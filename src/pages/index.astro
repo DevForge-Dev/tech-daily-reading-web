@@ -59,20 +59,12 @@ const updated = generatedAt
       byTopic.map((g) => {
         const grad = `linear-gradient(135deg, ${g.meta.gradient[0]}, ${g.meta.gradient[1]})`;
         return (
-          <a
-            class="hero"
-            href={url(`topics/${g.meta.slug}/`)}
-            style={`background:${grad}; padding:22px; min-height:120px; display:flex; flex-direction:column; justify-content:flex-end;`}
-          >
-            <span class="glyph" aria-hidden="true" style="font-size:110px;">
-              {g.meta.glyph}
-            </span>
-            <div class="topic-name" style="position:relative;">
-              {g.meta.name}
-            </div>
-            <div style="position:relative; font-size:22px; font-weight:800;">
+          <a class="topic-tile" href={url(`topics/${g.meta.slug}/`)} style={`background:${grad}`}>
+            <span class="glyph" aria-hidden="true">{g.meta.glyph}</span>
+            <div class="topic-name">{g.meta.name}</div>
+            <div class="count">
               {g.articles.length}
-              <span style="font-size:13px; font-weight:600; opacity:.85;"> 本</span>
+              <span> 本</span>
             </div>
           </a>
         );

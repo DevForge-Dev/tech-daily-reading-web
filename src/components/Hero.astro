@@ -10,9 +10,9 @@ const m = topicMeta(article.topic);
 const grad = `linear-gradient(135deg, ${m.gradient[0]}, ${m.gradient[1]})`;
 ---
 
-<section class="hero big" style={`background:${grad}`}>
+<section class="hero big rise" style={`background:${grad}`}>
   <span class="glyph" aria-hidden="true">{m.glyph}</span>
-  <div class="topic-name">{m.name}</div>
+  <div class="kicker">{m.name}</div>
   <h1>{article.title}</h1>
   <p class="lede">{article.lede}</p>
   <div class="meta">
