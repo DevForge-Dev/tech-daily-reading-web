@@ -10,8 +10,13 @@ const featured = articles[0];
 const rest = articles.slice(1);
 const byTopic = groupByTopic(articles);
 const generatedAt = getGeneratedAt();
+// ビルド環境(CI=UTC / ローカル=JST)に依存せず同じ出力になるよう JST で固定
 const updated = generatedAt
-  ? new Date(generatedAt).toLocaleString('ja-JP', { dateStyle: 'medium', timeStyle: 'short' })
+  ? new Date(generatedAt).toLocaleString('ja-JP', {
+      dateStyle: 'medium',
+      timeStyle: 'short',
+      timeZone: 'Asia/Tokyo',
+    })
   : '';
 ---
 
