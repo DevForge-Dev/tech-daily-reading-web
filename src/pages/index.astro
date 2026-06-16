@@ -18,7 +18,7 @@ const updated = generatedAt
 <Base title="デイリー技術深掘り 読み物" current="home" themeColor={topicMeta(featured?.topic ?? '').color}>
   {
     featured && (
-      <a href={url(`articles/${featured.id}/`)} style="display:block; margin-top:24px;">
+      <a class="hero-link" href={url(`articles/${featured.id}/`)} style="display:block; margin-top:24px;">
         <Hero article={featured} />
       </a>
     )

@@ -284,6 +284,18 @@ a:hover {
 .hero.big {
   padding: 52px 44px;
 }
+/* 先頭ヒーローをリンク化したときの下線を抑制し、代わりにわずかな浮き上がりで反応 */
+.hero-link,
+.hero-link:hover {
+  text-decoration: none;
+}
+.hero-link .hero {
+  transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+.hero-link:hover .hero {
+  transform: translateY(-3px);
+  box-shadow: var(--shadow-hover);
+}
 /* 立体感のあるハイライト + グレイン */
 .hero::before {
   content: '';
