@@ -1,0 +1,14 @@
+---
+import Base from '../layouts/Base.astro';
+import { url } from '../lib/url';
+---
+
+<Base title="ページが見つかりません" description="404">
+  <div class="empty" style="padding:90px 20px;">
+    <div style="font-size:64px; font-weight:800; opacity:.3;">404</div>
+    <p style="font-size:18px; margin:10px 0 20px;">お探しのページは見つかりませんでした。</p>
+    <a class="filter-btn active" href={url('')} style="background:var(--link); color:#fff; border-color:transparent; text-decoration:none;">
+      ホームへ戻る
+    </a>
+  </div>
+</Base>

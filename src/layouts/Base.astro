@@ -1,0 +1,104 @@
+---
+import '../styles/global.css';
+import Header from '../components/Header.astro';
+import { url } from '../lib/url';
+
+interface Props {
+  title: string;
+  description?: string;
+  current?: string;
+  /** OGP 用のトピック色など */
+  themeColor?: string;
+}
+
+const {
+  title,
+  description = 'Claude Code / Next.js / Flutter の毎日の技術リサーチを、深掘りの読み物として蓄積する自分用アーカイブ。',
+  current,
+  themeColor = '#7b3fe4',
+} = Astro.props;
+
+const siteName = 'デイリー技術深掘り 読み物';
+const fullTitle = title === siteName ? title : `${title} — ${siteName}`;
+const canonical = new URL(Astro.url.pathname, Astro.site).href;
+---
+
+<!doctype html>
+<html lang="ja">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+    <meta name="theme-color" content={themeColor} />
+    <link rel="canonical" href={canonical} />
+    <link
+      rel="alternate"
+      type="application/rss+xml"
+      title={siteName}
+      href={url('feed.xml')}
+    />
+    <link rel="manifest" href={url('manifest.webmanifest')} />
+    <link rel="icon" href={url('favicon.svg')} type="image/svg+xml" />
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content={siteName} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <!-- FOUC を防ぐためテーマを最優先で適用 -->
+    <script is:inline>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script>
+  </head>
+  <body>
+    <Header current={current} />
+    <main class="container">
+      <slot />
+    </main>
+    <footer class="site-footer">
+      <div class="container inner">
+        <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span>
+        <span>
+          <a href={url('feed.xml')}>RSS</a> ·
+          <a href={url('archive')}>アーカイブ</a> ·
+          <a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a>
+        </span>
+      </div>
+    </footer>
+
+    <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） -->
+    <script is:inline>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script>
+
+    <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） -->
+    <script is:inline define:vars={{ swPath: url('sw.js'), scope: url('') }}>
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    </script>
+  </body>
+</html>

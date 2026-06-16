@@ -1,0 +1,31 @@
+---
+import { topicMeta, formatDate } from '../lib/data';
+import type { Article } from '../lib/data';
+import { url } from '../lib/url';
+
+interface Props {
+  article: Article;
+}
+const { article } = Astro.props;
+const m = topicMeta(article.topic);
+const grad = `linear-gradient(135deg, ${m.gradient[0]}, ${m.gradient[1]})`;
+const href = url(`articles/${article.id}/`);
+---
+
+<article class="card">
+  <a class="card-link" href={href}>
+    <div class="card-hero" style={`background:${grad}`}>
+      <span class="glyph" aria-hidden="true">{m.glyph}</span>
+      <span class="topic-name">{m.name}</span>
+    </div>
+    <div class="card-body">
+      <h3>{article.title}</h3>
+      <p class="lede">{article.lede}</p>
+      <div class="card-meta">
+        <span>{formatDate(article.date)}</span>
+        <span>·</span>
+        <span>約{article.readingMinutes}分</span>
+      </div>
+    </div>
+  </a>
+</article>

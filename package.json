@@ -1,0 +1,24 @@
+{
+  "name": "tech-daily-reading-web",
+  "type": "module",
+  "version": "1.0.0",
+  "private": true,
+  "description": "デイリー技術深掘り 読み物 — data/articles.json から生成する静的ブログ (Astro)",
+  "engines": {
+    "node": ">=18.20.8"
+  },
+  "scripts": {
+    "dev": "astro dev",
+    "start": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
+    "astro": "astro"
+  },
+  "dependencies": {
+    "@astrojs/rss": "^4.0.11",
+    "astro": "^5.13.0",
+    "chart.js": "^4.4.7",
+    "highlight.js": "^11.11.1",
+    "node-html-parser": "^7.0.1"
+  }
+}

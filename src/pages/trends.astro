@@ -1,0 +1,145 @@
+---
+import Base from '../layouts/Base.astro';
+import { getArticles, groupByTopic, topicMeta } from '../lib/data';
+
+const articles = getArticles();
+const byTopic = groupByTopic(articles);
+
+// 月 × トピックの本数集計（昇順の月軸）
+const monthsSet = new Set<string>();
+articles.forEach((a) => monthsSet.add(a.date.slice(0, 7)));
+const months = [...monthsSet].sort();
+const monthLabels = months.map((m) => {
+  const [y, mm] = m.split('-');
+  return `${y}/${Number(mm)}`;
+});
+
+const series = byTopic.map((g) => {
+  const counts = months.map(
+    (m) => g.articles.filter((a) => a.date.slice(0, 7) === m).length
+  );
+  return {
+    label: g.meta.name,
+    color: g.meta.color,
+    data: counts,
+    total: g.articles.length,
+  };
+});
+
+const totalCount = articles.length;
+const topicCount = byTopic.length;
+const dayCount = new Set(articles.map((a) => a.date)).size;
+---
+
+<Base title="傾向" description="トピック別の本数推移と内訳" current="trends">
+  <h1 class="page-title">傾向</h1>
+  <p class="page-sub">トピック別の本数推移と内訳。</p>
+
+  <div class="stat-grid">
+    <div class="stat"><div class="num">{totalCount}</div><div class="label">総記事数</div></div>
+    <div class="stat"><div class="num">{topicCount}</div><div class="label">トピック</div></div>
+    <div class="stat"><div class="num">{dayCount}</div><div class="label">更新日数</div></div>
+  </div>
+
+  <div class="chart-card">
+    <h2>トピック別の本数推移</h2>
+    <p class="chart-sub">月ごとの公開本数（トピック別の積み上げ）</p>
+    <div class="chart-wrap"><canvas id="trendChart"></canvas></div>
+  </div>
+
+  <div class="chart-card">
+    <h2>トピック内訳</h2>
+    <p class="chart-sub">全期間のトピック別シェア</p>
+    <div class="chart-wrap" style="height:300px;"><canvas id="topicChart"></canvas></div>
+  </div>
+
+  <script type="application/json" id="trend-data" set:html={JSON.stringify({ monthLabels, series })} />
+</Base>
+
+<script>
+  import Chart from 'chart.js/auto';
+
+  const dataEl = document.getElementById('trend-data');
+  const { monthLabels, series } = JSON.parse(dataEl?.textContent || '{}');
+
+  function axisColor() {
+    return getComputedStyle(document.documentElement).getPropertyValue('--text-soft').trim() || '#666';
+  }
+  function gridColor() {
+    return getComputedStyle(document.documentElement).getPropertyValue('--border').trim() || '#ddd';
+  }
+
+  const charts = [];
+
+  function buildTrend() {
+    const ctx = document.getElementById('trendChart');
+    if (!ctx) return;
+    const c = new Chart(ctx, {
+      type: 'bar',
+      data: {
+        labels: monthLabels,
+        datasets: series.map((s) => ({
+          label: s.label,
+          data: s.data,
+          backgroundColor: s.color,
+          borderRadius: 6,
+          maxBarThickness: 60,
+        })),
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        scales: {
+          x: { stacked: true, ticks: { color: axisColor() }, grid: { display: false } },
+          y: {
+            stacked: true,
+            beginAtZero: true,
+            ticks: { color: axisColor(), precision: 0 },
+            grid: { color: gridColor() },
+          },
+        },
+        plugins: { legend: { labels: { color: axisColor() } } },
+      },
+    });
+    charts.push(c);
+  }
+
+  function buildTopic() {
+    const ctx = document.getElementById('topicChart');
+    if (!ctx) return;
+    const c = new Chart(ctx, {
+      type: 'doughnut',
+      data: {
+        labels: series.map((s) => s.label),
+        datasets: [
+          {
+            data: series.map((s) => s.total),
+            backgroundColor: series.map((s) => s.color),
+            borderColor: getComputedStyle(document.documentElement)
+              .getPropertyValue('--bg-elev')
+              .trim(),
+            borderWidth: 2,
+          },
+        ],
+      },
+      options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        cutout: '62%',
+        plugins: { legend: { position: 'right', labels: { color: axisColor() } } },
+      },
+    });
+    charts.push(c);
+  }
+
+  buildTrend();
+  buildTopic();
+
+  // テーマ変更で軸色などを更新
+  document.addEventListener('themechange', function () {
+    charts.forEach((c) => c.destroy());
+    charts.length = 0;
+    buildTrend();
+    buildTopic();
+  });
+</script>

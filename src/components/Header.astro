@@ -1,0 +1,61 @@
+---
+import { url } from '../lib/url';
+const { current } = Astro.props as { current?: string };
+const nav = [
+  { href: url(''), label: 'ホーム', key: 'home' },
+  { href: url('archive'), label: 'アーカイブ', key: 'archive' },
+  { href: url('trends'), label: '傾向', key: 'trends' },
+  { href: url('search'), label: '検索', key: 'search' },
+];
+---
+
+<header class="site-header">
+  <div class="container inner">
+    <a class="brand" href={url('')}>
+      <span class="logo">読</span>
+      <span>デイリー技術深掘り</span>
+    </a>
+    <nav class="nav">
+      {
+        nav.map((n) => (
+          <a href={n.href} aria-current={current === n.key ? 'page' : undefined}>
+            {n.label}
+          </a>
+        ))
+      }
+      <button
+        id="theme-toggle"
+        class="icon-btn"
+        type="button"
+        aria-label="ダークモード切替"
+        title="ダークモード切替"
+      >
+        <span aria-hidden="true" id="theme-icon">🌙</span>
+      </button>
+    </nav>
+  </div>
+</header>
+
+<script is:inline>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script>

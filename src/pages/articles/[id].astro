@@ -1,0 +1,144 @@
+---
+import Base from '../../layouts/Base.astro';
+import Hero from '../../components/Hero.astro';
+import { getArticles, topicMeta } from '../../lib/data';
+import { url } from '../../lib/url';
+
+export function getStaticPaths() {
+  return getArticles().map((article) => ({
+    params: { id: article.id },
+    props: { article },
+  }));
+}
+
+const { article } = Astro.props;
+const m = topicMeta(article.topic);
+---
+
+<Base
+  title={article.title}
+  description={article.lede}
+  themeColor={m.color}
+>
+  <a class="back-link" href={url('')}>← 一覧へ戻る</a>
+
+  <Hero article={article} />
+
+  <div class="article-layout" style={`--topic:${m.color}`}>
+    <div>
+      <article class="prose" set:html={article.html} data-has-mermaid={article.hasMermaid ? '1' : '0'} />
+
+      {
+        article.sources.length > 0 && (
+          <aside class="sources">
+            <h4>出典 / 参考</h4>
+            <ol>
+              {article.sources.map((s) => (
+                <li>
+                  <a href={s.url} target="_blank" rel="noopener noreferrer">
+                    {s.title}
+                  </a>
+                </li>
+              ))}
+            </ol>
+          </aside>
+        )
+      }
+    </div>
+
+    {
+      article.toc.length > 0 && (
+        <nav class="toc-rail" aria-label="目次">
+          <div class="toc-title">目次</div>
+          <ul>
+            {article.toc.map((t) => (
+              <li>
+                <a href={`#${t.id}`} data-toc={t.id}>
+                  {t.text}
+                </a>
+              </li>
+            ))}
+          </ul>
+          <div class="reading-box">
+            <div>📅 {article.date}</div>
+            <div>⏱ 読了 約{article.readingMinutes}分</div>
+            <div>🏷 {m.name}</div>
+          </div>
+        </nav>
+      )
+    }
+  </div>
+</Base>
+
+<!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト -->
+<script>
+  import hljs from 'highlight.js/lib/common';
+  // @ts-ignore - ?inline は Vite が文字列として読み込む
+  import githubLight from 'highlight.js/styles/github.css?inline';
+  // @ts-ignore
+  import githubDark from 'highlight.js/styles/github-dark.css?inline';
+
+  // --- 見出しアンカー ---
+  document.querySelectorAll('.prose h4[id]').forEach((h) => {
+    const a = document.createElement('a');
+    a.className = 'anchor';
+    a.href = '#' + h.id;
+    a.textContent = '#';
+    a.setAttribute('aria-hidden', 'true');
+    h.appendChild(a);
+  });
+
+  // --- コードハイライト ---
+  const themeEl = document.createElement('style');
+  themeEl.id = 'hljs-theme';
+  document.head.appendChild(themeEl);
+  function paintHljsTheme() {
+    const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+    themeEl.textContent = dark ? githubDark : githubLight;
+  }
+  paintHljsTheme();
+  document.addEventListener('themechange', paintHljsTheme);
+  document.querySelectorAll('.prose pre code').forEach((el) => {
+    hljs.highlightElement(el as HTMLElement);
+  });
+
+  // --- TOC アクティブ表示 ---
+  const links = new Map<string, HTMLElement>();
+  document.querySelectorAll<HTMLElement>('[data-toc]').forEach((a) => {
+    links.set(a.dataset.toc!, a);
+  });
+  const heads = Array.from(document.querySelectorAll<HTMLElement>('.prose h4[id]'));
+  if (heads.length && links.size) {
+    const obs = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) {
+            links.forEach((l) => l.classList.remove('active'));
+            const link = links.get((e.target as HTMLElement).id);
+            link && link.classList.add('active');
+          }
+        });
+      },
+      { rootMargin: '-80px 0px -70% 0px', threshold: 0 }
+    );
+    heads.forEach((h) => obs.observe(h));
+  }
+
+  // --- Mermaid（詳細表示時のみ・strict / htmlLabels:false）---
+  const prose = document.querySelector('.prose');
+  if (prose && prose.getAttribute('data-has-mermaid') === '1') {
+    const dark = document.documentElement.getAttribute('data-theme') === 'dark';
+    import('https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs')
+      .then(({ default: mermaid }) => {
+        mermaid.initialize({
+          startOnLoad: false,
+          securityLevel: 'strict',
+          theme: 'neutral',
+          fontFamily: 'inherit',
+          flowchart: { htmlLabels: false },
+        });
+        mermaid.run({ querySelector: '.prose pre.mermaid' });
+      })
+      .catch(() => {});
+  }
+</script>

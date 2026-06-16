@@ -1,0 +1,23 @@
+---
+import { topicMeta, formatDate } from '../lib/data';
+import type { Article } from '../lib/data';
+
+interface Props {
+  article: Article;
+}
+const { article } = Astro.props;
+const m = topicMeta(article.topic);
+const grad = `linear-gradient(135deg, ${m.gradient[0]}, ${m.gradient[1]})`;
+---
+
+<section class="hero big" style={`background:${grad}`}>
+  <span class="glyph" aria-hidden="true">{m.glyph}</span>
+  <div class="topic-name">{m.name}</div>
+  <h1>{article.title}</h1>
+  <p class="lede">{article.lede}</p>
+  <div class="meta">
+    <span>📅 {formatDate(article.date)}</span>
+    <span>⏱ 約{article.readingMinutes}分</span>
+    {article.sources.length > 0 && <span>🔗 出典 {article.sources.length} 件</span>}
+  </div>
+</section>

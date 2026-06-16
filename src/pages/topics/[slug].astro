@@ -1,0 +1,32 @@
+---
+import Base from '../../layouts/Base.astro';
+import ArticleCard from '../../components/ArticleCard.astro';
+import { getArticles, groupByTopic } from '../../lib/data';
+import { url } from '../../lib/url';
+
+export function getStaticPaths() {
+  return groupByTopic(getArticles()).map((g) => ({
+    params: { slug: g.meta.slug },
+    props: { group: g },
+  }));
+}
+
+const { group } = Astro.props;
+const m = group.meta;
+const grad = `linear-gradient(135deg, ${m.gradient[0]}, ${m.gradient[1]})`;
+---
+
+<Base title={`${m.name} の読み物`} description={`${m.name} に関する深掘り記事の一覧`} themeColor={m.color}>
+  <a class="back-link" href={url('archive')}>← アーカイブへ</a>
+
+  <section class="hero big" style={`background:${grad}; margin-top:8px;`}>
+    <span class="glyph" aria-hidden="true">{m.glyph}</span>
+    <div class="topic-name">トピック</div>
+    <h1>{m.name}</h1>
+    <p class="lede">{group.articles.length} 本の読み物</p>
+  </section>
+
+  <div class="card-grid" style="margin-top:28px;">
+    {group.articles.map((a) => <ArticleCard article={a} />)}
+  </div>
+</Base>

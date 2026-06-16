@@ -1,0 +1,82 @@
+---
+import Base from '../layouts/Base.astro';
+import Hero from '../components/Hero.astro';
+import ArticleCard from '../components/ArticleCard.astro';
+import { getArticles, groupByTopic, topicMeta, getGeneratedAt } from '../lib/data';
+import { url } from '../lib/url';
+
+const articles = getArticles();
+const featured = articles[0];
+const rest = articles.slice(1);
+const byTopic = groupByTopic(articles);
+const generatedAt = getGeneratedAt();
+const updated = generatedAt
+  ? new Date(generatedAt).toLocaleString('ja-JP', { dateStyle: 'medium', timeStyle: 'short' })
+  : '';
+---
+
+<Base title="デイリー技術深掘り 読み物" current="home" themeColor={topicMeta(featured?.topic ?? '').color}>
+  {
+    featured && (
+      <a href={url(`articles/${featured.id}/`)} style="display:block; margin-top:24px;">
+        <Hero article={featured} />
+      </a>
+    )
+  }
+
+  {
+    updated && (
+      <p class="muted" style="margin:14px 2px 0; font-size:13px;">
+        最終更新: {updated} ／ 全 {articles.length} 本
+      </p>
+    )
+  }
+
+  <div class="section-head">
+    <h2>最新の読み物</h2>
+    <a class="more" href={url('archive')}>アーカイブを見る →</a>
+  </div>
+
+  {
+    rest.length > 0 ? (
+      <div class="card-grid">
+        {rest.map((a) => (
+          <ArticleCard article={a} />
+        ))}
+      </div>
+    ) : (
+      <p class="empty">まだ記事がありません。</p>
+    )
+  }
+
+  <div class="section-head">
+    <h2>トピック</h2>
+    <a class="more" href={url('trends')}>傾向グラフ →</a>
+  </div>
+
+  <div class="card-grid" style="grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));">
+    {
+      byTopic.map((g) => {
+        const grad = `linear-gradient(135deg, ${g.meta.gradient[0]}, ${g.meta.gradient[1]})`;
+        return (
+          <a
+            class="hero"
+            href={url(`topics/${g.meta.slug}/`)}
+            style={`background:${grad}; padding:22px; min-height:120px; display:flex; flex-direction:column; justify-content:flex-end;`}
+          >
+            <span class="glyph" aria-hidden="true" style="font-size:110px;">
+              {g.meta.glyph}
+            </span>
+            <div class="topic-name" style="position:relative;">
+              {g.meta.name}
+            </div>
+            <div style="position:relative; font-size:22px; font-weight:800;">
+              {g.articles.length}
+              <span style="font-size:13px; font-weight:600; opacity:.85;"> 本</span>
+            </div>
+          </a>
+        );
+      })
+    }
+  </div>
+</Base>

@@ -1,0 +1,19 @@
+{
+  "name": "デイリー技術深掘り 読み物",
+  "short_name": "技術深掘り",
+  "description": "Claude Code / Next.js / Flutter の毎日の技術リサーチを深掘りの読み物として蓄積するアーカイブ。",
+  "start_url": "/tech-daily-reading-web/",
+  "scope": "/tech-daily-reading-web/",
+  "display": "standalone",
+  "background_color": "#0d0d12",
+  "theme_color": "#7b3fe4",
+  "lang": "ja",
+  "icons": [
+    {
+      "src": "/tech-daily-reading-web/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml",
+      "purpose": "any maskable"
+    }
+  ]
+}

@@ -1,0 +1,112 @@
+---
+import Base from '../layouts/Base.astro';
+import { getArticles, groupByMonth, groupByTopic, topicMeta, formatDate } from '../lib/data';
+import { url } from '../lib/url';
+
+const articles = getArticles();
+const byMonth = groupByMonth(articles);
+const byTopic = groupByTopic(articles);
+---
+
+<Base title="アーカイブ" description="トピック別・月別で読み物を絞り込む" current="archive">
+  <h1 class="page-title">アーカイブ</h1>
+  <p class="page-sub">全 {articles.length} 本。トピックで絞り込めます。</p>
+
+  <div class="filters" id="topic-filters">
+    <button class="filter-btn active" data-topic="all" style="background:var(--text); color:var(--bg);">
+      すべて
+    </button>
+    {
+      byTopic.map((g) => (
+        <button
+          class="filter-btn"
+          data-topic={g.meta.slug}
+          data-color={g.meta.color}
+          style={`--c:${g.meta.color}`}
+        >
+          {g.meta.glyph} {g.meta.name} ({g.articles.length})
+        </button>
+      ))
+    }
+  </div>
+
+  {
+    byMonth.map((mg) => (
+      <section class="month-section">
+        <div class="section-head">
+          <h2>{mg.label}</h2>
+          <span class="muted">{mg.articles.length} 本</span>
+        </div>
+        <ul class="archive-list">
+          {mg.articles.map((a) => {
+            const m = topicMeta(a.topic);
+            return (
+              <li data-topic={a.topicSlug}>
+                <span
+                  class="chip"
+                  style={`background:linear-gradient(135deg, ${m.gradient[0]}, ${m.gradient[1]})`}
+                >
+                  <span class="dot" aria-hidden="true">
+                    {m.glyph}
+                  </span>
+                  {m.name}
+                </span>
+                <a class="title" href={url(`articles/${a.id}/`)}>
+                  {a.title}
+                </a>
+                <span class="date">{formatDate(a.date)}</span>
+              </li>
+            );
+          })}
+        </ul>
+      </section>
+    ))
+  }
+</Base>
+
+<script is:inline>
+  (function () {
+    const btns = document.querySelectorAll('#topic-filters .filter-btn');
+    const items = document.querySelectorAll('.archive-list li[data-topic]');
+    const sections = document.querySelectorAll('.month-section');
+    function apply(topic) {
+      items.forEach((li) => {
+        li.style.display = topic === 'all' || li.dataset.topic === topic ? '' : 'none';
+      });
+      // 空になった月セクションを隠す
+      sections.forEach((sec) => {
+        const visible = sec.querySelectorAll('.archive-list li:not([style*="display: none"])');
+        let any = false;
+        sec.querySelectorAll('.archive-list li').forEach((li) => {
+          if (li.style.display !== 'none') any = true;
+        });
+        sec.style.display = any ? '' : 'none';
+      });
+    }
+    btns.forEach((b) => {
+      b.addEventListener('click', function () {
+        btns.forEach((x) => {
+          x.classList.remove('active');
+          if (x.dataset.topic === 'all') {
+            x.style.background = '';
+            x.style.color = '';
+          } else {
+            x.style.background = '';
+            x.style.color = '';
+            x.style.borderColor = '';
+          }
+        });
+        b.classList.add('active');
+        if (b.dataset.topic === 'all') {
+          b.style.background = 'var(--text)';
+          b.style.color = 'var(--bg)';
+        } else {
+          b.style.background = b.dataset.color;
+          b.style.color = '#fff';
+          b.style.borderColor = 'transparent';
+        }
+        apply(b.dataset.topic);
+      });
+    });
+  })();
+</script>
