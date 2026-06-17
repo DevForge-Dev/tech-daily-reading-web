@@ -1,12 +1,90 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-06-16T09:50:06.559Z",
+  "generatedAt": "2026-06-17T04:46:45.709Z",
   "topics": [
     "Claude Code",
     "Next.js",
     "Flutter"
   ],
   "articles": [
+    {
+      "id": "2026-06-17-claude-code",
+      "date": "2026-06-17",
+      "topic": "Claude Code",
+      "title": "権限と安全装置の再設計 — Tool(param:value)構文とautoモードの分類器ガード",
+      "lede": "v2.1.178でツール入力値にマッチするTool(param:value)権限ルールが登場。Agent(model:opus)で特定モデルのサブエージェント起動まで止められる。同時にautoモードがBedrock/Vertex/Foundryへ広がり、確認プロンプトを分類器の事前評価に置き換えた。無人運用の安全設計を読み解く。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>自動化が進むほど「何を許可して、何を止めるか」をどれだけ細かく制御できるかが効いてくる。これまでの権限ルールは <code>Bash</code> や <code>Agent</code> といった<b>ツール単位</b>での許可/拒否が基本で、「同じツールでも特定のパラメータのときだけ止めたい」という粒度には届かなかった。2026-06-15 公開の <b>Claude Code v2.1.178</b> はここに手を入れ、ツールの入力値そのものにマッチする権限構文を導入した。スケジュールタスクや CI で無人実行している人ほど直撃するアップデートだ。</p>\n<h4>何が新しいか</h4>\n<p>目玉は <b><code>Tool(param:value)</code> 構文</b>（<code>*</code> ワイルドカード対応）。ツールの<b>入力パラメータ単位</b>で許可/拒否を書けるようになった。たとえば <code>Agent(model:opus)</code> と書けば、Opus を使うサブエージェントの起動だけをブロックできる——コスト高いモデルの誤起動を防ぐ、といった制御が宣言的に書ける。あわせてワークフロー保存が<b>最寄りの <code>.claude/workflows/</code></b> を対象にするよう改善され、<b>auto モードのサブエージェント起動が分類器の事前評価を通る</b>ようになった。直近では <b>Safe Mode</b>（設定破損時の安全フォールバック）、作業ディレクトリを移す <b><code>/cd</code></b>、デフォルトモデルの <b>Opus 4.8</b>、カテゴリ別の <b><code>/usage</code></b> 内訳も到着している。</p>\n<figure class='fig'><svg viewBox='0 0 600 232' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='10' y='8' width='580' height='36' rx='9' fill='#efeafc'/><text x='300' y='31' text-anchor='middle' font-size='14' font-weight='700' fill='#5a3fc0'>Tool(param:value) — 入力パラメータ単位の権限ルール</text><rect x='24' y='58' width='270' height='150' rx='12' fill='#fdeef0' stroke='#e07a9b'/><text x='159' y='84' text-anchor='middle' font-size='13' font-weight='700' fill='#b03a6e'>従来：ツール単位</text><rect x='44' y='100' width='230' height='30' rx='8' fill='#fff' stroke='#f0c5d2'/><text x='159' y='120' text-anchor='middle' font-size='12' fill='#8c3257'>Agent ← 丸ごと許可/拒否</text><text x='159' y='158' text-anchor='middle' font-size='11' fill='#a85575'>「Opusのときだけ止める」</text><text x='159' y='176' text-anchor='middle' font-size='11' fill='#a85575'>が書けなかった</text><rect x='306' y='58' width='270' height='150' rx='12' fill='#e9f7ef' stroke='#46c08a'/><text x='441' y='84' text-anchor='middle' font-size='13' font-weight='700' fill='#1d8a5a'>v2.1.178：値単位</text><rect x='326' y='100' width='230' height='30' rx='8' fill='#fff' stroke='#bfe6d2'/><text x='441' y='120' text-anchor='middle' font-size='11.5' fill='#27674a'>Agent(model:opus) ← これだけ拒否</text><rect x='326' y='138' width='230' height='30' rx='8' fill='#fff' stroke='#bfe6d2'/><text x='441' y='158' text-anchor='middle' font-size='11.5' fill='#27674a'>Bash(rm:*) などワイルドカードも</text><text x='441' y='192' text-anchor='middle' font-size='11' fill='#1d8a5a'>粒度がツール→パラメータへ</text></svg><figcaption>図1：権限の粒度が「ツール単位」から「入力パラメータ単位」へ。狙った操作だけをピンポイントで止められる。</figcaption></figure>\n<h4>autoモードの安全モデル</h4>\n<p>もう一つの軸が <b>auto モード</b>の拡大だ。これまでの「ツールごとに確認プロンプトを出す」方式を、<b>バックグラウンドの安全性チェック</b>に置き換える。AI の分類器が各ツール呼び出しを<b>実行前に評価</b>し、危険な操作だけをブロックする仕組みで、サードパーティの <b>Bedrock / Vertex / Foundry</b>（Opus 4.7／4.8 向け）でも使えるようになった。v2.1.178 ではサブエージェント起動もこの事前評価を通るので、委譲先まで含めて安全網がかかる。</p>\n<figure class='fig'><pre class='mermaid'>flowchart TD\n  T[\"ツール呼び出し（auto）\"] --> C[\"分類器が実行前に評価\"]\n  C -->|\"安全\"| R[\"そのまま実行\"]\n  C -->|\"危険\"| B[\"ブロック\"]\n  C -->|\"保護パスへの書込\"| P[\"確認プロンプト\"]</pre><figcaption>図2：autoモードは確認プロンプトを分類器の事前評価へ置換。bypassでも .git/ .claude/ 等の保護パスは確認が残る。</figcaption></figure>\n<h4>自分が試すなら</h4>\n<ul><li>スケジュール/CI の権限を <code>Tool(param:value)</code> で締め、<code>Agent(model:opus)</code> で高コストモデルの誤起動を封じる。</li><li><code>/usage</code> のカテゴリ別内訳で自動化枠の消費を棚卸しする。</li><li>分類器頼みにせず、決定論的に止めたい所は <b>hooks</b> でガードレールを併設する。</li></ul>\n<h4>注意点</h4>\n<blockquote>分類器ベースの安全チェックは確率的で万能ではない。bypass モードでも <code>.git/</code>・<code>.claude/</code>（commands/agents/skills 除く）・<code>.vscode/</code>・<code>.husky/</code> など保護パスへの書き込みは確認が残る——この最後の砦は外さない設計が安全だ。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>v2.1.178 は「許可の粒度」を一段細かくし、auto モードは「確認の方法」を分類器へ寄せた。手で確認する運用から、ルールと分類器で守る無人運用へ——その移行を支える土台が揃いつつある。</p>",
+      "sources": [
+        {
+          "title": "Claude Code v2.1.178（Tool(param:value)構文）",
+          "url": "https://dev.classmethod.jp/articles/20260616-cc-updates-v2-1-178/"
+        },
+        {
+          "title": "Safe Mode・/cd・Opus 4.8・カテゴリ別/usage",
+          "url": "https://jangwook.net/en/blog/en/claude-code-june-2026-new-features-changelog-developer-guide/"
+        },
+        {
+          "title": "Auto モードがBedrock/Vertex/Foundryに対応",
+          "url": "https://claudefa.st/blog/guide/development/auto-mode"
+        },
+        {
+          "title": "Hooks・Subagents・Skills 完全ガイド2026",
+          "url": "https://dev.to/vibehackers/claude-code-hooks-subagents-power-features-the-complete-guide-2026-c71"
+        }
+      ]
+    },
+    {
+      "id": "2026-06-17-nextjs",
+      "date": "2026-06-17",
+      "topic": "Next.js",
+      "title": "静的シェルは即配信、動的部分は後から流す — Next.js 16のPartial Prerendering(PPR)を実装目線で",
+      "lede": "ページ単位で「静的か動的か」を選ばされる時代が終わる。PPRはビルド時に静的HTMLシェルを返しつつ、リクエスト依存の部分をSuspense境界の「穴」として同じレスポンス内で後からストリーミングする。Next.js 16で安定化し、Cache Componentsに統合された仕組みを噛み砕く。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>従来は1ルートにつき「静的（SSG/ISR）か、動的（SSR）か」をページ単位で選ぶしかなかった。カート・セッション・在庫のようにリクエスト依存のデータが<b>少しでも混ざると、ページ全体が動的</b>になり TTFB が悪化する——この二択がずっとつきまとってきた。<b>Partial Prerendering（PPR）</b>はこれをコンポーネント単位に分解する。ビルド時に<b>静的HTMLシェル</b>（レイアウト・ナビ・商品タイトル等）を作って即座に返し、リクエスト依存の<b>動的部分</b>は <code>&lt;Suspense&gt;</code> 境界で「穴」として残し、<b>同じHTTPレスポンス内で後からストリーミング</b>する。PPR は Next.js 14 で実験導入、15 で洗練、<b>16（2025年10月）で安定化</b>した。</p>\n<h4>何が新しいか</h4>\n<p>16 では独立フラグ <code>experimental.ppr</code> が廃止され、<b>Cache Components（<code>cacheComponents: true</code>）に統合</b>された。つまり「キャッシュ済み＝静的シェル、未キャッシュの非同期＝Suspenseで包む動的穴」という<b>同じメンタルモデル</b>でレンダリングとキャッシュが一体に扱える。ビルド時には PPR ルートごとに (1) Suspense フォールバックを穴として含む静的シェル、(2) <code>postponedState</code>（直列化された<b>不透明な</b>文字列。パースも改変も禁止）が作られる。リクエスト時は ①シェルを即送信 → ②<code>postponedState</code> で中断地点から再開 → ③動的部分をストリーミング、という流れだ。</p>\n<figure class='fig'><svg viewBox='0 0 600 226' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='16' y='16' width='568' height='194' rx='14' fill='#f3f7ff' stroke='#1f6feb'/><text x='300' y='40' text-anchor='middle' font-size='13.5' font-weight='700' fill='#16439b'>1つのページ ＝ 静的シェル ＋ 動的な穴</text><rect x='36' y='54' width='528' height='30' rx='7' fill='#1f6feb'/><text x='300' y='74' text-anchor='middle' font-size='12' fill='#fff' font-weight='700'>SiteHeader / ProductTitle（use cache）＝ ビルド時に確定・即配信</text><rect x='36' y='94' width='256' height='100' rx='10' fill='#fff' stroke='#9bc0ff' stroke-dasharray='5 4'/><text x='164' y='118' text-anchor='middle' font-size='12' font-weight='700' fill='#1f6feb'>&lt;Suspense&gt; 穴①</text><text x='164' y='140' text-anchor='middle' font-size='11' fill='#5570a0'>Recommendations</text><text x='164' y='158' text-anchor='middle' font-size='10.5' fill='#8a9bc0'>fallback→後からstream</text><rect x='308' y='94' width='256' height='100' rx='10' fill='#fff' stroke='#9bc0ff' stroke-dasharray='5 4'/><text x='436' y='118' text-anchor='middle' font-size='12' font-weight='700' fill='#1f6feb'>&lt;Suspense&gt; 穴②</text><text x='436' y='140' text-anchor='middle' font-size='11' fill='#5570a0'>CartBadge（cookies）</text><text x='436' y='158' text-anchor='middle' font-size='10.5' fill='#8a9bc0'>リクエスト毎に実行</text></svg><figcaption>図1：青帯＝即配信される静的シェル。点線枠＝Suspenseで包んだ動的穴。穴の中身だけが後からストリーミングされる。</figcaption></figure>\n<h4>実装のポイント</h4>\n<p>やることは2つだけ。「静的にしたいものに <code>'use cache'</code>」「動的なものは <code>&lt;Suspense&gt;</code> で包む」。Cache Components が有効だと、<b>キャッシュされていない非同期処理は必ず <code>&lt;Suspense&gt;</code> で包む</b>必要がある（包まないと \"Uncached data was accessed outside of &lt;Suspense&gt;\" でエラー）。<code>cookies()</code>/<code>headers()</code> を <code>use cache</code> スコープ内で直接呼ぶのも禁止（値はスコープ外で読んで引数で渡す）。</p>\n<figure class='fig'><pre class='mermaid'>flowchart LR\n  A[\"ビルド時：静的シェル ＋ postponedState を生成\"] --> B[\"リクエスト：シェルを即送信\"]\n  B --> C[\"postponedState で中断地点から再開\"]\n  C --> D[\"動的部分をストリーミング\"]\n  D --> E[\"クライアントが遅延境界をハイドレート\"]</pre><figcaption>図2：PPRの一連の流れ。デプロイ要件は「ストリーミング応答対応」だけで、next start なら追加インフラ不要。</figcaption></figure>\n<h4>使いどころと注意点</h4>\n<p>商品詳細（多くは静的だが在庫・推薦は動的）、マーケ面＋ログイン状態など「静的シェル＋動的穴」が自然な面で効果が大きい。全面リアルタイムや全面静的のページには過剰だ。注意点として、再検証時は<b>シェルと <code>postponedState</code> を必ずペアで差し替える</b>（片方だけ古いと動的描画が壊れる）。<code>postponedState</code> はログやプロキシで<b>改変しない</b>。Suspense 解決時のフェード演出を足すなら <code>@media (prefers-reduced-motion: reduce)</code> で瞬時切り替えにする。</p>\n<h4>ひとことまとめ</h4>\n<p>PPR は「静的の速さ」と「動的の鮮度」を1ページ内で両取りする仕組み。Cache Components と一体化した今、まずは商品詳細ページの推薦・在庫まわりを Suspense で切り出すのが入りやすい第一歩だ。</p>",
+      "sources": [
+        {
+          "title": "Next.js 公式 — PPR platform guide (v16.2.6)",
+          "url": "https://nextjs.org/docs/app/guides/ppr-platform-guide"
+        },
+        {
+          "title": "Next.js 公式 — cacheComponents 設定",
+          "url": "https://nextjs.org/docs/app/api-reference/config/next-config-js/cacheComponents"
+        },
+        {
+          "title": "Next.js 16 Partial Prerendering (PPR)",
+          "url": "https://dev.to/u11d/nextjs-16-partial-prerendering-ppr-the-best-of-static-and-dynamic-rendering-2fgg"
+        },
+        {
+          "title": "PPR in Production: Architecture Patterns (2026)",
+          "url": "https://samcheek.com/blog/nextjs-partial-prerendering-production-2026"
+        }
+      ]
+    },
+    {
+      "id": "2026-06-17-flutter",
+      "date": "2026-06-17",
+      "topic": "Flutter",
+      "title": "2026ロードマップ「Finishing the Job」— Android Impeller完全移行とWeb WASM既定化",
+      "lede": "新機能の大盤振る舞いではなく、未完了の移行を仕上げる年。Android 10以上でレガシーSkiaを撤去しVulkanのImpellerへ一本化、WebはWASMを既定へ。GenUI/エージェント志向やFull-Stack Dartも前進する、Flutterの足場固めを読む。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>Google I/O 2026 で示された <b>Flutter の2026ロードマップ</b>は、テーマからして異色だ。題して <b>「Finishing the Job」</b>——新機能を派手に増やすのではなく、これまで中途だった<b>移行を仕上げる</b>年だと宣言した。安定版は <b>Flutter 3.44 / Dart 3.12</b>、2026 も最低 4 回の安定リリースを約束する。地味に見えて、長期保守するアプリにとっては「いつ何が撤去されるか」が読めるのは大きい。</p>\n<h4>何が新しいか</h4>\n<p>最大の山場は <b>Android の Impeller 完全移行</b>。<b>Android 10 以上でレガシーな Skia バックエンドを撤去</b>し、Vulkan ベースの Impeller へ一本化する。Impeller はシェーダーを<b>ビルド時に AOT 事前コンパイル</b>するため、初回フレームからジャンクが出にくく、iOS は Metal・モダン Android は Vulkan を直接叩いて<b>安定120fps</b>を狙う。Web 側は <b>WASM を既定</b>へ前進。あわせて <b>GenUI／エージェント志向アプリ</b>の探求、<b>Full-Stack Dart</b> の拡充、Gemini CLI / Antigravity 連携による AI 開発体験の再構築が並ぶ。デザインシステムは Material/Cupertino を <code>material_ui</code>/<code>cupertino_ui</code> へ分離、iOS/macOS は <b>SwiftPM が既定</b>で CocoaPods 終焉へ。Dart 3.12 は private named parameters が正式、primary constructors が実験的に入った。</p>\n<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='120' y='26' text-anchor='middle' font-size='12.5' font-weight='700' fill='#666'>〜従来：2エンジン併存</text><rect x='24' y='40' width='200' height='44' rx='9' fill='#fdeef0' stroke='#e07a9b'/><text x='124' y='67' text-anchor='middle' font-size='12.5' fill='#b03a6e'>Skia（レガシー）</text><rect x='24' y='94' width='200' height='44' rx='9' fill='#eef6fb' stroke='#0277bd'/><text x='124' y='121' text-anchor='middle' font-size='12.5' fill='#0277bd'>Impeller</text><text x='124' y='160' text-anchor='middle' font-size='10.5' fill='#888'>分岐・検証コストが二重</text><line x1='236' y1='90' x2='320' y2='90' stroke='#1d8a5a' stroke-width='2.5' marker-end='url(#fa2)'/><defs><marker id='fa2' markerWidth='10' markerHeight='10' refX='5' refY='5' orient='auto'><path d='M0 0 L10 5 L0 10 z' fill='#1d8a5a'/></marker></defs><text x='278' y='82' text-anchor='middle' font-size='10.5' font-weight='700' fill='#1d8a5a'>2026</text><text x='470' y='26' text-anchor='middle' font-size='12.5' font-weight='700' fill='#666'>Android 10+：一本化</text><rect x='372' y='66' width='200' height='52' rx='10' fill='#e9f7ef' stroke='#46c08a'/><text x='472' y='90' text-anchor='middle' font-size='13' font-weight='700' fill='#1d8a5a'>Impeller / Vulkan</text><text x='472' y='108' text-anchor='middle' font-size='10.5' fill='#2f7d5b'>AOTシェーダー・安定120fps</text><text x='472' y='150' text-anchor='middle' font-size='10.5' fill='#1d8a5a'>Skia撤去で経路が単純化</text></svg><figcaption>図1：Android 10以上でSkiaを撤去しImpeller/Vulkanへ一本化。レンダリング経路が単純になり検証コストも下がる。</figcaption></figure>\n<h4>足場固めの中身</h4>\n<p>状態管理の基本線は変わらず、新規は <b>Riverpod 3.3.1 + コード生成</b>、監査証跡の要る規制業界は <b>Bloc 9.1.1</b>（<code>on&lt;Event&gt;</code> ハンドラ構文に統一）、GetX は12ヶ月超のプロジェクトで非推奨。パフォーマンスは<b>フレーム予算</b>で考えるのが定石で、90/120Hz が主流の2026 では 1 フレーム <b>8〜11ms</b> に収める。検証は必ず <b>profile モード</b>で行い、最頻出の問題「不要な再ビルド」は <code>const</code> 付与でスキップ、<code>Consumer</code>/<code>Selector</code> で局所再描画にする。</p>\n<figure class='fig'><svg viewBox='0 0 600 176' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='10' y='22' font-size='12.5' font-weight='700' fill='#333'>1フレームの予算（短いほど高fps）</text><text x='12' y='56' font-size='12' fill='#555'>60fps</text><rect x='66' y='42' width='480' height='20' rx='5' fill='#bcdff3'/><text x='556' y='57' font-size='11' fill='#0277bd' text-anchor='end'>16.6ms</text><text x='12' y='92' font-size='12' fill='#555'>90fps</text><rect x='66' y='78' width='318' height='20' rx='5' fill='#6fc3ea'/><text x='392' y='93' font-size='11' fill='#015a8c'>11ms</text><text x='12' y='128' font-size='12' fill='#555'>120fps</text><rect x='66' y='114' width='240' height='20' rx='5' fill='#0277bd'/><text x='314' y='129' font-size='11' fill='#015a8c'>8.3ms ← Impellerの狙い</text><text x='12' y='162' font-size='10.5' fill='#888'>※必ずprofileモードで計測。DevToolsのPerformanceでこの予算内に収める</text></svg><figcaption>図2：フレーム予算。Impeller一本化は120fps域(8.3ms)を安定して狙うための土台でもある。</figcaption></figure>\n<h4>自分が試すなら</h4>\n<ul><li>Android のターゲットを 10+ に揃え、Impeller 前提で実機（特にミドルレンジの Vulkan 端末）でジャンクを確認する。</li><li>iOS を SwiftPM へ移行し、CocoaPods 依存と Rosetta 起動を外してビルドを軽くする。</li><li>Web は WASM ビルドで初期表示とスクロール性能を計測し、既定化に備える。</li></ul>\n<h4>注意点</h4>\n<blockquote>「移行を仕上げる年」は裏を返せば<b>撤去の年</b>でもある。Skia 前提の独自シェーダーや Impeller で描画差の出る Rive 等は、リリース前に実機検証が要る。SwiftPM 移行も CocoaPods 前提のプラグインが残ると詰まりやすい。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>2026 の Flutter は「速くなる」より「二重だった足場を一本化して、これから速くしやすくする」年。新規は Impeller・Riverpod 3・SwiftPM を素直に前提に置くのが堅い。</p>",
+      "sources": [
+        {
+          "title": "Flutter 2026 Roadmap（Finishing the Job）",
+          "url": "https://webartdesign.com.au/blog/flutters-2026-roadmap-just-dropped-and-its-all-about-finishing-the-job/"
+        },
+        {
+          "title": "What's new in Flutter 3.41",
+          "url": "https://blog.flutter.dev/whats-new-in-flutter-3-41-302ec140e632"
+        },
+        {
+          "title": "How Impeller is Transforming Flutter UI Rendering in 2026",
+          "url": "https://dev.to/eira-wexford/how-impeller-is-transforming-flutter-ui-rendering-in-2026-3dpd"
+        },
+        {
+          "title": "Provider vs Riverpod vs Bloc 2026",
+          "url": "https://startdebugging.net/2026/06/provider-vs-riverpod-vs-bloc-for-flutter-state-management-in-2026/"
+        }
+      ]
+    },
     {
       "id": "2026-06-16-claude-code",
       "date": "2026-06-16",
