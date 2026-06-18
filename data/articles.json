@@ -1,12 +1,90 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-06-17T04:46:45.709Z",
+  "generatedAt": "2026-06-18T04:47:50.738Z",
   "topics": [
     "Claude Code",
     "Next.js",
     "Flutter"
   ],
   "articles": [
+    {
+      "id": "2026-06-18-claude-code",
+      "date": "2026-06-18",
+      "topic": "Claude Code",
+      "title": "Dynamic Workflows 正式発表 — 1セッションで数十〜数百のサブエージェントを自動オーケストレーション",
+      "lede": "Claudeが依頼からJavaScriptのオーケストレーションスクリプトを自動生成し、単一セッション内で数十〜数百の並列サブエージェントを起動・検証する。「単一エージェントには大きすぎる」広範なバグ調査・大規模マイグレーション・監査を自動化する新機能を、v2.1.179の修正や6/15の課金分離とあわせて読み解く。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>サブエージェントは便利だが、これまでは<b>人間（やメイン会話）がタスクを分解し、委譲し、結果を統合する</b>必要があった。対象がモノレポ全体・数十ファイル横断のように大きくなると、この手作業のオーケストレーションが現実的でなくなる。Anthropic が Claude Code に導入した <b>Dynamic Workflows（動的ワークフロー）</b>は、この「分解→並列実行→検証→統合」の段取りそのものを Claude に任せる仕組みだ。スケジュールタスクや CI で大型作業を回す人ほど効いてくる。</p>\n<h4>何が新しいか</h4>\n<p>依頼内容から Claude が <b>JavaScript のオーケストレーションスクリプト</b>を自動生成し、ランタイムがそれを<b>バックグラウンドで実行</b>する。1セッション内で<b>数十〜数百の並列サブエージェント</b>を起動し、各サブタスクの結果を<b>検証してから</b>最終回答を返す。ランタイムが裏で走るためメインセッションは応答性を保つ。提供は <b>Max・Team・対象 Enterprise でリサーチプレビュー</b>、<b>API / Bedrock / Vertex / Foundry</b> でも利用できる。広範なバグ調査・大規模リファクタ・セキュリティ監査など「単一エージェントには大きすぎる」タスクが射程に入る。</p>\n<figure class='fig'><pre class='mermaid'>flowchart TD\n  R[\"依頼（大型タスク）\"] --> G[\"Claudeがオーケストレーションスクリプトを自動生成(JS)\"]\n  G --> P[\"ランタイムが数十〜数百の並列サブエージェントを起動\"]\n  P --> V[\"各サブタスクの結果を検証\"]\n  V --> M[\"統合して最終回答（メインは応答性維持）\"]</pre><figcaption>図1：依頼からスクリプト生成→並列実行→検証→統合まで自動化。人手のオーケストレーションが不要に。</figcaption></figure>\n<h4>仕組みのポイント</h4>\n<p>肝は「<b>スクリプトとして書き出される</b>」こと。分解・並列・検証のパイプラインが明示的なコードになるため、確率的なモデルの解釈に丸投げするのではなく<b>決定論的な制御</b>を効かせやすい。従来の原則「1エージェント1ジョブ」を、多数束ねて動かすイメージに近い。冗長な中間出力は各サブエージェントの文脈に隔離され、メインには結論だけが返るので文脈も汚れにくい。</p>\n<figure class='fig'><svg viewBox='0 0 600 196' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='20' y='52' width='258' height='128' rx='12' fill='#fdeef0' stroke='#e07a9b'/><text x='149' y='40' text-anchor='middle' font-size='13' font-weight='700' fill='#b03a6e'>従来：手動オーケストレーション</text><text x='149' y='84' text-anchor='middle' font-size='11.5' fill='#8c3257'>人がタスクを分解・委譲</text><text x='149' y='108' text-anchor='middle' font-size='11.5' fill='#8c3257'>少数・ほぼ直列</text><text x='149' y='132' text-anchor='middle' font-size='11.5' fill='#8c3257'>統合も手作業</text><text x='149' y='160' text-anchor='middle' font-size='11' fill='#a85575'>大型タスクで破綻</text><rect x='322' y='52' width='258' height='128' rx='12' fill='#e9f7ef' stroke='#46c08a'/><text x='451' y='40' text-anchor='middle' font-size='13' font-weight='700' fill='#1d8a5a'>Dynamic Workflows</text><text x='451' y='84' text-anchor='middle' font-size='11.5' fill='#27674a'>Claudeがスクリプト自動生成</text><text x='451' y='108' text-anchor='middle' font-size='11.5' fill='#27674a'>数十〜数百を並列実行</text><text x='451' y='132' text-anchor='middle' font-size='11.5' fill='#27674a'>結果を検証してから統合</text><text x='451' y='160' text-anchor='middle' font-size='11' fill='#1d8a5a'>大型タスクを自動化</text></svg><figcaption>図2：手動のオーケストレーションから、自動生成スクリプトによる数百並列＋検証付きの実行へ。</figcaption></figure>\n<h4>自分が試すなら</h4>\n<ul><li>モノレポ横断の依存アップグレード調査や、コードベース全体のバグ探索を1依頼で投げてみる。</li><li>セキュリティ監査や大規模マイグレーションの「下調べ」を並列サブエージェントに分担させ、結論だけ受け取る。</li><li><code>/usage</code> のカテゴリ別内訳で、並列実行のトークン消費を必ず監視する。</li></ul>\n<h4>注意点</h4>\n<blockquote>数百サブエージェントは<b>コストが跳ねる</b>。6/15 の課金分離で自動化（Programmatic）は対話枠と別管理、Agent SDK は別クレジット消費になった。報道では Microsoft が直接ライセンスを縮小し Copilot CLI へ誘導、Uber は年間予算を4カ月で使い切ったとされる。規模と費用の見積もりは先に。なお同時期の <b>v2.1.179</b> は、中断接続時に生エラーではなく部分応答を保持し、「running tool」でのスピナー固着や WSL2 スクロールを修正している。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>Dynamic Workflows は Claude Code を「1タスクを手伝う道具」から「大型タスクを自走でこなすランタイム」へ押し上げる。鍵は決定論的なスクリプト制御とコスト管理。まずは小さめの調査タスクで挙動と消費感をつかむのが堅い。</p>",
+      "sources": [
+        {
+          "title": "Dynamic Workflows を正式発表（公式ブログ）",
+          "url": "https://claude.com/blog/introducing-dynamic-workflows-in-claude-code"
+        },
+        {
+          "title": "Dynamic Workflows 実践ガイド",
+          "url": "https://www.developersdigest.tech/blog/claude-code-dynamic-workflows-guide"
+        },
+        {
+          "title": "Claude Code v2.1.179 リリースノート",
+          "url": "https://releasebot.io/updates/anthropic/claude-code"
+        },
+        {
+          "title": "Claudeプラン変更（対話/自動化の分離）",
+          "url": "https://ai-advisors.jp/media/ai-news/claude-plan-change-20260615/"
+        }
+      ]
+    },
+    {
+      "id": "2026-06-18-nextjs",
+      "date": "2026-06-18",
+      "topic": "Next.js",
+      "title": "フィードバックを「設計」する — Next.js App Routerのマイクロインタラクション実装",
+      "lede": "hover/press/focusの3状態、スケルトン、リップル、トースト。多くはCSSだけで60fpsで完結し、Server Componentのまま使える。そこにReact 19のuseFormStatus・useActionState・useOptimisticを噛み合わせる。reduced-motion配慮まで含めた「反応するUI」の作法を実装目線で。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>マイクロインタラクションとは、ホバー・押下・ローディング・成功/失敗といった「操作への小さな視覚フィードバック」のこと。1つ数百msの演出だが、UIが<b>反応している感覚＝知覚パフォーマンスと信頼感</b>を大きく左右する。重要なのは、大半が<b>CSSだけ</b>（transition / keyframes）で GPU 合成・60fps で完結し、<code>'use client'</code> 無しの Server Component のまま使える点。そこに Next.js App Router 側の「フィードバック専用の仕組み」を組み合わせるのが今どきの作法だ。</p>\n<h4>何が新しいか（CSSの要点）</h4>\n<p>基本は3状態。ホバーは <code>scale(1.02〜1.05)</code> 程度に抑え、押下は <code>:active</code> で <code>scale(.96)</code>＋影を弱めて「カチッ」と沈ませ（押下時だけ 80〜120ms と短く）、フォーカスは必ず <code>:focus-visible</code> でリングを出す。ローディングは<b>スピナーよりスケルトン</b>が知覚速度で勝り、実コンテンツと<b>同じ寸法</b>にして CLS を防ぐ。シマーは <code>@keyframes</code> 1個で <code>background-position</code> を流すだけ。リップルは <code>transform: scale()</code> ＋ <code>opacity</code> のみで実装し、合成だけで完結させる。</p>\n<figure class='fig'><svg viewBox='0 0 600 188' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='10' y='8' width='580' height='34' rx='9' fill='#e9f0ff'/><text x='300' y='30' text-anchor='middle' font-size='13.5' font-weight='700' fill='#16439b'>何をアニメするかで滑らかさが決まる</text><rect x='24' y='56' width='270' height='118' rx='12' fill='#e9f7ef' stroke='#46c08a'/><text x='159' y='80' text-anchor='middle' font-size='12.5' font-weight='700' fill='#1d8a5a'>軽い（合成のみ・推奨）</text><text x='159' y='106' text-anchor='middle' font-size='12' fill='#27674a'>transform</text><text x='159' y='128' text-anchor='middle' font-size='12' fill='#27674a'>opacity</text><text x='159' y='154' text-anchor='middle' font-size='11' fill='#1d8a5a'>reflow/再描画なし → 60fps</text><rect x='306' y='56' width='270' height='118' rx='12' fill='#fdeef0' stroke='#e07a9b'/><text x='441' y='80' text-anchor='middle' font-size='12.5' font-weight='700' fill='#b03a6e'>重い（避ける）</text><text x='441' y='106' text-anchor='middle' font-size='12' fill='#8c3257'>width / height / top / left</text><text x='441' y='128' text-anchor='middle' font-size='12' fill='#8c3257'>box-shadow / filter の多用</text><text x='441' y='154' text-anchor='middle' font-size='11' fill='#a85575'>再描画が重く INP 悪化・カクつき</text></svg><figcaption>図1：アニメ対象はtransform/opacityへ寄せる。レイアウトを動かすプロパティは合成に乗らず重い。</figcaption></figure>\n<h4>React 19 と噛み合わせる「送信中」演出</h4>\n<p>状態に応じて切り替わる部分だけを Client Component にする。<b><code>useFormStatus</code></b>（react-dom）は <code>&lt;form&gt;</code> の<b>子</b>で <code>pending</code> を取り、ボタンを spinner＋disabled に。フォーム本体は Server Component のままでよい。<b><code>useActionState</code></b>（React 19）は Server Action の結果・エラー・pending を1つの state にまとめ、バリデーション表示と送信中演出を一括で扱う。<b><code>useOptimistic</code></b> はサーバ応答を待たず即 UI 反映し、失敗時に自動ロールバック（「いいね」等で体感速度が激変）。ルート遷移時は <code>loading.tsx</code> のスケルトンが静的シェルとして先行配信される。</p>\n<figure class='fig'><pre class='mermaid'>flowchart LR\n  S[\"form を送信\"] --> F[\"useFormStatus: pending=true\"]\n  F --> B[\"ボタンを spinner＋disabled\"]\n  S --> A[\"Server Action 実行\"]\n  A --> R[\"useActionState に 結果/エラー/pending\"]\n  R --> U[\"成功表示 or バリデーションエラー表示\"]</pre><figcaption>図2：CSSの演出（spinner）とReactの状態（pending/結果）を噛み合わせる。useFormStatusはformの子でのみ有効。</figcaption></figure>\n<h4>落とし穴と reduced-motion</h4>\n<p>アニメ対象は <code>transform</code>/<code>opacity</code> に寄せる。<code>useFormStatus</code> は<b>フォームの子でしか効かない</b>（同階層・親では <code>pending</code> が取れない）。スケルトンと実体の寸法ズレは CLS を生む。過剰演出は逆効果で、1操作1フィードバック・概ね 150〜500ms に収める。<code>prefers-reduced-motion: reduce</code> では<b>動きは消すが意味は残す</b>——シマーは静的グレー、押下の沈み込みは色変化で代替、送信中は spinner ではなく「送信中…」テキスト＋ <code>aria-busy</code> で十分伝わる。</p>\n<h4>ひとことまとめ</h4>\n<p>「反応するUI」はライブラリではなく、CSSの3状態＋Reactの状態フックの組み合わせで作れる。Server Component を保ちつつ、まずは送信ボタンの <code>useFormStatus</code> と一覧の <code>loading.tsx</code> スケルトンから始めるのが入りやすい。</p>",
+      "sources": [
+        {
+          "title": "Next.js Docs — Forms（useFormStatus / Server Actions）",
+          "url": "https://nextjs.org/docs/app/guides/forms"
+        },
+        {
+          "title": "Next.js Docs — loading.js（Instant Loading States）",
+          "url": "https://nextjs.org/docs/app/api-reference/file-conventions/loading"
+        },
+        {
+          "title": "useFormStatus vs useActionState Pending State in Next.js",
+          "url": "https://javascript.plainenglish.io/useformstatus-vs-useactionstate-pending-state-in-next-js-022eeb03d116"
+        },
+        {
+          "title": "Best Practices for Animating Micro-Interactions with CSS",
+          "url": "https://blog.pixelfreestudio.com/best-practices-for-animating-micro-interactions-with-css/"
+        }
+      ]
+    },
+    {
+      "id": "2026-06-18-flutter",
+      "date": "2026-06-18",
+      "topic": "Flutter",
+      "title": "アニメーションを「予算内」で設計する — タイミング階層・Staggered・Impellerとフレーム予算",
+      "lede": "micro 50〜200ms=implicit、component 200〜400ms=explicit、Hero 300〜600ms。複数アニメは単一AnimationControllerにIntervalで束ねるStaggeredが定石。Impellerのシェーダー事前コンパイルと、60/90/120fpsのフレーム予算を軸に「カクつかない動き」を組む。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>120Hz 端末が主流になり、1フレームの予算は<b>8ms 台</b>まで縮んだ。動きの良し悪しは派手さではなく、<b>タイミング設計</b>と<b>再ビルド削減</b>で決まる。現行の安定版は <b>Flutter 3.44 / Dart 3.12</b>。実装の勘どころは「用途に応じた継続時間」と「フレーム予算を超えない描画」の2点に集約される。</p>\n<h4>何が新しいか（タイミング階層とStaggered）</h4>\n<p>まず<b>用途で継続時間を決める</b>のが定石だ。<b>micro 50〜200ms は implicit</b>（<code>AnimatedContainer</code> 等）、<b>component 200〜400ms は explicit</b>（<code>AnimationController</code>）、<b>Hero 300〜600ms</b> は <code>flightShuttleBuilder</code> で独自フライトを描く。複数要素を時間差で動かす <b>Staggered（時間差）アニメ</b>は、個別にコントローラを持たせず<b>単一の <code>AnimationController</code></b> にまとめ、<code>Interval</code> で各要素の開始/終了を全体 duration の中に配置する。リストやグリッドの演出は <code>flutter_staggered_animations</code>、定型コード削減は <code>flutter_hooks</code>（HookWidget）が手軽だ。</p>\n<figure class='fig'><svg viewBox='0 0 600 188' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='10' y='22' font-size='12.5' font-weight='700' fill='#333'>1つのAnimationController（duration）＝ Intervalで時間差</text><line x1='70' y1='40' x2='560' y2='40' stroke='#ccc' stroke-width='1'/><text x='66' y='66' font-size='12' fill='#555'>要素A</text><rect x='110' y='54' width='150' height='18' rx='5' fill='#0277bd'/><text x='270' y='67' font-size='10.5' fill='#015a8c'>0.0〜0.4</text><text x='66' y='100' font-size='12' fill='#555'>要素B</text><rect x='200' y='88' width='150' height='18' rx='5' fill='#3aa0d8'/><text x='360' y='101' font-size='10.5' fill='#015a8c'>0.2〜0.6</text><text x='66' y='134' font-size='12' fill='#555'>要素C</text><rect x='290' y='122' width='150' height='18' rx='5' fill='#6fc3ea'/><text x='450' y='135' font-size='10.5' fill='#015a8c'>0.4〜0.8</text><text x='70' y='168' font-size='10.5' fill='#888'>各要素はIntervalで開始/終了をずらすだけ。コントローラは1つに集約しコスト最小化</text></svg><figcaption>図1：Staggeredは単一コントローラ＋Intervalで時間差を作る。複数コントローラを持たせない。</figcaption></figure>\n<h4>Impellerとフレーム予算</h4>\n<p>描画エンジン <b>Impeller</b> は、シェーダーを<b>ビルド時に AOT 事前コンパイル</b>するため、複雑シーンで<b>ラスタライズ約50%短縮</b>・初回フレームからジャンクが出にくい。フレーム予算は <b>60Hz=ビルド16ms・描画16ms</b>、120fps 端末では<b>合計 8ms 未満</b>を狙う。Rive を使うなら <b>0.12+</b> の events で名前付きイベントを受け取り、<code>.riv</code> は <code>initState</code>/<code>FutureBuilder</code> で<b>事前ロード</b>して <code>build()</code> 内ではロードしない。</p>\n<figure class='fig'><svg viewBox='0 0 600 176' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='10' y='22' font-size='12.5' font-weight='700' fill='#333'>1フレームの予算（短いほど高fps）</text><text x='12' y='56' font-size='12' fill='#555'>60fps</text><rect x='66' y='42' width='480' height='20' rx='5' fill='#bcdff3'/><text x='556' y='57' font-size='11' fill='#0277bd' text-anchor='end'>16.6ms</text><text x='12' y='92' font-size='12' fill='#555'>90fps</text><rect x='66' y='78' width='318' height='20' rx='5' fill='#6fc3ea'/><text x='392' y='93' font-size='11' fill='#015a8c'>11ms</text><text x='12' y='128' font-size='12' fill='#555'>120fps</text><rect x='66' y='114' width='240' height='20' rx='5' fill='#0277bd'/><text x='314' y='129' font-size='11' fill='#015a8c'>8.3ms ← Impellerの狙い</text><text x='12' y='162' font-size='10.5' fill='#888'>※必ずprofileモードで計測。DevToolsのPerformanceでこの予算内に収める</text></svg><figcaption>図2：フレーム予算。120fps域(8.3ms)を安定して狙うための土台がImpellerのAOTシェーダー。</figcaption></figure>\n<h4>自分が試すなら</h4>\n<ul><li>検証は必ず <b>profile モード</b>で行う（debug VM は大幅に遅く、数値が当てにならない）。</li><li>DevTools の <b>widget rebuild tracking</b> で各フレームの時間消費を特定し、<code>const</code> 付与で再ビルドをスキップ、<code>Consumer</code>/<code>Selector</code> で局所再描画にする。</li><li>画像は <code>cached_network_image</code>＋width/height 明示でレイアウト揺れと再デコードを防ぐ。</li></ul>\n<h4>注意点</h4>\n<blockquote>最頻出の性能問題は<b>不要な再ビルド</b>。大きな <code>build()</code> は分割し、アニメ中に親ごと再ビルドしない設計にする。Impeller で描画差が出たら <code>--no-enable-impeller</code> で Skia と比較して切り分ける。<code>.riv</code> を <code>build()</code> 内でロードするとフレーム落ちの原因になるので必ず事前ロードする。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>滑らかなアニメは「用途で継続時間を決め、単一コントローラで束ね、フレーム予算内に描く」の3点で作れる。まずは profile モードでの計測と <code>const</code> 化から、予算内に収める癖をつけるのが近道だ。</p>",
+      "sources": [
+        {
+          "title": "Flutter Docs — Staggered animations",
+          "url": "https://docs.flutter.dev/ui/animations/staggered-animations"
+        },
+        {
+          "title": "Mastering Hero Animations in Flutter（best practices）",
+          "url": "https://medium.com/fludev/mastering-hero-animations-in-flutter-advanced-use-cases-and-best-practices-4b36017d9075"
+        },
+        {
+          "title": "How Impeller is Transforming Flutter UI Rendering in 2026",
+          "url": "https://dev.to/eira-wexford/how-impeller-is-transforming-flutter-ui-rendering-in-2026-3dpd"
+        },
+        {
+          "title": "Flutter Docs — Rendering performance",
+          "url": "https://docs.flutter.dev/perf/rendering-performance"
+        }
+      ]
+    },
     {
       "id": "2026-06-17-claude-code",
       "date": "2026-06-17",
