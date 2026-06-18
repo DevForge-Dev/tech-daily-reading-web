@@ -1,0 +1,76 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Dynamic Workflows 正式発表 — 1セッションで数十〜数百のサブエージェントを自動オーケストレーション — デイリー技術深掘り 読み物</title><meta name="description" content="Claudeが依頼からJavaScriptのオーケストレーションスクリプトを自動生成し、単一セッション内で数十〜数百の並列サブエージェントを起動・検証する。「単一エージェントには大きすぎる」広範なバグ調査・大規模マイグレーション・監査を自動化する新機能を、v2.1.179の修正や6/15の課金分離とあわせて読み解く。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-06-18-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Dynamic Workflows 正式発表 — 1セッションで数十〜数百のサブエージェントを自動オーケストレーション — デイリー技術深掘り 読み物"><meta property="og:description" content="Claudeが依頼からJavaScriptのオーケストレーションスクリプトを自動生成し、単一セッション内で数十〜数百の並列サブエージェントを起動・検証する。「単一エージェントには大きすぎる」広範なバグ調査・大規模マイグレーション・監査を自動化する新機能を、v2.1.179の修正や6/15の課金分離とあわせて読み解く。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-06-18-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>Dynamic Workflows 正式発表 — 1セッションで数十〜数百のサブエージェントを自動オーケストレーション</h1> <p class="lede">Claudeが依頼からJavaScriptのオーケストレーションスクリプトを自動生成し、単一セッション内で数十〜数百の並列サブエージェントを起動・検証する。「単一エージェントには大きすぎる」広範なバグ調査・大規模マイグレーション・監査を自動化する新機能を、v2.1.179の修正や6/15の課金分離とあわせて読み解く。</p> <div class="meta"> <span>📅 2026年6月18日</span> <span>⏱ 約3分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="1"><h4 id="sec-1">なぜ今これが話題か</h4>
+<p>サブエージェントは便利だが、これまでは<b>人間（やメイン会話）がタスクを分解し、委譲し、結果を統合する</b>必要があった。対象がモノレポ全体・数十ファイル横断のように大きくなると、この手作業のオーケストレーションが現実的でなくなる。Anthropic が Claude Code に導入した <b>Dynamic Workflows（動的ワークフロー）</b>は、この「分解→並列実行→検証→統合」の段取りそのものを Claude に任せる仕組みだ。スケジュールタスクや CI で大型作業を回す人ほど効いてくる。</p>
+<h4 id="sec-2">何が新しいか</h4>
+<p>依頼内容から Claude が <b>JavaScript のオーケストレーションスクリプト</b>を自動生成し、ランタイムがそれを<b>バックグラウンドで実行</b>する。1セッション内で<b>数十〜数百の並列サブエージェント</b>を起動し、各サブタスクの結果を<b>検証してから</b>最終回答を返す。ランタイムが裏で走るためメインセッションは応答性を保つ。提供は <b>Max・Team・対象 Enterprise でリサーチプレビュー</b>、<b>API / Bedrock / Vertex / Foundry</b> でも利用できる。広範なバグ調査・大規模リファクタ・セキュリティ監査など「単一エージェントには大きすぎる」タスクが射程に入る。</p>
+<figure class='fig'><pre class='mermaid'>flowchart TD
+  R["依頼（大型タスク）"] --> G["Claudeがオーケストレーションスクリプトを自動生成(JS)"]
+  G --> P["ランタイムが数十〜数百の並列サブエージェントを起動"]
+  P --> V["各サブタスクの結果を検証"]
+  V --> M["統合して最終回答（メインは応答性維持）"]</pre><figcaption>図1：依頼からスクリプト生成→並列実行→検証→統合まで自動化。人手のオーケストレーションが不要に。</figcaption></figure>
+<h4 id="sec-3">仕組みのポイント</h4>
+<p>肝は「<b>スクリプトとして書き出される</b>」こと。分解・並列・検証のパイプラインが明示的なコードになるため、確率的なモデルの解釈に丸投げするのではなく<b>決定論的な制御</b>を効かせやすい。従来の原則「1エージェント1ジョブ」を、多数束ねて動かすイメージに近い。冗長な中間出力は各サブエージェントの文脈に隔離され、メインには結論だけが返るので文脈も汚れにくい。</p>
+<figure class='fig'><svg viewBox='0 0 600 196' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='20' y='52' width='258' height='128' rx='12' fill='#fdeef0' stroke='#e07a9b'></rect><text x='149' y='40' text-anchor='middle' font-size='13' font-weight='700' fill='#b03a6e'>従来：手動オーケストレーション</text><text x='149' y='84' text-anchor='middle' font-size='11.5' fill='#8c3257'>人がタスクを分解・委譲</text><text x='149' y='108' text-anchor='middle' font-size='11.5' fill='#8c3257'>少数・ほぼ直列</text><text x='149' y='132' text-anchor='middle' font-size='11.5' fill='#8c3257'>統合も手作業</text><text x='149' y='160' text-anchor='middle' font-size='11' fill='#a85575'>大型タスクで破綻</text><rect x='322' y='52' width='258' height='128' rx='12' fill='#e9f7ef' stroke='#46c08a'></rect><text x='451' y='40' text-anchor='middle' font-size='13' font-weight='700' fill='#1d8a5a'>Dynamic Workflows</text><text x='451' y='84' text-anchor='middle' font-size='11.5' fill='#27674a'>Claudeがスクリプト自動生成</text><text x='451' y='108' text-anchor='middle' font-size='11.5' fill='#27674a'>数十〜数百を並列実行</text><text x='451' y='132' text-anchor='middle' font-size='11.5' fill='#27674a'>結果を検証してから統合</text><text x='451' y='160' text-anchor='middle' font-size='11' fill='#1d8a5a'>大型タスクを自動化</text></svg><figcaption>図2：手動のオーケストレーションから、自動生成スクリプトによる数百並列＋検証付きの実行へ。</figcaption></figure>
+<h4 id="sec-4">自分が試すなら</h4>
+<ul><li>モノレポ横断の依存アップグレード調査や、コードベース全体のバグ探索を1依頼で投げてみる。</li><li>セキュリティ監査や大規模マイグレーションの「下調べ」を並列サブエージェントに分担させ、結論だけ受け取る。</li><li><code>/usage</code> のカテゴリ別内訳で、並列実行のトークン消費を必ず監視する。</li></ul>
+<h4 id="sec-5">注意点</h4>
+<blockquote>数百サブエージェントは<b>コストが跳ねる</b>。6/15 の課金分離で自動化（Programmatic）は対話枠と別管理、Agent SDK は別クレジット消費になった。報道では Microsoft が直接ライセンスを縮小し Copilot CLI へ誘導、Uber は年間予算を4カ月で使い切ったとされる。規模と費用の見積もりは先に。なお同時期の <b>v2.1.179</b> は、中断接続時に生エラーではなく部分応答を保持し、「running tool」でのスピナー固着や WSL2 スクロールを修正している。</blockquote>
+<h4 id="sec-6">ひとことまとめ</h4>
+<p>Dynamic Workflows は Claude Code を「1タスクを手伝う道具」から「大型タスクを自走でこなすランタイム」へ押し上げる。鍵は決定論的なスクリプト制御とコスト管理。まずは小さめの調査タスクで挙動と消費感をつかむのが堅い。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://claude.com/blog/introducing-dynamic-workflows-in-claude-code" target="_blank" rel="noopener noreferrer"> Dynamic Workflows を正式発表（公式ブログ） </a> </li><li> <a href="https://www.developersdigest.tech/blog/claude-code-dynamic-workflows-guide" target="_blank" rel="noopener noreferrer"> Dynamic Workflows 実践ガイド </a> </li><li> <a href="https://releasebot.io/updates/anthropic/claude-code" target="_blank" rel="noopener noreferrer"> Claude Code v2.1.179 リリースノート </a> </li><li> <a href="https://ai-advisors.jp/media/ai-news/claude-plan-change-20260615/" target="_blank" rel="noopener noreferrer"> Claudeプラン変更（対話/自動化の分離） </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> なぜ今これが話題か </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 何が新しいか </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 仕組みのポイント </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 自分が試すなら </a> </li><li> <a href="#sec-5" data-toc="sec-5"> 注意点 </a> </li><li> <a href="#sec-6" data-toc="sec-6"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-06-18</div> <div>⏱ 読了 約3分</div> <div>🏷 Claude Code</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

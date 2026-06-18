@@ -1,0 +1,72 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>アニメーションを「予算内」で設計する — タイミング階層・Staggered・Impellerとフレーム予算 — デイリー技術深掘り 読み物</title><meta name="description" content="micro 50〜200ms=implicit、component 200〜400ms=explicit、Hero 300〜600ms。複数アニメは単一AnimationControllerにIntervalで束ねるStaggeredが定石。Impellerのシェーダー事前コンパイルと、60/90/120fpsのフレーム予算を軸に「カクつかない動き」を組む。"><meta name="theme-color" content="#0277bd"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-06-18-flutter/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="アニメーションを「予算内」で設計する — タイミング階層・Staggered・Impellerとフレーム予算 — デイリー技術深掘り 読み物"><meta property="og:description" content="micro 50〜200ms=implicit、component 200〜400ms=explicit、Hero 300〜600ms。複数アニメは単一AnimationControllerにIntervalで束ねるStaggeredが定石。Impellerのシェーダー事前コンパイルと、60/90/120fpsのフレーム予算を軸に「カクつかない動き」を組む。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-06-18-flutter/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #29b6f6, #01579b)"> <span class="glyph" aria-hidden="true">◆</span> <div class="kicker">Flutter</div> <h1>アニメーションを「予算内」で設計する — タイミング階層・Staggered・Impellerとフレーム予算</h1> <p class="lede">micro 50〜200ms=implicit、component 200〜400ms=explicit、Hero 300〜600ms。複数アニメは単一AnimationControllerにIntervalで束ねるStaggeredが定石。Impellerのシェーダー事前コンパイルと、60/90/120fpsのフレーム予算を軸に「カクつかない動き」を組む。</p> <div class="meta"> <span>📅 2026年6月18日</span> <span>⏱ 約3分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#0277bd"> <div> <article class="prose" data-has-mermaid="0"><h4 id="sec-1">なぜ今これが話題か</h4>
+<p>120Hz 端末が主流になり、1フレームの予算は<b>8ms 台</b>まで縮んだ。動きの良し悪しは派手さではなく、<b>タイミング設計</b>と<b>再ビルド削減</b>で決まる。現行の安定版は <b>Flutter 3.44 / Dart 3.12</b>。実装の勘どころは「用途に応じた継続時間」と「フレーム予算を超えない描画」の2点に集約される。</p>
+<h4 id="sec-2">何が新しいか（タイミング階層とStaggered）</h4>
+<p>まず<b>用途で継続時間を決める</b>のが定石だ。<b>micro 50〜200ms は implicit</b>（<code>AnimatedContainer</code> 等）、<b>component 200〜400ms は explicit</b>（<code>AnimationController</code>）、<b>Hero 300〜600ms</b> は <code>flightShuttleBuilder</code> で独自フライトを描く。複数要素を時間差で動かす <b>Staggered（時間差）アニメ</b>は、個別にコントローラを持たせず<b>単一の <code>AnimationController</code></b> にまとめ、<code>Interval</code> で各要素の開始/終了を全体 duration の中に配置する。リストやグリッドの演出は <code>flutter_staggered_animations</code>、定型コード削減は <code>flutter_hooks</code>（HookWidget）が手軽だ。</p>
+<figure class='fig'><svg viewBox='0 0 600 188' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='10' y='22' font-size='12.5' font-weight='700' fill='#333'>1つのAnimationController（duration）＝ Intervalで時間差</text><line x1='70' y1='40' x2='560' y2='40' stroke='#ccc' stroke-width='1'></line><text x='66' y='66' font-size='12' fill='#555'>要素A</text><rect x='110' y='54' width='150' height='18' rx='5' fill='#0277bd'></rect><text x='270' y='67' font-size='10.5' fill='#015a8c'>0.0〜0.4</text><text x='66' y='100' font-size='12' fill='#555'>要素B</text><rect x='200' y='88' width='150' height='18' rx='5' fill='#3aa0d8'></rect><text x='360' y='101' font-size='10.5' fill='#015a8c'>0.2〜0.6</text><text x='66' y='134' font-size='12' fill='#555'>要素C</text><rect x='290' y='122' width='150' height='18' rx='5' fill='#6fc3ea'></rect><text x='450' y='135' font-size='10.5' fill='#015a8c'>0.4〜0.8</text><text x='70' y='168' font-size='10.5' fill='#888'>各要素はIntervalで開始/終了をずらすだけ。コントローラは1つに集約しコスト最小化</text></svg><figcaption>図1：Staggeredは単一コントローラ＋Intervalで時間差を作る。複数コントローラを持たせない。</figcaption></figure>
+<h4 id="sec-3">Impellerとフレーム予算</h4>
+<p>描画エンジン <b>Impeller</b> は、シェーダーを<b>ビルド時に AOT 事前コンパイル</b>するため、複雑シーンで<b>ラスタライズ約50%短縮</b>・初回フレームからジャンクが出にくい。フレーム予算は <b>60Hz=ビルド16ms・描画16ms</b>、120fps 端末では<b>合計 8ms 未満</b>を狙う。Rive を使うなら <b>0.12+</b> の events で名前付きイベントを受け取り、<code>.riv</code> は <code>initState</code>/<code>FutureBuilder</code> で<b>事前ロード</b>して <code>build()</code> 内ではロードしない。</p>
+<figure class='fig'><svg viewBox='0 0 600 176' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='10' y='22' font-size='12.5' font-weight='700' fill='#333'>1フレームの予算（短いほど高fps）</text><text x='12' y='56' font-size='12' fill='#555'>60fps</text><rect x='66' y='42' width='480' height='20' rx='5' fill='#bcdff3'></rect><text x='556' y='57' font-size='11' fill='#0277bd' text-anchor='end'>16.6ms</text><text x='12' y='92' font-size='12' fill='#555'>90fps</text><rect x='66' y='78' width='318' height='20' rx='5' fill='#6fc3ea'></rect><text x='392' y='93' font-size='11' fill='#015a8c'>11ms</text><text x='12' y='128' font-size='12' fill='#555'>120fps</text><rect x='66' y='114' width='240' height='20' rx='5' fill='#0277bd'></rect><text x='314' y='129' font-size='11' fill='#015a8c'>8.3ms ← Impellerの狙い</text><text x='12' y='162' font-size='10.5' fill='#888'>※必ずprofileモードで計測。DevToolsのPerformanceでこの予算内に収める</text></svg><figcaption>図2：フレーム予算。120fps域(8.3ms)を安定して狙うための土台がImpellerのAOTシェーダー。</figcaption></figure>
+<h4 id="sec-4">自分が試すなら</h4>
+<ul><li>検証は必ず <b>profile モード</b>で行う（debug VM は大幅に遅く、数値が当てにならない）。</li><li>DevTools の <b>widget rebuild tracking</b> で各フレームの時間消費を特定し、<code>const</code> 付与で再ビルドをスキップ、<code>Consumer</code>/<code>Selector</code> で局所再描画にする。</li><li>画像は <code>cached_network_image</code>＋width/height 明示でレイアウト揺れと再デコードを防ぐ。</li></ul>
+<h4 id="sec-5">注意点</h4>
+<blockquote>最頻出の性能問題は<b>不要な再ビルド</b>。大きな <code>build()</code> は分割し、アニメ中に親ごと再ビルドしない設計にする。Impeller で描画差が出たら <code>--no-enable-impeller</code> で Skia と比較して切り分ける。<code>.riv</code> を <code>build()</code> 内でロードするとフレーム落ちの原因になるので必ず事前ロードする。</blockquote>
+<h4 id="sec-6">ひとことまとめ</h4>
+<p>滑らかなアニメは「用途で継続時間を決め、単一コントローラで束ね、フレーム予算内に描く」の3点で作れる。まずは profile モードでの計測と <code>const</code> 化から、予算内に収める癖をつけるのが近道だ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://docs.flutter.dev/ui/animations/staggered-animations" target="_blank" rel="noopener noreferrer"> Flutter Docs — Staggered animations </a> </li><li> <a href="https://medium.com/fludev/mastering-hero-animations-in-flutter-advanced-use-cases-and-best-practices-4b36017d9075" target="_blank" rel="noopener noreferrer"> Mastering Hero Animations in Flutter（best practices） </a> </li><li> <a href="https://dev.to/eira-wexford/how-impeller-is-transforming-flutter-ui-rendering-in-2026-3dpd" target="_blank" rel="noopener noreferrer"> How Impeller is Transforming Flutter UI Rendering in 2026 </a> </li><li> <a href="https://docs.flutter.dev/perf/rendering-performance" target="_blank" rel="noopener noreferrer"> Flutter Docs — Rendering performance </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> なぜ今これが話題か </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 何が新しいか（タイミング階層とStaggered） </a> </li><li> <a href="#sec-3" data-toc="sec-3"> Impellerとフレーム予算 </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 自分が試すなら </a> </li><li> <a href="#sec-5" data-toc="sec-5"> 注意点 </a> </li><li> <a href="#sec-6" data-toc="sec-6"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-06-18</div> <div>⏱ 読了 約3分</div> <div>🏷 Flutter</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
