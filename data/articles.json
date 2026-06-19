@@ -1,12 +1,78 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-06-18T04:47:50.738Z",
+  "generatedAt": "2026-06-19T04:57:41.696Z",
   "topics": [
     "Claude Code",
     "Next.js",
     "Flutter"
   ],
   "articles": [
+    {
+      "id": "2026-06-19-claude-code",
+      "date": "2026-06-19",
+      "topic": "Claude Code",
+      "title": "Claude Code v2.1.181 と課金変更の撤回 — /config key=value で運用を即チューニング",
+      "lede": "2026-06-17 公開の v2.1.181 は /config key=value 構文で対話・-p・リモートのどこからでも設定を即時変更できるようにし、sandbox.allowAppleEvents や Bun 1.4 同梱、行単位ストリーミングを追加。あわせて 6/15 に予定されていた Agent SDK 課金分離の撤回・凍結も整理し、自動化を従来どおりサブスク枠で回すための運用ポイントをまとめる。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>毎朝のスケジュールタスクや CI で Claude Code を回していると、効いてくるのは派手な新ウィジェットより<b>運用の地ならし</b>だ。2026-06-17 公開の <b>v2.1.181</b> は操作性と基盤強化が中心で、設定変更の摩擦を一段下げる。あわせて 6/15 に予定されていた Agent SDK の課金分離が<b>撤回・凍結</b>された件も、自動化ユーザーには見逃せない。</p>\n<h4>何が新しいか</h4>\n<p>目玉は <b><code>/config key=value</code></b> 構文。対話・<code>-p</code>(ヘッドレス)・リモート操作の<b>どこからでも</b>任意の設定をその場で変更できる（例 <code>/config thinking=false</code>）。さらに macOS では sandbox 内コマンドが Apple Events を送れる <b><code>sandbox.allowAppleEvents</code></b> をオプトインで追加、同梱の <b>Bun ランタイムは 1.4</b> に更新。長い段落のストリーミングが<b>行単位で逐次表示</b>され、思考中の API 切断時には<b>自動リトライ</b>するようになった。</p>\n<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='14' y='20' width='150' height='40' rx='8' fill='#efeaff' stroke='#7b3fe4'/><text x='89' y='45' text-anchor='middle' font-size='12.5' fill='#4a2db0'>対話セッション</text><rect x='14' y='80' width='150' height='40' rx='8' fill='#efeaff' stroke='#7b3fe4'/><text x='89' y='105' text-anchor='middle' font-size='12.5' fill='#4a2db0'>-p ヘッドレス</text><rect x='14' y='140' width='150' height='40' rx='8' fill='#efeaff' stroke='#7b3fe4'/><text x='89' y='165' text-anchor='middle' font-size='12.5' fill='#4a2db0'>リモート操作</text><line x1='164' y1='40' x2='250' y2='95' stroke='#b98bff' stroke-width='2'/><line x1='164' y1='100' x2='250' y2='100' stroke='#b98bff' stroke-width='2'/><line x1='164' y1='160' x2='250' y2='105' stroke='#b98bff' stroke-width='2'/><rect x='250' y='66' width='150' height='68' rx='10' fill='#fff' stroke='#5840d6' stroke-width='2'/><text x='325' y='95' text-anchor='middle' font-size='13' font-weight='700' fill='#5840d6'>/config key=value</text><text x='325' y='116' text-anchor='middle' font-size='11' fill='#6b6b70'>その場で設定を即時変更</text><line x1='400' y1='100' x2='470' y2='100' stroke='#b98bff' stroke-width='2'/><rect x='470' y='76' width='116' height='48' rx='8' fill='#e9f7ef' stroke='#46c08a'/><text x='528' y='98' text-anchor='middle' font-size='11.5' fill='#1d8a5a'>thinking=false</text><text x='528' y='114' text-anchor='middle' font-size='11.5' fill='#1d8a5a'>等が即反映</text></svg><figcaption>図1：対話・-p・リモートのどこからでも <code>/config key=value</code> で設定を即時変更できる。</figcaption></figure>\n<h4>仕組みのポイント</h4>\n<p><code>/config key=value</code> の価値は「スコープを問わない」点にある。これまで設定変更は対話セッションや設定ファイル編集に縛られがちだったが、ヘッドレス実行やリモート経由でも<b>1行で即時に</b>切り替えられる。スケジュールタスク内に <code>/config</code> を差し込めば、実行ごとに thinking のオン/オフやモデル設定を動的に振り分けられる。</p>\n<h4>課金変更の撤回</h4>\n<p>当初 Anthropic は Agent SDK・<code>claude -p</code>・サードパーティアプリの利用を Pro/Max/Team/Enterprise の<b>サブスク枠から切り離し</b>、別建ての月額ドルクレジット(繰り越しなし)へ移す計画だった。だが 6/15 にヘルプセンターで<b>撤回を確認</b>。当面これらは従来どおりサブスク上限から消費される。同社は「開発実態により合う形に作り直す」とし、将来の変更時は事前告知するとしている。</p>\n<figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><line x1='40' y1='80' x2='560' y2='80' stroke='#d9d9de' stroke-width='2'/><circle cx='150' cy='80' r='7' fill='#e07a9b'/><text x='150' y='55' text-anchor='middle' font-size='12' font-weight='700' fill='#b03a6e'>6/15 予定</text><text x='150' y='110' text-anchor='middle' font-size='11' fill='#8c3257'>Agent SDK 課金分離</text><circle cx='420' cy='80' r='7' fill='#46c08a'/><text x='420' y='55' text-anchor='middle' font-size='12' font-weight='700' fill='#1d8a5a'>撤回・凍結</text><text x='420' y='110' text-anchor='middle' font-size='11' fill='#27674a'>従来どおりサブスク枠から消費</text></svg><figcaption>図2：6/15 の課金分離計画は撤回され、当面は従来どおりサブスク上限から消費される。</figcaption></figure>\n<h4>自分が試すなら</h4>\n<ul><li>スケジュールタスクの先頭で <code>/config</code> を使い、重い処理だけ thinking を切ってコスト削減。</li><li>Apple Events 連携が要る macOS 自動化で <code>sandbox.allowAppleEvents</code> を限定的に有効化。</li><li>Bun 1.4 同梱で外部ランタイム依存が減るので、CI イメージを軽くできるか検証。</li></ul>\n<h4>注意点</h4>\n<blockquote><code>sandbox.allowAppleEvents</code> はオプトイン＝既定で無効。アプリ間自動化はセキュリティ境界を緩めるので、対象アプリを絞って付与する。課金は「凍結」であって「無料化」ではない点も注意。サブスク上限は据え置きだが、Dynamic Workflows のような大規模並列はトークンを大きく消費するため <code>/usage</code> での監視は引き続き必須。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>v2.1.181 は派手さこそないが、<code>/config key=value</code> で運用の即応性が上がる実用アップデート。課金分離は当面凍結なので、自動化は従来どおりサブスク枠で回せる。まずは <code>/config thinking=false</code> をスケジュールタスクに仕込んで体感するのが手軽だ。</p>",
+      "sources": [
+        {
+          "title": "Claude Code v2.1.181 リリースノート（公式）",
+          "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.181"
+        },
+        {
+          "title": "6/15 の課金変更は撤回・凍結（DigitalApplied）",
+          "url": "https://www.digitalapplied.com/blog/anthropic-claude-credit-overhaul-june-15-2026"
+        },
+        {
+          "title": "2026年Claude Codeアップデート総まとめ（AIsmiley）",
+          "url": "https://aismiley.co.jp/ai_news/claude-code-update-summary-2026/"
+        }
+      ]
+    },
+    {
+      "id": "2026-06-19-nextjs",
+      "date": "2026-06-19",
+      "topic": "Next.js",
+      "title": "Next.js 16 の next/image 破壊的変更で Core Web Vitals を底上げ — priority→preload・qualities 必須化",
+      "lede": "Core Web Vitals(LCP/CLS/INP)は Next.js では画像とフォントの扱いで大半が決まる。Next.js 16 で next/image の API が変わり、priority は preload へ改名、qualities は必須化(既定[75])。過去のコピペが古くなる破壊的変更を押さえつつ、next/image と next/font で三指標を底上げする実装手順を整理する。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>Core Web Vitals の三指標——<b>LCP</b>(表示速度)・<b>CLS</b>(レイアウト安定性)・<b>INP</b>(応答性)——は、Next.js では<b>画像</b>と<b>フォント</b>の扱いでほぼ決まる。遅いページの多くは hero 画像が LCP 要素で、Web フォントの読み込みが CLS と FOIT を生み、肥大化した JS が INP を悪化させる。<code>next/image</code> と <code>next/font</code> はこの定番対策をビルトイン化しており、正しく使うだけで「LCP &lt; 2.5s・CLS ≈ 0」に届きやすい。</p>\n<figure class='fig'><svg viewBox='0 0 600 180' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='14' y='30' width='180' height='120' rx='10' fill='#eaf2ff' stroke='#1f6feb'/><text x='104' y='58' text-anchor='middle' font-size='15' font-weight='700' fill='#1456c4'>LCP</text><text x='104' y='84' text-anchor='middle' font-size='11.5' fill='#274b80'>表示速度</text><text x='104' y='112' text-anchor='middle' font-size='12' fill='#274b80'>主因：hero画像</text><text x='104' y='132' text-anchor='middle' font-size='11' fill='#5a7bb0'>→ preload / sizes</text><rect x='210' y='30' width='180' height='120' rx='10' fill='#eaf2ff' stroke='#1f6feb'/><text x='300' y='58' text-anchor='middle' font-size='15' font-weight='700' fill='#1456c4'>CLS</text><text x='300' y='84' text-anchor='middle' font-size='11.5' fill='#274b80'>レイアウト安定性</text><text x='300' y='112' text-anchor='middle' font-size='12' fill='#274b80'>主因：寸法欠落/font</text><text x='300' y='132' text-anchor='middle' font-size='11' fill='#5a7bb0'>→ width,height / next/font</text><rect x='406' y='30' width='180' height='120' rx='10' fill='#eaf2ff' stroke='#1f6feb'/><text x='496' y='58' text-anchor='middle' font-size='15' font-weight='700' fill='#1456c4'>INP</text><text x='496' y='84' text-anchor='middle' font-size='11.5' fill='#274b80'>応答性</text><text x='496' y='112' text-anchor='middle' font-size='12' fill='#274b80'>主因：JS量</text><text x='496' y='132' text-anchor='middle' font-size='11' fill='#5a7bb0'>→ RSC / 分割</text></svg><figcaption>図1：三指標と主因・対策の対応。画像・フォント・JS 量で大半が決まる。</figcaption></figure>\n<h4>何が新しいか（Next.js 16 の破壊的変更）</h4>\n<p>公式ドキュメント(v16.2.9 / Version History の v16.0.0)で確認した要点:</p>\n<ul><li><b><code>priority</code> prop は非推奨化</b>され <b><code>preload</code> prop に置換</b>。<code>preload={true}</code> が <code>&lt;head&gt;</code> に <code>&lt;link rel=\"preload\"&gt;</code> を挿入する。</li><li><b><code>qualities</code> が必須化</b>。<code>next.config</code> の <code>images.qualities</code> で許可画質を明示しないと任意画質で叩かれる攻撃面になるため。<b>既定は [75]</b>。一致しない値は近い値へ丸められ、REST API 直叩きは 400 を返す。</li><li>セルフホスト向けに <code>maximumDiskCacheSize</code>(16.1.7) などを追加。<code>dangerouslyAllowSVG</code> は依然デフォルト無効。</li></ul>\n<figure class='fig'><svg viewBox='0 0 600 170' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='14' y='20' width='270' height='130' rx='10' fill='#fdeef0' stroke='#e07a9b'/><text x='149' y='44' text-anchor='middle' font-size='13' font-weight='700' fill='#b03a6e'>〜v15（旧）</text><text x='149' y='74' text-anchor='middle' font-size='12' fill='#8c3257'>priority で LCP 先読み</text><text x='149' y='100' text-anchor='middle' font-size='12' fill='#8c3257'>qualities 任意（全画質可）</text><text x='149' y='126' text-anchor='middle' font-size='11.5' fill='#a85575'>API 直叩きの攻撃面</text><rect x='316' y='20' width='270' height='130' rx='10' fill='#e9f7ef' stroke='#46c08a'/><text x='451' y='44' text-anchor='middle' font-size='13' font-weight='700' fill='#1d8a5a'>v16（新）</text><text x='451' y='74' text-anchor='middle' font-size='12' fill='#27674a'>preload に改名</text><text x='451' y='100' text-anchor='middle' font-size='12' fill='#27674a'>qualities 必須・既定 [75]</text><text x='451' y='126' text-anchor='middle' font-size='11.5' fill='#1d8a5a'>許可画質のみ最適化</text></svg><figcaption>図2：next/image の破壊的変更。priority→preload、qualities は必須化（既定 [75]）。</figcaption></figure>\n<h4>仕組みのポイント</h4>\n<p><b>LCP</b>：hero には <code>preload</code> を付け <code>&lt;head&gt;</code> から先読みさせ、<code>loading=\"lazy\"</code> は厳禁。ビューポートで LCP 要素が変わるレスポンシブでは <code>preload</code> ではなく <code>fetchPriority=\"high\"</code> が意図明確。<code>sizes</code> を正しく書くとフル <code>srcset</code> が出て、小型端末が巨大画像を落とさずに済む。</p>\n<p><b>CLS</b>：画像は <code>width</code>/<code>height</code> か静的 import か <code>fill</code> でアスペクト比の枠を予約。フォントは <code>next/font</code> が <code>size-adjust</code>/<code>ascent-override</code> 等を自動注入して差し替え時のズレを潰す(既定 <code>display:'swap'</code> で FOIT 回避＆セルフホスト化)。<b>INP</b>：RSC でクライアント JS を削り、Client Component は対話が要る「島」に限定する。</p>\n<h4>自分が試すなら</h4>\n<pre><code>// next.config.js — 16では必須\nimages: {\n  qualities: [50, 75, 100],\n  formats: ['image/avif', 'image/webp'],\n}</code></pre>\n<p>hero は静的 import + <code>preload</code> + <code>placeholder=\"blur\"</code>、<code>style={{width:'100%',height:'auto'}}</code> で CLS を回避。AVIF は WebP より約20%小さいがエンコードは約50%遅い(初回のみ)ので、多くの用途では WebP も併走させる。</p>\n<h4>注意点</h4>\n<blockquote>過去記事の <code>priority</code> コピペは 16 で警告になる。<code>qualities</code> 未設定だと意図せず既定 [75] に縛られ、<code>quality={90}</code> が丸められる。セルフホスト＋前段 CDN では <code>Accept</code> ヘッダを転送しないと WebP/AVIF 判定が効かない。最適化画像は無効化機構が無いので <code>minimumCacheTTL</code> は低めにするか <code>src</code> を変える運用に。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>Next.js 16 では <code>priority</code>→<code>preload</code>、<code>qualities</code> 必須化がコア変更。hero に preload、その他は遅延、qualities を明示、フォントは next/font に任せる——この4点で LCP/CLS は自動的にかなり良くなる。</p>",
+      "sources": [
+        {
+          "title": "Next.js 公式: Image Component（v16.2.9 / Version History）",
+          "url": "https://nextjs.org/docs/app/api-reference/components/image"
+        },
+        {
+          "title": "DebugBear: Next.js Image Optimization",
+          "url": "https://www.debugbear.com/blog/nextjs-image-optimization"
+        },
+        {
+          "title": "Chrome for Developers: Framework tools for font fallbacks",
+          "url": "https://developer.chrome.com/blog/framework-tools-font-fallback/"
+        }
+      ]
+    },
+    {
+      "id": "2026-06-19-flutter",
+      "date": "2026-06-19",
+      "topic": "Flutter",
+      "title": "Flutter 3.44 のツールチェーン刷新 — Widget Preview に Inspector 内蔵・DevTools が WASM 既定でメモリ最大50%減",
+      "lede": "Flutter 3.44.0(2026-05-18)/Dart 3.12.1 の本丸は派手な新ウィジェットより開発体験(DX)の地殻変動。Widget Preview が Flutter Inspector を完全内蔵し、プレビュー検出を Dart Analysis Server ベースに刷新して IDE 全体のメモリを最大50%削減。DevTools は WASM 既定レンダラへ。静かだが効くツールチェーン刷新を読み解く。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>安定版は <b>Flutter 3.44.0</b>(2026-05-18) / <b>Dart 3.12.1</b>(2026-05-26)。3.45 は未リリースで現行は 3.44 系だ。3.44 の主役は新ウィジェットではなく<b>ツールチェーン(DX)の地殻変動</b>。毎日コードを書く時間の「待ち」と「メモリ」に直接効くので、地味だが体感は大きい。</p>\n<h4>何が新しいか</h4>\n<ul><li><b>Widget Preview が Flutter Inspector を完全内蔵</b>：ウィジェットツリーの検査・render object 確認・プロパティ編集がプレビュー内で完結。</li><li>プレビュー検出を <b>Dart Analysis Server ベース</b>に刷新し <code>flutter</code> ツールのメモリを削減 → <b>IDE 全体のメモリ使用を最大50%削減</b>。<b>Preview filtering</b>(group/name/URI)で絞り込み可。</li><li><b>DevTools が WebAssembly(WASM) を既定レンダラ</b>に → 起動高速化、巨大ツリーのスクロールが滑らか、Timeline が高頻度フレームをジャンクなく処理。</li><li>構造変化：Material/Cupertino を <code>material_ui</code>/<code>cupertino_ui</code> へ SDK から分離、<b>SwiftPM 既定</b>で CocoaPods 終焉・Rosetta 不要。</li><li>Dart 3.12：<b>private named parameters</b> 正式(先頭 <code>_</code> を自動で外して公開名に)。</li></ul>\n<figure class='fig'><svg viewBox='0 0 600 130' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><line x1='60' y1='70' x2='540' y2='70' stroke='#d9d9de' stroke-width='2'/><circle cx='180' cy='70' r='7' fill='#0277bd'/><text x='180' y='48' text-anchor='middle' font-size='12' font-weight='700' fill='#015b8e'>Flutter 3.44.0</text><text x='180' y='98' text-anchor='middle' font-size='11' fill='#37708c'>2026-05-18</text><circle cx='420' cy='70' r='7' fill='#0277bd'/><text x='420' y='48' text-anchor='middle' font-size='12' font-weight='700' fill='#015b8e'>Dart 3.12.1</text><text x='420' y='98' text-anchor='middle' font-size='11' fill='#37708c'>2026-05-26</text></svg><figcaption>図1：現行の安定版リリース。3.45 は未リリースで 3.44 系が現行。</figcaption></figure>\n<h4>仕組みのポイント</h4>\n<p>メモリ削減の肝は<b>プレビュー検出の担い手を替えた</b>こと。従来 <code>flutter</code> ツールが担っていたプレビュー対象の探索を、IDE がすでに常駐させている <b>Dart Analysis Server</b> に寄せたため、重複した解析プロセスが減る。DevTools の WASM 化は、UI ロジックを JS ではなく WASM で実行することで起動とフレーム処理を底上げする狙いだ。</p>\n<figure class='fig'><svg viewBox='0 0 600 160' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='24' text-anchor='middle' font-size='13' font-weight='700' fill='#015b8e'>IDE メモリ使用量（プレビュー検出の刷新）</text><text x='90' y='62' font-size='12' fill='#37708c'>従来(flutterツール)</text><rect x='200' y='48' width='360' height='24' rx='5' fill='#cfe6f4' stroke='#0277bd'/><text x='550' y='65' text-anchor='end' font-size='11' fill='#015b8e'>100%</text><text x='90' y='112' font-size='12' fill='#37708c'>3.44(Analysis Server)</text><rect x='200' y='98' width='180' height='24' rx='5' fill='#56c5f5' stroke='#0277bd'/><text x='392' y='115' font-size='11' fill='#015b8e'>最大 -50%</text></svg><figcaption>図2：プレビュー検出を Dart Analysis Server ベースに刷新し、IDE 全体のメモリを最大50%削減。</figcaption></figure>\n<h4>自分が試すなら</h4>\n<ul><li>3.44 へ上げ、Widget Preview 内の Inspector でツリー検査→プロパティ編集まで一筆書きで回す。</li><li>大きめプロジェクトで Preview filtering を使い、対象を絞って起動を軽くする。</li><li>iOS は SwiftPM 既定化に伴い CocoaPods 依存を棚卸し。</li></ul>\n<h4>注意点</h4>\n<blockquote>Material/Cupertino の <code>material_ui</code>/<code>cupertino_ui</code> 分離は import 経路に影響しうるので、移行時は依存とパスを確認。SwiftPM 既定化は既存の CocoaPods 構成と衝突する場合があるため、CI のキャッシュ前提も見直す。新機能のメモリ計測は <b>profile モード</b>で行い、debug の数値で判断しない。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>3.44 は「速くなった・軽くなった」が主役。Widget Preview×Inspector の一体化と Analysis Server ベース化で IDE メモリ最大50%減、DevTools は WASM 既定。派手さはないが毎日の開発の摩擦を確実に削るアップデートだ。</p>",
+      "sources": [
+        {
+          "title": "What's new in Flutter 3.44（公式ブログ）",
+          "url": "https://blog.flutter.dev/whats-new-in-flutter-3-44-b0cc1ad3c527"
+        },
+        {
+          "title": "Flutter 3.44 Highlights from Google I/O 2026",
+          "url": "https://dev.to/ianjasperrr/flutter-344-highlights-from-google-io-2026-whats-new-and-what-matters-g6f"
+        },
+        {
+          "title": "Dart changelog",
+          "url": "https://dart.dev/changelog"
+        }
+      ]
+    },
     {
       "id": "2026-06-18-claude-code",
       "date": "2026-06-18",
