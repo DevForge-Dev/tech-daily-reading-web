@@ -1,12 +1,78 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-06-19T04:57:41.696Z",
+  "generatedAt": "2026-06-20T04:49:28.374Z",
   "topics": [
     "Claude Code",
     "Next.js",
     "Flutter"
   ],
   "articles": [
+    {
+      "id": "2026-06-20-claude-code",
+      "date": "2026-06-20",
+      "topic": "Claude Code",
+      "title": "Claude Code v2.1.183 — 自動モードが破壊的 git/terraform を既定でブロック、成果は Artifacts でライブ共有",
+      "lede": "毎朝のスケジュールタスクや CI で自動モードを回すなら今回は外せない。2026-06-19 公開の v2.1.183 は、明示指示が無い限り git reset --hard・git clean -fd・terraform destroy などローカル変更や本番を壊すコマンドをブロックする安全強化が中心。あわせて Team/Enterprise 向けに、セッションの成果を共有可能なライブ HTML ページ化する Artifacts も発表された。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>自動モード（auto mode）でエージェントに作業を任せるほど怖いのが、<b>取り返しのつかない操作</b>だ。<code>git reset --hard</code> でローカル変更が消え、<code>terraform destroy</code> で本番インフラが飛ぶ——人間なら一拍置く操作を、エージェントが「掃除のつもり」で実行してしまうリスクは現実的だった。2026-06-19 公開の <b>v2.1.183</b> は、この安全性を一段引き上げる。</p>\n<h4>何が新しいか</h4>\n<p>ユーザーが<b>明示的に作業の破棄を指示していない限り</b>、ローカル変更を失う破壊的コマンドをブロックする。対象は <code>git reset --hard</code>・<code>git checkout -- .</code>・<code>git clean -fd</code>・<code>git stash drop</code> など。さらに、エージェント自身がそのセッションで作っていないコミットへの <code>git commit --amend</code> も止め、スタックを明示しない <code>terraform destroy</code>・<code>pulumi destroy</code>・<code>cdk destroy</code> も実行しない。加えて非推奨/自動更新モデル使用時に <code>-p</code> 出力で警告を出し、JetBrains 系 IDE（2026.1+）ターミナルのちらつきも同期出力で修正された。</p>\n<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='24' text-anchor='middle' font-size='13' font-weight='700' fill='#b03a6e'>明示指示が無い限りブロックされる破壊的コマンド</text><rect x='20' y='40' width='270' height='140' rx='10' fill='#fdeef0' stroke='#e07a9b'/><text x='155' y='64' text-anchor='middle' font-size='12' font-weight='700' fill='#8c3257'>Git（ローカル変更を喪失）</text><text x='155' y='90' text-anchor='middle' font-size='11.5' fill='#8c3257'>git reset --hard</text><text x='155' y='112' text-anchor='middle' font-size='11.5' fill='#8c3257'>git checkout -- .</text><text x='155' y='134' text-anchor='middle' font-size='11.5' fill='#8c3257'>git clean -fd / stash drop</text><text x='155' y='160' text-anchor='middle' font-size='11.5' fill='#8c3257'>未作成コミットへの --amend</text><rect x='310' y='40' width='270' height='140' rx='10' fill='#fdeef0' stroke='#e07a9b'/><text x='445' y='64' text-anchor='middle' font-size='12' font-weight='700' fill='#8c3257'>IaC（スタック未指定）</text><text x='445' y='92' text-anchor='middle' font-size='11.5' fill='#8c3257'>terraform destroy</text><text x='445' y='116' text-anchor='middle' font-size='11.5' fill='#8c3257'>pulumi destroy</text><text x='445' y='140' text-anchor='middle' font-size='11.5' fill='#8c3257'>cdk destroy</text></svg><figcaption>図1：v2.1.183 が既定でブロックする破壊的コマンド群。意図的な破棄は明示が必要。</figcaption></figure>\n<h4>成果は Artifacts でライブ共有</h4>\n<p>同時期に Anthropic は Team/Enterprise 向けに Claude Code の <b>Artifacts</b> を発表した。セッションの成果を、ライブで動く共有可能な HTML ページに変換できる。ライブコードや複数データソースを差し込み、共有 URL 上でインタラクティブに表示でき、PR ウォークスルー・ダッシュボード・リリースチェックリストなどに活用できる。バージョン履歴からいつでも復元可能だ（この読み物自体も同じ Artifacts の仕組みで動いている）。</p>\n<h4>仕組みのポイント</h4>\n<p>肝は「<b>意図の明示</b>を条件にした分岐」。ブロックは一律禁止ではなく、ユーザーが破棄を明示したかどうかで判断する。だから通常の編集フローは止めずに、事故だけを止められる。Hook と違ってモデル側のガードレールなので、追加設定なしで効くのも利点だ。</p>\n<figure class='fig'><pre class='mermaid'>flowchart TD\n  A[\"コマンド実行依頼\"] --> B{\"破壊的コマンドか\"}\n  B -->|\"いいえ\"| E[\"そのまま実行\"]\n  B -->|\"はい\"| C{\"破棄を明示したか\"}\n  C -->|\"明示あり\"| E\n  C -->|\"明示なし\"| D[\"ブロックして確認を促す\"]</pre><figcaption>図2：破壊的コマンドは「破棄の明示」がある時だけ通す分岐。</figcaption></figure>\n<h4>自分が試すなら</h4>\n<ul><li>スケジュールタスクや CI を v2.1.183 以降へ更新し、破壊的操作の事故耐性を底上げする。</li><li>意図的に reset したい時は「ローカル変更を破棄して」と<b>明示</b>してから実行する。</li><li>terraform/pulumi/cdk は対象スタックを必ず明示する運用に揃える。</li></ul>\n<h4>注意点</h4>\n<blockquote>ブロックは「破棄の明示が無いとき」の保険であって万能ではない。意図的な破棄は明示すれば従来どおり通るため、曖昧な指示文がかえって事故を呼ぶ。プロンプトでは「破棄する/しない」を一文で明確にするのが安全だ。Artifacts は現状 Team/Enterprise 向けの提供である点にも注意。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>v2.1.183 は派手さより<b>事故防止</b>のアップデート。自動化を回す人ほど恩恵が大きい。破棄系コマンドは「明示したときだけ通る」と覚え、まずは実行環境のバージョンを上げておきたい。</p>",
+      "sources": [
+        {
+          "title": "Claude Code changelog（公式）",
+          "url": "https://code.claude.com/docs/en/changelog"
+        },
+        {
+          "title": "Claude Code に Artifacts：ライブ共有ダッシュボード（VentureBeat）",
+          "url": "https://venturebeat.com/data/anthropics-claude-code-artifacts-update-brings-live-shared-dashboards-and-interactive-workspaces-to-enterprises"
+        },
+        {
+          "title": "新規本番コードの80%をClaudeが記述（VentureBeat）",
+          "url": "https://venturebeat.com/technology/anthropic-says-80-of-its-new-production-code-is-now-authored-by-claude-how-your-enterprise-can-keep-up"
+        }
+      ]
+    },
+    {
+      "id": "2026-06-20-nextjs",
+      "date": "2026-06-20",
+      "topic": "Next.js",
+      "title": "Next.js App Router で FLIP レイアウトアニメ — 並び替え・展開を 60fps で滑らかに",
+      "lede": "リストの並び替え、カードの展開、グリッド⇄リスト切替——レイアウトそのものが変わる動きは CSS の transition では繋げられない。鍵は FLIP（First/Last/Invert/Play）。位置の差分を transform で打ち消してから 0 へ流すので GPU 合成で 60fps を保てる。App Router での 'use client' 境界や Motion/AutoAnimate の使い分けまで実装目線で。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>リストの並び替え、要素の追加/削除、カードの展開、グリッド⇄リスト切替。これらは<b>レイアウトそのものが変わる</b>アニメで、<code>width</code>/<code>top</code> 等を直接トランジションすると毎フレーム再レイアウトが走って重い。そもそも Flexbox/Grid の自動配置による位置変化は CSS トランジションの対象にすらならない。ここで効くのが <b>FLIP</b>（First・Last・Invert・Play）だ。</p>\n<h4>FLIP とは何か</h4>\n<p>変化の<b>前</b>と<b>後</b>の位置を測り、その差分を <code>transform</code> で打ち消してから 0 へアニメする。動かすのは GPU 合成可能な <code>transform</code>/<code>opacity</code> だけなので 60fps を保てる。Motion（旧 Framer Motion）の <code>layout</code> プロップ、AutoAnimate、Svelte の <code>animate:flip</code> も内部はすべてこの FLIP だ。</p>\n<figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='14' y='45' width='130' height='60' rx='10' fill='#eaf2ff' stroke='#1f6feb'/><text x='79' y='72' text-anchor='middle' font-size='13' font-weight='700' fill='#1456c4'>First</text><text x='79' y='92' text-anchor='middle' font-size='10.5' fill='#274b80'>変化前を測定</text><rect x='158' y='45' width='130' height='60' rx='10' fill='#eaf2ff' stroke='#1f6feb'/><text x='223' y='72' text-anchor='middle' font-size='13' font-weight='700' fill='#1456c4'>Last</text><text x='223' y='92' text-anchor='middle' font-size='10.5' fill='#274b80'>変化後を測定</text><rect x='302' y='45' width='130' height='60' rx='10' fill='#eaf2ff' stroke='#1f6feb'/><text x='367' y='72' text-anchor='middle' font-size='13' font-weight='700' fill='#1456c4'>Invert</text><text x='367' y='92' text-anchor='middle' font-size='10.5' fill='#274b80'>差分をtransformで打消</text><rect x='446' y='45' width='140' height='60' rx='10' fill='#e9f7ef' stroke='#46c08a'/><text x='516' y='72' text-anchor='middle' font-size='13' font-weight='700' fill='#1d8a5a'>Play</text><text x='516' y='92' text-anchor='middle' font-size='10.5' fill='#27674a'>0へアニメ（GPU）</text><text x='146' y='80' font-size='16' fill='#9aa0ad'>→</text><text x='290' y='80' font-size='16' fill='#9aa0ad'>→</text><text x='434' y='80' font-size='16' fill='#9aa0ad'>→</text></svg><figcaption>図1：FLIP の4ステップ。測定2回を先に固め、以降は transform 補間だけで描く。</figcaption></figure>\n<h4>仕組みのポイント</h4>\n<p>キモは、重い処理＝2回の <code>getBoundingClientRect()</code> 測定（強制同期レイアウト）を<b>最初に固める</b>こと。以降のフレームは <code>transform</code> 補間だけになり、ブラウザが GPU で滑らかに描く。<code>transform</code> は他要素のレイアウトに影響しないので、リスト全項目を同時に動かしても破綻しない。</p>\n<pre><code>// Last測定後：差分をtransformで打ち消して0へ（WAAPI）\nconst dx = first.left - last.left, dy = first.top - last.top;\nif (dx || dy) el.animate(\n  [{transform:`translate(${dx}px,${dy}px)`}, {transform:'none'}],\n  {duration:350, easing:'cubic-bezier(.2,.8,.2,1)'});</code></pre>\n<h4>App Router での組み込み</h4>\n<p>FLIP は DOM 測定と <code>useLayoutEffect</code> を使うため対象は <b><code>'use client'</code> 必須</b>。データは Server Component で取得し、<code>&lt;AnimatedList items={...} /&gt;</code> のように<b>props でクライアント子へ渡す</b>と、サーバの利点を保ったまま動きだけクライアントに閉じ込められる。実装は三択：バンドルを増やしたくないなら<b>依存ゼロ</b>の自前フック、本格的なら <b>Motion</b> の <code>&lt;motion.li layout&gt;</code>＋<code>AnimatePresence</code>、最小コストなら <b>AutoAnimate</b>（親 ref に <code>useAutoAnimate()</code> を付けるだけ）。</p>\n<figure class='fig'><svg viewBox='0 0 600 160' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='20' y='30' width='270' height='110' rx='12' fill='#eaf2ff' stroke='#1f6feb'/><text x='155' y='54' text-anchor='middle' font-size='12.5' font-weight='700' fill='#1456c4'>同一ページ内のレイアウト変化</text><text x='155' y='80' text-anchor='middle' font-size='11.5' fill='#274b80'>並び替え・展開・グリッド切替</text><text x='155' y='106' text-anchor='middle' font-size='11.5' fill='#274b80'>→ FLIP / Motion layout</text><text x='155' y='126' text-anchor='middle' font-size='11.5' fill='#274b80'>/ AutoAnimate</text><rect x='310' y='30' width='270' height='110' rx='12' fill='#f3eaff' stroke='#7b3fe4'/><text x='445' y='54' text-anchor='middle' font-size='12.5' font-weight='700' fill='#5b27b0'>ルート間の共有要素</text><text x='445' y='80' text-anchor='middle' font-size='11.5' fill='#4a2db0'>ページ遷移を跨ぐ移動</text><text x='445' y='106' text-anchor='middle' font-size='11.5' fill='#4a2db0'>→ View Transitions API</text><text x='445' y='126' text-anchor='middle' font-size='11.5' fill='#4a2db0'>/ Motion layoutId</text></svg><figcaption>図2：同一ページ内は FLIP 系、ルート間は View Transitions / layoutId が適任。</figcaption></figure>\n<h4>注意点</h4>\n<blockquote><b>歪み</b>：サイズ変化を <code>scale</code> で表すと中の文字が伸縮するので子に逆スケール補正が要る（Motion は子にも <code>layout</code> で自動補正）。<b>測定タイミング</b>：React は <code>useLayoutEffect</code> で Last を測りペイント前に Invert を当てる（<code>useEffect</code> だと一瞬最終位置が見える）。<b>key</b>：インデックス key は並び替えで別物扱いになりアニメが壊れる。<code>prefers-reduced-motion</code> では大きな移動演出だけ消す。</blockquote>\n<h4>ルート間の共有要素なら</h4>\n<p>ページ遷移を跨ぐ共有要素は FLIP より <b>View Transitions API</b>（<code>view-transition-name</code>）や Motion の <code>layoutId</code> が適任。SPA 内のレイアウト変化なら <code>document.startViewTransition()</code> がブラウザ内部で FLIP 相当をやってくれる（Chromium系/Safari 18+）。</p>\n<h4>ひとことまとめ</h4>\n<p>レイアウトの動きは「測って・差分を transform で打ち消して・0 へ流す」だけ。まずは AutoAnimate でリストに付けて体感し、細かな制御が要れば Motion か自前フックへ——が入りやすい。</p>",
+      "sources": [
+        {
+          "title": "Aerotwist — FLIP Your Animations（原典）",
+          "url": "https://aerotwist.com/blog/flip-your-animations/"
+        },
+        {
+          "title": "Motion (React) — Layout Animations",
+          "url": "https://motion.dev/docs/react-layout-animations"
+        },
+        {
+          "title": "FormKit AutoAnimate（公式）",
+          "url": "https://auto-animate.formkit.com/"
+        }
+      ]
+    },
+    {
+      "id": "2026-06-20-flutter",
+      "date": "2026-06-20",
+      "topic": "Flutter",
+      "title": "Flutter、Android の Skia を撤去 — Pure Impeller(Vulkan) が唯一の描画経路に、シェーダーは事前コンパイル",
+      "lede": "複数年がかりの描画パイプライン移行がついに決着。Android 10 以上で Skia バックエンドが撤去され、Pure Impeller(Vulkan) が既定かつ唯一の選択肢になった。全シェーダーはビルド時に SPIR-V へ事前コンパイルされ、起動時のシェーダーコンパイル由来のスタッターが消滅。CustomPaint も Metal/Vulkan で大幅に速くなる。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>Flutter で長年の悩みだったのが <b>シェーダーコンパイル由来のジャンク</b>だ。Skia は初回に出会った描画を実行時にコンパイルするため、最初のアニメや遷移で<b>カクッと一瞬詰まる</b>ことがあった。これを根本から断つのが描画エンジン <b>Impeller</b> で、その移行が 2026 についに決着した。</p>\n<h4>何が新しいか</h4>\n<p><b>Android 10 以上で Skia バックエンドが撤去</b>され、<b>Pure Impeller（Vulkan）が既定かつ唯一の描画経路</b>になった。複数年計画の総決算だ。Impeller は描画プリミティブが有限である前提で、<b>エンジンが使う全シェーダーをビルド時に SPIR-V として事前コンパイル</b>する。起動時点でシェーダーが揃っているので<b>バックグラウンドのシェーダーコンパイルが消滅</b>し、予期せぬスタッターのない 60/90/120fps を狙える。安定版は <b>Flutter 3.44.0</b>（2026-05-18）/ <b>Dart 3.12.1</b>（2026-05-26）。</p>\n<figure class='fig'><svg viewBox='0 0 600 170' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='10' y='22' font-size='12.5' font-weight='700' fill='#015b8e'>遷移時の1フレーム描画時間（短いほど良い）</text><line x1='150' y1='40' x2='150' y2='150' stroke='#e07a9b' stroke-width='1' stroke-dasharray='4 3'/><text x='150' y='36' text-anchor='middle' font-size='10' fill='#b03a6e'>16ms(60Hz)</text><text x='12' y='66' font-size='12' fill='#555'>Skia(従来)</text><rect x='150' y='52' width='360' height='22' rx='5' fill='#f3c0d0' stroke='#e07a9b'/><text x='505' y='68' text-anchor='end' font-size='10.5' fill='#b03a6e'>16ms超へスパイク</text><text x='12' y='116' font-size='12' fill='#555'>Impeller</text><rect x='40' y='102' width='95' height='22' rx='5' fill='#56c5f5' stroke='#0277bd'/><text x='142' y='118' font-size='10.5' fill='#015a8c'>8ms未満を一貫維持</text><text x='40' y='150' font-size='10.5' fill='#888'>全シェーダーをビルド時AOTで事前コンパイル→初回フレームからジャンクなし</text></svg><figcaption>図1：Skia は遷移時に16msを超えてスパイクしがち。Impeller は120Hzに必要な8ms未満を一貫維持。</figcaption></figure>\n<h4>仕組みのポイント</h4>\n<p>Skia は OpenGL 時代の汎用 2D エンジンで、何でも描ける代わりに実行時コンパイルが避けられなかった。Impeller は「Flutter が実際に使う描画は有限」と割り切り、必要なシェーダーを<b>AOT（事前）で</b>用意する。さらに Metal(iOS)/Vulkan(Android) という<b>低レベルで効率的な GPU 経路</b>を直接叩く。結果、複雑シーンで<b>平均ラスタライズ時間が約50%短縮</b>、Skia が遷移時に 16ms 超へスパイクする場面でも Impeller は<b>120Hz に必要な 8ms 未満を一貫維持</b>する。</p>\n<figure class='fig'><pre class='mermaid'>flowchart LR\n  A[\"ビルド時\"] --> B[\"全シェーダーをSPIR-Vへ事前コンパイル(AOT)\"]\n  B --> C[\"アプリ起動時にシェーダーが揃う\"]\n  C --> D[\"実行時コンパイル不要＝初回ジャンク消滅\"]\n  D --> E[\"Vulkan/Metalで低レベル描画\"]</pre><figcaption>図2：シェーダーをビルド時に用意するため、実行時コンパイル由来のスタッターが起きない。</figcaption></figure>\n<h4>自分が試すなら</h4>\n<ul><li><code>CustomPaint</code> 中心の重い描画画面で、Impeller 化後のラスタライズ時間を <b>profile モード</b>＋DevTools で計測し直す。</li><li>120Hz 端末で遷移やリスト初回スクロールの初回フレームジャンクが消えているか確認する。</li><li>Rive 等で描画差が出たら <code>--no-enable-impeller</code> で Skia と比較し原因を切り分ける。</li></ul>\n<h4>注意点</h4>\n<blockquote>撤去は <b>Android 10 以上</b>が対象。古い端末や特殊な GPU では挙動差が出うるので、対象 OS と実機での確認は引き続き必要だ。性能計測は必ず <b>profile モード</b>で（debug VM は大幅に遅く数値が当てにならない）。Impeller でも<b>不要な再ビルド</b>は別問題として残るため、<code>const</code> 化や <code>Selector</code> による局所再描画は依然有効。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>「初回のカクつき」を生んでいた実行時シェーダーコンパイルが、ビルド時 AOT で消える——これが今回の本質。Android でも Skia が消え Impeller 一本化された今、まずは自分の重い描画画面を profile で測り直すのが近道だ。</p>",
+      "sources": [
+        {
+          "title": "Flutter Performance Deep Dive: Skia, Impeller, and the Frame Pipeline",
+          "url": "https://medium.com/@m.m.shahmeh/flutter-performance-deep-dive-skia-impeller-and-the-frame-pipeline-e1b82fd1d3a5"
+        },
+        {
+          "title": "How Impeller Is Transforming Flutter UI Rendering in 2026",
+          "url": "https://dev.to/eira-wexford/how-impeller-is-transforming-flutter-ui-rendering-in-2026-3dpd"
+        },
+        {
+          "title": "What's new in Flutter 3.44（公式ブログ）",
+          "url": "https://blog.flutter.dev/whats-new-in-flutter-3-44-b0cc1ad3c527"
+        }
+      ]
+    },
     {
       "id": "2026-06-19-claude-code",
       "date": "2026-06-19",
