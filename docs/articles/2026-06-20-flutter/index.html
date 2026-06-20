@@ -1,0 +1,76 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Flutter、Android の Skia を撤去 — Pure Impeller(Vulkan) が唯一の描画経路に、シェーダーは事前コンパイル — デイリー技術深掘り 読み物</title><meta name="description" content="複数年がかりの描画パイプライン移行がついに決着。Android 10 以上で Skia バックエンドが撤去され、Pure Impeller(Vulkan) が既定かつ唯一の選択肢になった。全シェーダーはビルド時に SPIR-V へ事前コンパイルされ、起動時のシェーダーコンパイル由来のスタッターが消滅。CustomPaint も Metal/Vulkan で大幅に速くなる。"><meta name="theme-color" content="#0277bd"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-06-20-flutter/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Flutter、Android の Skia を撤去 — Pure Impeller(Vulkan) が唯一の描画経路に、シェーダーは事前コンパイル — デイリー技術深掘り 読み物"><meta property="og:description" content="複数年がかりの描画パイプライン移行がついに決着。Android 10 以上で Skia バックエンドが撤去され、Pure Impeller(Vulkan) が既定かつ唯一の選択肢になった。全シェーダーはビルド時に SPIR-V へ事前コンパイルされ、起動時のシェーダーコンパイル由来のスタッターが消滅。CustomPaint も Metal/Vulkan で大幅に速くなる。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-06-20-flutter/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #29b6f6, #01579b)"> <span class="glyph" aria-hidden="true">◆</span> <div class="kicker">Flutter</div> <h1>Flutter、Android の Skia を撤去 — Pure Impeller(Vulkan) が唯一の描画経路に、シェーダーは事前コンパイル</h1> <p class="lede">複数年がかりの描画パイプライン移行がついに決着。Android 10 以上で Skia バックエンドが撤去され、Pure Impeller(Vulkan) が既定かつ唯一の選択肢になった。全シェーダーはビルド時に SPIR-V へ事前コンパイルされ、起動時のシェーダーコンパイル由来のスタッターが消滅。CustomPaint も Metal/Vulkan で大幅に速くなる。</p> <div class="meta"> <span>📅 2026年6月20日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#0277bd"> <div> <article class="prose" data-has-mermaid="1"><h4 id="sec-1">なぜ今これが話題か</h4>
+<p>Flutter で長年の悩みだったのが <b>シェーダーコンパイル由来のジャンク</b>だ。Skia は初回に出会った描画を実行時にコンパイルするため、最初のアニメや遷移で<b>カクッと一瞬詰まる</b>ことがあった。これを根本から断つのが描画エンジン <b>Impeller</b> で、その移行が 2026 についに決着した。</p>
+<h4 id="sec-2">何が新しいか</h4>
+<p><b>Android 10 以上で Skia バックエンドが撤去</b>され、<b>Pure Impeller（Vulkan）が既定かつ唯一の描画経路</b>になった。複数年計画の総決算だ。Impeller は描画プリミティブが有限である前提で、<b>エンジンが使う全シェーダーをビルド時に SPIR-V として事前コンパイル</b>する。起動時点でシェーダーが揃っているので<b>バックグラウンドのシェーダーコンパイルが消滅</b>し、予期せぬスタッターのない 60/90/120fps を狙える。安定版は <b>Flutter 3.44.0</b>（2026-05-18）/ <b>Dart 3.12.1</b>（2026-05-26）。</p>
+<figure class='fig'><svg viewBox='0 0 600 170' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='10' y='22' font-size='12.5' font-weight='700' fill='#015b8e'>遷移時の1フレーム描画時間（短いほど良い）</text><line x1='150' y1='40' x2='150' y2='150' stroke='#e07a9b' stroke-width='1' stroke-dasharray='4 3'></line><text x='150' y='36' text-anchor='middle' font-size='10' fill='#b03a6e'>16ms(60Hz)</text><text x='12' y='66' font-size='12' fill='#555'>Skia(従来)</text><rect x='150' y='52' width='360' height='22' rx='5' fill='#f3c0d0' stroke='#e07a9b'></rect><text x='505' y='68' text-anchor='end' font-size='10.5' fill='#b03a6e'>16ms超へスパイク</text><text x='12' y='116' font-size='12' fill='#555'>Impeller</text><rect x='40' y='102' width='95' height='22' rx='5' fill='#56c5f5' stroke='#0277bd'></rect><text x='142' y='118' font-size='10.5' fill='#015a8c'>8ms未満を一貫維持</text><text x='40' y='150' font-size='10.5' fill='#888'>全シェーダーをビルド時AOTで事前コンパイル→初回フレームからジャンクなし</text></svg><figcaption>図1：Skia は遷移時に16msを超えてスパイクしがち。Impeller は120Hzに必要な8ms未満を一貫維持。</figcaption></figure>
+<h4 id="sec-3">仕組みのポイント</h4>
+<p>Skia は OpenGL 時代の汎用 2D エンジンで、何でも描ける代わりに実行時コンパイルが避けられなかった。Impeller は「Flutter が実際に使う描画は有限」と割り切り、必要なシェーダーを<b>AOT（事前）で</b>用意する。さらに Metal(iOS)/Vulkan(Android) という<b>低レベルで効率的な GPU 経路</b>を直接叩く。結果、複雑シーンで<b>平均ラスタライズ時間が約50%短縮</b>、Skia が遷移時に 16ms 超へスパイクする場面でも Impeller は<b>120Hz に必要な 8ms 未満を一貫維持</b>する。</p>
+<figure class='fig'><pre class='mermaid'>flowchart LR
+  A["ビルド時"] --> B["全シェーダーをSPIR-Vへ事前コンパイル(AOT)"]
+  B --> C["アプリ起動時にシェーダーが揃う"]
+  C --> D["実行時コンパイル不要＝初回ジャンク消滅"]
+  D --> E["Vulkan/Metalで低レベル描画"]</pre><figcaption>図2：シェーダーをビルド時に用意するため、実行時コンパイル由来のスタッターが起きない。</figcaption></figure>
+<h4 id="sec-4">自分が試すなら</h4>
+<ul><li><code>CustomPaint</code> 中心の重い描画画面で、Impeller 化後のラスタライズ時間を <b>profile モード</b>＋DevTools で計測し直す。</li><li>120Hz 端末で遷移やリスト初回スクロールの初回フレームジャンクが消えているか確認する。</li><li>Rive 等で描画差が出たら <code>--no-enable-impeller</code> で Skia と比較し原因を切り分ける。</li></ul>
+<h4 id="sec-5">注意点</h4>
+<blockquote>撤去は <b>Android 10 以上</b>が対象。古い端末や特殊な GPU では挙動差が出うるので、対象 OS と実機での確認は引き続き必要だ。性能計測は必ず <b>profile モード</b>で（debug VM は大幅に遅く数値が当てにならない）。Impeller でも<b>不要な再ビルド</b>は別問題として残るため、<code>const</code> 化や <code>Selector</code> による局所再描画は依然有効。</blockquote>
+<h4 id="sec-6">ひとことまとめ</h4>
+<p>「初回のカクつき」を生んでいた実行時シェーダーコンパイルが、ビルド時 AOT で消える——これが今回の本質。Android でも Skia が消え Impeller 一本化された今、まずは自分の重い描画画面を profile で測り直すのが近道だ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://medium.com/@m.m.shahmeh/flutter-performance-deep-dive-skia-impeller-and-the-frame-pipeline-e1b82fd1d3a5" target="_blank" rel="noopener noreferrer"> Flutter Performance Deep Dive: Skia, Impeller, and the Frame Pipeline </a> </li><li> <a href="https://dev.to/eira-wexford/how-impeller-is-transforming-flutter-ui-rendering-in-2026-3dpd" target="_blank" rel="noopener noreferrer"> How Impeller Is Transforming Flutter UI Rendering in 2026 </a> </li><li> <a href="https://blog.flutter.dev/whats-new-in-flutter-3-44-b0cc1ad3c527" target="_blank" rel="noopener noreferrer"> What&#39;s new in Flutter 3.44（公式ブログ） </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> なぜ今これが話題か </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 何が新しいか </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 仕組みのポイント </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 自分が試すなら </a> </li><li> <a href="#sec-5" data-toc="sec-5"> 注意点 </a> </li><li> <a href="#sec-6" data-toc="sec-6"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-06-20</div> <div>⏱ 読了 約3分</div> <div>🏷 Flutter</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
