@@ -1,12 +1,78 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-06-20T04:49:28.374Z",
+  "generatedAt": "2026-06-21T04:47:30.780Z",
   "topics": [
     "Claude Code",
     "Next.js",
     "Flutter"
   ],
   "articles": [
+    {
+      "id": "2026-06-21-claude-code",
+      "date": "2026-06-21",
+      "topic": "Claude Code",
+      "title": "Claude Platform に Workload Identity Federation が正式提供 — 静的APIキーを短命OIDCトークンへ、Claude Code/CI が鍵レスに",
+      "lede": "エージェントやCIにコードを任せる時代に最後まで残る弱点が静的APIキーだ。6/21、Anthropic は Workload Identity Federation（WIF）を Claude Platform で一般提供（GA）にした。長寿命の sk-ant-… を、数分で失効する短命OIDCトークンに置き換える仕組みで、Claude Code 経由のアクセスにも適用される。claude-code-action なら ANTHROPIC_API_KEY シークレットすら不要になる。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>エージェントやCIにコードを任せる時代に、最後まで残る弱点が<b>静的APIキー</b>だ。<code>sk-ant-…</code> の長寿命キーは、漏洩すれば即悪用され、定期ローテーションの運用負担も重い。これを根本から変えるのが <b>Workload Identity Federation（WIF）</b>で、本日 Claude Platform で<b>一般提供（GA）</b>になった。</p>\n<h4>何が新しいか</h4>\n<p>WIF は長寿命の静的キーの代わりに、OIDC準拠のIdPが発行する<b>数分で失効する短命・スコープ付きトークン</b>でワークロードを認証する。対応発行者は <b>AWS IAM・Google Cloud・GitHub Actions・Kubernetes・Entra ID・Okta</b> など標準OIDC。全Claude APIエンドポイントを網羅し、<b>Claude Code 経由のアクセスにも適用</b>される。鍵の作成・保管・ローテーション・漏洩リスクをまとめて排除できる。</p>\n<figure class='fig'><svg viewBox='0 0 600 170' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='14' y='24' width='270' height='128' rx='10' fill='#fdeef0' stroke='#e07a9b'/><text x='149' y='50' text-anchor='middle' font-size='13' font-weight='700' fill='#b03a6e'>従来：静的APIキー</text><text x='149' y='80' text-anchor='middle' font-size='12' fill='#8c3257'>sk-ant-… を保管・配布</text><text x='149' y='104' text-anchor='middle' font-size='12' fill='#8c3257'>長寿命・要ローテーション</text><text x='149' y='128' text-anchor='middle' font-size='11.5' fill='#a85575'>漏洩すれば即悪用</text><rect x='316' y='24' width='270' height='128' rx='10' fill='#e9f7ef' stroke='#46c08a'/><text x='451' y='50' text-anchor='middle' font-size='13' font-weight='700' fill='#1d8a5a'>WIF：短命OIDCトークン</text><text x='451' y='80' text-anchor='middle' font-size='12' fill='#27674a'>数分で失効・スコープ付き</text><text x='451' y='104' text-anchor='middle' font-size='12' fill='#27674a'>鍵レス（IdPが発行）</text><text x='451' y='128' text-anchor='middle' font-size='11.5' fill='#1d8a5a'>漏洩面・運用負担を排除</text></svg><figcaption>図1：静的キーから短命OIDCトークンへ。鍵という\"持ち物\"を\"その場の身元証明\"に置換。</figcaption></figure>\n<h4>GitHub Actions では鍵レス化</h4>\n<p>公式の <code>claude-code-action</code> も WIF に対応した。ワークフローの <b>GitHub Actions OIDC トークン</b>を短命の Anthropic アクセストークンに<b>交換</b>することで、<code>ANTHROPIC_API_KEY</code> シークレットの作成・保存・ローテーションが不要になる。PRレビューや自動修正をCIに組み込むチームほど、鍵管理の負担と漏洩面が小さくなる。</p>\n<figure class='fig'><pre class='mermaid'>flowchart LR\n  A[\"GitHub Actions OIDCトークン\"] --> B[\"Anthropicが検証（信頼条件）\"]\n  B --> C[\"短命アクセストークンを発行\"]\n  C --> D[\"Claude Code / API を認証\"]</pre><figcaption>図2：OIDCトークンを短命トークンに交換して認証。長期シークレットを持たない。</figcaption></figure>\n<h4>仕組みのポイント</h4>\n<p>核心は「<b>信頼の確立をIdPに委ねる</b>」こと。Anthropic 側は事前に信頼するIdPと条件（リポジトリ・ブランチ等のclaim）を登録し、実行時にワークロードが提示するOIDCトークンを検証して短命トークンを発行する。鍵という\"持ち物\"を、\"その場で証明する身元\"に置き換えるイメージだ。Hookや設定と違い、認証基盤側のガードなので追加コードなしで効く。</p>\n<h4>自分が試すなら</h4>\n<ul><li>CIの <code>ANTHROPIC_API_KEY</code> シークレットを廃し、claude-code-action のOIDC交換へ移行する。</li><li>IdP側で信頼条件（対象リポジトリ/ブランチ）を最小限に絞る。</li><li>サーバ常駐やスケジュール実行の自動化も、可能ならWIF発行の短命トークンへ寄せる。</li></ul>\n<h4>注意点</h4>\n<blockquote>WIFは万能ではない。<b>IdP側の信頼設定やトークン交換の運用</b>を誤れば別の穴になり、<b>非OIDC環境</b>では恩恵を受けにくい（セキュリティ企業Aembitも利点と残課題の両面を指摘）。最新版 Claude Code は 6/21 時点でも <b>v2.1.183</b> 据え置きで、本件はプラットフォーム側の変更である点も押さえたい。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>「鍵を持たない」のが最も安全な鍵管理。WIFのGAで、Claude Code もCIも短命トークンで回せるようになった。まずはCIの静的キー廃止から着手するのが効果的だ。</p>",
+      "sources": [
+        {
+          "title": "Workload Identity Federation（Anthropic 公式ブログ）",
+          "url": "https://claude.com/blog/workload-identity-federation"
+        },
+        {
+          "title": "claude-code-action セットアップ（WIF認証）",
+          "url": "https://github.com/anthropics/claude-code-action/blob/main/docs/setup.md"
+        },
+        {
+          "title": "AnthropicのWIF評価 — 利点と残課題（Aembit）",
+          "url": "https://aembit.io/blog/anthropic-workload-identity-federation-what-it-gets-right-and-what-it-still-doesnt-solve/"
+        }
+      ]
+    },
+    {
+      "id": "2026-06-21-nextjs",
+      "date": "2026-06-21",
+      "topic": "Next.js",
+      "title": "Motion（旧Framer Motion）を Next.js App Router で — 'use client'境界・template.tsxでenter・LazyMotionで軽量化",
+      "lede": "Reactで最も使われる宣言的アニメライブラリ Framer Motion は、2024年末に「Motion」へ改名され、Reactエントリは motion/react に統合された。App Router では motion.* がClient専用なため 'use client' 必須、新ルートを先に描く特性でページexitが効きにくいなど固有の落とし穴がある。enterは template.tsx、exitは View Transitions と役割分担し、LazyMotion でバンドルを削る組み込み方を整理する。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>Reactで最も使われる宣言的アニメライブラリ <b>Framer Motion</b> は、2024年末に <b>「Motion」へ改名</b>された。Reactエントリは <code>motion/react</code>、バニラJSは <code>motion</code> に統合。<code>framer-motion</code> は互換エイリアスとして動くが、新規は <code>motion/react</code> が推奨だ。App Router での正しい組み込みを押さえておきたい。</p>\n<h4>何が新しい/重要か</h4>\n<p>強みは3点。<code>initial/animate/exit</code> の宣言だけで<b>マウント/アンマウント時のexit</b>まで書ける、<code>layout</code>/<code>layoutId</code> による<b>FLIPベースのレイアウト/共有要素アニメ</b>を内部で自動処理、transform/opacityは <b>WAAPI（ハイブリッドエンジン）</b>でGPU合成へオフロードしメインスレッドを空ける。一方で App Router 特有の落とし穴があるため、組み込み方の理解が要る。</p>\n<figure class='fig'><pre class='mermaid'>flowchart TD\n  A[\"Server Component（データ取得）\"] --> B[\"Client ラッパー 'use client'\"]\n  B --> C[\"motion.div で initial/animate/exit\"]</pre><figcaption>図1：ページはServerのまま、動く部分だけClientラッパーに閉じ込める定石。</figcaption></figure>\n<h4>App Router 特有の落とし穴</h4>\n<p><code>motion.*</code> はフック/Contextを使う<b>Client専用</b>なので <code>'use client'</code> が必須。ページはServerのまま、動く部分だけ小さなClientラッパーに切り出すのが定石だ。さらに App Router は新ルートを描画してから旧セグメントを外すため、<b>ページのexitが効きにくい</b>。enterだけなら <code>template.tsx</code>（遷移ごとに再マウント）に <code>motion.div</code> を置けば毎回 <code>initial→animate</code> が走る。exitも欲しければ <b>View Transitions API</b> との併用が無難だ。</p>\n<figure class='fig'><svg viewBox='0 0 600 160' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='20' y='30' width='270' height='110' rx='12' fill='#eaf2ff' stroke='#1f6feb'/><text x='155' y='56' text-anchor='middle' font-size='12.5' font-weight='700' fill='#1456c4'>enter のみで良い</text><text x='155' y='84' text-anchor='middle' font-size='11.5' fill='#274b80'>template.tsx に motion.div</text><text x='155' y='108' text-anchor='middle' font-size='11.5' fill='#274b80'>遷移ごと再マウント</text><text x='155' y='128' text-anchor='middle' font-size='11.5' fill='#274b80'>→ 毎回 initial→animate</text><rect x='310' y='30' width='270' height='110' rx='12' fill='#f3eaff' stroke='#7b3fe4'/><text x='445' y='56' text-anchor='middle' font-size='12.5' font-weight='700' fill='#5b27b0'>exit も欲しい</text><text x='445' y='84' text-anchor='middle' font-size='11.5' fill='#4a2db0'>View Transitions API</text><text x='445' y='108' text-anchor='middle' font-size='11.5' fill='#4a2db0'>or AnimatePresence</text><text x='445' y='128' text-anchor='middle' font-size='11.5' fill='#4a2db0'>（keyにpathname）</text></svg><figcaption>図2：enterのみなら template.tsx、exit付きは View Transitions 併用が素直。</figcaption></figure>\n<h4>仕組みのポイント</h4>\n<p>バンドルが気になるなら <code>LazyMotion</code> + <code>m</code> + <code>domAnimation</code>（軽量）/<code>domMax</code>（layout等フル）で機能を遅延ロードし初期JSを削れる。アクセシビリティは <code>&lt;MotionConfig reducedMotion=\"user\"&gt;</code> を上位に置くと、配下のtransform/opacity系の動きをユーザ設定に従って一括抑制できる（動きは消してもフェードや状態変化は残す）。</p>\n<h4>自分が試すなら</h4>\n<ul><li>共有要素タブのインジケータを <code>layoutId=\"indicator\"</code> で滑らかに移動させる。</li><li>enter演出は <code>template.tsx</code>、ページ遷移は View Transitions と役割分担する。</li><li><code>LazyMotion</code> + <code>m</code> で初期JS削減の効果を計測する。</li></ul>\n<h4>注意点</h4>\n<blockquote>初回ペイントで <code>initial</code> がレイアウトをずらすと<b>CLS</b>になり得る。位置に影響しない opacity/transform を使うか、初回は <code>initial={false}</code>。<code>AnimatePresence</code> 直下の子には一意の <code>key</code> が必須。<code>width/height</code> などレイアウト誘発プロパティはJS駆動でコスト高なので <code>scale/transform</code> に寄せる。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>App Router では「動く所だけ <code>'use client'</code>、enterは <code>template.tsx</code>、exitは View Transitions」が素直。まずは <code>whileInView</code> のReveal一つから入れて体感するのが手軽だ。</p>",
+      "sources": [
+        {
+          "title": "Motion (React) 公式ドキュメント",
+          "url": "https://motion.dev/docs/react"
+        },
+        {
+          "title": "Motion — AnimatePresence",
+          "url": "https://motion.dev/docs/react-animate-presence"
+        },
+        {
+          "title": "Next.js — Templates（template.tsx）",
+          "url": "https://nextjs.org/docs/app/api-reference/file-conventions/template"
+        }
+      ]
+    },
+    {
+      "id": "2026-06-21-flutter",
+      "date": "2026-06-21",
+      "topic": "Flutter",
+      "title": "Flutter、ネイティブ120fpsとデスクトップ拡張 — Impellerで1フレーム約8ms、macOSにpopup window・Windowsがスタイラス筆圧対応",
+      "lede": "フラッグシップ端末は90/120Hzが主流になり、滑らかさの基準が上がった。新描画エンジン Impeller は高リフレッシュ端末で1フレーム約8msのネイティブ120fpsを実現する。安定版は Flutter 3.44.0 / Dart 3.12。加えて macOS が popup window をサポートし、Windows がスタイラスの回転・筆圧に対応するなど、デスクトップ/クリエイティブ用途も一段前進した。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>フラッグシップ端末は <b>90/120Hz が主流</b>になり、滑らかさの基準が上がった。Flutterの新描画エンジン <b>Impeller</b> は高リフレッシュ端末で<b>1フレーム約8ms</b>のネイティブ120fpsを実現する。加えて 2026 はデスクトップ/クリエイティブ用途が一段前進した。</p>\n<h4>何が新しいか</h4>\n<p>安定版は <b>Flutter 3.44.0 / Dart 3.12</b>（Google I/O 2026, 2026-05-18）。Impeller は iOS / モダンAndroid（API 29+）の<b>既定レンダラ</b>で、シェーダーを<b>ビルド時にAOT事前コンパイル</b>し、最大の弱点だったシェーダーコンパイルジャンクを解消する。デスクトップ面では <b>macOSでpopup windowをサポート</b>（メニュー/ツールチップをOSネイティブのポップアップで表示）、<b>Windowsがスタイラス入力に対応</b>し<b>回転と筆圧（pressure）</b>の精密トラッキングを含む。Linux/Windowsのpopup windowは将来対応予定だ。</p>\n<figure class='fig'><svg viewBox='0 0 600 180' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='10' y='22' font-size='12.5' font-weight='700' fill='#015b8e'>1フレームの予算（短いほど高リフレッシュに対応）</text><text x='14' y='58' font-size='12' fill='#555'>60Hz</text><rect x='90' y='44' width='320' height='20' rx='5' fill='#cfe6f4' stroke='#0277bd'/><text x='416' y='60' font-size='10.5' fill='#015b8e'>16ms</text><text x='14' y='98' font-size='12' fill='#555'>90Hz</text><rect x='90' y='84' width='220' height='20' rx='5' fill='#9bd4ef' stroke='#0277bd'/><text x='316' y='100' font-size='10.5' fill='#015b8e'>11ms</text><text x='14' y='138' font-size='12' fill='#555'>120Hz</text><rect x='90' y='124' width='160' height='20' rx='5' fill='#56c5f5' stroke='#0277bd'/><text x='256' y='140' font-size='10.5' fill='#015b8e'>約8ms ← Impellerが一貫維持</text><text x='90' y='168' font-size='10.5' fill='#888'>シェーダーをビルド時にAOTで用意→初回フレームからジャンクなし</text></svg><figcaption>図1：リフレッシュレート別のフレーム予算。Impellerは120Hzに必要な約8msを保つ。</figcaption></figure>\n<h4>仕組みのポイント</h4>\n<p>120fpsの予算は<b>1フレーム約8ms</b>（60fps=16ms / 90fps=11ms）。Impeller はシェーダーを事前に用意し、Metal(iOS)/Vulkan(Android)の低レベル経路を直接叩くことで、初回フレームから安定して8msに収める。移行済みアプリはスクロール/遷移が滑らかになり、持続アニメで<b>バッテリー効率も改善</b>と報告されている。</p>\n<figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='22' text-anchor='middle' font-size='13' font-weight='700' fill='#015b8e'>2026 デスクトップ拡張</text><rect x='14' y='38' width='180' height='96' rx='10' fill='#e6f4fb' stroke='#0277bd'/><text x='104' y='64' text-anchor='middle' font-size='12' font-weight='700' fill='#015b8e'>macOS</text><text x='104' y='90' text-anchor='middle' font-size='11' fill='#37708c'>popup window 対応</text><text x='104' y='112' text-anchor='middle' font-size='11' fill='#37708c'>メニュー/ツールチップ</text><rect x='210' y='38' width='180' height='96' rx='10' fill='#e6f4fb' stroke='#0277bd'/><text x='300' y='64' text-anchor='middle' font-size='12' font-weight='700' fill='#015b8e'>Windows</text><text x='300' y='90' text-anchor='middle' font-size='11' fill='#37708c'>スタイラス対応</text><text x='300' y='112' text-anchor='middle' font-size='11' fill='#37708c'>回転＋筆圧の精密追跡</text><rect x='406' y='38' width='180' height='96' rx='10' fill='#f4f4f6' stroke='#9aa0ad'/><text x='496' y='64' text-anchor='middle' font-size='12' font-weight='700' fill='#5a5a66'>Linux/Win</text><text x='496' y='90' text-anchor='middle' font-size='11' fill='#6b6b70'>popup window</text><text x='496' y='112' text-anchor='middle' font-size='11' fill='#6b6b70'>将来リリースで対応予定</text></svg><figcaption>図2：デスクトップ強化の内訳。macOSは即時、popup windowの他OS対応は今後。</figcaption></figure>\n<h4>自分が試すなら</h4>\n<ul><li>120Hz端末で重い <code>CustomPaint</code>/シェーダーアニメ画面を <b>profileモード</b>＋DevToolsで計測し、8ms以内に収まるか確認する。</li><li>macOSアプリのメニュー/ツールチップを popup window 化してネイティブ感を上げる。</li><li>お絵描き/署名系アプリで Windows スタイラスの筆圧・回転を取り込む。</li></ul>\n<h4>注意点</h4>\n<blockquote>性能計測は必ず <b>profileモード</b>で（debug VMは大幅に遅い）。Impellerでも<b>不要な再ビルド</b>は別問題として残るため、<code>const</code>化や <code>Selector</code> による局所再描画は依然有効。描画差が出たら <code>--no-enable-impeller</code> でSkiaと比較し切り分ける。popup windowは現状macOSのみで、Linux/Windowsは将来リリース予定だ。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>「8msに収める」が120fps時代の合言葉。Impellerでシェーダージャンクが消え、macOS popup window と Windows スタイラスでデスクトップ表現も前進した。まずは重い描画画面をprofileで測り直すのが近道だ。</p>",
+      "sources": [
+        {
+          "title": "Flutter + Impeller: How to Achieve Native 120fps Performance in 2026",
+          "url": "https://shindekalpesharun.medium.com/flutter-impeller-how-to-achieve-native-120fps-performance-in-2026-68ec28cc71e5"
+        },
+        {
+          "title": "Flutter release notes（公式）",
+          "url": "https://docs.flutter.dev/release/release-notes"
+        },
+        {
+          "title": "Flutter 3.44 & Dart 3.12 — Everything That Changed at Google I/O 2026",
+          "url": "https://yawarothman.medium.com/flutter-3-44-dart-3-12-everything-that-changed-at-google-i-o-2026-16f73a0c03d5"
+        }
+      ]
+    },
     {
       "id": "2026-06-20-claude-code",
       "date": "2026-06-20",
