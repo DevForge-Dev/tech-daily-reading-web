@@ -1,0 +1,76 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Motion（旧Framer Motion）を Next.js App Router で — &#39;use client&#39;境界・template.tsxでenter・LazyMotionで軽量化 — デイリー技術深掘り 読み物</title><meta name="description" content="Reactで最も使われる宣言的アニメライブラリ Framer Motion は、2024年末に「Motion」へ改名され、Reactエントリは motion/react に統合された。App Router では motion.* がClient専用なため 'use client' 必須、新ルートを先に描く特性でページexitが効きにくいなど固有の落とし穴がある。enterは template.tsx、exitは View Transitions と役割分担し、LazyMotion でバンドルを削る組み込み方を整理する。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-06-21-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Motion（旧Framer Motion）を Next.js App Router で — 'use client'境界・template.tsxでenter・LazyMotionで軽量化 — デイリー技術深掘り 読み物"><meta property="og:description" content="Reactで最も使われる宣言的アニメライブラリ Framer Motion は、2024年末に「Motion」へ改名され、Reactエントリは motion/react に統合された。App Router では motion.* がClient専用なため 'use client' 必須、新ルートを先に描く特性でページexitが効きにくいなど固有の落とし穴がある。enterは template.tsx、exitは View Transitions と役割分担し、LazyMotion でバンドルを削る組み込み方を整理する。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-06-21-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>Motion（旧Framer Motion）を Next.js App Router で — &#39;use client&#39;境界・template.tsxでenter・LazyMotionで軽量化</h1> <p class="lede">Reactで最も使われる宣言的アニメライブラリ Framer Motion は、2024年末に「Motion」へ改名され、Reactエントリは motion/react に統合された。App Router では motion.* がClient専用なため &#39;use client&#39; 必須、新ルートを先に描く特性でページexitが効きにくいなど固有の落とし穴がある。enterは template.tsx、exitは View Transitions と役割分担し、LazyMotion でバンドルを削る組み込み方を整理する。</p> <div class="meta"> <span>📅 2026年6月21日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="1"><h4 id="sec-1">なぜ今これが話題か</h4>
+<p>Reactで最も使われる宣言的アニメライブラリ <b>Framer Motion</b> は、2024年末に <b>「Motion」へ改名</b>された。Reactエントリは <code>motion/react</code>、バニラJSは <code>motion</code> に統合。<code>framer-motion</code> は互換エイリアスとして動くが、新規は <code>motion/react</code> が推奨だ。App Router での正しい組み込みを押さえておきたい。</p>
+<h4 id="sec-2">何が新しい/重要か</h4>
+<p>強みは3点。<code>initial/animate/exit</code> の宣言だけで<b>マウント/アンマウント時のexit</b>まで書ける、<code>layout</code>/<code>layoutId</code> による<b>FLIPベースのレイアウト/共有要素アニメ</b>を内部で自動処理、transform/opacityは <b>WAAPI（ハイブリッドエンジン）</b>でGPU合成へオフロードしメインスレッドを空ける。一方で App Router 特有の落とし穴があるため、組み込み方の理解が要る。</p>
+<figure class='fig'><pre class='mermaid'>flowchart TD
+  A["Server Component（データ取得）"] --> B["Client ラッパー 'use client'"]
+  B --> C["motion.div で initial/animate/exit"]</pre><figcaption>図1：ページはServerのまま、動く部分だけClientラッパーに閉じ込める定石。</figcaption></figure>
+<h4 id="sec-3">App Router 特有の落とし穴</h4>
+<p><code>motion.*</code> はフック/Contextを使う<b>Client専用</b>なので <code>'use client'</code> が必須。ページはServerのまま、動く部分だけ小さなClientラッパーに切り出すのが定石だ。さらに App Router は新ルートを描画してから旧セグメントを外すため、<b>ページのexitが効きにくい</b>。enterだけなら <code>template.tsx</code>（遷移ごとに再マウント）に <code>motion.div</code> を置けば毎回 <code>initial→animate</code> が走る。exitも欲しければ <b>View Transitions API</b> との併用が無難だ。</p>
+<figure class='fig'><svg viewBox='0 0 600 160' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='20' y='30' width='270' height='110' rx='12' fill='#eaf2ff' stroke='#1f6feb'></rect><text x='155' y='56' text-anchor='middle' font-size='12.5' font-weight='700' fill='#1456c4'>enter のみで良い</text><text x='155' y='84' text-anchor='middle' font-size='11.5' fill='#274b80'>template.tsx に motion.div</text><text x='155' y='108' text-anchor='middle' font-size='11.5' fill='#274b80'>遷移ごと再マウント</text><text x='155' y='128' text-anchor='middle' font-size='11.5' fill='#274b80'>→ 毎回 initial→animate</text><rect x='310' y='30' width='270' height='110' rx='12' fill='#f3eaff' stroke='#7b3fe4'></rect><text x='445' y='56' text-anchor='middle' font-size='12.5' font-weight='700' fill='#5b27b0'>exit も欲しい</text><text x='445' y='84' text-anchor='middle' font-size='11.5' fill='#4a2db0'>View Transitions API</text><text x='445' y='108' text-anchor='middle' font-size='11.5' fill='#4a2db0'>or AnimatePresence</text><text x='445' y='128' text-anchor='middle' font-size='11.5' fill='#4a2db0'>（keyにpathname）</text></svg><figcaption>図2：enterのみなら template.tsx、exit付きは View Transitions 併用が素直。</figcaption></figure>
+<h4 id="sec-4">仕組みのポイント</h4>
+<p>バンドルが気になるなら <code>LazyMotion</code> + <code>m</code> + <code>domAnimation</code>（軽量）/<code>domMax</code>（layout等フル）で機能を遅延ロードし初期JSを削れる。アクセシビリティは <code>&lt;MotionConfig reducedMotion="user"&gt;</code> を上位に置くと、配下のtransform/opacity系の動きをユーザ設定に従って一括抑制できる（動きは消してもフェードや状態変化は残す）。</p>
+<h4 id="sec-5">自分が試すなら</h4>
+<ul><li>共有要素タブのインジケータを <code>layoutId="indicator"</code> で滑らかに移動させる。</li><li>enter演出は <code>template.tsx</code>、ページ遷移は View Transitions と役割分担する。</li><li><code>LazyMotion</code> + <code>m</code> で初期JS削減の効果を計測する。</li></ul>
+<h4 id="sec-6">注意点</h4>
+<blockquote>初回ペイントで <code>initial</code> がレイアウトをずらすと<b>CLS</b>になり得る。位置に影響しない opacity/transform を使うか、初回は <code>initial={false}</code>。<code>AnimatePresence</code> 直下の子には一意の <code>key</code> が必須。<code>width/height</code> などレイアウト誘発プロパティはJS駆動でコスト高なので <code>scale/transform</code> に寄せる。</blockquote>
+<h4 id="sec-7">ひとことまとめ</h4>
+<p>App Router では「動く所だけ <code>'use client'</code>、enterは <code>template.tsx</code>、exitは View Transitions」が素直。まずは <code>whileInView</code> のReveal一つから入れて体感するのが手軽だ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://motion.dev/docs/react" target="_blank" rel="noopener noreferrer"> Motion (React) 公式ドキュメント </a> </li><li> <a href="https://motion.dev/docs/react-animate-presence" target="_blank" rel="noopener noreferrer"> Motion — AnimatePresence </a> </li><li> <a href="https://nextjs.org/docs/app/api-reference/file-conventions/template" target="_blank" rel="noopener noreferrer"> Next.js — Templates（template.tsx） </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> なぜ今これが話題か </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 何が新しい/重要か </a> </li><li> <a href="#sec-3" data-toc="sec-3"> App Router 特有の落とし穴 </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 仕組みのポイント </a> </li><li> <a href="#sec-5" data-toc="sec-5"> 自分が試すなら </a> </li><li> <a href="#sec-6" data-toc="sec-6"> 注意点 </a> </li><li> <a href="#sec-7" data-toc="sec-7"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-06-21</div> <div>⏱ 読了 約3分</div> <div>🏷 Next.js</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
