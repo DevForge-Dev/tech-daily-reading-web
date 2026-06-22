@@ -1,0 +1,76 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Claude Code 6月の自律化アップデート — /cd でキャッシュを壊さずディレクトリ移動、サブエージェントは最大5段ネスト、fallbackModel と safe mode も — デイリー技術深掘り 読み物</title><meta name="description" content="エージェントに長時間・複数プロジェクトの作業を任せるほど「セッションを切らずにどこまで自律で走らせられるか」が効いてくる。2026年6月のClaude Codeアップデートは、/cd・サブエージェントの最大5段ネスト・fallbackModel・safe mode・post-session hook と、まさに自律実行まわりをまとめて強化した。あわせて /usage の内訳表示、/code-review、/plugin list も入った。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-06-22-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Claude Code 6月の自律化アップデート — /cd でキャッシュを壊さずディレクトリ移動、サブエージェントは最大5段ネスト、fallbackModel と safe mode も — デイリー技術深掘り 読み物"><meta property="og:description" content="エージェントに長時間・複数プロジェクトの作業を任せるほど「セッションを切らずにどこまで自律で走らせられるか」が効いてくる。2026年6月のClaude Codeアップデートは、/cd・サブエージェントの最大5段ネスト・fallbackModel・safe mode・post-session hook と、まさに自律実行まわりをまとめて強化した。あわせて /usage の内訳表示、/code-review、/plugin list も入った。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-06-22-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>Claude Code 6月の自律化アップデート — /cd でキャッシュを壊さずディレクトリ移動、サブエージェントは最大5段ネスト、fallbackModel と safe mode も</h1> <p class="lede">エージェントに長時間・複数プロジェクトの作業を任せるほど「セッションを切らずにどこまで自律で走らせられるか」が効いてくる。2026年6月のClaude Codeアップデートは、/cd・サブエージェントの最大5段ネスト・fallbackModel・safe mode・post-session hook と、まさに自律実行まわりをまとめて強化した。あわせて /usage の内訳表示、/code-review、/plugin list も入った。</p> <div class="meta"> <span>📅 2026年6月22日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="1"><h4 id="sec-1">なぜ今これが話題か</h4>
+<p>エージェントに長時間の作業や複数プロジェクトの横断を任せるほど、「セッションを切らずにどこまで自律で走らせられるか」が効いてくる。2026年6月のClaude Codeアップデートは、まさにこの<b>自律実行まわり</b>をまとめて強化した。</p>
+<h4 id="sec-2">何が新しいか</h4>
+<p>目玉は新コマンド <code>/cd</code>。<b>プロンプトキャッシュを壊さずに作業ディレクトリを移動</b>でき、移動先プロジェクトの保存領域を使うため <code>--resume</code> / <code>--continue</code> もそこで見つかる。Agentツールは<b>サブエージェントが自身の子サブエージェントを起動</b>できるようになり、バックグラウンドの連鎖は<b>最大5段ネスト</b>でキャップされる。さらに最大3モデルを順に試す <code>fallbackModel</code>、壊れた設定を切り分ける <b>safe mode</b>、セッション終了後に走る <b>post-session hook</b> が加わった。運用系では <code>/usage</code> がスキル・サブエージェント・プラグイン・MCP別に消費を内訳表示し、<code>/code-review</code> が正確性バグを検出・報告、<code>/plugin list</code> がメニューを開かずインストール済みプラグインを一覧する。</p>
+<figure class='fig'><pre class='mermaid'>flowchart TD
+  A["親エージェント"] --> B["サブ 1段目"]
+  B --> C["サブ 2段目"]
+  C --> D["サブ 3〜5段目"]
+  D --> E["最大5段でキャップ"]</pre><figcaption>図1：サブエージェントは自身の子を起動でき、連鎖は最大5段までに制限される。</figcaption></figure>
+<h4 id="sec-3">仕組みのポイント</h4>
+<p><code>/cd</code> の肝は「キャッシュを壊さない」こと。通常ディレクトリを変えるとプロンプトキャッシュが無効化されコスト/レイテンシが悪化するが、/cd はキャッシュを保ったまま文脈を移す。ネストするサブエージェントは、親が全体を統括し子へ分割タスクを投げる構造を最大5段まで安全弁付きで許可し、暴走的な無限ネストを防ぐ。<code>fallbackModel</code> は1つ目が混雑/失敗しても2つ目→3つ目へ自動で切り替え、長時間バッチの途中停止を減らす。</p>
+<figure class='fig'><svg viewBox='0 0 600 130' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='22' text-anchor='middle' font-size='12.5' font-weight='700' fill='#5b27b0'>fallbackModel：最大3モデルを順に試行</text><rect x='20' y='44' width='150' height='52' rx='10' fill='#f3eaff' stroke='#7b3fe4'></rect><text x='95' y='68' text-anchor='middle' font-size='12' font-weight='700' fill='#5b27b0'>モデル1</text><text x='95' y='86' text-anchor='middle' font-size='10.5' fill='#4a2db0'>混雑/失敗なら→</text><rect x='225' y='44' width='150' height='52' rx='10' fill='#efe6ff' stroke='#7b3fe4'></rect><text x='300' y='68' text-anchor='middle' font-size='12' font-weight='700' fill='#5b27b0'>モデル2</text><text x='300' y='86' text-anchor='middle' font-size='10.5' fill='#4a2db0'>だめなら→</text><rect x='430' y='44' width='150' height='52' rx='10' fill='#e9f7ef' stroke='#46c08a'></rect><text x='505' y='68' text-anchor='middle' font-size='12' font-weight='700' fill='#1d8a5a'>モデル3</text><text x='505' y='86' text-anchor='middle' font-size='10.5' fill='#27674a'>最終フォールバック</text><text x='192' y='74' font-size='16' fill='#9aa0ad'>→</text><text x='397' y='74' font-size='16' fill='#9aa0ad'>→</text></svg><figcaption>図2：fallbackModel は可用性低下時に次のモデルへ自動で切り替える。</figcaption></figure>
+<h4 id="sec-4">自分が試すなら</h4>
+<ul><li>モノレポやマルチプロジェクト作業で <code>/cd</code> を使い、セッションとキャッシュを維持したまま行き来する。</li><li>大きな調査タスクを親→複数の子エージェントへ分解し、5段以内で設計する。</li><li>夜間バッチに <code>fallbackModel</code> を設定し、可用性低下時の自動フォールバックを用意する。</li></ul>
+<h4 id="sec-5">注意点</h4>
+<blockquote>ネストは便利だが<b>深いほどデバッグとコスト把握が難しくなる</b>。5段は上限であって推奨ではなく、まずは2〜3段で十分なことが多い。<code>fallbackModel</code> は品質の異なるモデルへ落ちる可能性があるため、出力品質が重要なタスクではフォールバック先も吟味したい。</blockquote>
+<h4 id="sec-6">ひとことまとめ</h4>
+<p>今回は「自律で長く走らせる」ための足回り強化。まずは <code>/cd</code> と <code>fallbackModel</code> から入れると、日々の自動化が一段安定する。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://qiita.com/kai_kou/items/81cee59a85d82535e986" target="_blank" rel="noopener noreferrer"> Claude Code 6月の新機能（/cd・サブエージェント・fallbackModel ほか / Qiita） </a> </li><li> <a href="https://code.claude.com/docs/en/changelog" target="_blank" rel="noopener noreferrer"> Claude Code changelog（公式） </a> </li><li> <a href="https://ofox.ai/blog/claude-code-hooks-subagents-skills-complete-guide-2026/" target="_blank" rel="noopener noreferrer"> Hooks・Subagents・Skills 完全ガイド（ofox.ai） </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> なぜ今これが話題か </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 何が新しいか </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 仕組みのポイント </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 自分が試すなら </a> </li><li> <a href="#sec-5" data-toc="sec-5"> 注意点 </a> </li><li> <a href="#sec-6" data-toc="sec-6"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-06-22</div> <div>⏱ 読了 約3分</div> <div>🏷 Claude Code</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

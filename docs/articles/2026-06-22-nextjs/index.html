@@ -1,0 +1,78 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>App Router 最強のモーダル — Parallel Routes × Intercepting Routes でURL駆動、クリックは重ねて表示・直リンクはフルページ — デイリー技術深掘り 読み物</title><meta name="description" content="従来モーダルの宿痾——共有不可・リロードで消える・戻る/進むで履歴が壊れる——を一掃するのが Parallel Routes と Intercepting Routes の組み合わせ。@modal スロットと (.) 記法で、同じURLが「クリックではモーダル」「直リンク/リロードではフルページ」に切り替わる。Next.js 16.2 でも安定機能として現役。最大の落とし穴はセグメントの数え方だ。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-06-22-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="App Router 最強のモーダル — Parallel Routes × Intercepting Routes でURL駆動、クリックは重ねて表示・直リンクはフルページ — デイリー技術深掘り 読み物"><meta property="og:description" content="従来モーダルの宿痾——共有不可・リロードで消える・戻る/進むで履歴が壊れる——を一掃するのが Parallel Routes と Intercepting Routes の組み合わせ。@modal スロットと (.) 記法で、同じURLが「クリックではモーダル」「直リンク/リロードではフルページ」に切り替わる。Next.js 16.2 でも安定機能として現役。最大の落とし穴はセグメントの数え方だ。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-06-22-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>App Router 最強のモーダル — Parallel Routes × Intercepting Routes でURL駆動、クリックは重ねて表示・直リンクはフルページ</h1> <p class="lede">従来モーダルの宿痾——共有不可・リロードで消える・戻る/進むで履歴が壊れる——を一掃するのが Parallel Routes と Intercepting Routes の組み合わせ。@modal スロットと (.) 記法で、同じURLが「クリックではモーダル」「直リンク/リロードではフルページ」に切り替わる。Next.js 16.2 でも安定機能として現役。最大の落とし穴はセグメントの数え方だ。</p> <div class="meta"> <span>📅 2026年6月22日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="0"><h4 id="sec-1">なぜ今これが話題か</h4>
+<p>従来のモーダルには宿痾があった。URLを共有できない、リロードで消える、ブラウザの戻る/進むで履歴が壊れる。App Router の <b>Parallel Routes</b> と <b>Intercepting Routes</b> を組み合わせると、これらを一掃できる。ギャラリーの写真拡大、ログイン、カート、商品クイックビューに効き、Next.js 16.2 でも安定機能として現役だ。</p>
+<h4 id="sec-2">何が新しい/重要か</h4>
+<p><code>@modal</code> のような<b>名前付きスロット</b>（Parallel Routes）はURLに影響せず、親レイアウトに props として渡る。<code>(.)</code>/<code>(..)</code>/<code>(...)</code> の <b>Intercepting Routes</b> は、<code>&lt;Link&gt;</code> クリック（ソフトナビ）では別ルートを現在のレイアウトに<b>差し込んでモーダル表示</b>し、直リンク/リロード（ハードナビ）では<b>本来のフルページ</b>を出す。つまり同じURLが文脈で二通りに表示される。</p>
+<figure class='fig'><svg viewBox='0 0 600 160' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='20' y='30' width='270' height='110' rx='12' fill='#eaf2ff' stroke='#1f6feb'></rect><text x='155' y='56' text-anchor='middle' font-size='12.5' font-weight='700' fill='#1456c4'>ソフトナビ（Linkクリック）</text><text x='155' y='82' text-anchor='middle' font-size='11.5' fill='#274b80'>(.)photo を現在の画面に差し込み</text><text x='155' y='104' text-anchor='middle' font-size='11.5' fill='#274b80'>→ モーダルで重ねて表示</text><text x='155' y='126' text-anchor='middle' font-size='11.5' fill='#274b80'>URLだけ /photo/1 に書き換え</text><rect x='310' y='30' width='270' height='110' rx='12' fill='#e9f7ef' stroke='#46c08a'></rect><text x='445' y='56' text-anchor='middle' font-size='12.5' font-weight='700' fill='#1d8a5a'>ハードナビ（直リンク/リロード）</text><text x='445' y='82' text-anchor='middle' font-size='11.5' fill='#27674a'>photo/[id] の本来のページ</text><text x='445' y='104' text-anchor='middle' font-size='11.5' fill='#27674a'>→ 独立したフルページ表示</text><text x='445' y='126' text-anchor='middle' font-size='11.5' fill='#27674a'>共有・SEO もOK</text></svg><figcaption>図1：同じ /photo/1 が、入り方で「モーダル」と「フルページ」に切り替わる。</figcaption></figure>
+<h4 id="sec-3">仕組みと最大の落とし穴</h4>
+<p>キモは「<code>(..)</code> は<b>ファイル階層ではなくルートセグメント</b>を数える」点。スロット（<code>@modal</code>）やルートグループ（<code>(group)</code>）は<b>セグメントとして数えない</b>。だから <code>app/@modal/(.)photo/</code> から <code>app/photo/</code> を捕まえる時、ファイル上は2階層上でもセグメント的には同一階層なので、正しい記法は <code>(.)</code>。ここが最大の混乱要因だ。スロットには <b><code>default.tsx</code>（null を返す）が必須</b>で、無いとハードナビで404になる。</p>
+<figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='22' text-anchor='middle' font-size='12.5' font-weight='700' fill='#b03a6e'>(..) はセグメントを数える（ファイル階層ではない）</text><rect x='30' y='40' width='250' height='44' rx='8' fill='#fdeef0' stroke='#e07a9b'></rect><text x='155' y='60' text-anchor='middle' font-size='11.5' fill='#8c3257'>@modal（スロット）</text><text x='155' y='77' text-anchor='middle' font-size='11' fill='#a85575'>数えない</text><rect x='30' y='94' width='250' height='44' rx='8' fill='#fdeef0' stroke='#e07a9b'></rect><text x='155' y='114' text-anchor='middle' font-size='11.5' fill='#8c3257'>(group)（ルートグループ）</text><text x='155' y='131' text-anchor='middle' font-size='11' fill='#a85575'>数えない</text><rect x='320' y='66' width='250' height='50' rx='8' fill='#e9f7ef' stroke='#46c08a'></rect><text x='445' y='88' text-anchor='middle' font-size='11.5' fill='#1d8a5a'>結果：同一セグメント階層</text><text x='445' y='106' text-anchor='middle' font-size='11.5' font-weight='700' fill='#1d8a5a'>→ 正しい記法は (.)</text></svg><figcaption>図2：スロットとルートグループはセグメントに数えないため、見た目の階層と一致しない。</figcaption></figure>
+<pre><code>app/
+  layout.tsx                 // children と modal を並べる
+  @modal/
+    default.tsx              // return null（必須）
+    (.)photo/[id]/page.tsx   // Modal で包む（インターセプト先）
+  photo/[id]/page.tsx        // 直リンク時のフルページ</code></pre>
+<h4 id="sec-4">自分が試すなら</h4>
+<ul><li>画像ギャラリーで「クリック→モーダル、直リンク→フルページ」を実装する。</li><li>閉じる操作は <code>router.back()</code> に統一し、戻る/進むを自然に効かせる。</li><li>他ページ遷移でモーダルが残る場合は <code>@modal/[...catchAll]/page.tsx</code> で null を返すキャッチオールスロットを置く。</li></ul>
+<h4 id="sec-5">注意点</h4>
+<blockquote>同一セグメント階層のスロットは<b>静的/動的を混在できない</b>（1つが動的なら全スロットが動的化）。インターセプト用 <code>(.)photo</code> とフルページ <code>photo</code> は<b>同じ表示</b>になるよう <code>&lt;Photo&gt;</code> を共有して齟齬を防ぐ。構成は複雑化するので、独立した loading/error やモーダルが不要ならネストレイアウトの方が単純だ。</blockquote>
+<h4 id="sec-6">ひとことまとめ</h4>
+<p>「クリックは重ねて、直リンクはフルページ」を同じURLで両立できるのがこのパターンの真価。まずは <code>default.tsx</code> と <code>(.)</code> のセグメント数えから押さえるのが近道だ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://nextjs.org/docs/app/api-reference/file-conventions/intercepting-routes" target="_blank" rel="noopener noreferrer"> Intercepting Routes（Next.js 公式 / 16.2） </a> </li><li> <a href="https://nextjs.org/docs/app/api-reference/file-conventions/parallel-routes" target="_blank" rel="noopener noreferrer"> Parallel Routes（公式 / モーダル手順） </a> </li><li> <a href="https://github.com/vercel-labs/nextgram" target="_blank" rel="noopener noreferrer"> 公式サンプル nextgram（画像ギャラリーモーダル） </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> なぜ今これが話題か </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 何が新しい/重要か </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 仕組みと最大の落とし穴 </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 自分が試すなら </a> </li><li> <a href="#sec-5" data-toc="sec-5"> 注意点 </a> </li><li> <a href="#sec-6" data-toc="sec-6"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-06-22</div> <div>⏱ 読了 約3分</div> <div>🏷 Next.js</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

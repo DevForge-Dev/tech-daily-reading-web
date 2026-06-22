@@ -1,0 +1,75 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Flutterが単一エンジンへ収束 — Impeller をデスクトップへ展開し6面を統一、Web は WASM 既定化、GenUI SDK＋A2UI で UI を動的生成 — デイリー技術深掘り 読み物</title><meta name="description" content="2026後半ロードマップ「Finishing the Job」は、Android の Impeller 移行完了に加え、Impeller をデスクトップ(macOS/Windows/Linux)へ展開して6プラットフォームを単一の描画エンジンに統一する方向。Web は WASM を既定コンパイルターゲットへ前進し、GenUI SDK＋A2UI プロトコルで AI が動的に UI を生成する。安定版は Flutter 3.44.0 / Dart 3.12。"><meta name="theme-color" content="#0277bd"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-06-22-flutter/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Flutterが単一エンジンへ収束 — Impeller をデスクトップへ展開し6面を統一、Web は WASM 既定化、GenUI SDK＋A2UI で UI を動的生成 — デイリー技術深掘り 読み物"><meta property="og:description" content="2026後半ロードマップ「Finishing the Job」は、Android の Impeller 移行完了に加え、Impeller をデスクトップ(macOS/Windows/Linux)へ展開して6プラットフォームを単一の描画エンジンに統一する方向。Web は WASM を既定コンパイルターゲットへ前進し、GenUI SDK＋A2UI プロトコルで AI が動的に UI を生成する。安定版は Flutter 3.44.0 / Dart 3.12。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-06-22-flutter/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #29b6f6, #01579b)"> <span class="glyph" aria-hidden="true">◆</span> <div class="kicker">Flutter</div> <h1>Flutterが単一エンジンへ収束 — Impeller をデスクトップへ展開し6面を統一、Web は WASM 既定化、GenUI SDK＋A2UI で UI を動的生成</h1> <p class="lede">2026後半ロードマップ「Finishing the Job」は、Android の Impeller 移行完了に加え、Impeller をデスクトップ(macOS/Windows/Linux)へ展開して6プラットフォームを単一の描画エンジンに統一する方向。Web は WASM を既定コンパイルターゲットへ前進し、GenUI SDK＋A2UI プロトコルで AI が動的に UI を生成する。安定版は Flutter 3.44.0 / Dart 3.12。</p> <div class="meta"> <span>📅 2026年6月22日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#0277bd"> <div> <article class="prose" data-has-mermaid="1"><h4 id="sec-1">なぜ今これが話題か</h4>
+<p>マルチプラットフォーム対応の代償は「環境ごとの描画差」だった。2026後半ロードマップ <b>「Finishing the Job」</b> は、その分断を終わらせにいく。<b>6プラットフォームを単一の描画エンジンに統一</b>する方向が打ち出された。安定版は <b>Flutter 3.44.0 / Dart 3.12</b>（Google I/O 2026, 2026-05-18）。</p>
+<h4 id="sec-2">何が新しいか</h4>
+<p>第一に、Android の Impeller 移行完了（Android 10+ で Skia 撤去）に加え、<b>Impeller をデスクトップ（macOS/Windows/Linux）へ展開</b>し、モバイル・デスクトップ・Web を含む全プラットフォームを<b>1つの描画エンジン</b>へ収束させる。第二に、<b>Flutter Web は WASM を既定コンパイルターゲット</b>へ前進（現状は <code>--wasm</code> フラグ必須、3.35+ で Wasm dry-run により切替を準備中）。第三に、<b>GenUI SDK</b> が pub.dev で alpha 提供（Flutter 3.38 投入）され、<b>A2UI プロトコル</b>で AI モデルが Flutter の Widget カタログを使い、テキストでなく<b>動的に UI を生成</b>する。</p>
+<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='20' text-anchor='middle' font-size='12.5' font-weight='700' fill='#015b8e'>6プラットフォーム → 単一の描画エンジンへ</text><rect x='14' y='34' width='110' height='34' rx='7' fill='#e6f4fb' stroke='#0277bd'></rect><text x='69' y='56' text-anchor='middle' font-size='11' fill='#015b8e'>iOS</text><rect x='134' y='34' width='110' height='34' rx='7' fill='#e6f4fb' stroke='#0277bd'></rect><text x='189' y='56' text-anchor='middle' font-size='11' fill='#015b8e'>Android</text><rect x='254' y='34' width='110' height='34' rx='7' fill='#e6f4fb' stroke='#0277bd'></rect><text x='309' y='56' text-anchor='middle' font-size='11' fill='#015b8e'>macOS</text><rect x='374' y='34' width='100' height='34' rx='7' fill='#e6f4fb' stroke='#0277bd'></rect><text x='424' y='56' text-anchor='middle' font-size='11' fill='#015b8e'>Windows</text><rect x='484' y='34' width='100' height='34' rx='7' fill='#e6f4fb' stroke='#0277bd'></rect><text x='534' y='56' text-anchor='middle' font-size='11' fill='#015b8e'>Linux</text><rect x='254' y='80' width='110' height='34' rx='7' fill='#e6f4fb' stroke='#0277bd'></rect><text x='309' y='102' text-anchor='middle' font-size='11' fill='#015b8e'>Web</text><line x1='300' y1='118' x2='300' y2='140' stroke='#0277bd' stroke-width='2'></line><rect x='190' y='142' width='220' height='44' rx='10' fill='#cfeefb' stroke='#0277bd'></rect><text x='300' y='169' text-anchor='middle' font-size='13' font-weight='800' fill='#015b8e'>Impeller（単一エンジン）</text></svg><figcaption>図1：6面すべてを Impeller に収束。デスクトップ展開で描画パイプラインが揃う。</figcaption></figure>
+<h4 id="sec-3">仕組みのポイント</h4>
+<p>Impeller はシェーダーを<b>ビルド時に AOT 事前コンパイル</b>し、従来の弱点だったシェーダーコンパイルジャンクを解消する。これをデスクトップにも広げることで、6面が同じ描画パイプラインに乗り挙動の予測可能性が上がる。GenUI/A2UI は、モデルが自由テキストを返すのではなく<b>用意された Widget 語彙の範囲で UI を構築</b>する点が肝で、エージェントが画面そのものを生成する「エージェント志向 UI」に現実味を与える。</p>
+<figure class='fig'><pre class='mermaid'>flowchart LR
+  A["AIモデル"] --> B["A2UIプロトコル"]
+  B --> C["FlutterのWidgetカタログ"]
+  C --> D["動的に生成されたUI"]</pre><figcaption>図2：A2UI は自由テキストでなく Widget 語彙で UI を組み立てる。</figcaption></figure>
+<h4 id="sec-4">自分が試すなら</h4>
+<ul><li>既存デスクトップアプリを Impeller で動かし、描画差や性能を <b>profile モード</b>で比較する。</li><li>Web 配信のアプリで <code>--wasm</code> ビルドを試し、体感・サイズ・性能を計測する。</li><li>GenUI SDK の alpha を小さな動的フォーム生成で触り、A2UI の語彙設計を試す。</li></ul>
+<h4 id="sec-5">注意点</h4>
+<blockquote>デスクトップ Impeller や Web WASM 既定化は<b>移行途上</b>で、現時点では <code>--wasm</code> フラグや <code>--no-enable-impeller</code> での切り分けが必要な場面が残る。言語面は <b>Dart 3.13 で primary constructors</b> が正式追加見込みなど進化が速いので、最新の <code>digests/</code> の日付を確認してから採用判断したい。GenUI/A2UI は alpha のため本番採用は時期尚早だ。</blockquote>
+<h4 id="sec-6">ひとことまとめ</h4>
+<p>「6面を1エンジンに」「Web は WASM」「UI は AI が生成」という3方向の収束が今年のテーマ。まずはデスクトップ Impeller と Web WASM の計測から触れておくと流れに乗れる。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://github.com/flutter/flutter/blob/main/docs/roadmap/Roadmap.md" target="_blank" rel="noopener noreferrer"> Flutter Roadmap.md（公式 GitHub） </a> </li><li> <a href="https://blog.flutter.dev/flutter-darts-2026-roadmap-89378f17ebbd" target="_blank" rel="noopener noreferrer"> Flutter &amp; Dart&#39;s 2026 roadmap（公式ブログ） </a> </li><li> <a href="https://devnewsletter.com/p/state-of-flutter-2026/" target="_blank" rel="noopener noreferrer"> State of Flutter 2026 </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> なぜ今これが話題か </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 何が新しいか </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 仕組みのポイント </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 自分が試すなら </a> </li><li> <a href="#sec-5" data-toc="sec-5"> 注意点 </a> </li><li> <a href="#sec-6" data-toc="sec-6"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-06-22</div> <div>⏱ 読了 約3分</div> <div>🏷 Flutter</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
