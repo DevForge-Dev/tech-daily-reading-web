@@ -1,12 +1,78 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-06-21T04:47:30.780Z",
+  "generatedAt": "2026-06-22T04:47:49.382Z",
   "topics": [
     "Claude Code",
     "Next.js",
     "Flutter"
   ],
   "articles": [
+    {
+      "id": "2026-06-22-claude-code",
+      "date": "2026-06-22",
+      "topic": "Claude Code",
+      "title": "Claude Code 6月の自律化アップデート — /cd でキャッシュを壊さずディレクトリ移動、サブエージェントは最大5段ネスト、fallbackModel と safe mode も",
+      "lede": "エージェントに長時間・複数プロジェクトの作業を任せるほど「セッションを切らずにどこまで自律で走らせられるか」が効いてくる。2026年6月のClaude Codeアップデートは、/cd・サブエージェントの最大5段ネスト・fallbackModel・safe mode・post-session hook と、まさに自律実行まわりをまとめて強化した。あわせて /usage の内訳表示、/code-review、/plugin list も入った。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>エージェントに長時間の作業や複数プロジェクトの横断を任せるほど、「セッションを切らずにどこまで自律で走らせられるか」が効いてくる。2026年6月のClaude Codeアップデートは、まさにこの<b>自律実行まわり</b>をまとめて強化した。</p>\n<h4>何が新しいか</h4>\n<p>目玉は新コマンド <code>/cd</code>。<b>プロンプトキャッシュを壊さずに作業ディレクトリを移動</b>でき、移動先プロジェクトの保存領域を使うため <code>--resume</code> / <code>--continue</code> もそこで見つかる。Agentツールは<b>サブエージェントが自身の子サブエージェントを起動</b>できるようになり、バックグラウンドの連鎖は<b>最大5段ネスト</b>でキャップされる。さらに最大3モデルを順に試す <code>fallbackModel</code>、壊れた設定を切り分ける <b>safe mode</b>、セッション終了後に走る <b>post-session hook</b> が加わった。運用系では <code>/usage</code> がスキル・サブエージェント・プラグイン・MCP別に消費を内訳表示し、<code>/code-review</code> が正確性バグを検出・報告、<code>/plugin list</code> がメニューを開かずインストール済みプラグインを一覧する。</p>\n<figure class='fig'><pre class='mermaid'>flowchart TD\n  A[\"親エージェント\"] --> B[\"サブ 1段目\"]\n  B --> C[\"サブ 2段目\"]\n  C --> D[\"サブ 3〜5段目\"]\n  D --> E[\"最大5段でキャップ\"]</pre><figcaption>図1：サブエージェントは自身の子を起動でき、連鎖は最大5段までに制限される。</figcaption></figure>\n<h4>仕組みのポイント</h4>\n<p><code>/cd</code> の肝は「キャッシュを壊さない」こと。通常ディレクトリを変えるとプロンプトキャッシュが無効化されコスト/レイテンシが悪化するが、/cd はキャッシュを保ったまま文脈を移す。ネストするサブエージェントは、親が全体を統括し子へ分割タスクを投げる構造を最大5段まで安全弁付きで許可し、暴走的な無限ネストを防ぐ。<code>fallbackModel</code> は1つ目が混雑/失敗しても2つ目→3つ目へ自動で切り替え、長時間バッチの途中停止を減らす。</p>\n<figure class='fig'><svg viewBox='0 0 600 130' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='22' text-anchor='middle' font-size='12.5' font-weight='700' fill='#5b27b0'>fallbackModel：最大3モデルを順に試行</text><rect x='20' y='44' width='150' height='52' rx='10' fill='#f3eaff' stroke='#7b3fe4'/><text x='95' y='68' text-anchor='middle' font-size='12' font-weight='700' fill='#5b27b0'>モデル1</text><text x='95' y='86' text-anchor='middle' font-size='10.5' fill='#4a2db0'>混雑/失敗なら→</text><rect x='225' y='44' width='150' height='52' rx='10' fill='#efe6ff' stroke='#7b3fe4'/><text x='300' y='68' text-anchor='middle' font-size='12' font-weight='700' fill='#5b27b0'>モデル2</text><text x='300' y='86' text-anchor='middle' font-size='10.5' fill='#4a2db0'>だめなら→</text><rect x='430' y='44' width='150' height='52' rx='10' fill='#e9f7ef' stroke='#46c08a'/><text x='505' y='68' text-anchor='middle' font-size='12' font-weight='700' fill='#1d8a5a'>モデル3</text><text x='505' y='86' text-anchor='middle' font-size='10.5' fill='#27674a'>最終フォールバック</text><text x='192' y='74' font-size='16' fill='#9aa0ad'>→</text><text x='397' y='74' font-size='16' fill='#9aa0ad'>→</text></svg><figcaption>図2：fallbackModel は可用性低下時に次のモデルへ自動で切り替える。</figcaption></figure>\n<h4>自分が試すなら</h4>\n<ul><li>モノレポやマルチプロジェクト作業で <code>/cd</code> を使い、セッションとキャッシュを維持したまま行き来する。</li><li>大きな調査タスクを親→複数の子エージェントへ分解し、5段以内で設計する。</li><li>夜間バッチに <code>fallbackModel</code> を設定し、可用性低下時の自動フォールバックを用意する。</li></ul>\n<h4>注意点</h4>\n<blockquote>ネストは便利だが<b>深いほどデバッグとコスト把握が難しくなる</b>。5段は上限であって推奨ではなく、まずは2〜3段で十分なことが多い。<code>fallbackModel</code> は品質の異なるモデルへ落ちる可能性があるため、出力品質が重要なタスクではフォールバック先も吟味したい。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>今回は「自律で長く走らせる」ための足回り強化。まずは <code>/cd</code> と <code>fallbackModel</code> から入れると、日々の自動化が一段安定する。</p>",
+      "sources": [
+        {
+          "title": "Claude Code 6月の新機能（/cd・サブエージェント・fallbackModel ほか / Qiita）",
+          "url": "https://qiita.com/kai_kou/items/81cee59a85d82535e986"
+        },
+        {
+          "title": "Claude Code changelog（公式）",
+          "url": "https://code.claude.com/docs/en/changelog"
+        },
+        {
+          "title": "Hooks・Subagents・Skills 完全ガイド（ofox.ai）",
+          "url": "https://ofox.ai/blog/claude-code-hooks-subagents-skills-complete-guide-2026/"
+        }
+      ]
+    },
+    {
+      "id": "2026-06-22-nextjs",
+      "date": "2026-06-22",
+      "topic": "Next.js",
+      "title": "App Router 最強のモーダル — Parallel Routes × Intercepting Routes でURL駆動、クリックは重ねて表示・直リンクはフルページ",
+      "lede": "従来モーダルの宿痾——共有不可・リロードで消える・戻る/進むで履歴が壊れる——を一掃するのが Parallel Routes と Intercepting Routes の組み合わせ。@modal スロットと (.) 記法で、同じURLが「クリックではモーダル」「直リンク/リロードではフルページ」に切り替わる。Next.js 16.2 でも安定機能として現役。最大の落とし穴はセグメントの数え方だ。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>従来のモーダルには宿痾があった。URLを共有できない、リロードで消える、ブラウザの戻る/進むで履歴が壊れる。App Router の <b>Parallel Routes</b> と <b>Intercepting Routes</b> を組み合わせると、これらを一掃できる。ギャラリーの写真拡大、ログイン、カート、商品クイックビューに効き、Next.js 16.2 でも安定機能として現役だ。</p>\n<h4>何が新しい/重要か</h4>\n<p><code>@modal</code> のような<b>名前付きスロット</b>（Parallel Routes）はURLに影響せず、親レイアウトに props として渡る。<code>(.)</code>/<code>(..)</code>/<code>(...)</code> の <b>Intercepting Routes</b> は、<code>&lt;Link&gt;</code> クリック（ソフトナビ）では別ルートを現在のレイアウトに<b>差し込んでモーダル表示</b>し、直リンク/リロード（ハードナビ）では<b>本来のフルページ</b>を出す。つまり同じURLが文脈で二通りに表示される。</p>\n<figure class='fig'><svg viewBox='0 0 600 160' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='20' y='30' width='270' height='110' rx='12' fill='#eaf2ff' stroke='#1f6feb'/><text x='155' y='56' text-anchor='middle' font-size='12.5' font-weight='700' fill='#1456c4'>ソフトナビ（Linkクリック）</text><text x='155' y='82' text-anchor='middle' font-size='11.5' fill='#274b80'>(.)photo を現在の画面に差し込み</text><text x='155' y='104' text-anchor='middle' font-size='11.5' fill='#274b80'>→ モーダルで重ねて表示</text><text x='155' y='126' text-anchor='middle' font-size='11.5' fill='#274b80'>URLだけ /photo/1 に書き換え</text><rect x='310' y='30' width='270' height='110' rx='12' fill='#e9f7ef' stroke='#46c08a'/><text x='445' y='56' text-anchor='middle' font-size='12.5' font-weight='700' fill='#1d8a5a'>ハードナビ（直リンク/リロード）</text><text x='445' y='82' text-anchor='middle' font-size='11.5' fill='#27674a'>photo/[id] の本来のページ</text><text x='445' y='104' text-anchor='middle' font-size='11.5' fill='#27674a'>→ 独立したフルページ表示</text><text x='445' y='126' text-anchor='middle' font-size='11.5' fill='#27674a'>共有・SEO もOK</text></svg><figcaption>図1：同じ /photo/1 が、入り方で「モーダル」と「フルページ」に切り替わる。</figcaption></figure>\n<h4>仕組みと最大の落とし穴</h4>\n<p>キモは「<code>(..)</code> は<b>ファイル階層ではなくルートセグメント</b>を数える」点。スロット（<code>@modal</code>）やルートグループ（<code>(group)</code>）は<b>セグメントとして数えない</b>。だから <code>app/@modal/(.)photo/</code> から <code>app/photo/</code> を捕まえる時、ファイル上は2階層上でもセグメント的には同一階層なので、正しい記法は <code>(.)</code>。ここが最大の混乱要因だ。スロットには <b><code>default.tsx</code>（null を返す）が必須</b>で、無いとハードナビで404になる。</p>\n<figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='22' text-anchor='middle' font-size='12.5' font-weight='700' fill='#b03a6e'>(..) はセグメントを数える（ファイル階層ではない）</text><rect x='30' y='40' width='250' height='44' rx='8' fill='#fdeef0' stroke='#e07a9b'/><text x='155' y='60' text-anchor='middle' font-size='11.5' fill='#8c3257'>@modal（スロット）</text><text x='155' y='77' text-anchor='middle' font-size='11' fill='#a85575'>数えない</text><rect x='30' y='94' width='250' height='44' rx='8' fill='#fdeef0' stroke='#e07a9b'/><text x='155' y='114' text-anchor='middle' font-size='11.5' fill='#8c3257'>(group)（ルートグループ）</text><text x='155' y='131' text-anchor='middle' font-size='11' fill='#a85575'>数えない</text><rect x='320' y='66' width='250' height='50' rx='8' fill='#e9f7ef' stroke='#46c08a'/><text x='445' y='88' text-anchor='middle' font-size='11.5' fill='#1d8a5a'>結果：同一セグメント階層</text><text x='445' y='106' text-anchor='middle' font-size='11.5' font-weight='700' fill='#1d8a5a'>→ 正しい記法は (.)</text></svg><figcaption>図2：スロットとルートグループはセグメントに数えないため、見た目の階層と一致しない。</figcaption></figure>\n<pre><code>app/\n  layout.tsx                 // children と modal を並べる\n  @modal/\n    default.tsx              // return null（必須）\n    (.)photo/[id]/page.tsx   // Modal で包む（インターセプト先）\n  photo/[id]/page.tsx        // 直リンク時のフルページ</code></pre>\n<h4>自分が試すなら</h4>\n<ul><li>画像ギャラリーで「クリック→モーダル、直リンク→フルページ」を実装する。</li><li>閉じる操作は <code>router.back()</code> に統一し、戻る/進むを自然に効かせる。</li><li>他ページ遷移でモーダルが残る場合は <code>@modal/[...catchAll]/page.tsx</code> で null を返すキャッチオールスロットを置く。</li></ul>\n<h4>注意点</h4>\n<blockquote>同一セグメント階層のスロットは<b>静的/動的を混在できない</b>（1つが動的なら全スロットが動的化）。インターセプト用 <code>(.)photo</code> とフルページ <code>photo</code> は<b>同じ表示</b>になるよう <code>&lt;Photo&gt;</code> を共有して齟齬を防ぐ。構成は複雑化するので、独立した loading/error やモーダルが不要ならネストレイアウトの方が単純だ。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>「クリックは重ねて、直リンクはフルページ」を同じURLで両立できるのがこのパターンの真価。まずは <code>default.tsx</code> と <code>(.)</code> のセグメント数えから押さえるのが近道だ。</p>",
+      "sources": [
+        {
+          "title": "Intercepting Routes（Next.js 公式 / 16.2）",
+          "url": "https://nextjs.org/docs/app/api-reference/file-conventions/intercepting-routes"
+        },
+        {
+          "title": "Parallel Routes（公式 / モーダル手順）",
+          "url": "https://nextjs.org/docs/app/api-reference/file-conventions/parallel-routes"
+        },
+        {
+          "title": "公式サンプル nextgram（画像ギャラリーモーダル）",
+          "url": "https://github.com/vercel-labs/nextgram"
+        }
+      ]
+    },
+    {
+      "id": "2026-06-22-flutter",
+      "date": "2026-06-22",
+      "topic": "Flutter",
+      "title": "Flutterが単一エンジンへ収束 — Impeller をデスクトップへ展開し6面を統一、Web は WASM 既定化、GenUI SDK＋A2UI で UI を動的生成",
+      "lede": "2026後半ロードマップ「Finishing the Job」は、Android の Impeller 移行完了に加え、Impeller をデスクトップ(macOS/Windows/Linux)へ展開して6プラットフォームを単一の描画エンジンに統一する方向。Web は WASM を既定コンパイルターゲットへ前進し、GenUI SDK＋A2UI プロトコルで AI が動的に UI を生成する。安定版は Flutter 3.44.0 / Dart 3.12。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>マルチプラットフォーム対応の代償は「環境ごとの描画差」だった。2026後半ロードマップ <b>「Finishing the Job」</b> は、その分断を終わらせにいく。<b>6プラットフォームを単一の描画エンジンに統一</b>する方向が打ち出された。安定版は <b>Flutter 3.44.0 / Dart 3.12</b>（Google I/O 2026, 2026-05-18）。</p>\n<h4>何が新しいか</h4>\n<p>第一に、Android の Impeller 移行完了（Android 10+ で Skia 撤去）に加え、<b>Impeller をデスクトップ（macOS/Windows/Linux）へ展開</b>し、モバイル・デスクトップ・Web を含む全プラットフォームを<b>1つの描画エンジン</b>へ収束させる。第二に、<b>Flutter Web は WASM を既定コンパイルターゲット</b>へ前進（現状は <code>--wasm</code> フラグ必須、3.35+ で Wasm dry-run により切替を準備中）。第三に、<b>GenUI SDK</b> が pub.dev で alpha 提供（Flutter 3.38 投入）され、<b>A2UI プロトコル</b>で AI モデルが Flutter の Widget カタログを使い、テキストでなく<b>動的に UI を生成</b>する。</p>\n<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='20' text-anchor='middle' font-size='12.5' font-weight='700' fill='#015b8e'>6プラットフォーム → 単一の描画エンジンへ</text><rect x='14' y='34' width='110' height='34' rx='7' fill='#e6f4fb' stroke='#0277bd'/><text x='69' y='56' text-anchor='middle' font-size='11' fill='#015b8e'>iOS</text><rect x='134' y='34' width='110' height='34' rx='7' fill='#e6f4fb' stroke='#0277bd'/><text x='189' y='56' text-anchor='middle' font-size='11' fill='#015b8e'>Android</text><rect x='254' y='34' width='110' height='34' rx='7' fill='#e6f4fb' stroke='#0277bd'/><text x='309' y='56' text-anchor='middle' font-size='11' fill='#015b8e'>macOS</text><rect x='374' y='34' width='100' height='34' rx='7' fill='#e6f4fb' stroke='#0277bd'/><text x='424' y='56' text-anchor='middle' font-size='11' fill='#015b8e'>Windows</text><rect x='484' y='34' width='100' height='34' rx='7' fill='#e6f4fb' stroke='#0277bd'/><text x='534' y='56' text-anchor='middle' font-size='11' fill='#015b8e'>Linux</text><rect x='254' y='80' width='110' height='34' rx='7' fill='#e6f4fb' stroke='#0277bd'/><text x='309' y='102' text-anchor='middle' font-size='11' fill='#015b8e'>Web</text><line x1='300' y1='118' x2='300' y2='140' stroke='#0277bd' stroke-width='2'/><rect x='190' y='142' width='220' height='44' rx='10' fill='#cfeefb' stroke='#0277bd'/><text x='300' y='169' text-anchor='middle' font-size='13' font-weight='800' fill='#015b8e'>Impeller（単一エンジン）</text></svg><figcaption>図1：6面すべてを Impeller に収束。デスクトップ展開で描画パイプラインが揃う。</figcaption></figure>\n<h4>仕組みのポイント</h4>\n<p>Impeller はシェーダーを<b>ビルド時に AOT 事前コンパイル</b>し、従来の弱点だったシェーダーコンパイルジャンクを解消する。これをデスクトップにも広げることで、6面が同じ描画パイプラインに乗り挙動の予測可能性が上がる。GenUI/A2UI は、モデルが自由テキストを返すのではなく<b>用意された Widget 語彙の範囲で UI を構築</b>する点が肝で、エージェントが画面そのものを生成する「エージェント志向 UI」に現実味を与える。</p>\n<figure class='fig'><pre class='mermaid'>flowchart LR\n  A[\"AIモデル\"] --> B[\"A2UIプロトコル\"]\n  B --> C[\"FlutterのWidgetカタログ\"]\n  C --> D[\"動的に生成されたUI\"]</pre><figcaption>図2：A2UI は自由テキストでなく Widget 語彙で UI を組み立てる。</figcaption></figure>\n<h4>自分が試すなら</h4>\n<ul><li>既存デスクトップアプリを Impeller で動かし、描画差や性能を <b>profile モード</b>で比較する。</li><li>Web 配信のアプリで <code>--wasm</code> ビルドを試し、体感・サイズ・性能を計測する。</li><li>GenUI SDK の alpha を小さな動的フォーム生成で触り、A2UI の語彙設計を試す。</li></ul>\n<h4>注意点</h4>\n<blockquote>デスクトップ Impeller や Web WASM 既定化は<b>移行途上</b>で、現時点では <code>--wasm</code> フラグや <code>--no-enable-impeller</code> での切り分けが必要な場面が残る。言語面は <b>Dart 3.13 で primary constructors</b> が正式追加見込みなど進化が速いので、最新の <code>digests/</code> の日付を確認してから採用判断したい。GenUI/A2UI は alpha のため本番採用は時期尚早だ。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>「6面を1エンジンに」「Web は WASM」「UI は AI が生成」という3方向の収束が今年のテーマ。まずはデスクトップ Impeller と Web WASM の計測から触れておくと流れに乗れる。</p>",
+      "sources": [
+        {
+          "title": "Flutter Roadmap.md（公式 GitHub）",
+          "url": "https://github.com/flutter/flutter/blob/main/docs/roadmap/Roadmap.md"
+        },
+        {
+          "title": "Flutter & Dart's 2026 roadmap（公式ブログ）",
+          "url": "https://blog.flutter.dev/flutter-darts-2026-roadmap-89378f17ebbd"
+        },
+        {
+          "title": "State of Flutter 2026",
+          "url": "https://devnewsletter.com/p/state-of-flutter-2026/"
+        }
+      ]
+    },
     {
       "id": "2026-06-21-claude-code",
       "date": "2026-06-21",
