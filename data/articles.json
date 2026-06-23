@@ -1,12 +1,78 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-06-22T04:47:49.382Z",
+  "generatedAt": "2026-06-23T04:45:13.305Z",
   "topics": [
     "Claude Code",
     "Next.js",
     "Flutter"
   ],
   "articles": [
+    {
+      "id": "2026-06-23-claude-code",
+      "date": "2026-06-23",
+      "topic": "Claude Code",
+      "title": "Claude Code に Dynamic Workflows — 1タスクを最大1,000サブエージェントへ自動分解・並列実行、ultracode で単発起動",
+      "lede": "エージェントに大きな目標を丸ごと任せたいが、手作業でサブタスクへ割るのは面倒——その溝を埋めるのが公式発表の Dynamic Workflows。Claude 自身が目標をオーケストレーションスクリプトに落とし込み、分解→並列実行→検証→統合まで自動で進める。最大1,000サブエージェントを並列で動かせ、実行前にワークフローを検査できる。あわせて v2.1.178 で権限やセキュリティも強化された。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>エージェントに「リポジトリ全体を横断する大きな目標」を任せたいとき、これまでは人間が手作業でサブタスクへ割り、順番や並列度を設計する必要があった。Anthropic 公式が発表した <b>Dynamic Workflows</b> は、その分解と統括を <b>Claude 自身</b>に肩代わりさせる仕組みだ。リサーチプレビューとして、InfoQ など第三者メディアも取り上げている。</p>\n<h4>何が新しいか</h4>\n<p>核心は、Claude が複雑な目標を <b>JavaScript のオーケストレーションスクリプト</b>に落とし込み、<b>サブタスクへの分解 → 並列実行 → 検証 → 統合</b>までを自動で進める点。リサーチプレビューでは <b>最大1,000のサブエージェント</b>を並列に動かせる。生成されたワークフローは<b>実行前に内容を検査</b>でき、再現性のある運用に一歩近づく。<b>v2.1.154 以降</b>で全有料プラン・API に加え <b>Amazon Bedrock / Google Vertex / Microsoft Foundry</b> でも使え、プロンプトに <code>ultracode</code> と書けばそのタスクだけをワークフローとして走らせられる。</p>\n<figure class='fig'><pre class='mermaid'>flowchart TD\n  A[\"大きな目標\"] --> B[\"Claudeがオーケストレーションスクリプトを自動生成\"]\n  B --> C[\"サブタスクへ分解\"]\n  C --> D[\"最大1,000サブエージェントを並列実行\"]\n  D --> E[\"検証\"]\n  E --> F[\"統合して成果に\"]</pre><figcaption>図1：目標を自動でスクリプト化し、分解→並列→検証→統合まで進める。</figcaption></figure>\n<h4>同時に入ったセキュリティ強化（v2.1.178）</h4>\n<p>6月15日リリースの <b>v2.1.178</b> では、権限ルールが入力値まで見て判定する <code>Tool(param:value)</code> 構文に対応。<b>入れ子の <code>.claude/skills</code></b> は最も近い作業ディレクトリの定義が優先で読み込まれる。オートモードでは<b>サブエージェント起動前に分類器が評価</b>し、レビューなしでブロック済みアクションを要求できる抜け穴を塞いだ。さらに公式 changelog によれば、ユーザーが指示していない <code>git reset --hard</code> / <code>git clean -fd</code> / <code>git stash drop</code> や、対象スタックを指定しない <code>terraform/pulumi/cdk destroy</code> は<b>既定でブロック</b>される。</p>\n<figure class='fig'><svg viewBox='0 0 600 140' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='20' text-anchor='middle' font-size='12.5' font-weight='700' fill='#5b27b0'>既定でブロックされる破壊的コマンド（指示なき実行）</text><rect x='20' y='36' width='175' height='44' rx='9' fill='#fdeef0' stroke='#e07a9b'/><text x='107' y='62' text-anchor='middle' font-size='11' fill='#8c3257'>git reset --hard</text><rect x='212' y='36' width='175' height='44' rx='9' fill='#fdeef0' stroke='#e07a9b'/><text x='299' y='62' text-anchor='middle' font-size='11' fill='#8c3257'>git clean -fd</text><rect x='404' y='36' width='175' height='44' rx='9' fill='#fdeef0' stroke='#e07a9b'/><text x='491' y='62' text-anchor='middle' font-size='11' fill='#8c3257'>terraform destroy</text><rect x='150' y='94' width='300' height='34' rx='9' fill='#e9f7ef' stroke='#46c08a'/><text x='300' y='116' text-anchor='middle' font-size='11.5' font-weight='700' fill='#1d8a5a'>明示の指示・スタック指定がない限り停止</text></svg><figcaption>図2：自律実行の暴走を防ぐため、破壊的操作は既定で止める方向。</figcaption></figure>\n<h4>自分が試すなら</h4>\n<ul><li>大きめの調査・リファクタを <code>ultracode</code> で単発ワークフロー化し、生成スクリプトを<b>実行前に必ず読む</b>。</li><li>並列度は最初から最大を狙わず、小さなサブタスク数で挙動とコストを確かめる。</li><li>破壊的 git/terraform のブロック挙動を前提に、意図的な破棄は明示指定する運用へ。</li></ul>\n<h4>注意点</h4>\n<blockquote>最大1,000という数字は上限であって推奨ではない。並列が増えるほど<b>コスト把握とデバッグが難しく</b>なるので、まずは検査可能な小さなワークフローから。リサーチプレビュー段階のため、対象プラン・挙動は今後変わり得る点も踏まえたい。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>「分解と統括をエージェントに任せる」段階に入った。鍵は<b>実行前にスクリプトを読める</b>こと。まずは <code>ultracode</code> で1タスクから試すのが安全だ。</p>",
+      "sources": [
+        {
+          "title": "Dynamic Workflows in Claude Code（Anthropic 公式ブログ）",
+          "url": "https://claude.com/blog/introducing-dynamic-workflows-in-claude-code"
+        },
+        {
+          "title": "Claude Code v2.1.178 アップデート（DevelopersIO）",
+          "url": "https://dev.classmethod.jp/en/articles/20260616-cc-updates-v2-1-178/"
+        },
+        {
+          "title": "Dynamic Workflows 解説（InfoQ）",
+          "url": "https://www.infoq.com/news/2026/06/dynamic-workflows-claude-code/"
+        }
+      ]
+    },
+    {
+      "id": "2026-06-23-nextjs",
+      "date": "2026-06-23",
+      "topic": "Next.js",
+      "title": "SVGの自己描画とモーフィング — stroke-dasharray と pathLength で純CSS、Server Component のまま置ける",
+      "lede": "ロゴが線で描かれていく self-drawing 演出や、アイコンが滑らかに別形へ変わるモーフィングは、SVGならテキストとして1要素ずつ制御でき、解像度非依存・軽量・アクセシブルに作れる。中心は stroke-dasharray / stroke-dashoffset と、長さを正規化する pathLength。純CSSで完結しGPU合成と相性がよいため、Next.js では 'use client' 不要で Server Component のまま置けるのが大きな利点だ。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>アニメーション手法の中で <b>SVG</b> は、ロゴの線が描かれていく「self-drawing（自己描画）」やアイコンのモーフィングを、<b>解像度非依存・軽量・アクセシブル</b>に実現できる。要素をテキストとして1つずつ制御でき、しかも純CSSで完結する。Next.js では純CSSアニメは JS ランタイム不要なので、<b><code>'use client'</code> を付けずに Server Component のまま</b>置けるのが実装上うれしい。</p>\n<h4>何が新しい/重要か</h4>\n<p>self-drawing の原理はシンプルだ。<code>stroke-dasharray</code> を「線の全長 L」に設定すると実線 L と空白 L が交互になり、<code>stroke-dashoffset: L</code> で全長ぶんずらして<b>非表示</b>にできる。これを <code>L → 0</code> へアニメーションすると線が描かれていく。問題は L がパスごとに違うこと。そこで <b><code>pathLength=\"1\"</code></b>（または100）を付けると、ブラウザがそのパスを「指定した数値の長さ」として扱うので、<b>形が違っても同じ数値</b>でダッシュ計算できる。<code>getTotalLength()</code> の実測が不要になりコードが安定する。</p>\n<figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='20' text-anchor='middle' font-size='12.5' font-weight='700' fill='#1456c4'>dashoffset を L→0 に動かすと線が描かれる</text><line x1='40' y1='56' x2='560' y2='56' stroke='#dbe6f5' stroke-width='10' stroke-linecap='round'/><line x1='40' y1='56' x2='180' y2='56' stroke='#1f6feb' stroke-width='10' stroke-linecap='round'/><text x='40' y='84' font-size='11' fill='#274b80'>offset = L（全部隠れる）</text><text x='300' y='84' text-anchor='middle' font-size='11' fill='#274b80'>offset 減少（描画中）</text><text x='560' y='84' text-anchor='end' font-size='11' fill='#1d8a5a'>offset = 0（描き切り）</text><rect x='40' y='104' width='520' height='26' rx='8' fill='#eef4ff' stroke='#1f6feb'/><text x='300' y='121' text-anchor='middle' font-size='11' fill='#1456c4'>pathLength=\"1\" で正規化 → 形が違っても同じ数値で制御</text></svg><figcaption>図1：破線の隙間を全長ぶんずらし、offset を 0 に近づけて線を出す。</figcaption></figure>\n<h4>モーフィングの選択肢</h4>\n<p>「アイコンA→B」の形状変化は手段で難度が違う。実用上は <b>2つのパスを重ねて <code>opacity</code>/<code>transform</code> でクロス</b>させる擬似モーフが軽く確実。<code>d</code> 属性そのものを補間する真のモーフィングは<b>頂点数を揃える</b>必要があり、素のCSS補間は不安定なのでライブラリ（GSAP/kute.js 等）が無難だ。</p>\n<figure class='fig'><pre class='mermaid'>flowchart TD\n  A[\"形を変えたい\"] --> B{\"確実さ優先?\"}\n  B -->|\"Yes\"| C[\"2パスを重ねopacity/transformでクロス（軽い）\"]\n  B -->|\"頂点数を揃え真の補間\"| D[\"ライブラリ（GSAP/kute.js）\"]</pre><figcaption>図2：多くの場面は擬似モーフで足りる。真の d 補間はライブラリへ。</figcaption></figure>\n<h4>Next.js（App Router）での組み込み</h4>\n<p>純CSSの stroke アニメは <b>SVGをJSXに直接インライン</b>すれば Server Component のままでよい。別ファイルの <code>.svg</code> を動かしたいなら SVGR を使うが、<b>Next.js 16 の Turbopack は webpack 設定を読まない</b>ため <code>next.config.js</code> の <code>turbopack.rules</code> 側に書く。</p>\n<pre><code>// next.config.js（Next.js 16 / Turbopack）\nturbopack: { rules: { '*.svg': {\n  loaders: [{ loader: '@svgr/webpack', options: { icon: true } }],\n  as: '*.js',\n} } }</code></pre>\n<h4>自分が試すなら / 注意点</h4>\n<ul><li>ロゴに <code>pathLength=\"1\"</code> + <code>@keyframes</code> で描画演出を入れ、<code>animation-fill-mode: forwards</code> で完成形を保持。</li><li><code>scroll-driven animations</code> の <code>animation-timeline: view()</code> と組み、見えたら描き始める。</li></ul>\n<blockquote><code>transform</code>/<code>opacity</code> はGPU合成で軽いが、<code>fill</code>/<code>stroke</code>/<code>d</code> のアニメは<b>CPUのrepaintを伴い重い</b>。<code>stroke-dashoffset</code> も描画に関わるためモバイルでは要計測。<code>prefers-reduced-motion: reduce</code> では<b>完成形を即表示</b>し、動きだけ消して情報は残す。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>「<code>pathLength</code> で正規化 → 純CSSで描画 → Server Component のまま」が今日の要点。まずはロゴ1つの self-drawing から入れると効果が分かりやすい。</p>",
+      "sources": [
+        {
+          "title": "How SVG Line Animation Works（CSS-Tricks）",
+          "url": "https://css-tricks.com/svg-line-animation-works/"
+        },
+        {
+          "title": "pathLength makes SVG path animations easier（Stefan Judis）",
+          "url": "https://www.stefanjudis.com/today-i-learned/pathlength-makes-makes-svg-path-animations-easier-to-manage/"
+        },
+        {
+          "title": "Turbopack: A Better Way to Inline SVG in Next.js 16（DEV）",
+          "url": "https://dev.to/vitalets/turbopack-a-better-way-to-inline-svg-in-nextjs-16-36em"
+        }
+      ]
+    },
+    {
+      "id": "2026-06-23-flutter",
+      "date": "2026-06-23",
+      "topic": "Flutter",
+      "title": "AIエージェント駆動の開発ループ — Agentic Hot Reload と GenUI/A2UI、コア構造も再編（Flutter 3.44 / Dart 3.12）",
+      "lede": "Google I/O 2026 で示された方向は「AIエージェントが開発ループそのものに入る」こと。安定版 Flutter 3.44.0 / Dart 3.12 を土台に、コーディングエージェントが起動中アプリを自動検出して UI 変更を即ホットリロードする Agentic Hot Reload、AI が実 Widget で画面を動的生成する GenUI/A2UI が目玉だ。同時に Material/Cupertino のコア凍結や Android 10+ の Pure Impeller 化など構造面も動いた。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>2026 の Flutter は「AIエージェントを開発ループの内側に取り込む」方向にはっきり舵を切った。安定版は <b>Flutter 3.44.0 / Dart 3.12</b>（Google I/O 2026, 2026-05-18）で、現行は 3.44 系。年4回の安定リリースを継続しつつ、編集ループとUI生成のあり方を更新している。</p>\n<h4>何が新しいか</h4>\n<p>目玉は <b>Agentic Hot Reload</b>。コーディングエージェントが起動中アプリを<b>自動検出・接続</b>し、UI を変更すると <code>Dart &amp; Flutter MCP Server</code> 経由で<b>自動ホットリロード</b>する。人がリロードを押す手間が消え、AI編集ループが標準化される。さらに <b>GenUI</b> は固定ウィジェットツリーの制約を解除し、AIエージェントが<b>実 Flutter ウィジェットをその場で構成</b>してユーザー意図に応じた画面を動的生成する（<b>A2UI プロトコル</b>で接続）。言語面の <b>Dart 3.12</b> は dot shorthands（<code>.value</code> 省略記法）と private named parameters（先頭 <code>_</code> を自動で外して公開名に）を正式サポートした。</p>\n<figure class='fig'><pre class='mermaid'>flowchart LR\n  A[\"エージェントがUIコード編集\"] --> B[\"起動中アプリを自動検出・接続\"]\n  B --> C[\"Dart & Flutter MCP Server\"]\n  C --> D[\"自動ホットリロード\"]\n  D --> A</pre><figcaption>図1：人手のリロードを挟まず、編集→反映が回り続けるAI編集ループ。</figcaption></figure>\n<h4>コア構造の再編</h4>\n<p>地味だが重要なのが土台の整理だ。<b>Material / Cupertino をコアで凍結し独立パッケージ（material_ui / cupertino_ui）へ</b>移行、<b>SwiftPM</b> が iOS/macOS の既定依存管理に正式昇格、<b>Android 10+ で Skia を撤去</b>し Pure Impeller(Vulkan) が既定になった。Impeller はシェーダーを<b>ビルド時に AOT 事前コンパイル</b>するためシェーダージャンクが減り、フレーム予算（60fps=16ms / 120fps=11ms）を守りやすい。</p>\n<figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='20' text-anchor='middle' font-size='12.5' font-weight='700' fill='#015b8e'>3.44 のコア再編ハイライト</text><rect x='18' y='36' width='182' height='86' rx='10' fill='#e6f4fb' stroke='#0277bd'/><text x='109' y='62' text-anchor='middle' font-size='11.5' font-weight='700' fill='#015b8e'>UIライブラリ</text><text x='109' y='84' text-anchor='middle' font-size='10.5' fill='#015b8e'>Material/Cupertino を</text><text x='109' y='100' text-anchor='middle' font-size='10.5' fill='#015b8e'>独立パッケージ化</text><rect x='209' y='36' width='182' height='86' rx='10' fill='#e6f4fb' stroke='#0277bd'/><text x='300' y='62' text-anchor='middle' font-size='11.5' font-weight='700' fill='#015b8e'>依存管理</text><text x='300' y='84' text-anchor='middle' font-size='10.5' fill='#015b8e'>SwiftPM が</text><text x='300' y='100' text-anchor='middle' font-size='10.5' fill='#015b8e'>iOS/macOS 既定に</text><rect x='400' y='36' width='182' height='86' rx='10' fill='#cfeefb' stroke='#0277bd'/><text x='491' y='62' text-anchor='middle' font-size='11.5' font-weight='700' fill='#015b8e'>描画</text><text x='491' y='84' text-anchor='middle' font-size='10.5' fill='#015b8e'>Android10+ で Skia撤去</text><text x='491' y='100' text-anchor='middle' font-size='10.5' fill='#015b8e'>Pure Impeller 既定</text></svg><figcaption>図2：UIライブラリ・依存管理・描画の3点でコアが再編された。</figcaption></figure>\n<h4>自分が試すなら</h4>\n<ul><li>対応エディタで Agentic Hot Reload を有効にし、AI編集→自動反映ループを小さなUI変更で体感する。</li><li>Dart 3.12 の dot shorthands / private named parameters を既存コードの一部に適用し読みやすさを比較。</li><li>独立パッケージ化に備え、<code>material_ui</code> 等への import 整理を段階的に検討する。</li></ul>\n<h4>注意点</h4>\n<blockquote>GenUI/A2UI は登場直後で<b>本番採用は時期尚早</b>。Impeller 化で Rive 等の描画/性能に差が出ることがあり、差があれば <code>--no-enable-impeller</code> で Skia と比較し切り分ける。計測は必ず <b>profile モード</b>で。進化が速い領域なので、採用判断前に最新の <code>digests/</code> の日付を確認したい。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>「エージェントが編集ループに入り、AIが画面を生成し、コアは独立パッケージへ」。まずは Agentic Hot Reload と Dart 3.12 の新記法から触れておくと流れに乗れる。</p>",
+      "sources": [
+        {
+          "title": "Flutter 3.44.0 release notes（公式）",
+          "url": "https://docs.flutter.dev/release/release-notes/release-notes-3.44.0"
+        },
+        {
+          "title": "Flutter at Google I/O 2026（Flutter Community）",
+          "url": "https://medium.com/flutter-community/flutter-at-google-i-o-2026-4fe9dcc8a849"
+        },
+        {
+          "title": "Flutter 3.44 Highlights from Google I/O 2026（DEV）",
+          "url": "https://dev.to/ianjasperrr/flutter-344-highlights-from-google-io-2026-whats-new-and-what-matters-g6f"
+        }
+      ]
+    },
     {
       "id": "2026-06-22-claude-code",
       "date": "2026-06-22",
