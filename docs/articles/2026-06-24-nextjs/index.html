@@ -1,0 +1,83 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Zustand を Next.js App Router で安全に — グローバルストアの罠と Store Factory + Context パターン — デイリー技術深掘り 読み物</title><meta name="description" content="Zustand は create した hook をどこからでも呼べる手軽さが売りだが、App Router の SSR ではこのグローバルストアがそのまま落とし穴になる。サーバは1プロセスで複数リクエストを捌くため、モジュールスコープのストアを共有するとユーザーAの状態がユーザーBに漏れる。公式の解は「リクエストごとにストアを生成する Store Factory ＋ React Context で配布」。RSCはストアに触らず、クライアント状態は Client Component に閉じる、という線引きが軸になる。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-06-24-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Zustand を Next.js App Router で安全に — グローバルストアの罠と Store Factory + Context パターン — デイリー技術深掘り 読み物"><meta property="og:description" content="Zustand は create した hook をどこからでも呼べる手軽さが売りだが、App Router の SSR ではこのグローバルストアがそのまま落とし穴になる。サーバは1プロセスで複数リクエストを捌くため、モジュールスコープのストアを共有するとユーザーAの状態がユーザーBに漏れる。公式の解は「リクエストごとにストアを生成する Store Factory ＋ React Context で配布」。RSCはストアに触らず、クライアント状態は Client Component に閉じる、という線引きが軸になる。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-06-24-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>Zustand を Next.js App Router で安全に — グローバルストアの罠と Store Factory + Context パターン</h1> <p class="lede">Zustand は create した hook をどこからでも呼べる手軽さが売りだが、App Router の SSR ではこのグローバルストアがそのまま落とし穴になる。サーバは1プロセスで複数リクエストを捌くため、モジュールスコープのストアを共有するとユーザーAの状態がユーザーBに漏れる。公式の解は「リクエストごとにストアを生成する Store Factory ＋ React Context で配布」。RSCはストアに触らず、クライアント状態は Client Component に閉じる、という線引きが軸になる。</p> <div class="meta"> <span>📅 2026年6月24日</span> <span>⏱ 約4分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="1"><h4 id="sec-1">なぜ今これが話題か</h4>
+<p>Zustand は軽量・ボイラープレート最小で人気の状態管理ライブラリ。基本は「ストア＝モジュールのグローバル変数」で、<code>create</code> した hook を Context 不要でどこからでも呼べる手軽さが売りだ。ところが <b>Next.js（特に App Router の SSR）では、このグローバルストアがそのまま落とし穴</b>になる。状態管理カテゴリの基礎として最初に押さえたい論点だ。</p>
+<h4 id="sec-2">何が問題か</h4>
+<p>サーバは<b>1プロセスで複数リクエストを同時に捌く</b>。モジュールトップで <code>create(...)</code> したストアをアプリ全体で共有すると、<b>ユーザーAの状態がユーザーBに漏れる</b>（クロスリクエスト汚染＝実質セキュリティ事故）。加えて SSR とクライアントで初期値が食い違うと <b>hydration error</b>（<code>Text content does not match...</code>）になる。原因の多くは <code>localStorage</code>/<code>persist</code>・<code>Date.now()</code>・<code>window</code> など「クライアントだけが持つ値」を初回レンダリングで描いてしまうことだ。</p>
+<figure class='fig'><svg viewBox='0 0 600 176' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='18' text-anchor='middle' font-size='12.5' font-weight='700' fill='#1456c4'>グローバル共有 → 漏れる / ファクトリ → 隔離</text><rect x='18' y='32' width='270' height='130' rx='10' fill='#fdeef0' stroke='#e07a9b'></rect><text x='153' y='52' text-anchor='middle' font-size='11.5' font-weight='700' fill='#a0335a'>NG：モジュール共有ストア</text><rect x='40' y='66' width='100' height='30' rx='7' fill='#fff' stroke='#e07a9b'></rect><text x='90' y='86' text-anchor='middle' font-size='10' fill='#8c3257'>ユーザーA</text><rect x='166' y='66' width='100' height='30' rx='7' fill='#fff' stroke='#e07a9b'></rect><text x='216' y='86' text-anchor='middle' font-size='10' fill='#8c3257'>ユーザーB</text><rect x='90' y='118' width='126' height='30' rx='7' fill='#fbdce3' stroke='#e07a9b'></rect><text x='153' y='138' text-anchor='middle' font-size='10' fill='#8c3257'>同一ストアを共有→漏洩</text><line x1='90' y1='96' x2='150' y2='118' stroke='#e07a9b'></line><line x1='216' y1='96' x2='156' y2='118' stroke='#e07a9b'></line><rect x='312' y='32' width='270' height='130' rx='10' fill='#eef7f0' stroke='#5bb98a'></rect><text x='447' y='52' text-anchor='middle' font-size='11.5' font-weight='700' fill='#1d8a5a'>OK：リクエスト毎にファクトリ生成</text><rect x='334' y='66' width='100' height='30' rx='7' fill='#fff' stroke='#5bb98a'></rect><text x='384' y='86' text-anchor='middle' font-size='10' fill='#27674a'>A 専用ストア</text><rect x='460' y='66' width='100' height='30' rx='7' fill='#fff' stroke='#5bb98a'></rect><text x='510' y='86' text-anchor='middle' font-size='10' fill='#27674a'>B 専用ストア</text><text x='447' y='140' text-anchor='middle' font-size='10.5' fill='#27674a'>状態が混ざらない</text></svg><figcaption>図1：モジュール共有はクロスリクエスト汚染を招く。ファクトリでリクエスト単位に隔離する。</figcaption></figure>
+<h4 id="sec-3">公式パターン：Store Factory + Context</h4>
+<p>解は2段構え。①ストア本体を <code>zustand/vanilla</code> の <b><code>createStore</code> を返すファクトリ関数</b>として書く（<code>'use client'</code> 不要の純ロジック）。②<b><code>'use client'</code> の Provider</b> で <code>useState(() =&gt; createStore())</code> として「マウント時に1回だけ」生成し、Context で配る。<code>useState</code> の初期化関数にすることで、再レンダリングでも作り直さず<b>1インスタンス</b>に安定する。<b>RSC はストアに触らない</b>——Server Component は hooks も Context も使えず、読み書きは Client Component に閉じる。</p>
+<pre><code>// store（純ロジック・'use client'不要）
+export const createCounterStore = (init = { count: 0 }) =>
+  createStore&lt;CounterStore&gt;()((set) =&gt; ({
+    ...init,
+    inc: () =&gt; set((s) =&gt; ({ count: s.count + 1 })),
+  }))
+
+// provider（'use client'）— マウント時1回だけ生成
+const [store] = useState(() =&gt; createCounterStore())</code></pre>
+<figure class='fig'><pre class='mermaid'>flowchart LR
+  A["zustand/vanilla createStore（ファクトリ）"] --> B["'use client' Provider：useState(()=>create()) で1回生成"]
+  B --> C["Context で配布"]
+  C --> D["Client Componentで useStore(selector) 購読"]</pre><figcaption>図2：純ロジックのファクトリ→Providerで1回生成→Context配布→selectorで購読。</figcaption></figure>
+<h4 id="sec-4">自分が試すなら / 注意点</h4>
+<ul><li>サーバ由来データで初期化したいときは RSC で取得→props で Provider に渡し、ファクトリの <code>initState</code> へ流す（初回HTMLとクライアント初期化が一致し hydration mismatch を防ぐ）。</li><li>複数フィールドを1セレクタで返すと毎回新オブジェクトで再描画が増える。<b><code>useShallow</code></b> か、フィールドごとにセレクタを分ける。</li></ul>
+<blockquote><code>persist</code>（localStorage）は初回サーバレンダリングに存在せず hydration mismatch の常連。<code>skipHydration</code>/<code>onRehydrateStorage</code> でマウント後に反映する。Server Actions の楽観的更新は <code>useOptimistic</code> に任せ、Zustand はモーダル開閉・フィルタ等の純粋なUI状態に絞ると責務が綺麗だ。</blockquote>
+<h4 id="sec-5">ひとことまとめ</h4>
+<p>「グローバル <code>create</code> を共有しない／ファクトリで生成／Providerは <code>'use client'</code>／RSCは触らない」が要点。まずは Counter 1個を Store Factory で組むと型が掴める。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://zustand.docs.pmnd.rs/learn/guides/nextjs" target="_blank" rel="noopener noreferrer"> Zustand 公式：Setup with Next.js </a> </li><li> <a href="https://zustand.docs.pmnd.rs/learn/guides/ssr-and-hydration" target="_blank" rel="noopener noreferrer"> Zustand 公式：SSR and Hydration </a> </li><li> <a href="https://zustand.docs.pmnd.rs/learn/guides/initialize-state-with-props" target="_blank" rel="noopener noreferrer"> Zustand 公式：Initialize state with props </a> </li><li> <a href="https://github.com/pmndrs/zustand/discussions/3202" target="_blank" rel="noopener noreferrer"> GitHub Discussion #3202：Provider pattern は必要か </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> なぜ今これが話題か </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 何が問題か </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 公式パターン：Store Factory + Context </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 自分が試すなら / 注意点 </a> </li><li> <a href="#sec-5" data-toc="sec-5"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-06-24</div> <div>⏱ 読了 約4分</div> <div>🏷 Next.js</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
