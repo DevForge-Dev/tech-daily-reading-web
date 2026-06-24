@@ -1,12 +1,90 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-06-23T04:45:13.305Z",
+  "generatedAt": "2026-06-24T04:47:02.944Z",
   "topics": [
     "Claude Code",
     "Next.js",
     "Flutter"
   ],
   "articles": [
+    {
+      "id": "2026-06-24-claude-code",
+      "date": "2026-06-24",
+      "topic": "Claude Code",
+      "title": "Claude Code v2.1.186 — CLIから直接MCP認証（claude mcp login）、Artifacts搭載、ワークフロー起動語が ultracode に",
+      "lede": "MCPサーバーの認証はこれまで対話式の /mcp メニューを開く必要があり、SSH越しの自動化と相性が悪かった。6月22日の v2.1.186 は claude mcp login/logout でCLIから直接認証でき、--no-browser でSSH越しも完結する。あわせてセッションの作業をその場更新できる Artifacts、新モデル Fable 5 と Opus 4.8、起動語の ultracode 改名が入った。拡張の4要素（Skills/Hooks/Rules/Subagents）の公式整理も同時期に出ている。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>エージェントに長時間・自動の作業を任せるほど、外部ツール連携（MCP）の<b>認証を人手の対話なしに通せるか</b>が効いてくる。従来は <code>/mcp</code> メニューを開いて認証する必要があり、SSH越しのヘッドレス運用では詰まりがちだった。6月22日リリースの <b>Claude Code v2.1.186</b> は、ここを正面から潰してきた。</p>\n<h4>何が新しいか</h4>\n<p>目玉は <code>claude mcp login &lt;name&gt;</code> / <code>claude mcp logout &lt;name&gt;</code>。対話メニューを開かず<b>CLIから直接MCPサーバーを認証</b>できる。<code>--no-browser</code> の stdin リダイレクトに対応し、<b>SSH越しでも認証を完了</b>できる。動的ワークフローの起動キーワードは <code>workflow</code> から <b><code>ultracode</code></b> に改名され、effortメニューから呼ぶと <b>effort を xhigh</b> に設定しつつ、ワークフロー化すべきかは Claude が自動判断する。さらに <code>/workflows</code> のエージェント詳細に <b>f キーでステータス絞り込み</b>、<code>/plugin</code> の Installed タブに <b>Skills 欄</b>が追加された。別系統では、セッションの作業をその場更新できる共有Webページ <b>Artifacts</b> 搭載、新モデル <b>Fable 5</b>（<code>/model fable</code>）と <b>Opus 4.8</b>、Bedrock/Vertex/Foundry でのオートモード拡大も入っている。</p>\n<figure class='fig'><svg viewBox='0 0 600 168' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='20' text-anchor='middle' font-size='12.5' font-weight='700' fill='#5b27b0'>MCP認証：対話メニュー → CLI直叩きへ</text><rect x='20' y='36' width='260' height='62' rx='10' fill='#f3eef7' stroke='#b58bd6'/><text x='150' y='58' text-anchor='middle' font-size='11.5' font-weight='700' fill='#7a4fb0'>従来</text><text x='150' y='78' text-anchor='middle' font-size='10.5' fill='#6b4a93'>/mcp メニューを開いて認証</text><text x='150' y='92' text-anchor='middle' font-size='10.5' fill='#a05'>SSH越しの自動化に不向き</text><rect x='320' y='36' width='260' height='62' rx='10' fill='#eef7f0' stroke='#5bb98a'/><text x='450' y='58' text-anchor='middle' font-size='11.5' font-weight='700' fill='#1d8a5a'>v2.1.186</text><text x='450' y='78' text-anchor='middle' font-size='10.5' fill='#27674a'>claude mcp login &lt;name&gt;</text><text x='450' y='92' text-anchor='middle' font-size='10.5' fill='#27674a'>--no-browser で SSH 越しもOK</text><text x='300' y='80' text-anchor='middle' font-size='18' fill='#9aa0ad'>→</text><rect x='120' y='118' width='360' height='34' rx='9' fill='#f3eaff' stroke='#7b3fe4'/><text x='300' y='140' text-anchor='middle' font-size='11' fill='#5b27b0'>ヘッドレス/CI でも対話なしで認証が通る</text></svg><figcaption>図1：認証フローが対話メニュー依存からCLIコマンドへ。SSH/CI運用が楽になる。</figcaption></figure>\n<h4>あわせて整理された拡張の4要素</h4>\n<p>同時期に Anthropic 公式ブログが <b>Skills / Hooks / Rules / Subagents</b> の使い分けを整理した。<b>Hooks</b> はライフサイクル上の<b>決定的な自動化</b>（25のライフサイクル点で発火し、<code>PreToolUse</code> はツール実行前の主要なセキュリティ関門）、<b>Subagents</b> は独立コンテキストでの<b>並列委譲</b>で冗長な出力を隔離し要約だけ返す、<b>Skills</b> はオンデマンドで読み込まれる<b>再利用可能な指示パック</b>。CLAUDE.md を肥大化させずにプロジェクト固有の振る舞いを教える設計指針だ。</p>\n<figure class='fig'><pre class='mermaid'>flowchart TD\n  A[\"やりたいこと\"] --> B{\"性質は?\"}\n  B -->|\"必ず決まった処理\"| C[\"Hooks：決定的自動化（25点・PreToolUseで防御）\"]\n  B -->|\"重い並列作業を隔離\"| D[\"Subagents：並列委譲し要約だけ返す\"]\n  B -->|\"再利用する手順書\"| E[\"Skills：オンデマンド指示パック\"]</pre><figcaption>図2：強制したいなら Hooks、隔離・並列なら Subagents、手順の再利用は Skills。</figcaption></figure>\n<h4>自分が試すなら</h4>\n<ul><li>リモート開発機で <code>claude mcp login</code> + <code>--no-browser</code> を使い、MCP認証をスクリプト化する。</li><li>大きめの調査を <code>ultracode</code> で単発ワークフロー化し、effort=xhigh の挙動とコストを確かめる。</li><li>繰り返す手順は Skills 化、止めたい操作は Hooks（PreToolUse）で防御、という棲み分けを試す。</li></ul>\n<h4>注意点</h4>\n<blockquote>Fable 5 / Opus 4.8 はモデル特性が異なるため、品質が重要なタスクは出力を見て選ぶ。Artifacts の組織内限定共有・バージョン履歴は Team/Enterprise のベータ扱い。<code>respondToBashCommands</code> など新しい自動応答挙動は <code>settings.json</code> で従来動作に戻せる点も把握しておきたい。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>v2.1.186 は「自動化の足回り」を磨いた更新。まずは <code>claude mcp login</code> と <code>ultracode</code> から触れると、ヘッドレス運用と大きめタスクの両方が一段楽になる。</p>",
+      "sources": [
+        {
+          "title": "Claude Code changelog（公式）",
+          "url": "https://code.claude.com/docs/en/changelog"
+        },
+        {
+          "title": "Claude Code What's new（公式 / Artifacts）",
+          "url": "https://code.claude.com/docs/en/whats-new"
+        },
+        {
+          "title": "Claude Code を操る：Skills・Hooks・Rules・Subagents（Anthropic 公式ブログ）",
+          "url": "https://claude.com/blog/steering-claude-code-skills-hooks-rules-subagents-and-more"
+        },
+        {
+          "title": "Anthropic Claude Code updates（Releasebot / Fable 5・Opus 4.8）",
+          "url": "https://releasebot.io/updates/anthropic/claude-code"
+        }
+      ]
+    },
+    {
+      "id": "2026-06-24-nextjs",
+      "date": "2026-06-24",
+      "topic": "Next.js",
+      "title": "Zustand を Next.js App Router で安全に — グローバルストアの罠と Store Factory + Context パターン",
+      "lede": "Zustand は create した hook をどこからでも呼べる手軽さが売りだが、App Router の SSR ではこのグローバルストアがそのまま落とし穴になる。サーバは1プロセスで複数リクエストを捌くため、モジュールスコープのストアを共有するとユーザーAの状態がユーザーBに漏れる。公式の解は「リクエストごとにストアを生成する Store Factory ＋ React Context で配布」。RSCはストアに触らず、クライアント状態は Client Component に閉じる、という線引きが軸になる。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>Zustand は軽量・ボイラープレート最小で人気の状態管理ライブラリ。基本は「ストア＝モジュールのグローバル変数」で、<code>create</code> した hook を Context 不要でどこからでも呼べる手軽さが売りだ。ところが <b>Next.js（特に App Router の SSR）では、このグローバルストアがそのまま落とし穴</b>になる。状態管理カテゴリの基礎として最初に押さえたい論点だ。</p>\n<h4>何が問題か</h4>\n<p>サーバは<b>1プロセスで複数リクエストを同時に捌く</b>。モジュールトップで <code>create(...)</code> したストアをアプリ全体で共有すると、<b>ユーザーAの状態がユーザーBに漏れる</b>（クロスリクエスト汚染＝実質セキュリティ事故）。加えて SSR とクライアントで初期値が食い違うと <b>hydration error</b>（<code>Text content does not match...</code>）になる。原因の多くは <code>localStorage</code>/<code>persist</code>・<code>Date.now()</code>・<code>window</code> など「クライアントだけが持つ値」を初回レンダリングで描いてしまうことだ。</p>\n<figure class='fig'><svg viewBox='0 0 600 176' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='18' text-anchor='middle' font-size='12.5' font-weight='700' fill='#1456c4'>グローバル共有 → 漏れる / ファクトリ → 隔離</text><rect x='18' y='32' width='270' height='130' rx='10' fill='#fdeef0' stroke='#e07a9b'/><text x='153' y='52' text-anchor='middle' font-size='11.5' font-weight='700' fill='#a0335a'>NG：モジュール共有ストア</text><rect x='40' y='66' width='100' height='30' rx='7' fill='#fff' stroke='#e07a9b'/><text x='90' y='86' text-anchor='middle' font-size='10' fill='#8c3257'>ユーザーA</text><rect x='166' y='66' width='100' height='30' rx='7' fill='#fff' stroke='#e07a9b'/><text x='216' y='86' text-anchor='middle' font-size='10' fill='#8c3257'>ユーザーB</text><rect x='90' y='118' width='126' height='30' rx='7' fill='#fbdce3' stroke='#e07a9b'/><text x='153' y='138' text-anchor='middle' font-size='10' fill='#8c3257'>同一ストアを共有→漏洩</text><line x1='90' y1='96' x2='150' y2='118' stroke='#e07a9b'/><line x1='216' y1='96' x2='156' y2='118' stroke='#e07a9b'/><rect x='312' y='32' width='270' height='130' rx='10' fill='#eef7f0' stroke='#5bb98a'/><text x='447' y='52' text-anchor='middle' font-size='11.5' font-weight='700' fill='#1d8a5a'>OK：リクエスト毎にファクトリ生成</text><rect x='334' y='66' width='100' height='30' rx='7' fill='#fff' stroke='#5bb98a'/><text x='384' y='86' text-anchor='middle' font-size='10' fill='#27674a'>A 専用ストア</text><rect x='460' y='66' width='100' height='30' rx='7' fill='#fff' stroke='#5bb98a'/><text x='510' y='86' text-anchor='middle' font-size='10' fill='#27674a'>B 専用ストア</text><text x='447' y='140' text-anchor='middle' font-size='10.5' fill='#27674a'>状態が混ざらない</text></svg><figcaption>図1：モジュール共有はクロスリクエスト汚染を招く。ファクトリでリクエスト単位に隔離する。</figcaption></figure>\n<h4>公式パターン：Store Factory + Context</h4>\n<p>解は2段構え。①ストア本体を <code>zustand/vanilla</code> の <b><code>createStore</code> を返すファクトリ関数</b>として書く（<code>'use client'</code> 不要の純ロジック）。②<b><code>'use client'</code> の Provider</b> で <code>useState(() =&gt; createStore())</code> として「マウント時に1回だけ」生成し、Context で配る。<code>useState</code> の初期化関数にすることで、再レンダリングでも作り直さず<b>1インスタンス</b>に安定する。<b>RSC はストアに触らない</b>——Server Component は hooks も Context も使えず、読み書きは Client Component に閉じる。</p>\n<pre><code>// store（純ロジック・'use client'不要）\nexport const createCounterStore = (init = { count: 0 }) =>\n  createStore&lt;CounterStore&gt;()((set) =&gt; ({\n    ...init,\n    inc: () =&gt; set((s) =&gt; ({ count: s.count + 1 })),\n  }))\n\n// provider（'use client'）— マウント時1回だけ生成\nconst [store] = useState(() =&gt; createCounterStore())</code></pre>\n<figure class='fig'><pre class='mermaid'>flowchart LR\n  A[\"zustand/vanilla createStore（ファクトリ）\"] --> B[\"'use client' Provider：useState(()=>create()) で1回生成\"]\n  B --> C[\"Context で配布\"]\n  C --> D[\"Client Componentで useStore(selector) 購読\"]</pre><figcaption>図2：純ロジックのファクトリ→Providerで1回生成→Context配布→selectorで購読。</figcaption></figure>\n<h4>自分が試すなら / 注意点</h4>\n<ul><li>サーバ由来データで初期化したいときは RSC で取得→props で Provider に渡し、ファクトリの <code>initState</code> へ流す（初回HTMLとクライアント初期化が一致し hydration mismatch を防ぐ）。</li><li>複数フィールドを1セレクタで返すと毎回新オブジェクトで再描画が増える。<b><code>useShallow</code></b> か、フィールドごとにセレクタを分ける。</li></ul>\n<blockquote><code>persist</code>（localStorage）は初回サーバレンダリングに存在せず hydration mismatch の常連。<code>skipHydration</code>/<code>onRehydrateStorage</code> でマウント後に反映する。Server Actions の楽観的更新は <code>useOptimistic</code> に任せ、Zustand はモーダル開閉・フィルタ等の純粋なUI状態に絞ると責務が綺麗だ。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>「グローバル <code>create</code> を共有しない／ファクトリで生成／Providerは <code>'use client'</code>／RSCは触らない」が要点。まずは Counter 1個を Store Factory で組むと型が掴める。</p>",
+      "sources": [
+        {
+          "title": "Zustand 公式：Setup with Next.js",
+          "url": "https://zustand.docs.pmnd.rs/learn/guides/nextjs"
+        },
+        {
+          "title": "Zustand 公式：SSR and Hydration",
+          "url": "https://zustand.docs.pmnd.rs/learn/guides/ssr-and-hydration"
+        },
+        {
+          "title": "Zustand 公式：Initialize state with props",
+          "url": "https://zustand.docs.pmnd.rs/learn/guides/initialize-state-with-props"
+        },
+        {
+          "title": "GitHub Discussion #3202：Provider pattern は必要か",
+          "url": "https://github.com/pmndrs/zustand/discussions/3202"
+        }
+      ]
+    },
+    {
+      "id": "2026-06-24-flutter",
+      "date": "2026-06-24",
+      "topic": "Flutter",
+      "title": "Dart 3.12 Primary Constructors（実験プレビュー）と Impeller の WebGPU 移植 — 言語の簡潔化とツール/Web高速化（Flutter 3.44）",
+      "lede": "安定版 Flutter 3.44.0 / Dart 3.12 を土台に、今日の主役は「言語の簡潔化」と「ツール/Webの高速化」。Dart 3.12 の Primary Constructors は実験プレビューとして、クラス本体でコンストラクタを短く宣言できる。dot shorthands は正式サポート。描画では Impeller がもはや既定で、Android 10+ では Skia を撤去。DevTools は WasmGC 既定化で解析が高速になり、Impeller の WebGPU 移植でブラウザにもネイティブ級の性能が見えてきた。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>安定版は <b>Flutter 3.44.0 / Dart 3.12</b>（Google I/O 2026, 2026-05-18）で、年4回の安定リリースを継続中。今日の素材が示すテーマは2つ——<b>言語の簡潔化</b>と、<b>ツール/Webの高速化</b>だ。日々の書き味と計測体験に効く話なので、リリース情報として押さえておきたい。</p>\n<h4>何が新しいか</h4>\n<p>言語面の目玉は <b>Dart 3.12 の Primary Constructors</b>。<b>「実験プレビュー」</b>として提供され、クラス本体内で <code>new</code> / <code>factory</code> を使う短い構文でコンストラクタを宣言でき、本体が空のクラスはセミコロンで終えられる。有効化は <code>primary-constructors</code> フラグ。<b>dot shorthands</b>（<code>.value</code> 省略記法）は正式サポートされ、enum や静的メンバ参照の宣言が簡潔になった。構文はフィードバックで変わり得るため、Primary Constructors の<b>本番全面採用は様子見が推奨</b>だ。</p>\n<pre><code>// イメージ（実験プレビュー / 構文は変更され得る）\n// 本体が空ならセミコロンで終了できる\n// dot shorthands：型が決まる文脈で .value と書ける\nfinal Color c = .blue;          // = Color.blue\nreturn switch (s) { .idle =&gt; ... };</code></pre>\n<h4>ツール/Webの高速化</h4>\n<p>描画の <b>Impeller はもはや実験的ではなく既定</b>。iOS とモダン Android（API 29+）の標準レンダラとして、シェーダーを<b>ビルド時に AOT 事前コンパイル</b>することで長年のシェーダージャンクをほぼ解消し、複雑シーンの<b>平均フレームラスタライズ時間を約50%短縮</b>した。さらに <b>Android 10 以上でレガシー Skia バックエンドが正式撤去</b>され、純 Impeller(Vulkan) に。アニメ負荷の高い処理で <b>Skia 比 約17%のバッテリー消費低減</b>も報告されている。<b>DevTools は WasmGC に既定コンパイル</b>され、テレメトリ解析の遅延が <b>200ms 超短縮</b>。ロードマップでは <b>Impeller を WebGPU へ移植中</b>で、ブラウザ上の Flutter にもネイティブ級グラフィック性能が見えてきた。</p>\n<figure class='fig'><svg viewBox='0 0 600 180' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='18' text-anchor='middle' font-size='12.5' font-weight='700' fill='#015b8e'>フレーム予算とラスタライズ目標</text><text x='30' y='52' font-size='11' fill='#015b8e'>60fps：フレーム 16ms</text><rect x='30' y='58' width='540' height='20' rx='5' fill='#e6f4fb' stroke='#0277bd'/><rect x='30' y='58' width='135' height='20' rx='5' fill='#0277bd'/><text x='175' y='73' font-size='10' fill='#015b8e'>ラスタライズ &lt;4ms が目安</text><text x='30' y='106' font-size='11' fill='#015b8e'>120fps：フレーム 11ms</text><rect x='30' y='112' width='540' height='20' rx='5' fill='#e6f4fb' stroke='#0277bd'/><rect x='30' y='112' width='405' height='20' rx='5' fill='#56c5f5'/><text x='445' y='127' font-size='10' fill='#015b8e'>ラスタライズ &lt;8.3ms が目安</text><text x='300' y='162' text-anchor='middle' font-size='10.5' fill='#27674a'>Impeller(AOT)でジャンク減：ラスタライズ約50%短縮・バッテリー約17%減</text></svg><figcaption>図1：高リフレッシュ端末ほどフレーム予算は厳しい。Impeller の事前コンパイルが効く。</figcaption></figure>\n<figure class='fig'><pre class='mermaid'>flowchart LR\n  A[\"Skia（実行時コンパイル/ジャンク）\"] --> B[\"Impeller 既定（ビルド時AOT）\"]\n  B --> C[\"Android10+：Skia撤去・純Vulkan\"]\n  B --> D[\"DevTools：WasmGC既定（解析 -200ms超）\"]\n  B --> E[\"WebGPU へ移植中：ブラウザもネイティブ級\"]</pre><figcaption>図2：Impeller を軸に、モバイル描画・計測ツール・Webまで高速化が波及。</figcaption></figure>\n<h4>自分が試すなら / 注意点</h4>\n<ul><li><code>dot shorthands</code> を既存コードの enum/静的参照に当て、読みやすさを比較する。</li><li>Primary Constructors は <code>primary-constructors</code> フラグで小さなモデルクラスから試し、構文変更リスクを織り込む（本番全面採用は避ける）。</li><li>性能は必ず <b>profile モード</b>で計測し、Performance Overlay の赤バーでジャンクを検出する。</li></ul>\n<blockquote>Impeller 既定化で Rive 等の描画/性能に差が出る場合があり実機検証が必要。最頻出の性能問題は依然「不要な再ビルド」で、<code>const</code> / <code>build()</code> 分割 / <code>Selector</code> が基本線である点は変わらない。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>「言語は短く（dot shorthands は正式・Primary Constructors は様子見）、描画と計測は Impeller 起点で速く」。まずは dot shorthands と profile 計測から取り入れると流れに乗れる。</p>",
+      "sources": [
+        {
+          "title": "Flutter 3.44.0 release notes（公式）",
+          "url": "https://docs.flutter.dev/release/release-notes/release-notes-3.44.0"
+        },
+        {
+          "title": "Announcing Dart 3.12（Dart 公式ブログ）",
+          "url": "https://dart.dev/blog/announcing-dart-3-12"
+        },
+        {
+          "title": "How Impeller Is Transforming Flutter UI Rendering in 2026（DEV）",
+          "url": "https://dev.to/eira-wexford/how-impeller-is-transforming-flutter-ui-rendering-in-2026-3dpd"
+        },
+        {
+          "title": "Flutter 2026: Impeller, WASM & Cross-Platform（softaims）",
+          "url": "https://softaims.com/blog/flutter-3-impeller-wasm-features-2026"
+        }
+      ]
+    },
     {
       "id": "2026-06-23-claude-code",
       "date": "2026-06-23",
