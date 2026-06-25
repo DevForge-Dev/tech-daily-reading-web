@@ -1,12 +1,78 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-06-24T04:47:02.944Z",
+  "generatedAt": "2026-06-25T04:53:13.843Z",
   "topics": [
     "Claude Code",
     "Next.js",
     "Flutter"
   ],
   "articles": [
+    {
+      "id": "2026-06-25-claude-code",
+      "date": "2026-06-25",
+      "topic": "Claude Code",
+      "title": "Claude Code v2.1.187 — sandbox.credentials で認証情報を遮断、記憶を整える「Dreaming」、レート上限2倍",
+      "lede": "サンドボックス実行に外部認証を任せるほど、信用できないコマンドが ~/.aws/credentials や ~/.ssh を読めてしまう危険が増す。6月23日の v2.1.187 は sandbox.credentials でこの読み取りを既定で遮断できるようにした。あわせて過去セッションを振り返ってメモリを再編成するリサーチプレビュー「Dreaming」、Claude Code のレート上限2倍と並列サブエージェント委譲の強化も到来している。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>エージェントに自動実行を任せるほど、<b>サンドボックス内のコマンドが何を読めるか</b>が安全性の核心になる。既定では <code>~/.aws/credentials</code> や <code>~/.ssh/</code>、秘密の環境変数までプロセスから見えてしまい、信頼できないツールやスクリプトを動かす場面では情報漏れの経路になりうる。6月23日リリースの <b>Claude Code v2.1.187</b> は、ここを設定でふさげるようにした。</p>\n<h4>何が新しいか</h4>\n<p>目玉は <code>sandbox.credentials</code> 設定。<b>サンドボックス実行されるコマンドが認証ファイルや秘密の環境変数を読み取れないように遮断</b>できる。あわせて、モデルピッカーに<b>組織が構成したモデル制限</b>が反映され、全画面モードのセレクトメニューで<b>マウスクリック選択</b>に対応。<code>--resume</code> が「No conversation found」で失敗する不具合の修正、<code>--json-schema</code> とワークフローエージェントの<b>構造化出力</b>の改善も入った。別系統では Anthropic が <b>Dreaming（Dreams）</b> をリサーチプレビューで提供開始。過去セッションを定期的に振り返り、繰り返す失敗・共有ワークフロー・チームの嗜好を抽出して<b>メモリを自動でキュレーション</b>する。さらに <b>Claude Code のレート上限が2倍</b>に引き上げられ（反映済み）、<b>リードエージェントが並列サブエージェントへ委譲</b>（各々が独自のモデル・プロンプト・ツール）する構成も強化された。</p>\n<figure class='fig'><svg viewBox='0 0 600 180' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='20' text-anchor='middle' font-size='12.5' font-weight='700' fill='#5b27b0'>sandbox.credentials：認証情報の読み取りを遮断</text><rect x='20' y='38' width='260' height='110' rx='10' fill='#fbeeee' stroke='#d68b8b'/><text x='150' y='60' text-anchor='middle' font-size='11.5' font-weight='700' fill='#a05'>従来（既定）</text><text x='150' y='84' text-anchor='middle' font-size='10.5' fill='#7a3b3b'>~/.aws/credentials</text><text x='150' y='104' text-anchor='middle' font-size='10.5' fill='#7a3b3b'>~/.ssh/ ・秘密環境変数</text><text x='150' y='128' text-anchor='middle' font-size='10.5' fill='#a05'>→ サンドボックスから読める</text><rect x='320' y='38' width='260' height='110' rx='10' fill='#eef7f0' stroke='#5bb98a'/><text x='450' y='60' text-anchor='middle' font-size='11.5' font-weight='700' fill='#1d8a5a'>v2.1.187</text><text x='450' y='84' text-anchor='middle' font-size='10.5' fill='#27674a'>sandbox.credentials で</text><text x='450' y='104' text-anchor='middle' font-size='10.5' fill='#27674a'>読み取りを遮断</text><text x='450' y='128' text-anchor='middle' font-size='10.5' fill='#1d8a5a'>→ 漏えい経路を既定で封鎖</text><text x='300' y='98' text-anchor='middle' font-size='18' fill='#9aa0ad'>→</text></svg><figcaption>図1：信頼できないコマンドからの認証情報アクセスを設定でふさぐ。</figcaption></figure>\n<h4>Dreaming はどう効くか</h4>\n<p>Dream は既存のメモリストアと過去セッションのトランスクリプトを読み込み、<b>重複を統合・陳腐化エントリを置換・新知見を付与</b>した再編成済みメモリを出力する。実行間でエージェントが賢くなることを狙うスケジュール処理だ。</p>\n<figure class='fig'><pre class='mermaid'>flowchart LR\n  A[\"過去セッションのトランスクリプト\"] --> B[\"Dream：振り返り・パターン抽出\"]\n  C[\"既存メモリストア\"] --> B\n  B --> D[\"重複統合・陳腐化置換・新知見付与\"]\n  D --> E[\"再編成済みメモリ\"]</pre><figcaption>図2：Dreaming は過去ログとメモリを読み、整理し直した記憶を書き戻す。</figcaption></figure>\n<h4>自分が試すなら</h4>\n<ul><li><code>settings.json</code> に <code>sandbox.credentials</code> を設定し、サンドボックス内から認証ファイルが読めないことを確認する。</li><li>組織のモデル制限を入れて、ピッカーに反映されるか・意図しないモデルが選べないかを検証する。</li><li>レート上限2倍を前提に、重い調査を並列サブエージェントへ委譲する構成を試す。</li></ul>\n<h4>注意点</h4>\n<blockquote>Dreaming は Claude Managed Agents 向けの<b>リサーチプレビュー</b>で、挙動や提供範囲は変わりうる。sandbox.credentials は「サンドボックス実行されるコマンド」に効く設定なので、サンドボックス外で動く処理の権限管理は別途必要。レート上限2倍でも、自動化の暴走によるコスト増は別問題として上限・予算アラートで管理したい。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>v2.1.187 は「安全な自動実行」を一段進めた更新。まず <code>sandbox.credentials</code> で足元の漏えい経路を封じ、Dreaming とレート上限2倍で長時間タスクの質と量を伸ばすのが筋が良い。</p>",
+      "sources": [
+        {
+          "title": "Claude Code changelog（公式）",
+          "url": "https://code.claude.com/docs/en/changelog"
+        },
+        {
+          "title": "Claude エージェントの記憶を整える Dreaming（Releasebot）",
+          "url": "https://releasebot.io/updates/anthropic/claude-code"
+        },
+        {
+          "title": "Claude Code レート上限2倍・マルチエージェント強化（Releasebot 6月まとめ）",
+          "url": "https://releasebot.io/updates/anthropic/claude"
+        }
+      ]
+    },
+    {
+      "id": "2026-06-25-nextjs",
+      "date": "2026-06-25",
+      "topic": "Next.js",
+      "title": "react-three-fiber を Next.js App Router で — 宣言的3DとSSR回避（client island）の作法",
+      "lede": "WebGL（three.js）をReactの宣言的世界に持ち込むのが react-three-fiber（R3F）。<mesh> や <ambientLight> をJSXで書くだけで three.js のオブジェクトツリーへマップされる。注目は R3F v9 が React 19 に対応して安定したこと。App Router（15/16・React 19）と素直に噛み合い、ヒーロー演出や製品ビューアで実運用に乗せやすくなった。鍵は three.js を SSR させず client island として切り出す組み込み手順だ。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>命令的な <code>new THREE.Mesh(...)</code> の生成・破棄を手で管理するのは骨が折れる。<b>react-three-fiber（R3F）</b>は <code>&lt;mesh&gt;</code> や <code>&lt;ambientLight&gt;</code> をJSXで書くと、three.js のオブジェクトツリーへ Reactの reconciler がそのままマップしてくれる。コンポーネント分割・props・状態・Suspense といった既存のReact資産で3Dを組めるのが利点だ。</p>\n<h4>何が新しいか</h4>\n<p>転機は <b>R3F v9 が React 19 対応で安定したこと</b>。<code>@react-three/fiber</code> <b>v9系</b>は React 19.0〜19.2 に対応（v8→v9 は React 19対応のメジャーで、<code>Props</code>→<code>CanvasProps</code> など型整理を含む）。ヘルパ集 <code>@react-three/drei</code> は <b>v10系</b>（OrbitControls / Environment / useGLTF / Html）が対になる現行標準。<b>メジャーを混在させない</b>（v9 fiber に v9 drei を当てる取り違えが定番のハマり）。Next.js App Router（15/16・React 19）と素直に噛み合い、「Reactで3D」が実運用に乗せやすくなった。</p>\n<figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='20' text-anchor='middle' font-size='12.5' font-weight='700' fill='#1456b8'>バージョンの対（混在させない）</text><rect x='40' y='40' width='240' height='44' rx='9' fill='#eef4fd' stroke='#7aa8ef'/><text x='160' y='60' text-anchor='middle' font-size='11' font-weight='700' fill='#1456b8'>React 19（19.0〜19.2）</text><text x='160' y='76' text-anchor='middle' font-size='10' fill='#3a6abf'>App Router 15/16</text><rect x='40' y='96' width='240' height='40' rx='9' fill='#eef4fd' stroke='#7aa8ef'/><text x='160' y='121' text-anchor='middle' font-size='11' fill='#1456b8'>fiber v9 ＋ drei v10</text><rect x='330' y='40' width='230' height='96' rx='9' fill='#f6efe9' stroke='#d2a878'/><text x='445' y='60' text-anchor='middle' font-size='11' font-weight='700' fill='#9a6a2b'>旧 React 18 系</text><text x='445' y='84' text-anchor='middle' font-size='10.5' fill='#7a5524'>fiber v8 ＋ drei v9</text><text x='445' y='110' text-anchor='middle' font-size='10' fill='#9a6a2b'>メジャー取り違えに注意</text></svg><figcaption>図1：React 19 なら fiber v9 / drei v10。18系は v8 / v9。組み合わせを揃える。</figcaption></figure>\n<h4>仕組み・組み込みの要点</h4>\n<p>three.js は <code>window</code>/<code>document</code> と WebGL コンテキストを前提とするため<b>SSRで死ぬ</b>。基本は SSRさせず<b>クライアント島</b>に切り出す。ところが Server Component から直接 <code>dynamic(import, {ssr:false})</code> を書くと「ssr: false is not allowed ...」エラーになるので、<code>'use client'</code> の薄いラッパに閉じ込めるのが現行のお作法だ。</p>\n<pre><code>// SceneClient.tsx\n'use client';\nimport dynamic from 'next/dynamic';\nconst Scene = dynamic(() =&gt; import('./Scene'), {\n  ssr: false,\n  loading: () =&gt; &lt;div style={{height:400}} /&gt;, // CLS回避\n});\nexport default function SceneClient(){ return &lt;Scene/&gt;; }</code></pre>\n<p>アニメーションは <b>Reactのstateで回さない</b>。毎フレームは <code>useFrame((_,delta)=&gt;{ ref.current.rotation.y += delta })</code> でレンダーループ上から直接 mutate する（stateで回すと毎フレーム再レンダリングして破綻）。<code>delta</code> を掛けると<b>フレームレート非依存</b>。静的シーンは <code>frameloop=\"demand\"</code> で変化時のみ描画、<code>dpr={[1,2]}</code> でピクセル比上限2にしてRetinaのGPU焼けを防ぐ。</p>\n<h4>自分が試すなら</h4>\n<ul><li>ページはRSCのまま、3D部分だけ <code>SceneClient</code> として島化し、親に<b>明示的な高さ</b>を与えて CLS を防ぐ。</li><li><code>frameloop=\"demand\"</code> ＋ <code>prefers-reduced-motion</code> で自動回転を止め、OrbitControls の手動操作だけ残す。</li><li>重いGLTFは <code>useGLTF</code>＋<code>&lt;Suspense&gt;</code>＋<code>useGLTF.preload()</code> で遅延・先読み。</li></ul>\n<h4>注意点</h4>\n<blockquote>R3F は独立した reconciler ルートを作るため、<b>Canvas内から <code>useRouter</code> 等のNextコンテキストが見えない</b>ことがある。ナビゲーションはCanvasの外で行うか、コンテキストを橋渡しする。<code>'use client'</code> の付け忘れはフックが使えずビルドエラーになる。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>R3F v9＋drei v10 で「Reactで3D」が安定段階に。<b>client island ＋ ssr:false ラッパ ＋ useFrame</b> の3点を押さえれば、App Router でも LCP/CLS を守りつつ宣言的に3Dを載せられる。</p>",
+      "sources": [
+        {
+          "title": "React Three Fiber — Installation（公式）",
+          "url": "https://r3f.docs.pmnd.rs/getting-started/installation"
+        },
+        {
+          "title": "R3F v9 Migration Guide（React 19対応）",
+          "url": "https://r3f.docs.pmnd.rs/tutorials/v9-migration-guide"
+        },
+        {
+          "title": "Next.js — Lazy Loading（next/dynamic, ssr:false）",
+          "url": "https://nextjs.org/docs/app/guides/lazy-loading"
+        }
+      ]
+    },
+    {
+      "id": "2026-06-25-flutter",
+      "date": "2026-06-25",
+      "topic": "Flutter",
+      "title": "Flutter のフルスタックAI化 — Genkit Dart プレビューと GenUI（A2UI）、エコシステムは月150万開発者へ",
+      "lede": "Flutter が「描画フレームワーク」から「AIを織り込んだフルスタック基盤」へ踏み出している。オープンソースのプレビューとして Genkit Dart が登場し、サーバ〜クライアントを横断するエージェント型 Dart/Flutter アプリを構築できる。クライアントの GenUI SDK は A2UI（Agent-to-UI）プロトコル上で、AIが実ウィジェットをその場で構成する。pub.dev は直近30日で13億DL超、月間アクティブ開発者は150万人（前年比+50%）。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>これまで Flutter は「描画とUI」の領域が中心だったが、生成AIを<b>アプリの内側に常駐させる</b>需要が高まっている。Google I/O 2026（2026-05-18）以降、安定版は <b>Flutter 3.44.0 / Dart 3.12</b>。年4回の安定リリースを継続しつつ、今回はAIとエコシステムの拡大が主役になった。</p>\n<h4>何が新しいか</h4>\n<p>第一に <b>Genkit Dart</b> がオープンソースの<b>プレビュー</b>で登場。サーバからクライアントまで横断して、<b>AIを組み込んだフルスタックのエージェント型 Dart/Flutter アプリ</b>を構築できる。第二に、クライアントの <b>GenUI SDK</b> が <b>A2UI（Agent-to-UI）プロトコル</b>上に構築され、AIエージェントが<b>実 Flutter ウィジェットをその場で構成</b>する。ストア更新や事前定義レイアウトなしに、完全インタラクティブな画面を動的生成できるのが新しい。<b>Agentic Hot Reload</b> は <code>Dart &amp; Flutter MCP Server</code> 経由で起動中アプリを自動ホットリロードする。エコシステム指標も強く、<b>pub.dev は直近30日で13億パッケージDL超</b>、Flutter は両アプリストアで<b>2番目に人気のモバイルSDK</b>、<b>月間アクティブ開発者は150万人（前年比+50%）</b>。採用例に 2026 Toyota RAV4 のインフォテインメント、LG webOS SDK for Flutter（スマートTV向け）が挙がる。</p>\n<figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='20' text-anchor='middle' font-size='12.5' font-weight='700' fill='#066aa0'>エコシステム指標（2026-06）</text><rect x='30' y='40' width='170' height='90' rx='10' fill='#e9f5fb' stroke='#6cc0e6'/><text x='115' y='72' text-anchor='middle' font-size='20' font-weight='800' fill='#066aa0'>13億+</text><text x='115' y='96' text-anchor='middle' font-size='10.5' fill='#2b6e8f'>pub.dev DL</text><text x='115' y='112' text-anchor='middle' font-size='10' fill='#2b6e8f'>直近30日</text><rect x='215' y='40' width='170' height='90' rx='10' fill='#e9f5fb' stroke='#6cc0e6'/><text x='300' y='72' text-anchor='middle' font-size='20' font-weight='800' fill='#066aa0'>150万</text><text x='300' y='96' text-anchor='middle' font-size='10.5' fill='#2b6e8f'>月間開発者</text><text x='300' y='112' text-anchor='middle' font-size='10' fill='#2b6e8f'>前年比 +50%</text><rect x='400' y='40' width='170' height='90' rx='10' fill='#e9f5fb' stroke='#6cc0e6'/><text x='485' y='72' text-anchor='middle' font-size='20' font-weight='800' fill='#066aa0'>第2位</text><text x='485' y='96' text-anchor='middle' font-size='10.5' fill='#2b6e8f'>人気モバイルSDK</text><text x='485' y='112' text-anchor='middle' font-size='10' fill='#2b6e8f'>両ストア</text></svg><figcaption>図1：DL・開発者数・SDKランキングが揃って伸長。採用の裾野が広がっている。</figcaption></figure>\n<h4>仕組み（A2UI の流れ）</h4>\n<p>従来の「事前に組んだ画面にデータを流す」設計に対し、GenUI/A2UI は<b>エージェントの応答そのものがUI構成</b>になる。レイアウトを固定せず、対話の文脈に応じて必要なウィジェットを生成する発想だ。</p>\n<figure class='fig'><pre class='mermaid'>flowchart LR\n  A[\"ユーザー入力\"] --> B[\"AIエージェント\"]\n  B --> C[\"A2UI：UI構成を返す\"]\n  C --> D[\"GenUI SDK が実Flutterウィジェットを構成\"]\n  D --> E[\"インタラクティブ画面を動的生成\"]</pre><figcaption>図2：A2UI はUIの設計図をAIから受け取り、その場で実ウィジェット化する。</figcaption></figure>\n<h4>自分が試すなら</h4>\n<ul><li>Genkit Dart のプレビューで、サーバ側ロジックとFlutterクライアントを1スタックに通す最小サンプルを作る。</li><li>GenUI SDK で「問い合わせフォームをAIが生成」など、レイアウト固定なしの動的画面を1画面だけ試す。</li><li><code>Dart &amp; Flutter MCP Server</code> ＋ Agentic Hot Reload で、編集→反映ループの速さを体感する。</li></ul>\n<h4>注意点</h4>\n<blockquote>Genkit Dart・GenUI はいずれも<b>プレビュー段階</b>で、APIやプロトコルは変わりうる。動的UIは便利だが、<b>レイアウトの予測可能性・アクセシビリティ・テスト</b>が難しくなりやすい。本番は GenUI を一部画面に限定し、堅い部分は従来のウィジェット＋状態管理（新規は Riverpod 3.0 が既定）で固めるのが無難。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>Flutter は 3.44/Dart 3.12 を土台に、Genkit Dart と GenUI で<b>AIフルスタック</b>へ広がりつつある。まずはプレビューを小さく触り、動的UIの効きどころと落とし穴を自分の手で測っておきたい。</p>",
+      "sources": [
+        {
+          "title": "Announcing Dart 3.12",
+          "url": "https://dart.dev/blog/announcing-dart-3-12"
+        },
+        {
+          "title": "Flutter at Google I/O 2026",
+          "url": "https://medium.com/flutter-community/flutter-at-google-i-o-2026-4fe9dcc8a849"
+        },
+        {
+          "title": "Flutter 3.44.0 release notes",
+          "url": "https://docs.flutter.dev/release/release-notes/release-notes-3.44.0"
+        }
+      ]
+    },
     {
       "id": "2026-06-24-claude-code",
       "date": "2026-06-24",
