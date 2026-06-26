@@ -1,12 +1,78 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-06-25T04:53:13.843Z",
+  "generatedAt": "2026-06-26T04:48:37.959Z",
   "topics": [
     "Claude Code",
     "Next.js",
     "Flutter"
   ],
   "articles": [
+    {
+      "date": "2026-06-26",
+      "topic": "Claude Code",
+      "title": "Claude Code、自動モードが破壊的コマンドを既定ブロック — git reset --hard / terraform destroy を遮断、Claude Design も大型刷新",
+      "lede": "エージェントに自動実行を任せるほど、取り返しのつかない操作の事故が怖い。最新の公式changelogでは、自動（auto）モードが git reset --hard・git clean -fd・terraform destroy などの破壊的コマンドを既定でブロックするようになった。あわせてストール表示の文言・しきい値の調整、JetBrains/Kitty端末の不具合修正、6月17日の Claude Design 大型刷新（/design-sync・/design）も到来している。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>自律的に走る時間が延びるほど、エージェントが<b>不可逆な操作</b>を踏んだときの被害が大きくなる。<code>git reset --hard</code> でローカル変更を吹き飛ばす、<code>terraform destroy</code> でスタックを消す——こうした事故を「明示的に指示していない限り起こさない」よう、自動モードの安全装置が一段強化された。</p>\n<h4>何が新しいか</h4>\n<p>公式changelogによると、自動モードはローカルの変更破棄を明示的に指示していない場合、<code>git reset --hard</code>・<code>git checkout -- .</code>・<code>git clean -fd</code>・<code>git stash drop</code> といった破壊的gitコマンドを<b>既定でブロック</b>する。さらに当該セッションで<b>エージェント自身が作成していないコミット</b>への <code>git commit --amend</code> を遮断し、<code>terraform destroy</code>・<code>pulumi destroy</code>・<code>cdk destroy</code> も特定スタックを指定して依頼した場合を除いて停止する。信頼性面では、ストリーミングが滞った際のヒントが「No response from API · Retrying…」から「Waiting for API response · will retry…」に変わり、発火が<b>10秒の沈黙から20秒</b>に緩和。JetBrains系IDE(2026.1+)端末のちらつきを同期出力で解消し、Kitty系端末(WezTerm・Ghostty・kitty)で <code>Shift+非ASCII</code>(例 Shift+ä→Ä)が欠落する不具合、2.1.169 混入の起動リグレッション(約120ms増)も修正された。</p>\n<figure class='fig'><svg viewBox='0 0 600 184' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='20' text-anchor='middle' font-size='12.5' font-weight='700' fill='#5b27b0'>自動モード：破壊的コマンドを既定でブロック</text><rect x='20' y='36' width='262' height='128' rx='10' fill='#fbeeee' stroke='#d68b8b'/><text x='151' y='58' text-anchor='middle' font-size='11.5' font-weight='700' fill='#a05'>遮断対象（明示依頼がなければ）</text><text x='151' y='82' text-anchor='middle' font-size='10.5' fill='#7a3b3b'>git reset --hard / checkout -- .</text><text x='151' y='102' text-anchor='middle' font-size='10.5' fill='#7a3b3b'>git clean -fd / stash drop</text><text x='151' y='122' text-anchor='middle' font-size='10.5' fill='#7a3b3b'>他者コミットへの --amend</text><text x='151' y='142' text-anchor='middle' font-size='10.5' fill='#7a3b3b'>terraform / pulumi / cdk destroy</text><rect x='318' y='36' width='262' height='128' rx='10' fill='#eef7f0' stroke='#5bb98a'/><text x='449' y='58' text-anchor='middle' font-size='11.5' font-weight='700' fill='#1d8a5a'>挙動</text><text x='449' y='84' text-anchor='middle' font-size='10.5' fill='#27674a'>明示指示がなければ実行を停止</text><text x='449' y='106' text-anchor='middle' font-size='10.5' fill='#27674a'>スタック指定の destroy のみ許可</text><text x='449' y='128' text-anchor='middle' font-size='10.5' fill='#1d8a5a'>→ 不可逆操作の事故を抑止</text></svg><figcaption>図1：自動実行中の「やり直せない」操作を既定で止める。</figcaption></figure>\n<h4>Claude Design の大型刷新</h4>\n<p>6月17日、Anthropic は <b>Claude Design</b> を大型刷新し、Claude Code との<b>デザイン⇔コード双方向連携</b>を追加した。<code>/design-sync</code> で既存コードベースのデザインシステムを Claude Design に取り込み、<code>/design</code> で Claude Design 側の修正・追加を Claude Code に同期する。9プラットフォームへのコネクタやブランドコントロールも加わり、ブランド一貫性を保ったまま UI 実装まで一本の流れにつなぐ狙いだ。</p>\n<figure class='fig'><pre class='mermaid'>flowchart LR\n  A[\"既存コードのデザインシステム\"] -->|\"/design-sync\"| B[\"Claude Design\"]\n  B -->|\"修正・追加\"| C[\"更新されたデザイン\"]\n  C -->|\"/design\"| D[\"Claude Code で実装へ同期\"]</pre><figcaption>図2：design-sync で取り込み、design で実装へ。デザインとコードを往復する。</figcaption></figure>\n<h4>自分が試すなら</h4>\n<ul><li>自動モードを使う既存リポジトリで、<code>reset --hard</code> 等が確かに止まるかを安全な検証用ブランチで確認する。</li><li>IaC を扱うなら、<code>destroy</code> 系がスタック指定なしで止まる挙動を前提に運用ルールを更新する。</li><li>UIのある案件で <code>/design-sync</code>→<code>/design</code> の往復を一度通し、コード化までの分断が減るか体感する。</li></ul>\n<h4>注意点</h4>\n<blockquote>ブロックは「明示的に指示していない場合」の安全弁であり、意図的に破棄したいときは明示すれば実行できる。逆に言えば、危険な操作を雑に依頼すると通ってしまう余地は残るので、自動モードでも重要ブランチの保護や予算・権限のスコープ管理は別途必要。Claude Design 連携は対応プラットフォームやプランの条件を確認しておきたい。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>今回は「自動実行の安全性」を底上げした更新。破壊的 git/IaC コマンドの既定ブロックでまず足元の事故を防ぎ、Claude Design 連携でデザイン→実装の流れを縮める、という二本立てで効いてくる。</p>",
+      "sources": [
+        {
+          "title": "Claude Code changelog（公式）",
+          "url": "https://code.claude.com/docs/en/changelog"
+        },
+        {
+          "title": "Claude Code What's new（公式・Claude Design 刷新）",
+          "url": "https://code.claude.com/docs/en/whats-new"
+        },
+        {
+          "title": "SitePoint「Claude Code June 2026: 10 new features」",
+          "url": "https://www.sitepoint.com/claude-code-june-2026-10-new-features-devs-need-to-know/"
+        }
+      ],
+      "id": "2026-06-26-claude-code"
+    },
+    {
+      "date": "2026-06-26",
+      "topic": "Next.js",
+      "title": "Tailwind CSS v4 のCSS-firstテーマ設計 — @theme でトークンを一本化し、App RouterでSSR安全なダークモードを作る",
+      "lede": "Tailwind v4 は設定の中心を tailwind.config.js（JS）から CSS内の @theme へ移した。@theme に書いたトークンはそのまま実CSS変数（--color-*）として出力され、ユーティリティ（bg-brand）と素のCSS（var(--color-brand)）が同じ値を参照できる。テーマ切替が変数差し替えだけで完結する一方、darkMode:'class' が効かない等の落とし穴があり、App Router（RSC）では next-themes＋suppressHydrationWarning でちらつき・hydration mismatch を抑える必要がある。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>v4 はデフォルトで全トークンを<b>CSS変数化</b>するため、ランタイムのテーマ切替に<b>JSクラスの総入れ替えが不要</b>になった。「Tailwindのトークン」と「デザインシステムのトークン」が一本化し、ダーク/ライトやブランド切替が変数の差し替えだけで済む。反面、<code>dark:</code> の挙動が v3 から変わるなど移行上の落とし穴があり、App Router では SSR時にユーザーのテーマが分からず<b>FOUC（ちらつき）や hydration mismatch</b>が起きやすい。</p>\n<h4>何が新しいか（と最大の落とし穴）</h4>\n<p>v4 は <code>tailwind.config.js</code>／<code>postcss.config.js</code>／autoprefixer 不要。CSS先頭で <code>@import 'tailwindcss';</code> し、<code>@theme { --color-brand: oklch(0.62 0.19 255); }</code> のように書くと、トークンは <code>:root</code> のCSS変数として生成され、<code>bg-brand</code> 等のユーティリティも自動生成される。色は知覚的に均一な <b>OKLCH</b> 推奨。最大の罠は<b>ダークモード</b>だ。既定の <code>dark:</code> は <code>prefers-color-scheme</code> メディア駆動（OS追従）で、<b><code>darkMode:'class'</code> は効かない</b>。手動トグルにするには CSS で <code>@custom-variant</code> を明示宣言する必要がある。</p>\n<pre><code>/* data属性方式（classと衝突しにくく推奨） */\n@custom-variant dark (&:where([data-theme='dark'], [data-theme='dark'] *));</code></pre>\n<figure class='fig'><svg viewBox='0 0 600 196' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='20' text-anchor='middle' font-size='12.5' font-weight='700' fill='#1456b8'>トークン二段構え：生変数 ＋ @theme inline</text><rect x='30' y='34' width='250' height='66' rx='9' fill='#eef4fd' stroke='#7aa8ef'/><text x='155' y='54' text-anchor='middle' font-size='10.5' font-weight='700' fill='#1456b8'>:root / [data-theme=dark]</text><text x='155' y='74' text-anchor='middle' font-size='10' fill='#3a6abf'>--bg / --fg / --brand を</text><text x='155' y='90' text-anchor='middle' font-size='10' fill='#3a6abf'>「生の値」で定義（属性で上書き）</text><rect x='320' y='34' width='250' height='66' rx='9' fill='#eef4fd' stroke='#7aa8ef'/><text x='445' y='54' text-anchor='middle' font-size='10.5' font-weight='700' fill='#1456b8'>@theme inline</text><text x='445' y='74' text-anchor='middle' font-size='10' fill='#3a6abf'>--color-bg: var(--bg) のように</text><text x='445' y='90' text-anchor='middle' font-size='10' fill='#3a6abf'>「指すだけ」にする</text><text x='300' y='72' text-anchor='middle' font-size='16' fill='#9aa0ad'>→</text><rect x='120' y='118' width='360' height='62' rx='9' fill='#eafaf0' stroke='#5bb98a'/><text x='300' y='140' text-anchor='middle' font-size='11' font-weight='700' fill='#1d8a5a'>[data-theme] を1つ変えるだけで全テーマ切替</text><text x='300' y='162' text-anchor='middle' font-size='10' fill='#27674a'>再コンパイル不要。素の @theme だと値が固定化され効かない</text></svg><figcaption>図1：生変数を @theme inline で参照。属性1つでテーマが切り替わる。</figcaption></figure>\n<h4>App Router でSSR安全にする</h4>\n<p>Next.js は v4 を <code>@tailwindcss/postcss</code> 経由で通す。<code>next-themes</code> の <code>&lt;ThemeProvider&gt;</code> は <code>'use client'</code> のクライアントコンポーネントとして <code>layout.tsx</code> の <code>&lt;body&gt;</code> 内に置き（RSCのままにはできない）、<code>&lt;html lang='ja' suppressHydrationWarning&gt;</code> を付ける。サーバはテーマを知らずに描画→クライアントが <code>localStorage</code> から復元して <code>data-theme</code> を書き換えるため html 要素に差分が出るが、これは想定内なので警告を抑止する（html要素のみ）。<code>attribute='data-theme'</code> は <code>@custom-variant</code> の宣言と一致させる。トグルのアイコン等 <code>useTheme()</code> 依存UIは <code>mounted</code> ガードでマウント後のみ描画して初回不一致を避ける。</p>\n<figure class='fig'><pre class='mermaid'>flowchart TD\n  A[\"サーバ：テーマ不明のまま描画\"] --> B[\"HTML送信\"]\n  B --> C[\"クライアント：localStorage から復元\"]\n  C --> D[\"data-theme を書き換え（html要素に差分）\"]\n  D --> E[\"suppressHydrationWarning で警告抑止\"]\n  C --> F[\"mounted 後にトグルUIを描画し不一致回避\"]</pre><figcaption>図2：差分が出るのは想定内。抑止とマウントガードでFOUC/不一致を抑える。</figcaption></figure>\n<h4>自分が試すなら</h4>\n<ul><li>パレットを <code>:root</code>／<code>[data-theme='dark']</code> に生変数で定義し、<code>@theme inline</code> はそれを指すだけにする二段構えを最小構成で組む。</li><li>テーマ切替を <code>startViewTransition</code> で包み、対応ブラウザだけ円形リビールにする進行的強化を試す。</li><li><code>prefers-reduced-motion: reduce</code> 時は即時切替＋色 transition を無効化し、意味は残して動きだけ消す。</li></ul>\n<h4>注意点</h4>\n<blockquote><code>darkMode:'class'</code> を書いても効かない（CSSで <code>@custom-variant</code> 宣言する）。テーマ依存色を素の <code>@theme</code> に直書きすると属性切替で変わらないので <code>@theme inline</code>＋生変数に。ThemeProvider をServer Componentにする／<code>suppressHydrationWarning</code> 付け忘れは警告とちらつきの元。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>v4 はトークンをCSS変数として一本化し、テーマ切替を「変数の差し替え」に落とし込めるのが本質。App Router では client境界・suppressHydrationWarning・mountedガードの3点を押さえれば、SSRでもちらつかないダークモードが作れる。</p>",
+      "sources": [
+        {
+          "title": "Tailwind CSS v4.0（公式ブログ）",
+          "url": "https://tailwindcss.com/blog/tailwindcss-v4"
+        },
+        {
+          "title": "Theme variables - Core concepts（公式）",
+          "url": "https://tailwindcss.com/docs/theme"
+        },
+        {
+          "title": "next-themes（pacocoursey/next-themes）",
+          "url": "https://github.com/pacocoursey/next-themes"
+        }
+      ],
+      "id": "2026-06-26-nextjs"
+    },
+    {
+      "date": "2026-06-26",
+      "topic": "Flutter",
+      "title": "Flutter 3.44 移行実務 — iOSはSPM既定・AndroidはAGP 9、Web は WASM 既定へ前進、Impeller は WebGPU 移植中",
+      "lede": "Google I/O 2026 で出た Flutter 3.44.0 / Dart 3.12 への移行が今日の焦点。iOS/macOS は Swift Package Manager（SPM）が新規プロジェクトの既定依存マネージャに昇格して CocoaPods を置換し、Apple Silicon で Rosetta 不要に。Android は Android Gradle Plugin 9（AGP 9）対応と Kotlin 設定の組込み化へ。Web は WebAssembly が既定コンパイルターゲットへ前進し、Impeller を WebGPU へ移植中。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>安定版は <b>Flutter 3.44.0 / Dart 3.12</b>（Google I/O 2026, 2026-05-18）。年4回（2月/5月/8月/11月）の安定リリースが続き、<b>次は2026年8月予定</b>。今日の主役は新機能そのものより<b>3.44 への移行実務</b>で、iOS と Android の足回りが同時に変わるため、既存プロジェクトはバージョン整合と deprecated API の解消が要る。</p>\n<h4>何が変わるか（プラットフォーム別）</h4>\n<p>iOS/macOS では <b>SPM が新規プロジェクトの既定依存マネージャ</b>に昇格して CocoaPods を置換、Apple Silicon で <b>Rosetta 不要</b>になる。Android は <b>AGP 9 をサポート</b>し、<b>Kotlin 設定の組込み化</b>へシフト。既存プロジェクトは Gradle/AGP/Kotlin のバージョン整合と非推奨APIの解消が必要だ。SDK 側では <b>Material/Cupertino がコアで凍結</b>され、将来 <code>material_ui</code> / <code>cupertino_ui</code> として独立バージョニングへ（2026年内完了見込み）。Dart 3.12 は <b>dot shorthands</b>・<b>private named parameters</b> が正式、<b>primary constructors</b> は実験プレビュー。Web は <b>WebAssembly を既定コンパイルターゲット</b>へ前進し、<b>Impeller を WebGPU へ移植中</b>でブラウザでもネイティブ級グラフィックを狙う。</p>\n<figure class='fig'><svg viewBox='0 0 600 168' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='20' text-anchor='middle' font-size='12.5' font-weight='700' fill='#066aa0'>3.44 移行：プラットフォーム別チェック</text><rect x='24' y='34' width='176' height='118' rx='10' fill='#e9f5fb' stroke='#6cc0e6'/><text x='112' y='56' text-anchor='middle' font-size='11.5' font-weight='700' fill='#066aa0'>iOS / macOS</text><text x='112' y='80' text-anchor='middle' font-size='10' fill='#2b6e8f'>SPM が既定に昇格</text><text x='112' y='100' text-anchor='middle' font-size='10' fill='#2b6e8f'>CocoaPods を置換</text><text x='112' y='120' text-anchor='middle' font-size='10' fill='#2b6e8f'>Rosetta 不要(Apple Silicon)</text><rect x='212' y='34' width='176' height='118' rx='10' fill='#eef7f0' stroke='#6cc69a'/><text x='300' y='56' text-anchor='middle' font-size='11.5' font-weight='700' fill='#1d8a5a'>Android</text><text x='300' y='80' text-anchor='middle' font-size='10' fill='#27674a'>AGP 9 をサポート</text><text x='300' y='100' text-anchor='middle' font-size='10' fill='#27674a'>Kotlin 設定の組込み化</text><text x='300' y='120' text-anchor='middle' font-size='10' fill='#27674a'>Gradle/AGP/Kotlin 整合</text><rect x='400' y='34' width='176' height='118' rx='10' fill='#f3eefb' stroke='#b58bd6'/><text x='488' y='56' text-anchor='middle' font-size='11.5' font-weight='700' fill='#5b27b0'>Web</text><text x='488' y='80' text-anchor='middle' font-size='10' fill='#6b4a93'>WASM が既定ターゲットへ</text><text x='488' y='100' text-anchor='middle' font-size='10' fill='#6b4a93'>Impeller→WebGPU 移植中</text><text x='488' y='120' text-anchor='middle' font-size='10' fill='#6b4a93'>ブラウザでネイティブ級</text></svg><figcaption>図1：iOS・Android・Web で同時に足回りが更新される。整合性の確認が要点。</figcaption></figure>\n<h4>性能の物差し（Impeller）</h4>\n<p>Impeller の核心は<b>シェーダーのAOT（ビルド時）コンパイル</b>。Skia の実行時(JIT)コンパイルが招いた初回ジャンクを排除し、複雑シーンの平均ラスタライズ時間を<b>約50%短縮</b>、高リフレッシュ端末で<b>120fps を一貫維持</b>、アニメ負荷時のバッテリーは <b>Skia比 約17%減</b>。フレーム予算は下図が目安だ。</p>\n<figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='18' text-anchor='middle' font-size='12.5' font-weight='700' fill='#066aa0'>フレーム予算（profileモードで計測）</text><text x='14' y='52' font-size='11' fill='#333'>60fps</text><rect x='70' y='40' width='470' height='18' rx='4' fill='#eef2f5' stroke='#cdd6dd'/><rect x='70' y='40' width='118' height='18' rx='4' fill='#6cc0e6'/><text x='196' y='54' font-size='10' fill='#2b6e8f'>raster &lt;4ms</text><text x='548' y='54' font-size='10' fill='#777' text-anchor='end'>16ms</text><text x='14' y='98' font-size='11' fill='#333'>120fps</text><rect x='70' y='86' width='470' height='18' rx='4' fill='#eef2f5' stroke='#cdd6dd'/><rect x='70' y='86' width='244' height='18' rx='4' fill='#56c5f5'/><text x='322' y='100' font-size='10' fill='#1d6e8f'>raster &lt;8.3ms</text><text x='548' y='100' font-size='10' fill='#777' text-anchor='end'>11ms</text><text x='70' y='130' font-size='10' fill='#888'>GLSL は if 分岐より mix/step/clamp 等の数学演算で書くと予算に収まりやすい</text></svg><figcaption>図2：60fps=16ms / 120fps=11ms。ラスタライズは各 4ms / 8.3ms 以内が目安。</figcaption></figure>\n<h4>自分が試すなら</h4>\n<ul><li>検証ブランチで <code>flutter create</code> し直し、iOS は SPM 既定・Android は AGP 9 でビルドが通るか確認する。</li><li>既存アプリは Gradle/AGP/Kotlin を上げ、非推奨APIの警告をつぶしてから 3.44 へ。</li><li>視覚/性能の不具合切り分けには <code>--no-enable-impeller</code> で一時的に Skia へフォールバックして比較する。</li></ul>\n<h4>注意点</h4>\n<blockquote>Material/Cupertino の独立パッケージ化は移行作業が2026年内に続くため、依存の置き換えが将来発生する。Dart 3.12 の primary constructors は実験プレビューで本番不可。Web の WASM/WebGPU 経路は前進中だが対応ブラウザ・プラグイン互換を要確認。状態管理は新規=Riverpod 3.0、監査/大規模=Bloc 9.0 の基本線は変わらない。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>3.44 は「足回りの世代交代」。iOSのSPM既定・AndroidのAGP 9・WebのWASM前進が同時に来るので、まず検証ブランチで素のビルドを通し、整合性と非推奨APIを片付けてから本体を上げるのが安全だ。</p>",
+      "sources": [
+        {
+          "title": "Flutter 3.44 Migration Guide（AGP 9 / SPM / Breaking Changes）",
+          "url": "https://somniosoftware.com/blog/flutter-3-44-migration-guide-agp-9-swift-package-manager-and-breaking-changes"
+        },
+        {
+          "title": "Announcing Dart 3.12",
+          "url": "https://dart.dev/blog/announcing-dart-3-12"
+        },
+        {
+          "title": "How Impeller Is Transforming Flutter UI Rendering in 2026",
+          "url": "https://dev.to/eira-wexford/how-impeller-is-transforming-flutter-ui-rendering-in-2026-3dpd"
+        }
+      ],
+      "id": "2026-06-26-flutter"
+    },
     {
       "id": "2026-06-25-claude-code",
       "date": "2026-06-25",
