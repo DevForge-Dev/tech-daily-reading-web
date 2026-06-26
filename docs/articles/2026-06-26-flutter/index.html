@@ -1,0 +1,72 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Flutter 3.44 移行実務 — iOSはSPM既定・AndroidはAGP 9、Web は WASM 既定へ前進、Impeller は WebGPU 移植中 — デイリー技術深掘り 読み物</title><meta name="description" content="Google I/O 2026 で出た Flutter 3.44.0 / Dart 3.12 への移行が今日の焦点。iOS/macOS は Swift Package Manager（SPM）が新規プロジェクトの既定依存マネージャに昇格して CocoaPods を置換し、Apple Silicon で Rosetta 不要に。Android は Android Gradle Plugin 9（AGP 9）対応と Kotlin 設定の組込み化へ。Web は WebAssembly が既定コンパイルターゲットへ前進し、Impeller を WebGPU へ移植中。"><meta name="theme-color" content="#0277bd"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-06-26-flutter/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Flutter 3.44 移行実務 — iOSはSPM既定・AndroidはAGP 9、Web は WASM 既定へ前進、Impeller は WebGPU 移植中 — デイリー技術深掘り 読み物"><meta property="og:description" content="Google I/O 2026 で出た Flutter 3.44.0 / Dart 3.12 への移行が今日の焦点。iOS/macOS は Swift Package Manager（SPM）が新規プロジェクトの既定依存マネージャに昇格して CocoaPods を置換し、Apple Silicon で Rosetta 不要に。Android は Android Gradle Plugin 9（AGP 9）対応と Kotlin 設定の組込み化へ。Web は WebAssembly が既定コンパイルターゲットへ前進し、Impeller を WebGPU へ移植中。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-06-26-flutter/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #29b6f6, #01579b)"> <span class="glyph" aria-hidden="true">◆</span> <div class="kicker">Flutter</div> <h1>Flutter 3.44 移行実務 — iOSはSPM既定・AndroidはAGP 9、Web は WASM 既定へ前進、Impeller は WebGPU 移植中</h1> <p class="lede">Google I/O 2026 で出た Flutter 3.44.0 / Dart 3.12 への移行が今日の焦点。iOS/macOS は Swift Package Manager（SPM）が新規プロジェクトの既定依存マネージャに昇格して CocoaPods を置換し、Apple Silicon で Rosetta 不要に。Android は Android Gradle Plugin 9（AGP 9）対応と Kotlin 設定の組込み化へ。Web は WebAssembly が既定コンパイルターゲットへ前進し、Impeller を WebGPU へ移植中。</p> <div class="meta"> <span>📅 2026年6月26日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#0277bd"> <div> <article class="prose" data-has-mermaid="0"><h4 id="sec-1">なぜ今これが話題か</h4>
+<p>安定版は <b>Flutter 3.44.0 / Dart 3.12</b>（Google I/O 2026, 2026-05-18）。年4回（2月/5月/8月/11月）の安定リリースが続き、<b>次は2026年8月予定</b>。今日の主役は新機能そのものより<b>3.44 への移行実務</b>で、iOS と Android の足回りが同時に変わるため、既存プロジェクトはバージョン整合と deprecated API の解消が要る。</p>
+<h4 id="sec-2">何が変わるか（プラットフォーム別）</h4>
+<p>iOS/macOS では <b>SPM が新規プロジェクトの既定依存マネージャ</b>に昇格して CocoaPods を置換、Apple Silicon で <b>Rosetta 不要</b>になる。Android は <b>AGP 9 をサポート</b>し、<b>Kotlin 設定の組込み化</b>へシフト。既存プロジェクトは Gradle/AGP/Kotlin のバージョン整合と非推奨APIの解消が必要だ。SDK 側では <b>Material/Cupertino がコアで凍結</b>され、将来 <code>material_ui</code> / <code>cupertino_ui</code> として独立バージョニングへ（2026年内完了見込み）。Dart 3.12 は <b>dot shorthands</b>・<b>private named parameters</b> が正式、<b>primary constructors</b> は実験プレビュー。Web は <b>WebAssembly を既定コンパイルターゲット</b>へ前進し、<b>Impeller を WebGPU へ移植中</b>でブラウザでもネイティブ級グラフィックを狙う。</p>
+<figure class='fig'><svg viewBox='0 0 600 168' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='20' text-anchor='middle' font-size='12.5' font-weight='700' fill='#066aa0'>3.44 移行：プラットフォーム別チェック</text><rect x='24' y='34' width='176' height='118' rx='10' fill='#e9f5fb' stroke='#6cc0e6'></rect><text x='112' y='56' text-anchor='middle' font-size='11.5' font-weight='700' fill='#066aa0'>iOS / macOS</text><text x='112' y='80' text-anchor='middle' font-size='10' fill='#2b6e8f'>SPM が既定に昇格</text><text x='112' y='100' text-anchor='middle' font-size='10' fill='#2b6e8f'>CocoaPods を置換</text><text x='112' y='120' text-anchor='middle' font-size='10' fill='#2b6e8f'>Rosetta 不要(Apple Silicon)</text><rect x='212' y='34' width='176' height='118' rx='10' fill='#eef7f0' stroke='#6cc69a'></rect><text x='300' y='56' text-anchor='middle' font-size='11.5' font-weight='700' fill='#1d8a5a'>Android</text><text x='300' y='80' text-anchor='middle' font-size='10' fill='#27674a'>AGP 9 をサポート</text><text x='300' y='100' text-anchor='middle' font-size='10' fill='#27674a'>Kotlin 設定の組込み化</text><text x='300' y='120' text-anchor='middle' font-size='10' fill='#27674a'>Gradle/AGP/Kotlin 整合</text><rect x='400' y='34' width='176' height='118' rx='10' fill='#f3eefb' stroke='#b58bd6'></rect><text x='488' y='56' text-anchor='middle' font-size='11.5' font-weight='700' fill='#5b27b0'>Web</text><text x='488' y='80' text-anchor='middle' font-size='10' fill='#6b4a93'>WASM が既定ターゲットへ</text><text x='488' y='100' text-anchor='middle' font-size='10' fill='#6b4a93'>Impeller→WebGPU 移植中</text><text x='488' y='120' text-anchor='middle' font-size='10' fill='#6b4a93'>ブラウザでネイティブ級</text></svg><figcaption>図1：iOS・Android・Web で同時に足回りが更新される。整合性の確認が要点。</figcaption></figure>
+<h4 id="sec-3">性能の物差し（Impeller）</h4>
+<p>Impeller の核心は<b>シェーダーのAOT（ビルド時）コンパイル</b>。Skia の実行時(JIT)コンパイルが招いた初回ジャンクを排除し、複雑シーンの平均ラスタライズ時間を<b>約50%短縮</b>、高リフレッシュ端末で<b>120fps を一貫維持</b>、アニメ負荷時のバッテリーは <b>Skia比 約17%減</b>。フレーム予算は下図が目安だ。</p>
+<figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='18' text-anchor='middle' font-size='12.5' font-weight='700' fill='#066aa0'>フレーム予算（profileモードで計測）</text><text x='14' y='52' font-size='11' fill='#333'>60fps</text><rect x='70' y='40' width='470' height='18' rx='4' fill='#eef2f5' stroke='#cdd6dd'></rect><rect x='70' y='40' width='118' height='18' rx='4' fill='#6cc0e6'></rect><text x='196' y='54' font-size='10' fill='#2b6e8f'>raster &lt;4ms</text><text x='548' y='54' font-size='10' fill='#777' text-anchor='end'>16ms</text><text x='14' y='98' font-size='11' fill='#333'>120fps</text><rect x='70' y='86' width='470' height='18' rx='4' fill='#eef2f5' stroke='#cdd6dd'></rect><rect x='70' y='86' width='244' height='18' rx='4' fill='#56c5f5'></rect><text x='322' y='100' font-size='10' fill='#1d6e8f'>raster &lt;8.3ms</text><text x='548' y='100' font-size='10' fill='#777' text-anchor='end'>11ms</text><text x='70' y='130' font-size='10' fill='#888'>GLSL は if 分岐より mix/step/clamp 等の数学演算で書くと予算に収まりやすい</text></svg><figcaption>図2：60fps=16ms / 120fps=11ms。ラスタライズは各 4ms / 8.3ms 以内が目安。</figcaption></figure>
+<h4 id="sec-4">自分が試すなら</h4>
+<ul><li>検証ブランチで <code>flutter create</code> し直し、iOS は SPM 既定・Android は AGP 9 でビルドが通るか確認する。</li><li>既存アプリは Gradle/AGP/Kotlin を上げ、非推奨APIの警告をつぶしてから 3.44 へ。</li><li>視覚/性能の不具合切り分けには <code>--no-enable-impeller</code> で一時的に Skia へフォールバックして比較する。</li></ul>
+<h4 id="sec-5">注意点</h4>
+<blockquote>Material/Cupertino の独立パッケージ化は移行作業が2026年内に続くため、依存の置き換えが将来発生する。Dart 3.12 の primary constructors は実験プレビューで本番不可。Web の WASM/WebGPU 経路は前進中だが対応ブラウザ・プラグイン互換を要確認。状態管理は新規=Riverpod 3.0、監査/大規模=Bloc 9.0 の基本線は変わらない。</blockquote>
+<h4 id="sec-6">ひとことまとめ</h4>
+<p>3.44 は「足回りの世代交代」。iOSのSPM既定・AndroidのAGP 9・WebのWASM前進が同時に来るので、まず検証ブランチで素のビルドを通し、整合性と非推奨APIを片付けてから本体を上げるのが安全だ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://somniosoftware.com/blog/flutter-3-44-migration-guide-agp-9-swift-package-manager-and-breaking-changes" target="_blank" rel="noopener noreferrer"> Flutter 3.44 Migration Guide（AGP 9 / SPM / Breaking Changes） </a> </li><li> <a href="https://dart.dev/blog/announcing-dart-3-12" target="_blank" rel="noopener noreferrer"> Announcing Dart 3.12 </a> </li><li> <a href="https://dev.to/eira-wexford/how-impeller-is-transforming-flutter-ui-rendering-in-2026-3dpd" target="_blank" rel="noopener noreferrer"> How Impeller Is Transforming Flutter UI Rendering in 2026 </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> なぜ今これが話題か </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 何が変わるか（プラットフォーム別） </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 性能の物差し（Impeller） </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 自分が試すなら </a> </li><li> <a href="#sec-5" data-toc="sec-5"> 注意点 </a> </li><li> <a href="#sec-6" data-toc="sec-6"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-06-26</div> <div>⏱ 読了 約3分</div> <div>🏷 Flutter</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
