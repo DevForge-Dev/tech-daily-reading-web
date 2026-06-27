@@ -1,0 +1,79 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Flutter コアSDKのスリム化 — Material/Cupertino がパッケージ独立へ（material_ui / cupertino_ui）、Dart 3.12 の dot shorthands と private named parameters — デイリー技術深掘り 読み物</title><meta name="description" content="安定版は Flutter 3.44.0 / Dart 3.12.2（Google I/O 2026, 2026-05-18, 次は8月）。今日の主役は新ウィジェットではなく、コアSDKそのもののスリム化だ。長年同梱されてきた Material / Cupertino がコード凍結され、独立した pub.dev パッケージ（将来 material_ui / cupertino_ui）へ移行を始めた。3ヶ月のSDKサイクルから切り離して独立更新を可能にし、アプリサイズを縮小する狙いがある。Dart 3.12 の新文法とあわせて整理する。"><meta name="theme-color" content="#0277bd"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-06-27-flutter/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Flutter コアSDKのスリム化 — Material/Cupertino がパッケージ独立へ（material_ui / cupertino_ui）、Dart 3.12 の dot shorthands と private named parameters — デイリー技術深掘り 読み物"><meta property="og:description" content="安定版は Flutter 3.44.0 / Dart 3.12.2（Google I/O 2026, 2026-05-18, 次は8月）。今日の主役は新ウィジェットではなく、コアSDKそのもののスリム化だ。長年同梱されてきた Material / Cupertino がコード凍結され、独立した pub.dev パッケージ（将来 material_ui / cupertino_ui）へ移行を始めた。3ヶ月のSDKサイクルから切り離して独立更新を可能にし、アプリサイズを縮小する狙いがある。Dart 3.12 の新文法とあわせて整理する。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-06-27-flutter/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #29b6f6, #01579b)"> <span class="glyph" aria-hidden="true">◆</span> <div class="kicker">Flutter</div> <h1>Flutter コアSDKのスリム化 — Material/Cupertino がパッケージ独立へ（material_ui / cupertino_ui）、Dart 3.12 の dot shorthands と private named parameters</h1> <p class="lede">安定版は Flutter 3.44.0 / Dart 3.12.2（Google I/O 2026, 2026-05-18, 次は8月）。今日の主役は新ウィジェットではなく、コアSDKそのもののスリム化だ。長年同梱されてきた Material / Cupertino がコード凍結され、独立した pub.dev パッケージ（将来 material_ui / cupertino_ui）へ移行を始めた。3ヶ月のSDKサイクルから切り離して独立更新を可能にし、アプリサイズを縮小する狙いがある。Dart 3.12 の新文法とあわせて整理する。</p> <div class="meta"> <span>📅 2026年6月27日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#0277bd"> <div> <article class="prose" data-has-mermaid="0"><h4 id="sec-1">なぜ今これが話題か</h4>
+<p>安定版は <b>Flutter 3.44.0 / Dart 3.12.2</b>（Google I/O 2026, 2026-05-18, 次の安定版は8月予定）。今日の主役は新ウィジェットではなく<b>コアSDKそのもののスリム化</b>だ。長年 <code>flutter/flutter</code> に同梱されてきた <b>Material / Cupertino がコード凍結</b>され、リポジトリの外の<b>独立した pub.dev パッケージ</b>（将来 <code>material_ui</code> / <code>cupertino_ui</code>）へ移行を始めた。3ヶ月のSDKサイクルから切り離してUIを独立更新できるようにしつつ、<b>アプリサイズを縮小</b>する狙いがある。</p>
+<h4 id="sec-2">何が変わるか</h4>
+<p>SDK本体からUIライブラリが分離されると、<b>Material の更新（slider・theming・indicator の対応拡大など）がSDKリリースを待たずに出せる</b>ようになり、使わないUIを含めないことでバイナリも小さくなる。開発体験では <code>flutter run</code> が<b>構成ファイル</b>をサポートし、Web の <code>host / port / certification / header</code> に加え <b><code>proxy</code></b> 設定も書けるようになった。言語側の <b>Dart 3.12</b> は <b>dot shorthands</b>（<code>.value</code> の省略記法）で enum/静的メンバ参照を簡潔化、<b>private named parameters</b> と<b>実験的な primary constructors</b> でボイラープレートを削る。さらに <b>Agentic Hot Reload</b>（Dart MCP Server 経由の自動ホットリロード）や <b>Genkit</b> 追加など、AIエージェント連携も前進している。</p>
+<figure class='fig'><svg viewBox='0 0 600 188' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='18' text-anchor='middle' font-size='12.5' font-weight='700' fill='#066aa0'>コアSDKのスリム化：UIライブラリを分離</text><text x='150' y='40' text-anchor='middle' font-size='11' font-weight='700' fill='#444'>従来（同梱）</text><rect x='40' y='50' width='220' height='120' rx='10' fill='#e9f5fb' stroke='#6cc0e6'></rect><rect x='58' y='66' width='184' height='28' rx='5' fill='#fff' stroke='#9bd3ea'></rect><text x='150' y='84' text-anchor='middle' font-size='10' fill='#066aa0'>Flutter engine / framework</text><rect x='58' y='100' width='184' height='28' rx='5' fill='#d8eefb' stroke='#6cc0e6'></rect><text x='150' y='118' text-anchor='middle' font-size='10' fill='#066aa0'>Material</text><rect x='58' y='134' width='184' height='28' rx='5' fill='#d8eefb' stroke='#6cc0e6'></rect><text x='150' y='152' text-anchor='middle' font-size='10' fill='#066aa0'>Cupertino</text><text x='300' y='116' text-anchor='middle' font-size='20' fill='#9aa0ad'>→</text><text x='450' y='40' text-anchor='middle' font-size='11' font-weight='700' fill='#1d8a5a'>これから（分離）</text><rect x='340' y='50' width='220' height='40' rx='10' fill='#eef7f0' stroke='#6cc69a'></rect><text x='450' y='74' text-anchor='middle' font-size='10' fill='#1d8a5a'>スリムなコアSDK</text><rect x='340' y='100' width='104' height='62' rx='8' fill='#fff' stroke='#6cc69a'></rect><text x='392' y='126' text-anchor='middle' font-size='9.5' fill='#1d8a5a'>material_ui</text><text x='392' y='142' text-anchor='middle' font-size='8' fill='#3a8a66'>pub.dev で独立更新</text><rect x='456' y='100' width='104' height='62' rx='8' fill='#fff' stroke='#6cc69a'></rect><text x='508' y='126' text-anchor='middle' font-size='9.5' fill='#1d8a5a'>cupertino_ui</text><text x='508' y='142' text-anchor='middle' font-size='8' fill='#3a8a66'>アプリサイズ縮小</text></svg><figcaption>図1：Material/Cupertino を pub.dev パッケージへ。SDKサイクルに縛られず更新でき、アプリも軽くなる。</figcaption></figure>
+<h4 id="sec-3">Dart 3.12 の書き味</h4>
+<p>dot shorthands は型が分かっている文脈で型名を省ける。enum や静的メンバの参照が短くなり、UIコードの定型句が減る。</p>
+<pre><code>// before
+setMode(ThemeMode.dark);
+final align = MainAxisAlignment.center;
+
+// Dart 3.12: dot shorthands（型が推論できる文脈で型名を省略）
+setMode(.dark);
+final align = .center;</code></pre>
+<figure class='fig'><svg viewBox='0 0 600 120' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='20' text-anchor='middle' font-size='12.5' font-weight='700' fill='#066aa0'>安定版リリースは年4回（2/5/8/11月）</text><line x1='80' y1='66' x2='540' y2='66' stroke='#cdd6dd' stroke-width='3'></line><circle cx='100' cy='66' r='6' fill='#6cc0e6'></circle><text x='100' y='52' text-anchor='middle' font-size='10' fill='#2b6e8f'>2月</text><circle cx='250' cy='66' r='9' fill='#066aa0'></circle><text x='250' y='48' text-anchor='middle' font-size='10' font-weight='700' fill='#066aa0'>5月・3.44（現在）</text><circle cx='400' cy='66' r='7' fill='#56c5f5'></circle><text x='400' y='52' text-anchor='middle' font-size='10' fill='#2b6e8f'>8月（次の安定版）</text><circle cx='520' cy='66' r='6' fill='#6cc0e6'></circle><text x='520' y='52' text-anchor='middle' font-size='10' fill='#2b6e8f'>11月</text><text x='300' y='94' text-anchor='middle' font-size='9' fill='#888'>3.44.0 / Dart 3.12.2（Google I/O 2026, 2026-05-18）</text></svg><figcaption>図2：現行は5月の3.44系、次の安定版は8月予定。</figcaption></figure>
+<h4 id="sec-4">自分が試すなら</h4>
+<ul><li>検証ブランチで 3.44 にし、Material/Cupertino の import が将来 <code>material_ui</code> 等へ移る前提で依存を棚卸しする。</li><li>Dart 3.12 の dot shorthands を enum/定数の多い箇所に部分導入して可読性を測る。</li><li><code>flutter run</code> の構成ファイルに <code>proxy</code> を書き、社内プロキシ越しのWeb実行を試す。</li></ul>
+<h4 id="sec-5">注意点</h4>
+<blockquote>primary constructors は<b>実験プレビュー</b>で本番不可。Material/Cupertino のパッケージ分離は移行作業が当面続くため、将来 import パスやバージョン指定の置き換えが発生しうる。状態管理の基本線は変わらず、新規/非同期取得＝Riverpod 3.0、監査・規制・複雑な並行処理＝Bloc 9.0。性能は profile モードで計測し、フレーム予算 <b>60fps=16ms / 120fps=11ms</b>（ラスタライズは各 4ms / 8.3ms 目安）を物差しにする。</blockquote>
+<h4 id="sec-6">ひとことまとめ</h4>
+<p>3.44 の本質は「コアの軽量化と分離」。UIライブラリをパッケージへ出して独立更新とサイズ削減を進め、Dart 3.12 の新文法で日常コードを整理する。まずは依存の棚卸しと dot shorthands の部分導入から始めるのが現実的だ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://docs.flutter.dev/release/whats-new" target="_blank" rel="noopener noreferrer"> What&#39;s new in the docs（Flutter 公式） </a> </li><li> <a href="https://dart.dev/blog/announcing-dart-3-12" target="_blank" rel="noopener noreferrer"> Announcing Dart 3.12 </a> </li><li> <a href="https://yawarothman.medium.com/flutter-3-44-dart-3-12-everything-that-changed-at-google-i-o-2026-16f73a0c03d5" target="_blank" rel="noopener noreferrer"> Flutter 3.44 &amp; Dart 3.12 at Google I/O 2026 </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> なぜ今これが話題か </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 何が変わるか </a> </li><li> <a href="#sec-3" data-toc="sec-3"> Dart 3.12 の書き味 </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 自分が試すなら </a> </li><li> <a href="#sec-5" data-toc="sec-5"> 注意点 </a> </li><li> <a href="#sec-6" data-toc="sec-6"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-06-27</div> <div>⏱ 読了 約3分</div> <div>🏷 Flutter</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

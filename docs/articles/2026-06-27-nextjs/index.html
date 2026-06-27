@@ -1,0 +1,75 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>JSなしのネイティブCSSカルーセル — ::scroll-button() / ::scroll-marker で Server Component のまま送りボタンとドットを作る（Chrome/Edge 135） — デイリー技術深掘り 読み物</title><meta name="description" content="カルーセルはこれまで embla や swiper などクライアントJS必須の代表格で、App Router では 'use client' 化とhydrationのコストを払ってきた。CSS Overflow Module Level 5 のプリミティブが Chrome / Edge 135（2025年3月）で出荷され、JavaScriptなしで送りボタンとドットページャを付けられるようになった。Server Component のまま動き、端での自動 disabled やキーボード巡回まで標準装備。ただし対応はChromium系のみで、プログレッシブエンハンスメント前提で使う。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-06-27-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="JSなしのネイティブCSSカルーセル — ::scroll-button() / ::scroll-marker で Server Component のまま送りボタンとドットを作る（Chrome/Edge 135） — デイリー技術深掘り 読み物"><meta property="og:description" content="カルーセルはこれまで embla や swiper などクライアントJS必須の代表格で、App Router では 'use client' 化とhydrationのコストを払ってきた。CSS Overflow Module Level 5 のプリミティブが Chrome / Edge 135（2025年3月）で出荷され、JavaScriptなしで送りボタンとドットページャを付けられるようになった。Server Component のまま動き、端での自動 disabled やキーボード巡回まで標準装備。ただし対応はChromium系のみで、プログレッシブエンハンスメント前提で使う。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-06-27-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>JSなしのネイティブCSSカルーセル — ::scroll-button() / ::scroll-marker で Server Component のまま送りボタンとドットを作る（Chrome/Edge 135）</h1> <p class="lede">カルーセルはこれまで embla や swiper などクライアントJS必須の代表格で、App Router では &#39;use client&#39; 化とhydrationのコストを払ってきた。CSS Overflow Module Level 5 のプリミティブが Chrome / Edge 135（2025年3月）で出荷され、JavaScriptなしで送りボタンとドットページャを付けられるようになった。Server Component のまま動き、端での自動 disabled やキーボード巡回まで標準装備。ただし対応はChromium系のみで、プログレッシブエンハンスメント前提で使う。</p> <div class="meta"> <span>📅 2026年6月27日</span> <span>⏱ 約4分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="1"><h4 id="sec-1">なぜ今これが話題か</h4>
+<p>カルーセルはこれまで <code>embla</code> や <code>swiper</code> など<b>クライアントJS必須</b>の代表格で、App Router では <code>'use client'</code> 化と hydration のコストを払ってきた。CSS Overflow Module Level 5 が定義した一連のプリミティブが <b>Chrome / Edge 135（2025年3月）</b>で出荷され、<b>JavaScriptなし</b>で送りボタンとドットページャを付けられるようになった。Server Component のまま動くので、クライアントJSもhydrationも不要になり、バンドル削減とLCP/INPに効く。</p>
+<h4 id="sec-2">何が新しいか</h4>
+<p>カルーセルの正体は「<b>スクロール領域＋最大2つのアフォーダンス</b>」。土台は普通のオーバーフロー領域に <code>scroll-snap-type: x mandatory</code> を付けるだけ。そこへ擬似要素を足す。<b><code>::scroll-button(left/right)</code></b> はブラウザ生成の本物の <code>&lt;button&gt;</code> で、押すとスクロール領域の<b>85%</b>送り（snapがあれば実質1枚送り）、<b>端で自動的に <code>:disabled</code></b> になる。第2引数で代替テキストも渡せる（<code>content: "➡" / "次へ"</code>）。<b><code>scroll-marker-group</code></b> でドット/サムネの入れ物を生成し、各アイテムの <b><code>::scroll-marker</code></b> がその項目への<b>アンカー <code>&lt;a&gt;</code></b> を作る。現在地は <b><code>:target-current</code></b> で装飾でき、キーボード巡回やスクリーンリーダーの tablist 相当の読み上げ、端での自動無効化までブラウザが面倒を見る。</p>
+<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='18' text-anchor='middle' font-size='12.5' font-weight='700' fill='#1456b8'>カルーセル＝スクロール領域＋2つのアフォーダンス</text><rect x='72' y='40' width='456' height='92' rx='10' fill='#eef4fd' stroke='#7aa8ef'></rect><rect x='92' y='58' width='120' height='56' rx='6' fill='#fff' stroke='#9cc0f5'></rect><rect x='240' y='58' width='120' height='56' rx='6' fill='#fff' stroke='#9cc0f5'></rect><rect x='388' y='58' width='120' height='56' rx='6' fill='#fff' stroke='#9cc0f5'></rect><text x='300' y='128' text-anchor='middle' font-size='9' fill='#3a6abf'>scroll-snap-type: x mandatory（土台は普通のオーバーフロー領域）</text><circle cx='44' cy='86' r='16' fill='#1f6feb'></circle><text x='44' y='91' text-anchor='middle' font-size='15' fill='#fff'>‹</text><circle cx='556' cy='86' r='16' fill='#1f6feb'></circle><text x='556' y='91' text-anchor='middle' font-size='15' fill='#fff'>›</text><text x='44' y='118' text-anchor='middle' font-size='8' fill='#1456b8'>::scroll-button()</text><text x='556' y='118' text-anchor='middle' font-size='8' fill='#1456b8'>端で自動 disabled</text><circle cx='270' cy='166' r='6' fill='#1f6feb'></circle><circle cx='292' cy='166' r='6' fill='none' stroke='#7aa8ef'></circle><circle cx='314' cy='166' r='6' fill='none' stroke='#7aa8ef'></circle><text x='300' y='190' text-anchor='middle' font-size='9' fill='#1456b8'>::scroll-marker（:target-current で現在地をハイライト）</text></svg><figcaption>図1：本物の button と a が生成され、端での自動 disabled・現在地ハイライトまで標準装備。</figcaption></figure>
+<h4 id="sec-3">App Router での組み込みとフォールバック</h4>
+<p>純CSSなので <code>'use client'</code> 不要、<b>RSCで <code>map</code> して生成</b>できる。最大の注意は対応範囲で、<b>2026年6月時点でも Chromium 系のみ</b>（Firefox/Safari は実装中）。未対応ブラウザでは擬似要素が無視されるが、<b>素のスクロール領域としては成立</b>する。だから<b>プログレッシブエンハンスメント</b>前提で設計し、どうしても全ブラウザでボタン/ドットが要る場合だけ <code>CSS.supports('selector(::scroll-marker)')</code> で判定して未対応時に小さなクライアントコンポーネントで補う（＝対応ブラウザはJSゼロ）。スムーススクロールは <code>prefers-reduced-motion: no-preference</code> のときだけ有効化し、機能（送り・ジャンプ）は常に残す。</p>
+<figure class='fig'><pre class='mermaid'>flowchart TD
+  A["::scroll-marker をサポート?"] -->|"はい (Chrome/Edge 135+)"| B["ネイティブのボタン＋ドット（JSゼロ）"]
+  A -->|"いいえ (Firefox/Safari)"| C["素のスクロール領域として成立"]
+  C -->|"必要なら"| D["小さな client component で prev/next を補完"]</pre><figcaption>図2：対応ブラウザはJSゼロ、未対応は素のスクロール領域＋任意でclient補完。</figcaption></figure>
+<h4 id="sec-4">自分が試すなら</h4>
+<ul><li>RSC のまま <code>&lt;ul class="carousel"&gt;</code> を <code>map</code> で出し、<code>::scroll-button()</code> と <code>::scroll-marker</code> をCSSだけで足す最小カルーセルを組む。</li><li>Tailwind v4 を使う場合は、擬似要素は <code>@layer</code> で素のCSSを書き、配色は <code>@theme</code> トークンを <code>var()</code> 参照で統一する。</li><li>Firefox/Safari で素のスクロール領域として成立するかを必ず確認し、UI前提にしない。</li></ul>
+<h4 id="sec-5">注意点</h4>
+<blockquote>対応は Chromium 135+ のみ。<code>scroll-behavior: smooth</code> × snap × 85%送りは相性で崩れることがあるので <code>grid-auto-columns</code> と gap で調整する。v1では自前要素の差し込み・循環スクロールは不可（将来対応）。「カルーセル」と呼ぶが本質はスクロール領域のナビ強化で、タブUI・スライド・ギャラリーにも同じ仕組みが使える（過剰にカルーセル化しない）。</blockquote>
+<h4 id="sec-6">ひとことまとめ</h4>
+<p>ネイティブCSSカルーセルは「JSを足さずにアクセシブルな送り＆ページャを得る」手段。Server Component と相性が良くバンドルとCWVに効くが、当面はChromium限定なので、未対応でも成立する設計を土台に進行的強化として載せるのが正解だ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://developer.chrome.com/blog/carousels-with-css" target="_blank" rel="noopener noreferrer"> Carousels with CSS — Chrome for Developers </a> </li><li> <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Overflow/Carousels" target="_blank" rel="noopener noreferrer"> Creating CSS carousels — MDN </a> </li><li> <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/::scroll-marker" target="_blank" rel="noopener noreferrer"> ::scroll-marker — MDN </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> なぜ今これが話題か </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 何が新しいか </a> </li><li> <a href="#sec-3" data-toc="sec-3"> App Router での組み込みとフォールバック </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 自分が試すなら </a> </li><li> <a href="#sec-5" data-toc="sec-5"> 注意点 </a> </li><li> <a href="#sec-6" data-toc="sec-6"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-06-27</div> <div>⏱ 読了 約4分</div> <div>🏷 Next.js</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
