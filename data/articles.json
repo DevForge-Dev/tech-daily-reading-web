@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-06-26T04:48:37.959Z",
+  "generatedAt": "2026-06-27T04:47:51.663Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,73 @@
   ],
   "articles": [
     {
+      "id": "2026-06-27-claude-code",
+      "date": "2026-06-27",
+      "topic": "Claude Code",
+      "title": "Claude Code 週次更新（v2.1.166〜176）— /cd で作業ディレクトリを途中変更、サブエージェント入れ子化、--safe-mode と fallbackModel、sandbox.credentials で秘密情報を遮断",
+      "lede": "エージェントに長く任せるほど、作業ディレクトリの固定・秘密情報の漏れ・モデル障害時の停止といった地味な引っかかりが効いてくる。6月第2週の週次リリース（v2.1.166〜176）と公式changelogは、/cd の途中ディレクトリ変更、サブエージェントの入れ子生成（最大5階層）、--safe-mode、fallbackModel、sandbox.credentials を一気に投入した。派手さより「止まりにくく・壊れにくく・漏れにくく」を底上げする更新だ。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>エージェントに長時間任せるほど、地味な運用の引っかかりが効いてくる。作業ディレクトリが固定で別プロジェクトに移れない、サンドボックス内のコマンドが認証情報を読めてしまう、モデル側が一時的に落ちるとセッションごと止まる——こうした「事故と中断」を減らす運用系の改善が、6月第2週の週次リリース（<code>v2.1.166〜176</code>）と公式changelogでまとめて入った。</p>\n<h4>何が新しいか</h4>\n<p>目玉は5つ。<b>/cd</b> は会話の途中で作業ディレクトリを移動でき、<b>プロンプトキャッシュを再構築せず</b>に別ディレクトリへ切り替えられる。<b>サブエージェントの入れ子生成</b>が可能になり、バックグラウンドの連鎖は<b>最大5階層</b>まで。<b>--safe-mode</b> は全カスタマイズ（MCP・hooks・skills 等）を無効化して起動し、不具合の切り分けを容易にする。<b>fallbackModel</b> は<b>最大3モデル</b>を順に試すフォールバック構成に対応。安全面では <b>sandbox.credentials</b> がサンドボックス実行中のコマンドから<b>認証情報ファイルや秘密の環境変数の読取を遮断</b>する。あわせて、大きなツリーで <code>denyRead/allowRead</code> のグロブが Bash ツール説明文を肥大化させ Linux でセッションが使えなくなる不具合、スピナーが「running tool」で固着する問題を修正し、<b>ミッドストリーム切断時には生エラーを出さず部分応答を保持</b>するようになった。なお v2.1.161 単体でも22項目の変更（権限挙動・MCP レジリエンス・OAuth・省メモリ化）が入っている。</p>\n<figure class='fig'><svg viewBox='0 0 600 184' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='20' text-anchor='middle' font-size='12.5' font-weight='700' fill='#5b27b0'>週次更新の3つの軸</text><rect x='24' y='34' width='176' height='134' rx='10' fill='#f3eefb' stroke='#b58bd6'/><text x='112' y='56' text-anchor='middle' font-size='11.5' font-weight='700' fill='#5b27b0'>運用</text><text x='112' y='80' text-anchor='middle' font-size='10' fill='#6b4a93'>/cd で途中ディレクトリ変更</text><text x='112' y='100' text-anchor='middle' font-size='10' fill='#6b4a93'>（キャッシュ再構築なし）</text><text x='112' y='124' text-anchor='middle' font-size='10' fill='#6b4a93'>サブエージェント入れ子</text><text x='112' y='144' text-anchor='middle' font-size='10' fill='#6b4a93'>最大5階層</text><rect x='212' y='34' width='176' height='134' rx='10' fill='#fbeeee' stroke='#d68b8b'/><text x='300' y='56' text-anchor='middle' font-size='11.5' font-weight='700' fill='#a0335a'>安全</text><text x='300' y='80' text-anchor='middle' font-size='10' fill='#7a3b3b'>sandbox.credentials で</text><text x='300' y='100' text-anchor='middle' font-size='10' fill='#7a3b3b'>秘密情報の読取を遮断</text><text x='300' y='124' text-anchor='middle' font-size='10' fill='#7a3b3b'>--safe-mode で</text><text x='300' y='144' text-anchor='middle' font-size='10' fill='#7a3b3b'>全カスタマイズ無効化</text><rect x='400' y='34' width='176' height='134' rx='10' fill='#eef7f0' stroke='#6cc69a'/><text x='488' y='56' text-anchor='middle' font-size='11.5' font-weight='700' fill='#1d8a5a'>信頼性</text><text x='488' y='80' text-anchor='middle' font-size='10' fill='#27674a'>fallbackModel 最大3</text><text x='488' y='100' text-anchor='middle' font-size='10' fill='#27674a'>モデルを順に試行</text><text x='488' y='124' text-anchor='middle' font-size='10' fill='#27674a'>切断時に部分応答を保持</text><text x='488' y='144' text-anchor='middle' font-size='10' fill='#27674a'>スピナー固着を解消</text></svg><figcaption>図1：運用・安全・信頼性の三方向で「止まりにくく・漏れにくく」を底上げ。</figcaption></figure>\n<h4>fallbackModel の動き</h4>\n<p>fallbackModel は指定したモデルを<b>左から順に</b>試し、過負荷やエラーで失敗したら次へ自動で切り替える。長時間の自動実行中に主モデルが一時的に落ちても、セッションを止めずに継続できる。</p>\n<figure class='fig'><pre class='mermaid'>flowchart LR\n  A[\"primary model\"] -->|\"過負荷/エラー\"| B[\"fallback 1\"]\n  B -->|\"失敗\"| C[\"fallback 2\"]\n  A -->|\"成功\"| D[\"応答を継続\"]\n  B -->|\"成功\"| D\n  C -->|\"成功\"| D</pre><figcaption>図2：最大3モデルを順に試し、セッションを止めずに続ける。</figcaption></figure>\n<h4>自分が試すなら</h4>\n<ul><li>モノレポで <code>/cd</code> を使い、パッケージ間をキャッシュ維持のまま移動できるか確認する。</li><li>設定に <b>fallbackModel</b> を入れ、主モデル過負荷時に継続するか試す。</li><li>機密を扱う環境で <b>sandbox.credentials</b> を有効化し、秘密が読めないことを検証する。</li><li>不調時はまず <code>--safe-mode</code> で起動し、カスタマイズ起因かを切り分ける。</li></ul>\n<h4>注意点</h4>\n<blockquote>サブエージェントの入れ子は強力だが、5階層の連鎖はトークン消費とコストが膨らみやすい。Claude Code の年換算売上は25億ドル規模に達し利用が急増する一方、月次支出が跳ねる事例も報じられており、fallback や入れ子を使う前に予算・使用量の可視化を整えておきたい。--safe-mode は切り分け用で、常用すると必要な拡張まで無効化される点に注意。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>今回は「止まりにくく・壊れにくく・漏れにくく」を一段進めた運用アップデート。/cd と入れ子サブエージェントで作業の自由度を上げ、fallbackModel と部分応答保持で中断を減らし、sandbox.credentials で足元の安全を固める三方向の改善だ。</p>",
+      "sources": [
+        {
+          "title": "Claude Code What's new（公式）",
+          "url": "https://code.claude.com/docs/en/whats-new"
+        },
+        {
+          "title": "Claude Code changelog（公式）",
+          "url": "https://code.claude.com/docs/en/changelog"
+        },
+        {
+          "title": "Claude Code v2.1.161 リリースノート（Claude Updates）",
+          "url": "https://www.claudeupdates.dev/version/2.1.161"
+        }
+      ]
+    },
+    {
+      "id": "2026-06-27-nextjs",
+      "date": "2026-06-27",
+      "topic": "Next.js",
+      "title": "JSなしのネイティブCSSカルーセル — ::scroll-button() / ::scroll-marker で Server Component のまま送りボタンとドットを作る（Chrome/Edge 135）",
+      "lede": "カルーセルはこれまで embla や swiper などクライアントJS必須の代表格で、App Router では 'use client' 化とhydrationのコストを払ってきた。CSS Overflow Module Level 5 のプリミティブが Chrome / Edge 135（2025年3月）で出荷され、JavaScriptなしで送りボタンとドットページャを付けられるようになった。Server Component のまま動き、端での自動 disabled やキーボード巡回まで標準装備。ただし対応はChromium系のみで、プログレッシブエンハンスメント前提で使う。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>カルーセルはこれまで <code>embla</code> や <code>swiper</code> など<b>クライアントJS必須</b>の代表格で、App Router では <code>'use client'</code> 化と hydration のコストを払ってきた。CSS Overflow Module Level 5 が定義した一連のプリミティブが <b>Chrome / Edge 135（2025年3月）</b>で出荷され、<b>JavaScriptなし</b>で送りボタンとドットページャを付けられるようになった。Server Component のまま動くので、クライアントJSもhydrationも不要になり、バンドル削減とLCP/INPに効く。</p>\n<h4>何が新しいか</h4>\n<p>カルーセルの正体は「<b>スクロール領域＋最大2つのアフォーダンス</b>」。土台は普通のオーバーフロー領域に <code>scroll-snap-type: x mandatory</code> を付けるだけ。そこへ擬似要素を足す。<b><code>::scroll-button(left/right)</code></b> はブラウザ生成の本物の <code>&lt;button&gt;</code> で、押すとスクロール領域の<b>85%</b>送り（snapがあれば実質1枚送り）、<b>端で自動的に <code>:disabled</code></b> になる。第2引数で代替テキストも渡せる（<code>content: \"➡\" / \"次へ\"</code>）。<b><code>scroll-marker-group</code></b> でドット/サムネの入れ物を生成し、各アイテムの <b><code>::scroll-marker</code></b> がその項目への<b>アンカー <code>&lt;a&gt;</code></b> を作る。現在地は <b><code>:target-current</code></b> で装飾でき、キーボード巡回やスクリーンリーダーの tablist 相当の読み上げ、端での自動無効化までブラウザが面倒を見る。</p>\n<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='18' text-anchor='middle' font-size='12.5' font-weight='700' fill='#1456b8'>カルーセル＝スクロール領域＋2つのアフォーダンス</text><rect x='72' y='40' width='456' height='92' rx='10' fill='#eef4fd' stroke='#7aa8ef'/><rect x='92' y='58' width='120' height='56' rx='6' fill='#fff' stroke='#9cc0f5'/><rect x='240' y='58' width='120' height='56' rx='6' fill='#fff' stroke='#9cc0f5'/><rect x='388' y='58' width='120' height='56' rx='6' fill='#fff' stroke='#9cc0f5'/><text x='300' y='128' text-anchor='middle' font-size='9' fill='#3a6abf'>scroll-snap-type: x mandatory（土台は普通のオーバーフロー領域）</text><circle cx='44' cy='86' r='16' fill='#1f6feb'/><text x='44' y='91' text-anchor='middle' font-size='15' fill='#fff'>‹</text><circle cx='556' cy='86' r='16' fill='#1f6feb'/><text x='556' y='91' text-anchor='middle' font-size='15' fill='#fff'>›</text><text x='44' y='118' text-anchor='middle' font-size='8' fill='#1456b8'>::scroll-button()</text><text x='556' y='118' text-anchor='middle' font-size='8' fill='#1456b8'>端で自動 disabled</text><circle cx='270' cy='166' r='6' fill='#1f6feb'/><circle cx='292' cy='166' r='6' fill='none' stroke='#7aa8ef'/><circle cx='314' cy='166' r='6' fill='none' stroke='#7aa8ef'/><text x='300' y='190' text-anchor='middle' font-size='9' fill='#1456b8'>::scroll-marker（:target-current で現在地をハイライト）</text></svg><figcaption>図1：本物の button と a が生成され、端での自動 disabled・現在地ハイライトまで標準装備。</figcaption></figure>\n<h4>App Router での組み込みとフォールバック</h4>\n<p>純CSSなので <code>'use client'</code> 不要、<b>RSCで <code>map</code> して生成</b>できる。最大の注意は対応範囲で、<b>2026年6月時点でも Chromium 系のみ</b>（Firefox/Safari は実装中）。未対応ブラウザでは擬似要素が無視されるが、<b>素のスクロール領域としては成立</b>する。だから<b>プログレッシブエンハンスメント</b>前提で設計し、どうしても全ブラウザでボタン/ドットが要る場合だけ <code>CSS.supports('selector(::scroll-marker)')</code> で判定して未対応時に小さなクライアントコンポーネントで補う（＝対応ブラウザはJSゼロ）。スムーススクロールは <code>prefers-reduced-motion: no-preference</code> のときだけ有効化し、機能（送り・ジャンプ）は常に残す。</p>\n<figure class='fig'><pre class='mermaid'>flowchart TD\n  A[\"::scroll-marker をサポート?\"] -->|\"はい (Chrome/Edge 135+)\"| B[\"ネイティブのボタン＋ドット（JSゼロ）\"]\n  A -->|\"いいえ (Firefox/Safari)\"| C[\"素のスクロール領域として成立\"]\n  C -->|\"必要なら\"| D[\"小さな client component で prev/next を補完\"]</pre><figcaption>図2：対応ブラウザはJSゼロ、未対応は素のスクロール領域＋任意でclient補完。</figcaption></figure>\n<h4>自分が試すなら</h4>\n<ul><li>RSC のまま <code>&lt;ul class=\"carousel\"&gt;</code> を <code>map</code> で出し、<code>::scroll-button()</code> と <code>::scroll-marker</code> をCSSだけで足す最小カルーセルを組む。</li><li>Tailwind v4 を使う場合は、擬似要素は <code>@layer</code> で素のCSSを書き、配色は <code>@theme</code> トークンを <code>var()</code> 参照で統一する。</li><li>Firefox/Safari で素のスクロール領域として成立するかを必ず確認し、UI前提にしない。</li></ul>\n<h4>注意点</h4>\n<blockquote>対応は Chromium 135+ のみ。<code>scroll-behavior: smooth</code> × snap × 85%送りは相性で崩れることがあるので <code>grid-auto-columns</code> と gap で調整する。v1では自前要素の差し込み・循環スクロールは不可（将来対応）。「カルーセル」と呼ぶが本質はスクロール領域のナビ強化で、タブUI・スライド・ギャラリーにも同じ仕組みが使える（過剰にカルーセル化しない）。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>ネイティブCSSカルーセルは「JSを足さずにアクセシブルな送り＆ページャを得る」手段。Server Component と相性が良くバンドルとCWVに効くが、当面はChromium限定なので、未対応でも成立する設計を土台に進行的強化として載せるのが正解だ。</p>",
+      "sources": [
+        {
+          "title": "Carousels with CSS — Chrome for Developers",
+          "url": "https://developer.chrome.com/blog/carousels-with-css"
+        },
+        {
+          "title": "Creating CSS carousels — MDN",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Overflow/Carousels"
+        },
+        {
+          "title": "::scroll-marker — MDN",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/::scroll-marker"
+        }
+      ]
+    },
+    {
+      "id": "2026-06-27-flutter",
+      "date": "2026-06-27",
+      "topic": "Flutter",
+      "title": "Flutter コアSDKのスリム化 — Material/Cupertino がパッケージ独立へ（material_ui / cupertino_ui）、Dart 3.12 の dot shorthands と private named parameters",
+      "lede": "安定版は Flutter 3.44.0 / Dart 3.12.2（Google I/O 2026, 2026-05-18, 次は8月）。今日の主役は新ウィジェットではなく、コアSDKそのもののスリム化だ。長年同梱されてきた Material / Cupertino がコード凍結され、独立した pub.dev パッケージ（将来 material_ui / cupertino_ui）へ移行を始めた。3ヶ月のSDKサイクルから切り離して独立更新を可能にし、アプリサイズを縮小する狙いがある。Dart 3.12 の新文法とあわせて整理する。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>安定版は <b>Flutter 3.44.0 / Dart 3.12.2</b>（Google I/O 2026, 2026-05-18, 次の安定版は8月予定）。今日の主役は新ウィジェットではなく<b>コアSDKそのもののスリム化</b>だ。長年 <code>flutter/flutter</code> に同梱されてきた <b>Material / Cupertino がコード凍結</b>され、リポジトリの外の<b>独立した pub.dev パッケージ</b>（将来 <code>material_ui</code> / <code>cupertino_ui</code>）へ移行を始めた。3ヶ月のSDKサイクルから切り離してUIを独立更新できるようにしつつ、<b>アプリサイズを縮小</b>する狙いがある。</p>\n<h4>何が変わるか</h4>\n<p>SDK本体からUIライブラリが分離されると、<b>Material の更新（slider・theming・indicator の対応拡大など）がSDKリリースを待たずに出せる</b>ようになり、使わないUIを含めないことでバイナリも小さくなる。開発体験では <code>flutter run</code> が<b>構成ファイル</b>をサポートし、Web の <code>host / port / certification / header</code> に加え <b><code>proxy</code></b> 設定も書けるようになった。言語側の <b>Dart 3.12</b> は <b>dot shorthands</b>（<code>.value</code> の省略記法）で enum/静的メンバ参照を簡潔化、<b>private named parameters</b> と<b>実験的な primary constructors</b> でボイラープレートを削る。さらに <b>Agentic Hot Reload</b>（Dart MCP Server 経由の自動ホットリロード）や <b>Genkit</b> 追加など、AIエージェント連携も前進している。</p>\n<figure class='fig'><svg viewBox='0 0 600 188' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='18' text-anchor='middle' font-size='12.5' font-weight='700' fill='#066aa0'>コアSDKのスリム化：UIライブラリを分離</text><text x='150' y='40' text-anchor='middle' font-size='11' font-weight='700' fill='#444'>従来（同梱）</text><rect x='40' y='50' width='220' height='120' rx='10' fill='#e9f5fb' stroke='#6cc0e6'/><rect x='58' y='66' width='184' height='28' rx='5' fill='#fff' stroke='#9bd3ea'/><text x='150' y='84' text-anchor='middle' font-size='10' fill='#066aa0'>Flutter engine / framework</text><rect x='58' y='100' width='184' height='28' rx='5' fill='#d8eefb' stroke='#6cc0e6'/><text x='150' y='118' text-anchor='middle' font-size='10' fill='#066aa0'>Material</text><rect x='58' y='134' width='184' height='28' rx='5' fill='#d8eefb' stroke='#6cc0e6'/><text x='150' y='152' text-anchor='middle' font-size='10' fill='#066aa0'>Cupertino</text><text x='300' y='116' text-anchor='middle' font-size='20' fill='#9aa0ad'>→</text><text x='450' y='40' text-anchor='middle' font-size='11' font-weight='700' fill='#1d8a5a'>これから（分離）</text><rect x='340' y='50' width='220' height='40' rx='10' fill='#eef7f0' stroke='#6cc69a'/><text x='450' y='74' text-anchor='middle' font-size='10' fill='#1d8a5a'>スリムなコアSDK</text><rect x='340' y='100' width='104' height='62' rx='8' fill='#fff' stroke='#6cc69a'/><text x='392' y='126' text-anchor='middle' font-size='9.5' fill='#1d8a5a'>material_ui</text><text x='392' y='142' text-anchor='middle' font-size='8' fill='#3a8a66'>pub.dev で独立更新</text><rect x='456' y='100' width='104' height='62' rx='8' fill='#fff' stroke='#6cc69a'/><text x='508' y='126' text-anchor='middle' font-size='9.5' fill='#1d8a5a'>cupertino_ui</text><text x='508' y='142' text-anchor='middle' font-size='8' fill='#3a8a66'>アプリサイズ縮小</text></svg><figcaption>図1：Material/Cupertino を pub.dev パッケージへ。SDKサイクルに縛られず更新でき、アプリも軽くなる。</figcaption></figure>\n<h4>Dart 3.12 の書き味</h4>\n<p>dot shorthands は型が分かっている文脈で型名を省ける。enum や静的メンバの参照が短くなり、UIコードの定型句が減る。</p>\n<pre><code>// before\nsetMode(ThemeMode.dark);\nfinal align = MainAxisAlignment.center;\n\n// Dart 3.12: dot shorthands（型が推論できる文脈で型名を省略）\nsetMode(.dark);\nfinal align = .center;</code></pre>\n<figure class='fig'><svg viewBox='0 0 600 120' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='20' text-anchor='middle' font-size='12.5' font-weight='700' fill='#066aa0'>安定版リリースは年4回（2/5/8/11月）</text><line x1='80' y1='66' x2='540' y2='66' stroke='#cdd6dd' stroke-width='3'/><circle cx='100' cy='66' r='6' fill='#6cc0e6'/><text x='100' y='52' text-anchor='middle' font-size='10' fill='#2b6e8f'>2月</text><circle cx='250' cy='66' r='9' fill='#066aa0'/><text x='250' y='48' text-anchor='middle' font-size='10' font-weight='700' fill='#066aa0'>5月・3.44（現在）</text><circle cx='400' cy='66' r='7' fill='#56c5f5'/><text x='400' y='52' text-anchor='middle' font-size='10' fill='#2b6e8f'>8月（次の安定版）</text><circle cx='520' cy='66' r='6' fill='#6cc0e6'/><text x='520' y='52' text-anchor='middle' font-size='10' fill='#2b6e8f'>11月</text><text x='300' y='94' text-anchor='middle' font-size='9' fill='#888'>3.44.0 / Dart 3.12.2（Google I/O 2026, 2026-05-18）</text></svg><figcaption>図2：現行は5月の3.44系、次の安定版は8月予定。</figcaption></figure>\n<h4>自分が試すなら</h4>\n<ul><li>検証ブランチで 3.44 にし、Material/Cupertino の import が将来 <code>material_ui</code> 等へ移る前提で依存を棚卸しする。</li><li>Dart 3.12 の dot shorthands を enum/定数の多い箇所に部分導入して可読性を測る。</li><li><code>flutter run</code> の構成ファイルに <code>proxy</code> を書き、社内プロキシ越しのWeb実行を試す。</li></ul>\n<h4>注意点</h4>\n<blockquote>primary constructors は<b>実験プレビュー</b>で本番不可。Material/Cupertino のパッケージ分離は移行作業が当面続くため、将来 import パスやバージョン指定の置き換えが発生しうる。状態管理の基本線は変わらず、新規/非同期取得＝Riverpod 3.0、監査・規制・複雑な並行処理＝Bloc 9.0。性能は profile モードで計測し、フレーム予算 <b>60fps=16ms / 120fps=11ms</b>（ラスタライズは各 4ms / 8.3ms 目安）を物差しにする。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>3.44 の本質は「コアの軽量化と分離」。UIライブラリをパッケージへ出して独立更新とサイズ削減を進め、Dart 3.12 の新文法で日常コードを整理する。まずは依存の棚卸しと dot shorthands の部分導入から始めるのが現実的だ。</p>",
+      "sources": [
+        {
+          "title": "What's new in the docs（Flutter 公式）",
+          "url": "https://docs.flutter.dev/release/whats-new"
+        },
+        {
+          "title": "Announcing Dart 3.12",
+          "url": "https://dart.dev/blog/announcing-dart-3-12"
+        },
+        {
+          "title": "Flutter 3.44 & Dart 3.12 at Google I/O 2026",
+          "url": "https://yawarothman.medium.com/flutter-3-44-dart-3-12-everything-that-changed-at-google-i-o-2026-16f73a0c03d5"
+        }
+      ]
+    },
+    {
+      "id": "2026-06-26-claude-code",
       "date": "2026-06-26",
       "topic": "Claude Code",
       "title": "Claude Code、自動モードが破壊的コマンドを既定ブロック — git reset --hard / terraform destroy を遮断、Claude Design も大型刷新",
@@ -26,10 +93,10 @@
           "title": "SitePoint「Claude Code June 2026: 10 new features」",
           "url": "https://www.sitepoint.com/claude-code-june-2026-10-new-features-devs-need-to-know/"
         }
-      ],
-      "id": "2026-06-26-claude-code"
+      ]
     },
     {
+      "id": "2026-06-26-nextjs",
       "date": "2026-06-26",
       "topic": "Next.js",
       "title": "Tailwind CSS v4 のCSS-firstテーマ設計 — @theme でトークンを一本化し、App RouterでSSR安全なダークモードを作る",
@@ -48,10 +115,10 @@
           "title": "next-themes（pacocoursey/next-themes）",
           "url": "https://github.com/pacocoursey/next-themes"
         }
-      ],
-      "id": "2026-06-26-nextjs"
+      ]
     },
     {
+      "id": "2026-06-26-flutter",
       "date": "2026-06-26",
       "topic": "Flutter",
       "title": "Flutter 3.44 移行実務 — iOSはSPM既定・AndroidはAGP 9、Web は WASM 既定へ前進、Impeller は WebGPU 移植中",
@@ -70,8 +137,7 @@
           "title": "How Impeller Is Transforming Flutter UI Rendering in 2026",
           "url": "https://dev.to/eira-wexford/how-impeller-is-transforming-flutter-ui-rendering-in-2026-3dpd"
         }
-      ],
-      "id": "2026-06-26-flutter"
+      ]
     },
     {
       "id": "2026-06-25-claude-code",
