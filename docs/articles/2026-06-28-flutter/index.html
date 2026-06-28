@@ -1,0 +1,75 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Flutter 2026 の旗印「Platform Parity」と GenUI — A2UI でAIが実ウィジェットを動的構成、HCPP で Platform Views を刷新 — デイリー技術深掘り 読み物</title><meta name="description" content="安定版は Flutter 3.44.0 / Dart 3.12.2（Google I/O 2026）。2026 の旗印は「Platform Parity（プラットフォーム同等性）」で、ネイティブに近いが届かない uncanny valley の解消を狙う。目玉は GenUI SDK で、オープンな A2UI（Agent-to-UI）プロトコル上に構築され、AIエージェントが実 Flutter ウィジェットをその場で構成して静的ウィジェットツリーの制約を突破する。Android の Platform Views は Hybrid Composition++（HCPP）で刷新された。"><meta name="theme-color" content="#0277bd"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-06-28-flutter/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Flutter 2026 の旗印「Platform Parity」と GenUI — A2UI でAIが実ウィジェットを動的構成、HCPP で Platform Views を刷新 — デイリー技術深掘り 読み物"><meta property="og:description" content="安定版は Flutter 3.44.0 / Dart 3.12.2（Google I/O 2026）。2026 の旗印は「Platform Parity（プラットフォーム同等性）」で、ネイティブに近いが届かない uncanny valley の解消を狙う。目玉は GenUI SDK で、オープンな A2UI（Agent-to-UI）プロトコル上に構築され、AIエージェントが実 Flutter ウィジェットをその場で構成して静的ウィジェットツリーの制約を突破する。Android の Platform Views は Hybrid Composition++（HCPP）で刷新された。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-06-28-flutter/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #29b6f6, #01579b)"> <span class="glyph" aria-hidden="true">◆</span> <div class="kicker">Flutter</div> <h1>Flutter 2026 の旗印「Platform Parity」と GenUI — A2UI でAIが実ウィジェットを動的構成、HCPP で Platform Views を刷新</h1> <p class="lede">安定版は Flutter 3.44.0 / Dart 3.12.2（Google I/O 2026）。2026 の旗印は「Platform Parity（プラットフォーム同等性）」で、ネイティブに近いが届かない uncanny valley の解消を狙う。目玉は GenUI SDK で、オープンな A2UI（Agent-to-UI）プロトコル上に構築され、AIエージェントが実 Flutter ウィジェットをその場で構成して静的ウィジェットツリーの制約を突破する。Android の Platform Views は Hybrid Composition++（HCPP）で刷新された。</p> <div class="meta"> <span>📅 2026年6月28日</span> <span>⏱ 約4分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#0277bd"> <div> <article class="prose" data-has-mermaid="1"><h4 id="sec-1">なぜ今これが話題か</h4>
+<p>Flutter は2026年、<b>「Platform Parity（プラットフォーム同等性）」</b>を旗印に掲げた。アプリがネイティブに「近いが届かない」<b>uncanny valley の解消</b>が狙いで、レンダリングからプラットフォーム連携まで底上げが進む。安定版は <b>Flutter 3.44.0 / Dart 3.12.2</b>（Google I/O 2026, 2026-05-18）。次の安定版は2026年8月予定で、年4回（2/5/8/11月）のリズムは変わらない。</p>
+<h4 id="sec-2">何が新しいか</h4>
+<p>今日の主役は <b>GenUI SDK</b> と <b>HCPP</b>。GenUI はオープンな <b>A2UI（Agent-to-UI）プロトコル</b>上に構築され、AIエージェントが<b>実 Flutter ウィジェットをその場で構成</b>し、<b>静的ウィジェットツリーの制約を突破</b>して、ユーザーの目的に応じた完全インタラクティブな画面を動的生成する。Android の <b>Platform Views は Hybrid Composition++（HCPP）</b>で刷新され、<b>Vulkan ＋ SurfaceControl</b> でコンポジットを Android OS へ委譲することで、長年の「性能 vs 正確性」のトレードオフを解消した。iOS/macOS は <b>SwiftPM が既定</b>に。<b>Dart 3.12.2</b> は private named parameters・実験的 primary constructors・<b>dot shorthands</b> で宣言を簡潔化し、<b>Agentic Hot Reload</b> と <b>Genkit</b> でAI/エージェント開発を標準装備した。採用例は 2026 Toyota RAV4、LG webOS SDK for Flutter が近日対応。</p>
+<figure class='fig'><svg viewBox='0 0 600 196' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='20' text-anchor='middle' font-size='12.5' font-weight='700' fill='#0277bd'>静的ツリー vs GenUI（A2UI で動的構成）</text><rect x='30' y='36' width='250' height='148' rx='10' fill='#eef5fa' stroke='#7ab8da'></rect><text x='155' y='58' text-anchor='middle' font-size='11' font-weight='700' fill='#0277bd'>従来：静的ウィジェットツリー</text><rect x='120' y='70' width='70' height='20' rx='4' fill='#fff' stroke='#9ccbe6'></rect><rect x='95' y='100' width='52' height='18' rx='4' fill='#fff' stroke='#9ccbe6'></rect><rect x='163' y='100' width='52' height='18' rx='4' fill='#fff' stroke='#9ccbe6'></rect><text x='155' y='150' text-anchor='middle' font-size='9.5' fill='#36739a'>ビルド時に画面構成が固定</text><text x='155' y='168' text-anchor='middle' font-size='9.5' fill='#36739a'>目的別の動的生成は不得手</text><rect x='320' y='36' width='250' height='148' rx='10' fill='#e9f7ef' stroke='#6cc69a'></rect><text x='445' y='58' text-anchor='middle' font-size='11' font-weight='700' fill='#1d8a5a'>GenUI：A2UI で動的構成</text><text x='445' y='84' text-anchor='middle' font-size='9.5' fill='#27674a'>AIエージェント</text><text x='445' y='102' text-anchor='middle' font-size='13' fill='#6cc69a'>↓ A2UI プロトコル</text><text x='445' y='124' text-anchor='middle' font-size='9.5' fill='#27674a'>実 Flutter ウィジェットを生成</text><text x='445' y='150' text-anchor='middle' font-size='9.5' fill='#27674a'>目的に応じた完全</text><text x='445' y='166' text-anchor='middle' font-size='9.5' fill='#27674a'>インタラクティブ画面</text></svg><figcaption>図1：GenUI は静的ツリーの制約を超え、エージェントが実ウィジェットでUIを組み立てる。</figcaption></figure>
+<h4 id="sec-3">足回り：レンダリングと状態管理</h4>
+<p>描画は <b>Impeller</b> が既定（Skia 置換）。シェーダーを<b>ビルド時(AOT)に事前コンパイル</b>して初回ジャンクを解消し、複雑シーンの平均ラスタライズ時間を<b>約50%短縮</b>、高リフレッシュ端末で <b>120fps</b> を維持する。状態管理は新規なら <b>Riverpod 3.0</b> が既定（コンパイル時安全・組込みオフライン永続化・最小ボイラープレート、初期化失敗時は 200ms→倍々で最大6.4s の指数バックオフで自動リトライ）。監査証跡が要る規制業界（金融/医療）は完全な event traceability を持つ <b>Bloc 9.0</b> が標準で、v9.0 の mounted 安全チェックが disposed widget へのコールバック実行を防ぐ。</p>
+<figure class='fig'><pre class='mermaid'>flowchart LR
+  A["新規プロジェクト?"] -->|"はい・非同期取得が中心"| B["Riverpod 3.0（自動リトライ/オフライン永続化）"]
+  A -->|"規制・監査・複雑な並行処理"| C["Bloc 9.0（event traceability）"]
+  A -->|"レガシー保守"| D["Provider（保守のみ）"]</pre><figcaption>図2：選定はベンチ数値よりチームの習熟度に従うのが原則。</figcaption></figure>
+<h4 id="sec-4">自分が試すなら</h4>
+<ul><li>Platform Views を多用する画面で <b>HCPP</b>（Vulkan＋SurfaceControl）の効果を、地図やWebView混在のスクロール性能で確認する。</li><li>新規の小さな画面で <b>GenUI / A2UI</b> の動的UI生成を試し、静的ツリーで書く場合との差を体感する。</li><li>Dart 3.12 の <b>dot shorthands</b> や primary constructors（実験的）で、enum/定数まわりの宣言がどれだけ短くなるか試す。</li></ul>
+<h4 id="sec-5">注意点</h4>
+<blockquote>GenUI / A2UI と HCPP は2026の新しい柱で、APIや既定動作が今後の安定版（8月予定）で変わりうる。primary constructors は実験フラグ段階。Rive×Impeller で描画や性能に差が出る場合は <code>--no-enable-impeller</code> で Skia にフォールバックして切り分ける。パフォーマンスの最頻出問題は依然として不要な再ビルドで、不変部分は <code>const</code> で完全スキップ、大きな <code>build()</code> は分割、計測は必ず profile モードで（フレーム予算 60fps=16ms / 120fps=8.3ms）。</blockquote>
+<h4 id="sec-6">ひとことまとめ</h4>
+<p>2026の Flutter は「Platform Parity」を軸に、GenUI/A2UI で<b>UIの作り方そのもの</b>を動的化し、HCPP で Platform Views の長年の弱点を解消する。足回りは Impeller の120fpsと Riverpod 3.0/Bloc 9.0 の使い分けが安定線。新しい柱は積極的に触りつつ、安定版での変化に備えておきたい。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://devnewsletter.com/p/state-of-flutter-2026/" target="_blank" rel="noopener noreferrer"> State of Flutter 2026 </a> </li><li> <a href="https://intercode.com/blog/flutter-2026-technical-review" target="_blank" rel="noopener noreferrer"> Flutter 2026 Technical Review（UI Thread Merge, GenUI, Cross-Platform） </a> </li><li> <a href="https://dart.dev/blog/announcing-dart-3-12" target="_blank" rel="noopener noreferrer"> Announcing Dart 3.12 </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> なぜ今これが話題か </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 何が新しいか </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 足回り：レンダリングと状態管理 </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 自分が試すなら </a> </li><li> <a href="#sec-5" data-toc="sec-5"> 注意点 </a> </li><li> <a href="#sec-6" data-toc="sec-6"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-06-28</div> <div>⏱ 読了 約4分</div> <div>🏷 Flutter</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

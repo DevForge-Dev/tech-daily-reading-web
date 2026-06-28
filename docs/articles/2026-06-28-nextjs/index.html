@@ -1,0 +1,90 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>App Router の認可設計 — Data Access Layer × proxy.ts × Server Actions で「データに最も近い場所」を守る — デイリー技術深掘り 読み物</title><meta name="description" content="App Router の認証・認可は「どこでチェックするか」を間違えると、ページは守れても Server Actions や子コンポーネントから素通りされる。公式が一貫して推すのは多層防御＋データに最も近い場所での認可で、その中心が Data Access Layer（DAL）に verifySession() を集約するパターンだ。Next.js 16 で middleware.ts は proxy.ts に改名され、CVE-2025-29927（CVSS 9.1）の middleware バイパス事件が「middleware に認可を依存するな」という設計を決定づけた。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-06-28-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="App Router の認可設計 — Data Access Layer × proxy.ts × Server Actions で「データに最も近い場所」を守る — デイリー技術深掘り 読み物"><meta property="og:description" content="App Router の認証・認可は「どこでチェックするか」を間違えると、ページは守れても Server Actions や子コンポーネントから素通りされる。公式が一貫して推すのは多層防御＋データに最も近い場所での認可で、その中心が Data Access Layer（DAL）に verifySession() を集約するパターンだ。Next.js 16 で middleware.ts は proxy.ts に改名され、CVE-2025-29927（CVSS 9.1）の middleware バイパス事件が「middleware に認可を依存するな」という設計を決定づけた。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-06-28-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>App Router の認可設計 — Data Access Layer × proxy.ts × Server Actions で「データに最も近い場所」を守る</h1> <p class="lede">App Router の認証・認可は「どこでチェックするか」を間違えると、ページは守れても Server Actions や子コンポーネントから素通りされる。公式が一貫して推すのは多層防御＋データに最も近い場所での認可で、その中心が Data Access Layer（DAL）に verifySession() を集約するパターンだ。Next.js 16 で middleware.ts は proxy.ts に改名され、CVE-2025-29927（CVSS 9.1）の middleware バイパス事件が「middleware に認可を依存するな」という設計を決定づけた。</p> <div class="meta"> <span>📅 2026年6月28日</span> <span>⏱ 約5分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="1"><h4 id="sec-1">なぜ今これが話題か</h4>
+<p>App Router では認可をどこに置くかで安全性が決まる。Layout やページの入口だけで <code>return null</code> する SPA 的な発想だと、ネストした route segment・Route Handler・Server Actions が止まらず素通りされる。公式は一貫して<b>多層防御（defense-in-depth）＋データに最も近い場所での認可</b>を推し、その本丸が <b>Data Access Layer（DAL）</b>だ。加えて <b>Next.js 16 で <code>middleware.ts</code> が <code>proxy.ts</code> に改名</b>され（公式認証ガイド v16.2.9 / 2026-06-23 更新）、<b>CVE-2025-29927（CVSS 9.1, 2025-03公開）</b>の middleware 認可バイパス事件が設計指針を固めた。</p>
+<h4 id="sec-2">何が新しいか</h4>
+<p>認可は2種類に分けて考える。<b>楽観的（Optimistic）</b>は Cookie 内のセッションだけで判定し、UIの出し分けやリダイレクトなど軽い操作向けで <code>proxy.ts</code> が担う（<b>DBには触らない</b>——proxy はprefetch含め全ルートで走るためDBアクセスは性能事故になる）。<b>厳密（Secure）</b>は DB のセッション実体と突き合わせ、機微データ・重要操作向けで <b>DAL</b> が担う。<code>proxy.ts</code> は「最初の門番」であって<b>最後の砦ではない</b>。CVE-2025-29927 は <code>x-middleware-subrequest</code> ヘッダ偽装で middleware/proxy の認可を<b>完全バイパス</b>できた事件で、<code>next start</code> + <code>output: 'standalone'</code> のセルフホスト構成が影響対象（Vercel/Netlify ホストは非影響、15.2.3+ / 14.2.25+ 等で修正済）。だから<b>セキュリティチェックはデータソースに最も近い場所</b>へ寄せる。</p>
+<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='20' text-anchor='middle' font-size='12.5' font-weight='700' fill='#1456b8'>多層防御：楽観的チェックと厳密チェックの分業</text><rect x='40' y='38' width='520' height='52' rx='10' fill='#eef4fd' stroke='#7aa8ef'></rect><text x='300' y='60' text-anchor='middle' font-size='11' font-weight='700' fill='#1456b8'>proxy.ts（旧 middleware.ts）= 楽観的チェック</text><text x='300' y='78' text-anchor='middle' font-size='9.5' fill='#3a6abf'>Cookieのみで判定・リダイレクト集約／DBに触らない／唯一の防御にしない</text><text x='300' y='104' text-anchor='middle' font-size='15' fill='#9aa0ad'>↓</text><rect x='40' y='114' width='520' height='58' rx='10' fill='#eef7f0' stroke='#6cc69a'></rect><text x='300' y='136' text-anchor='middle' font-size='11' font-weight='700' fill='#1d8a5a'>Data Access Layer = 厳密チェック（最後の砦）</text><text x='300' y='154' text-anchor='middle' font-size='9.5' fill='#27674a'>verifySession() を react cache() でメモ化／import 'server-only'</text><text x='300' y='168' text-anchor='middle' font-size='9.5' fill='#27674a'>getUser() は必ず先に verifySession()／DTOで返す列を絞る</text><text x='300' y='194' text-anchor='middle' font-size='9.5' fill='#a0335a'>Server Actions / Route Handler は公開APIとして各自で verifySession() + ロール確認</text></svg><figcaption>図1：proxy.ts は最初の門番、DAL がデータに最も近い最後の砦。</figcaption></figure>
+<h4 id="sec-3">DAL に認可を集約する</h4>
+<p>核は <code>verifySession()</code> を専用ファイルに置き、<b>React の <code>cache()</code> でメモ化</b>して1レンダーパス内の重複検証・重複クエリを防ぐこと。ファイル先頭に <code>import 'server-only'</code> を置けば、認証・DBロジックがクライアントへ混入するのを物理的に遮断できる。<code>getUser()</code> 等のデータ取得関数は<b>必ず先に <code>verifySession()</code> を呼ぶ</b>ことで「呼べばどこでも認可が走る」状態を担保する。返却は<b>DTO で必要な列だけ</b>に絞り、password や電話番号の漏洩を防ぐ。</p>
+<pre><code>// app/lib/dal.ts
+import 'server-only'
+import { cache } from 'react'
+import { cookies } from 'next/headers'
+import { redirect } from 'next/navigation'
+import { decrypt } from '@/app/lib/session'
+
+export const verifySession = cache(async () => {
+  const cookie = (await cookies()).get('session')?.value
+  const session = await decrypt(cookie)
+  if (!session?.userId) redirect('/login') // 未認証は弾く
+  return { isAuth: true, userId: session.userId }
+})</code></pre>
+<figure class='fig'><pre class='mermaid'>flowchart TD
+  A["リクエスト"] --> B["proxy.ts: Cookieで楽観判定→必要ならリダイレクト"]
+  B --> C["Server Component / Action / Route Handler"]
+  C --> D["DAL.verifySession() でDB突き合わせ"]
+  D -->|"OK"| E["DTOで必要列だけ返す"]
+  D -->|"NG"| F["redirect('/login') / 401・403"]</pre><figcaption>図2：入口は楽観、データ取得の直前で厳密チェックを必ず通す。</figcaption></figure>
+<h4 id="sec-4">自分が試すなら</h4>
+<ul><li>既存プロジェクトの認可ロジックを <code>app/lib/dal.ts</code> に集約し、各データ取得関数の先頭で <code>verifySession()</code> を呼ぶ形に揃える。</li><li>各 Server Action / Route Handler の先頭にも <code>verifySession()</code> + ロール確認を入れる（Route Handler は未認証=401、権限不足=403 の二段）。</li><li>セルフホスト構成なら Next.js のバージョンを確認し、CVE-2025-29927 修正済み（15.2.3+ 等）かを点検する。</li></ul>
+<h4 id="sec-5">注意点</h4>
+<blockquote>Layout はPartial Renderingでナビゲーション時に再レンダーされない＝ルート遷移ごとにセッションが再検証されないため、Layout で認可を完結させない。<code>'use server'</code> はサーバへ移すモジュール境界の指示にすぎず、認証・入力検証・レート制限を一切付与しない（markした関数は誰でも叩けるPOSTエンドポイント）。トークンは <code>localStorage</code> に置かず httpOnly Cookie（Secure / SameSite / Path 付き）を使い、セッションJWTのペイロードは userId・role など最小限に絞る。</blockquote>
+<h4 id="sec-6">ひとことまとめ</h4>
+<p>App Router の認可は「入口で守る」発想を捨て、<b>データに最も近い DAL で verifySession() を必ず通す</b>のが正解。proxy.ts は楽観的な門番、Server Actions / Route Handler は公開APIとして各自で認可。CVE-2025-29927 が示した通り、middleware/proxy を唯一の防御にしてはいけない。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://nextjs.org/docs/app/guides/authentication" target="_blank" rel="noopener noreferrer"> How to implement authentication（Next.js 公式, v16.2.9） </a> </li><li> <a href="https://nvd.nist.gov/vuln/detail/CVE-2025-29927" target="_blank" rel="noopener noreferrer"> CVE-2025-29927 詳細（NVD） </a> </li><li> <a href="https://securitylabs.datadoghq.com/articles/nextjs-middleware-auth-bypass/" target="_blank" rel="noopener noreferrer"> CVE-2025-29927 middleware auth bypass 解説（Datadog Security Labs） </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> なぜ今これが話題か </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 何が新しいか </a> </li><li> <a href="#sec-3" data-toc="sec-3"> DAL に認可を集約する </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 自分が試すなら </a> </li><li> <a href="#sec-5" data-toc="sec-5"> 注意点 </a> </li><li> <a href="#sec-6" data-toc="sec-6"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-06-28</div> <div>⏱ 読了 約5分</div> <div>🏷 Next.js</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
