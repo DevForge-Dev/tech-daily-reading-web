@@ -1,12 +1,86 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-06-28T04:46:20.156Z",
+  "generatedAt": "2026-06-29T04:48:58.904Z",
   "topics": [
     "Claude Code",
     "Next.js",
     "Flutter"
   ],
   "articles": [
+    {
+      "id": "2026-06-29-claude-code",
+      "date": "2026-06-29",
+      "topic": "Claude Code",
+      "title": "Claude Codeの「舵取り」を体系化する — skills / hooks / rules / subagents の役割分担と、入れ子サブエージェント・Artifacts という地ならし",
+      "lede": "Anthropicは自社の新規プロダクションコードの約8割をClaudeが書くと明かした。これだけ任せるなら、汎用アシスタントを「自分のコードベースの専門家」に寄せる手段が要る。公式ブログが整理した4つの制御手段——skills・hooks・rules・subagents——を、6月の新機能（入れ子サブエージェント、フォールバックモデルチェーン、Artifacts）と合わせて読み解く。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>VentureBeatは、Anthropicが<b>新規プロダクションコードの約80%をClaudeが執筆</b>していると報じた。人間は設計・レビュー・方向づけに比重を移しつつある。これだけエージェントに任せる前提になると、汎用アシスタントをそのまま使うのではなく、<b>自分のコードベースやワークフローの専門家へ寄せる「舵取り（steering）」</b>が効いてくる。Anthropic公式ブログがその手段を体系立てて整理し、SitePointは6月に入った新機能を10項目で俯瞰した。</p>\n<h4>何が新しい/重要か</h4>\n<p>公式が挙げる制御手段は4つ。<b>skills</b> は <code>SKILL.md</code> を核にしたフォルダ型の手順パックで、<b>必要時のみ本体が読み込まれる</b>ためトークンコストをほぼ増やさない。<b>hooks</b> はイベント発火で処理を<b>決定論的に強制</b>する。<b>rules</b> は<b>常時効くガードレール</b>。<b>subagents</b> は<b>独立コンテキスト</b>で副次作業を担い、メインの文脈を汚さない。6月はこれに、親が子を<b>最大3階層まで生成できる入れ子サブエージェント</b>、<b>最大3モデルを順に試すフォールバックチェーン</b>、セッション成果をライブHTMLで共有する<b>Artifacts</b>が加わった。</p>\n<figure class='fig'><svg viewBox='0 0 600 220' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='20' text-anchor='middle' font-size='12.5' font-weight='700' fill='#5b27b0'>4つの制御手段の役割分担</text><rect x='20' y='34' width='270' height='80' rx='10' fill='#f3eefb' stroke='#b58bd6'/><text x='34' y='56' font-size='11' font-weight='700' fill='#5b27b0'>skills</text><text x='34' y='76' font-size='9.5' fill='#6b4a93'>SKILL.md の手順パック</text><text x='34' y='92' font-size='9.5' fill='#6b4a93'>必要時のみ読込→トークン節約</text><text x='34' y='108' font-size='9.5' fill='#6b4a93'>例: 繰り返す定型手順</text><rect x='310' y='34' width='270' height='80' rx='10' fill='#eef4fd' stroke='#7aa8ef'/><text x='324' y='56' font-size='11' font-weight='700' fill='#1456b8'>hooks</text><text x='324' y='76' font-size='9.5' fill='#3a6abf'>イベント発火で決定論的に強制</text><text x='324' y='92' font-size='9.5' fill='#3a6abf'>確率に頼らず必ず実行</text><text x='324' y='108' font-size='9.5' fill='#3a6abf'>例: commit前にlint/test</text><rect x='20' y='126' width='270' height='80' rx='10' fill='#eef7f0' stroke='#6cc69a'/><text x='34' y='148' font-size='11' font-weight='700' fill='#1d8a5a'>rules</text><text x='34' y='168' font-size='9.5' fill='#27674a'>常時効くガードレール</text><text x='34' y='184' font-size='9.5' fill='#27674a'>CLAUDE.md と近いが範囲限定可</text><text x='34' y='200' font-size='9.5' fill='#27674a'>例: 触ってはいけない領域</text><rect x='310' y='126' width='270' height='80' rx='10' fill='#fbf4ea' stroke='#e0b271'/><text x='324' y='148' font-size='11' font-weight='700' fill='#a76a16'>subagents</text><text x='324' y='168' font-size='9.5' fill='#80561a'>独立コンテキストで副次作業</text><text x='324' y='184' font-size='9.5' fill='#80561a'>最大3階層の入れ子も可</text><text x='324' y='200' font-size='9.5' fill='#80561a'>例: 重い調査・並列探索</text></svg><figcaption>図1：読込タイミングと強制力で4手段を使い分ける。</figcaption></figure>\n<h4>仕組みのポイント</h4>\n<p>勘所は「<b>いつ読み込まれ、どれだけ強制力があるか</b>」。skills は長大な参照資料を抱えても、呼ばれるまで本体を読まないのでコストがほぼ発生しない。同じ手順を何度もチャットに貼っているなら、それは<b>Skill化の合図</b>だ。一方 CLAUDE.md に常駐させた知識は毎ターン文脈に乗るため、巨大化するとコストと混乱を招く。hooks は確率的なお願いではなく<b>コードによる強制</b>なので、「必ず通したいゲート」に向く。</p>\n<figure class='fig'><pre class='mermaid'>flowchart TD\n  A[\"やりたいこと\"] --> B{\"必ず実行させたい?\"}\n  B -->|\"はい\"| C[\"hooks (決定論的強制)\"]\n  B -->|\"いいえ\"| D{\"繰り返す手順か?\"}\n  D -->|\"はい\"| E[\"skill 化 (必要時のみ読込)\"]\n  D -->|\"いいえ\"| F{\"文脈を分けたい重い作業?\"}\n  F -->|\"はい\"| G[\"subagent (独立コンテキスト)\"]\n  F -->|\"いいえ\"| H[\"rules / CLAUDE.md で規範化\"]</pre><figcaption>図2：「強制力→再利用性→文脈分離」の順に判断すると迷わない。</figcaption></figure>\n<h4>自分が試すなら</h4>\n<ul><li>このタスクのような毎朝の自動処理の定型手順を <code>SKILL.md</code> に切り出し、CLAUDE.md から重い手順記述を追い出してトークンを節約する。</li><li>調査フェーズを subagent に分離し、メイン文脈を汚さず結論だけ受け取る構成を試す。入れ子は3階層まで。</li><li>成果物のダッシュボードを Artifacts でライブ共有し、URL固定・バージョン復元を体験する。</li></ul>\n<h4>注意点</h4>\n<blockquote>入れ子サブエージェントやフォールバックチェーンは便利だが、<b>階層とリトライの分だけコストが膨らむ</b>。6月の更新で入ったエージェント単位のコスト按分・スコープ付き権限で、どのエージェントがいくら使ったかを必ず監視する。Artifacts は外部リクエストを遮断する厳格CSPと16MiB上限、Team/Enterpriseの組織内認証メンバー限定という制約も押さえておく。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>skills=必要時に読む手順、hooks=必ず通すゲート、rules=常時の規範、subagents=文脈を分ける作業。この4軸で舵を取り、入れ子サブエージェントとArtifactsで作業と共有を底上げする。8割をAIが書く時代の主導権は、こうした制御設計に宿る。</p>",
+      "sources": [
+        {
+          "title": "Steering Claude Code（Anthropic公式）",
+          "url": "https://claude.com/blog/steering-claude-code-skills-hooks-rules-subagents-and-more"
+        },
+        {
+          "title": "Claude Code 2026年6月の新機能10選（SitePoint）",
+          "url": "https://www.sitepoint.com/claude-code-june-2026-10-new-features-devs-need-to-know/"
+        },
+        {
+          "title": "Claude CodeがArtifactsに対応（公式ブログ）",
+          "url": "https://claude.com/blog/artifacts-in-claude-code"
+        },
+        {
+          "title": "Anthropic、新規本番コードの80%をClaudeが執筆（VentureBeat）",
+          "url": "https://venturebeat.com/technology/anthropic-says-80-of-its-new-production-code-is-now-authored-by-claude-how-your-enterprise-can-keep-up"
+        }
+      ]
+    },
+    {
+      "id": "2026-06-29-nextjs",
+      "date": "2026-06-29",
+      "topic": "Next.js",
+      "title": "GSAPが完全無料化、App RouterではuseGSAPが正解 — 自動クリーンアップ・scope・contextSafe と書き直されたSplitText 3.13",
+      "lede": "2025年4月、Webflow買収を経てGSAPが商用込みで100%無料化。SplitTextやScrollTriggerなど旧プレミアムが全部使えるようになり、選定理由が変わった。App Routerで安全に使う鍵は @gsap/react の useGSAP()。SSR安全・自動revert・scopeの三点と、約半分のサイズに書き直されたSplitText 3.13を整理する。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p><b>GSAPが2025年4月に100%無料化</b>された。Webflowが2024年秋にGreenSockを買収し、これまで有料のClub GreenSock限定だった<b>SplitText / MorphSVG / DrawSVG / ScrollTrigger / ScrollSmoother / Inertia</b>を含む全機能が、<b>商用利用込みで無償</b>になった。タイムラインベースの精密なシーケンス、スクラブ連動の本格スクロール、文字単位のテキスト演出が課金なしに使える。Motion（旧Framer Motion）が「宣言的に動きを与える」のに対し、GSAPは「<b>命令的なタイムラインで時間軸を細かく組む</b>」のが得意で、両者は併用できる。</p>\n<h4>何が新しい/重要か</h4>\n<p>App Routerでの正解は <code>@gsap/react</code> の <b>useGSAP()</b>。<code>useLayoutEffect</code>/<code>useEffect</code> のドロップイン置換で、内部の <code>useIsomorphicLayoutEffect</code> により<b>SSR安全</b>。フック中に作られた全アニメ・ScrollTrigger・SplitTextを <code>gsap.context()</code> が記録し、<b>アンマウント時に自動revert</b>する。Strict Modeの二重実行やクライアントナビでの二重登録事故を吸収し、手動 <code>kill()</code> 行脚が要らない。さらに<b>SplitText 3.13で全面書き直し</b>（約7kb、サイズ半減）。<code>mask:'lines'</code> でマスクリビールを内蔵、<code>aria</code> 自動付与、<code>autoSplit</code> でフォント遅延ロードやリサイズ時に自動再分割する。</p>\n<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='20' text-anchor='middle' font-size='12.5' font-weight='700' fill='#1456b8'>Motion と GSAP の思想 ＋ useGSAP の3効能</text><rect x='20' y='34' width='265' height='66' rx='10' fill='#eef4fd' stroke='#7aa8ef'/><text x='34' y='56' font-size='11' font-weight='700' fill='#1456b8'>Motion（宣言的）</text><text x='34' y='76' font-size='9.5' fill='#3a6abf'>Reactコンポーネントに動きを付与</text><text x='34' y='92' font-size='9.5' fill='#3a6abf'>レイアウト・状態連動が得意</text><rect x='315' y='34' width='265' height='66' rx='10' fill='#f3eefb' stroke='#b58bd6'/><text x='329' y='56' font-size='11' font-weight='700' fill='#5b27b0'>GSAP（命令的）</text><text x='329' y='76' font-size='9.5' fill='#6b4a93'>タイムラインで時間軸を精密制御</text><text x='329' y='92' font-size='9.5' fill='#6b4a93'>scrub・SplitText・複雑シーケンス</text><rect x='20' y='112' width='180' height='72' rx='10' fill='#eef7f0' stroke='#6cc69a'/><text x='110' y='134' text-anchor='middle' font-size='10.5' font-weight='700' fill='#1d8a5a'>SSR安全</text><text x='110' y='156' text-anchor='middle' font-size='9.5' fill='#27674a'>isomorphic effect</text><text x='110' y='172' text-anchor='middle' font-size='9.5' fill='#27674a'>'use client' 前提</text><rect x='210' y='112' width='180' height='72' rx='10' fill='#eef7f0' stroke='#6cc69a'/><text x='300' y='134' text-anchor='middle' font-size='10.5' font-weight='700' fill='#1d8a5a'>自動revert</text><text x='300' y='156' text-anchor='middle' font-size='9.5' fill='#27674a'>gsap.context が記録</text><text x='300' y='172' text-anchor='middle' font-size='9.5' fill='#27674a'>二重登録を吸収</text><rect x='400' y='112' width='180' height='72' rx='10' fill='#eef7f0' stroke='#6cc69a'/><text x='490' y='134' text-anchor='middle' font-size='10.5' font-weight='700' fill='#1d8a5a'>scope</text><text x='490' y='156' text-anchor='middle' font-size='9.5' fill='#27674a'>セレクタをref配下に限定</text><text x='490' y='172' text-anchor='middle' font-size='9.5' fill='#27674a'>他要素を巻き込まない</text></svg><figcaption>図1：宣言的Motionと命令的GSAPの棲み分け、useGSAPが与える3つの効能。</figcaption></figure>\n<h4>仕組みと最小コード</h4>\n<p>Reactでは <code>document.querySelector</code> ではなく<b>refかscope付きセレクタ</b>を使うのが鉄則。<code>useGSAP({ scope: ref })</code> でセレクタ文字列をコンテナ配下に限定できる。</p>\n<pre><code>'use client';\nimport gsap from 'gsap';\nimport { useGSAP } from '@gsap/react';\ngsap.registerPlugin(useGSAP);\n\nuseGSAP(() => {\n  gsap.from('.box', { y: 40, opacity: 0, stagger: 0.1 });\n}, { scope: ref });   // 自動クリーンアップ + スコープ</code></pre>\n<figure class='fig'><pre class='mermaid'>flowchart TD\n  A[\"GSAPアニメを作る場所は?\"] --> B{\"useGSAP のコールバック内?\"}\n  B -->|\"フック実行中\"| C[\"context が自動記録→自動revert\"]\n  B -->|\"クリックやタイマー等 実行後\"| D[\"contextSafe(fn) でラップ\"]\n  D --> C</pre><figcaption>図2：フック実行後に作るアニメは contextSafe でラップしないと後始末漏れになる。</figcaption></figure>\n<h4>自分が試すなら</h4>\n<p>ルート/レイアウトはServer Componentのまま保ち、<b>動かす島だけ</b> <code>'use client'</code> に切り出す。reduced-motion対応は <code>gsap.matchMedia()</code> が相性抜群で、<code>(prefers-reduced-motion: reduce)</code> ブロックに「動かさず即完成形」を書けばメディアクエリ変化に自動追従する。宣言的レイアウトはMotion、作り込んだ演出はGSAP、と併用する構成を試したい。</p>\n<h4>注意点</h4>\n<blockquote>GSAPはDOM/<code>window</code>に触るため <b>'use client' 必須</b>（RSCのままは不可）。App Routerの遷移後に高さが変わると位置がズレるので、画像/フォント確定後に <code>ScrollTrigger.refresh()</code>。ScrollSmootherは重いので、軽量なLenis等も選択肢。プラグインは <code>gsap.registerPlugin()</code> で使用前に登録する。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>無料化でGSAPの全武器が解禁。App Routerでは useGSAP の「SSR安全・自動revert・scope」が事故を消し、SplitText 3.13がアクセシブルな映画的リビールを手組みなしで実現する。宣言的はMotion、精密演出はGSAPの併用が現実解だ。</p>",
+      "sources": [
+        {
+          "title": "React & GSAP（公式・useGSAP/contextSafe/scope）",
+          "url": "https://gsap.com/resources/React/"
+        },
+        {
+          "title": "Webflow makes GSAP 100% free（無料化告知）",
+          "url": "https://webflow.com/blog/gsap-becomes-free"
+        },
+        {
+          "title": "GSAP 3.13 release（SplitText書き直し）",
+          "url": "https://gsap.com/blog/3-13/"
+        },
+        {
+          "title": "SplitText Docs",
+          "url": "https://gsap.com/docs/v3/Plugins/SplitText/"
+        }
+      ]
+    },
+    {
+      "id": "2026-06-29-flutter",
+      "date": "2026-06-29",
+      "topic": "Flutter",
+      "title": "Flutter 3.44 / Dart 3.12.2 — flutter run のWeb構成ファイル、画面共有の機密保護、Dart 3.12 dot shorthands",
+      "lede": "安定版はFlutter 3.44.0 / Dart 3.12.2（docs最終更新2026-06-24）。今日の焦点は派手な新ウィジェットより開発体験（DX）とセキュリティの底上げだ。flutter run がWeb構成ファイルに対応し、Androidは画面共有時に機密UIを隠せるようになった。Dart 3.12のdot shorthandsと合わせて、地ならし系のアップデートを読む。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>安定版は <b>Flutter 3.44.0 / Dart 3.12.2</b>（docs最終更新 2026-06-24）。リリースは年4回（2月/5月/8月/11月）で、次の安定版は<b>2026年8月</b>予定。今回の焦点は新ウィジェットの追加ではなく、<b>開発体験（DX）とセキュリティの底上げ</b>という地ならしにある。日々の <code>flutter run</code> やセキュアな画面まわりで効く、地味だが効用の大きい変更が入った。</p>\n<h4>何が新しい/重要か</h4>\n<p>第一に <code>flutter run</code> が<b>Web設定の構成ファイル</b>に対応し、<b>host / port / certification / header</b> をまとめて指定できる。構成ファイルは <b>proxy設定</b>にも対応し、同一ホストの動的エンドポイントへ繋ぐWebクライアント開発が容易になった。第二に、Androidで<b>画面共有・録画から指定UIを隠す</b>機能。顧客情報など機密コンテンツを共有画面で保護できる。第三に新設の<b>「Create with AI」ガイド</b>が、Gemini Code Assist / Gemini CLI / <b>Dart &amp; Flutter MCP Server</b> を使ったAI機能の組み込みを解説。Dart 3.12は <b>dot shorthands</b> と、initializing formals / primary constructor parameters での<b>private named parameters</b>（先頭 <code>_</code> を自動省略）をサポートする。</p>\n<figure class='fig'><svg viewBox='0 0 600 196' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='20' text-anchor='middle' font-size='12.5' font-weight='700' fill='#0b7285'>flutter run の Web 構成ファイル</text><rect x='30' y='36' width='200' height='140' rx='10' fill='#e7f6f8' stroke='#5bbccb'/><text x='130' y='58' text-anchor='middle' font-size='11' font-weight='700' fill='#0b7285'>config ファイル</text><text x='130' y='84' text-anchor='middle' font-size='9.5' fill='#21707f'>host</text><text x='130' y='102' text-anchor='middle' font-size='9.5' fill='#21707f'>port</text><text x='130' y='120' text-anchor='middle' font-size='9.5' fill='#21707f'>certification</text><text x='130' y='138' text-anchor='middle' font-size='9.5' fill='#21707f'>header</text><text x='130' y='160' text-anchor='middle' font-size='9.5' font-weight='700' fill='#21707f'>+ proxy 設定</text><line x1='230' y1='106' x2='360' y2='106' stroke='#5bbccb' stroke-width='2'/><polygon points='360,106 350,101 350,111' fill='#5bbccb'/><rect x='362' y='66' width='210' height='80' rx='10' fill='#eef7f0' stroke='#6cc69a'/><text x='467' y='92' text-anchor='middle' font-size='10' fill='#27674a'>同一ホストの</text><text x='467' y='110' text-anchor='middle' font-size='10' fill='#27674a'>動的エンドポイントへ</text><text x='467' y='128' text-anchor='middle' font-size='10' font-weight='700' fill='#1d8a5a'>Webクライアント開発が容易</text></svg><figcaption>図1：接続設定を一括管理し、proxyで動的エンドポイントへ繋ぐ。</figcaption></figure>\n<h4>仕組みと使いどころ</h4>\n<p>構成ファイルは、これまでコマンドラインフラグに散らばっていた接続設定を一箇所に集約する。proxy対応により、ローカル開発でAPIゲートウェイや動的なバックエンドへ透過的に繋げる。画面共有保護は、決済・本人確認・顧客台帳のような<b>映してはいけない画面</b>を持つ業務アプリで効く。</p>\n<figure class='fig'><svg viewBox='0 0 600 120' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='20' text-anchor='middle' font-size='12' font-weight='700' fill='#0b7285'>リリース周期（年4回）と次の安定版</text><line x1='40' y1='70' x2='560' y2='70' stroke='#bbb' stroke-width='2'/><circle cx='100' cy='70' r='6' fill='#5bbccb'/><text x='100' y='95' text-anchor='middle' font-size='10' fill='#21707f'>2月</text><circle cx='230' cy='70' r='6' fill='#5bbccb'/><text x='230' y='95' text-anchor='middle' font-size='10' fill='#21707f'>5月</text><circle cx='360' cy='70' r='8' fill='#1d8a5a'/><text x='360' y='95' text-anchor='middle' font-size='10' font-weight='700' fill='#1d8a5a'>8月（次の安定版）</text><circle cx='490' cy='70' r='6' fill='#5bbccb'/><text x='490' y='95' text-anchor='middle' font-size='10' fill='#21707f'>11月</text><text x='300' y='48' text-anchor='middle' font-size='9.5' fill='#888'>現行: 3.44.0 / Dart 3.12.2</text></svg><figcaption>図2：2月/5月/8月/11月の安定版。次は2026年8月。</figcaption></figure>\n<h4>自分が試すなら</h4>\n<p>Web開発では構成ファイルにproxyを書き、動的エンドポイント越しの開発フローを整える。機密画面を持つアプリではAndroidの画面共有保護を有効化し、共有/録画時に該当UIが隠れるか確認する。AI機能を足すなら「Create with AI」ガイドとDart &amp; Flutter MCP Serverから入るとよい。</p>\n<h4>注意点</h4>\n<blockquote>現行は3.44系で、ここでの情報は <b>docs 2026-06-24時点</b>。レンダリングは <b>Impeller が 3.27以降 iOS/Android API29+ で既定</b>（フレームラスタライズ約50%高速、120fpsを一貫維持）になっている点も合わせて押さえたい。計測は必ずprofileモードで行い、最大の敵である不要な再ビルドは <code>const</code>・build分割・<code>Selector</code> で抑える。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>3.44はDXとセキュリティの地ならし。flutter run のWeb構成ファイル（host/port/cert/header＋proxy）で接続設定が一元化し、画面共有保護が機密業務アプリを守る。Dart 3.12のdot shorthandsと合わせ、日々の開発の手触りを静かに改善する更新だ。</p>",
+      "sources": [
+        {
+          "title": "What's new in the docs（Flutter公式）",
+          "url": "https://docs.flutter.dev/release/whats-new"
+        },
+        {
+          "title": "What's new in Flutter 3.44",
+          "url": "https://blog.flutter.dev/whats-new-in-flutter-3-44-b0cc1ad3c527"
+        },
+        {
+          "title": "Dart what's new",
+          "url": "https://dart.dev/resources/whats-new"
+        }
+      ]
+    },
     {
       "id": "2026-06-28-claude-code",
       "date": "2026-06-28",
