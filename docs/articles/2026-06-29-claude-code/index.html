@@ -1,0 +1,79 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Claude Codeの「舵取り」を体系化する — skills / hooks / rules / subagents の役割分担と、入れ子サブエージェント・Artifacts という地ならし — デイリー技術深掘り 読み物</title><meta name="description" content="Anthropicは自社の新規プロダクションコードの約8割をClaudeが書くと明かした。これだけ任せるなら、汎用アシスタントを「自分のコードベースの専門家」に寄せる手段が要る。公式ブログが整理した4つの制御手段——skills・hooks・rules・subagents——を、6月の新機能（入れ子サブエージェント、フォールバックモデルチェーン、Artifacts）と合わせて読み解く。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-06-29-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Claude Codeの「舵取り」を体系化する — skills / hooks / rules / subagents の役割分担と、入れ子サブエージェント・Artifacts という地ならし — デイリー技術深掘り 読み物"><meta property="og:description" content="Anthropicは自社の新規プロダクションコードの約8割をClaudeが書くと明かした。これだけ任せるなら、汎用アシスタントを「自分のコードベースの専門家」に寄せる手段が要る。公式ブログが整理した4つの制御手段——skills・hooks・rules・subagents——を、6月の新機能（入れ子サブエージェント、フォールバックモデルチェーン、Artifacts）と合わせて読み解く。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-06-29-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>Claude Codeの「舵取り」を体系化する — skills / hooks / rules / subagents の役割分担と、入れ子サブエージェント・Artifacts という地ならし</h1> <p class="lede">Anthropicは自社の新規プロダクションコードの約8割をClaudeが書くと明かした。これだけ任せるなら、汎用アシスタントを「自分のコードベースの専門家」に寄せる手段が要る。公式ブログが整理した4つの制御手段——skills・hooks・rules・subagents——を、6月の新機能（入れ子サブエージェント、フォールバックモデルチェーン、Artifacts）と合わせて読み解く。</p> <div class="meta"> <span>📅 2026年6月29日</span> <span>⏱ 約3分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="1"><h4 id="sec-1">なぜ今これが話題か</h4>
+<p>VentureBeatは、Anthropicが<b>新規プロダクションコードの約80%をClaudeが執筆</b>していると報じた。人間は設計・レビュー・方向づけに比重を移しつつある。これだけエージェントに任せる前提になると、汎用アシスタントをそのまま使うのではなく、<b>自分のコードベースやワークフローの専門家へ寄せる「舵取り（steering）」</b>が効いてくる。Anthropic公式ブログがその手段を体系立てて整理し、SitePointは6月に入った新機能を10項目で俯瞰した。</p>
+<h4 id="sec-2">何が新しい/重要か</h4>
+<p>公式が挙げる制御手段は4つ。<b>skills</b> は <code>SKILL.md</code> を核にしたフォルダ型の手順パックで、<b>必要時のみ本体が読み込まれる</b>ためトークンコストをほぼ増やさない。<b>hooks</b> はイベント発火で処理を<b>決定論的に強制</b>する。<b>rules</b> は<b>常時効くガードレール</b>。<b>subagents</b> は<b>独立コンテキスト</b>で副次作業を担い、メインの文脈を汚さない。6月はこれに、親が子を<b>最大3階層まで生成できる入れ子サブエージェント</b>、<b>最大3モデルを順に試すフォールバックチェーン</b>、セッション成果をライブHTMLで共有する<b>Artifacts</b>が加わった。</p>
+<figure class='fig'><svg viewBox='0 0 600 220' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='20' text-anchor='middle' font-size='12.5' font-weight='700' fill='#5b27b0'>4つの制御手段の役割分担</text><rect x='20' y='34' width='270' height='80' rx='10' fill='#f3eefb' stroke='#b58bd6'></rect><text x='34' y='56' font-size='11' font-weight='700' fill='#5b27b0'>skills</text><text x='34' y='76' font-size='9.5' fill='#6b4a93'>SKILL.md の手順パック</text><text x='34' y='92' font-size='9.5' fill='#6b4a93'>必要時のみ読込→トークン節約</text><text x='34' y='108' font-size='9.5' fill='#6b4a93'>例: 繰り返す定型手順</text><rect x='310' y='34' width='270' height='80' rx='10' fill='#eef4fd' stroke='#7aa8ef'></rect><text x='324' y='56' font-size='11' font-weight='700' fill='#1456b8'>hooks</text><text x='324' y='76' font-size='9.5' fill='#3a6abf'>イベント発火で決定論的に強制</text><text x='324' y='92' font-size='9.5' fill='#3a6abf'>確率に頼らず必ず実行</text><text x='324' y='108' font-size='9.5' fill='#3a6abf'>例: commit前にlint/test</text><rect x='20' y='126' width='270' height='80' rx='10' fill='#eef7f0' stroke='#6cc69a'></rect><text x='34' y='148' font-size='11' font-weight='700' fill='#1d8a5a'>rules</text><text x='34' y='168' font-size='9.5' fill='#27674a'>常時効くガードレール</text><text x='34' y='184' font-size='9.5' fill='#27674a'>CLAUDE.md と近いが範囲限定可</text><text x='34' y='200' font-size='9.5' fill='#27674a'>例: 触ってはいけない領域</text><rect x='310' y='126' width='270' height='80' rx='10' fill='#fbf4ea' stroke='#e0b271'></rect><text x='324' y='148' font-size='11' font-weight='700' fill='#a76a16'>subagents</text><text x='324' y='168' font-size='9.5' fill='#80561a'>独立コンテキストで副次作業</text><text x='324' y='184' font-size='9.5' fill='#80561a'>最大3階層の入れ子も可</text><text x='324' y='200' font-size='9.5' fill='#80561a'>例: 重い調査・並列探索</text></svg><figcaption>図1：読込タイミングと強制力で4手段を使い分ける。</figcaption></figure>
+<h4 id="sec-3">仕組みのポイント</h4>
+<p>勘所は「<b>いつ読み込まれ、どれだけ強制力があるか</b>」。skills は長大な参照資料を抱えても、呼ばれるまで本体を読まないのでコストがほぼ発生しない。同じ手順を何度もチャットに貼っているなら、それは<b>Skill化の合図</b>だ。一方 CLAUDE.md に常駐させた知識は毎ターン文脈に乗るため、巨大化するとコストと混乱を招く。hooks は確率的なお願いではなく<b>コードによる強制</b>なので、「必ず通したいゲート」に向く。</p>
+<figure class='fig'><pre class='mermaid'>flowchart TD
+  A["やりたいこと"] --> B{"必ず実行させたい?"}
+  B -->|"はい"| C["hooks (決定論的強制)"]
+  B -->|"いいえ"| D{"繰り返す手順か?"}
+  D -->|"はい"| E["skill 化 (必要時のみ読込)"]
+  D -->|"いいえ"| F{"文脈を分けたい重い作業?"}
+  F -->|"はい"| G["subagent (独立コンテキスト)"]
+  F -->|"いいえ"| H["rules / CLAUDE.md で規範化"]</pre><figcaption>図2：「強制力→再利用性→文脈分離」の順に判断すると迷わない。</figcaption></figure>
+<h4 id="sec-4">自分が試すなら</h4>
+<ul><li>このタスクのような毎朝の自動処理の定型手順を <code>SKILL.md</code> に切り出し、CLAUDE.md から重い手順記述を追い出してトークンを節約する。</li><li>調査フェーズを subagent に分離し、メイン文脈を汚さず結論だけ受け取る構成を試す。入れ子は3階層まで。</li><li>成果物のダッシュボードを Artifacts でライブ共有し、URL固定・バージョン復元を体験する。</li></ul>
+<h4 id="sec-5">注意点</h4>
+<blockquote>入れ子サブエージェントやフォールバックチェーンは便利だが、<b>階層とリトライの分だけコストが膨らむ</b>。6月の更新で入ったエージェント単位のコスト按分・スコープ付き権限で、どのエージェントがいくら使ったかを必ず監視する。Artifacts は外部リクエストを遮断する厳格CSPと16MiB上限、Team/Enterpriseの組織内認証メンバー限定という制約も押さえておく。</blockquote>
+<h4 id="sec-6">ひとことまとめ</h4>
+<p>skills=必要時に読む手順、hooks=必ず通すゲート、rules=常時の規範、subagents=文脈を分ける作業。この4軸で舵を取り、入れ子サブエージェントとArtifactsで作業と共有を底上げする。8割をAIが書く時代の主導権は、こうした制御設計に宿る。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://claude.com/blog/steering-claude-code-skills-hooks-rules-subagents-and-more" target="_blank" rel="noopener noreferrer"> Steering Claude Code（Anthropic公式） </a> </li><li> <a href="https://www.sitepoint.com/claude-code-june-2026-10-new-features-devs-need-to-know/" target="_blank" rel="noopener noreferrer"> Claude Code 2026年6月の新機能10選（SitePoint） </a> </li><li> <a href="https://claude.com/blog/artifacts-in-claude-code" target="_blank" rel="noopener noreferrer"> Claude CodeがArtifactsに対応（公式ブログ） </a> </li><li> <a href="https://venturebeat.com/technology/anthropic-says-80-of-its-new-production-code-is-now-authored-by-claude-how-your-enterprise-can-keep-up" target="_blank" rel="noopener noreferrer"> Anthropic、新規本番コードの80%をClaudeが執筆（VentureBeat） </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> なぜ今これが話題か </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 何が新しい/重要か </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 仕組みのポイント </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 自分が試すなら </a> </li><li> <a href="#sec-5" data-toc="sec-5"> 注意点 </a> </li><li> <a href="#sec-6" data-toc="sec-6"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-06-29</div> <div>⏱ 読了 約3分</div> <div>🏷 Claude Code</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

@@ -1,0 +1,84 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>GSAPが完全無料化、App RouterではuseGSAPが正解 — 自動クリーンアップ・scope・contextSafe と書き直されたSplitText 3.13 — デイリー技術深掘り 読み物</title><meta name="description" content="2025年4月、Webflow買収を経てGSAPが商用込みで100%無料化。SplitTextやScrollTriggerなど旧プレミアムが全部使えるようになり、選定理由が変わった。App Routerで安全に使う鍵は @gsap/react の useGSAP()。SSR安全・自動revert・scopeの三点と、約半分のサイズに書き直されたSplitText 3.13を整理する。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-06-29-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="GSAPが完全無料化、App RouterではuseGSAPが正解 — 自動クリーンアップ・scope・contextSafe と書き直されたSplitText 3.13 — デイリー技術深掘り 読み物"><meta property="og:description" content="2025年4月、Webflow買収を経てGSAPが商用込みで100%無料化。SplitTextやScrollTriggerなど旧プレミアムが全部使えるようになり、選定理由が変わった。App Routerで安全に使う鍵は @gsap/react の useGSAP()。SSR安全・自動revert・scopeの三点と、約半分のサイズに書き直されたSplitText 3.13を整理する。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-06-29-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>GSAPが完全無料化、App RouterではuseGSAPが正解 — 自動クリーンアップ・scope・contextSafe と書き直されたSplitText 3.13</h1> <p class="lede">2025年4月、Webflow買収を経てGSAPが商用込みで100%無料化。SplitTextやScrollTriggerなど旧プレミアムが全部使えるようになり、選定理由が変わった。App Routerで安全に使う鍵は @gsap/react の useGSAP()。SSR安全・自動revert・scopeの三点と、約半分のサイズに書き直されたSplitText 3.13を整理する。</p> <div class="meta"> <span>📅 2026年6月29日</span> <span>⏱ 約4分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="1"><h4 id="sec-1">なぜ今これが話題か</h4>
+<p><b>GSAPが2025年4月に100%無料化</b>された。Webflowが2024年秋にGreenSockを買収し、これまで有料のClub GreenSock限定だった<b>SplitText / MorphSVG / DrawSVG / ScrollTrigger / ScrollSmoother / Inertia</b>を含む全機能が、<b>商用利用込みで無償</b>になった。タイムラインベースの精密なシーケンス、スクラブ連動の本格スクロール、文字単位のテキスト演出が課金なしに使える。Motion（旧Framer Motion）が「宣言的に動きを与える」のに対し、GSAPは「<b>命令的なタイムラインで時間軸を細かく組む</b>」のが得意で、両者は併用できる。</p>
+<h4 id="sec-2">何が新しい/重要か</h4>
+<p>App Routerでの正解は <code>@gsap/react</code> の <b>useGSAP()</b>。<code>useLayoutEffect</code>/<code>useEffect</code> のドロップイン置換で、内部の <code>useIsomorphicLayoutEffect</code> により<b>SSR安全</b>。フック中に作られた全アニメ・ScrollTrigger・SplitTextを <code>gsap.context()</code> が記録し、<b>アンマウント時に自動revert</b>する。Strict Modeの二重実行やクライアントナビでの二重登録事故を吸収し、手動 <code>kill()</code> 行脚が要らない。さらに<b>SplitText 3.13で全面書き直し</b>（約7kb、サイズ半減）。<code>mask:'lines'</code> でマスクリビールを内蔵、<code>aria</code> 自動付与、<code>autoSplit</code> でフォント遅延ロードやリサイズ時に自動再分割する。</p>
+<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='20' text-anchor='middle' font-size='12.5' font-weight='700' fill='#1456b8'>Motion と GSAP の思想 ＋ useGSAP の3効能</text><rect x='20' y='34' width='265' height='66' rx='10' fill='#eef4fd' stroke='#7aa8ef'></rect><text x='34' y='56' font-size='11' font-weight='700' fill='#1456b8'>Motion（宣言的）</text><text x='34' y='76' font-size='9.5' fill='#3a6abf'>Reactコンポーネントに動きを付与</text><text x='34' y='92' font-size='9.5' fill='#3a6abf'>レイアウト・状態連動が得意</text><rect x='315' y='34' width='265' height='66' rx='10' fill='#f3eefb' stroke='#b58bd6'></rect><text x='329' y='56' font-size='11' font-weight='700' fill='#5b27b0'>GSAP（命令的）</text><text x='329' y='76' font-size='9.5' fill='#6b4a93'>タイムラインで時間軸を精密制御</text><text x='329' y='92' font-size='9.5' fill='#6b4a93'>scrub・SplitText・複雑シーケンス</text><rect x='20' y='112' width='180' height='72' rx='10' fill='#eef7f0' stroke='#6cc69a'></rect><text x='110' y='134' text-anchor='middle' font-size='10.5' font-weight='700' fill='#1d8a5a'>SSR安全</text><text x='110' y='156' text-anchor='middle' font-size='9.5' fill='#27674a'>isomorphic effect</text><text x='110' y='172' text-anchor='middle' font-size='9.5' fill='#27674a'>'use client' 前提</text><rect x='210' y='112' width='180' height='72' rx='10' fill='#eef7f0' stroke='#6cc69a'></rect><text x='300' y='134' text-anchor='middle' font-size='10.5' font-weight='700' fill='#1d8a5a'>自動revert</text><text x='300' y='156' text-anchor='middle' font-size='9.5' fill='#27674a'>gsap.context が記録</text><text x='300' y='172' text-anchor='middle' font-size='9.5' fill='#27674a'>二重登録を吸収</text><rect x='400' y='112' width='180' height='72' rx='10' fill='#eef7f0' stroke='#6cc69a'></rect><text x='490' y='134' text-anchor='middle' font-size='10.5' font-weight='700' fill='#1d8a5a'>scope</text><text x='490' y='156' text-anchor='middle' font-size='9.5' fill='#27674a'>セレクタをref配下に限定</text><text x='490' y='172' text-anchor='middle' font-size='9.5' fill='#27674a'>他要素を巻き込まない</text></svg><figcaption>図1：宣言的Motionと命令的GSAPの棲み分け、useGSAPが与える3つの効能。</figcaption></figure>
+<h4 id="sec-3">仕組みと最小コード</h4>
+<p>Reactでは <code>document.querySelector</code> ではなく<b>refかscope付きセレクタ</b>を使うのが鉄則。<code>useGSAP({ scope: ref })</code> でセレクタ文字列をコンテナ配下に限定できる。</p>
+<pre><code>'use client';
+import gsap from 'gsap';
+import { useGSAP } from '@gsap/react';
+gsap.registerPlugin(useGSAP);
+
+useGSAP(() => {
+  gsap.from('.box', { y: 40, opacity: 0, stagger: 0.1 });
+}, { scope: ref });   // 自動クリーンアップ + スコープ</code></pre>
+<figure class='fig'><pre class='mermaid'>flowchart TD
+  A["GSAPアニメを作る場所は?"] --> B{"useGSAP のコールバック内?"}
+  B -->|"フック実行中"| C["context が自動記録→自動revert"]
+  B -->|"クリックやタイマー等 実行後"| D["contextSafe(fn) でラップ"]
+  D --> C</pre><figcaption>図2：フック実行後に作るアニメは contextSafe でラップしないと後始末漏れになる。</figcaption></figure>
+<h4 id="sec-4">自分が試すなら</h4>
+<p>ルート/レイアウトはServer Componentのまま保ち、<b>動かす島だけ</b> <code>'use client'</code> に切り出す。reduced-motion対応は <code>gsap.matchMedia()</code> が相性抜群で、<code>(prefers-reduced-motion: reduce)</code> ブロックに「動かさず即完成形」を書けばメディアクエリ変化に自動追従する。宣言的レイアウトはMotion、作り込んだ演出はGSAP、と併用する構成を試したい。</p>
+<h4 id="sec-5">注意点</h4>
+<blockquote>GSAPはDOM/<code>window</code>に触るため <b>'use client' 必須</b>（RSCのままは不可）。App Routerの遷移後に高さが変わると位置がズレるので、画像/フォント確定後に <code>ScrollTrigger.refresh()</code>。ScrollSmootherは重いので、軽量なLenis等も選択肢。プラグインは <code>gsap.registerPlugin()</code> で使用前に登録する。</blockquote>
+<h4 id="sec-6">ひとことまとめ</h4>
+<p>無料化でGSAPの全武器が解禁。App Routerでは useGSAP の「SSR安全・自動revert・scope」が事故を消し、SplitText 3.13がアクセシブルな映画的リビールを手組みなしで実現する。宣言的はMotion、精密演出はGSAPの併用が現実解だ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://gsap.com/resources/React/" target="_blank" rel="noopener noreferrer"> React &amp; GSAP（公式・useGSAP/contextSafe/scope） </a> </li><li> <a href="https://webflow.com/blog/gsap-becomes-free" target="_blank" rel="noopener noreferrer"> Webflow makes GSAP 100% free（無料化告知） </a> </li><li> <a href="https://gsap.com/blog/3-13/" target="_blank" rel="noopener noreferrer"> GSAP 3.13 release（SplitText書き直し） </a> </li><li> <a href="https://gsap.com/docs/v3/Plugins/SplitText/" target="_blank" rel="noopener noreferrer"> SplitText Docs </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> なぜ今これが話題か </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 何が新しい/重要か </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 仕組みと最小コード </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 自分が試すなら </a> </li><li> <a href="#sec-5" data-toc="sec-5"> 注意点 </a> </li><li> <a href="#sec-6" data-toc="sec-6"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-06-29</div> <div>⏱ 読了 約4分</div> <div>🏷 Next.js</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
