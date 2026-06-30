@@ -1,0 +1,77 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Claude Code、6月の地殻変動 — 課金が「対話」と「自動化」で分かれ、/cd・Tool(param:value)・mcp login で実務が固まる — デイリー技術深掘り 読み物</title><meta name="description" content="2026年6月15日、AnthropicはAgent SDK・ヘッドレス実行・GitHub Actionsをサブスク枠から切り離し、自動化分をAPI料金の月次クレジットへ移した。同じ月、CLI側も /cd・パラメータ値ベースの権限・シェルからのMCP認証で実務装備が一段進む。対話補助から自動化基盤への移行を、課金と機能の両面から読む。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-06-30-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Claude Code、6月の地殻変動 — 課金が「対話」と「自動化」で分かれ、/cd・Tool(param:value)・mcp login で実務が固まる — デイリー技術深掘り 読み物"><meta property="og:description" content="2026年6月15日、AnthropicはAgent SDK・ヘッドレス実行・GitHub Actionsをサブスク枠から切り離し、自動化分をAPI料金の月次クレジットへ移した。同じ月、CLI側も /cd・パラメータ値ベースの権限・シェルからのMCP認証で実務装備が一段進む。対話補助から自動化基盤への移行を、課金と機能の両面から読む。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-06-30-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>Claude Code、6月の地殻変動 — 課金が「対話」と「自動化」で分かれ、/cd・Tool(param:value)・mcp login で実務が固まる</h1> <p class="lede">2026年6月15日、AnthropicはAgent SDK・ヘッドレス実行・GitHub Actionsをサブスク枠から切り離し、自動化分をAPI料金の月次クレジットへ移した。同じ月、CLI側も /cd・パラメータ値ベースの権限・シェルからのMCP認証で実務装備が一段進む。対話補助から自動化基盤への移行を、課金と機能の両面から読む。</p> <div class="meta"> <span>📅 2026年6月30日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="1"><h4 id="sec-1">なぜ今これが話題か</h4>
+<p>Claude Code はこの半年で「対話的なコーディング補助」から「複数エージェントを束ねる自動化基盤」へと重心を移してきた。その地殻変動が会計に表れたのが<b>2026年6月15日の課金変更</b>だ。Anthropic は <b>Agent SDK</b>・<b>ヘッドレス実行（<code>claude -p</code>）</b>・<b>Claude Code GitHub Actions</b>・サードパーティ製エージェントを、これまでの月額サブスクリプションの利用制限から外し、<b>API 料金で課金される別建ての月次クレジット</b>へ移した。「人が画面の前で打つ利用」と「プログラムが回す利用」が、ようやく会計上はっきり分離されたことになる。</p>
+<h4 id="sec-2">何が変わったか</h4>
+<p>同じ6月、CLI（v2.1.153〜v2.1.178）側も実務装備が進んだ。<b><code>/cd</code></b>（v2.1.169）はプロンプトキャッシュを壊さずにセッションの作業ディレクトリを移せる。権限は <b><code>Tool(param:value)</code></b> 構文が入り、ツール単位ではなく<b>入力パラメータの値まで見て</b>許可・拒否できる。モデルは <b>Claude Opus 4.7</b> が Max/Team Premium の既定になり、最上位の <b><code>xhigh</code></b> エフォートも選べる。週次更新では対話メニュー無しでシェルから認証する <b><code>claude mcp login</code>/<code>logout</code></b>、シェルモードが <code>npm test</code> などの<b>コマンド出力に自動で応答</b>、<b><code>/rewind</code> が <code>/clear</code> 前まで遡及</b>、背景サブエージェントの権限プロンプトをメインに表示——といった細かな改善が並んだ。</p>
+<figure class='fig'><svg viewBox='0 0 600 220' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='20' text-anchor='middle' font-size='12.5' font-weight='700' fill='#5b27b0'>6/15 課金分離：対話はサブスク枠／自動化はAPI月次クレジット</text><rect x='20' y='36' width='270' height='150' rx='12' fill='#f3eefb' stroke='#b58bd6'></rect><text x='34' y='58' font-size='11.5' font-weight='700' fill='#5b27b0'>サブスク枠（対話的利用）</text><text x='34' y='84' font-size='10' fill='#6b4a93'>・ターミナルでの対話セッション</text><text x='34' y='104' font-size='10' fill='#6b4a93'>・IDE 連携の手動操作</text><text x='34' y='124' font-size='10' fill='#6b4a93'>・既存の月額プランの制限内</text><text x='34' y='156' font-size='10' font-style='italic' fill='#8a6cb0'>人が前にいる利用</text><rect x='310' y='36' width='270' height='150' rx='12' fill='#eef4fd' stroke='#7aa8ef'></rect><text x='324' y='58' font-size='11.5' font-weight='700' fill='#1456b8'>API月次クレジット（自動化）</text><text x='324' y='84' font-size='10' fill='#3a6abf'>・Agent SDK</text><text x='324' y='104' font-size='10' fill='#3a6abf'>・ヘッドレス claude -p</text><text x='324' y='124' font-size='10' fill='#3a6abf'>・GitHub Actions／3rd party agent</text><text x='324' y='156' font-size='10' font-style='italic' fill='#5a86c8'>プログラムが回す利用</text></svg><figcaption>図1：同じClaude Codeでも、利用の「形」で課金経路が分かれた。</figcaption></figure>
+<h4 id="sec-3">仕組みのポイント</h4>
+<p>分離のキモは「自動化はトークンを大量に焼く」前提が明示された点だ。入れ子サブエージェントやフォールバックチェーンを多用するほど、リトライと階層の分だけ消費が膨らむ。サブスクの一律制限に押し込めると、ヘビーな自動化が他の対話利用を圧迫してしまう。別建ての従量クレジットにすることで、自動化の実コストが可視化され、CI やバッチの設計を「いくら使うか」で考えられるようになる。<code>Tool(param:value)</code> 権限はこの流れと相性が良く、たとえば「<code>Bash(rm:*)</code> は拒否」のように危険な値だけを止める粒度の防御を組める。</p>
+<figure class='fig'><pre class='mermaid'>flowchart TD
+  A["ツール呼び出し"] --> B{"権限ルールの粒度"}
+  B -->|"旧: ツール単位"| C["Bash 全体を許可/拒否"]
+  B -->|"新: Tool(param:value)"| D["パラメータ値で判定"]
+  D --> E["例: Bash(rm:*) は拒否"]
+  D --> F["例: Bash(npm test) は許可"]</pre><figcaption>図2：param:value で「危険な値だけ止める」現実的なガードを組める。</figcaption></figure>
+<h4 id="sec-4">自分が試すなら</h4>
+<ul><li>このタスクのような毎朝の自動処理は <code>claude -p</code> 経路に乗るので、6/15以降は<b>API月次クレジットの消費</b>として別枠で見積もる。</li><li>危険操作は <code>Tool(param:value)</code> でピンポイントに拒否ルール化し、許可は広く取りすぎない。</li><li>長い調査セッションは <code>/cd</code> でキャッシュを保ったまま対象リポジトリへ移動して使い回す。</li></ul>
+<h4 id="sec-5">注意点</h4>
+<blockquote>自動化を多用するなら、6/15の課金分離で<b>想定外のAPI請求</b>が出ていないかを最初に確認したい。ヘッドレスやGitHub Actionsを回している人ほど影響が大きい。エージェント単位のコスト按分・スコープ付き権限と合わせ、「どの自動化がいくら使ったか」を必ず監視する。</blockquote>
+<h4 id="sec-6">ひとことまとめ</h4>
+<p>6月のClaude Codeは、課金で「対話」と「自動化」を分け、CLIで <code>/cd</code>・<code>Tool(param:value)</code>・<code>claude mcp login</code> を足して実務基盤を固めた。自動化前提で使うなら、コストの見える化と値ベースの権限設計が主導権を握る。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://www.pravinkumar.co/blog/claude-june-15-billing-change-explained-2026" target="_blank" rel="noopener noreferrer"> 6月15日課金変更の解説（Agent SDK・headless・Actionsを分離） </a> </li><li> <a href="https://ai-heartland.com/news/claude-code-june-2026-update/" target="_blank" rel="noopener noreferrer"> Claude Code 6月版アップデートまとめ（/cd・Tool(param:value)・Opus 4.7） </a> </li><li> <a href="https://claudefa.st/blog/guide/changelog" target="_blank" rel="noopener noreferrer"> Claude Code 第26週changelog（mcp login・シェル出力応答・/rewind） </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> なぜ今これが話題か </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 何が変わったか </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 仕組みのポイント </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 自分が試すなら </a> </li><li> <a href="#sec-5" data-toc="sec-5"> 注意点 </a> </li><li> <a href="#sec-6" data-toc="sec-6"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-06-30</div> <div>⏱ 読了 約3分</div> <div>🏷 Claude Code</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
