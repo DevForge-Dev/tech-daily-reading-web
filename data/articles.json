@@ -1,12 +1,78 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-06-29T04:48:58.904Z",
+  "generatedAt": "2026-06-30T04:50:38.119Z",
   "topics": [
     "Claude Code",
     "Next.js",
     "Flutter"
   ],
   "articles": [
+    {
+      "id": "2026-06-30-claude-code",
+      "date": "2026-06-30",
+      "topic": "Claude Code",
+      "title": "Claude Code、6月の地殻変動 — 課金が「対話」と「自動化」で分かれ、/cd・Tool(param:value)・mcp login で実務が固まる",
+      "lede": "2026年6月15日、AnthropicはAgent SDK・ヘッドレス実行・GitHub Actionsをサブスク枠から切り離し、自動化分をAPI料金の月次クレジットへ移した。同じ月、CLI側も /cd・パラメータ値ベースの権限・シェルからのMCP認証で実務装備が一段進む。対話補助から自動化基盤への移行を、課金と機能の両面から読む。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>Claude Code はこの半年で「対話的なコーディング補助」から「複数エージェントを束ねる自動化基盤」へと重心を移してきた。その地殻変動が会計に表れたのが<b>2026年6月15日の課金変更</b>だ。Anthropic は <b>Agent SDK</b>・<b>ヘッドレス実行（<code>claude -p</code>）</b>・<b>Claude Code GitHub Actions</b>・サードパーティ製エージェントを、これまでの月額サブスクリプションの利用制限から外し、<b>API 料金で課金される別建ての月次クレジット</b>へ移した。「人が画面の前で打つ利用」と「プログラムが回す利用」が、ようやく会計上はっきり分離されたことになる。</p>\n<h4>何が変わったか</h4>\n<p>同じ6月、CLI（v2.1.153〜v2.1.178）側も実務装備が進んだ。<b><code>/cd</code></b>（v2.1.169）はプロンプトキャッシュを壊さずにセッションの作業ディレクトリを移せる。権限は <b><code>Tool(param:value)</code></b> 構文が入り、ツール単位ではなく<b>入力パラメータの値まで見て</b>許可・拒否できる。モデルは <b>Claude Opus 4.7</b> が Max/Team Premium の既定になり、最上位の <b><code>xhigh</code></b> エフォートも選べる。週次更新では対話メニュー無しでシェルから認証する <b><code>claude mcp login</code>/<code>logout</code></b>、シェルモードが <code>npm test</code> などの<b>コマンド出力に自動で応答</b>、<b><code>/rewind</code> が <code>/clear</code> 前まで遡及</b>、背景サブエージェントの権限プロンプトをメインに表示——といった細かな改善が並んだ。</p>\n<figure class='fig'><svg viewBox='0 0 600 220' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='20' text-anchor='middle' font-size='12.5' font-weight='700' fill='#5b27b0'>6/15 課金分離：対話はサブスク枠／自動化はAPI月次クレジット</text><rect x='20' y='36' width='270' height='150' rx='12' fill='#f3eefb' stroke='#b58bd6'/><text x='34' y='58' font-size='11.5' font-weight='700' fill='#5b27b0'>サブスク枠（対話的利用）</text><text x='34' y='84' font-size='10' fill='#6b4a93'>・ターミナルでの対話セッション</text><text x='34' y='104' font-size='10' fill='#6b4a93'>・IDE 連携の手動操作</text><text x='34' y='124' font-size='10' fill='#6b4a93'>・既存の月額プランの制限内</text><text x='34' y='156' font-size='10' font-style='italic' fill='#8a6cb0'>人が前にいる利用</text><rect x='310' y='36' width='270' height='150' rx='12' fill='#eef4fd' stroke='#7aa8ef'/><text x='324' y='58' font-size='11.5' font-weight='700' fill='#1456b8'>API月次クレジット（自動化）</text><text x='324' y='84' font-size='10' fill='#3a6abf'>・Agent SDK</text><text x='324' y='104' font-size='10' fill='#3a6abf'>・ヘッドレス claude -p</text><text x='324' y='124' font-size='10' fill='#3a6abf'>・GitHub Actions／3rd party agent</text><text x='324' y='156' font-size='10' font-style='italic' fill='#5a86c8'>プログラムが回す利用</text></svg><figcaption>図1：同じClaude Codeでも、利用の「形」で課金経路が分かれた。</figcaption></figure>\n<h4>仕組みのポイント</h4>\n<p>分離のキモは「自動化はトークンを大量に焼く」前提が明示された点だ。入れ子サブエージェントやフォールバックチェーンを多用するほど、リトライと階層の分だけ消費が膨らむ。サブスクの一律制限に押し込めると、ヘビーな自動化が他の対話利用を圧迫してしまう。別建ての従量クレジットにすることで、自動化の実コストが可視化され、CI やバッチの設計を「いくら使うか」で考えられるようになる。<code>Tool(param:value)</code> 権限はこの流れと相性が良く、たとえば「<code>Bash(rm:*)</code> は拒否」のように危険な値だけを止める粒度の防御を組める。</p>\n<figure class='fig'><pre class='mermaid'>flowchart TD\n  A[\"ツール呼び出し\"] --> B{\"権限ルールの粒度\"}\n  B -->|\"旧: ツール単位\"| C[\"Bash 全体を許可/拒否\"]\n  B -->|\"新: Tool(param:value)\"| D[\"パラメータ値で判定\"]\n  D --> E[\"例: Bash(rm:*) は拒否\"]\n  D --> F[\"例: Bash(npm test) は許可\"]</pre><figcaption>図2：param:value で「危険な値だけ止める」現実的なガードを組める。</figcaption></figure>\n<h4>自分が試すなら</h4>\n<ul><li>このタスクのような毎朝の自動処理は <code>claude -p</code> 経路に乗るので、6/15以降は<b>API月次クレジットの消費</b>として別枠で見積もる。</li><li>危険操作は <code>Tool(param:value)</code> でピンポイントに拒否ルール化し、許可は広く取りすぎない。</li><li>長い調査セッションは <code>/cd</code> でキャッシュを保ったまま対象リポジトリへ移動して使い回す。</li></ul>\n<h4>注意点</h4>\n<blockquote>自動化を多用するなら、6/15の課金分離で<b>想定外のAPI請求</b>が出ていないかを最初に確認したい。ヘッドレスやGitHub Actionsを回している人ほど影響が大きい。エージェント単位のコスト按分・スコープ付き権限と合わせ、「どの自動化がいくら使ったか」を必ず監視する。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>6月のClaude Codeは、課金で「対話」と「自動化」を分け、CLIで <code>/cd</code>・<code>Tool(param:value)</code>・<code>claude mcp login</code> を足して実務基盤を固めた。自動化前提で使うなら、コストの見える化と値ベースの権限設計が主導権を握る。</p>",
+      "sources": [
+        {
+          "title": "6月15日課金変更の解説（Agent SDK・headless・Actionsを分離）",
+          "url": "https://www.pravinkumar.co/blog/claude-june-15-billing-change-explained-2026"
+        },
+        {
+          "title": "Claude Code 6月版アップデートまとめ（/cd・Tool(param:value)・Opus 4.7）",
+          "url": "https://ai-heartland.com/news/claude-code-june-2026-update/"
+        },
+        {
+          "title": "Claude Code 第26週changelog（mcp login・シェル出力応答・/rewind）",
+          "url": "https://claudefa.st/blog/guide/changelog"
+        }
+      ]
+    },
+    {
+      "id": "2026-06-30-nextjs",
+      "date": "2026-06-30",
+      "topic": "Next.js",
+      "title": "ツールチップに JS ライブラリはもう要らない — CSS Anchor Positioning が Baseline 2026 到達、App Router では RSC のまま動く",
+      "lede": "Floating UI / Popper.js が担ってきた『要素を別要素に追従させ、画面端で回り込ませる』処理が、2026年初頭に主要3ブラウザ出揃いで純CSS化した。position-anchor / anchor() / position-area / position-try-fallbacks。Popover API と組めば 'use client' もハイドレーションも不要で、INPとバンドルに効く。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>ツールチップ・ポップオーバー・ドロップダウンを「トリガーに追従させ、画面端では自動で反対側へ回り込ませる」処理は、長らく <b>Floating UI / Popper.js</b> など JS ライブラリの仕事だった。スクロールやリサイズのたびに <code>getBoundingClientRect()</code> を読んで <code>top/left</code> を書き戻す——典型的なレイアウトスラッシング源だ。<b>CSS Anchor Positioning</b> はこれをブラウザネイティブのCSSだけで完結させる仕様で、<b>Firefox 147（2026年1月13日）でデフォルト有効化</b>され主要3ブラウザが揃い、<b>Baseline 2026</b> に到達した。「ツールチップにJSライブラリは要らない」と言える段階だ。</p>\n<h4>何が新しいか</h4>\n<p>中核は3点セット。アンカー側に <code>anchor-name: --tip;</code>、配置側（<code>position: absolute/fixed</code> 必須）に <code>position-anchor: --tip;</code>、そして配置の指定だ。配置は <b><code>position-area</code></b> でアンカー中心の<b>3×3グリッド</b>にキーワードで置く（<code>bottom center</code> 等）のが最も手軽。<code>anchor()</code> 関数で辺を参照したり、<code>anchor-size(width)</code> でトリガー幅にドロップダウンを揃えるのも定番だ。画面端では <b><code>position-try-fallbacks: flip-block, flip-inline;</code></b> がはみ出しを検知して収まる位置へ反転（Floating UIの <code>flip()</code> 相当）、<code>position-visibility: anchors-visible;</code> はアンカーが画面外に出たらポップオーバーも隠す。</p>\n<figure class='fig'><svg viewBox='0 0 600 230' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='18' text-anchor='middle' font-size='12.5' font-weight='700' fill='#1456b8'>position-area：アンカー中心の3×3グリッドで置く</text><g stroke='#9cc0f5' fill='none'><rect x='220' y='40' width='160' height='150'/><line x1='220' y1='90' x2='380' y2='90'/><line x1='220' y1='140' x2='380' y2='140'/><line x1='273' y1='40' x2='273' y2='190'/><line x1='327' y1='40' x2='327' y2='190'/></g><rect x='273' y='90' width='54' height='50' fill='#1f6feb'/><text x='300' y='119' text-anchor='middle' font-size='9.5' fill='#fff'>anchor</text><text x='246' y='66' text-anchor='middle' font-size='8.5' fill='#5a86c8'>top start</text><text x='300' y='66' text-anchor='middle' font-size='8.5' fill='#5a86c8'>top center</text><text x='354' y='66' text-anchor='middle' font-size='8.5' fill='#5a86c8'>top end</text><rect x='273' y='150' width='54' height='34' rx='5' fill='#eef4fd' stroke='#7aa8ef'/><text x='300' y='171' text-anchor='middle' font-size='8.5' fill='#1456b8'>bottom center</text><text x='470' y='110' font-size='10' fill='#3a6abf'>端ではみ出すと</text><text x='470' y='130' font-size='10' fill='#3a6abf'>flip-block で</text><text x='470' y='150' font-size='10' fill='#3a6abf'>上下反転</text><path d='M408 140 L455 140' stroke='#1f6feb' stroke-width='1.5' marker-end='url(#ar)'/><defs><marker id='ar' markerWidth='8' markerHeight='8' refX='6' refY='3' orient='auto'><path d='M0,0 L6,3 L0,6 z' fill='#1f6feb'/></marker></defs></svg><figcaption>図1：3×3グリッドへキーワードで配置し、端では宣言的に反転。</figcaption></figure>\n<h4>仕組みのポイント（App Router）</h4>\n<p>App Router 的に効くのは <b>純CSSで完結＝<code>'use client'</code> 不要、Server Component のまま使える</b>こと。さらに <b>Popover API</b>（<code>popover</code> / <code>popovertarget</code>）と組めば、開閉・Escクローズ・外側クリックで閉じる・top-layer重なり（z-index地獄回避）まで<b>宣言的HTML</b>で賄え、ハイドレーションもクライアントJSもゼロでリッチなオーバーレイが組める。INP とバンドルサイズに直接効く。</p>\n<figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='14' y='28' width='270' height='104' rx='10' fill='#fdeef0' stroke='#e09aa6'/><text x='28' y='50' font-size='11' font-weight='700' fill='#b83a4a'>旧：JS（Floating UI 等）</text><text x='28' y='72' font-size='9.5' fill='#9a4452'>rect 計測 → 座標計算 → top/left 書戻し</text><text x='28' y='90' font-size='9.5' fill='#9a4452'>scroll/resize ごとに再計算</text><text x='28' y='112' font-size='9.5' fill='#9a4452'>レイアウトスラッシング＋JS実行</text><rect x='316' y='28' width='270' height='104' rx='10' fill='#eef7f0' stroke='#6cc69a'/><text x='330' y='50' font-size='11' font-weight='700' fill='#1d8a5a'>新：純CSS（Anchor Positioning）</text><text x='330' y='72' font-size='9.5' fill='#27674a'>position-anchor / position-area で宣言</text><text x='330' y='90' font-size='9.5' fill='#27674a'>端は position-try-fallbacks が自動反転</text><text x='330' y='112' font-size='9.5' fill='#27674a'>RSCのまま・JSゼロ・INPに有利</text></svg><figcaption>図2：座標計算をブラウザに委ね、JS実行と再計算を消す。</figcaption></figure>\n<h4>自分が試すなら</h4>\n<ul><li>軽量な自前ツールチップ／メニューを、まず <code>position-area</code> + Popover API で置き換える（shadcn/Radixは当面Floating UIのまま）。</li><li>未対応ブラウザ向けに <code>@supports (anchor-name: --x)</code> で素の配置をフォールバックにして段階導入する。</li></ul>\n<h4>注意点</h4>\n<blockquote>リスト内で同じ <code>anchor-name: --tip</code> を量産すると、各 <code>position-anchor</code> が DOM上「最後の」アンカーに解決され全部同じ場所に出る。<b><code>useId()</code> で一意な dashed-ident</b> を生成して回避する（または <code>anchor-scope</code>）。Chrome 125→129で <b><code>inset-area</code>→<code>position-area</code></b> 等の改名があり、古い記事のコピペは無言で効かない。ホバー型ツールチップの完全宣言化はまだ Chrome 限定なので注意。</blockquote>\n<h4>ひとことまとめ</h4>\n<p><code>anchor-name</code>＋<code>position-area</code>＋<code>position-try-fallbacks</code> の3点で、ツールチップ配置はJS無し・RSCのままになった。Popover API と組んで、軽いオーバーレイから置き換えるのが現実的な第一歩。</p>",
+      "sources": [
+        {
+          "title": "MDN: Using CSS anchor positioning",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Anchor_positioning/Using"
+        },
+        {
+          "title": "web.dev blog: New to the web platform in January 2026（Firefox 147 default-on）",
+          "url": "https://web.dev/blog/web-platform-01-2026"
+        },
+        {
+          "title": "CSS-Tricks: CSS Anchor Positioning Guide",
+          "url": "https://css-tricks.com/css-anchor-positioning-guide/"
+        }
+      ]
+    },
+    {
+      "id": "2026-06-30-flutter",
+      "date": "2026-06-30",
+      "topic": "Flutter",
+      "title": "Flutter 3.44 / Dart 3.12 の主役は AI-Native — Genkit Dart と GenUI（A2UI v0.9）で『LLMが画面を組む』を安全に",
+      "lede": "Google I/O 2026 で示された Flutter の今年の軸はAIネイティブ。Genkit Dart(preview)はGoogle/Anthropic/OpenAIを統一type-safe APIで扱い、GenUI SDK は A2UI プロトコル上でLLMが生成したJSON UIレシピを『許可済みウィジェットカタログ』から組み立てる。存在しないウィジェットは発明できない安全設計が肝だ。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>安定版は <b>Flutter 3.44 / Dart 3.12</b>（Google I/O 2026 発表、次の安定版は2026年8月予定）。今年の主役は個別ウィジェットの新作ではなく、<b>AIネイティブな開発スタック</b>そのものだ。LLM にUIや処理を委ねる前提で、フレームワーク側が「安全に任せる」仕組みを用意してきた。中心が <b>Genkit Dart</b> と <b>GenUI SDK</b> の2つで、後者の SDK ダウンロードは<b>年初比 +500%</b>と伸びている。</p>\n<h4>何が新しいか</h4>\n<p><b>Genkit Dart（preview）</b>は、モデル戦争に左右されず <b>Google / Anthropic / OpenAI および互換モデル</b>を<b>統一された type-safe API</b> で扱える AI アプリ構築フレームワーク。サーバ〜クライアントを横断するエージェント型 Dart/Flutter アプリを組める。<b>GenUI SDK</b> はオープンな <b>A2UI（Agent-to-UI）プロトコル v0.9</b> 上に構築され、LLM が <b>JSONベースの宣言的UIレシピ</b>を生成し、アプリが<b>許可済みの Flutter ウィジェットカタログ</b>からその場で画面を組み立てる。モデルが Dart コードを実行するのではなく、<b>カタログに無いウィジェットは発明できない</b>のが安全設計の核だ。あわせて Dart 3.12 は <code>.value</code> の <b>dot shorthands</b> を正式化、Web は CanvasKit/Skwasm の GC 共有や DevTools の WASM 既定化、Widget Previewer 改善でIDEメモリ最大50%削減が入った。採用例として<b>実車販売中の 2026 Toyota RAV4</b> のマルチメディアUIが Flutter で動く。</p>\n<figure class='fig'><pre class='mermaid'>flowchart TD\n  A[\"ユーザー要求\"] --> B[\"LLM\"]\n  B --> C[\"JSON UIレシピ (A2UI v0.9)\"]\n  C --> D{\"許可済みウィジェットカタログ\"}\n  D -->|\"カタログ内\"| E[\"その場で画面を組立→描画\"]\n  D -->|\"カタログ外\"| F[\"拒否：存在しないwidgetは発明不可\"]</pre><figcaption>図1：LLMはコードを実行せず、許可カタログの範囲でだけUIを組む。</figcaption></figure>\n<h4>仕組みのポイント</h4>\n<p>GenUI の安全モデルは「<b>生成するのはコードではなくレシピ</b>」という割り切りにある。LLM の出力は宣言的JSONに限定され、実行可能な Dart には触れない。描画できるのは開発者が事前に許可したウィジェットだけなので、未知の挙動や任意コード実行のリスクが構造的に閉じる。Genkit Dart 側は、モデルを差し替えても呼び出しコードが変わらない <b>type-safe な統一API</b>を提供し、ベンダーロックインを避けつつエージェントの推論部分を組み替えられる。</p>\n<figure class='fig'><svg viewBox='0 0 600 180' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='20' text-anchor='middle' font-size='12.5' font-weight='700' fill='#0277bd'>Genkit Dart：モデルを統一APIで束ねる</text><rect x='20' y='40' width='150' height='34' rx='8' fill='#e3f3fb' stroke='#56c5f5'/><text x='95' y='62' text-anchor='middle' font-size='10.5' fill='#0a66b9'>Google</text><rect x='20' y='84' width='150' height='34' rx='8' fill='#e3f3fb' stroke='#56c5f5'/><text x='95' y='106' text-anchor='middle' font-size='10.5' fill='#0a66b9'>Anthropic</text><rect x='20' y='128' width='150' height='34' rx='8' fill='#e3f3fb' stroke='#56c5f5'/><text x='95' y='150' text-anchor='middle' font-size='10.5' fill='#0a66b9'>OpenAI / 互換</text><rect x='235' y='78' width='150' height='46' rx='10' fill='#0277bd'/><text x='310' y='100' text-anchor='middle' font-size='10.5' font-weight='700' fill='#fff'>統一 type-safe API</text><text x='310' y='116' text-anchor='middle' font-size='9' fill='#cdeefb'>呼び出しコードは不変</text><rect x='446' y='78' width='140' height='46' rx='10' fill='#e8f5ea' stroke='#6cc69a'/><text x='516' y='105' text-anchor='middle' font-size='10.5' font-weight='700' fill='#1d8a5a'>Dart/Flutter</text><path d='M170 57 L233 92' stroke='#56c5f5' stroke-width='1.4'/><path d='M170 101 L233 101' stroke='#56c5f5' stroke-width='1.4'/><path d='M170 145 L233 110' stroke='#56c5f5' stroke-width='1.4'/><path d='M385 101 L444 101' stroke='#0277bd' stroke-width='1.6'/></svg><figcaption>図2：モデルを差し替えても呼び出しコードが変わらない。</figcaption></figure>\n<h4>自分が試すなら</h4>\n<ul><li>小さなフォームやカード程度の画面で GenUI の<b>許可カタログ</b>を定義し、LLM生成レシピがカタログ外を要求したら落ちる挙動を確かめる。</li><li>Genkit Dart で同じエージェントを Anthropic↔OpenAI に差し替え、呼び出しコード無改修で動くかを検証する。</li></ul>\n<h4>注意点</h4>\n<blockquote>Genkit Dart は <b>preview</b>、A2UI も <b>v0.9</b> と発展途上で、API は変わり得る。GenUIの安全性は「許可カタログの設計」に依存するので、<b>何を許可するかの線引きが開発者の責務</b>になる。描画経路では HCPP（Hybrid Composition++）が Android API34+ で <b>opt-inフラグ</b>段階な点も踏まえて採用する。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>Flutter 3.44/Dart 3.12 はAIネイティブが軸。Genkit Dart がモデルを統一APIで束ね、GenUI＋A2UIが「LLMはレシピだけ作り、描画は許可カタログ内」に閉じて安全に画面を生成する。preview段階だが方向性は明快だ。</p>",
+      "sources": [
+        {
+          "title": "Flutter at Google I/O 2026",
+          "url": "https://medium.com/flutter-community/flutter-at-google-i-o-2026-4fe9dcc8a849"
+        },
+        {
+          "title": "Generative UI in Flutter: GenUI and the A2UI protocol",
+          "url": "https://stackademic.com/blog/generative-ui-in-flutter-genui-and-the-a2ui-protocol"
+        },
+        {
+          "title": "Flutter docs: What's new",
+          "url": "https://docs.flutter.dev/release/whats-new"
+        }
+      ]
+    },
     {
       "id": "2026-06-29-claude-code",
       "date": "2026-06-29",
