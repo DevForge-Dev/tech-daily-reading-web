@@ -1,0 +1,77 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>拡張機構が『選び分け』の時代へ — hooks/subagents/skills と階層サブエージェント3段、6月の総仕上げ — デイリー技術深掘り 読み物</title><meta name="description" content="7月1日のダイジェストは、6月の機能ラッシュを『品質・信頼性』で締める公式アップデートと、拡張機構(hooks/subagents/skills)の使い分けを説く実践記事が並んだ。階層的サブエージェント(最大3段)・dynamic workflows・Artifactsベータに、『新規本番コードの約80%をClaudeが生成』という数字まで。対話補助から自動化基盤への移行がはっきり形になってきた。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-01-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="拡張機構が『選び分け』の時代へ — hooks/subagents/skills と階層サブエージェント3段、6月の総仕上げ — デイリー技術深掘り 読み物"><meta property="og:description" content="7月1日のダイジェストは、6月の機能ラッシュを『品質・信頼性』で締める公式アップデートと、拡張機構(hooks/subagents/skills)の使い分けを説く実践記事が並んだ。階層的サブエージェント(最大3段)・dynamic workflows・Artifactsベータに、『新規本番コードの約80%をClaudeが生成』という数字まで。対話補助から自動化基盤への移行がはっきり形になってきた。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-01-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>拡張機構が『選び分け』の時代へ — hooks/subagents/skills と階層サブエージェント3段、6月の総仕上げ</h1> <p class="lede">7月1日のダイジェストは、6月の機能ラッシュを『品質・信頼性』で締める公式アップデートと、拡張機構(hooks/subagents/skills)の使い分けを説く実践記事が並んだ。階層的サブエージェント(最大3段)・dynamic workflows・Artifactsベータに、『新規本番コードの約80%をClaudeが生成』という数字まで。対話補助から自動化基盤への移行がはっきり形になってきた。</p> <div class="meta"> <span>📅 2026年7月1日</span> <span>⏱ 約3分</span> <span>🔗 出典 5 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="1"><h4 id="sec-1">なぜ今これが話題か</h4>
+<p>この半年でClaude Codeは「対話的なコーディング補助」から「複数エージェントを束ねる自動化基盤」へ重心を移してきた。6月はその総仕上げの月で、7月1日の公式「What's new」は新機能ではなく<b>品質・信頼性</b>——組織単位の既定モデル、読みやすいセッション名、クリック可能な添付、<b>MCP耐障害性とOAuth処理の改善</b>、長時間セッションのCPU/メモリ低減——を前面に出した。派手さより「毎日安心して回せるか」に軸足が移った合図だ。</p>
+<h4 id="sec-2">何が新しいか</h4>
+<p>SitePointの「June 2026: 10 New Features」は開発者が押さえるべき目玉として、親が子を、子がさらに子を生む<b>階層的サブエージェント生成（最大3段）</b>と、大規模課題向けの<b>dynamic workflows</b>、そしてセッション出力をその場で更新される共有ライブページに変える<b>Artifactsベータ</b>を挙げる（この読み物自体がArtifacts運用の一例）。加えてTeam/Enterprise向けに<b>Trusted Devices</b>が入り、リモート操作前のデバイス検証を必須化できる。</p>
+<figure class='fig'><svg viewBox='0 0 600 232' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='20' text-anchor='middle' font-size='12.5' font-weight='700' fill='#5b27b0'>拡張機構の選び分け：目的が違えば道具も違う</text><rect x='18' y='34' width='276' height='84' rx='11' fill='#f3eefb' stroke='#b58bd6'></rect><text x='32' y='56' font-size='12' font-weight='700' fill='#5b27b0'>hook</text><text x='32' y='76' font-size='10' fill='#6b4a93'>決定論的にルールを強制</text><text x='32' y='94' font-size='10' fill='#6b4a93'>例: コミット前に整形/検査</text><text x='32' y='110' font-size='9.5' font-style='italic' fill='#8a6cb0'>「必ずこうする」を保証</text><rect x='306' y='34' width='276' height='84' rx='11' fill='#eef4fd' stroke='#7aa8ef'></rect><text x='320' y='56' font-size='12' font-weight='700' fill='#1456b8'>subagent</text><text x='320' y='76' font-size='10' fill='#3a6abf'>独立文脈の並列専門ワーカー</text><text x='320' y='94' font-size='10' fill='#3a6abf'>例: 多数ファイルの調査を委譲</text><text x='320' y='110' font-size='9.5' font-style='italic' fill='#5a86c8'>本体を汚さず集中</text><rect x='18' y='128' width='276' height='84' rx='11' fill='#eefaf1' stroke='#79c99a'></rect><text x='32' y='150' font-size='12' font-weight='700' fill='#1c7c4a'>skill</text><text x='32' y='170' font-size='10' fill='#2f7d54'>ドメインロジック＋補助ファイル</text><text x='32' y='188' font-size='10' fill='#2f7d54'>例: 独自手順・テンプレを束ねる</text><text x='32' y='204' font-size='9.5' font-style='italic' fill='#4a9b72'>「やり方」を再利用</text><rect x='306' y='128' width='276' height='84' rx='11' fill='#fdf3ea' stroke='#e0a86a'></rect><text x='320' y='150' font-size='12' font-weight='700' fill='#b5730f'>slash command</text><text x='320' y='170' font-size='10' fill='#946012'>定型の呼び出しを短縮</text><text x='320' y='188' font-size='10' fill='#946012'>例: /review /init</text><text x='320' y='204' font-size='9.5' font-style='italic' fill='#b58a4a'>「呼び出し」を短く</text></svg><figcaption>図1：hook=強制、subagent=並列委譲、skill=手順の再利用、slash=定型の短縮。用途で選ぶ。</figcaption></figure>
+<h4 id="sec-3">仕組みのポイント</h4>
+<p>ofox.aiの完全ガイドは、hookは「コードでルールを強制する決定論的な仕組み」、subagentは「独立コンテキストで並列に動く専門ワーカー」、skillは「実際のドメインロジックや補助ファイルを伴う場面」で使う、と整理する。強力なのはsubagentだが、Nimbalystは<b>トークン消費が単一スレッドの約7倍</b>に達しうると釘を刺す。レート上限が近いときは、あえて単一スレッドの方が安く速い。</p>
+<figure class='fig'><pre class='mermaid'>flowchart TD
+  U["メイン会話"] --> A["subagent 1段目：設計"]
+  A --> B["subagent 2段目：実装"]
+  A --> C["subagent 2段目：調査"]
+  B --> D["subagent 3段目：テスト"]
+  C --> E["注意：段が増えるほどトークン約7倍で膨張"]</pre><figcaption>図2：階層は最大3段。深くするほどコストは指数的に効いてくる。</figcaption></figure>
+<h4 id="sec-4">自分が試すなら</h4>
+<ul><li>毎朝の自動処理は「必ず走らせたい検査」をhookに、「重い調査」だけをsubagentに切り出し、多段化は本当に必要な所に限定する。</li><li>繰り返す手順はskill化して再利用し、プロンプトを毎回書き直さない。</li><li>Artifactsベータで、日次の成果を再訪できるライブページに固定する。</li></ul>
+<h4 id="sec-5">注意点</h4>
+<blockquote>subagentは便利だが約7倍のトークンを食う。階層3段×並列を無計画に使うと請求が跳ねる。6月15日の課金分離（自動化はAPI月次クレジット）と併せ、「どの自動化がいくら使ったか」を必ず監視したい。</blockquote>
+<h4 id="sec-6">ひとことまとめ</h4>
+<p>6月のClaude Codeは、hooks/subagents/skillsの「選び分け」と階層サブエージェント・dynamic workflows・Artifactsで自動化基盤を固めた。強力さの裏でコストは正直なので、用途に合った最小構成が主導権を握る。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://code.claude.com/docs/en/whats-new" target="_blank" rel="noopener noreferrer"> Claude Code What&#39;s new（品質・信頼性アップデート） </a> </li><li> <a href="https://www.sitepoint.com/claude-code-june-2026-10-new-features-devs-need-to-know/" target="_blank" rel="noopener noreferrer"> SitePoint: Claude Code June 2026 — 10 New Features </a> </li><li> <a href="https://ofox.ai/blog/claude-code-hooks-subagents-skills-complete-guide-2026/" target="_blank" rel="noopener noreferrer"> ofox.ai: Hooks, Subagents &amp; Skills Complete Guide </a> </li><li> <a href="https://nimbalyst.com/blog/claude-code-subagents-guide/" target="_blank" rel="noopener noreferrer"> Nimbalyst: Claude Code Subagents Practical Guide（約7倍のトークン） </a> </li><li> <a href="https://venturebeat.com/orchestration/anthropic-says-claude-code-transformed-programming-now-claude-cowork-is" target="_blank" rel="noopener noreferrer"> VentureBeat: 新規本番コードの約80%をClaudeが生成 </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> なぜ今これが話題か </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 何が新しいか </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 仕組みのポイント </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 自分が試すなら </a> </li><li> <a href="#sec-5" data-toc="sec-5"> 注意点 </a> </li><li> <a href="#sec-6" data-toc="sec-6"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-07-01</div> <div>⏱ 読了 約3分</div> <div>🏷 Claude Code</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

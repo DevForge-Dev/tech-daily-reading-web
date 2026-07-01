@@ -1,0 +1,77 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Turbopack が Next.js 16 の既定に — dev も build も無設定で2〜5倍、FSキャッシュとメモリ90%減まで — デイリー技術深掘り 読み物</title><meta name="description" content="Next.js 16でTurbopackがdev/buildの両方で安定版・既定バンドラになった。本番ビルドは2〜5倍、Fast Refreshは最大10倍。設定キーはトップレベルturbopackへ昇格し、webpackは--webpackでオプトイン側へ回った。ファイルシステムキャッシュとメモリエビクションで、ウォームビルドとdevメモリも大幅改善。移行の落とし穴も押さえておく。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-01-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Turbopack が Next.js 16 の既定に — dev も build も無設定で2〜5倍、FSキャッシュとメモリ90%減まで — デイリー技術深掘り 読み物"><meta property="og:description" content="Next.js 16でTurbopackがdev/buildの両方で安定版・既定バンドラになった。本番ビルドは2〜5倍、Fast Refreshは最大10倍。設定キーはトップレベルturbopackへ昇格し、webpackは--webpackでオプトイン側へ回った。ファイルシステムキャッシュとメモリエビクションで、ウォームビルドとdevメモリも大幅改善。移行の落とし穴も押さえておく。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-01-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>Turbopack が Next.js 16 の既定に — dev も build も無設定で2〜5倍、FSキャッシュとメモリ90%減まで</h1> <p class="lede">Next.js 16でTurbopackがdev/buildの両方で安定版・既定バンドラになった。本番ビルドは2〜5倍、Fast Refreshは最大10倍。設定キーはトップレベルturbopackへ昇格し、webpackは--webpackでオプトイン側へ回った。ファイルシステムキャッシュとメモリエビクションで、ウォームビルドとdevメモリも大幅改善。移行の落とし穴も押さえておく。</p> <div class="meta"> <span>📅 2026年7月1日</span> <span>⏱ 約3分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="0"><h4 id="sec-1">なぜ今これが話題か</h4>
+<p>これまでTurbopackは「devだけ速いツール」だった。それが<b>Next.js 16でdevとbuildの両方の既定バンドラ</b>に昇格し、<code>next build</code>（本番ビルド）まで担うようになった。歴史は<code>next dev</code>がv15.0で安定、<code>next build</code>が15.3で実験→15.5でbeta→<b>16.0で既定</b>。webpackは<code>--webpack</code>でのオプトイン側に回った。すでにNext.js 15.3+では開発セッションの50%超・本番ビルドの20%超がTurbopack稼働で、vercel.comやnextjs.org自身もTurbopackビルドだ。</p>
+<h4 id="sec-2">何が新しいか</h4>
+<p>新規も既存も基本は<b>無設定</b>で<code>next dev</code>/<code>next build</code>がそのままTurbopack。設定キーは<code>experimental.turbopack</code>からトップレベルの<code>turbopack</code>へ昇格した。効果は<b>本番ビルド2〜5倍、Fast Refresh最大10倍</b>。さらに16.1〜16.3で育ったFSキャッシュにより、ウォームビルドが大幅高速化し、devメモリは最大90%削減される。</p>
+<figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='20' text-anchor='middle' font-size='12.5' font-weight='700' fill='#1456b8'>Turbopackが「build既定」に至るまで</text><line x1='40' y1='84' x2='560' y2='84' stroke='#7aa8ef' stroke-width='2'></line><circle cx='80' cy='84' r='6' fill='#1f6feb'></circle><text x='80' y='68' text-anchor='middle' font-size='10' fill='#1456b8'>v15.0</text><text x='80' y='108' text-anchor='middle' font-size='9.5' fill='#3a6abf'>dev 安定</text><circle cx='230' cy='84' r='6' fill='#1f6feb'></circle><text x='230' y='68' text-anchor='middle' font-size='10' fill='#1456b8'>v15.3</text><text x='230' y='108' text-anchor='middle' font-size='9.5' fill='#3a6abf'>build 実験</text><circle cx='380' cy='84' r='6' fill='#1f6feb'></circle><text x='380' y='68' text-anchor='middle' font-size='10' fill='#1456b8'>v15.5</text><text x='380' y='108' text-anchor='middle' font-size='9.5' fill='#3a6abf'>build beta</text><circle cx='530' cy='84' r='7' fill='#0b3d91'></circle><text x='530' y='68' text-anchor='middle' font-size='10' font-weight='700' fill='#0b3d91'>v16.0</text><text x='530' y='108' text-anchor='middle' font-size='9.5' font-weight='700' fill='#0b3d91'>dev/build 既定</text></svg><figcaption>図1：devからbuildへ、段階的に本番へ降りてきた。</figcaption></figure>
+<h4 id="sec-3">仕組みのポイント</h4>
+<p>速さの源は3つ。client/serverを単一グラフで扱う<b>Unified Graph</b>、一度やった仕事を再計算しない<b>関数レベルのインクリメンタル計算＋並列化</b>（コンパイル時間はルートの大きさでなく変更の大きさに比例）、devサーバが要求した分だけ束ねる<b>Lazy Bundling</b>だ。CSSは<code>Lightning CSS</code>、JS/TSは<code>SWC</code>が処理し、型チェックはしないので<code>tsc --watch</code>やIDEに任せる。</p>
+<figure class='fig'><svg viewBox='0 0 600 168' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='18' text-anchor='middle' font-size='12.5' font-weight='700' fill='#1456b8'>FSキャッシュ有効時のウォームビルド短縮（16.3）</text><text x='150' y='52' text-anchor='middle' font-size='10.5' fill='#333'>nextjs.org</text><rect x='60' y='60' width='210' height='16' rx='4' fill='#c9dcf7'></rect><text x='276' y='73' font-size='9.5' fill='#6b6b70'>21s</text><rect x='60' y='80' width='92' height='16' rx='4' fill='#1f6feb'></rect><text x='158' y='93' font-size='9.5' fill='#1456b8'>9.2s（約2.3倍）</text><text x='150' y='122' text-anchor='middle' font-size='10.5' fill='#333'>vercel.com/geist</text><rect x='60' y='130' width='300' height='16' rx='4' fill='#c9dcf7'></rect><text x='366' y='143' font-size='9.5' fill='#6b6b70'>30s</text><rect x='60' y='150' width='55' height='12' rx='4' fill='#1f6feb'></rect><text x='122' y='160' font-size='9.5' fill='#1456b8'>5.5s（約5.5倍）</text><text x='430' y='96' font-size='10' fill='#0b3d91'>devメモリは</text><text x='430' y='112' font-size='13' font-weight='700' fill='#0b3d91'>最大90%減</text></svg><figcaption>図2：コールドではなくウォーム比較。CIは.nextを持ち越すと効く。</figcaption></figure>
+<h4 id="sec-4">自分が試すなら</h4>
+<ul><li>既存アプリは移行前に一度<code>next build</code>を回し、webpackプラグイン・<code>webpack()</code>設定・Sassの<code>~</code>・CSS Module順序依存の有無を確認する。</li><li>CIでは<code>experimental.turbopackFileSystemCacheForBuild: true</code>を有効化し、<code>.next</code>を実行間で持ち越してウォーム化する。</li><li>詰まったら当面<code>next build --webpack</code>で逃げられる。</li></ul>
+<pre><code>// next.config.js — 設定はトップレベル turbopack キー
+module.exports = {
+  turbopack: { resolveAlias: { '~*': '*' } }, // Sass の ~ 構文救済
+  experimental: { turbopackFileSystemCacheForBuild: true },
+}</code></pre>
+<h4 id="sec-5">注意点</h4>
+<blockquote>webpackプラグインは非対応（loaderは対応）、<code>webpack()</code>設定は無視、Sassの<code>~</code>構文や一部レガシーCSS Modules機能も非対応。カスタムwebpack設定が残っていると<code>next build</code>は誤設定として止まる。意図的にwebpackを使うなら明示的に<code>--webpack</code>を付ける。</blockquote>
+<h4 id="sec-6">ひとことまとめ</h4>
+<p>Next.js 16はTurbopackを「本番の既定」に据えた。無設定で2〜5倍、FSキャッシュでウォームはさらに速く、devメモリは9割減。移行は事前の一度のbuildで落とし穴を洗い出すのが近道だ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://nextjs.org/docs/app/api-reference/turbopack" target="_blank" rel="noopener noreferrer"> API Reference: Turbopack（Next.js 公式） </a> </li><li> <a href="https://nextjs.org/blog/next-16-3-turbopack" target="_blank" rel="noopener noreferrer"> Turbopack: What&#39;s New in Next.js 16.3 </a> </li><li> <a href="https://nextjs.org/blog/next-16" target="_blank" rel="noopener noreferrer"> Next.js 16（Turbopackをdev/buildの既定に） </a> </li><li> <a href="https://nextjs.org/docs/app/guides/upgrading/version-16" target="_blank" rel="noopener noreferrer"> Upgrading: Version 16 </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> なぜ今これが話題か </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 何が新しいか </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 仕組みのポイント </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 自分が試すなら </a> </li><li> <a href="#sec-5" data-toc="sec-5"> 注意点 </a> </li><li> <a href="#sec-6" data-toc="sec-6"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-07-01</div> <div>⏱ 読了 約3分</div> <div>🏷 Next.js</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
