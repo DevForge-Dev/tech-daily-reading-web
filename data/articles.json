@@ -1,12 +1,94 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-06-30T04:50:38.119Z",
+  "generatedAt": "2026-07-01T04:49:23.777Z",
   "topics": [
     "Claude Code",
     "Next.js",
     "Flutter"
   ],
   "articles": [
+    {
+      "id": "2026-07-01-claude-code",
+      "date": "2026-07-01",
+      "topic": "Claude Code",
+      "title": "拡張機構が『選び分け』の時代へ — hooks/subagents/skills と階層サブエージェント3段、6月の総仕上げ",
+      "lede": "7月1日のダイジェストは、6月の機能ラッシュを『品質・信頼性』で締める公式アップデートと、拡張機構(hooks/subagents/skills)の使い分けを説く実践記事が並んだ。階層的サブエージェント(最大3段)・dynamic workflows・Artifactsベータに、『新規本番コードの約80%をClaudeが生成』という数字まで。対話補助から自動化基盤への移行がはっきり形になってきた。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>この半年でClaude Codeは「対話的なコーディング補助」から「複数エージェントを束ねる自動化基盤」へ重心を移してきた。6月はその総仕上げの月で、7月1日の公式「What's new」は新機能ではなく<b>品質・信頼性</b>——組織単位の既定モデル、読みやすいセッション名、クリック可能な添付、<b>MCP耐障害性とOAuth処理の改善</b>、長時間セッションのCPU/メモリ低減——を前面に出した。派手さより「毎日安心して回せるか」に軸足が移った合図だ。</p>\n<h4>何が新しいか</h4>\n<p>SitePointの「June 2026: 10 New Features」は開発者が押さえるべき目玉として、親が子を、子がさらに子を生む<b>階層的サブエージェント生成（最大3段）</b>と、大規模課題向けの<b>dynamic workflows</b>、そしてセッション出力をその場で更新される共有ライブページに変える<b>Artifactsベータ</b>を挙げる（この読み物自体がArtifacts運用の一例）。加えてTeam/Enterprise向けに<b>Trusted Devices</b>が入り、リモート操作前のデバイス検証を必須化できる。</p>\n<figure class='fig'><svg viewBox='0 0 600 232' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='20' text-anchor='middle' font-size='12.5' font-weight='700' fill='#5b27b0'>拡張機構の選び分け：目的が違えば道具も違う</text><rect x='18' y='34' width='276' height='84' rx='11' fill='#f3eefb' stroke='#b58bd6'/><text x='32' y='56' font-size='12' font-weight='700' fill='#5b27b0'>hook</text><text x='32' y='76' font-size='10' fill='#6b4a93'>決定論的にルールを強制</text><text x='32' y='94' font-size='10' fill='#6b4a93'>例: コミット前に整形/検査</text><text x='32' y='110' font-size='9.5' font-style='italic' fill='#8a6cb0'>「必ずこうする」を保証</text><rect x='306' y='34' width='276' height='84' rx='11' fill='#eef4fd' stroke='#7aa8ef'/><text x='320' y='56' font-size='12' font-weight='700' fill='#1456b8'>subagent</text><text x='320' y='76' font-size='10' fill='#3a6abf'>独立文脈の並列専門ワーカー</text><text x='320' y='94' font-size='10' fill='#3a6abf'>例: 多数ファイルの調査を委譲</text><text x='320' y='110' font-size='9.5' font-style='italic' fill='#5a86c8'>本体を汚さず集中</text><rect x='18' y='128' width='276' height='84' rx='11' fill='#eefaf1' stroke='#79c99a'/><text x='32' y='150' font-size='12' font-weight='700' fill='#1c7c4a'>skill</text><text x='32' y='170' font-size='10' fill='#2f7d54'>ドメインロジック＋補助ファイル</text><text x='32' y='188' font-size='10' fill='#2f7d54'>例: 独自手順・テンプレを束ねる</text><text x='32' y='204' font-size='9.5' font-style='italic' fill='#4a9b72'>「やり方」を再利用</text><rect x='306' y='128' width='276' height='84' rx='11' fill='#fdf3ea' stroke='#e0a86a'/><text x='320' y='150' font-size='12' font-weight='700' fill='#b5730f'>slash command</text><text x='320' y='170' font-size='10' fill='#946012'>定型の呼び出しを短縮</text><text x='320' y='188' font-size='10' fill='#946012'>例: /review /init</text><text x='320' y='204' font-size='9.5' font-style='italic' fill='#b58a4a'>「呼び出し」を短く</text></svg><figcaption>図1：hook=強制、subagent=並列委譲、skill=手順の再利用、slash=定型の短縮。用途で選ぶ。</figcaption></figure>\n<h4>仕組みのポイント</h4>\n<p>ofox.aiの完全ガイドは、hookは「コードでルールを強制する決定論的な仕組み」、subagentは「独立コンテキストで並列に動く専門ワーカー」、skillは「実際のドメインロジックや補助ファイルを伴う場面」で使う、と整理する。強力なのはsubagentだが、Nimbalystは<b>トークン消費が単一スレッドの約7倍</b>に達しうると釘を刺す。レート上限が近いときは、あえて単一スレッドの方が安く速い。</p>\n<figure class='fig'><pre class='mermaid'>flowchart TD\n  U[\"メイン会話\"] --> A[\"subagent 1段目：設計\"]\n  A --> B[\"subagent 2段目：実装\"]\n  A --> C[\"subagent 2段目：調査\"]\n  B --> D[\"subagent 3段目：テスト\"]\n  C --> E[\"注意：段が増えるほどトークン約7倍で膨張\"]</pre><figcaption>図2：階層は最大3段。深くするほどコストは指数的に効いてくる。</figcaption></figure>\n<h4>自分が試すなら</h4>\n<ul><li>毎朝の自動処理は「必ず走らせたい検査」をhookに、「重い調査」だけをsubagentに切り出し、多段化は本当に必要な所に限定する。</li><li>繰り返す手順はskill化して再利用し、プロンプトを毎回書き直さない。</li><li>Artifactsベータで、日次の成果を再訪できるライブページに固定する。</li></ul>\n<h4>注意点</h4>\n<blockquote>subagentは便利だが約7倍のトークンを食う。階層3段×並列を無計画に使うと請求が跳ねる。6月15日の課金分離（自動化はAPI月次クレジット）と併せ、「どの自動化がいくら使ったか」を必ず監視したい。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>6月のClaude Codeは、hooks/subagents/skillsの「選び分け」と階層サブエージェント・dynamic workflows・Artifactsで自動化基盤を固めた。強力さの裏でコストは正直なので、用途に合った最小構成が主導権を握る。</p>",
+      "sources": [
+        {
+          "title": "Claude Code What's new（品質・信頼性アップデート）",
+          "url": "https://code.claude.com/docs/en/whats-new"
+        },
+        {
+          "title": "SitePoint: Claude Code June 2026 — 10 New Features",
+          "url": "https://www.sitepoint.com/claude-code-june-2026-10-new-features-devs-need-to-know/"
+        },
+        {
+          "title": "ofox.ai: Hooks, Subagents & Skills Complete Guide",
+          "url": "https://ofox.ai/blog/claude-code-hooks-subagents-skills-complete-guide-2026/"
+        },
+        {
+          "title": "Nimbalyst: Claude Code Subagents Practical Guide（約7倍のトークン）",
+          "url": "https://nimbalyst.com/blog/claude-code-subagents-guide/"
+        },
+        {
+          "title": "VentureBeat: 新規本番コードの約80%をClaudeが生成",
+          "url": "https://venturebeat.com/orchestration/anthropic-says-claude-code-transformed-programming-now-claude-cowork-is"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-01-nextjs",
+      "date": "2026-07-01",
+      "topic": "Next.js",
+      "title": "Turbopack が Next.js 16 の既定に — dev も build も無設定で2〜5倍、FSキャッシュとメモリ90%減まで",
+      "lede": "Next.js 16でTurbopackがdev/buildの両方で安定版・既定バンドラになった。本番ビルドは2〜5倍、Fast Refreshは最大10倍。設定キーはトップレベルturbopackへ昇格し、webpackは--webpackでオプトイン側へ回った。ファイルシステムキャッシュとメモリエビクションで、ウォームビルドとdevメモリも大幅改善。移行の落とし穴も押さえておく。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>これまでTurbopackは「devだけ速いツール」だった。それが<b>Next.js 16でdevとbuildの両方の既定バンドラ</b>に昇格し、<code>next build</code>（本番ビルド）まで担うようになった。歴史は<code>next dev</code>がv15.0で安定、<code>next build</code>が15.3で実験→15.5でbeta→<b>16.0で既定</b>。webpackは<code>--webpack</code>でのオプトイン側に回った。すでにNext.js 15.3+では開発セッションの50%超・本番ビルドの20%超がTurbopack稼働で、vercel.comやnextjs.org自身もTurbopackビルドだ。</p>\n<h4>何が新しいか</h4>\n<p>新規も既存も基本は<b>無設定</b>で<code>next dev</code>/<code>next build</code>がそのままTurbopack。設定キーは<code>experimental.turbopack</code>からトップレベルの<code>turbopack</code>へ昇格した。効果は<b>本番ビルド2〜5倍、Fast Refresh最大10倍</b>。さらに16.1〜16.3で育ったFSキャッシュにより、ウォームビルドが大幅高速化し、devメモリは最大90%削減される。</p>\n<figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='20' text-anchor='middle' font-size='12.5' font-weight='700' fill='#1456b8'>Turbopackが「build既定」に至るまで</text><line x1='40' y1='84' x2='560' y2='84' stroke='#7aa8ef' stroke-width='2'/><circle cx='80' cy='84' r='6' fill='#1f6feb'/><text x='80' y='68' text-anchor='middle' font-size='10' fill='#1456b8'>v15.0</text><text x='80' y='108' text-anchor='middle' font-size='9.5' fill='#3a6abf'>dev 安定</text><circle cx='230' cy='84' r='6' fill='#1f6feb'/><text x='230' y='68' text-anchor='middle' font-size='10' fill='#1456b8'>v15.3</text><text x='230' y='108' text-anchor='middle' font-size='9.5' fill='#3a6abf'>build 実験</text><circle cx='380' cy='84' r='6' fill='#1f6feb'/><text x='380' y='68' text-anchor='middle' font-size='10' fill='#1456b8'>v15.5</text><text x='380' y='108' text-anchor='middle' font-size='9.5' fill='#3a6abf'>build beta</text><circle cx='530' cy='84' r='7' fill='#0b3d91'/><text x='530' y='68' text-anchor='middle' font-size='10' font-weight='700' fill='#0b3d91'>v16.0</text><text x='530' y='108' text-anchor='middle' font-size='9.5' font-weight='700' fill='#0b3d91'>dev/build 既定</text></svg><figcaption>図1：devからbuildへ、段階的に本番へ降りてきた。</figcaption></figure>\n<h4>仕組みのポイント</h4>\n<p>速さの源は3つ。client/serverを単一グラフで扱う<b>Unified Graph</b>、一度やった仕事を再計算しない<b>関数レベルのインクリメンタル計算＋並列化</b>（コンパイル時間はルートの大きさでなく変更の大きさに比例）、devサーバが要求した分だけ束ねる<b>Lazy Bundling</b>だ。CSSは<code>Lightning CSS</code>、JS/TSは<code>SWC</code>が処理し、型チェックはしないので<code>tsc --watch</code>やIDEに任せる。</p>\n<figure class='fig'><svg viewBox='0 0 600 168' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='18' text-anchor='middle' font-size='12.5' font-weight='700' fill='#1456b8'>FSキャッシュ有効時のウォームビルド短縮（16.3）</text><text x='150' y='52' text-anchor='middle' font-size='10.5' fill='#333'>nextjs.org</text><rect x='60' y='60' width='210' height='16' rx='4' fill='#c9dcf7'/><text x='276' y='73' font-size='9.5' fill='#6b6b70'>21s</text><rect x='60' y='80' width='92' height='16' rx='4' fill='#1f6feb'/><text x='158' y='93' font-size='9.5' fill='#1456b8'>9.2s（約2.3倍）</text><text x='150' y='122' text-anchor='middle' font-size='10.5' fill='#333'>vercel.com/geist</text><rect x='60' y='130' width='300' height='16' rx='4' fill='#c9dcf7'/><text x='366' y='143' font-size='9.5' fill='#6b6b70'>30s</text><rect x='60' y='150' width='55' height='12' rx='4' fill='#1f6feb'/><text x='122' y='160' font-size='9.5' fill='#1456b8'>5.5s（約5.5倍）</text><text x='430' y='96' font-size='10' fill='#0b3d91'>devメモリは</text><text x='430' y='112' font-size='13' font-weight='700' fill='#0b3d91'>最大90%減</text></svg><figcaption>図2：コールドではなくウォーム比較。CIは.nextを持ち越すと効く。</figcaption></figure>\n<h4>自分が試すなら</h4>\n<ul><li>既存アプリは移行前に一度<code>next build</code>を回し、webpackプラグイン・<code>webpack()</code>設定・Sassの<code>~</code>・CSS Module順序依存の有無を確認する。</li><li>CIでは<code>experimental.turbopackFileSystemCacheForBuild: true</code>を有効化し、<code>.next</code>を実行間で持ち越してウォーム化する。</li><li>詰まったら当面<code>next build --webpack</code>で逃げられる。</li></ul>\n<pre><code>// next.config.js — 設定はトップレベル turbopack キー\nmodule.exports = {\n  turbopack: { resolveAlias: { '~*': '*' } }, // Sass の ~ 構文救済\n  experimental: { turbopackFileSystemCacheForBuild: true },\n}</code></pre>\n<h4>注意点</h4>\n<blockquote>webpackプラグインは非対応（loaderは対応）、<code>webpack()</code>設定は無視、Sassの<code>~</code>構文や一部レガシーCSS Modules機能も非対応。カスタムwebpack設定が残っていると<code>next build</code>は誤設定として止まる。意図的にwebpackを使うなら明示的に<code>--webpack</code>を付ける。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>Next.js 16はTurbopackを「本番の既定」に据えた。無設定で2〜5倍、FSキャッシュでウォームはさらに速く、devメモリは9割減。移行は事前の一度のbuildで落とし穴を洗い出すのが近道だ。</p>",
+      "sources": [
+        {
+          "title": "API Reference: Turbopack（Next.js 公式）",
+          "url": "https://nextjs.org/docs/app/api-reference/turbopack"
+        },
+        {
+          "title": "Turbopack: What's New in Next.js 16.3",
+          "url": "https://nextjs.org/blog/next-16-3-turbopack"
+        },
+        {
+          "title": "Next.js 16（Turbopackをdev/buildの既定に）",
+          "url": "https://nextjs.org/blog/next-16"
+        },
+        {
+          "title": "Upgrading: Version 16",
+          "url": "https://nextjs.org/docs/app/guides/upgrading/version-16"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-01-flutter",
+      "date": "2026-07-01",
+      "topic": "Flutter",
+      "title": "Flutter の主役『The Great Thread Merge』— Dartがプラットフォームスレッドへ、FFIで直接Swift/Kotlinを呼ぶ",
+      "lede": "Flutter 3.44 / Dart 3.12.2 の目玉は、DartをUI専用スレッドからネイティブのプラットフォームスレッドへ統合するThe Great Thread Merge。async platform channel無しにFFI経由でSwift/Kotlin APIを直接呼べるようになり、ネイティブ通信が高速・クリーンになる。Impellerの既定化、Riverpod 3.x、Material/Cupertinoの独立バージョニングも合わせて読む。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>安定版は<b>Flutter 3.44.0 / Dart 3.12.2</b>（Google I/O 2026発表）。次の安定版は2026年8月予定だ。今日の主役は<b>The Great Thread Merge（UIスレッド統合）</b>。Dartの実行をこれまでの専用UIスレッドから<b>ネイティブのプラットフォームスレッドへ移し</b>、Dartとネイティブ(Swift/Kotlin)の境界を解消する。長年オーバーヘッドの原因だった非同期のやり取りに、構造的なメスが入った。</p>\n<h4>何が新しいか</h4>\n<p>統合により、<b>async platform channel無しでFFI経由で直接Swift/Kotlin APIを呼べる</b>ようになり、ネイティブ通信が高速・クリーンになる。周辺も動いた。<b>Material/CupertinoはコアSDKで凍結</b>され、将来<code>material_ui</code>/<code>cupertino_ui</code>として独立バージョニングへ移行——デザインシステムがSDKリリースを待たず独自cadenceで更新できる。Dart 3.12は<code>.value</code>の<b>dot shorthands</b>を正式サポートし、<b><code>dart compile wasm</code>がstable</b>へ。採用面では実車の2026 Toyota RAV4のダッシュボードがFlutter UI、LG webOS SDK for Flutterも近日対応する。</p>\n<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='18' text-anchor='middle' font-size='12.5' font-weight='700' fill='#0277bd'>Thread Merge：境界をまたぐ通信が「直接呼び出し」へ</text><text x='150' y='44' text-anchor='middle' font-size='11' font-weight='700' fill='#555'>従来</text><rect x='40' y='54' width='100' height='40' rx='8' fill='#eef4fd' stroke='#7aa8ef'/><text x='90' y='78' text-anchor='middle' font-size='10' fill='#1456b8'>UIスレッド(Dart)</text><rect x='160' y='54' width='120' height='40' rx='8' fill='#fdeef0' stroke='#e79aa6'/><text x='220' y='72' text-anchor='middle' font-size='9' fill='#b0455a'>platform</text><text x='220' y='86' text-anchor='middle' font-size='9' fill='#b0455a'>channel(async)</text><path d='M140 74 L160 74' stroke='#b0455a' stroke-width='2' marker-end='url(#a)'/><text x='150' y='112' text-anchor='middle' font-size='9' fill='#b0455a'>境界コスト</text><text x='450' y='44' text-anchor='middle' font-size='11' font-weight='700' fill='#1c7c4a'>Thread Merge後</text><rect x='360' y='54' width='180' height='40' rx='8' fill='#eefaf1' stroke='#79c99a'/><text x='450' y='72' text-anchor='middle' font-size='10' fill='#1c7c4a'>プラットフォームスレッド</text><text x='450' y='86' text-anchor='middle' font-size='9' fill='#2f7d54'>Dart と ネイティブが同居</text><text x='450' y='120' text-anchor='middle' font-size='9.5' fill='#1c7c4a'>FFIで Swift/Kotlin を直接呼ぶ</text><rect x='40' y='150' width='520' height='34' rx='8' fill='#f6faf7' stroke='#cfe8d8'/><text x='300' y='171' text-anchor='middle' font-size='10' fill='#2f7d54'>async channelのシリアライズ往復が減り、ネイティブ連携が高速・簡潔に</text><defs><marker id='a' markerWidth='8' markerHeight='8' refX='6' refY='3' orient='auto'><path d='M0 0 L6 3 L0 6 z' fill='#b0455a'/></marker></defs></svg><figcaption>図1：境界の「翻訳コスト」を、同一スレッド化＋FFIで削り取る。</figcaption></figure>\n<h4>仕組みのポイント</h4>\n<p>描画側では<b>Impeller</b>がもはや実験的でなく、iOS・モダンAndroid(API29+)の<b>既定レンダラ</b>だ。シェーダーをビルド時(AOT)にコンパイルするためシェーダーコンパイルジャンクを解消し、アニメ起動時には命令が既にGPU待機状態——複雑アニメでも<b>120fps</b>を維持する。DevToolsもWASMが既定レンダラになり、巨大ウィジェットツリーのスクロールやTimelineが滑らかになった。</p>\n<figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='18' text-anchor='middle' font-size='12.5' font-weight='700' fill='#0277bd'>シェーダーはいつコンパイルするか</text><rect x='30' y='40' width='260' height='84' rx='10' fill='#fdeef0' stroke='#e79aa6'/><text x='160' y='60' text-anchor='middle' font-size='11' font-weight='700' fill='#b0455a'>旧: 実行時コンパイル</text><text x='160' y='82' text-anchor='middle' font-size='9.5' fill='#a05563'>初回描画で詰まる → ジャンク</text><text x='160' y='102' text-anchor='middle' font-size='9.5' fill='#a05563'>アニメ起動が引っかかる</text><rect x='310' y='40' width='260' height='84' rx='10' fill='#eefaf1' stroke='#79c99a'/><text x='440' y='60' text-anchor='middle' font-size='11' font-weight='700' fill='#1c7c4a'>Impeller: ビルド時(AOT)</text><text x='440' y='82' text-anchor='middle' font-size='9.5' fill='#2f7d54'>開く前に重処理を完了</text><text x='440' y='102' text-anchor='middle' font-size='9.5' fill='#2f7d54'>起動から即滑らか / 120fps</text></svg><figcaption>図2：コンパイルを前倒しするだけで、体感の「引っかかり」が消える。</figcaption></figure>\n<h4>自分が試すなら</h4>\n<ul><li>新規は<b>Riverpod 3.3.1＋コード生成</b>を既定に。監査証跡や大規模チームの厳格さが要るならBloc 9系を選ぶ。</li><li>ネイティブ連携がある機能は、Thread Merge前提でplatform channelをFFI直呼びに置き換えられないか検討する。</li><li>Impeller環境での実機検証を必ず行う（特にRive等の描画）。</li></ul>\n<h4>注意点</h4>\n<blockquote>ImpellerがSkiaを置換し全プラットフォーム既定へ向かう過程で、Rive Flutterランタイムに描画/性能差が出る場合がある。低スペック端末を含む複数端末での<b>Impeller環境の実機検証</b>を怠らないこと。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>3.44の主役はThread Merge——Dartをプラットフォームスレッドへ統合し、FFIでネイティブを直接呼ぶ。Impeller既定化とRiverpod 3.xも合わせ、「速さ」と「ネイティブ距離の近さ」が同時に前進した。</p>",
+      "sources": [
+        {
+          "title": "Flutter 2026 Review: UI Thread Merge, GenUI, Cross-Platform",
+          "url": "https://intercode.com/blog/flutter-2026-technical-review"
+        },
+        {
+          "title": "Flutter 3.44 and Dart 3.12",
+          "url": "https://chuvak-pavel.medium.com/flutter-3-44-and-dart-3-12-faster-builds-smarter-tools-and-a-framework-that-thinks-ahead-42d2bf2cf5de"
+        },
+        {
+          "title": "Flutter at Google I/O 2026",
+          "url": "https://medium.com/flutter-community/flutter-at-google-i-o-2026-4fe9dcc8a849"
+        },
+        {
+          "title": "Flutter + Impeller: Native 120fps in 2026",
+          "url": "https://shindekalpesharun.medium.com/flutter-impeller-how-to-achieve-native-120fps-performance-in-2026-68ec28cc71e5"
+        }
+      ]
+    },
     {
       "id": "2026-06-30-claude-code",
       "date": "2026-06-30",
