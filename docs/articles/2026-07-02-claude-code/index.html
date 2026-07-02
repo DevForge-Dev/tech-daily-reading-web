@@ -1,0 +1,79 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Claude Code の既定が Sonnet 5 へ — ネイティブ1Mコンテキストと『落ちない』自動化 — デイリー技術深掘り 読み物</title><meta name="description" content="7月2日はモデル世代交代の日。Claude Sonnet 5 が Claude Code の新しい既定モデルになり、ネイティブ1Mトークンのコンテキストを標準搭載した（v2.1.197〜）。同時にストリーム監視の既定オン化と、プロセスが停止・再起動しても生き残るバックグラウンド実行が入り、長時間の自動化が現実的に『落ちない』方向へ進んだ。導入価格と上限緩和も合わせて、大きなコードベースを一気に読ませる運用が組みやすくなった。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-02-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Claude Code の既定が Sonnet 5 へ — ネイティブ1Mコンテキストと『落ちない』自動化 — デイリー技術深掘り 読み物"><meta property="og:description" content="7月2日はモデル世代交代の日。Claude Sonnet 5 が Claude Code の新しい既定モデルになり、ネイティブ1Mトークンのコンテキストを標準搭載した（v2.1.197〜）。同時にストリーム監視の既定オン化と、プロセスが停止・再起動しても生き残るバックグラウンド実行が入り、長時間の自動化が現実的に『落ちない』方向へ進んだ。導入価格と上限緩和も合わせて、大きなコードベースを一気に読ませる運用が組みやすくなった。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-02-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>Claude Code の既定が Sonnet 5 へ — ネイティブ1Mコンテキストと『落ちない』自動化</h1> <p class="lede">7月2日はモデル世代交代の日。Claude Sonnet 5 が Claude Code の新しい既定モデルになり、ネイティブ1Mトークンのコンテキストを標準搭載した（v2.1.197〜）。同時にストリーム監視の既定オン化と、プロセスが停止・再起動しても生き残るバックグラウンド実行が入り、長時間の自動化が現実的に『落ちない』方向へ進んだ。導入価格と上限緩和も合わせて、大きなコードベースを一気に読ませる運用が組みやすくなった。</p> <div class="meta"> <span>📅 2026年7月2日</span> <span>⏱ 約3分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="1"><h4 id="sec-1">なぜ今これが話題か</h4>
+<p>この半年、Claude Code は『対話の相棒』から『長時間まわす自動化基盤』へ重心を移してきた。その土台に直接効くのがモデルの世代交代だ。7月2日、Anthropic は Sonnet 系で最も自律的(agentic)とうたう <b>Claude Sonnet 5</b> を発表し、<b>Claude Code の新しい既定モデル</b>に据えた。推論・ツール利用・コーディング・自律タスク処理が強化され、なにより<b>ネイティブ1Mトークン</b>のコンテキストを標準で持つ。大規模リポジトリを分割せず一度に読ませる、という運用のハードルが下がった。</p>
+<h4 id="sec-2">何が新しいか</h4>
+<p>公式ドキュメント「What's new in Sonnet 5」によれば、<b>1Mコンテキストは『既定かつ最大』</b>で、より小さいコンテキスト版は存在しない。長文脈のために<b>ベータヘッダーは不要</b>、長文脈リクエストも<b>標準価格で課金</b>される。出力は<b>最大128kトークン</b>、<b>適応的思考(adaptive thinking)</b>に対応し、ツールやプラットフォーム機能は Sonnet 4.6 と同等。Claude Code のモデルピッカーで「Sonnet 5 (1M context)」を選ぶと <code>sonnet[1m]</code> にマップされ全幅を使える。導入価格は <b>$2 / $10 per Mtok（8/31まで）</b>、レート上限も引き上げられた（v2.1.197 以降で既定化）。</p>
+<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='22' text-anchor='middle' font-size='12.5' font-weight='700' fill='#5b27b0'>Sonnet 5：1Mが『既定かつ最大』の一段構成</text><rect x='30' y='40' width='250' height='150' rx='12' fill='#f6f2fd' stroke='#b58bd6'></rect><text x='155' y='64' text-anchor='middle' font-size='12' font-weight='700' fill='#6b4a93'>従来（〜4.6）</text><rect x='52' y='78' width='206' height='30' rx='6' fill='#fff' stroke='#d9c7ef'></rect><text x='155' y='98' text-anchor='middle' font-size='10.5' fill='#7a5aa8'>標準コンテキスト</text><rect x='52' y='116' width='206' height='30' rx='6' fill='#fff' stroke='#d9c7ef'></rect><text x='155' y='136' text-anchor='middle' font-size='10.5' fill='#7a5aa8'>1M はベータヘッダー必要</text><text x='155' y='170' text-anchor='middle' font-size='10' font-style='italic' fill='#9a7cc0'>版・ヘッダーの使い分けが要る</text><rect x='320' y='40' width='250' height='150' rx='12' fill='#eef7f0' stroke='#79c99a'></rect><text x='445' y='64' text-anchor='middle' font-size='12' font-weight='700' fill='#1c7c4a'>Sonnet 5</text><rect x='342' y='78' width='206' height='30' rx='6' fill='#fff' stroke='#bfe6cd'></rect><text x='445' y='98' text-anchor='middle' font-size='10.5' fill='#2f7d54'>1M が既定＝最大（小容量版なし）</text><rect x='342' y='116' width='206' height='30' rx='6' fill='#fff' stroke='#bfe6cd'></rect><text x='445' y='136' text-anchor='middle' font-size='10.5' fill='#2f7d54'>ヘッダー不要・標準価格で課金</text><text x='445' y='170' text-anchor='middle' font-size='10' font-style='italic' fill='#4a9b72'>128k出力・適応的思考</text></svg><figcaption>図1：版やベータヘッダーの使い分けが消え、1Mが素の既定に。運用がシンプルになった。</figcaption></figure>
+<h4 id="sec-3">『落ちない』ための仕組み</h4>
+<p>7月の Claude Code 更新は、モデルだけでなく<b>耐障害性</b>にも踏み込んだ。<b>ストリームのアイドル監視(watchdog)が全プロバイダで既定オン</b>になり、5分間イベントが来ない応答は中断して自動リトライする。さらに長時間コマンドやワークフローは、<b>セッションのプロセスが停止・再起動・更新されても生き残る</b>ようになり、Windows でもバックグラウンドシェルは kill されず引き継がれる。無人で回すスケジュールタスクや CI にとっては、これが体感差になる。</p>
+<figure class='fig'><pre class='mermaid'>flowchart TD
+  A["応答をストリーム中"] --> B{"5分間イベント無し?"}
+  B -- "いいえ" --> A
+  B -- "はい" --> C["watchdogが中断"]
+  C --> D["自動リトライ"]
+  D --> A
+  A --> E["プロセス停止/再起動/更新"]
+  E --> F["バックグラウンド作業は生存し継続"]</pre><figcaption>図2：アイドル監視で固まりを検知→自動リトライ。長時間作業はプロセス断でも継続。</figcaption></figure>
+<h4 id="sec-4">自分が試すなら</h4>
+<ul><li>大規模リポジトリの横断調査や移行を、分割せず <code>sonnet[1m]</code> の全幅で一気に読ませて挙動を比べる。</li><li>ただし1M全幅は課金が増える。普段は文脈を絞り、勝負どころだけ全幅、と使い分ける（8/31までの導入価格が効くうちに感触を掴む）。</li><li>毎朝の自動処理は、watchdog 既定オン前提で『固まったら自動リトライ』を織り込み、長時間ジョブの生存を確認する。</li></ul>
+<h4 id="sec-5">注意点</h4>
+<blockquote>1Mは『使えば速い』ではなく『使うほど高い』。標準価格で課金される以上、全幅を常用すると請求が伸びる。カテゴリ別 <code>/usage</code> で自動化枠の消費を棚卸しし、全幅が本当に要る場面に限定したい。</blockquote>
+<h4 id="sec-6">ひとことまとめ</h4>
+<p>Sonnet 5 の既定化は、Claude Code を『大きな文脈を一度に扱い、落ちずに回す』基盤へ一段進めた。全幅1Mは強力だが正直にコストへ跳ねるので、使い分けが主導権を握る。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://www.anthropic.com/news/claude-sonnet-5" target="_blank" rel="noopener noreferrer"> Anthropic: Introducing Claude Sonnet 5 </a> </li><li> <a href="https://platform.claude.com/docs/en/about-claude/models/whats-new-sonnet-5" target="_blank" rel="noopener noreferrer"> Claude Platform Docs: What&#39;s new in Claude Sonnet 5 </a> </li><li> <a href="https://releasebot.io/updates/anthropic/claude-code" target="_blank" rel="noopener noreferrer"> Claude Code updates（Sonnet 5既定化・watchdog・耐障害性） </a> </li><li> <a href="https://www.aimadetools.com/blog/claude-sonnet-5-claude-code-setup/" target="_blank" rel="noopener noreferrer"> aimadetools: Claude Sonnet 5 in Claude Code — Setup, Config, Cost Tips </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> なぜ今これが話題か </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 何が新しいか </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 『落ちない』ための仕組み </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 自分が試すなら </a> </li><li> <a href="#sec-5" data-toc="sec-5"> 注意点 </a> </li><li> <a href="#sec-6" data-toc="sec-6"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-07-02</div> <div>⏱ 読了 約3分</div> <div>🏷 Claude Code</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
