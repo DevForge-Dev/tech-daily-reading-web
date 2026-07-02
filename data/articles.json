@@ -1,12 +1,86 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-07-01T04:49:23.777Z",
+  "generatedAt": "2026-07-02T04:51:21.384Z",
   "topics": [
     "Claude Code",
     "Next.js",
     "Flutter"
   ],
   "articles": [
+    {
+      "id": "2026-07-02-claude-code",
+      "date": "2026-07-02",
+      "topic": "Claude Code",
+      "title": "Claude Code の既定が Sonnet 5 へ — ネイティブ1Mコンテキストと『落ちない』自動化",
+      "lede": "7月2日はモデル世代交代の日。Claude Sonnet 5 が Claude Code の新しい既定モデルになり、ネイティブ1Mトークンのコンテキストを標準搭載した（v2.1.197〜）。同時にストリーム監視の既定オン化と、プロセスが停止・再起動しても生き残るバックグラウンド実行が入り、長時間の自動化が現実的に『落ちない』方向へ進んだ。導入価格と上限緩和も合わせて、大きなコードベースを一気に読ませる運用が組みやすくなった。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>この半年、Claude Code は『対話の相棒』から『長時間まわす自動化基盤』へ重心を移してきた。その土台に直接効くのがモデルの世代交代だ。7月2日、Anthropic は Sonnet 系で最も自律的(agentic)とうたう <b>Claude Sonnet 5</b> を発表し、<b>Claude Code の新しい既定モデル</b>に据えた。推論・ツール利用・コーディング・自律タスク処理が強化され、なにより<b>ネイティブ1Mトークン</b>のコンテキストを標準で持つ。大規模リポジトリを分割せず一度に読ませる、という運用のハードルが下がった。</p>\n<h4>何が新しいか</h4>\n<p>公式ドキュメント「What's new in Sonnet 5」によれば、<b>1Mコンテキストは『既定かつ最大』</b>で、より小さいコンテキスト版は存在しない。長文脈のために<b>ベータヘッダーは不要</b>、長文脈リクエストも<b>標準価格で課金</b>される。出力は<b>最大128kトークン</b>、<b>適応的思考(adaptive thinking)</b>に対応し、ツールやプラットフォーム機能は Sonnet 4.6 と同等。Claude Code のモデルピッカーで「Sonnet 5 (1M context)」を選ぶと <code>sonnet[1m]</code> にマップされ全幅を使える。導入価格は <b>$2 / $10 per Mtok（8/31まで）</b>、レート上限も引き上げられた（v2.1.197 以降で既定化）。</p>\n<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='22' text-anchor='middle' font-size='12.5' font-weight='700' fill='#5b27b0'>Sonnet 5：1Mが『既定かつ最大』の一段構成</text><rect x='30' y='40' width='250' height='150' rx='12' fill='#f6f2fd' stroke='#b58bd6'/><text x='155' y='64' text-anchor='middle' font-size='12' font-weight='700' fill='#6b4a93'>従来（〜4.6）</text><rect x='52' y='78' width='206' height='30' rx='6' fill='#fff' stroke='#d9c7ef'/><text x='155' y='98' text-anchor='middle' font-size='10.5' fill='#7a5aa8'>標準コンテキスト</text><rect x='52' y='116' width='206' height='30' rx='6' fill='#fff' stroke='#d9c7ef'/><text x='155' y='136' text-anchor='middle' font-size='10.5' fill='#7a5aa8'>1M はベータヘッダー必要</text><text x='155' y='170' text-anchor='middle' font-size='10' font-style='italic' fill='#9a7cc0'>版・ヘッダーの使い分けが要る</text><rect x='320' y='40' width='250' height='150' rx='12' fill='#eef7f0' stroke='#79c99a'/><text x='445' y='64' text-anchor='middle' font-size='12' font-weight='700' fill='#1c7c4a'>Sonnet 5</text><rect x='342' y='78' width='206' height='30' rx='6' fill='#fff' stroke='#bfe6cd'/><text x='445' y='98' text-anchor='middle' font-size='10.5' fill='#2f7d54'>1M が既定＝最大（小容量版なし）</text><rect x='342' y='116' width='206' height='30' rx='6' fill='#fff' stroke='#bfe6cd'/><text x='445' y='136' text-anchor='middle' font-size='10.5' fill='#2f7d54'>ヘッダー不要・標準価格で課金</text><text x='445' y='170' text-anchor='middle' font-size='10' font-style='italic' fill='#4a9b72'>128k出力・適応的思考</text></svg><figcaption>図1：版やベータヘッダーの使い分けが消え、1Mが素の既定に。運用がシンプルになった。</figcaption></figure>\n<h4>『落ちない』ための仕組み</h4>\n<p>7月の Claude Code 更新は、モデルだけでなく<b>耐障害性</b>にも踏み込んだ。<b>ストリームのアイドル監視(watchdog)が全プロバイダで既定オン</b>になり、5分間イベントが来ない応答は中断して自動リトライする。さらに長時間コマンドやワークフローは、<b>セッションのプロセスが停止・再起動・更新されても生き残る</b>ようになり、Windows でもバックグラウンドシェルは kill されず引き継がれる。無人で回すスケジュールタスクや CI にとっては、これが体感差になる。</p>\n<figure class='fig'><pre class='mermaid'>flowchart TD\n  A[\"応答をストリーム中\"] --> B{\"5分間イベント無し?\"}\n  B -- \"いいえ\" --> A\n  B -- \"はい\" --> C[\"watchdogが中断\"]\n  C --> D[\"自動リトライ\"]\n  D --> A\n  A --> E[\"プロセス停止/再起動/更新\"]\n  E --> F[\"バックグラウンド作業は生存し継続\"]</pre><figcaption>図2：アイドル監視で固まりを検知→自動リトライ。長時間作業はプロセス断でも継続。</figcaption></figure>\n<h4>自分が試すなら</h4>\n<ul><li>大規模リポジトリの横断調査や移行を、分割せず <code>sonnet[1m]</code> の全幅で一気に読ませて挙動を比べる。</li><li>ただし1M全幅は課金が増える。普段は文脈を絞り、勝負どころだけ全幅、と使い分ける（8/31までの導入価格が効くうちに感触を掴む）。</li><li>毎朝の自動処理は、watchdog 既定オン前提で『固まったら自動リトライ』を織り込み、長時間ジョブの生存を確認する。</li></ul>\n<h4>注意点</h4>\n<blockquote>1Mは『使えば速い』ではなく『使うほど高い』。標準価格で課金される以上、全幅を常用すると請求が伸びる。カテゴリ別 <code>/usage</code> で自動化枠の消費を棚卸しし、全幅が本当に要る場面に限定したい。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>Sonnet 5 の既定化は、Claude Code を『大きな文脈を一度に扱い、落ちずに回す』基盤へ一段進めた。全幅1Mは強力だが正直にコストへ跳ねるので、使い分けが主導権を握る。</p>",
+      "sources": [
+        {
+          "title": "Anthropic: Introducing Claude Sonnet 5",
+          "url": "https://www.anthropic.com/news/claude-sonnet-5"
+        },
+        {
+          "title": "Claude Platform Docs: What's new in Claude Sonnet 5",
+          "url": "https://platform.claude.com/docs/en/about-claude/models/whats-new-sonnet-5"
+        },
+        {
+          "title": "Claude Code updates（Sonnet 5既定化・watchdog・耐障害性）",
+          "url": "https://releasebot.io/updates/anthropic/claude-code"
+        },
+        {
+          "title": "aimadetools: Claude Sonnet 5 in Claude Code — Setup, Config, Cost Tips",
+          "url": "https://www.aimadetools.com/blog/claude-sonnet-5-claude-code-setup/"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-02-nextjs",
+      "date": "2026-07-02",
+      "topic": "Next.js",
+      "title": "height:auto へアニメーション — interpolate-size と calc-size() で純CSS開閉、Server Componentのまま",
+      "lede": "『開くと高さが auto に伸びるアコーディオン』は要求が多いのに CSS だけでは長年できなかった代表格。interpolate-size: allow-keywords と calc-size() が、auto などの内在サイズキーワードそのものを補間可能にする。JS計測もハックも不要で、Server Component のまま hydration ゼロで動く。プログレッシブエンハンスメントの好例だが Chromium 129+ 限定なので、特徴検出とフォールバックが要る。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p><code>height: 0 &rarr; auto</code> は補間対象にならない——この一点のために、開閉アニメは長らく回避策の巣窟だった。JS で <code>scrollHeight</code> を測って px を当てる、<code>grid-template-rows: 0fr &rarr; 1fr</code>、<code>max-height</code> に大きめの値を当てる（イージングが不自然・中身が超えると切れる）。どれも一長一短で、純CSSでの『素直な auto への補間』は不可能だった。<b>interpolate-size: allow-keywords</b> と <b>calc-size()</b>（Chrome/Edge/Opera 129+、2024-09〜）は、<b>auto などの内在サイズキーワードそのものを補間可能にする</b>ネイティブ機能で、この積年の課題を正面から解く。</p>\n<h4>何が新しいか</h4>\n<p><code>interpolate-size: allow-keywords</code> は、<code>&lt;length&gt;</code> と内在サイズキーワード（<code>auto</code>/<code>min-content</code>/<code>max-content</code>/<code>fit-content</code> 等）間の補間を<b>オプトインで有効化</b>する。既定は <code>numeric-only</code>（後方互換のため）。<b>継承する</b>ので <code>:root { interpolate-size: allow-keywords; }</code> と一度書けば文書全体で効く。一方 <code>calc-size()</code> は <code>calc()</code> に似るが、<b>ちょうど1つの内在サイズキーワード</b>に対する演算を許す関数で、<code>calc-size(auto, size)</code> のように書く。<code>size</code> はそのキーワードの計算後サイズを表し、返り値は補間可能。<b>calc-size() を値に使うと、その値だけに局所的にオプトインが効く</b>。</p>\n<figure class='fig'><svg viewBox='0 0 600 214' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='20' text-anchor='middle' font-size='12.5' font-weight='700' fill='#1456b8'>height:auto への到達手段：ハックからネイティブへ</text><rect x='20' y='34' width='270' height='168' rx='11' fill='#fbeef0' stroke='#e07a9b'/><text x='155' y='56' text-anchor='middle' font-size='12' font-weight='700' fill='#b03a6e'>従来のハック</text><text x='36' y='82' font-size='10.5' fill='#8c3257'>・JSで scrollHeight を測り px を当てる</text><text x='36' y='106' font-size='10.5' fill='#8c3257'>・grid-template-rows 0fr&rarr;1fr</text><text x='36' y='130' font-size='10.5' fill='#8c3257'>・max-height に大きめ固定値</text><text x='36' y='160' font-size='10' font-style='italic' fill='#a8546f'>イージング不自然/中身超過で切れる</text><text x='36' y='180' font-size='10' font-style='italic' fill='#a8546f'>JS前提で hydration が要る</text><rect x='310' y='34' width='270' height='168' rx='11' fill='#eef4fd' stroke='#7aa8ef'/><text x='445' y='56' text-anchor='middle' font-size='12' font-weight='700' fill='#1456b8'>ネイティブ(129+)</text><text x='326' y='82' font-size='10.5' fill='#2b5aa8'>・interpolate-size: allow-keywords</text><text x='326' y='106' font-size='10.5' fill='#2b5aa8'>・calc-size(auto, size)</text><text x='326' y='130' font-size='10.5' fill='#2b5aa8'>・純CSS＝Server Componentのまま</text><text x='326' y='160' font-size='10' font-style='italic' fill='#5a86c8'>hydration ゼロ・INP/CLSに有利</text><text x='326' y='180' font-size='10' font-style='italic' fill='#5a86c8'>非対応でも瞬時に開くだけ</text></svg><figcaption>図1：JS計測やmax-heightハックを、キーワード補間のネイティブ機能が置き換える。</figcaption></figure>\n<h4>仕組みのポイント</h4>\n<p>ネイティブ <code>&lt;details&gt;</code> なら開閉ロジックも JS 不要で、<code>::details-content</code>（中身を包む疑似要素）に高さ補間を当てる。<code>display</code> が切り替わる要素は、高さだけでなく <code>transition-behavior: allow-discrete</code> と <code>@starting-style</code> を併用して初めて開閉とも滑らかになる。純CSSなので <code>'use client'</code> 不要、SSRで初期の開/閉を確定でき、ちらつかない。</p>\n<pre><code>/* app/globals.css */\n:root { interpolate-size: allow-keywords; }\ndetails::details-content {\n  height: 0; overflow: hidden;\n  transition: height 300ms ease, content-visibility 300ms allow-discrete;\n}\ndetails[open]::details-content {\n  height: calc-size(auto, size); /* この値だけで補間オプトイン */\n}</code></pre>\n<figure class='fig'><pre class='mermaid'>flowchart TD\n  A[\"開閉トグル\"] --> B{\"interpolate-size 対応?\"}\n  B -- \"はい(Chromium 129+)\" --> C[\"height:auto へ滑らかに補間\"]\n  B -- \"いいえ(Safari/Firefox)\" --> D[\"@supports で分岐\"]\n  D --> E[\"grid 0fr→1fr など従来手法/瞬時開閉\"]</pre><figcaption>図2：対応ブラウザは滑らか、非対応はフォールバック。壊れない設計にする。</figcaption></figure>\n<h4>注意点</h4>\n<blockquote>Chromium 129+ 限定で <b>Safari・Firefox は未実装</b>＝Baseline 未達。<code>@supports not (interpolate-size: allow-keywords)</code> で必ずフォールバックを用意する。親に <code>overflow: hidden</code> が無いと閉じる途中で中身がはみ出す。高さアニメはレイアウトを走らせる（transform/opacityより高コスト）ので、多数同時展開は要注意。<code>@media (prefers-reduced-motion: reduce)</code> で <code>transition: none</code> にしても開/閉の最終状態は残るので情報は失われない。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>『auto への補間』がついにネイティブになった。純CSSで Server Component のまま動く好例だが、当面は対応ブラウザ限定。特徴検出前提で、まずは <code>&lt;details&gt;</code> の開閉から差し込むのが安全な第一歩だ。</p>",
+      "sources": [
+        {
+          "title": "MDN: interpolate-size",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/interpolate-size"
+        },
+        {
+          "title": "MDN: calc-size()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/calc-size"
+        },
+        {
+          "title": "Chrome for Developers: Animate to height:auto",
+          "url": "https://developer.chrome.com/docs/css-ui/animate-to-height-auto"
+        },
+        {
+          "title": "Piccalilli: interpolate-size は progressive enhancement の好例",
+          "url": "https://piccalil.li/blog/the-interpolate-size-property-is-a-great-example-of-progressive-enhancement/"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-02-flutter",
+      "date": "2026-07-02",
+      "topic": "Flutter",
+      "title": "Dart 3.12 の Macros 安定化 — build_runner なしでデータクラス/シリアライズをコンパイル時生成",
+      "lede": "Google I/O 2026 の本命は静的メタプログラミング。Dart 3.12 で Macros（マクロ）が安定化し、ライブラリがシリアライズ・データクラス・アダプタを『コンパイル時』に生成できるようになった。build_runner のような追加ビルドステップが不要になり、生成物とソースのズレやコード生成待ちから解放される。安定版は Flutter 3.44.0 / Dart 3.12.2。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>Flutter/Dart のデータクラスやJSONシリアライズは長らく <code>build_runner</code> による<b>コード生成</b>頼みだった。<code>freezed</code> や <code>json_serializable</code> は強力だが、<code>*.g.dart</code> を生成する<b>別ステップ</b>が要り、生成待ち・生成物とソースのズレ・CIの一手間がついて回った。Google I/O 2026 で示された Dart 3.12 の主役 <b>Macros（マクロ）の安定化</b>は、この構造そのものを置き換える。安定版は <b>Flutter 3.44.0 / Dart 3.12.2</b>で、次の安定版は2026年8月予定。</p>\n<h4>何が新しいか</h4>\n<p>Macros は<b>静的メタプログラミング</b>——コンパイラがソースを解析する過程で、ライブラリが<b>コンパイル時にコードを生成</b>できる仕組みだ。シリアライズ・データクラス・アダプタ生成が<b>build_runner のような追加ビルドステップなしで</b>完結する。生成物は中間ファイルとしてディスクに落ちず、コンパイルの一部として扱われるため、<b>『生成待ち』も『.g.dart のコミット』も消える</b>。あわせて <b>pub workspaces</b> が入り、モノレポで隣接する複数パッケージ（例：Flutter アプリと同居するサーバ関数）が<b>依存を共有し、ワークスペース全体で一度に解決</b>できる。</p>\n<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='20' text-anchor='middle' font-size='12.5' font-weight='700' fill='#0277bd'>データクラス生成：別ステップ → コンパイル時に内包</text><text x='150' y='44' text-anchor='middle' font-size='11.5' font-weight='700' fill='#666'>従来（build_runner）</text><rect x='40' y='54' width='220' height='30' rx='7' fill='#fff' stroke='#c9b6e0'/><text x='150' y='74' text-anchor='middle' font-size='10.5' fill='#6b4a93'>ソース(.dart)</text><rect x='40' y='92' width='220' height='30' rx='7' fill='#fdeef0' stroke='#e07a9b'/><text x='150' y='112' text-anchor='middle' font-size='10.5' fill='#b03a6e'>build_runner で .g.dart 生成</text><rect x='40' y='130' width='220' height='30' rx='7' fill='#fff' stroke='#c9b6e0'/><text x='150' y='150' text-anchor='middle' font-size='10.5' fill='#6b4a93'>コンパイル</text><text x='150' y='182' text-anchor='middle' font-size='10' font-style='italic' fill='#a8546f'>生成待ち・ズレ・.g.dart管理</text><line x1='268' y1='107' x2='330' y2='107' stroke='#1d8a5a' stroke-width='2.5' marker-end='url(#fl3)'/><defs><marker id='fl3' markerWidth='10' markerHeight='10' refX='5' refY='5' orient='auto'><path d='M0 0 L10 5 L0 10 z' fill='#1d8a5a'/></marker></defs><text x='450' y='44' text-anchor='middle' font-size='11.5' font-weight='700' fill='#666'>Dart 3.12 Macros</text><rect x='350' y='72' width='220' height='30' rx='7' fill='#fff' stroke='#8fd3b6'/><text x='460' y='92' text-anchor='middle' font-size='10.5' fill='#1c7c4a'>ソース(.dart＋マクロ注釈)</text><rect x='350' y='110' width='220' height='30' rx='7' fill='#e9f7ef' stroke='#46c08a'/><text x='460' y='130' text-anchor='middle' font-size='10.5' fill='#1c7c4a'>コンパイル時に生成を内包</text><text x='460' y='170' text-anchor='middle' font-size='10' font-style='italic' fill='#2f7d5b'>中間ファイルなし・追加ステップなし</text></svg><figcaption>図1：生成が独立ステップからコンパイルの一部へ。.g.dart の管理と生成待ちが消える。</figcaption></figure>\n<h4>実務での使いどころ</h4>\n<p>DTO/モデル層のシリアライズやコピー・等価比較は、まさにマクロが効く領域だ。<code>freezed</code> のボイラープレートを更に削れる可能性があり、状態管理の推奨線（新規は <b>Riverpod 3.3.1＋コード生成</b>、監査/大規模は <b>Bloc 9.x</b>）とも噛み合う。ただし新規APIなので、まずは小さなモデル1つで生成物の挙動・ビルド時間・IDE補完を確かめてから面を広げるのが堅い。</p>\n<figure class='fig'><pre class='mermaid'>flowchart LR\n  A[\"@モデル注釈を書く\"] --> B[\"コンパイル\"]\n  B --> C[\"fromJson/toJson/copyWith を自動内包\"]\n  C --> D[\"アプリコードから普通に呼ぶ\"]\n  A -. \"build_runner 実行は不要\" .-> B</pre><figcaption>図2：注釈→コンパイルで生成が完了。別コマンドの実行を挟まない。</figcaption></figure>\n<h4>注意点</h4>\n<blockquote>Macros は強力だが<b>安定化したばかり</b>。既存の <code>build_runner</code> ベースの生成物と混在させると二重管理になりやすい。移行はモデル層から段階的に行い、生成物の差分・ビルド時間・実機での挙動を確認する。エコシステム（対応ライブラリ）の追随状況も見極めたい。Impeller 環境と同様、『新機能はまず小さく試す』が定石だ。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>Dart 3.12 は『生成の仕組み』を build_runner からコンパイル時マクロへ移す転換点。新規のデータクラス/シリアライズは、まず小さくマクロを試して感触を掴むのがよい。安定版 3.44.0 / 3.12.2 を土台に据えよう。</p>",
+      "sources": [
+        {
+          "title": "Announcing Dart 3.12",
+          "url": "https://dart.dev/blog/announcing-dart-3-12"
+        },
+        {
+          "title": "Flutter 3.44 & Dart 3.12: Everything That Changed at Google I/O 2026",
+          "url": "https://yawarothman.medium.com/flutter-3-44-dart-3-12-everything-that-changed-at-google-i-o-2026-16f73a0c03d5"
+        },
+        {
+          "title": "Flutter 3.44.0 release notes",
+          "url": "https://docs.flutter.dev/release/release-notes/release-notes-3.44.0"
+        }
+      ]
+    },
     {
       "id": "2026-07-01-claude-code",
       "date": "2026-07-01",
