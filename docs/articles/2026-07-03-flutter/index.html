@@ -1,0 +1,76 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>2026ロードマップ「Finishing the Job」— Android Impeller完了・Wasm-safe interop・Web WASM既定 — デイリー技術深掘り 読み物</title><meta name="description" content="今日の主役は公開された Flutter/Dart 2026ロードマップ「Finishing the Job」。新機能の追加より「やり残しの完遂」が主軸で、AndroidのImpeller移行完了(Android10+でレガシーSkia撤去しVulkan一本化)が中核。レガシーJS interopを廃止し Wasm-safe interop(dart:js_interop)へ、WebはWebAssemblyが既定化(ロード時間40%短縮・メモリ30%削減)。安定版は Flutter 3.44.0 / Dart 3.12.2。"><meta name="theme-color" content="#0277bd"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-03-flutter/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="2026ロードマップ「Finishing the Job」— Android Impeller完了・Wasm-safe interop・Web WASM既定 — デイリー技術深掘り 読み物"><meta property="og:description" content="今日の主役は公開された Flutter/Dart 2026ロードマップ「Finishing the Job」。新機能の追加より「やり残しの完遂」が主軸で、AndroidのImpeller移行完了(Android10+でレガシーSkia撤去しVulkan一本化)が中核。レガシーJS interopを廃止し Wasm-safe interop(dart:js_interop)へ、WebはWebAssemblyが既定化(ロード時間40%短縮・メモリ30%削減)。安定版は Flutter 3.44.0 / Dart 3.12.2。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-03-flutter/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #29b6f6, #01579b)"> <span class="glyph" aria-hidden="true">◆</span> <div class="kicker">Flutter</div> <h1>2026ロードマップ「Finishing the Job」— Android Impeller完了・Wasm-safe interop・Web WASM既定</h1> <p class="lede">今日の主役は公開された Flutter/Dart 2026ロードマップ「Finishing the Job」。新機能の追加より「やり残しの完遂」が主軸で、AndroidのImpeller移行完了(Android10+でレガシーSkia撤去しVulkan一本化)が中核。レガシーJS interopを廃止し Wasm-safe interop(dart:js_interop)へ、WebはWebAssemblyが既定化(ロード時間40%短縮・メモリ30%削減)。安定版は Flutter 3.44.0 / Dart 3.12.2。</p> <div class="meta"> <span>📅 2026年7月3日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#0277bd"> <div> <article class="prose" data-has-mermaid="1"><h4 id="sec-1">なぜ今これが話題か</h4>
+<p>Flutter の2026年は「派手な新機能」ではなく<b>やり残しの完遂</b>がテーマだ。公開されたロードマップ「<b>Finishing the Job</b>」は、長年並行運用してきたレンダリングやWeb基盤の移行を"終わらせる"方向を鮮明にした。安定版は <b>Flutter 3.44.0 / Dart 3.12.2</b>、次の安定版は2026年8月予定(年4回リリース)。基盤が固まる局面なので、既存プロジェクトの棚卸しに直結する話が多い。</p>
+<h4 id="sec-2">何が新しいか</h4>
+<p>中核は<b>AndroidのImpeller移行完了</b>。<b>Android 10以上ではレガシーSkiaを撤去し、Vulkan一本化(Pure Impeller)</b>になる。シェーダーをビルド時(AOT)にコンパイルするため、実行時のシェーダーコンパイル由来のジャンクが消え、決定論的フレームで 60/90/120fps が安定する。Web側は二段構え。<b>レガシーJS interop(<code>dart:html</code>/<code>package:js</code>)を廃止し、Wasm-safe interop(<code>dart:js_interop</code>)へ移行</b>、そして<b>WebはWebAssembly(Wasm)が既定</b>になる。テストでは<b>ロード時間40%短縮・実行時メモリ30%削減</b>、DevToolsもWASM既定でTimelineが高頻度フレームをジャンクなく扱う。さらに Android 17 や新iOSへの day-zero 対応、言語面では Primary Constructors と Augmentations を2026年内に出荷予定。</p>
+<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='20' text-anchor='middle' font-size='12.5' font-weight='700' fill='#0277bd'>Finishing the Job：3つの「完遂」項目</text><rect x='26' y='36' width='548' height='40' rx='8' fill='#e9f7ef' stroke='#46c08a'></rect><text x='40' y='55' font-size='11' font-weight='700' fill='#1c7c4a'>Android Impeller 移行完了</text><text x='40' y='70' font-size='10' fill='#2f7d5b'>Android10+ はレガシーSkia撤去 → Vulkan一本化(AOTシェーダーでジャンク解消)</text><rect x='26' y='84' width='548' height='40' rx='8' fill='#eef4fd' stroke='#7aa8ef'></rect><text x='40' y='103' font-size='11' font-weight='700' fill='#1456b8'>Wasm-safe interop へ移行</text><text x='40' y='118' font-size='10' fill='#2b5aa8'>dart:html / package:js を廃止 → dart:js_interop（Wasmの前提）</text><rect x='26' y='132' width='548' height='40' rx='8' fill='#fdf3ea' stroke='#e0a86a'></rect><text x='40' y='151' font-size='11' font-weight='700' fill='#b5730f'>Web は WebAssembly 既定</text><text x='40' y='166' font-size='10' fill='#946012'>ロード時間 -40% ・ 実行時メモリ -30%（テスト値）・DevTools も WASM 既定</text><text x='300' y='192' text-anchor='middle' font-size='10' font-style='italic' fill='#0277bd'>新機能追加より「並行運用の終了」で基盤を一本化</text></svg><figcaption>図1：Impeller・interop・Web実行基盤の3つを"完遂"して並行運用を畳む。</figcaption></figure>
+<h4 id="sec-3">実務での使いどころ</h4>
+<p>効くのはWebプロジェクトの棚卸しだ。<code>dart:html</code> に直接依存するプラグインは Wasm で動かないため、早めの洗い出しが要る。まず <code>flutter build web --wasm</code> の <b>dry-run</b> を走らせ、非対応依存を特定するところから始めるのが定石。Android側は Impeller 前提でシェーダー由来のジャンクが減るので、以前コンパイルジャンクを疑っていた箇所を再計測する価値がある。</p>
+<figure class='fig'><pre class='mermaid'>flowchart TD
+  A["現状：dart:html / package:js に依存"] --> B["flutter build web --wasm の dry-run"]
+  B --> C{"非対応依存あり?"}
+  C -- "はい" --> D["dart:js_interop へ置換 / 代替プラグイン"]
+  C -- "いいえ" --> E["Wasm 既定でビルド"]
+  D --> E
+  E --> F["ロード -40% / メモリ -30%"]</pre><figcaption>図2：dry-runで非対応依存を洗い出し、Wasm-safe interop へ移してから既定ビルドへ。</figcaption></figure>
+<h4 id="sec-4">注意点</h4>
+<blockquote>「完遂」ロードマップは<b>撤去を伴う</b>のが肝。Android10+ のレガシーSkia撤去やレガシーJS interop廃止は、古い依存を抱えたままだと更新時に壊れうる。移行は<b>依存の棚卸し→dry-run→段階置換</b>の順で、一気に上げない。数値(-40%/-30%)は公式テスト値で、実アプリでは構成次第なので profile モードで自分の値を測ること。新言語機能(Primary Constructors 等)は2026年内予定で、今すぐ本番前提にはしない。</blockquote>
+<h4 id="sec-5">ひとことまとめ</h4>
+<p>2026のFlutterは「増やす」より「終わらせる」年。Impeller一本化とWeb WASM既定は性能に効くが、撤去を伴うぶん依存の棚卸しが先。まず <code>--wasm</code> の dry-run で自分のプロジェクトの現在地を確認しよう。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://blog.flutter.dev/flutter-darts-2026-roadmap-89378f17ebbd" target="_blank" rel="noopener noreferrer"> Flutter &amp; Dart 2026 roadmap </a> </li><li> <a href="https://webartdesign.com.au/blog/flutters-2026-roadmap-just-dropped-and-its-all-about-finishing-the-job/" target="_blank" rel="noopener noreferrer"> Flutter&#39;s 2026 Roadmap — Finishing the Job </a> </li><li> <a href="https://dart.dev/resources/whats-new" target="_blank" rel="noopener noreferrer"> Dart: what’s new </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> なぜ今これが話題か </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 何が新しいか </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 実務での使いどころ </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 注意点 </a> </li><li> <a href="#sec-5" data-toc="sec-5"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-07-03</div> <div>⏱ 読了 約3分</div> <div>🏷 Flutter</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

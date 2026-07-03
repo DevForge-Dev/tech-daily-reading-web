@@ -1,0 +1,87 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Payload CMS 3.x — Next.js に「直接インストール」して Server Component から DB を直クエリ — デイリー技術深掘り 読み物</title><meta name="description" content="ヘッドレスCMSは「別サービスを立てて REST/GraphQL で叩く」が常識だった。Payload 3.0 は Express を捨て、Next.js の /app に丸ごと同居する初のCMS。管理画面もAPIもあなたのプロジェクト内に生成され、Local API で Server Component から HTTP を経由せず DB に直行できる。2025年に Figma が Payload チームを買収、v3.73.0 で Next.js 16 対応。ただし App Router 前提で、サーバー境界と認可の扱いに落とし穴がある。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-03-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Payload CMS 3.x — Next.js に「直接インストール」して Server Component から DB を直クエリ — デイリー技術深掘り 読み物"><meta property="og:description" content="ヘッドレスCMSは「別サービスを立てて REST/GraphQL で叩く」が常識だった。Payload 3.0 は Express を捨て、Next.js の /app に丸ごと同居する初のCMS。管理画面もAPIもあなたのプロジェクト内に生成され、Local API で Server Component から HTTP を経由せず DB に直行できる。2025年に Figma が Payload チームを買収、v3.73.0 で Next.js 16 対応。ただし App Router 前提で、サーバー境界と認可の扱いに落とし穴がある。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-03-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>Payload CMS 3.x — Next.js に「直接インストール」して Server Component から DB を直クエリ</h1> <p class="lede">ヘッドレスCMSは「別サービスを立てて REST/GraphQL で叩く」が常識だった。Payload 3.0 は Express を捨て、Next.js の /app に丸ごと同居する初のCMS。管理画面もAPIもあなたのプロジェクト内に生成され、Local API で Server Component から HTTP を経由せず DB に直行できる。2025年に Figma が Payload チームを買収、v3.73.0 で Next.js 16 対応。ただし App Router 前提で、サーバー境界と認可の扱いに落とし穴がある。</p> <div class="meta"> <span>📅 2026年7月3日</span> <span>⏱ 約4分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="1"><h4 id="sec-1">なぜ今これが話題か</h4>
+<p>従来のヘッドレスCMSは、フロントとは別のバックエンドを立て、<code>REST</code>/<code>GraphQL</code>越しにコンテンツを取りに行く構成だった。デプロイ対象が増え、ネットワーク往復も挟まる。<b>Payload 3.0</b>(TypeScript製・MIT)はこの前提を壊す。<b>Next.js の /app フォルダに直接インストールできる初のCMS</b>として、Express を捨て Next.js のランタイム内に丸ごと同居する。Admin Panel も API も全部あなたの Next.js プロジェクト内に生成され、デプロイは1つのまま。Vercel のサーバーレスにもそのまま載る。</p>
+<h4 id="sec-2">何が新しいか</h4>
+<p>最大の武器が <b>Local API</b>。<code>getPayload({ config })</code> で初期化済みインスタンスを取り、<code>payload.find</code>/<code>create</code>/<code>update</code> で<b>HTTPを経由せず DB に直行</b>する。これができる主要CMSは Payload だけで、React Server Components のデータ取得と極めて相性が良い。設定は <code>payload.config.ts</code> が単一の真実で、コレクション定義から<b>TypeScript型・DBスキーマ・Admin UI・API がすべて生成</b>される。DBアダプタは PostgreSQL/MongoDB/SQLite。エコシステム面では<b>Figma が Payload チームを買収</b>(2025)、コアは OSS/self-host のまま維持され、<b>v3.73.0(2026-01-23)で Next.js 16 対応</b>済み。</p>
+<figure class='fig'><svg viewBox='0 0 600 214' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='20' text-anchor='middle' font-size='12.5' font-weight='700' fill='#1456b8'>データ取得経路：別サービス+HTTP から Local API 直行へ</text><rect x='20' y='36' width='270' height='166' rx='11' fill='#fbeef0' stroke='#e07a9b'></rect><text x='155' y='58' text-anchor='middle' font-size='12' font-weight='700' fill='#b03a6e'>従来のヘッドレスCMS</text><rect x='40' y='72' width='230' height='26' rx='6' fill='#fff' stroke='#efc3d3'></rect><text x='155' y='89' text-anchor='middle' font-size='10' fill='#8c3257'>Next.js アプリ</text><text x='155' y='112' text-anchor='middle' font-size='11' fill='#b03a6e'>↓ REST / GraphQL(HTTP往復)</text><rect x='40' y='120' width='230' height='26' rx='6' fill='#fff' stroke='#efc3d3'></rect><text x='155' y='137' text-anchor='middle' font-size='10' fill='#8c3257'>別サービスのCMS</text><rect x='40' y='150' width='230' height='26' rx='6' fill='#fff' stroke='#efc3d3'></rect><text x='155' y='167' text-anchor='middle' font-size='10' fill='#8c3257'>DB</text><text x='155' y='192' text-anchor='middle' font-size='9.5' font-style='italic' fill='#a8546f'>デプロイ2つ・往復あり</text><rect x='310' y='36' width='270' height='166' rx='11' fill='#eef4fd' stroke='#7aa8ef'></rect><text x='445' y='58' text-anchor='middle' font-size='12' font-weight='700' fill='#1456b8'>Payload 3.x(同居)</text><rect x='330' y='72' width='230' height='26' rx='6' fill='#fff' stroke='#c3d8f5'></rect><text x='445' y='89' text-anchor='middle' font-size='10' fill='#2b5aa8'>Next.js アプリ + Payload(同一)</text><text x='445' y='112' text-anchor='middle' font-size='11' fill='#1456b8'>↓ Local API(HTTPなし)</text><rect x='330' y='120' width='230' height='26' rx='6' fill='#fff' stroke='#c3d8f5'></rect><text x='445' y='137' text-anchor='middle' font-size='10' fill='#2b5aa8'>DB を直接クエリ</text><text x='445' y='176' text-anchor='middle' font-size='9.5' font-style='italic' fill='#5a86c8'>デプロイ1つ・RSCと好相性</text></svg><figcaption>図1：別サービス＋HTTP往復を、同居＋Local API の直クエリが置き換える。</figcaption></figure>
+<h4 id="sec-3">仕組みと実装</h4>
+<p>既存プロジェクトへは <code>npx create-payload-app@latest</code> で導入でき、/app に <code>(payload)</code> ルートグループと <code>payload.config.ts</code> が入る。Server Component からは <code>'use client'</code> 不要で、そのまま DB に直行できる。</p>
+<pre><code>// app/(app)/blog/page.tsx — Server Component
+import 'server-only'
+import { getPayload } from 'payload'
+import config from '@payload-config'
+
+export default async function BlogPage() {
+  const payload = await getPayload({ config })
+  const { docs } = await payload.find({
+    collection: 'posts',
+    where: { _status: { equals: 'published' } },
+  })
+  return docs.map(p => <li key={p.id}>{p.title}</li>)
+}</code></pre>
+<figure class='fig'><pre class='mermaid'>flowchart TD
+  A["Server Component / Server Action"] --> B["getPayload(config)"]
+  B --> C["payload.find / update"]
+  C --> D["DB を直接クエリ(HTTPなし)"]
+  A -. "変更系は overrideAccess:false + user" .-> E["コレクションのアクセス制御を通す"]</pre><figcaption>図2：読みは直行、変更はアクセス制御を必ず通す。認可の素通りを防ぐ。</figcaption></figure>
+<h4 id="sec-4">注意点</h4>
+<blockquote><b>App Router 前提</b>で Pages Router には噛み合わない。Local API はサーバー専用なので <code>getPayload</code> を含むモジュールをクライアントに引き込むとバンドルが壊れ秘密も漏れる——<code>import 'server-only'</code> でガードする。Server Action からの変更は既定で <code>overrideAccess: true</code> になりがちで、ユーザー入力起点では <b><code>overrideAccess: false</code> ＋ <code>user</code></b> を渡してアクセス制御を効かせないと認可を素通りする。Next.js のメジャー更新には Payload 側の対応バージョン(15→16 は 3.73)が要り、両者の整合を取る。</blockquote>
+<h4 id="sec-5">ひとことまとめ</h4>
+<p>Payload 3.x は「CMSを別サービスにしない」発想で、RSC のデータ取得を最短にする。1デプロイで完結し Local API が速いが、App Router 前提とサーバー境界・認可の作法を守ることが条件だ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://payloadcms.com/posts/blog/payload-30-the-first-cms-that-installs-directly-into-any-nextjs-app" target="_blank" rel="noopener noreferrer"> Payload 3.0 発表（Next.js ネイティブ） </a> </li><li> <a href="https://payloadcms.com/docs/local-api/overview" target="_blank" rel="noopener noreferrer"> Local API 概要（公式ドキュメント） </a> </li><li> <a href="https://github.com/payloadcms/payload/releases/tag/v3.73.0" target="_blank" rel="noopener noreferrer"> v3.73.0 リリース（Next.js 16 対応） </a> </li><li> <a href="https://www.figma.com/blog/payload-joins-figma/" target="_blank" rel="noopener noreferrer"> Payload joins Figma（Figma Blog） </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> なぜ今これが話題か </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 何が新しいか </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 仕組みと実装 </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 注意点 </a> </li><li> <a href="#sec-5" data-toc="sec-5"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-07-03</div> <div>⏱ 読了 約4分</div> <div>🏷 Next.js</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

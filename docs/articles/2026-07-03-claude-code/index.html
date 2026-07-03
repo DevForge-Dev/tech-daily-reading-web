@@ -1,0 +1,79 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>バックグラウンドエージェントが自走する日 — 通知フック・自動ドラフトPR・Exploreのモデル継承 — デイリー技術深掘り 読み物</title><meta name="description" content="7月3日のダイジェストは「自走する自動化基盤」への一歩。Claude in Chrome が一般提供(GA)になり、バックグラウンドのエージェントが入力待ち/完了時に通知フック(agent_needs_input / agent_completed)を発火、worktree での作業を終えると確認待ちで止まらずコミット・プッシュしてドラフトPRまで開く。内蔵 Explore は haiku ではなくメインモデル(opus上限)を継承し、/dataviz スキルも追加。裏で Sonnet 5 の新トークナイザ(約30%増)というコストの注意点も。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-03-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="バックグラウンドエージェントが自走する日 — 通知フック・自動ドラフトPR・Exploreのモデル継承 — デイリー技術深掘り 読み物"><meta property="og:description" content="7月3日のダイジェストは「自走する自動化基盤」への一歩。Claude in Chrome が一般提供(GA)になり、バックグラウンドのエージェントが入力待ち/完了時に通知フック(agent_needs_input / agent_completed)を発火、worktree での作業を終えると確認待ちで止まらずコミット・プッシュしてドラフトPRまで開く。内蔵 Explore は haiku ではなくメインモデル(opus上限)を継承し、/dataviz スキルも追加。裏で Sonnet 5 の新トークナイザ(約30%増)というコストの注意点も。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-03-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>バックグラウンドエージェントが自走する日 — 通知フック・自動ドラフトPR・Exploreのモデル継承</h1> <p class="lede">7月3日のダイジェストは「自走する自動化基盤」への一歩。Claude in Chrome が一般提供(GA)になり、バックグラウンドのエージェントが入力待ち/完了時に通知フック(agent_needs_input / agent_completed)を発火、worktree での作業を終えると確認待ちで止まらずコミット・プッシュしてドラフトPRまで開く。内蔵 Explore は haiku ではなくメインモデル(opus上限)を継承し、/dataviz スキルも追加。裏で Sonnet 5 の新トークナイザ(約30%増)というコストの注意点も。</p> <div class="meta"> <span>📅 2026年7月3日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="1"><h4 id="sec-1">なぜ今これが話題か</h4>
+<p>この半年、Claude Code は「対話しながら書く相棒」から「無人で長く回す自動化基盤」へ重心を移してきた。7月3日の公式CHANGELOGはその方向をさらに一段進める。<b>Claude in Chrome が一般提供(GA)</b>になり、そして<b>バックグラウンドのエージェント</b>が人の確認を待たずに作業を完遂できるようになった。あわせて組織デフォルトモデル・読みやすいセッション名・クリック可能な添付・agentsビュー改善といった、毎日の運用の手触りを底上げする更新群も入っている。</p>
+<h4 id="sec-2">何が新しいか</h4>
+<p>核心は3つ。第一に、バックグラウンドセッションが状態遷移で<b>Notificationフックを発火</b>するようになった。入力が要るときは <code>agent_needs_input</code>、完了時は <code>agent_completed</code> が飛ぶので、通知やスクリプトで拾える。第二に、worktree でコード作業を終えたバックグラウンドエージェントは<b>確認待ちで止まらず、コミット・プッシュしてドラフトPRを開く</b>。第三に、内蔵の <b>Explore エージェントが haiku ではなくメインセッションのモデル(opus上限)を継承</b>するようになり、調査の質が上がった。加えて、チャートやダッシュボード設計を助ける <b>/dataviz スキル</b>とカラーパレット検証が追加された。</p>
+<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='22' text-anchor='middle' font-size='12.5' font-weight='700' fill='#5b27b0'>バックグラウンドエージェント：確認待ちから自走へ</text><rect x='24' y='40' width='262' height='150' rx='12' fill='#f6f2fd' stroke='#b58bd6'></rect><text x='155' y='63' text-anchor='middle' font-size='12' font-weight='700' fill='#6b4a93'>従来</text><rect x='44' y='76' width='222' height='28' rx='6' fill='#fff' stroke='#d9c7ef'></rect><text x='155' y='94' text-anchor='middle' font-size='10.5' fill='#7a5aa8'>作業完了 → 確認待ちで停止</text><rect x='44' y='112' width='222' height='28' rx='6' fill='#fff' stroke='#d9c7ef'></rect><text x='155' y='130' text-anchor='middle' font-size='10.5' fill='#7a5aa8'>人が戻るまで前へ進まない</text><text x='155' y='168' text-anchor='middle' font-size='10' font-style='italic' fill='#9a7cc0'>無人運用だと詰まりやすい</text><rect x='314' y='40' width='262' height='150' rx='12' fill='#eef7f0' stroke='#79c99a'></rect><text x='445' y='63' text-anchor='middle' font-size='12' font-weight='700' fill='#1c7c4a'>今回(GA)</text><rect x='334' y='76' width='222' height='28' rx='6' fill='#fff' stroke='#bfe6cd'></rect><text x='445' y='94' text-anchor='middle' font-size='10.5' fill='#2f7d54'>通知フック発火(needs_input/completed)</text><rect x='334' y='112' width='222' height='28' rx='6' fill='#fff' stroke='#bfe6cd'></rect><text x='445' y='130' text-anchor='middle' font-size='10.5' fill='#2f7d54'>自動でcommit/push→ドラフトPR</text><text x='445' y='168' text-anchor='middle' font-size='10' font-style='italic' fill='#4a9b72'>止まらず成果を残す</text></svg><figcaption>図1：完了時に人を待たず、成果をPRとして残す方向へ。無人運用の実効性が上がる。</figcaption></figure>
+<h4 id="sec-3">仕組みのポイント</h4>
+<p>ポイントは「エージェントが自分の状態を外へ知らせ、区切りで成果を確定する」ループができたこと。<code>agent_needs_input</code> と <code>agent_completed</code> は Notification フックの一種で、人はそれを購読すればよく、常時監視から解放される。完了時の自動 push→ドラフトPR は、worktree による隔離が前提なので main を直接汚さない。Explore のモデル継承は、調査サブエージェントが安価な haiku 固定ではなく親と同じ賢さで動くという変更で、設計・横断調査の精度に効く。</p>
+<figure class='fig'><pre class='mermaid'>flowchart TD
+  A["バックグラウンドで作業"] --> B{"人の入力が要る?"}
+  B -- "はい" --> C["agent_needs_input を発火"]
+  C --> D["通知で人に確認を促す"]
+  B -- "いいえ" --> E["作業を完遂"]
+  E --> F["agent_completed を発火"]
+  F --> G["commit / push"]
+  G --> H["ドラフトPRを自動で開く"]</pre><figcaption>図2：状態遷移で通知を出し、完了時は自動でPRまで到達する自走ループ。</figcaption></figure>
+<h4 id="sec-4">自分が試すなら</h4>
+<ul><li>毎朝の自動処理を worktree ＋バックグラウンドで走らせ、<code>agent_completed</code> 通知でドラフトPRの有無だけ確認する運用に寄せる。</li><li>横断調査タスクは Explore に委譲し、モデル継承で精度が上がったか before/after を比べる。</li><li>ダッシュボード系の可視化は <code>/dataviz</code> に任せてカラーパレット検証まで通す。</li></ul>
+<h4 id="sec-5">注意点</h4>
+<blockquote>裏で走る Sonnet 5 の<b>新トークナイザは同じ入力でも約30%多くトークンを生成</b>する。自走で回数が増えるほど請求は膨らむので、カテゴリ別 <code>/usage</code> で自動化枠の消費を棚卸ししたい。加えて Sonnet 5 は<b>適応的思考が既定オン</b>で、手動の拡張思考や非既定サンプリングは400エラーになる点も設定見直しが要る。自動PRは便利だが、レビュー無しでのマージは避け、ドラフト止まりを既定に。</blockquote>
+<h4 id="sec-6">ひとことまとめ</h4>
+<p>通知フック＋自動ドラフトPR＋Exploreのモデル継承で、Claude Code は「人を待たずに成果を残す」自走基盤へ近づいた。強力さの裏でトークンコストは正直に増えるので、監視と worktree 隔離が主導権を握る。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer"> Claude Code CHANGELOG（GitHub） </a> </li><li> <a href="https://code.claude.com/docs/en/changelog" target="_blank" rel="noopener noreferrer"> Claude Code Docs: Changelog </a> </li><li> <a href="https://simonwillison.net/2026/Jun/30/claude-sonnet-5/" target="_blank" rel="noopener noreferrer"> Simon Willison: What&#39;s new in Claude Sonnet 5 </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> なぜ今これが話題か </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 何が新しいか </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 仕組みのポイント </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 自分が試すなら </a> </li><li> <a href="#sec-5" data-toc="sec-5"> 注意点 </a> </li><li> <a href="#sec-6" data-toc="sec-6"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-07-03</div> <div>⏱ 読了 約3分</div> <div>🏷 Claude Code</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
