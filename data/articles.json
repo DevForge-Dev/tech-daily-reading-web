@@ -1,12 +1,82 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-07-02T04:51:21.384Z",
+  "generatedAt": "2026-07-03T04:47:18.073Z",
   "topics": [
     "Claude Code",
     "Next.js",
     "Flutter"
   ],
   "articles": [
+    {
+      "id": "2026-07-03-claude-code",
+      "date": "2026-07-03",
+      "topic": "Claude Code",
+      "title": "バックグラウンドエージェントが自走する日 — 通知フック・自動ドラフトPR・Exploreのモデル継承",
+      "lede": "7月3日のダイジェストは「自走する自動化基盤」への一歩。Claude in Chrome が一般提供(GA)になり、バックグラウンドのエージェントが入力待ち/完了時に通知フック(agent_needs_input / agent_completed)を発火、worktree での作業を終えると確認待ちで止まらずコミット・プッシュしてドラフトPRまで開く。内蔵 Explore は haiku ではなくメインモデル(opus上限)を継承し、/dataviz スキルも追加。裏で Sonnet 5 の新トークナイザ(約30%増)というコストの注意点も。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>この半年、Claude Code は「対話しながら書く相棒」から「無人で長く回す自動化基盤」へ重心を移してきた。7月3日の公式CHANGELOGはその方向をさらに一段進める。<b>Claude in Chrome が一般提供(GA)</b>になり、そして<b>バックグラウンドのエージェント</b>が人の確認を待たずに作業を完遂できるようになった。あわせて組織デフォルトモデル・読みやすいセッション名・クリック可能な添付・agentsビュー改善といった、毎日の運用の手触りを底上げする更新群も入っている。</p>\n<h4>何が新しいか</h4>\n<p>核心は3つ。第一に、バックグラウンドセッションが状態遷移で<b>Notificationフックを発火</b>するようになった。入力が要るときは <code>agent_needs_input</code>、完了時は <code>agent_completed</code> が飛ぶので、通知やスクリプトで拾える。第二に、worktree でコード作業を終えたバックグラウンドエージェントは<b>確認待ちで止まらず、コミット・プッシュしてドラフトPRを開く</b>。第三に、内蔵の <b>Explore エージェントが haiku ではなくメインセッションのモデル(opus上限)を継承</b>するようになり、調査の質が上がった。加えて、チャートやダッシュボード設計を助ける <b>/dataviz スキル</b>とカラーパレット検証が追加された。</p>\n<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='22' text-anchor='middle' font-size='12.5' font-weight='700' fill='#5b27b0'>バックグラウンドエージェント：確認待ちから自走へ</text><rect x='24' y='40' width='262' height='150' rx='12' fill='#f6f2fd' stroke='#b58bd6'/><text x='155' y='63' text-anchor='middle' font-size='12' font-weight='700' fill='#6b4a93'>従来</text><rect x='44' y='76' width='222' height='28' rx='6' fill='#fff' stroke='#d9c7ef'/><text x='155' y='94' text-anchor='middle' font-size='10.5' fill='#7a5aa8'>作業完了 → 確認待ちで停止</text><rect x='44' y='112' width='222' height='28' rx='6' fill='#fff' stroke='#d9c7ef'/><text x='155' y='130' text-anchor='middle' font-size='10.5' fill='#7a5aa8'>人が戻るまで前へ進まない</text><text x='155' y='168' text-anchor='middle' font-size='10' font-style='italic' fill='#9a7cc0'>無人運用だと詰まりやすい</text><rect x='314' y='40' width='262' height='150' rx='12' fill='#eef7f0' stroke='#79c99a'/><text x='445' y='63' text-anchor='middle' font-size='12' font-weight='700' fill='#1c7c4a'>今回(GA)</text><rect x='334' y='76' width='222' height='28' rx='6' fill='#fff' stroke='#bfe6cd'/><text x='445' y='94' text-anchor='middle' font-size='10.5' fill='#2f7d54'>通知フック発火(needs_input/completed)</text><rect x='334' y='112' width='222' height='28' rx='6' fill='#fff' stroke='#bfe6cd'/><text x='445' y='130' text-anchor='middle' font-size='10.5' fill='#2f7d54'>自動でcommit/push→ドラフトPR</text><text x='445' y='168' text-anchor='middle' font-size='10' font-style='italic' fill='#4a9b72'>止まらず成果を残す</text></svg><figcaption>図1：完了時に人を待たず、成果をPRとして残す方向へ。無人運用の実効性が上がる。</figcaption></figure>\n<h4>仕組みのポイント</h4>\n<p>ポイントは「エージェントが自分の状態を外へ知らせ、区切りで成果を確定する」ループができたこと。<code>agent_needs_input</code> と <code>agent_completed</code> は Notification フックの一種で、人はそれを購読すればよく、常時監視から解放される。完了時の自動 push→ドラフトPR は、worktree による隔離が前提なので main を直接汚さない。Explore のモデル継承は、調査サブエージェントが安価な haiku 固定ではなく親と同じ賢さで動くという変更で、設計・横断調査の精度に効く。</p>\n<figure class='fig'><pre class='mermaid'>flowchart TD\n  A[\"バックグラウンドで作業\"] --> B{\"人の入力が要る?\"}\n  B -- \"はい\" --> C[\"agent_needs_input を発火\"]\n  C --> D[\"通知で人に確認を促す\"]\n  B -- \"いいえ\" --> E[\"作業を完遂\"]\n  E --> F[\"agent_completed を発火\"]\n  F --> G[\"commit / push\"]\n  G --> H[\"ドラフトPRを自動で開く\"]</pre><figcaption>図2：状態遷移で通知を出し、完了時は自動でPRまで到達する自走ループ。</figcaption></figure>\n<h4>自分が試すなら</h4>\n<ul><li>毎朝の自動処理を worktree ＋バックグラウンドで走らせ、<code>agent_completed</code> 通知でドラフトPRの有無だけ確認する運用に寄せる。</li><li>横断調査タスクは Explore に委譲し、モデル継承で精度が上がったか before/after を比べる。</li><li>ダッシュボード系の可視化は <code>/dataviz</code> に任せてカラーパレット検証まで通す。</li></ul>\n<h4>注意点</h4>\n<blockquote>裏で走る Sonnet 5 の<b>新トークナイザは同じ入力でも約30%多くトークンを生成</b>する。自走で回数が増えるほど請求は膨らむので、カテゴリ別 <code>/usage</code> で自動化枠の消費を棚卸ししたい。加えて Sonnet 5 は<b>適応的思考が既定オン</b>で、手動の拡張思考や非既定サンプリングは400エラーになる点も設定見直しが要る。自動PRは便利だが、レビュー無しでのマージは避け、ドラフト止まりを既定に。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>通知フック＋自動ドラフトPR＋Exploreのモデル継承で、Claude Code は「人を待たずに成果を残す」自走基盤へ近づいた。強力さの裏でトークンコストは正直に増えるので、監視と worktree 隔離が主導権を握る。</p>",
+      "sources": [
+        {
+          "title": "Claude Code CHANGELOG（GitHub）",
+          "url": "https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md"
+        },
+        {
+          "title": "Claude Code Docs: Changelog",
+          "url": "https://code.claude.com/docs/en/changelog"
+        },
+        {
+          "title": "Simon Willison: What's new in Claude Sonnet 5",
+          "url": "https://simonwillison.net/2026/Jun/30/claude-sonnet-5/"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-03-nextjs",
+      "date": "2026-07-03",
+      "topic": "Next.js",
+      "title": "Payload CMS 3.x — Next.js に「直接インストール」して Server Component から DB を直クエリ",
+      "lede": "ヘッドレスCMSは「別サービスを立てて REST/GraphQL で叩く」が常識だった。Payload 3.0 は Express を捨て、Next.js の /app に丸ごと同居する初のCMS。管理画面もAPIもあなたのプロジェクト内に生成され、Local API で Server Component から HTTP を経由せず DB に直行できる。2025年に Figma が Payload チームを買収、v3.73.0 で Next.js 16 対応。ただし App Router 前提で、サーバー境界と認可の扱いに落とし穴がある。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>従来のヘッドレスCMSは、フロントとは別のバックエンドを立て、<code>REST</code>/<code>GraphQL</code>越しにコンテンツを取りに行く構成だった。デプロイ対象が増え、ネットワーク往復も挟まる。<b>Payload 3.0</b>(TypeScript製・MIT)はこの前提を壊す。<b>Next.js の /app フォルダに直接インストールできる初のCMS</b>として、Express を捨て Next.js のランタイム内に丸ごと同居する。Admin Panel も API も全部あなたの Next.js プロジェクト内に生成され、デプロイは1つのまま。Vercel のサーバーレスにもそのまま載る。</p>\n<h4>何が新しいか</h4>\n<p>最大の武器が <b>Local API</b>。<code>getPayload({ config })</code> で初期化済みインスタンスを取り、<code>payload.find</code>/<code>create</code>/<code>update</code> で<b>HTTPを経由せず DB に直行</b>する。これができる主要CMSは Payload だけで、React Server Components のデータ取得と極めて相性が良い。設定は <code>payload.config.ts</code> が単一の真実で、コレクション定義から<b>TypeScript型・DBスキーマ・Admin UI・API がすべて生成</b>される。DBアダプタは PostgreSQL/MongoDB/SQLite。エコシステム面では<b>Figma が Payload チームを買収</b>(2025)、コアは OSS/self-host のまま維持され、<b>v3.73.0(2026-01-23)で Next.js 16 対応</b>済み。</p>\n<figure class='fig'><svg viewBox='0 0 600 214' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='20' text-anchor='middle' font-size='12.5' font-weight='700' fill='#1456b8'>データ取得経路：別サービス+HTTP から Local API 直行へ</text><rect x='20' y='36' width='270' height='166' rx='11' fill='#fbeef0' stroke='#e07a9b'/><text x='155' y='58' text-anchor='middle' font-size='12' font-weight='700' fill='#b03a6e'>従来のヘッドレスCMS</text><rect x='40' y='72' width='230' height='26' rx='6' fill='#fff' stroke='#efc3d3'/><text x='155' y='89' text-anchor='middle' font-size='10' fill='#8c3257'>Next.js アプリ</text><text x='155' y='112' text-anchor='middle' font-size='11' fill='#b03a6e'>↓ REST / GraphQL(HTTP往復)</text><rect x='40' y='120' width='230' height='26' rx='6' fill='#fff' stroke='#efc3d3'/><text x='155' y='137' text-anchor='middle' font-size='10' fill='#8c3257'>別サービスのCMS</text><rect x='40' y='150' width='230' height='26' rx='6' fill='#fff' stroke='#efc3d3'/><text x='155' y='167' text-anchor='middle' font-size='10' fill='#8c3257'>DB</text><text x='155' y='192' text-anchor='middle' font-size='9.5' font-style='italic' fill='#a8546f'>デプロイ2つ・往復あり</text><rect x='310' y='36' width='270' height='166' rx='11' fill='#eef4fd' stroke='#7aa8ef'/><text x='445' y='58' text-anchor='middle' font-size='12' font-weight='700' fill='#1456b8'>Payload 3.x(同居)</text><rect x='330' y='72' width='230' height='26' rx='6' fill='#fff' stroke='#c3d8f5'/><text x='445' y='89' text-anchor='middle' font-size='10' fill='#2b5aa8'>Next.js アプリ + Payload(同一)</text><text x='445' y='112' text-anchor='middle' font-size='11' fill='#1456b8'>↓ Local API(HTTPなし)</text><rect x='330' y='120' width='230' height='26' rx='6' fill='#fff' stroke='#c3d8f5'/><text x='445' y='137' text-anchor='middle' font-size='10' fill='#2b5aa8'>DB を直接クエリ</text><text x='445' y='176' text-anchor='middle' font-size='9.5' font-style='italic' fill='#5a86c8'>デプロイ1つ・RSCと好相性</text></svg><figcaption>図1：別サービス＋HTTP往復を、同居＋Local API の直クエリが置き換える。</figcaption></figure>\n<h4>仕組みと実装</h4>\n<p>既存プロジェクトへは <code>npx create-payload-app@latest</code> で導入でき、/app に <code>(payload)</code> ルートグループと <code>payload.config.ts</code> が入る。Server Component からは <code>'use client'</code> 不要で、そのまま DB に直行できる。</p>\n<pre><code>// app/(app)/blog/page.tsx — Server Component\nimport 'server-only'\nimport { getPayload } from 'payload'\nimport config from '@payload-config'\n\nexport default async function BlogPage() {\n  const payload = await getPayload({ config })\n  const { docs } = await payload.find({\n    collection: 'posts',\n    where: { _status: { equals: 'published' } },\n  })\n  return docs.map(p => <li key={p.id}>{p.title}</li>)\n}</code></pre>\n<figure class='fig'><pre class='mermaid'>flowchart TD\n  A[\"Server Component / Server Action\"] --> B[\"getPayload(config)\"]\n  B --> C[\"payload.find / update\"]\n  C --> D[\"DB を直接クエリ(HTTPなし)\"]\n  A -. \"変更系は overrideAccess:false + user\" .-> E[\"コレクションのアクセス制御を通す\"]</pre><figcaption>図2：読みは直行、変更はアクセス制御を必ず通す。認可の素通りを防ぐ。</figcaption></figure>\n<h4>注意点</h4>\n<blockquote><b>App Router 前提</b>で Pages Router には噛み合わない。Local API はサーバー専用なので <code>getPayload</code> を含むモジュールをクライアントに引き込むとバンドルが壊れ秘密も漏れる——<code>import 'server-only'</code> でガードする。Server Action からの変更は既定で <code>overrideAccess: true</code> になりがちで、ユーザー入力起点では <b><code>overrideAccess: false</code> ＋ <code>user</code></b> を渡してアクセス制御を効かせないと認可を素通りする。Next.js のメジャー更新には Payload 側の対応バージョン(15→16 は 3.73)が要り、両者の整合を取る。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>Payload 3.x は「CMSを別サービスにしない」発想で、RSC のデータ取得を最短にする。1デプロイで完結し Local API が速いが、App Router 前提とサーバー境界・認可の作法を守ることが条件だ。</p>",
+      "sources": [
+        {
+          "title": "Payload 3.0 発表（Next.js ネイティブ）",
+          "url": "https://payloadcms.com/posts/blog/payload-30-the-first-cms-that-installs-directly-into-any-nextjs-app"
+        },
+        {
+          "title": "Local API 概要（公式ドキュメント）",
+          "url": "https://payloadcms.com/docs/local-api/overview"
+        },
+        {
+          "title": "v3.73.0 リリース（Next.js 16 対応）",
+          "url": "https://github.com/payloadcms/payload/releases/tag/v3.73.0"
+        },
+        {
+          "title": "Payload joins Figma（Figma Blog）",
+          "url": "https://www.figma.com/blog/payload-joins-figma/"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-03-flutter",
+      "date": "2026-07-03",
+      "topic": "Flutter",
+      "title": "2026ロードマップ「Finishing the Job」— Android Impeller完了・Wasm-safe interop・Web WASM既定",
+      "lede": "今日の主役は公開された Flutter/Dart 2026ロードマップ「Finishing the Job」。新機能の追加より「やり残しの完遂」が主軸で、AndroidのImpeller移行完了(Android10+でレガシーSkia撤去しVulkan一本化)が中核。レガシーJS interopを廃止し Wasm-safe interop(dart:js_interop)へ、WebはWebAssemblyが既定化(ロード時間40%短縮・メモリ30%削減)。安定版は Flutter 3.44.0 / Dart 3.12.2。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>Flutter の2026年は「派手な新機能」ではなく<b>やり残しの完遂</b>がテーマだ。公開されたロードマップ「<b>Finishing the Job</b>」は、長年並行運用してきたレンダリングやWeb基盤の移行を\"終わらせる\"方向を鮮明にした。安定版は <b>Flutter 3.44.0 / Dart 3.12.2</b>、次の安定版は2026年8月予定(年4回リリース)。基盤が固まる局面なので、既存プロジェクトの棚卸しに直結する話が多い。</p>\n<h4>何が新しいか</h4>\n<p>中核は<b>AndroidのImpeller移行完了</b>。<b>Android 10以上ではレガシーSkiaを撤去し、Vulkan一本化(Pure Impeller)</b>になる。シェーダーをビルド時(AOT)にコンパイルするため、実行時のシェーダーコンパイル由来のジャンクが消え、決定論的フレームで 60/90/120fps が安定する。Web側は二段構え。<b>レガシーJS interop(<code>dart:html</code>/<code>package:js</code>)を廃止し、Wasm-safe interop(<code>dart:js_interop</code>)へ移行</b>、そして<b>WebはWebAssembly(Wasm)が既定</b>になる。テストでは<b>ロード時間40%短縮・実行時メモリ30%削減</b>、DevToolsもWASM既定でTimelineが高頻度フレームをジャンクなく扱う。さらに Android 17 や新iOSへの day-zero 対応、言語面では Primary Constructors と Augmentations を2026年内に出荷予定。</p>\n<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='20' text-anchor='middle' font-size='12.5' font-weight='700' fill='#0277bd'>Finishing the Job：3つの「完遂」項目</text><rect x='26' y='36' width='548' height='40' rx='8' fill='#e9f7ef' stroke='#46c08a'/><text x='40' y='55' font-size='11' font-weight='700' fill='#1c7c4a'>Android Impeller 移行完了</text><text x='40' y='70' font-size='10' fill='#2f7d5b'>Android10+ はレガシーSkia撤去 → Vulkan一本化(AOTシェーダーでジャンク解消)</text><rect x='26' y='84' width='548' height='40' rx='8' fill='#eef4fd' stroke='#7aa8ef'/><text x='40' y='103' font-size='11' font-weight='700' fill='#1456b8'>Wasm-safe interop へ移行</text><text x='40' y='118' font-size='10' fill='#2b5aa8'>dart:html / package:js を廃止 → dart:js_interop（Wasmの前提）</text><rect x='26' y='132' width='548' height='40' rx='8' fill='#fdf3ea' stroke='#e0a86a'/><text x='40' y='151' font-size='11' font-weight='700' fill='#b5730f'>Web は WebAssembly 既定</text><text x='40' y='166' font-size='10' fill='#946012'>ロード時間 -40% ・ 実行時メモリ -30%（テスト値）・DevTools も WASM 既定</text><text x='300' y='192' text-anchor='middle' font-size='10' font-style='italic' fill='#0277bd'>新機能追加より「並行運用の終了」で基盤を一本化</text></svg><figcaption>図1：Impeller・interop・Web実行基盤の3つを\"完遂\"して並行運用を畳む。</figcaption></figure>\n<h4>実務での使いどころ</h4>\n<p>効くのはWebプロジェクトの棚卸しだ。<code>dart:html</code> に直接依存するプラグインは Wasm で動かないため、早めの洗い出しが要る。まず <code>flutter build web --wasm</code> の <b>dry-run</b> を走らせ、非対応依存を特定するところから始めるのが定石。Android側は Impeller 前提でシェーダー由来のジャンクが減るので、以前コンパイルジャンクを疑っていた箇所を再計測する価値がある。</p>\n<figure class='fig'><pre class='mermaid'>flowchart TD\n  A[\"現状：dart:html / package:js に依存\"] --> B[\"flutter build web --wasm の dry-run\"]\n  B --> C{\"非対応依存あり?\"}\n  C -- \"はい\" --> D[\"dart:js_interop へ置換 / 代替プラグイン\"]\n  C -- \"いいえ\" --> E[\"Wasm 既定でビルド\"]\n  D --> E\n  E --> F[\"ロード -40% / メモリ -30%\"]</pre><figcaption>図2：dry-runで非対応依存を洗い出し、Wasm-safe interop へ移してから既定ビルドへ。</figcaption></figure>\n<h4>注意点</h4>\n<blockquote>「完遂」ロードマップは<b>撤去を伴う</b>のが肝。Android10+ のレガシーSkia撤去やレガシーJS interop廃止は、古い依存を抱えたままだと更新時に壊れうる。移行は<b>依存の棚卸し→dry-run→段階置換</b>の順で、一気に上げない。数値(-40%/-30%)は公式テスト値で、実アプリでは構成次第なので profile モードで自分の値を測ること。新言語機能(Primary Constructors 等)は2026年内予定で、今すぐ本番前提にはしない。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>2026のFlutterは「増やす」より「終わらせる」年。Impeller一本化とWeb WASM既定は性能に効くが、撤去を伴うぶん依存の棚卸しが先。まず <code>--wasm</code> の dry-run で自分のプロジェクトの現在地を確認しよう。</p>",
+      "sources": [
+        {
+          "title": "Flutter & Dart 2026 roadmap",
+          "url": "https://blog.flutter.dev/flutter-darts-2026-roadmap-89378f17ebbd"
+        },
+        {
+          "title": "Flutter's 2026 Roadmap — Finishing the Job",
+          "url": "https://webartdesign.com.au/blog/flutters-2026-roadmap-just-dropped-and-its-all-about-finishing-the-job/"
+        },
+        {
+          "title": "Dart: what’s new",
+          "url": "https://dart.dev/resources/whats-new"
+        }
+      ]
+    },
     {
       "id": "2026-07-02-claude-code",
       "date": "2026-07-02",
