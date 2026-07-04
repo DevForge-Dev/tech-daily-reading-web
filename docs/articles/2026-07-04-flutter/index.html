@@ -1,0 +1,73 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>画面をLLMが組み立てる — GenUI SDKとA2UI v0.9（Flutter 3.44 / Dart 3.12.2） — デイリー技術深掘り 読み物</title><meta name="description" content="今日の主役は生成的UI。AIエージェントに「許可済みウィジェットのカタログ」と「目標」を渡すと、ランタイムで実Flutterウィジェットを構成して画面を組む。A2UIはLLMが吐くJSONベースの宣言的UI形式。モデルはDartを実行せず、カタログ外は発明できない安全設計。experimental/alpha。"><meta name="theme-color" content="#0277bd"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-04-flutter/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="画面をLLMが組み立てる — GenUI SDKとA2UI v0.9（Flutter 3.44 / Dart 3.12.2） — デイリー技術深掘り 読み物"><meta property="og:description" content="今日の主役は生成的UI。AIエージェントに「許可済みウィジェットのカタログ」と「目標」を渡すと、ランタイムで実Flutterウィジェットを構成して画面を組む。A2UIはLLMが吐くJSONベースの宣言的UI形式。モデルはDartを実行せず、カタログ外は発明できない安全設計。experimental/alpha。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-04-flutter/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #29b6f6, #01579b)"> <span class="glyph" aria-hidden="true">◆</span> <div class="kicker">Flutter</div> <h1>画面をLLMが組み立てる — GenUI SDKとA2UI v0.9（Flutter 3.44 / Dart 3.12.2）</h1> <p class="lede">今日の主役は生成的UI。AIエージェントに「許可済みウィジェットのカタログ」と「目標」を渡すと、ランタイムで実Flutterウィジェットを構成して画面を組む。A2UIはLLMが吐くJSONベースの宣言的UI形式。モデルはDartを実行せず、カタログ外は発明できない安全設計。experimental/alpha。</p> <div class="meta"> <span>📅 2026年7月4日</span> <span>⏱ 約2分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#0277bd"> <div> <article class="prose" data-has-mermaid="1"><h4 id="sec-1">なぜ今これが話題か</h4>
+<p>従来のUIは開発者がレイアウトをハードコードしていた。<b>GenUI SDK</b>はそれを覆し、<b>AIエージェントに「許可済みウィジェットのカタログ」と「目標」を渡す</b>と、ユーザーが実際に達成したいことに応じて<b>ランタイムで実Flutterウィジェットを構成</b>して画面を組み立てる。事前定義レイアウトもアプリストア更新も要らない、という発想の転換だ。安定版はFlutter 3.44.0 / Dart 3.12.2、次の安定版は8月予定。</p>
+<h4 id="sec-2">何が新しい/重要か</h4>
+<p>中核は<b>A2UI（Agent-to-UI）プロトコル v0.9</b>。これはLLMが生成する<b>JSONベースの宣言的UIシリアライズ形式</b>で、GenUI SDKは現在v0.9をサポートする。安全設計が肝で、<b>モデルはDartコードを実行せず</b>、<b>カタログに存在しないウィジェットは発明できない</b>。<code>genui</code>パッケージはpub.devで公開されているが<b>experimental/alpha</b>でAPIは大きく変わり得る。</p>
+<figure class='fig'><pre class='mermaid'>flowchart TD
+  A["AIエージェントと目標"] --> B["許可済みウィジェットのカタログ"]
+  B --> C["A2UI v0.9 の宣言的JSONを生成"]
+  C --> D["ランタイムで実Flutterウィジェットを構成"]
+  D --> E["事前レイアウト不要 ストア更新不要"]</pre><figcaption>図1：目標＋カタログ→A2UI JSON→実ウィジェット。カタログ外は生成されないのが安全弁。</figcaption></figure>
+<h4 id="sec-3">仕組み・実装のポイント</h4>
+<p>AIロジックは<code>genkit_shelf</code>でUI非依存部分を<b>Dartバックエンドサーバへ退避</b>でき、Gemini APIキーをクライアントから外せる（サーバもFlutterアプリも同じDartでコードはほぼ変わらない）。<code>genui_dartantic</code> / <code>dartantic_ai</code>経由で<b>Google(Gemini)/OpenAI/Anthropic/Mistral</b>を統一APIで扱える。言語面では<b>Primary Constructors</b>（実験プレビュー）やdot shorthands、Augmentations（コード生成の簡素化）が整理を進める。</p>
+<h4 id="sec-4">実務での使いどころ・注意点</h4>
+<blockquote>設定画面やダッシュボードのように「ユーザーの目的で構成が変わる」面は生成的UIと相性が良い。まずカタログを厳密に定義し、モデルがそこから外れないことを検証する運用が要る。ただしalphaでAPI破壊的変更があり得るので、本番投入より小さなPoCから。キーはサーバ側に必ず退避する。</blockquote>
+<h4 id="sec-5">ひとことまとめ</h4>
+<p>GenUI SDK＋A2UI v0.9で、画面は「書く」ものから「目標とカタログから組ませる」ものへ。安全弁はカタログ制約とDart非実行。今はalpha、PoCで手触りを確かめる段階だ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://docs.flutter.dev/ai/genui" target="_blank" rel="noopener noreferrer"> GenUI SDK for Flutter </a> </li><li> <a href="https://pub.dev/packages/genui" target="_blank" rel="noopener noreferrer"> genui | Flutter package </a> </li><li> <a href="https://verygood.ventures/blog/genkit-for-flutter-moving-ai-logic-to-a-dart-backend/" target="_blank" rel="noopener noreferrer"> Genkit for Flutter (Dart backend) </a> </li><li> <a href="https://dart.dev/blog/announcing-dart-3-12" target="_blank" rel="noopener noreferrer"> Announcing Dart 3.12 </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> なぜ今これが話題か </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 何が新しい/重要か </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 仕組み・実装のポイント </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 実務での使いどころ・注意点 </a> </li><li> <a href="#sec-5" data-toc="sec-5"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-07-04</div> <div>⏱ 読了 約2分</div> <div>🏷 Flutter</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

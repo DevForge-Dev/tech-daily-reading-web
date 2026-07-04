@@ -1,0 +1,72 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>SVGフィルターで“溶ける・ゆらぐ” — Goo(feGaussianBlur+feColorMatrix)と液体feTurbulence — デイリー技術深掘り 読み物</title><meta name="description" content="DOMを増やさず質感を足すSVGフィルター。重なる図形を溶かすGooはぼかし→アルファ急峻化の2段、液体ゆらぎはfeTurbulence→feDisplacementMap。定義も適用も純CSS/SVGで完結するのでRSCのまま置ける。ただしGooはChromium前提・フィルター領域は小さく、が鉄則。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-04-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="SVGフィルターで“溶ける・ゆらぐ” — Goo(feGaussianBlur+feColorMatrix)と液体feTurbulence — デイリー技術深掘り 読み物"><meta property="og:description" content="DOMを増やさず質感を足すSVGフィルター。重なる図形を溶かすGooはぼかし→アルファ急峻化の2段、液体ゆらぎはfeTurbulence→feDisplacementMap。定義も適用も純CSS/SVGで完結するのでRSCのまま置ける。ただしGooはChromium前提・フィルター領域は小さく、が鉄則。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-04-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>SVGフィルターで“溶ける・ゆらぐ” — Goo(feGaussianBlur+feColorMatrix)と液体feTurbulence</h1> <p class="lede">DOMを増やさず質感を足すSVGフィルター。重なる図形を溶かすGooはぼかし→アルファ急峻化の2段、液体ゆらぎはfeTurbulence→feDisplacementMap。定義も適用も純CSS/SVGで完結するのでRSCのまま置ける。ただしGooはChromium前提・フィルター領域は小さく、が鉄則。</p> <div class="meta"> <span>📅 2026年7月4日</span> <span>⏱ 約2分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="1"><h4 id="sec-1">なぜ今これが話題か</h4>
+<p>SVGの<b>フィルタープリミティブ</b>は、CSSの<code>filter: url(#id)</code>から参照するだけで、要素を足さずに「溶け合う」「にじむ」「液体のように歪む」質感を作れる。輪郭（パス描画/モーフ）とは別レイヤーの、<b>ピクセルの合成・歪み</b>を扱う手法だ。少ないマークアップで強い印象を出せて、しかもServer Componentのまま使えるのが今どきの旨味になる。</p>
+<h4 id="sec-2">何が新しい/重要か</h4>
+<p>核は2つのパイプライン。<b>Goo（溶け合い）</b>は<code>feGaussianBlur</code>で重なった図形のアルファをぼかし、<code>feColorMatrix</code>でアルファだけを急峻化（例 <code>...0 0 0 18 -7</code>）——18倍して7を引くことで、ぼけたアルファがしきい値を跨いだ所で硬いエッジに“戻り”、近接図形がヌルっと橋渡しされて1つの塊に見える。<b>液体ゆらぎ</b>は<code>feTurbulence</code>でPerlinノイズを生成し、<code>feDisplacementMap</code>の<code>scale</code>（10〜30程度）で元画像を歪ませる。</p>
+<figure class='fig'><pre class='mermaid'>flowchart LR
+  A["重なる図形 SourceGraphic"] --> B["feGaussianBlur でぼかし"]
+  B --> C["feColorMatrix でアルファ急峻化"]
+  C --> D["近接図形が溶けて一体化 Goo"]</pre><figcaption>図1：Gooは「ぼかし→アルファ急峻化」の2段。ぼかし量としきい値は連動ペアで実測調整する。</figcaption></figure>
+<h4 id="sec-3">仕組み・実装のポイント</h4>
+<p>フィルター定義も適用も静的なCSS/SVGなので<b><code>'use client'</code>不要</b>。定義は非表示の<code>&lt;svg width="0" height="0"&gt;</code>にインラインし、適用側は<code>.cluster { filter: url(#goo); }</code>を当てるだけ。個々の子要素はCSSのtransform/opacityで動かす（合成スレッド）。アニメ手段は、宣言的なSMILは本番非推奨、CSSはフィルター属性値を直接動かしにくい、結局<code>requestAnimationFrame</code>で<code>baseFrequency</code>をsin波で微小オシレーションさせる<b>JSが最も確実</b>。動かす所だけ小さなClient島に切り出すのが定石だ。</p>
+<h4 id="sec-4">注意点・落とし穴</h4>
+<blockquote>最重要は対応差。<b>Gooのアルファ急峻化トリックはChromium/Chromeで確実に効くが、Safari/Firefoxではただのぼかしに見える</b>構成があり塊化しない。本番はChrome/Edgeで確認し、非対応時はフィルターを外してぼかし無しにフォールバックする。性能面では<b>フィルター領域を小さく保つ</b>のが鉄則（全画面に大判フィルターを敷いて毎フレーム再計算すると重い）。<code>id</code>はページ内で一意にし、定義はアートの近くにインラインで置く。</blockquote>
+<h4 id="sec-5">ひとことまとめ</h4>
+<p>純CSS/SVGで質感を足せてRSCと好相性。Gooは“ぼかし→アルファ急峻化”、液体は“ノイズ→変位”。効くブラウザとフィルター領域のサイズだけは最初に押さえる。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feTurbulence" target="_blank" rel="noopener noreferrer"> MDN: feTurbulence </a> </li><li> <a href="https://css-tricks.com/gooey-effect/" target="_blank" rel="noopener noreferrer"> CSS-Tricks: The Gooey Effect </a> </li><li> <a href="https://www.smashingmagazine.com/2021/09/deep-dive-wonderful-world-svg-displacement-filtering/" target="_blank" rel="noopener noreferrer"> Smashing: A Deep Dive Into SVG Displacement Filtering </a> </li><li> <a href="https://tympanus.net/codrops/2019/02/19/svg-filter-effects-creating-texture-with-feturbulence/" target="_blank" rel="noopener noreferrer"> Codrops: Creating Texture with feTurbulence </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> なぜ今これが話題か </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 何が新しい/重要か </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 仕組み・実装のポイント </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 注意点・落とし穴 </a> </li><li> <a href="#sec-5" data-toc="sec-5"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-07-04</div> <div>⏱ 読了 約2分</div> <div>🏷 Next.js</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
