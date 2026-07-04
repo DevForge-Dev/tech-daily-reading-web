@@ -1,12 +1,94 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-07-03T04:47:18.073Z",
+  "generatedAt": "2026-07-04T04:51:15.603Z",
   "topics": [
     "Claude Code",
     "Next.js",
     "Flutter"
   ],
   "articles": [
+    {
+      "id": "2026-07-04-claude-code",
+      "date": "2026-07-04",
+      "topic": "Claude Code",
+      "title": "デフォルトが切り替わった日 — Opus 4.8・Sonnet 5・Claude Code Artifacts",
+      "lede": "7/4のダイジェストは“既定値”の話。上位プランの既定がOpus 4.8になりeffortは全面で「高」、fastモードは3倍安。Claude CodeはSonnet 5が既定で100万トークン文脈＋割引価格。さらにセッションをライブ共有できるArtifactsが加わり、ステアリング指針も公式に整理された。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>ここ数日のClaude Codeは、新機能の追加より<b>「既定でどう動くか」</b>の再設定が続いている。モデル・価格・共有のデフォルトがまとめて更新され、意識せず使うだけで挙動が変わる。7/4はその節目だ。</p>\n<h4>何が新しいか</h4>\n<p>まずモデル。<b>Opus 4.8</b>がMax・Team Premium・Enterprise従量課金・APIの既定になり、Claude Code/APIを含む全サーフェスで<b>effortパラメータが既定「高」</b>になった。高effortでもOpus 4.7の既定と同程度のトークン消費で性能が上がり、2.5倍速の<b>fastモードは従来比3倍安</b>。一方Claude Code本体は<b>Sonnet 5が既定</b>で、<b>100万トークンの文脈窓</b>と8/31までの割引価格<b>$2/$10 per Mtok</b>が案内された。加えて組織デフォルトモデル・読みやすいセッション名・クリック可能な添付も入る。そして<b>Claude Code Artifacts</b>——セッションの成果をライブ共有HTMLページとして公開し、進行に合わせ自動更新、公開ごとに新バージョンが作られ履歴から復元できる（Team/Enterpriseベータ・組織限定共有）。</p>\n<figure class='fig'><pre class='mermaid'>flowchart LR\n  P[\"上位プラン Max Team Enterprise従量 API\"] --> O[\"既定 Opus 4.8 effort高 fast3倍安\"]\n  C[\"Claude Code 本体\"] --> S[\"既定 Sonnet 5 100万トークン 割引2/10\"]</pre><figcaption>図1：上位プランはOpus 4.8、Claude Code本体はSonnet 5。既定が二層で切り替わった。</figcaption></figure>\n<h4>ステアリングの整理</h4>\n<p>公式は拡張手段の使い分けも整理した。毎回必ず守らせたい規則は<b>CLAUDE.md</b>、必要時だけ読み込む手順は<b>skill</b>、決定論的に強制したい処理は<b>hook</b>、重い/並列/文脈分離が要る仕事は<b>subagent</b>へ委譲——という対応づけだ。CLAUDE.mdを肥大させずに挙動を安定させる設計指針になる。利用実態の調査では平均<b>週20時間</b>使われ、エージェントが動くGitHubプロジェクトは半年で2倍超に増えたという。</p>\n<h4>自分が試すなら</h4>\n<ul><li>fastモードが3倍安になったので、反復の多い自動処理をfastへ寄せてコストを実測する。</li><li>毎朝の定型レポートをArtifact化し、再訪できるURLとして残す。</li><li>肥大化したCLAUDE.mdをskill/hookへ切り出し、必須処理だけhookで強制する。</li></ul>\n<h4>注意点</h4>\n<blockquote>effort既定「高」は品質に効くが、自走の回数×高effortで請求は伸びる。カテゴリ別<code>/usage</code>で消費を棚卸ししたい。割引価格($2/$10)は8/31までの期限つきである点にも注意。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>モデル(Opus 4.8/Sonnet 5)・価格(fast3倍安/割引)・共有(Artifacts)の既定が同時に更新。“設定しなくても賢く速く安く、成果は共有できる”方向へ寄せる一日だった。</p>",
+      "sources": [
+        {
+          "title": "Claude Code Docs: What's new",
+          "url": "https://code.claude.com/docs/en/whats-new"
+        },
+        {
+          "title": "Anthropic: Introducing Claude Opus 4.8",
+          "url": "https://www.anthropic.com/news/claude-opus-4-8"
+        },
+        {
+          "title": "Anthropic: Claude Code now supports artifacts",
+          "url": "https://claude.com/blog/artifacts-in-claude-code"
+        },
+        {
+          "title": "Anthropic: Steering Claude Code",
+          "url": "https://claude.com/blog/steering-claude-code-skills-hooks-rules-subagents-and-more"
+        },
+        {
+          "title": "Anthropic Research: How Claude Code is used in practice",
+          "url": "https://www.anthropic.com/research/claude-code-expertise"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-04-nextjs",
+      "date": "2026-07-04",
+      "topic": "Next.js",
+      "title": "SVGフィルターで“溶ける・ゆらぐ” — Goo(feGaussianBlur+feColorMatrix)と液体feTurbulence",
+      "lede": "DOMを増やさず質感を足すSVGフィルター。重なる図形を溶かすGooはぼかし→アルファ急峻化の2段、液体ゆらぎはfeTurbulence→feDisplacementMap。定義も適用も純CSS/SVGで完結するのでRSCのまま置ける。ただしGooはChromium前提・フィルター領域は小さく、が鉄則。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>SVGの<b>フィルタープリミティブ</b>は、CSSの<code>filter: url(#id)</code>から参照するだけで、要素を足さずに「溶け合う」「にじむ」「液体のように歪む」質感を作れる。輪郭（パス描画/モーフ）とは別レイヤーの、<b>ピクセルの合成・歪み</b>を扱う手法だ。少ないマークアップで強い印象を出せて、しかもServer Componentのまま使えるのが今どきの旨味になる。</p>\n<h4>何が新しい/重要か</h4>\n<p>核は2つのパイプライン。<b>Goo（溶け合い）</b>は<code>feGaussianBlur</code>で重なった図形のアルファをぼかし、<code>feColorMatrix</code>でアルファだけを急峻化（例 <code>...0 0 0 18 -7</code>）——18倍して7を引くことで、ぼけたアルファがしきい値を跨いだ所で硬いエッジに“戻り”、近接図形がヌルっと橋渡しされて1つの塊に見える。<b>液体ゆらぎ</b>は<code>feTurbulence</code>でPerlinノイズを生成し、<code>feDisplacementMap</code>の<code>scale</code>（10〜30程度）で元画像を歪ませる。</p>\n<figure class='fig'><pre class='mermaid'>flowchart LR\n  A[\"重なる図形 SourceGraphic\"] --> B[\"feGaussianBlur でぼかし\"]\n  B --> C[\"feColorMatrix でアルファ急峻化\"]\n  C --> D[\"近接図形が溶けて一体化 Goo\"]</pre><figcaption>図1：Gooは「ぼかし→アルファ急峻化」の2段。ぼかし量としきい値は連動ペアで実測調整する。</figcaption></figure>\n<h4>仕組み・実装のポイント</h4>\n<p>フィルター定義も適用も静的なCSS/SVGなので<b><code>'use client'</code>不要</b>。定義は非表示の<code>&lt;svg width=\"0\" height=\"0\"&gt;</code>にインラインし、適用側は<code>.cluster { filter: url(#goo); }</code>を当てるだけ。個々の子要素はCSSのtransform/opacityで動かす（合成スレッド）。アニメ手段は、宣言的なSMILは本番非推奨、CSSはフィルター属性値を直接動かしにくい、結局<code>requestAnimationFrame</code>で<code>baseFrequency</code>をsin波で微小オシレーションさせる<b>JSが最も確実</b>。動かす所だけ小さなClient島に切り出すのが定石だ。</p>\n<h4>注意点・落とし穴</h4>\n<blockquote>最重要は対応差。<b>Gooのアルファ急峻化トリックはChromium/Chromeで確実に効くが、Safari/Firefoxではただのぼかしに見える</b>構成があり塊化しない。本番はChrome/Edgeで確認し、非対応時はフィルターを外してぼかし無しにフォールバックする。性能面では<b>フィルター領域を小さく保つ</b>のが鉄則（全画面に大判フィルターを敷いて毎フレーム再計算すると重い）。<code>id</code>はページ内で一意にし、定義はアートの近くにインラインで置く。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>純CSS/SVGで質感を足せてRSCと好相性。Gooは“ぼかし→アルファ急峻化”、液体は“ノイズ→変位”。効くブラウザとフィルター領域のサイズだけは最初に押さえる。</p>",
+      "sources": [
+        {
+          "title": "MDN: feTurbulence",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/SVG/Reference/Element/feTurbulence"
+        },
+        {
+          "title": "CSS-Tricks: The Gooey Effect",
+          "url": "https://css-tricks.com/gooey-effect/"
+        },
+        {
+          "title": "Smashing: A Deep Dive Into SVG Displacement Filtering",
+          "url": "https://www.smashingmagazine.com/2021/09/deep-dive-wonderful-world-svg-displacement-filtering/"
+        },
+        {
+          "title": "Codrops: Creating Texture with feTurbulence",
+          "url": "https://tympanus.net/codrops/2019/02/19/svg-filter-effects-creating-texture-with-feturbulence/"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-04-flutter",
+      "date": "2026-07-04",
+      "topic": "Flutter",
+      "title": "画面をLLMが組み立てる — GenUI SDKとA2UI v0.9（Flutter 3.44 / Dart 3.12.2）",
+      "lede": "今日の主役は生成的UI。AIエージェントに「許可済みウィジェットのカタログ」と「目標」を渡すと、ランタイムで実Flutterウィジェットを構成して画面を組む。A2UIはLLMが吐くJSONベースの宣言的UI形式。モデルはDartを実行せず、カタログ外は発明できない安全設計。experimental/alpha。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>従来のUIは開発者がレイアウトをハードコードしていた。<b>GenUI SDK</b>はそれを覆し、<b>AIエージェントに「許可済みウィジェットのカタログ」と「目標」を渡す</b>と、ユーザーが実際に達成したいことに応じて<b>ランタイムで実Flutterウィジェットを構成</b>して画面を組み立てる。事前定義レイアウトもアプリストア更新も要らない、という発想の転換だ。安定版はFlutter 3.44.0 / Dart 3.12.2、次の安定版は8月予定。</p>\n<h4>何が新しい/重要か</h4>\n<p>中核は<b>A2UI（Agent-to-UI）プロトコル v0.9</b>。これはLLMが生成する<b>JSONベースの宣言的UIシリアライズ形式</b>で、GenUI SDKは現在v0.9をサポートする。安全設計が肝で、<b>モデルはDartコードを実行せず</b>、<b>カタログに存在しないウィジェットは発明できない</b>。<code>genui</code>パッケージはpub.devで公開されているが<b>experimental/alpha</b>でAPIは大きく変わり得る。</p>\n<figure class='fig'><pre class='mermaid'>flowchart TD\n  A[\"AIエージェントと目標\"] --> B[\"許可済みウィジェットのカタログ\"]\n  B --> C[\"A2UI v0.9 の宣言的JSONを生成\"]\n  C --> D[\"ランタイムで実Flutterウィジェットを構成\"]\n  D --> E[\"事前レイアウト不要 ストア更新不要\"]</pre><figcaption>図1：目標＋カタログ→A2UI JSON→実ウィジェット。カタログ外は生成されないのが安全弁。</figcaption></figure>\n<h4>仕組み・実装のポイント</h4>\n<p>AIロジックは<code>genkit_shelf</code>でUI非依存部分を<b>Dartバックエンドサーバへ退避</b>でき、Gemini APIキーをクライアントから外せる（サーバもFlutterアプリも同じDartでコードはほぼ変わらない）。<code>genui_dartantic</code> / <code>dartantic_ai</code>経由で<b>Google(Gemini)/OpenAI/Anthropic/Mistral</b>を統一APIで扱える。言語面では<b>Primary Constructors</b>（実験プレビュー）やdot shorthands、Augmentations（コード生成の簡素化）が整理を進める。</p>\n<h4>実務での使いどころ・注意点</h4>\n<blockquote>設定画面やダッシュボードのように「ユーザーの目的で構成が変わる」面は生成的UIと相性が良い。まずカタログを厳密に定義し、モデルがそこから外れないことを検証する運用が要る。ただしalphaでAPI破壊的変更があり得るので、本番投入より小さなPoCから。キーはサーバ側に必ず退避する。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>GenUI SDK＋A2UI v0.9で、画面は「書く」ものから「目標とカタログから組ませる」ものへ。安全弁はカタログ制約とDart非実行。今はalpha、PoCで手触りを確かめる段階だ。</p>",
+      "sources": [
+        {
+          "title": "GenUI SDK for Flutter",
+          "url": "https://docs.flutter.dev/ai/genui"
+        },
+        {
+          "title": "genui | Flutter package",
+          "url": "https://pub.dev/packages/genui"
+        },
+        {
+          "title": "Genkit for Flutter (Dart backend)",
+          "url": "https://verygood.ventures/blog/genkit-for-flutter-moving-ai-logic-to-a-dart-backend/"
+        },
+        {
+          "title": "Announcing Dart 3.12",
+          "url": "https://dart.dev/blog/announcing-dart-3-12"
+        }
+      ]
+    },
     {
       "id": "2026-07-03-claude-code",
       "date": "2026-07-03",
