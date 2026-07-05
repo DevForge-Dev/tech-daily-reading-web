@@ -1,0 +1,75 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Flutter 4.0の輪郭 — Impeller 2.0とデザインのデカップリング — デイリー技術深掘り 読み物</title><meta name="description" content="安定版は Flutter 3.44 / Dart 3.12.2 で、次は2026年8月予定。今日の主役はその先の次期メジャー Flutter 4.0 の輪郭だ。Impeller 2.0 と Dart 4.x 統合を軸に mid-2026 が取り沙汰されるが、日程よりコアゴール（とりわけMaterial/Cupertinoのデカップリング）達成を優先する方針が示された。"><meta name="theme-color" content="#0277bd"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-05-flutter/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Flutter 4.0の輪郭 — Impeller 2.0とデザインのデカップリング — デイリー技術深掘り 読み物"><meta property="og:description" content="安定版は Flutter 3.44 / Dart 3.12.2 で、次は2026年8月予定。今日の主役はその先の次期メジャー Flutter 4.0 の輪郭だ。Impeller 2.0 と Dart 4.x 統合を軸に mid-2026 が取り沙汰されるが、日程よりコアゴール（とりわけMaterial/Cupertinoのデカップリング）達成を優先する方針が示された。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-05-flutter/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #29b6f6, #01579b)"> <span class="glyph" aria-hidden="true">◆</span> <div class="kicker">Flutter</div> <h1>Flutter 4.0の輪郭 — Impeller 2.0とデザインのデカップリング</h1> <p class="lede">安定版は Flutter 3.44 / Dart 3.12.2 で、次は2026年8月予定。今日の主役はその先の次期メジャー Flutter 4.0 の輪郭だ。Impeller 2.0 と Dart 4.x 統合を軸に mid-2026 が取り沙汰されるが、日程よりコアゴール（とりわけMaterial/Cupertinoのデカップリング）達成を優先する方針が示された。</p> <div class="meta"> <span>📅 2026年7月5日</span> <span>⏱ 約2分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#0277bd"> <div> <article class="prose" data-has-mermaid="0"><h4 id="sec-1">なぜ今これが話題か</h4>
+<p>安定版は<b>Flutter 3.44 / Dart 3.12.2</b>で、次の安定版は2026年8月予定。今日の主役はその先、<b>次期メジャー Flutter 4.0</b>の輪郭だ。Flutterチームは日程より「コアゴール達成」を優先する方針を示した。</p>
+<h4 id="sec-2">何が新しいか</h4>
+<p>4.0は<b>Impeller 2.0</b>レンダリングエンジンと<b>Dart 4.x</b>統合が軸で、mid-2026 が取り沙汰される。その前提条件が<b>デザインのデカップリング</b>——<b>Material/Cupertino</b>をコアから独立した versioned な pub.dev パッケージ（将来の<code>material_ui</code>/<code>cupertino_ui</code>）へ切り出す作業が2026初頭から進行中だ。モジュール化で<b>アプリサイズ縮小</b>とSDKリリースを待たない<b>UIの独立更新</b>を狙う。言語面ではDart 3.12が private named parameters を初期化フォーマルで対応し、年内にPrimary Constructors／Augmentationsを出荷予定と、いずれもDart 4.x世代への布石だ。</p>
+<figure class='fig'><svg viewBox='0 0 600 132' xmlns='http://www.w3.org/2000/svg'>
+  <rect x='0' y='0' width='600' height='132' fill='#e8f6fd' rx='8'></rect>
+  <line x1='40' y1='72' x2='560' y2='72' stroke='#0277bd' stroke-width='2'></line>
+  <circle cx='120' cy='72' r='6' fill='#0277bd'></circle><text x='120' y='52' font-size='11' fill='#1c1c1e' text-anchor='middle'>3.44 / 3.12.2</text><text x='120' y='98' font-size='10' fill='#6b6b70' text-anchor='middle'>現行安定</text>
+  <circle cx='330' cy='72' r='6' fill='#0277bd'></circle><text x='330' y='52' font-size='11' fill='#1c1c1e' text-anchor='middle'>2026/08</text><text x='330' y='98' font-size='10' fill='#6b6b70' text-anchor='middle'>次期安定</text>
+  <circle cx='520' cy='72' r='8' fill='#01579b'></circle><text x='520' y='52' font-size='11' fill='#01579b' font-weight='700' text-anchor='middle'>4.0 mid-2026?</text><text x='520' y='98' font-size='10' fill='#6b6b70' text-anchor='middle'>Impeller 2.0</text>
+</svg><figcaption>図1：4.0は日程よりデカップリング等のゴール達成を優先する。</figcaption></figure>
+<h4 id="sec-3">実務での使いどころ</h4>
+<p>本番の凍結面は<b>3.44 / 3.12.2</b>に据えるのが安全。4.0系の機能はまだ experimental だ。状態管理は新規＝<b>Riverpod 3.x</b>、監査/規制＝<b>Bloc 9.2</b> が基本線で、Impellerは既にiOS/モダンAndroidの安定既定エンジンになっている。</p>
+<h4 id="sec-4">注意点</h4>
+<blockquote>デカップリングでMaterial/Cupertinoがパッケージ化されると、依存やimport経路が変わりうる。移行を前提にバージョン固定と更新計画を持ちたい。experimentalな4.0系を本番の土台にしない。</blockquote>
+<h4 id="sec-5">ひとことまとめ</h4>
+<p>4.0は「速さ（Impeller 2.0）」と「軽さ・独立更新（デカップリング）」の同時追求。今は3.44で堅く作りつつ、パッケージ分離の波に備える時期だ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://blog.flutter.dev/flutter-darts-2026-roadmap-89378f17ebbd" target="_blank" rel="noopener noreferrer"> Flutter &amp; Dart&#39;s 2026 roadmap </a> </li><li> <a href="https://docs.flutter.dev/release/whats-new" target="_blank" rel="noopener noreferrer"> What&#39;s new (docs.flutter.dev) </a> </li><li> <a href="https://dart.dev/blog/announcing-dart-3-12" target="_blank" rel="noopener noreferrer"> Announcing Dart 3.12 </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> なぜ今これが話題か </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 何が新しいか </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 実務での使いどころ </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 注意点 </a> </li><li> <a href="#sec-5" data-toc="sec-5"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-07-05</div> <div>⏱ 読了 約2分</div> <div>🏷 Flutter</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

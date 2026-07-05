@@ -1,0 +1,78 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>JS無しで“貼り付いた/スナップした”を検出 — scroll-state() コンテナクエリ — デイリー技術深掘り 読み物</title><meta name="description" content="position: sticky が本当に貼り付いた瞬間や、スクロールスナップが決まった瞬間を、これまではscrollイベント＋IntersectionObserver＋sentinelで検出していた。scroll-state()コンテナクエリはそれをCSSだけの数行に置き換える。RSCのまま使えJSゼロなのがNext.js的な旨味だが、未対応ブラウザ前提のフォールバックが要る。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-05-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="JS無しで“貼り付いた/スナップした”を検出 — scroll-state() コンテナクエリ — デイリー技術深掘り 読み物"><meta property="og:description" content="position: sticky が本当に貼り付いた瞬間や、スクロールスナップが決まった瞬間を、これまではscrollイベント＋IntersectionObserver＋sentinelで検出していた。scroll-state()コンテナクエリはそれをCSSだけの数行に置き換える。RSCのまま使えJSゼロなのがNext.js的な旨味だが、未対応ブラウザ前提のフォールバックが要る。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-05-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>JS無しで“貼り付いた/スナップした”を検出 — scroll-state() コンテナクエリ</h1> <p class="lede">position: sticky が本当に貼り付いた瞬間や、スクロールスナップが決まった瞬間を、これまではscrollイベント＋IntersectionObserver＋sentinelで検出していた。scroll-state()コンテナクエリはそれをCSSだけの数行に置き換える。RSCのまま使えJSゼロなのがNext.js的な旨味だが、未対応ブラウザ前提のフォールバックが要る。</p> <div class="meta"> <span>📅 2026年7月5日</span> <span>⏱ 約2分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="1"><h4 id="sec-1">なぜ今これが話題か</h4>
+<p><code>position: sticky</code>が実際に「貼り付いた（stuck）」瞬間や、スクロールスナップが決まった瞬間の検出は、これまでscrollイベント＋<code>IntersectionObserver</code>＋sentinel要素という定番ハックで実装していた。<b>scroll-state()コンテナクエリ</b>はそれをCSSだけの数行に置き換える新機能だ。</p>
+<h4 id="sec-2">何が新しいか</h4>
+<p>状態を持つ要素に<code>container-type: scroll-state</code>を付け、<code>@container scroll-state(...)</code>で<b>その子孫</b>にスタイルを当てる。クエリは<b>stuck</b>（stickyが貼り付いた辺）/<b>snapped</b>（スナップ中の軸）/<b>scrollable</b>（まだ送れる方向）/<b>scrolled</b>（初期位置から動いたか）。純CSSなので<b>Server Componentのまま</b>使え、<code>'use client'</code>もscrollリスナも不要でINP悪化やCLSを招きにくい。</p>
+<figure class='fig'><pre class='mermaid'>flowchart LR
+  A["ラッパーに container-type scroll-state ＋ position sticky"] --> B["@container scroll-state(stuck top)"]
+  B --> C["子孫の nav に影を付与"]</pre><figcaption>図1：貼り付き検出は「ラッパーに宣言、子孫にスタイル」。付けた要素自身には当てられない。</figcaption></figure>
+<h4 id="sec-3">対応状況と落とし穴</h4>
+<figure class='fig'><svg viewBox='0 0 600 152' xmlns='http://www.w3.org/2000/svg'>
+  <rect x='0' y='0' width='600' height='152' fill='#f2f7ff' rx='8'></rect>
+  <text x='16' y='28' font-size='13' fill='#1f6feb' font-weight='700'>ブラウザ対応（2026-07時点）</text>
+  <text x='16' y='58' font-size='12' fill='#1c1c1e'>stuck / snapped / scrollable … Chrome・Edge 133+（2025-02）</text>
+  <text x='16' y='84' font-size='12' fill='#1c1c1e'>scrolled … Chrome・Edge 144+（2026-01）と後発</text>
+  <text x='16' y='110' font-size='12' fill='#b00020'>Firefox / Safari … 未対応＝Baseline未達（要フォールバック）</text>
+  <text x='16' y='136' font-size='11' fill='#6b6b70'>未対応では @container ブロックが無視され、既定の見た目が出る</text>
+</svg><figcaption>図2：影や強調などの“加点的”演出に留め、機能可否をこれに賭けない。</figcaption></figure>
+<h4 id="sec-4">自分が試すなら</h4>
+<p>スティッキーヘッダーの「浮き影」をstuckで、カルーセルの現在項目強調をsnappedで実装し、<code>@supports not (container-type: scroll-state)</code>でIntersectionObserverのフォールバックを用意する。<code>container-type</code>を付けた要素<b>自身</b>には当たらないので、ラッパー＋子孫の入れ子にするのが要点だ。</p>
+<h4 id="sec-5">ひとことまとめ</h4>
+<p>スクロール状態のUI表現が、RSCのまま・JSゼロで書ける数少ない手段。未対応PFのフォールバック前提なら十分に実戦投入できる。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Conditional_rules/Container_scroll-state_queries" target="_blank" rel="noopener noreferrer"> MDN: Container scroll-state queries </a> </li><li> <a href="https://developer.chrome.com/blog/css-scroll-state-queries" target="_blank" rel="noopener noreferrer"> Chrome for Developers: CSS scroll-state() </a> </li><li> <a href="https://una.im/scroll-state-scrolled" target="_blank" rel="noopener noreferrer"> una.im: Directional CSS with scroll-state(scrolled) </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> なぜ今これが話題か </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 何が新しいか </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 対応状況と落とし穴 </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 自分が試すなら </a> </li><li> <a href="#sec-5" data-toc="sec-5"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-07-05</div> <div>⏱ 読了 約2分</div> <div>🏷 Next.js</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
