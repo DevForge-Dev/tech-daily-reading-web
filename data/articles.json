@@ -1,12 +1,82 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-07-04T04:51:15.603Z",
+  "generatedAt": "2026-07-05T04:57:52.753Z",
   "topics": [
     "Claude Code",
     "Next.js",
     "Flutter"
   ],
   "articles": [
+    {
+      "id": "2026-07-05-claude-code",
+      "date": "2026-07-05",
+      "topic": "Claude Code",
+      "title": "既定は「手動で確認」へ — v2.1.201までの安定化とChrome GA",
+      "lede": "7/5は派手な新機能より“既定の見直し”。権限モードの表記が「Manual」になり、AskUserQuestionは自動継続をやめた。背景ではv2.1.201までの安定化、Claude in ChromeのGA、/dataviz追加。拡張はhook/skill/subagentの使い分けが定説化し、Anthropicは新規本番コードの約8割をClaudeが書くと明かした。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>ここ数日のClaude Codeは、新機能の追加より<b>「既定でどう振る舞うか」</b>の作り直しが続いている。7/5は権限まわりの既定が安全側へ寄り、背景の安定化とツール連携のGAが重なった節目だ。</p>\n<h4>何が新しいか</h4>\n<p>まず権限。CLI/VS Code/JetBrainsで<b>「default」表記が「Manual」</b>に変わり、<code>--permission-mode manual</code>と<code>defaultMode: manual</code>がdefaultと併せて受理される。加えて<b>AskUserQuestionダイアログは既定で自動継続しなくなった</b>（<code>/config</code>のアイドルタイムアウトでオプトイン復帰）。安定版はv2.1.201まで進み、スリープ/再開で<b>バックグラウンドセッションが無言のまま止まる不具合を修正</b>、<b>Sonnet 5が会話途中のsystemロールを使わなくなり</b>スクリーンリーダー対応も改善した。少し前のv2.1.197〜198では<b>Claude in ChromeがGA</b>、チャート設計を助ける<b>/dataviz</b>、背景エージェントの自動commit/push/ドラフトPRが入っている。VentureBeatはAnthropicの<b>新規本番コードの約8割をClaudeが執筆</b>していると報じた。</p>\n<figure class='fig'><pre class='mermaid'>flowchart TD\n  A[\"必ず守らせる規則\"] --> CM[\"CLAUDE.md\"]\n  B[\"必要時だけ読む手順\"] --> SK[\"skill\"]\n  C[\"決定論的に強制\"] --> HK[\"hook\"]\n  D[\"並列 重い 文脈分離\"] --> SA[\"subagent\"]</pre><figcaption>図1：拡張の4レイヤーを役割で使い分ける（今日の記事群の共通テーマ）。</figcaption></figure>\n<h4>実務での使いどころ</h4>\n<p>自動継続の廃止は暴走抑止に効く一方、無人の定期実行では確認待ちで止まりうる。定型自動化は<code>/config</code>でタイムアウトを明示し、肥大化したCLAUDE.mdはskill/hookへ切り出すのが安全だ。fastやChrome連携は反復の多い検証作業へ寄せてコストと速度を実測したい。</p>\n<h4>注意点</h4>\n<blockquote>「Manual」は表記変更で、挙動の実体はこれまでのdefaultと同じ。既存スクリプトの<code>--permission-mode default</code>はそのまま動くが、無人運用ではAskUserQuestionが停止する点に注意。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>既定は“手動で確認”へ、連携はChrome GAで外へ。賢く自走しつつ最終判断は人に戻す方向の更新だ。</p>",
+      "sources": [
+        {
+          "title": "Claude Code changelog",
+          "url": "https://code.claude.com/docs/en/changelog"
+        },
+        {
+          "title": "DevelopersIO: Claude Code v2.1.200〜201アップデート",
+          "url": "https://dev.classmethod.jp/articles/20260704-cc-updates-v2-1-201/"
+        },
+        {
+          "title": "DevelopersIO: v2.1.197〜198（Claude in Chrome GA/dataviz）",
+          "url": "https://dev.classmethod.jp/en/articles/20260702-cc-updates-v2-1-198/"
+        },
+        {
+          "title": "VentureBeat: 新規本番コードの80%をClaudeが執筆",
+          "url": "https://venturebeat.com/technology/anthropic-says-80-of-its-new-production-code-is-now-authored-by-claude-how-your-enterprise-can-keep-up"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-05-nextjs",
+      "date": "2026-07-05",
+      "topic": "Next.js",
+      "title": "JS無しで“貼り付いた/スナップした”を検出 — scroll-state() コンテナクエリ",
+      "lede": "position: sticky が本当に貼り付いた瞬間や、スクロールスナップが決まった瞬間を、これまではscrollイベント＋IntersectionObserver＋sentinelで検出していた。scroll-state()コンテナクエリはそれをCSSだけの数行に置き換える。RSCのまま使えJSゼロなのがNext.js的な旨味だが、未対応ブラウザ前提のフォールバックが要る。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p><code>position: sticky</code>が実際に「貼り付いた（stuck）」瞬間や、スクロールスナップが決まった瞬間の検出は、これまでscrollイベント＋<code>IntersectionObserver</code>＋sentinel要素という定番ハックで実装していた。<b>scroll-state()コンテナクエリ</b>はそれをCSSだけの数行に置き換える新機能だ。</p>\n<h4>何が新しいか</h4>\n<p>状態を持つ要素に<code>container-type: scroll-state</code>を付け、<code>@container scroll-state(...)</code>で<b>その子孫</b>にスタイルを当てる。クエリは<b>stuck</b>（stickyが貼り付いた辺）/<b>snapped</b>（スナップ中の軸）/<b>scrollable</b>（まだ送れる方向）/<b>scrolled</b>（初期位置から動いたか）。純CSSなので<b>Server Componentのまま</b>使え、<code>'use client'</code>もscrollリスナも不要でINP悪化やCLSを招きにくい。</p>\n<figure class='fig'><pre class='mermaid'>flowchart LR\n  A[\"ラッパーに container-type scroll-state ＋ position sticky\"] --> B[\"@container scroll-state(stuck top)\"]\n  B --> C[\"子孫の nav に影を付与\"]</pre><figcaption>図1：貼り付き検出は「ラッパーに宣言、子孫にスタイル」。付けた要素自身には当てられない。</figcaption></figure>\n<h4>対応状況と落とし穴</h4>\n<figure class='fig'><svg viewBox='0 0 600 152' xmlns='http://www.w3.org/2000/svg'>\n  <rect x='0' y='0' width='600' height='152' fill='#f2f7ff' rx='8'/>\n  <text x='16' y='28' font-size='13' fill='#1f6feb' font-weight='700'>ブラウザ対応（2026-07時点）</text>\n  <text x='16' y='58' font-size='12' fill='#1c1c1e'>stuck / snapped / scrollable … Chrome・Edge 133+（2025-02）</text>\n  <text x='16' y='84' font-size='12' fill='#1c1c1e'>scrolled … Chrome・Edge 144+（2026-01）と後発</text>\n  <text x='16' y='110' font-size='12' fill='#b00020'>Firefox / Safari … 未対応＝Baseline未達（要フォールバック）</text>\n  <text x='16' y='136' font-size='11' fill='#6b6b70'>未対応では @container ブロックが無視され、既定の見た目が出る</text>\n</svg><figcaption>図2：影や強調などの“加点的”演出に留め、機能可否をこれに賭けない。</figcaption></figure>\n<h4>自分が試すなら</h4>\n<p>スティッキーヘッダーの「浮き影」をstuckで、カルーセルの現在項目強調をsnappedで実装し、<code>@supports not (container-type: scroll-state)</code>でIntersectionObserverのフォールバックを用意する。<code>container-type</code>を付けた要素<b>自身</b>には当たらないので、ラッパー＋子孫の入れ子にするのが要点だ。</p>\n<h4>ひとことまとめ</h4>\n<p>スクロール状態のUI表現が、RSCのまま・JSゼロで書ける数少ない手段。未対応PFのフォールバック前提なら十分に実戦投入できる。</p>",
+      "sources": [
+        {
+          "title": "MDN: Container scroll-state queries",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Conditional_rules/Container_scroll-state_queries"
+        },
+        {
+          "title": "Chrome for Developers: CSS scroll-state()",
+          "url": "https://developer.chrome.com/blog/css-scroll-state-queries"
+        },
+        {
+          "title": "una.im: Directional CSS with scroll-state(scrolled)",
+          "url": "https://una.im/scroll-state-scrolled"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-05-flutter",
+      "date": "2026-07-05",
+      "topic": "Flutter",
+      "title": "Flutter 4.0の輪郭 — Impeller 2.0とデザインのデカップリング",
+      "lede": "安定版は Flutter 3.44 / Dart 3.12.2 で、次は2026年8月予定。今日の主役はその先の次期メジャー Flutter 4.0 の輪郭だ。Impeller 2.0 と Dart 4.x 統合を軸に mid-2026 が取り沙汰されるが、日程よりコアゴール（とりわけMaterial/Cupertinoのデカップリング）達成を優先する方針が示された。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>安定版は<b>Flutter 3.44 / Dart 3.12.2</b>で、次の安定版は2026年8月予定。今日の主役はその先、<b>次期メジャー Flutter 4.0</b>の輪郭だ。Flutterチームは日程より「コアゴール達成」を優先する方針を示した。</p>\n<h4>何が新しいか</h4>\n<p>4.0は<b>Impeller 2.0</b>レンダリングエンジンと<b>Dart 4.x</b>統合が軸で、mid-2026 が取り沙汰される。その前提条件が<b>デザインのデカップリング</b>——<b>Material/Cupertino</b>をコアから独立した versioned な pub.dev パッケージ（将来の<code>material_ui</code>/<code>cupertino_ui</code>）へ切り出す作業が2026初頭から進行中だ。モジュール化で<b>アプリサイズ縮小</b>とSDKリリースを待たない<b>UIの独立更新</b>を狙う。言語面ではDart 3.12が private named parameters を初期化フォーマルで対応し、年内にPrimary Constructors／Augmentationsを出荷予定と、いずれもDart 4.x世代への布石だ。</p>\n<figure class='fig'><svg viewBox='0 0 600 132' xmlns='http://www.w3.org/2000/svg'>\n  <rect x='0' y='0' width='600' height='132' fill='#e8f6fd' rx='8'/>\n  <line x1='40' y1='72' x2='560' y2='72' stroke='#0277bd' stroke-width='2'/>\n  <circle cx='120' cy='72' r='6' fill='#0277bd'/><text x='120' y='52' font-size='11' fill='#1c1c1e' text-anchor='middle'>3.44 / 3.12.2</text><text x='120' y='98' font-size='10' fill='#6b6b70' text-anchor='middle'>現行安定</text>\n  <circle cx='330' cy='72' r='6' fill='#0277bd'/><text x='330' y='52' font-size='11' fill='#1c1c1e' text-anchor='middle'>2026/08</text><text x='330' y='98' font-size='10' fill='#6b6b70' text-anchor='middle'>次期安定</text>\n  <circle cx='520' cy='72' r='8' fill='#01579b'/><text x='520' y='52' font-size='11' fill='#01579b' font-weight='700' text-anchor='middle'>4.0 mid-2026?</text><text x='520' y='98' font-size='10' fill='#6b6b70' text-anchor='middle'>Impeller 2.0</text>\n</svg><figcaption>図1：4.0は日程よりデカップリング等のゴール達成を優先する。</figcaption></figure>\n<h4>実務での使いどころ</h4>\n<p>本番の凍結面は<b>3.44 / 3.12.2</b>に据えるのが安全。4.0系の機能はまだ experimental だ。状態管理は新規＝<b>Riverpod 3.x</b>、監査/規制＝<b>Bloc 9.2</b> が基本線で、Impellerは既にiOS/モダンAndroidの安定既定エンジンになっている。</p>\n<h4>注意点</h4>\n<blockquote>デカップリングでMaterial/Cupertinoがパッケージ化されると、依存やimport経路が変わりうる。移行を前提にバージョン固定と更新計画を持ちたい。experimentalな4.0系を本番の土台にしない。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>4.0は「速さ（Impeller 2.0）」と「軽さ・独立更新（デカップリング）」の同時追求。今は3.44で堅く作りつつ、パッケージ分離の波に備える時期だ。</p>",
+      "sources": [
+        {
+          "title": "Flutter & Dart's 2026 roadmap",
+          "url": "https://blog.flutter.dev/flutter-darts-2026-roadmap-89378f17ebbd"
+        },
+        {
+          "title": "What's new (docs.flutter.dev)",
+          "url": "https://docs.flutter.dev/release/whats-new"
+        },
+        {
+          "title": "Announcing Dart 3.12",
+          "url": "https://dart.dev/blog/announcing-dart-3-12"
+        }
+      ]
+    },
     {
       "id": "2026-07-04-claude-code",
       "date": "2026-07-04",
