@@ -1,0 +1,82 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>安定化に舵 — v2.1.199とSonnet 5既定化、Skills×SubAgentの住み分け — デイリー技術深掘り 読み物</title><meta name="description" content="7/6は派手な新機能より“土台固め”。v2.1.199は背景/サブエージェントとネットワーク周りの安定化が中心。並行してSonnet 5がClaude Codeの既定になり100万トークン文脈＋8/31まで$2/$10の優待価格。fallbackModelで予備モデルを最大3つ指定でき、拡張はSkills=マクロ／SubAgent=別文脈ワーカーの住み分けが定説化した。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-06-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="安定化に舵 — v2.1.199とSonnet 5既定化、Skills×SubAgentの住み分け — デイリー技術深掘り 読み物"><meta property="og:description" content="7/6は派手な新機能より“土台固め”。v2.1.199は背景/サブエージェントとネットワーク周りの安定化が中心。並行してSonnet 5がClaude Codeの既定になり100万トークン文脈＋8/31まで$2/$10の優待価格。fallbackModelで予備モデルを最大3つ指定でき、拡張はSkills=マクロ／SubAgent=別文脈ワーカーの住み分けが定説化した。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-06-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>安定化に舵 — v2.1.199とSonnet 5既定化、Skills×SubAgentの住み分け</h1> <p class="lede">7/6は派手な新機能より“土台固め”。v2.1.199は背景/サブエージェントとネットワーク周りの安定化が中心。並行してSonnet 5がClaude Codeの既定になり100万トークン文脈＋8/31まで$2/$10の優待価格。fallbackModelで予備モデルを最大3つ指定でき、拡張はSkills=マクロ／SubAgent=別文脈ワーカーの住み分けが定説化した。</p> <div class="meta"> <span>📅 2026年7月6日</span> <span>⏱ 約3分</span> <span>🔗 出典 5 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="1"><h4 id="sec-1">なぜ今これが話題か</h4>
+<p>ここ数日のClaude Codeは、新機能より<b>「長時間・並列で安定して回す」</b>ための地固めが続いている。7/6は<b>v2.1.199</b>の安定化リリースと、<b>Sonnet 5の既定化</b>という運用面の節目が重なった。</p>
+<h4 id="sec-2">何が新しいか</h4>
+<p>DevelopersIOによると<b>v2.1.199</b>（7/2公開）は不具合修正が主体で、<b>バックグラウンドエージェントとサブエージェントの安定性</b>、および<b>レート制限・ストリーミング・SSL</b>といったネットワーク信頼性を底上げした。直前のv2.1.197〜198で入ったClaude in ChromeのGAや<code>/dataviz</code>を、安定運用に載せる位置づけだ。並行して<b>Sonnet 5がClaude Codeの既定モデル</b>（Pro/Free含む全プラン）になり、ネイティブ<b>100万トークン文脈</b>に対応、<b>8/31まで入力$2/出力$10</b>（per Mtok）の優待価格で使える。セッションは約<b>967Kトークン</b>で自動コンパクトされる。changelogでは主モデル過負荷時に順に試す<b>fallbackModel（最大3つ）</b>、組織既定モデルのコンソール設定、bashモードのライブパス補完も入った。</p>
+<figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg'>
+  <rect x='0' y='0' width='600' height='150' fill='#fff4ec' rx='8'></rect>
+  <text x='16' y='28' font-size='13' fill='#c2560f' font-weight='700'>Sonnet 5 がClaude Codeの既定に</text>
+  <text x='16' y='58' font-size='12' fill='#1c1c1e'>文脈窓：ネイティブ 1,000,000 トークン</text>
+  <text x='16' y='84' font-size='12' fill='#1c1c1e'>自動コンパクト：約 967K トークン</text>
+  <text x='16' y='110' font-size='12' fill='#1c1c1e'>優待価格：入力 $2 / 出力 $10（per Mtok・〜8/31）</text>
+  <text x='16' y='136' font-size='11' fill='#6b6b70'>fallbackModel で過負荷時に予備モデルを最大3つ順試行</text>
+</svg><figcaption>図1：モデルと価格の既定が更新。巨大コードベースを丸ごと扱いやすくなった。</figcaption></figure>
+<h4 id="sec-3">拡張の住み分け（Skills×SubAgent）</h4>
+<p>今日の技術記事群は<b>SkillsとSub-agentsの使い分け</b>で一致している。Skillsは主会話の文脈内でオンデマンドに読み込む<b>「マクロ」</b>、Sub-agentsは<code>.claude/agents/</code>のMarkdownで定義する<b>別コンテキストの「ワーカー」</b>で、広い探索に数万トークン使っても<b>要約だけを主エージェントに返し文脈を汚さない</b>のが最大の差だ。手順や規約の知識はSkillsへ、独立した並列作業や重い探索はSub-agentsへ寄せる。Uravationは並列委譲で<b>3〜6倍速</b>を狙うプロンプト10本を提示している。</p>
+<figure class='fig'><pre class='mermaid'>flowchart TD
+  A["必要時だけ読む手順 規約"] --> SK["Skills 主会話内マクロ"]
+  B["重い探索 並列 隔離検証"] --> SA["SubAgent 別文脈ワーカー"]
+  SA --> R["要約だけ主へ返す"]</pre><figcaption>図2：文脈を汚さず要約を返せるかで役割を分ける。</figcaption></figure>
+<h4 id="sec-4">自分が試すなら</h4>
+<p>まずSonnet 5の1M文脈で、これまで分割していた大きめリファクタを一括で投げてコンパクト頻度を見る。定型自動化にはfallbackModelを設定して過負荷での中断を減らし、肥大化したCLAUDE.mdの手順部分をSkillへ、重い横断調査をSubAgentへ切り出す。</p>
+<h4 id="sec-5">注意点</h4>
+<blockquote>$2/$10は8/31までの期限つき優待。1M文脈は便利だが約967Kで自動コンパクトが走るため、超長セッションは要約で情報が薄まる前提で区切りを設計したい。事業面ではAnthropicがシリーズGで<b>300億ドル調達（ポストマネー3,800億ドル）</b>、法人契約が年初から約4倍と、継続投資の後ろ盾は厚い。</blockquote>
+<h4 id="sec-6">ひとことまとめ</h4>
+<p>既定はSonnet 5＋1M文脈へ、土台はv2.1.199で安定化。拡張はSkills＝マクロ／SubAgent＝ワーカーの二層で組むのが定石になった。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://dev.classmethod.jp/articles/20260703-cc-updates-v2-1-199/" target="_blank" rel="noopener noreferrer"> DevelopersIO: Claude Code v2.1.199アップデート </a> </li><li> <a href="https://platform.claude.com/docs/en/about-claude/models/whats-new-sonnet-5" target="_blank" rel="noopener noreferrer"> What&#39;s new in Sonnet 5 (platform.claude.com) </a> </li><li> <a href="https://code.claude.com/docs/en/changelog" target="_blank" rel="noopener noreferrer"> Claude Code changelog </a> </li><li> <a href="https://zenn.dev/cureapp/articles/claude-code-skills-vs-subagents" target="_blank" rel="noopener noreferrer"> Zenn(CureApp): Skills と Sub-agents の使い分け </a> </li><li> <a href="https://venturebeat.com/orchestration/anthropic-says-claude-code-transformed-programming-now-claude-cowork-is" target="_blank" rel="noopener noreferrer"> VentureBeat: Claude Code法人契約が4倍・Coworkへ </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> なぜ今これが話題か </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 何が新しいか </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 拡張の住み分け（Skills×SubAgent） </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 自分が試すなら </a> </li><li> <a href="#sec-5" data-toc="sec-5"> 注意点 </a> </li><li> <a href="#sec-6" data-toc="sec-6"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-07-06</div> <div>⏱ 読了 約3分</div> <div>🏷 Claude Code</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
