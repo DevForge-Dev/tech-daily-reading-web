@@ -1,12 +1,94 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-07-05T04:57:52.753Z",
+  "generatedAt": "2026-07-06T04:47:39.009Z",
   "topics": [
     "Claude Code",
     "Next.js",
     "Flutter"
   ],
   "articles": [
+    {
+      "id": "2026-07-06-claude-code",
+      "date": "2026-07-06",
+      "topic": "Claude Code",
+      "title": "安定化に舵 — v2.1.199とSonnet 5既定化、Skills×SubAgentの住み分け",
+      "lede": "7/6は派手な新機能より“土台固め”。v2.1.199は背景/サブエージェントとネットワーク周りの安定化が中心。並行してSonnet 5がClaude Codeの既定になり100万トークン文脈＋8/31まで$2/$10の優待価格。fallbackModelで予備モデルを最大3つ指定でき、拡張はSkills=マクロ／SubAgent=別文脈ワーカーの住み分けが定説化した。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>ここ数日のClaude Codeは、新機能より<b>「長時間・並列で安定して回す」</b>ための地固めが続いている。7/6は<b>v2.1.199</b>の安定化リリースと、<b>Sonnet 5の既定化</b>という運用面の節目が重なった。</p>\n<h4>何が新しいか</h4>\n<p>DevelopersIOによると<b>v2.1.199</b>（7/2公開）は不具合修正が主体で、<b>バックグラウンドエージェントとサブエージェントの安定性</b>、および<b>レート制限・ストリーミング・SSL</b>といったネットワーク信頼性を底上げした。直前のv2.1.197〜198で入ったClaude in ChromeのGAや<code>/dataviz</code>を、安定運用に載せる位置づけだ。並行して<b>Sonnet 5がClaude Codeの既定モデル</b>（Pro/Free含む全プラン）になり、ネイティブ<b>100万トークン文脈</b>に対応、<b>8/31まで入力$2/出力$10</b>（per Mtok）の優待価格で使える。セッションは約<b>967Kトークン</b>で自動コンパクトされる。changelogでは主モデル過負荷時に順に試す<b>fallbackModel（最大3つ）</b>、組織既定モデルのコンソール設定、bashモードのライブパス補完も入った。</p>\n<figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg'>\n  <rect x='0' y='0' width='600' height='150' fill='#fff4ec' rx='8'/>\n  <text x='16' y='28' font-size='13' fill='#c2560f' font-weight='700'>Sonnet 5 がClaude Codeの既定に</text>\n  <text x='16' y='58' font-size='12' fill='#1c1c1e'>文脈窓：ネイティブ 1,000,000 トークン</text>\n  <text x='16' y='84' font-size='12' fill='#1c1c1e'>自動コンパクト：約 967K トークン</text>\n  <text x='16' y='110' font-size='12' fill='#1c1c1e'>優待価格：入力 $2 / 出力 $10（per Mtok・〜8/31）</text>\n  <text x='16' y='136' font-size='11' fill='#6b6b70'>fallbackModel で過負荷時に予備モデルを最大3つ順試行</text>\n</svg><figcaption>図1：モデルと価格の既定が更新。巨大コードベースを丸ごと扱いやすくなった。</figcaption></figure>\n<h4>拡張の住み分け（Skills×SubAgent）</h4>\n<p>今日の技術記事群は<b>SkillsとSub-agentsの使い分け</b>で一致している。Skillsは主会話の文脈内でオンデマンドに読み込む<b>「マクロ」</b>、Sub-agentsは<code>.claude/agents/</code>のMarkdownで定義する<b>別コンテキストの「ワーカー」</b>で、広い探索に数万トークン使っても<b>要約だけを主エージェントに返し文脈を汚さない</b>のが最大の差だ。手順や規約の知識はSkillsへ、独立した並列作業や重い探索はSub-agentsへ寄せる。Uravationは並列委譲で<b>3〜6倍速</b>を狙うプロンプト10本を提示している。</p>\n<figure class='fig'><pre class='mermaid'>flowchart TD\n  A[\"必要時だけ読む手順 規約\"] --> SK[\"Skills 主会話内マクロ\"]\n  B[\"重い探索 並列 隔離検証\"] --> SA[\"SubAgent 別文脈ワーカー\"]\n  SA --> R[\"要約だけ主へ返す\"]</pre><figcaption>図2：文脈を汚さず要約を返せるかで役割を分ける。</figcaption></figure>\n<h4>自分が試すなら</h4>\n<p>まずSonnet 5の1M文脈で、これまで分割していた大きめリファクタを一括で投げてコンパクト頻度を見る。定型自動化にはfallbackModelを設定して過負荷での中断を減らし、肥大化したCLAUDE.mdの手順部分をSkillへ、重い横断調査をSubAgentへ切り出す。</p>\n<h4>注意点</h4>\n<blockquote>$2/$10は8/31までの期限つき優待。1M文脈は便利だが約967Kで自動コンパクトが走るため、超長セッションは要約で情報が薄まる前提で区切りを設計したい。事業面ではAnthropicがシリーズGで<b>300億ドル調達（ポストマネー3,800億ドル）</b>、法人契約が年初から約4倍と、継続投資の後ろ盾は厚い。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>既定はSonnet 5＋1M文脈へ、土台はv2.1.199で安定化。拡張はSkills＝マクロ／SubAgent＝ワーカーの二層で組むのが定石になった。</p>",
+      "sources": [
+        {
+          "title": "DevelopersIO: Claude Code v2.1.199アップデート",
+          "url": "https://dev.classmethod.jp/articles/20260703-cc-updates-v2-1-199/"
+        },
+        {
+          "title": "What's new in Sonnet 5 (platform.claude.com)",
+          "url": "https://platform.claude.com/docs/en/about-claude/models/whats-new-sonnet-5"
+        },
+        {
+          "title": "Claude Code changelog",
+          "url": "https://code.claude.com/docs/en/changelog"
+        },
+        {
+          "title": "Zenn(CureApp): Skills と Sub-agents の使い分け",
+          "url": "https://zenn.dev/cureapp/articles/claude-code-skills-vs-subagents"
+        },
+        {
+          "title": "VentureBeat: Claude Code法人契約が4倍・Coworkへ",
+          "url": "https://venturebeat.com/orchestration/anthropic-says-claude-code-transformed-programming-now-claude-cowork-is"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-06-nextjs",
+      "date": "2026-07-06",
+      "topic": "Next.js",
+      "title": "RSCを“もう一つのローダー”に — TanStack Query v5をApp Routerで",
+      "lede": "App RouterのサーバーデータはRSC＋fetchで足りる場面が多い。だが再取得・楽観的更新・無限スクロール等の“インタラクティブなサーバー状態”はTanStack Query v5が最有力。正解はRSCでprefetch→dehydrate→クライアントのHydrationBoundaryで復元。最大の落とし穴はstaleTime:0で、prefetchが即二重取得になる点だ。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>App Routerでは<b>サーバー状態</b>の取得はRSC＋<code>fetch</code>＋Server Actionsでほぼ完結する。しかし<b>再取得・キャッシュ無効化・楽観的更新・window focus refetch・無限スクロール・ポーリング</b>が要るダッシュボードやフィードでは、依然<b>TanStack Query v5</b>（旧React Query）が最有力だ。前日扱ったZustand（クライアント状態）とは守備範囲が違い、こちらは<b>サーバー由来の非同期データ</b>を担当する。</p>\n<h4>何が新しい/重要か</h4>\n<p>App Router時代の正解は、<b>RSCを“もう一つのローダー”として使い、サーバーでprefetch→<code>dehydrate</code>でキャッシュを直列化→Client側の<code>&lt;HydrationBoundary&gt;</code>で復元</b>する形。初回描画はprefetch済みデータで即埋まり、以降はクライアントのQueryが引き継ぐ。QueryClientは<b>「サーバーはリクエスト毎に新規／ブラウザはシングルトン」</b>が鉄則で、グローバル1個はクロスリクエスト汚染・hydration mismatchを招く。サーバー判定は現行ドキュメントの<code>environmentManager.isServer()</code>を使う。</p>\n<figure class='fig'><pre class='mermaid'>flowchart LR\n  A[\"page.tsx RSC prefetchQuery await不要\"] --> B[\"dehydrate でキャッシュ直列化\"]\n  B --> C[\"HydrationBoundary で復元\"]\n  C --> D[\"Client useQuery 同一queryKey で即描画\"]</pre><figcaption>図1：prefetchはServer Component、消費はClient Component。鍵は同一queryKey。</figcaption></figure>\n<h4>最大の落とし穴：staleTime</h4>\n<figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg'>\n  <rect x='0' y='0' width='600' height='150' fill='#eef4ff' rx='8'/>\n  <text x='16' y='28' font-size='13' fill='#1f6feb' font-weight='700'>staleTime の既定は 0 = 即 stale</text>\n  <rect x='16' y='44' width='560' height='30' fill='#ffd7d7' rx='4'/>\n  <text x='26' y='64' font-size='12' fill='#b00020'>0 のまま：prefetch 済みでもマウント直後に裏で再フェッチ（無駄な二重取得）</text>\n  <rect x='16' y='84' width='560' height='30' fill='#d7f2df' rx='4'/>\n  <text x='26' y='104' font-size='12' fill='#1b6b34'>60 * 1000：その間は fresh 扱い＝クライアントは再フェッチをスキップ</text>\n  <text x='16' y='138' font-size='11' fill='#6b6b70'>SSR/prefetch 前提なら staleTime を 0 より大きくするのが必須</text>\n</svg><figcaption>図2：SSR前提でstaleTime:0は最大の罠。60秒程度を既定に。</figcaption></figure>\n<h4>ストリーミングと非推奨パターン</h4>\n<p><b>v5.40.0+</b>では<code>shouldDehydrateQuery</code>を拡張して<b>pending Queryもdehydrate</b>でき、awaitせずprefetchを撃って解決順にクライアントへストリーミングできる（消費側は<code>useSuspenseQuery</code>）。逆に<b>Server ActionsをqueryFnにしない</b>——直列実行でpendingのまま固着する。Server Actionsは<code>useMutation</code>専用、データ取得はRoute Handler/tRPCで、が公式スタンスだ。</p>\n<h4>自分が試すなら</h4>\n<p><code>makeQueryClient()</code>＋<code>getQueryClient()</code>を用意し<code>staleTime:60_000</code>を既定に。prefetch前提でない画面は<code>useSuspenseQuery</code>ではなく壊れにくい<code>useQuery</code>を選ぶ。RSCの<code>fetchQuery</code>戻り値を描画に使わず、所有をどちらか一方に寄せて同期ずれを防ぐ。</p>\n<h4>ひとことまとめ</h4>\n<p>RSCをローダー化してprefetch→dehydrate→HydrationBoundary。staleTimeを上げ、Server Actionsはmutation専用。新規は標準(RSC+fetch)で始め、必要になってから足すのが公式の勧めだ。</p>",
+      "sources": [
+        {
+          "title": "TanStack Query v5: Advanced Server Rendering",
+          "url": "https://tanstack.com/query/v5/docs/framework/react/guides/advanced-ssr"
+        },
+        {
+          "title": "TanStack Query v5: Server Rendering & Hydration",
+          "url": "https://tanstack.com/query/v5/docs/framework/react/guides/ssr"
+        },
+        {
+          "title": "公式サンプル: Next.js App Prefetching",
+          "url": "https://tanstack.com/query/v5/docs/framework/react/examples/nextjs-app-prefetching"
+        },
+        {
+          "title": "TkDodo: You Might Not Need React Query",
+          "url": "https://tkdodo.eu/blog/you-might-not-need-react-query"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-06-flutter",
+      "date": "2026-07-06",
+      "topic": "Flutter",
+      "title": "Material/Cupertino「凍結」の号砲 — 3.44とImpellerのSDF円描画",
+      "lede": "安定版はFlutter 3.44 / Dart 3.12.2。今日の主役は3.44でのMaterial/Cupertinoライブラリの“コード凍結”だ。これがコア内での最後の更新で、今後はstandaloneの material_ui / cupertino_ui へ。描画ではImpellerが円をSDFベースにし、ギザつきのないクリーンな円を描けるようになった。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>安定版は<b>Flutter 3.44 / Dart 3.12.2</b>（次期安定は2026年8月予定）。今日の主役は、3.44での<b>Material／Cupertinoライブラリの「コード凍結（frozen）」</b>だ。これが<b>コアフレームワーク内での最後の更新セット</b>で、UIの提供モデルが変わる号砲になる。</p>\n<h4>何が新しい/重要か</h4>\n<p>凍結時点で<b>Material 3コンポーネントは完全カバー</b>済み。デザインシステム準拠のためのband-aid回避策や自作ウィジェットはもう不要だ。今後はstandalone packagesの<b><code>material_ui</code>／<code>cupertino_ui</code></b>へ移行し、<b>SDKリリースを待たずデザインシステムを独自cadenceで更新</b>でき、<b>アプリサイズも縮小</b>する。描画では<b>Impeller</b>が円のレンダリングを<b>signed-distance functions（SDF）</b>ベースに更新し、以前エイリアス（ギザつき）が出ていたケースでも<b>クリーンな円</b>を描ける。角丸・ボーダー・アイコン等の円要素が多いUIで効く。perspective matrixの扱いも改善し、シャドウと3D風transformの見た目が正確になった。</p>\n<figure class='fig'><svg viewBox='0 0 600 160' xmlns='http://www.w3.org/2000/svg'>\n  <rect x='0' y='0' width='600' height='160' fill='#e8f6fd' rx='8'/>\n  <text x='150' y='28' font-size='12' fill='#01579b' font-weight='700' text-anchor='middle'>Before（Skia/旧描画）</text>\n  <text x='450' y='28' font-size='12' fill='#01579b' font-weight='700' text-anchor='middle'>After（Impeller SDF）</text>\n  <circle cx='150' cy='95' r='42' fill='none' stroke='#b00020' stroke-width='6' stroke-dasharray='5 3'/>\n  <text x='150' y='150' font-size='11' fill='#6b6b70' text-anchor='middle'>縁がギザつく（aliasing）</text>\n  <circle cx='450' cy='95' r='42' fill='none' stroke='#0277bd' stroke-width='6'/>\n  <text x='450' y='150' font-size='11' fill='#6b6b70' text-anchor='middle'>クリーンな円</text>\n</svg><figcaption>図1：円がSDFベースに。角丸・アイコン等の円要素が多いUIで描画品質が上がる。</figcaption></figure>\n<h4>描画基盤とアーキテクチャ</h4>\n<p>パフォーマンス面では<b>Pure Impeller VulkanがモダンAndroidで既定かつ唯一の選択肢</b>となり、全シェーダーとreflectionを<b>ビルド時にオフラインコンパイル</b>して実行時のシェーダーコンパイルジャンクを排除する。DevToolsは<b>WasmGCへ既定コンパイル</b>され軽快になり、Impeller専用ビューでdraw callのバッチ化を可視化できる。状態管理は新規＝<b>Riverpod 3.3.1＋コード生成</b>、規制/監査/複雑並行＝<b>Bloc 9.2.x</b>が基本線だ。</p>\n<figure class='fig'><pre class='mermaid'>flowchart LR\n  A[\"3.44 コア内の Material Cupertino 凍結\"] --> B[\"最後の更新セット Material3 完全カバー\"]\n  B --> C[\"material_ui cupertino_ui へ移行\"]\n  C --> D[\"独自cadence更新 ＋ アプリサイズ縮小\"]</pre><figcaption>図2：UIはコアから分離し、SDKリリースを待たず更新できる方向へ。</figcaption></figure>\n<h4>自分が試すなら</h4>\n<p>本番の凍結面は<b>3.44 / 3.12.2</b>に据えるのが安全。円やドロップシャドウの多い画面をprofileモードで再計測し、SDF化とperspective補正の効果を確認する。将来のパッケージ分離に備え、依存とimport経路の変更を見越してバージョン固定と更新計画を持っておく。</p>\n<h4>注意点</h4>\n<blockquote>凍結後はコアからMaterialへのAPI追加が止まるため、新機能は将来の<code>material_ui</code>側で追う前提になる。Rive等はImpellerで描画差が出る場合があり、<code>--no-enable-impeller</code>でSkiaにフォールバックして切り分ける。experimentalなPrimary Constructors/Augmentationsを本番の土台にしない。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>Material/Cupertinoは3.44で凍結し、UIはパッケージ独立更新の時代へ。描画はSDF円＋Vulkan既定で品質と決定論が上がる。今は3.44で堅く作りつつ分離の波に備えたい。</p>",
+      "sources": [
+        {
+          "title": "What's new in Flutter 3.44",
+          "url": "https://blog.flutter.dev/whats-new-in-flutter-3-44-b0cc1ad3c527"
+        },
+        {
+          "title": "Impeller rendering engine (docs.flutter.dev)",
+          "url": "https://docs.flutter.dev/perf/impeller"
+        },
+        {
+          "title": "State Management in 2026 (samioda)",
+          "url": "https://samioda.com/en/blog/flutter-state-management-2026"
+        },
+        {
+          "title": "Dart what's new",
+          "url": "https://dart.dev/resources/whats-new"
+        }
+      ]
+    },
     {
       "id": "2026-07-05-claude-code",
       "date": "2026-07-05",
