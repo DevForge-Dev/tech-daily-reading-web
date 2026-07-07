@@ -64,6 +64,13 @@ const TOPIC_META: Record<string, TopicMeta> = {
     gradient: ['#29b6f6', '#01579b'],
     glyph: '◆',
   },
+  'GitHub Trending': {
+    name: 'GitHub Trending',
+    slug: 'github-trending',
+    color: '#238636',
+    gradient: ['#3fb950', '#1a7f37'],
+    glyph: '★',
+  },
   'はじめに': {
     name: 'はじめに',
     slug: 'intro',
