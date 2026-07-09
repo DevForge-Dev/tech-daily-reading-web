@@ -1,0 +1,90 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>宣言的ルート遷移 — React &lt;ViewTransition&gt; × Next.js experimental.viewTransition — デイリー技術深掘り 読み物</title><meta name="description" content="これまでMotion等が手作業でやっていた「mount/unmount管理・要素の位置追跡・タイミング調停」を、React公式の <ViewTransition> が宣言的に置き換える。next.config で experimental.viewTransition:true を立て、連続させたい要素に同じ name を付けるだけ。Next.jsのルート遷移は自動でTransition扱いになるので startViewTransition を自分で呼ぶ必要がない。enter/exit/update/share の4発火タイプと落とし穴を押さえる。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-08-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="宣言的ルート遷移 — React <ViewTransition> × Next.js experimental.viewTransition — デイリー技術深掘り 読み物"><meta property="og:description" content="これまでMotion等が手作業でやっていた「mount/unmount管理・要素の位置追跡・タイミング調停」を、React公式の <ViewTransition> が宣言的に置き換える。next.config で experimental.viewTransition:true を立て、連続させたい要素に同じ name を付けるだけ。Next.jsのルート遷移は自動でTransition扱いになるので startViewTransition を自分で呼ぶ必要がない。enter/exit/update/share の4発火タイプと落とし穴を押さえる。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-08-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>宣言的ルート遷移 — React &lt;ViewTransition&gt; × Next.js experimental.viewTransition</h1> <p class="lede">これまでMotion等が手作業でやっていた「mount/unmount管理・要素の位置追跡・タイミング調停」を、React公式の &lt;ViewTransition&gt; が宣言的に置き換える。next.config で experimental.viewTransition:true を立て、連続させたい要素に同じ name を付けるだけ。Next.jsのルート遷移は自動でTransition扱いになるので startViewTransition を自分で呼ぶ必要がない。enter/exit/update/share の4発火タイプと落とし穴を押さえる。</p> <div class="meta"> <span>📅 2026年7月8日</span> <span>⏱ 約4分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="0"><h4 id="sec-1">なぜ今これが話題か</h4>
+<p>6/15の回では「素のView Transitions API」「next-view-transitions」「React実験API」の3方式を俯瞰した。今日はそのうち<b>React公式の <code>&lt;ViewTransition&gt;</code> コンポーネント</b>を、<b>Next.js 16.2</b> の <code>experimental.viewTransition</code> と組み合わせる方式に絞る。従来ライブラリが担っていたライフサイクル管理や位置追跡を、<b>「連続させたい要素に <code>name</code> を付ける」だけ</b>の宣言に落とせるのが要点だ。</p>
+<h4 id="sec-2">何が新しいか</h4>
+<p>有効化は <code>next.config.ts</code> に <code>experimental: { viewTransition: true }</code> を書くだけ。<code>&lt;ViewTransition&gt;</code> は<b>React の Canary / Experimental 限定</b>APIだが、<b>App Router は React canary を使う</b>ため <code>react@canary</code> を自前で入れる必要はなく <code>import { ViewTransition } from 'react'</code> で使える。主要3ブラウザすべてが View Transitions API 対応で、<b>未対応でもアプリは通常動作しアニメが付かないだけ</b>（graceful degradation）。重要なのは<b>発火条件</b>で、素の <code>setState</code> では発火せず、<b>Transition・Suspense・useDeferredValue</b> に包まれた更新でのみアクティブ化する。Next.jsのルート遷移はこれに該当するので<b>遷移では自動発火</b>する。</p>
+<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg'>
+  <rect x='0' y='0' width='600' height='200' fill='#eef4ff' rx='8'></rect>
+  <text x='16' y='26' font-size='13' fill='#1f6feb' font-weight='700'>&lt;ViewTransition&gt; の4つの発火タイプ</text>
+  <rect x='16' y='40' width='276' height='68' fill='#ffffff' stroke='#74a8ff' rx='6'></rect>
+  <text x='28' y='62' font-size='12' fill='#1f6feb' font-weight='700'>enter / exit</text>
+  <text x='28' y='82' font-size='11.5' fill='#1c1c1e'>最初に挿入/削除された境界</text>
+  <text x='28' y='100' font-size='11' fill='#6b6b70'>先頭配置のときだけ発火</text>
+  <rect x='308' y='40' width='276' height='68' fill='#ffffff' stroke='#74a8ff' rx='6'></rect>
+  <text x='320' y='62' font-size='12' fill='#1f6feb' font-weight='700'>update</text>
+  <text x='320' y='82' font-size='11.5' fill='#1c1c1e'>内部変異や兄弟影響でサイズ/位置変化</text>
+  <rect x='16' y='118' width='568' height='68' fill='#ffffff' stroke='#1f6feb' rx='6'></rect>
+  <text x='28' y='140' font-size='12' fill='#1f6feb' font-weight='700'>share（最優先）</text>
+  <text x='28' y='160' font-size='11.5' fill='#1c1c1e'>削除ツリーと挿入ツリーの同名が対 → 旧→新へモーフ</text>
+  <text x='28' y='178' font-size='11' fill='#6b6b70'>share は enter/exit より優先される</text>
+</svg><figcaption>図1：4発火タイプの関係。共有要素モーフ（share）が最優先。</figcaption></figure>
+<h4 id="sec-3">仕組みのポイント</h4>
+<p>Reactは最寄りDOMノードのインラインスタイルに <code>view-transition-name</code> を（アニメ参加の瞬間だけ）付与し、<b><code>startViewTransition</code> を自動で呼ぶ</b>。だから<b>自前で <code>startViewTransition</code> を走らせると割り込んで中断する</b>——View TransitionはReact側に一元化する。カスタマイズは <code>name</code> 直書きの疑似セレクタではなく<b>View Transition Class</b>推奨で、<code>enter</code>/<code>exit</code>/<code>update</code>/<code>share</code>/<code>default</code> 各propにクラス名を渡すとReactが子要素へそのクラスを付ける。</p>
+<pre><code>// 共有要素モーフ：グリッドと詳細で同じ name
+&lt;ViewTransition name={`photo-${id}`}&gt;&lt;Image .../&gt;&lt;/ViewTransition&gt;
+
+/* CSS はクラスで受ける */
+::view-transition-group(.slide-in) { /* ... */ }</code></pre>
+<h4 id="sec-4">実務での使いどころ</h4>
+<p>サムネ→ヒーロー画像のモーフ（同一 <code>name</code>）、Suspenseスケルトン→本体のリビール（fallbackに <code>exit</code>・本体に <code>enter</code>・<code>default="none"</code>）、<code>&lt;Link transitionTypes={['nav-forward']}&gt;</code> による方向付きスライド、同一ルート内の <code>key</code> 差し替えクロスフェード——の4パターンが定石。まずは共有要素モーフから試すのが費用対効果が高い。</p>
+<h4 id="sec-5">注意点・落とし穴</h4>
+<blockquote>enter/exitは<b>先頭配置のときだけ</b>発火（上に&lt;div&gt;があると起きない）。<b>name はアプリ全体で同時に1つだけ</b>——リストで同名を量産するとエラーになるため <code>item-${id}</code> で一意化する。<b>戻る/進む（popstate）はView Transitionをスキップ</b>するので方向スライドは戻るボタンでは鳴らない。<b>prefers-reduced-motion はReactが自動で切らない</b>——CSSで明示的に無効化する必要がある。</blockquote>
+<h4 id="sec-6">ひとことまとめ</h4>
+<p>フラグを立て、連続させたい要素に <code>name</code> を付け、カスタムは View Transition Class で。<code>startViewTransition</code> はReactに任せ、name一意化・先頭配置・reduced-motionだけ手当てすれば、宣言的にルート遷移が動く。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://react.dev/reference/react/ViewTransition" target="_blank" rel="noopener noreferrer"> React: &lt;ViewTransition&gt; </a> </li><li> <a href="https://nextjs.org/docs/app/guides/view-transitions" target="_blank" rel="noopener noreferrer"> Next.js Guides: Designing view transitions </a> </li><li> <a href="https://nextjs.org/docs/app/api-reference/config/next-config-js/viewTransition" target="_blank" rel="noopener noreferrer"> Next.js config: viewTransition </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> なぜ今これが話題か </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 何が新しいか </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 仕組みのポイント </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 実務での使いどころ </a> </li><li> <a href="#sec-5" data-toc="sec-5"> 注意点・落とし穴 </a> </li><li> <a href="#sec-6" data-toc="sec-6"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-07-08</div> <div>⏱ 読了 約4分</div> <div>🏷 Next.js</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

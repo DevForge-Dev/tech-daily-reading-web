@@ -1,0 +1,91 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>既定は「Manual」へ — v2.1.200の権限転換とArtifacts、拡張4層の地図 — デイリー技術深掘り 読み物</title><meta name="description" content="7/7のClaude Codeは“主導権をユーザーへ戻す”アップデート。v2.1.200で既定の権限モードがManualになり、AskUserQuestionは勝手に進まなくなった。あわせてセッション成果をライブWebページ化するArtifactsが登場し、拡張はhooks/subagents/skills/slashの4層で整理が定着。採用面では日次インストール29M・公開コミットの約4%と“ChatGPTの瞬間”が続く。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-07-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="既定は「Manual」へ — v2.1.200の権限転換とArtifacts、拡張4層の地図 — デイリー技術深掘り 読み物"><meta property="og:description" content="7/7のClaude Codeは“主導権をユーザーへ戻す”アップデート。v2.1.200で既定の権限モードがManualになり、AskUserQuestionは勝手に進まなくなった。あわせてセッション成果をライブWebページ化するArtifactsが登場し、拡張はhooks/subagents/skills/slashの4層で整理が定着。採用面では日次インストール29M・公開コミットの約4%と“ChatGPTの瞬間”が続く。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-07-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>既定は「Manual」へ — v2.1.200の権限転換とArtifacts、拡張4層の地図</h1> <p class="lede">7/7のClaude Codeは“主導権をユーザーへ戻す”アップデート。v2.1.200で既定の権限モードがManualになり、AskUserQuestionは勝手に進まなくなった。あわせてセッション成果をライブWebページ化するArtifactsが登場し、拡張はhooks/subagents/skills/slashの4層で整理が定着。採用面では日次インストール29M・公開コミットの約4%と“ChatGPTの瞬間”が続く。</p> <div class="meta"> <span>📅 2026年7月7日</span> <span>⏱ 約4分</span> <span>🔗 出典 5 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="1"><h4 id="sec-1">なぜ今これが話題か</h4>
+<p>ここ数日のClaude Codeは自律実行の速さを競ってきたが、7/7の焦点はむしろ逆で、<b>「重要な判断は人に戻す」</b>方向への調整だ。エージェントが長時間・並列で動くほど、意図しない実行や無言の続行が事故につながる。<b>v2.1.200</b>はその安全側の既定変更をまとめて入れてきた。</p>
+<h4 id="sec-2">何が新しいか</h4>
+<p>Releasebotによると、<b>v2.1.200</b>では CLI・<code>--help</code>・VS Code・JetBrains を通じた<b>既定の権限モードが「Manual」</b>になった。<code>--permission-mode manual</code> と <code>"defaultMode": "manual"</code> はいずれも従来の <code>"default"</code> のエイリアスとして受理される（Manualラベルの表示はv2.1.200以降が必要）。さらに<b>AskUserQuestionのダイアログが既定で自動継続しなくなり</b>（<code>askUserQuestionTimeout</code>が<code>"never"</code>）、放置しても勝手に選択が進まない。アイドルで進めたい人は <code>/config</code> からタイムアウトへ<b>オプトイン</b>する。加えてバックグラウンドセッションの安定化、MCPサーバー信頼性、サンドボックスのネットワーク許可ダイアログ改善も含む。</p>
+<figure class='fig'><svg viewBox='0 0 600 170' xmlns='http://www.w3.org/2000/svg'>
+  <rect x='0' y='0' width='600' height='170' fill='#fff4ec' rx='8'></rect>
+  <text x='16' y='26' font-size='13' fill='#c2560f' font-weight='700'>v2.1.200：既定の“主導権”がユーザー側へ</text>
+  <rect x='16' y='40' width='270' height='110' fill='#ffffff' stroke='#e3a06d' rx='6'></rect>
+  <text x='30' y='62' font-size='12' fill='#6b6b70'>これまで（default）</text>
+  <text x='30' y='86' font-size='12' fill='#1c1c1e'>権限：自動寄りで実行</text>
+  <text x='30' y='108' font-size='12' fill='#1c1c1e'>AskUserQuestion：時間で自動継続</text>
+  <text x='30' y='130' font-size='11' fill='#6b6b70'>放置で選択が進むことがある</text>
+  <rect x='314' y='40' width='270' height='110' fill='#ffffff' stroke='#c2560f' rx='6'></rect>
+  <text x='328' y='62' font-size='12' fill='#c2560f' font-weight='700'>v2.1.200（Manual既定）</text>
+  <text x='328' y='86' font-size='12' fill='#1c1c1e'>権限：Manualで都度確認</text>
+  <text x='328' y='108' font-size='12' fill='#1c1c1e'>AskUserQuestion：自動継続しない</text>
+  <text x='328' y='130' font-size='11' fill='#6b6b70'>/config でアイドル継続にオプトイン</text>
+</svg><figcaption>図1：既定値が“確認優先”へ。無言の続行による事故を減らす調整。</figcaption></figure>
+<h4 id="sec-3">もう一つの目玉：Artifacts</h4>
+<p>公式changelogによると、Claude Codeにセッションの作業内容を<b>ライブWebページにするArtifacts</b>が加わった。PRのウォークスルー、インシデント対応ページ、ダッシュボード、チェックリストなどを、使い捨てのログではなく<b>「開くたびに最新化される資産」</b>としてチームに共有できる。Team/Enterpriseでは<b>組織内限定の非公開共有とバージョン履歴</b>がベータで提供される。</p>
+<h4 id="sec-4">拡張の地図（4層）</h4>
+<p>技術記事側は拡張機構の整理で一致している。<b>slashコマンド＝プロンプトの雛形</b>、<b>skill＝補助ファイルを伴う知識/プレイブック</b>（呼ばれるまで本文がロードされずコスト小）、<b>subagent＝隔離した並列ワーカー</b>、<b>hook＝コードでルールを強制</b>。Hooksは2026年に<b>全30種イベント・5種ハンドラー</b>（command/prompt/agent/http等）へ拡大し、設定は<b>管理者ポリシー&gt;プロジェクト&gt;ユーザー&gt;プラグイン/スキル</b>の優先順で評価される。<code>rm -rf</code>防御や<code>.env</code>保護は <code>.claude/settings.json</code> にコミット、個人実験は <code>settings.local.json</code> が定石だ。</p>
+<figure class='fig'><pre class='mermaid'>flowchart TD
+  A["プロンプト雛形"] --> S["slash コマンド"]
+  B["手順 規約 知識"] --> SK["skill 呼ぶ時だけロード"]
+  C["重い並列 隔離作業"] --> SA["subagent 別文脈ワーカー"]
+  D["ルールを強制したい"] --> H["hook 30種イベント"]</pre><figcaption>図2：やりたいことから拡張レイヤを引く早見。まずskillから始めると費用対効果が高い。</figcaption></figure>
+<h4 id="sec-5">自分が試すなら</h4>
+<p>まず既定のManualで数タスク回し、確認が増えて煩わしい定型だけを許可ルールで緩める運用に切り替える。放置バッチには <code>/config</code> でアイドル継続をオプトイン。トラブル時は前バージョンで入った <code>--safe-mode</code> で全カスタマイズを無効化し、<code>/cd</code> でキャッシュを壊さず作業ディレクトリを移して切り分ける。</p>
+<h4 id="sec-6">注意点</h4>
+<blockquote>Manual既定は安全側だが確認回数が増える。CIや無人実行では明示的に権限モードとタイムアウトを設定しないと止まりっぱなしになり得る。採用の勢いは続き、日次インストールは17.7M→29M、2026年2月時点で公開GitHubコミットの約4%（SemiAnalysisは年末20%超と予測）、Claude Code単体でラン・レート25億ドル超。国内でも楽天がリリースを24→5日、マネーフォワードはエンジニア約80%が利用と定着が進む。</blockquote>
+<h4 id="sec-7">ひとことまとめ</h4>
+<p>既定はManualへ、問いは勝手に進まない。成果はArtifactsで“生きたページ”に、拡張はslash/skill/subagent/hookの4層で組む——それが7/7時点の定石だ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://releasebot.io/updates/anthropic/claude-code" target="_blank" rel="noopener noreferrer"> Releasebot: Claude Code updates (v2.1.200) </a> </li><li> <a href="https://code.claude.com/docs/en/changelog" target="_blank" rel="noopener noreferrer"> Claude Code changelog（Artifacts） </a> </li><li> <a href="https://dev.classmethod.jp/en/articles/20260702-cc-updates-v2-1-198/" target="_blank" rel="noopener noreferrer"> DevelopersIO: Claude Code v2.1.198 updates </a> </li><li> <a href="https://ofox.ai/blog/claude-code-hooks-subagents-skills-complete-guide-2026/" target="_blank" rel="noopener noreferrer"> ofox.ai: Hooks/Subagents/Skills complete guide </a> </li><li> <a href="https://www.uncoveralpha.com/p/anthropics-claude-code-is-having" target="_blank" rel="noopener noreferrer"> UncoverAlpha: Claude Code is having its ChatGPT moment </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> なぜ今これが話題か </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 何が新しいか </a> </li><li> <a href="#sec-3" data-toc="sec-3"> もう一つの目玉：Artifacts </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 拡張の地図（4層） </a> </li><li> <a href="#sec-5" data-toc="sec-5"> 自分が試すなら </a> </li><li> <a href="#sec-6" data-toc="sec-6"> 注意点 </a> </li><li> <a href="#sec-7" data-toc="sec-7"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-07-07</div> <div>⏱ 読了 約4分</div> <div>🏷 Claude Code</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

@@ -1,0 +1,86 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>7/7の話題リポジトリ — 自律ペンテスト・エージェント多重化・トークン節約 — デイリー技術深掘り 読み物</title><meta name="description" content="今日の3本は「AIエージェントをどう仕事に効かせるか」で一貫。攻撃者視点でアプリを検査するstrix、複数エージェントを束ねるherdr、指示を切り詰めてコストを削るcaveman——守り・生産性・節約の三方向。"><meta name="theme-color" content="#238636"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-07-github-trending/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="7/7の話題リポジトリ — 自律ペンテスト・エージェント多重化・トークン節約 — デイリー技術深掘り 読み物"><meta property="og:description" content="今日の3本は「AIエージェントをどう仕事に効かせるか」で一貫。攻撃者視点でアプリを検査するstrix、複数エージェントを束ねるherdr、指示を切り詰めてコストを削るcaveman——守り・生産性・節約の三方向。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-07-github-trending/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3fb950, #1a7f37)"> <span class="glyph" aria-hidden="true">★</span> <div class="kicker">GitHub Trending</div> <h1>7/7の話題リポジトリ — 自律ペンテスト・エージェント多重化・トークン節約</h1> <p class="lede">今日の3本は「AIエージェントをどう仕事に効かせるか」で一貫。攻撃者視点でアプリを検査するstrix、複数エージェントを束ねるherdr、指示を切り詰めてコストを削るcaveman——守り・生産性・節約の三方向。</p> <div class="meta"> <span>📅 2026年7月7日</span> <span>⏱ 約2分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#238636"> <div> <article class="prose" data-has-mermaid="0"><p>今日GitHub Trendingで急伸した3本は、いずれも<b>AIエージェントの“使い方”</b>を実務へ寄せる道具だ。攻撃側に立たせて守りを固めるもの、複数エージェントを一つの画面で捌くもの、そして冗長な指示を削ってコストを下げるもの。狙う課題は違うが、通底するのは<b>「エージェントを増やしても破綻させない」</b>という運用視点である。</p>
+<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg'>
+  <rect x='0' y='0' width='600' height='200' fill='#eefaf1' rx='8'></rect>
+  <text x='16' y='26' font-size='13' fill='#1a7f37' font-weight='700'>今日の3本：解決したい課題 から 提供する機能</text>
+  <line x1='16' y1='38' x2='584' y2='38' stroke='#bfe6c8'></line>
+  <text x='16' y='60' font-size='12' fill='#1a7f37' font-weight='700'>strix</text>
+  <text x='120' y='60' font-size='11' fill='#1c1c1e'>脆弱性発見が人手頼み</text>
+  <text x='330' y='60' font-size='11' fill='#127a3e'>AIが自律ペンテスト＋修正提案</text>
+  <line x1='16' y1='72' x2='584' y2='72' stroke='#e0f0e5'></line>
+  <text x='16' y='96' font-size='12' fill='#1a7f37' font-weight='700'>herdr</text>
+  <text x='120' y='96' font-size='11' fill='#1c1c1e'>複数エージェントの並行管理が煩雑</text>
+  <text x='330' y='96' font-size='11' fill='#127a3e'>tmux風TUIで多重化・切替</text>
+  <line x1='16' y1='108' x2='584' y2='108' stroke='#e0f0e5'></line>
+  <text x='16' y='132' font-size='12' fill='#1a7f37' font-weight='700'>caveman</text>
+  <text x='120' y='132' font-size='11' fill='#1c1c1e'>冗長プロンプトでトークン浪費</text>
+  <text x='330' y='132' font-size='11' fill='#127a3e'>指示を切り詰め約65%節約</text>
+  <line x1='16' y1='144' x2='584' y2='144' stroke='#e0f0e5'></line>
+  <text x='16' y='168' font-size='11' fill='#6b6b70'>言語：Python / Rust / JavaScript と多彩。守り・生産性・節約の三方向。</text>
+  <text x='16' y='188' font-size='11' fill='#6b6b70'>共通項：エージェントを増やしても運用を破綻させない工夫。</text>
+</svg><figcaption>図1：3リポジトリの「課題→機能」対応。狙う場所は違うが運用視点で通底する。</figcaption></figure>
+<h4 id="sec-1">usestrix/strix（Python・⭐34.3k）</h4>
+<p><b>解決したい課題：</b>脆弱性診断は専門知識と工数が要り、人手のペネトレーションテストは頻度も網羅性も限られる。リリース速度が上がるほど「攻撃者視点の検査」が追いつかない。<b>提供する機能：</b>AIエージェントが<b>自律的にペンテストを実施</b>してアプリの脆弱性を洗い出し、<b>修正提案まで踏み込む</b>オープンソースツール。自分のアプリに導入して攻撃者目線の検査を自動化できる。本日約2,800スターを獲得、<b>セキュリティ×AIエージェント</b>という旬のテーマと実用性の高さで急上昇している。</p>
+<h4 id="sec-2">ogulcancelik/herdr（Rust・⭐10.7k）</h4>
+<p><b>解決したい課題：</b>コーディングエージェントを複数同時に走らせたいが、ターミナルやセッションが分散して管理が煩雑になる。どれが何をしているか見失いやすい。<b>提供する機能：</b>複数のAIエージェントを<b>1つのターミナルで並行管理</b>する<b>エージェント・マルチプレクサ</b>。Rust製で軽量・高速、<b>tmux風の使い勝手</b>でセッションを切り替えられる。本日500超のスターを集めており、並列エージェント運用のニーズに軽快なTUIで応える新規性が支持されている。</p>
+<h4 id="sec-3">JuliusBrussee/caveman（JavaScript・⭐82.8k）</h4>
+<p><b>解決したい課題：</b>丁寧で冗長なプロンプトはトークンを浪費し、コストとレスポンス時間を押し上げる。<b>提供する機能：</b>"原始人"のように短い言葉で話させ、<b>プロンプトを簡潔化してトークンを最大65%節約</b>するClaude Code向けスキル。導入が手軽で<b>コスト削減とレスポンス高速化</b>を同時に狙える。本日約2,850スターを獲得——ネタ性と実利を両立した発想がバズの理由だ。</p>
+<h4 id="sec-4">まとめ：自分が試すなら</h4>
+<p>すぐ効くのは<b>caveman</b>——導入が軽くコストに直結する。エージェントを日常的に並列運用しているなら<b>herdr</b>で運用を一元化。プロダクトを持っているなら<b>strix</b>をCIに組み込み、攻撃者視点の検査を定期実行にするのが投資対効果が高い。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://github.com/usestrix/strix" target="_blank" rel="noopener noreferrer"> usestrix/strix </a> </li><li> <a href="https://github.com/ogulcancelik/herdr" target="_blank" rel="noopener noreferrer"> ogulcancelik/herdr </a> </li><li> <a href="https://github.com/JuliusBrussee/caveman" target="_blank" rel="noopener noreferrer"> JuliusBrussee/caveman </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> usestrix/strix（Python・⭐34.3k） </a> </li><li> <a href="#sec-2" data-toc="sec-2"> ogulcancelik/herdr（Rust・⭐10.7k） </a> </li><li> <a href="#sec-3" data-toc="sec-3"> JuliusBrussee/caveman（JavaScript・⭐82.8k） </a> </li><li> <a href="#sec-4" data-toc="sec-4"> まとめ：自分が試すなら </a> </li> </ul> <div class="reading-box"> <div>📅 2026-07-07</div> <div>⏱ 読了 約2分</div> <div>🏷 GitHub Trending</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

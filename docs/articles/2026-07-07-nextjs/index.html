@@ -1,0 +1,91 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>型を付けるとグラデが動く — @propertyでCSSだけの回転ボーダーと色溶け — デイリー技術深掘り 読み物</title><meta name="description" content="カスタムプロパティは既定で“文字列”なので補間できず、--angleを0→360degにしてもカクッと切り替わるだけだった。@propertyで角度/色/数値と型を宣言すると、変数そのものが補間可能になり、conicの回転ボーダーや色停止の溶け込み、進捗リングが純CSSで書ける。Baseline 2024で主要3エンジン対応、RSCのまま use client 不要。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-07-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="型を付けるとグラデが動く — @propertyでCSSだけの回転ボーダーと色溶け — デイリー技術深掘り 読み物"><meta property="og:description" content="カスタムプロパティは既定で“文字列”なので補間できず、--angleを0→360degにしてもカクッと切り替わるだけだった。@propertyで角度/色/数値と型を宣言すると、変数そのものが補間可能になり、conicの回転ボーダーや色停止の溶け込み、進捗リングが純CSSで書ける。Baseline 2024で主要3エンジン対応、RSCのまま use client 不要。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-07-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>型を付けるとグラデが動く — @propertyでCSSだけの回転ボーダーと色溶け</h1> <p class="lede">カスタムプロパティは既定で“文字列”なので補間できず、--angleを0→360degにしてもカクッと切り替わるだけだった。@propertyで角度/色/数値と型を宣言すると、変数そのものが補間可能になり、conicの回転ボーダーや色停止の溶け込み、進捗リングが純CSSで書ける。Baseline 2024で主要3エンジン対応、RSCのまま use client 不要。</p> <div class="meta"> <span>📅 2026年7月7日</span> <span>⏱ 約4分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="0"><h4 id="sec-1">なぜ今これが話題か</h4>
+<p>CSS変数（<code>--x</code>）は既定で<b>すべて文字列扱い</b>のため、<code>--angle: 0deg → 360deg</code> と書いても<b>補間されず</b>カクッと切り替わるだけだった。グラデーションの角度や色停止は値の内部にあり、<code>transition</code>/<code>@keyframes</code>の対象にできない。だから従来は「要素ごと<code>transform: rotate()</code>」「JSでrAFループ」「重ね画像をクロスフェード」で回避していた。<b>@property</b>はこの前提を覆す。</p>
+<h4 id="sec-2">何が新しいか</h4>
+<p><b>@property</b>はカスタムプロパティに<b>型（syntax）を宣言</b>する。型が付くと、ブラウザはその値を補間可能な<code>&lt;angle&gt;</code>/<code>&lt;color&gt;</code>/<code>&lt;number&gt;</code>等として理解し、<b>変数自体をアニメーションできる</b>。対応は<b>Baseline 2024（2024-07-09 Newly available）</b>で、Chrome/Edge 85+、Safari 16.4+、<b>Firefox 128+</b>と主要3エンジンが揃い、実務投入OKの段階だ。フォールバックは「動かない静的グラデ」に自然に縮退するので、加点演出に向く。</p>
+<figure class='fig'><svg viewBox='0 0 600 160' xmlns='http://www.w3.org/2000/svg'>
+  <rect x='0' y='0' width='600' height='160' fill='#eef4ff' rx='8'></rect>
+  <text x='16' y='26' font-size='13' fill='#1e4bb8' font-weight='700'>型を付けると“補間できる変数”になる</text>
+  <rect x='16' y='40' width='270' height='104' fill='#ffffff' stroke='#9db8ee' rx='6'></rect>
+  <text x='30' y='64' font-size='12' fill='#6b6b70'>型なし（既定：文字列）</text>
+  <text x='30' y='90' font-size='12' fill='#1c1c1e'>--angle: 0deg から 360deg</text>
+  <text x='30' y='114' font-size='12' fill='#c2560f'>補間されず一気に切替（カクッ）</text>
+  <rect x='314' y='40' width='270' height='104' fill='#ffffff' stroke='#1e4bb8' rx='6'></rect>
+  <text x='328' y='64' font-size='12' fill='#1e4bb8' font-weight='700'>@property で角度型を宣言</text>
+  <text x='328' y='90' font-size='12' fill='#1c1c1e'>--angle を @keyframes で回せる</text>
+  <text x='328' y='114' font-size='12' fill='#127a3e'>conic の from に差して滑らか回転</text>
+</svg><figcaption>図1：型宣言が“補間可能”のスイッチ。角度・色・数値が純CSSで動く。</figcaption></figure>
+<h4 id="sec-3">仕組み・要点</h4>
+<p>宣言は3ディスクリプタ。<code>syntax</code>と<code>inherits</code>は<b>常に必須</b>、<code>initial-value</code>は<code>syntax:"*"</code>以外で必須（＝フォールバック値）。型に合わない代入は<code>initial-value</code>に落ちるので型安全だ。</p>
+<pre><code>@property --angle {
+  syntax: "&lt;angle&gt;"; inherits: false; initial-value: 0deg;
+}
+.spinner {
+  background: conic-gradient(from var(--angle), #6574cd, #3490dc, #ffb636, #6574cd);
+  animation: spin 1.2s linear infinite;
+}
+@keyframes spin { to { --angle: 360deg; } }</code></pre>
+<p><b>回転ボーダー</b>は擬似要素なしで作れる：回転するconicを背景に敷き、<code>padding</code>分だけ内側にソリッド背景の子を重ねると隙間が枠に見える。<b>中身は回らず枠だけ回る</b>のが利点。<b>色溶け</b>は各色停止を別々の<code>@property &lt;color&gt;</code>にして<code>var()</code>参照し、<code>transition: --c1 .6s</code>のように<b>変数を直接トランジション</b>する（素のグラデ同士のtransitionは効かない）。<code>&lt;number&gt;</code>を使えば<code>conic-gradient(#22c55e calc(var(--p)*1%), …)</code>で進捗リングも動かせる。</p>
+<h4 id="sec-4">Next.js（App Router）での使いどころ</h4>
+<p><b>純CSS＝Server Componentのまま</b>で、<code>@property</code>も<code>@keyframes</code>もクライアントJSを要さない。ローダー、CTAの光る枠、ヒーロー背景をRSCで完結でき<b>hydrationゼロ・INP/LCP/CLSに悪影響なし</b>。<code>@property</code>は<code>app/globals.css</code>に<b>一度グローバル登録</b>すれば全ページで使える。サーバー値で決めたい進捗はインラインの<code>--p</code>変数でRSCが出力、カウントアップ等の動的変化だけ小さな<code>'use client'</code>島に閉じる。Tailwind v4の<code>@theme</code>トークンを<code>initial-value</code>へ流用も可。</p>
+<h4 id="sec-5">注意点・落とし穴</h4>
+<blockquote><code>initial-value</code>忘れは登録無効化＝補間が効かない。色停止は<b>停止ごとに型付き変数が必要</b>（1変数に複数色は不可）。<code>inherits:true</code>の乱用で子孫が意図せずアニメを拾う。大面積conicの毎フレーム再ペイントは重く、領域は小さめ＋<code>contain: paint</code>を検討。JSの<code>CSS.registerProperty()</code>はSSR/RSCで実行されないので、SSRから確実に効かせたいならCSSの<code>@property</code>を使う。<code>@media (prefers-reduced-motion: reduce)</code>で<code>animation: none</code>にすれば静的グラデの完成形が残る。</blockquote>
+<h4 id="sec-6">ひとことまとめ</h4>
+<p>「型を付ける」だけでグラデが動く。回転ボーダー・色溶け・進捗リングをJSも擬似要素もなしにRSCで完結できる、コスパの高い装飾テクだ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://web.dev/blog/at-property-baseline" target="_blank" rel="noopener noreferrer"> web.dev: @property — Baseline 2024 </a> </li><li> <a href="https://developer.mozilla.org/en-US/docs/Web/API/CSS_Properties_and_Values_API/guide" target="_blank" rel="noopener noreferrer"> MDN: CSS Properties and Values API guide </a> </li><li> <a href="https://ryanmulligan.dev/blog/css-property-new-style/" target="_blank" rel="noopener noreferrer"> Ryan Mulligan: CSS @property and the New Style </a> </li><li> <a href="https://dev.to/afif/we-can-finally-animate-css-gradient-kdk" target="_blank" rel="noopener noreferrer"> We can finally animate CSS gradient </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> なぜ今これが話題か </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 何が新しいか </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 仕組み・要点 </a> </li><li> <a href="#sec-4" data-toc="sec-4"> Next.js（App Router）での使いどころ </a> </li><li> <a href="#sec-5" data-toc="sec-5"> 注意点・落とし穴 </a> </li><li> <a href="#sec-6" data-toc="sec-6"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-07-07</div> <div>⏱ 読了 約4分</div> <div>🏷 Next.js</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

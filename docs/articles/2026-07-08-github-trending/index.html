@@ -1,0 +1,92 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>7/8の話題リポジトリ — エージェントに“スキル”を、UIに“エージェント対応”を、学びに“システム視点”を — デイリー技術深掘り 読み物</title><meta name="description" content="本日の3本を貫くのは「AIエージェント時代に何を土台として整えるか」。エージェントへスキルを装備させる方法論（superpowers）、AIが扱いやすいデザインシステム（astryx）、そしてモデル単体でなくMLシステム全体を学ぶ教科書（cs249r_book）——道具・UI・知識の3層で“エージェント前提”への地ならしが進んでいる。"><meta name="theme-color" content="#238636"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-08-github-trending/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="7/8の話題リポジトリ — エージェントに“スキル”を、UIに“エージェント対応”を、学びに“システム視点”を — デイリー技術深掘り 読み物"><meta property="og:description" content="本日の3本を貫くのは「AIエージェント時代に何を土台として整えるか」。エージェントへスキルを装備させる方法論（superpowers）、AIが扱いやすいデザインシステム（astryx）、そしてモデル単体でなくMLシステム全体を学ぶ教科書（cs249r_book）——道具・UI・知識の3層で“エージェント前提”への地ならしが進んでいる。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-08-github-trending/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3fb950, #1a7f37)"> <span class="glyph" aria-hidden="true">★</span> <div class="kicker">GitHub Trending</div> <h1>7/8の話題リポジトリ — エージェントに“スキル”を、UIに“エージェント対応”を、学びに“システム視点”を</h1> <p class="lede">本日の3本を貫くのは「AIエージェント時代に何を土台として整えるか」。エージェントへスキルを装備させる方法論（superpowers）、AIが扱いやすいデザインシステム（astryx）、そしてモデル単体でなくMLシステム全体を学ぶ教科書（cs249r_book）——道具・UI・知識の3層で“エージェント前提”への地ならしが進んでいる。</p> <div class="meta"> <span>📅 2026年7月8日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#238636"> <div> <article class="prose" data-has-mermaid="0"><h4 id="sec-1">今日の3本を貫くもの</h4>
+<p>本日のTrendingは、AIエージェントを実務に組み込む前提での<b>土台づくり</b>という共通線で読める。エージェントに<b>能力（スキル）</b>を与える枠組み、エージェントが扱いやすい<b>UIの器</b>、そしてモデルではなく<b>システム全体</b>を理解するための<b>知識</b>——道具・UI・学びの3方向から地ならしが進む。それぞれ「何を解決しようとしているか」「何を提供するか」で見ていく。</p>
+<figure class='fig'><svg viewBox='0 0 600 220' xmlns='http://www.w3.org/2000/svg'>
+  <rect x='0' y='0' width='600' height='220' fill='#eefcf1' rx='8'></rect>
+  <text x='16' y='26' font-size='13' fill='#1a7f37' font-weight='700'>リポジトリ × 解決したい課題 / 提供する機能</text>
+  <line x1='210' y1='36' x2='210' y2='210' stroke='#bfe6c8' stroke-width='1'></line>
+  <line x1='405' y1='36' x2='405' y2='210' stroke='#bfe6c8' stroke-width='1'></line>
+  <text x='24' y='52' font-size='11' fill='#6b6b70'>リポジトリ</text>
+  <text x='218' y='52' font-size='11' fill='#6b6b70'>解決したい課題</text>
+  <text x='413' y='52' font-size='11' fill='#6b6b70'>提供する機能</text>
+  <rect x='16' y='60' width='568' height='48' fill='#ffffff' stroke='#3fb950' rx='6'></rect>
+  <text x='24' y='80' font-size='11.5' fill='#1a7f37' font-weight='700'>obra/superpowers</text>
+  <text x='24' y='98' font-size='10' fill='#6b6b70'>Shell ⭐245.4k</text>
+  <text x='218' y='88' font-size='10.5' fill='#1c1c1e'>エージェントに再現性ある能力を</text>
+  <text x='413' y='88' font-size='10.5' fill='#1c1c1e'>再利用スキル＋開発手法を一体提供</text>
+  <rect x='16' y='114' width='568' height='48' fill='#ffffff' stroke='#3fb950' rx='6'></rect>
+  <text x='24' y='134' font-size='11.5' fill='#1a7f37' font-weight='700'>facebook/astryx</text>
+  <text x='24' y='152' font-size='10' fill='#6b6b70'>TypeScript ⭐4.4k</text>
+  <text x='218' y='142' font-size='10.5' fill='#1c1c1e'>AIが扱いにくいUIの器を刷新</text>
+  <text x='413' y='142' font-size='10.5' fill='#1c1c1e'>agent ready なデザインシステム</text>
+  <rect x='16' y='168' width='568' height='40' fill='#ffffff' stroke='#3fb950' rx='6'></rect>
+  <text x='24' y='186' font-size='11.5' fill='#1a7f37' font-weight='700'>harvard-edge/cs249r_book</text>
+  <text x='24' y='202' font-size='10' fill='#6b6b70'>Python ⭐26.1k</text>
+  <text x='218' y='192' font-size='10.5' fill='#1c1c1e'>モデル偏重の学びを是正</text>
+  <text x='413' y='192' font-size='10.5' fill='#1c1c1e'>MLシステムの体系的教科書</text>
+</svg><figcaption>図1：3本の「課題→機能」対応。道具・UI・知識の3層。</figcaption></figure>
+<h4 id="sec-2">obra/superpowers（Shell・⭐245.4k）</h4>
+<p><b>解決したい課題：</b>コーディングエージェントは強力だが、都度その場のプロンプトに頼ると<b>再現性がなく、ノウハウが蓄積しない</b>。<b>提供する機能：</b>エージェントに<b>再利用可能な「スキル」を装備</b>させ、開発メソドロジーとツールを一体で提供する枠組み。Claude Code などのエージェントと組み合わせやすい。本日約1,200スターを獲得し、すでに24万超という規模から、AIエージェント開発の実践知として拡散していることがうかがえる。</p>
+<h4 id="sec-3">facebook/astryx（TypeScript・⭐4.4k）</h4>
+<p><b>解決したい課題：</b>既存のUIコンポーネント群は人間の手作業前提で、<b>エージェントが安全にカスタマイズ・生成しづらい</b>。<b>提供する機能：</b>完全カスタマイズ可能で <b>“agent ready”</b> を掲げる、Meta製OSSのデザインシステム。AIによるUI構築の生産性向上を狙う。大手Metaが公開した信頼性と、エージェント対応という新規性が本日900超スターの急伸を後押ししている。</p>
+<h4 id="sec-4">harvard-edge/cs249r_book（Python・⭐26.1k）</h4>
+<p><b>解決したい課題：</b>学習リソースはモデル単体に偏りがちで、<b>データ・運用・システム設計まで含む全体像</b>が学びにくい。<b>提供する機能：</b>ハーバード発、<b>機械学習システム（ML Systems）</b>を体系的に学べるオープンな教科書。モデル運用やシステム設計まで幅広くカバーする。大学発の無料教材という信頼性と網羅性から、本日約800スターを得て教育リソースとして広がっている。</p>
+<h4 id="sec-5">まとめ — 自分が試すなら</h4>
+<p>実務のエージェント運用に直結するのは <b>superpowers</b>——手元のClaude Codeにスキルとして落とし込めば、日々の定型を再現性ある形で任せられる。UIの器を試すなら astryx、腰を据えて設計力を上げるなら cs249r_book を読み物として積む、という三段構えが今日の収穫だ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://github.com/obra/superpowers" target="_blank" rel="noopener noreferrer"> obra/superpowers </a> </li><li> <a href="https://github.com/facebook/astryx" target="_blank" rel="noopener noreferrer"> facebook/astryx </a> </li><li> <a href="https://github.com/harvard-edge/cs249r_book" target="_blank" rel="noopener noreferrer"> harvard-edge/cs249r_book </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 今日の3本を貫くもの </a> </li><li> <a href="#sec-2" data-toc="sec-2"> obra/superpowers（Shell・⭐245.4k） </a> </li><li> <a href="#sec-3" data-toc="sec-3"> facebook/astryx（TypeScript・⭐4.4k） </a> </li><li> <a href="#sec-4" data-toc="sec-4"> harvard-edge/cs249r_book（Python・⭐26.1k） </a> </li><li> <a href="#sec-5" data-toc="sec-5"> まとめ — 自分が試すなら </a> </li> </ul> <div class="reading-box"> <div>📅 2026-07-08</div> <div>⏱ 読了 約3分</div> <div>🏷 GitHub Trending</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
