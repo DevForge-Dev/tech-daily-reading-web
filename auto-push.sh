@@ -9,6 +9,23 @@
 export PATH="/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin"
 cd "/Users/keita/Develop/DevForge/tech-daily-reading-web" || exit 1
 
+# 0) 残留ロックの掃除
+#    過去に git プロセスがクラッシュすると .git/*.lock が残り、以降の
+#    commit / rebase が「cannot lock ref」で毎日失敗し続ける（沈黙する）。
+#    実際に走っている git プロセスが無ければ、残留ロックだけ除去して自動回復する。
+#    ※ プロセス名が厳密に git のものだけを見る（-f だと VS Code や gh の
+#      コマンドラインに含まれる "git" を誤検知し、掃除が永久スキップされる）。
+if pgrep -x "git" >/dev/null 2>&1 || pgrep -x "git-remote-https" >/dev/null 2>&1; then
+  echo "$(date '+%F %T') 他の git プロセスが実行中、ロック掃除をスキップ"
+else
+  for lock in .git/HEAD.lock .git/index.lock .git/config.lock \
+              .git/refs/heads/main.lock .git/ORIG_HEAD.lock; do
+    if [ -e "$lock" ]; then
+      rm -f "$lock" && echo "$(date '+%F %T') 残留ロック除去: $lock"
+    fi
+  done
+fi
+
 # 1) ローカルの変更を確定
 git add -A
 if git diff --cached --quiet; then
