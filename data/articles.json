@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-07-08T04:50:06.066Z",
+  "generatedAt": "2026-07-09T04:46:58.584Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,114 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-07-09-claude-code",
+      "date": "2026-07-09",
+      "topic": "Claude Code",
+      "title": "Claude Code v2.1.203/204 — サブエージェント既定バックグラウンド化と自動化運用の地固め",
+      "lede": "スラッシュ・スキルの5連読み込みとサブエージェントの既定バックグラウンド実行で日常のスループットが向上。ヘッドレスのフック安定化やログイン期限警告など、CI・自動化まわりの足元も固まった。",
+      "articleHtml": "<p>Claude Code は小刻みなリリースを高頻度で重ねるスタイルだが、今回の一連の更新は「エージェントを並列に、自動化を安定に」という方向がはっきり見える。派手な新機能より、毎日使うワークフローの摩擦を削る改善群だ。</p>\n<p>まず公式 changelog から。<code>/skill-a /skill-b</code> のようにスラッシュ・スキルを連ねて呼ぶと、従来は先頭しか読まれなかったところ、<b>先頭から最大5つまで読み込む</b>ようになった。さらに<b>サブエージェントが既定でバックグラウンド実行</b>になり、実行中も本流の作業を続けられ、完了時に通知が届く。探索・レビューのような重い並列作業を「投げて待たずに進む」形が標準になった。</p>\n<p>バージョン別では、7/7 の <b>v2.1.203</b> がログイン有効期限が近づくと警告を出して再認証を促す機能、手動権限モード時のフッター一時停止バッジ（⏸）、セッションの追加作業ディレクトリを MCP の roots/list に反映して変更時に <code>notifications/roots/list_changed</code> を送る対応、macOS の低メモリ誤検知でセッション切替が15〜20秒止まる不具合の修正を含む。7/8 の <b>v2.1.204</b> は、ヘッドレス実行の SessionStart フック中にイベントがストリームされず、フック実行途中でワーカーが「アイドル」と誤判定されて回収（idle-reap）される不具合を修正した。CI/CD で長めの初期化フックを走らせる構成には効く修正だ。</p>\n<figure class='fig'><svg viewBox='0 0 620 230' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='14' width='190' height='200' rx='12' fill='#f3ecff' stroke='#7b3fe4'/><text x='105' y='40' text-anchor='middle' font-size='13' font-weight='bold' fill='#5a2ec4'>changelog</text><text x='105' y='66' text-anchor='middle' font-size='11.5' fill='#333'>スラッシュ・スキル</text><text x='105' y='84' text-anchor='middle' font-size='11.5' fill='#333'>先頭5つまで読込</text><text x='105' y='116' text-anchor='middle' font-size='11.5' fill='#333'>サブエージェント</text><text x='105' y='134' text-anchor='middle' font-size='11.5' fill='#333'>既定バックグラウンド化</text><text x='105' y='152' text-anchor='middle' font-size='11' fill='#666'>完了時に通知</text><rect x='215' y='14' width='190' height='200' rx='12' fill='#fff' stroke='#7b3fe4'/><text x='310' y='40' text-anchor='middle' font-size='13' font-weight='bold' fill='#5a2ec4'>v2.1.203（7/7）</text><text x='310' y='66' text-anchor='middle' font-size='11.5' fill='#333'>ログイン期限切れ警告</text><text x='310' y='90' text-anchor='middle' font-size='11.5' fill='#333'>手動権限モード⏸バッジ</text><text x='310' y='114' text-anchor='middle' font-size='11.5' fill='#333'>追加dirをMCP rootsへ</text><text x='310' y='138' text-anchor='middle' font-size='11.5' fill='#333'>macOS切替15-20秒停止修正</text><rect x='420' y='14' width='190' height='200' rx='12' fill='#fff' stroke='#7b3fe4'/><text x='515' y='40' text-anchor='middle' font-size='13' font-weight='bold' fill='#5a2ec4'>v2.1.204（7/8）</text><text x='515' y='66' text-anchor='middle' font-size='11.5' fill='#333'>ヘッドレスSessionStart</text><text x='515' y='84' text-anchor='middle' font-size='11.5' fill='#333'>フックのイベント欠落修正</text><text x='515' y='112' text-anchor='middle' font-size='11.5' fill='#333'>idle-reap誤判定を防止</text><text x='515' y='140' text-anchor='middle' font-size='11' fill='#666'>CI/自動化の安定性向上</text></svg><figcaption>図1：今回の更新の全体像 — 並列化の強化（左）と運用系の修正（中・右）</figcaption></figure>\n<p>周辺では、DEV Community に hooks の2026年版完全ガイド（すぐ使える20以上の実例つき）が出た。hooks はプロンプト指示と違い<b>毎回決定論的に発火</b>するので、Write/Edit 後の prettier 強制、本番 push のブロック、シェルコマンドの監査ログといった「取りこぼしが許されない」処理に向く。ニュース面では、週間利用上限の50%引き上げ（7/13まで・既存プラン対象）、Claude Cowork のクラウド化と M365 書き込みツール追加、そして「Anthropic の新規本番コードの約80%を Claude が執筆」という数字が話題になった。</p>\n<p>自分が試すなら、まず CI で使っているバージョンを v2.1.204 以降へ上げて SessionStart フックの安定性を確認し、次に重めのレビュー用サブエージェントをバックグアウンド前提のフローに組み直す。注意点は、サブエージェントの完了を暗黙に待っていた既存の手順が既定変更で崩れないか、通知の受け方を含めて一度見直すこと。</p>\n<p><b>ひとことまとめ:</b> 新機能より「並列で速く、無人でも落ちない」を積み上げた回。自動化運用者ほど恩恵が大きい。</p>",
+      "sources": [
+        {
+          "title": "Claude Code changelog",
+          "url": "https://code.claude.com/docs/en/changelog"
+        },
+        {
+          "title": "Release notes (v2.1.203)",
+          "url": "https://support.claude.com/en/articles/12138966-release-notes"
+        },
+        {
+          "title": "Releasebot (v2.1.204)",
+          "url": "https://releasebot.io/updates/anthropic/claude-code"
+        },
+        {
+          "title": "Claude Code Hooks Complete Guide (DEV)",
+          "url": "https://dev.to/lukaszfryc/claude-code-hooks-complete-guide-with-20-ready-to-use-examples-2026-dcg"
+        },
+        {
+          "title": "Anthropic: 80% of new production code by Claude (VentureBeat)",
+          "url": "https://venturebeat.com/technology/anthropic-says-80-of-its-new-production-code-is-now-authored-by-claude-how-your-enterprise-can-keep-up"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-09-nextjs",
+      "date": "2026-07-09",
+      "topic": "Next.js",
+      "title": "Server Actions × useActionState — App Router フォームの定石を固める",
+      "lede": "React 19 で安定した useActionState にフォーム状態を畳み込み、JS 未ロードでも動くプログレッシブエンハンスメントと「throw しない型付きエラー契約」で堅牢なフォームを組む。",
+      "articleHtml": "<p>App Router で「フォーム送信 → サーバーで検証・書き込み → 結果を UI に返す」を書くと、useState で loading / error / success を手管理する定型コードが積み上がる。React 19 で安定化した <code>useActionState</code> はこれを1フックに畳み込み、しかも <b>JS が未ロードでも素の HTML フォームとして送信できる</b>（プログレッシブエンハンスメント）。変更系の定石として押さえておきたいパターンだ。</p>\n<p>形は <code>const [state, formAction, isPending] = useActionState(action, initialState, permalink?)</code>。action は <code>(previousState, formData) =&gt; newState</code> のシグネチャで、返り値がそのまま次の state になる。第3要素の <code>isPending</code> で送信中が判定でき、送信ボタンの disabled 程度なら <code>useFormStatus</code> なしで書ける。要点は <code>&lt;form action={formAction}&gt;</code> と<b>関数を直接渡す</b>こと（onSubmit ではない）。これで JS 読込前でも POST が飛ぶ。</p>\n<figure class='fig'><pre class='mermaid'>flowchart TD\n  A[\"form action=formAction で送信\"] --> B[\"Server Action: 認証チェック\"]\n  B --> C[\"Zod で入力検証\"]\n  C -->|\"失敗\"| D[\"fieldErrors と values を返す\"]\n  D --> E[\"useActionState が state を描画・入力値を復元\"]\n  C -->|\"成功\"| F[\"DB 書き込み\"]\n  F --> G[\"revalidatePath / revalidateTag\"]\n  G --> H[\"ok:true を返しトースト表示\"]</pre><figcaption>図1：型付きエラー契約のフォームフロー — throw せず常に同じ shape を返す</figcaption></figure>\n<p>設計の核は<b>型付きエラー契約</b>。Server Action は実体としては公開 POST エンドポイントなので、例外を投げるのではなく、毎回同じ形のオブジェクト（例: <code>{ ok: false, fieldErrors, values }</code>）を返す。<code>fieldErrors</code> でインライン表示し、<code>values</code> で失敗時に入力値を復元する。JS なしの送信ではクライアント state が残らないため、値の復元はサーバーから返すのが確実だ。サーバー側の手順は「① 認証（DAL の verifySession 等）→ ② Zod で検証 → ③ 書き込み → ④ <code>revalidatePath</code> / <code>revalidateTag</code>」で固定する。</p>\n<pre><code>const [state, formAction, isPending] = useActionState(createNote, initial);\n// action 側: (prev, formData) =&gt; Promise&lt;FormState&gt;\n// 失敗: { ok:false, fieldErrors, values } / 成功: { ok:true, message }</code></pre>\n<p>落とし穴は3つ。<code>useFormStatus</code> は<b>親の form から状態を拾う</b>ため、form を描画するコンポーネント自身では動かず、SubmitButton を子に切り出す必要がある。<code>useOptimistic</code> の自動ロールバックは <b>async 関数が throw したときだけ</b>働くので、削除のようにロールバックしたい操作は逆に throw させる設計にする（インライン表示したい操作は throw しない、という使い分け）。そして Next.js 16 はインラインクロージャ変数を転送時に暗号化するが、<b>これは認可モデルではない</b>。'use server' を付けても認可は付与されず、毎回の入力検証・認証・権限チェックは自前で行う。<code>.bind()</code> で ID を渡す場合は prevState の後ろに引数がずれる点（React #31356）にも注意。</p>\n<p>自分が試すなら、既存の「useState + fetch」のフォームを1つ選んで useActionState + 型付き契約に置き換え、JS を無効にしても送信・エラー表示・値復元が成立するか確認する。<b>ひとことまとめ:</b> フォームは「throw しない契約 + form action 直渡し」。この2点だけで堅牢さと PE が同時に手に入る。</p>",
+      "sources": [
+        {
+          "title": "useActionState – React 公式",
+          "url": "https://react.dev/reference/react/useActionState"
+        },
+        {
+          "title": "useFormStatus – React 公式",
+          "url": "https://react.dev/reference/react-dom/hooks/useFormStatus"
+        },
+        {
+          "title": "Server Actions – Next.js 公式",
+          "url": "https://nextjs.org/docs/app/guides/server-actions"
+        },
+        {
+          "title": "Forms with Server Actions – Next.js 公式",
+          "url": "https://nextjs.org/docs/app/guides/forms"
+        },
+        {
+          "title": "facebook/react #31356",
+          "url": "https://github.com/facebook/react/issues/31356"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-09-flutter",
+      "date": "2026-07-09",
+      "topic": "Flutter",
+      "title": "フルスタック Dart へ — Cloud Functions for Firebase に experimental の Dart サポート",
+      "lede": "クライアントもサーバも同じ Dart で書ける時代の入口。HTTPS / callable 関数と Dart Admin SDK が初期提供され、Firebase CLI が手元でコンパイルして Cloud Run functions へ直接デプロイする。",
+      "articleHtml": "<p>Flutter 開発の長年の割り切りは「クライアントは Dart、バックエンドは TypeScript / Go / Python」だった。結果として2つのコードベースを保守し、ビジネスロジックとデータモデルを二重管理することになる。Cloud Next で発表された <b>Cloud Functions for Firebase の experimental な Dart サポート</b>は、この分断を解消する一歩で、Flutter / Dart / Firebase を通してクライアントもサーバも<b>同一言語・同一ツールチェーン</b>で書けるようになる。</p>\n<p>初期リリースがサポートするのは <b>HTTPS functions と callable functions</b>。合わせて公開された <b>experimental Dart Admin SDK</b> は Cloud Functions 内で自動初期化されるため、追加設定なしで Firestore の読み書きができる。デプロイの仕組みも面白く、ソースを Cloud Build に上げるのではなく、<b>Firebase CLI が開発マシン上で Dart をコンパイルし、生成バイナリを Cloud Run functions に直接アップロード</b>する。AI エージェント基盤の Genkit Dart と組めば、AI ロジックもサーバ側 Dart に載せられる。</p>\n<figure class='fig'><svg viewBox='0 0 620 240' xmlns='http://www.w3.org/2000/svg'><text x='155' y='26' text-anchor='middle' font-size='13' font-weight='bold' fill='#01579b'>従来</text><rect x='30' y='40' width='250' height='60' rx='10' fill='#e1f5fe' stroke='#0277bd'/><text x='155' y='65' text-anchor='middle' font-size='12' fill='#333'>クライアント: Flutter / Dart</text><text x='155' y='85' text-anchor='middle' font-size='12' fill='#333'>バックエンド: TS / Go / Python</text><rect x='30' y='112' width='250' height='44' rx='10' fill='#fff' stroke='#e57373'/><text x='155' y='131' text-anchor='middle' font-size='11.5' fill='#c62828'>コードベース×2</text><text x='155' y='148' text-anchor='middle' font-size='11.5' fill='#c62828'>ロジック・モデルの二重管理</text><text x='465' y='26' text-anchor='middle' font-size='13' font-weight='bold' fill='#01579b'>Dart functions（experimental）</text><rect x='340' y='40' width='250' height='60' rx='10' fill='#e1f5fe' stroke='#0277bd'/><text x='465' y='65' text-anchor='middle' font-size='12' fill='#333'>クライアントもサーバも Dart</text><text x='465' y='85' text-anchor='middle' font-size='12' fill='#333'>HTTPS / callable ＋ Admin SDK</text><rect x='340' y='112' width='250' height='44' rx='10' fill='#fff' stroke='#0277bd'/><text x='465' y='131' text-anchor='middle' font-size='11.5' fill='#333'>CLI が手元で compile →</text><text x='465' y='148' text-anchor='middle' font-size='11.5' fill='#333'>Cloud Run functions へ直接デプロイ</text><rect x='30' y='176' width='560' height='44' rx='10' fill='#fffde7' stroke='#f9a825'/><text x='310' y='195' text-anchor='middle' font-size='11.5' fill='#795548'>注意: experimental — Node.js functions の一部機能に未対応 / Firebase Console に Dart functions が表示されない</text><text x='310' y='212' text-anchor='middle' font-size='11.5' fill='#795548'>本番採用は様子見が妥当</text></svg><figcaption>図1：フルスタック Dart の前後比較と現時点の制約</figcaption></figure>\n<p>言語側の足場も揃ってきた。安定運用は <b>Flutter 3.44.0 / Dart 3.12.2</b> で、Dart 3.12 は private named parameters（先頭アンダースコアの自動省略）や dot shorthands（.value 省略記法）に加え、primary constructors を experimental サポート。次の安定版は 2026年8月予定（年4回リリース）だ。クライアント側の今日の要点としては、jank 診断では setState で width / height を変えて再レイアウトを誘発するより Transform / Opacity の純グラフィカル変換へ寄せること、Impeller では Platform View / Texture が Skia より遅くなる報告（issue #180831）があるため該当画面は実機計測すること、の2つを覚えておきたい。</p>\n<p>自分が試すなら、既存アプリの「クライアントから叩く小さな検証 API」を callable 関数1本で Dart 化し、Firestore の読み書きとデプロイ体験を確認するところから。モデル定義を共有パッケージに切り出せるかも見どころだ。注意点は experimental ステータスそのもので、予告なく変わる可能性があり、Firebase Console にまだ Dart functions が表示されない。本番ワークロードへの採用は時期尚早。</p>\n<p><b>ひとことまとめ:</b> 「Dart はクライアント言語」という前提が崩れ始めた。まずは callable 1本、遊びで踏むには十分な入口。</p>",
+      "sources": [
+        {
+          "title": "Announcing Dart support in Cloud Functions",
+          "url": "https://firebase.blog/posts/2026/05/dart-functions-exp/"
+        },
+        {
+          "title": "Get started with the experimental Dart SDK",
+          "url": "https://firebase.google.com/docs/functions/start-dart"
+        },
+        {
+          "title": "Announcing Dart 3.12",
+          "url": "https://dart.dev/blog/announcing-dart-3-12"
+        },
+        {
+          "title": "Impeller: Platform View / Texture 劣化 (#180831)",
+          "url": "https://github.com/flutter/flutter/issues/180831"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-09-github-trending",
+      "date": "2026-07-09",
+      "topic": "GitHub Trending",
+      "title": "7/9の話題リポジトリ — コード知識グラフ・DevTools公式MCP・セルフホストROM管理",
+      "lede": "AIコーディングエージェントに「文脈」と「手足」を与える2本と、トレンドの中で異彩を放つ趣味系実用アプリ1本。エージェント時代の周辺整備が主戦場になっている。",
+      "articleHtml": "<p>今日の3本のうち2本は、AI コーディングエージェント本体ではなく「エージェントに何を見せ、何を触らせるか」を担う周辺レイヤーだ。残る1本はその潮流と無関係に伸びるセルフホストアプリで、Trending の幅を感じさせる。</p>\n<figure class='fig'><svg viewBox='0 0 640 250' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='170' height='34' rx='8' fill='#eafaf0' stroke='#1a7f37'/><text x='95' y='32' text-anchor='middle' font-size='12' font-weight='bold' fill='#1a7f37'>リポジトリ</text><rect x='190' y='10' width='215' height='34' rx='8' fill='#eafaf0' stroke='#1a7f37'/><text x='297' y='32' text-anchor='middle' font-size='12' font-weight='bold' fill='#1a7f37'>解決したい課題</text><rect x='415' y='10' width='215' height='34' rx='8' fill='#eafaf0' stroke='#1a7f37'/><text x='522' y='32' text-anchor='middle' font-size='12' font-weight='bold' fill='#1a7f37'>提供する機能</text><rect x='10' y='54' width='170' height='58' rx='8' fill='#fff' stroke='#3fb950'/><text x='95' y='78' text-anchor='middle' font-size='11.5' fill='#333'>graphify</text><text x='95' y='96' text-anchor='middle' font-size='10.5' fill='#666'>Python ⭐76.9k</text><rect x='190' y='54' width='215' height='58' rx='8' fill='#fff' stroke='#3fb950'/><text x='297' y='78' text-anchor='middle' font-size='11' fill='#333'>コード・スキーマ・文書が分断され</text><text x='297' y='96' text-anchor='middle' font-size='11' fill='#333'>エージェントが横断把握できない</text><rect x='415' y='54' width='215' height='58' rx='8' fill='#fff' stroke='#3fb950'/><text x='522' y='78' text-anchor='middle' font-size='11' fill='#333'>何でも問い合わせ可能な</text><text x='522' y='96' text-anchor='middle' font-size='11' fill='#333'>ナレッジグラフに変換するスキル</text><rect x='10' y='122' width='170' height='58' rx='8' fill='#fff' stroke='#3fb950'/><text x='95' y='146' text-anchor='middle' font-size='11.5' fill='#333'>chrome-devtools-mcp</text><text x='95' y='164' text-anchor='middle' font-size='10.5' fill='#666'>TypeScript ⭐45.4k</text><rect x='190' y='122' width='215' height='58' rx='8' fill='#fff' stroke='#3fb950'/><text x='297' y='146' text-anchor='middle' font-size='11' fill='#333'>エージェントがブラウザの実挙動を</text><text x='297' y='164' text-anchor='middle' font-size='11' fill='#333'>計測・検査できない</text><rect x='415' y='122' width='215' height='58' rx='8' fill='#fff' stroke='#3fb950'/><text x='522' y='146' text-anchor='middle' font-size='11' fill='#333'>DevTools を MCP 経由で公開</text><text x='522' y='164' text-anchor='middle' font-size='11' fill='#333'>性能・ネットワーク・デバッグ</text><rect x='10' y='190' width='170' height='50' rx='8' fill='#fff' stroke='#3fb950'/><text x='95' y='210' text-anchor='middle' font-size='11.5' fill='#333'>romm</text><text x='95' y='227' text-anchor='middle' font-size='10.5' fill='#666'>Python ⭐9.7k</text><rect x='190' y='190' width='215' height='50' rx='8' fill='#fff' stroke='#3fb950'/><text x='297' y='210' text-anchor='middle' font-size='11' fill='#333'>散らばるROMコレクションの</text><text x='297' y='227' text-anchor='middle' font-size='11' fill='#333'>管理・プレイ環境が煩雑</text><rect x='415' y='190' width='215' height='50' rx='8' fill='#fff' stroke='#3fb950'/><text x='522' y='210' text-anchor='middle' font-size='11' fill='#333'>メタデータ自動整理＋</text><text x='522' y='227' text-anchor='middle' font-size='11' fill='#333'>ブラウザでそのままプレイ</text></svg><figcaption>図1：今日の3本 — 課題と提供機能の対応</figcaption></figure>\n<h4>safishamsi/graphify（Python・⭐76.9k / 本日+約937）</h4>\n<p><b>解決したい課題:</b> AI エージェントにコードベースを渡しても、アプリコード・SQL スキーマ・インフラ構成・ドキュメント・論文・画像・動画といった資産はバラバラのファイル群のままで、「この API はどのテーブルに触り、どの設計文書に根拠があるか」といった横断的な文脈を機械が把握できない。<b>提供する機能:</b> 任意のフォルダを問い合わせ可能なナレッジグラフに変換する AI コーディング支援スキル。Claude Code・Codex・OpenCode・Cursor・Gemini CLI など主要エージェントから「スキル」として使え、コードと DB スキーマとインフラを1つのグラフとして横断クエリできる。1日で約940スターという急伸は、特定ツールに縛られないスキル設計が刺さった証拠だろう。</p>\n<h4>ChromeDevTools/chrome-devtools-mcp（TypeScript・⭐45.4k / 本日+約404）</h4>\n<p><b>解決したい課題:</b> コーディングエージェントは「コードを書く」ことはできても、書いたものがブラウザでどう振る舞うか — 描画性能、ネットワーク、コンソールエラー — を自分で確かめる手段を持たない。<b>提供する機能:</b> Chrome DevTools の機能を MCP サーバーとしてエージェントに公開し、パフォーマンス計測・ネットワーク検査・デバッグ情報へのプログラム的アクセスを可能にする。Chrome DevTools チーム公式（ChromeDevTools org）という信頼性が採用の後押しで、MCP 対応ツールの需要拡大を背景に着実に伸びている。</p>\n<h4>rommapp/romm（Python・⭐9.7k / 本日+約236）</h4>\n<p><b>解決したい課題:</b> レトロゲームの ROM コレクションはフォルダに散らばりがちで、メタデータ整理もプレイ環境の準備も手作業になりやすい。<b>提供する機能:</b> セルフホスト型の ROM マネージャー兼プレイヤー。ライブラリのメタデータを自動取得して整理し、ブラウザから直接プレイでき、Docker で手軽に立てられる。AI 一色のトレンドで異色の存在だが、セルフホスト愛好家コミュニティの支持で安定して上昇中だ。</p>\n<p><b>まとめ:</b> 自分が試すなら chrome-devtools-mcp。Claude Code に繋いで「実装 → ブラウザで計測 → 直す」のループをエージェントに閉じさせられるかを確かめたい。graphify はモノレポ＋DB スキーマの案件で真価が出そうだ。</p>",
+      "sources": [
+        {
+          "title": "safishamsi/graphify",
+          "url": "https://github.com/safishamsi/graphify"
+        },
+        {
+          "title": "ChromeDevTools/chrome-devtools-mcp",
+          "url": "https://github.com/ChromeDevTools/chrome-devtools-mcp"
+        },
+        {
+          "title": "rommapp/romm",
+          "url": "https://github.com/rommapp/romm"
+        }
+      ]
+    },
     {
       "id": "2026-07-08-claude-code",
       "date": "2026-07-08",
