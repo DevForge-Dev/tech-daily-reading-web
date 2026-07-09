@@ -1,0 +1,64 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>フルスタック Dart へ — Cloud Functions for Firebase に experimental の Dart サポート — デイリー技術深掘り 読み物</title><meta name="description" content="クライアントもサーバも同じ Dart で書ける時代の入口。HTTPS / callable 関数と Dart Admin SDK が初期提供され、Firebase CLI が手元でコンパイルして Cloud Run functions へ直接デプロイする。"><meta name="theme-color" content="#0277bd"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-09-flutter/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="フルスタック Dart へ — Cloud Functions for Firebase に experimental の Dart サポート — デイリー技術深掘り 読み物"><meta property="og:description" content="クライアントもサーバも同じ Dart で書ける時代の入口。HTTPS / callable 関数と Dart Admin SDK が初期提供され、Firebase CLI が手元でコンパイルして Cloud Run functions へ直接デプロイする。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-09-flutter/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #29b6f6, #01579b)"> <span class="glyph" aria-hidden="true">◆</span> <div class="kicker">Flutter</div> <h1>フルスタック Dart へ — Cloud Functions for Firebase に experimental の Dart サポート</h1> <p class="lede">クライアントもサーバも同じ Dart で書ける時代の入口。HTTPS / callable 関数と Dart Admin SDK が初期提供され、Firebase CLI が手元でコンパイルして Cloud Run functions へ直接デプロイする。</p> <div class="meta"> <span>📅 2026年7月9日</span> <span>⏱ 約3分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#0277bd"> <div> <article class="prose" data-has-mermaid="0"><p>Flutter 開発の長年の割り切りは「クライアントは Dart、バックエンドは TypeScript / Go / Python」だった。結果として2つのコードベースを保守し、ビジネスロジックとデータモデルを二重管理することになる。Cloud Next で発表された <b>Cloud Functions for Firebase の experimental な Dart サポート</b>は、この分断を解消する一歩で、Flutter / Dart / Firebase を通してクライアントもサーバも<b>同一言語・同一ツールチェーン</b>で書けるようになる。</p>
+<p>初期リリースがサポートするのは <b>HTTPS functions と callable functions</b>。合わせて公開された <b>experimental Dart Admin SDK</b> は Cloud Functions 内で自動初期化されるため、追加設定なしで Firestore の読み書きができる。デプロイの仕組みも面白く、ソースを Cloud Build に上げるのではなく、<b>Firebase CLI が開発マシン上で Dart をコンパイルし、生成バイナリを Cloud Run functions に直接アップロード</b>する。AI エージェント基盤の Genkit Dart と組めば、AI ロジックもサーバ側 Dart に載せられる。</p>
+<figure class='fig'><svg viewBox='0 0 620 240' xmlns='http://www.w3.org/2000/svg'><text x='155' y='26' text-anchor='middle' font-size='13' font-weight='bold' fill='#01579b'>従来</text><rect x='30' y='40' width='250' height='60' rx='10' fill='#e1f5fe' stroke='#0277bd'></rect><text x='155' y='65' text-anchor='middle' font-size='12' fill='#333'>クライアント: Flutter / Dart</text><text x='155' y='85' text-anchor='middle' font-size='12' fill='#333'>バックエンド: TS / Go / Python</text><rect x='30' y='112' width='250' height='44' rx='10' fill='#fff' stroke='#e57373'></rect><text x='155' y='131' text-anchor='middle' font-size='11.5' fill='#c62828'>コードベース×2</text><text x='155' y='148' text-anchor='middle' font-size='11.5' fill='#c62828'>ロジック・モデルの二重管理</text><text x='465' y='26' text-anchor='middle' font-size='13' font-weight='bold' fill='#01579b'>Dart functions（experimental）</text><rect x='340' y='40' width='250' height='60' rx='10' fill='#e1f5fe' stroke='#0277bd'></rect><text x='465' y='65' text-anchor='middle' font-size='12' fill='#333'>クライアントもサーバも Dart</text><text x='465' y='85' text-anchor='middle' font-size='12' fill='#333'>HTTPS / callable ＋ Admin SDK</text><rect x='340' y='112' width='250' height='44' rx='10' fill='#fff' stroke='#0277bd'></rect><text x='465' y='131' text-anchor='middle' font-size='11.5' fill='#333'>CLI が手元で compile →</text><text x='465' y='148' text-anchor='middle' font-size='11.5' fill='#333'>Cloud Run functions へ直接デプロイ</text><rect x='30' y='176' width='560' height='44' rx='10' fill='#fffde7' stroke='#f9a825'></rect><text x='310' y='195' text-anchor='middle' font-size='11.5' fill='#795548'>注意: experimental — Node.js functions の一部機能に未対応 / Firebase Console に Dart functions が表示されない</text><text x='310' y='212' text-anchor='middle' font-size='11.5' fill='#795548'>本番採用は様子見が妥当</text></svg><figcaption>図1：フルスタック Dart の前後比較と現時点の制約</figcaption></figure>
+<p>言語側の足場も揃ってきた。安定運用は <b>Flutter 3.44.0 / Dart 3.12.2</b> で、Dart 3.12 は private named parameters（先頭アンダースコアの自動省略）や dot shorthands（.value 省略記法）に加え、primary constructors を experimental サポート。次の安定版は 2026年8月予定（年4回リリース）だ。クライアント側の今日の要点としては、jank 診断では setState で width / height を変えて再レイアウトを誘発するより Transform / Opacity の純グラフィカル変換へ寄せること、Impeller では Platform View / Texture が Skia より遅くなる報告（issue #180831）があるため該当画面は実機計測すること、の2つを覚えておきたい。</p>
+<p>自分が試すなら、既存アプリの「クライアントから叩く小さな検証 API」を callable 関数1本で Dart 化し、Firestore の読み書きとデプロイ体験を確認するところから。モデル定義を共有パッケージに切り出せるかも見どころだ。注意点は experimental ステータスそのもので、予告なく変わる可能性があり、Firebase Console にまだ Dart functions が表示されない。本番ワークロードへの採用は時期尚早。</p>
+<p><b>ひとことまとめ:</b> 「Dart はクライアント言語」という前提が崩れ始めた。まずは callable 1本、遊びで踏むには十分な入口。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://firebase.blog/posts/2026/05/dart-functions-exp/" target="_blank" rel="noopener noreferrer"> Announcing Dart support in Cloud Functions </a> </li><li> <a href="https://firebase.google.com/docs/functions/start-dart" target="_blank" rel="noopener noreferrer"> Get started with the experimental Dart SDK </a> </li><li> <a href="https://dart.dev/blog/announcing-dart-3-12" target="_blank" rel="noopener noreferrer"> Announcing Dart 3.12 </a> </li><li> <a href="https://github.com/flutter/flutter/issues/180831" target="_blank" rel="noopener noreferrer"> Impeller: Platform View / Texture 劣化 (#180831) </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

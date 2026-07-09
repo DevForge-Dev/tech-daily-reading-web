@@ -1,0 +1,74 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Server Actions × useActionState — App Router フォームの定石を固める — デイリー技術深掘り 読み物</title><meta name="description" content="React 19 で安定した useActionState にフォーム状態を畳み込み、JS 未ロードでも動くプログレッシブエンハンスメントと「throw しない型付きエラー契約」で堅牢なフォームを組む。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-09-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Server Actions × useActionState — App Router フォームの定石を固める — デイリー技術深掘り 読み物"><meta property="og:description" content="React 19 で安定した useActionState にフォーム状態を畳み込み、JS 未ロードでも動くプログレッシブエンハンスメントと「throw しない型付きエラー契約」で堅牢なフォームを組む。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-09-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>Server Actions × useActionState — App Router フォームの定石を固める</h1> <p class="lede">React 19 で安定した useActionState にフォーム状態を畳み込み、JS 未ロードでも動くプログレッシブエンハンスメントと「throw しない型付きエラー契約」で堅牢なフォームを組む。</p> <div class="meta"> <span>📅 2026年7月9日</span> <span>⏱ 約3分</span> <span>🔗 出典 5 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="1"><p>App Router で「フォーム送信 → サーバーで検証・書き込み → 結果を UI に返す」を書くと、useState で loading / error / success を手管理する定型コードが積み上がる。React 19 で安定化した <code>useActionState</code> はこれを1フックに畳み込み、しかも <b>JS が未ロードでも素の HTML フォームとして送信できる</b>（プログレッシブエンハンスメント）。変更系の定石として押さえておきたいパターンだ。</p>
+<p>形は <code>const [state, formAction, isPending] = useActionState(action, initialState, permalink?)</code>。action は <code>(previousState, formData) =&gt; newState</code> のシグネチャで、返り値がそのまま次の state になる。第3要素の <code>isPending</code> で送信中が判定でき、送信ボタンの disabled 程度なら <code>useFormStatus</code> なしで書ける。要点は <code>&lt;form action={formAction}&gt;</code> と<b>関数を直接渡す</b>こと（onSubmit ではない）。これで JS 読込前でも POST が飛ぶ。</p>
+<figure class='fig'><pre class='mermaid'>flowchart TD
+  A["form action=formAction で送信"] --> B["Server Action: 認証チェック"]
+  B --> C["Zod で入力検証"]
+  C -->|"失敗"| D["fieldErrors と values を返す"]
+  D --> E["useActionState が state を描画・入力値を復元"]
+  C -->|"成功"| F["DB 書き込み"]
+  F --> G["revalidatePath / revalidateTag"]
+  G --> H["ok:true を返しトースト表示"]</pre><figcaption>図1：型付きエラー契約のフォームフロー — throw せず常に同じ shape を返す</figcaption></figure>
+<p>設計の核は<b>型付きエラー契約</b>。Server Action は実体としては公開 POST エンドポイントなので、例外を投げるのではなく、毎回同じ形のオブジェクト（例: <code>{ ok: false, fieldErrors, values }</code>）を返す。<code>fieldErrors</code> でインライン表示し、<code>values</code> で失敗時に入力値を復元する。JS なしの送信ではクライアント state が残らないため、値の復元はサーバーから返すのが確実だ。サーバー側の手順は「① 認証（DAL の verifySession 等）→ ② Zod で検証 → ③ 書き込み → ④ <code>revalidatePath</code> / <code>revalidateTag</code>」で固定する。</p>
+<pre><code>const [state, formAction, isPending] = useActionState(createNote, initial);
+// action 側: (prev, formData) =&gt; Promise&lt;FormState&gt;
+// 失敗: { ok:false, fieldErrors, values } / 成功: { ok:true, message }</code></pre>
+<p>落とし穴は3つ。<code>useFormStatus</code> は<b>親の form から状態を拾う</b>ため、form を描画するコンポーネント自身では動かず、SubmitButton を子に切り出す必要がある。<code>useOptimistic</code> の自動ロールバックは <b>async 関数が throw したときだけ</b>働くので、削除のようにロールバックしたい操作は逆に throw させる設計にする（インライン表示したい操作は throw しない、という使い分け）。そして Next.js 16 はインラインクロージャ変数を転送時に暗号化するが、<b>これは認可モデルではない</b>。'use server' を付けても認可は付与されず、毎回の入力検証・認証・権限チェックは自前で行う。<code>.bind()</code> で ID を渡す場合は prevState の後ろに引数がずれる点（React #31356）にも注意。</p>
+<p>自分が試すなら、既存の「useState + fetch」のフォームを1つ選んで useActionState + 型付き契約に置き換え、JS を無効にしても送信・エラー表示・値復元が成立するか確認する。<b>ひとことまとめ:</b> フォームは「throw しない契約 + form action 直渡し」。この2点だけで堅牢さと PE が同時に手に入る。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://react.dev/reference/react/useActionState" target="_blank" rel="noopener noreferrer"> useActionState – React 公式 </a> </li><li> <a href="https://react.dev/reference/react-dom/hooks/useFormStatus" target="_blank" rel="noopener noreferrer"> useFormStatus – React 公式 </a> </li><li> <a href="https://nextjs.org/docs/app/guides/server-actions" target="_blank" rel="noopener noreferrer"> Server Actions – Next.js 公式 </a> </li><li> <a href="https://nextjs.org/docs/app/guides/forms" target="_blank" rel="noopener noreferrer"> Forms with Server Actions – Next.js 公式 </a> </li><li> <a href="https://github.com/facebook/react/issues/31356" target="_blank" rel="noopener noreferrer"> facebook/react #31356 </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
