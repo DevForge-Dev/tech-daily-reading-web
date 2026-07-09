@@ -1,12 +1,205 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-07-06T04:47:39.009Z",
+  "generatedAt": "2026-07-08T04:50:06.066Z",
   "topics": [
     "Claude Code",
     "Next.js",
-    "Flutter"
+    "Flutter",
+    "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-07-08-claude-code",
+      "date": "2026-07-08",
+      "topic": "Claude Code",
+      "title": "Sonnet 5 が既定に、v2.1.202 は“動的ワークフローの規模”を手綱に",
+      "lede": "7/8のClaude Codeは二本立て。既定モデルが Sonnet 5（ネイティブ1Mトークン、8/31まで$2/$10）へ切り替わり、長大コードベースをサブエージェント無しで一気に読める余地が広がった。もう一方の v2.1.202 は /config に「Dynamic workflow size」を追加し、Claudeが生成するエージェント数を small/medium/large で制御可能に。OTel属性 workflow.run_id/name で1回の実行を再構成できるようにもなった。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>動的ワークフローで数十〜数百のサブエージェントを一括ファンアウトできるようになった反面、「勝手に大量のエージェントが立ち上がってトークンと時間を食う」という制御性の不安が残っていた。7/8のアップデートは、<b>モデルの地力を底上げ（Sonnet 5）</b>しつつ、<b>ワークフローの規模と可観測性を人が握れるようにする（v2.1.202）</b>という、攻めと手綱の両面を同時に入れてきた。</p>\n<h4>何が新しいか</h4>\n<p>公式リリースノートによると、<b>Claude Sonnet 5</b> が Claude Code の<b>既定モデル</b>になった。ネイティブで<b>100万トークン</b>のコンテキストを持ち、<b>8月31日まで $2/$10 per Mtok</b> のプロモ価格、<b>v2.1.197</b> 以降でアクセスできる。Sonnet 4.6比で推論・ツール利用・コーディングが大きく伸び、同社史上もっともエージェント的なSonnetと位置づけられる。もう一方の <b>v2.1.202</b>（計18件）は <code>/config</code> に <b>「Dynamic workflow size」</b> を追加し、動的ワークフロー時に生成するエージェント数を <b>small / medium / large</b> の規模感で制御できる。さらにワークフロー生成エージェントのテレメトリに <b>workflow.run_id</b> と <b>workflow.name</b> のOpenTelemetry属性が付き、OTelデータから1回の実行の活動を丸ごと再構成できる。アイドルなバックグラウンドシェルがメモリ圧迫時に自動回収されるようにもなった。</p>\n<figure class='fig'><svg viewBox='0 0 600 190' xmlns='http://www.w3.org/2000/svg'>\n  <rect x='0' y='0' width='600' height='190' fill='#f3efff' rx='8'/>\n  <text x='16' y='26' font-size='13' fill='#5840d6' font-weight='700'>7/8の二本立て：地力と手綱</text>\n  <rect x='16' y='40' width='270' height='134' fill='#ffffff' stroke='#b98bff' rx='6'/>\n  <text x='30' y='62' font-size='12' fill='#7b3fe4' font-weight='700'>Sonnet 5（既定モデル）</text>\n  <text x='30' y='86' font-size='12' fill='#1c1c1e'>ネイティブ 1M トークン</text>\n  <text x='30' y='108' font-size='12' fill='#1c1c1e'>8/31まで $2/$10 per Mtok</text>\n  <text x='30' y='130' font-size='12' fill='#1c1c1e'>v2.1.197 以降でアクセス</text>\n  <text x='30' y='154' font-size='11' fill='#6b6b70'>長大コードを一括読み込み</text>\n  <rect x='314' y='40' width='270' height='134' fill='#ffffff' stroke='#7b3fe4' rx='6'/>\n  <text x='328' y='62' font-size='12' fill='#7b3fe4' font-weight='700'>v2.1.202（規模と可観測性）</text>\n  <text x='328' y='86' font-size='12' fill='#1c1c1e'>Dynamic workflow size 追加</text>\n  <text x='328' y='108' font-size='12' fill='#1c1c1e'>small / medium / large 制御</text>\n  <text x='328' y='130' font-size='12' fill='#1c1c1e'>OTel: workflow.run_id / name</text>\n  <text x='328' y='154' font-size='11' fill='#6b6b70'>1実行を丸ごと再構成</text>\n</svg><figcaption>図1：モデルの地力（左）とワークフロー制御（右）を同時に強化。</figcaption></figure>\n<h4>仕組みのポイント</h4>\n<p>1Mコンテキストの効き所は「サブエージェントに探索を分けなくても、メインの文脈に必要なファイル群をまとめて載せられる」点にある。読み込み設計をシンプルにでき、要約の往復で情報が痩せるリスクを減らせる。一方 Dynamic workflow size は、リードエージェントがファンアウトする規模を先に宣言する発想だ。small なら少数精鋭で速く安く、large なら網羅性重視で広く展開、という具合に<b>コストと網羅性のトレードオフを事前に選ぶ</b>。OTel属性はその実行を後から監査するための背骨になる。</p>\n<pre><code># /config で規模を指定するイメージ\nDynamic workflow size: medium   # small / medium / large\n# 生成エージェントのテレメトリに付く属性\nworkflow.run_id = \"wf_2026...\"\nworkflow.name   = \"refactor-auth\"</code></pre>\n<h4>実務での使いどころ・自分が試すなら</h4>\n<p>まず既定を Sonnet 5 のまま、大きめのリポジトリを<b>サブエージェント無し</b>で読ませ、1Mコンテキストでどこまで一括理解できるか感触を取る。動的ワークフローを使う定型（横断リファクタ、監査スキャン）では規模を <b>small→medium</b> と上げてコスト差を比較。OTelを流している環境なら workflow.run_id でGrafana等にワークフロー単位のダッシュボードを作ると、暴走の早期検知に効く。</p>\n<h4>注意点・落とし穴</h4>\n<blockquote>1Mコンテキストは“載る”からといって“毎回全部載せる”のは高くつく。必要な範囲を選ぶ設計は引き続き重要だ。プロモ価格は8/31まで——恒常価格でのコスト試算も並行して持っておくと予算がぶれない。large を安易に選ぶとエージェント数が膨らみトークンを消費するため、まずは medium 基準が無難。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>既定はSonnet 5・ネイティブ1M。ワークフローは <code>/config</code> で規模を選び、OTelで実行を追える。地力が上がった今こそ「載せすぎない」読み込み設計と規模の選択が効く。</p>",
+      "sources": [
+        {
+          "title": "Anthropic: Claude Code release notes",
+          "url": "https://support.claude.com/en/articles/12138966-release-notes"
+        },
+        {
+          "title": "Releasebot: Claude Code updates (v2.1.202)",
+          "url": "https://releasebot.io/updates/anthropic/claude-code"
+        },
+        {
+          "title": "Claude Code changelog",
+          "url": "https://code.claude.com/docs/en/changelog"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-08-nextjs",
+      "date": "2026-07-08",
+      "topic": "Next.js",
+      "title": "宣言的ルート遷移 — React <ViewTransition> × Next.js experimental.viewTransition",
+      "lede": "これまでMotion等が手作業でやっていた「mount/unmount管理・要素の位置追跡・タイミング調停」を、React公式の <ViewTransition> が宣言的に置き換える。next.config で experimental.viewTransition:true を立て、連続させたい要素に同じ name を付けるだけ。Next.jsのルート遷移は自動でTransition扱いになるので startViewTransition を自分で呼ぶ必要がない。enter/exit/update/share の4発火タイプと落とし穴を押さえる。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>6/15の回では「素のView Transitions API」「next-view-transitions」「React実験API」の3方式を俯瞰した。今日はそのうち<b>React公式の <code>&lt;ViewTransition&gt;</code> コンポーネント</b>を、<b>Next.js 16.2</b> の <code>experimental.viewTransition</code> と組み合わせる方式に絞る。従来ライブラリが担っていたライフサイクル管理や位置追跡を、<b>「連続させたい要素に <code>name</code> を付ける」だけ</b>の宣言に落とせるのが要点だ。</p>\n<h4>何が新しいか</h4>\n<p>有効化は <code>next.config.ts</code> に <code>experimental: { viewTransition: true }</code> を書くだけ。<code>&lt;ViewTransition&gt;</code> は<b>React の Canary / Experimental 限定</b>APIだが、<b>App Router は React canary を使う</b>ため <code>react@canary</code> を自前で入れる必要はなく <code>import { ViewTransition } from 'react'</code> で使える。主要3ブラウザすべてが View Transitions API 対応で、<b>未対応でもアプリは通常動作しアニメが付かないだけ</b>（graceful degradation）。重要なのは<b>発火条件</b>で、素の <code>setState</code> では発火せず、<b>Transition・Suspense・useDeferredValue</b> に包まれた更新でのみアクティブ化する。Next.jsのルート遷移はこれに該当するので<b>遷移では自動発火</b>する。</p>\n<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg'>\n  <rect x='0' y='0' width='600' height='200' fill='#eef4ff' rx='8'/>\n  <text x='16' y='26' font-size='13' fill='#1f6feb' font-weight='700'>&lt;ViewTransition&gt; の4つの発火タイプ</text>\n  <rect x='16' y='40' width='276' height='68' fill='#ffffff' stroke='#74a8ff' rx='6'/>\n  <text x='28' y='62' font-size='12' fill='#1f6feb' font-weight='700'>enter / exit</text>\n  <text x='28' y='82' font-size='11.5' fill='#1c1c1e'>最初に挿入/削除された境界</text>\n  <text x='28' y='100' font-size='11' fill='#6b6b70'>先頭配置のときだけ発火</text>\n  <rect x='308' y='40' width='276' height='68' fill='#ffffff' stroke='#74a8ff' rx='6'/>\n  <text x='320' y='62' font-size='12' fill='#1f6feb' font-weight='700'>update</text>\n  <text x='320' y='82' font-size='11.5' fill='#1c1c1e'>内部変異や兄弟影響でサイズ/位置変化</text>\n  <rect x='16' y='118' width='568' height='68' fill='#ffffff' stroke='#1f6feb' rx='6'/>\n  <text x='28' y='140' font-size='12' fill='#1f6feb' font-weight='700'>share（最優先）</text>\n  <text x='28' y='160' font-size='11.5' fill='#1c1c1e'>削除ツリーと挿入ツリーの同名が対 → 旧→新へモーフ</text>\n  <text x='28' y='178' font-size='11' fill='#6b6b70'>share は enter/exit より優先される</text>\n</svg><figcaption>図1：4発火タイプの関係。共有要素モーフ（share）が最優先。</figcaption></figure>\n<h4>仕組みのポイント</h4>\n<p>Reactは最寄りDOMノードのインラインスタイルに <code>view-transition-name</code> を（アニメ参加の瞬間だけ）付与し、<b><code>startViewTransition</code> を自動で呼ぶ</b>。だから<b>自前で <code>startViewTransition</code> を走らせると割り込んで中断する</b>——View TransitionはReact側に一元化する。カスタマイズは <code>name</code> 直書きの疑似セレクタではなく<b>View Transition Class</b>推奨で、<code>enter</code>/<code>exit</code>/<code>update</code>/<code>share</code>/<code>default</code> 各propにクラス名を渡すとReactが子要素へそのクラスを付ける。</p>\n<pre><code>// 共有要素モーフ：グリッドと詳細で同じ name\n&lt;ViewTransition name={`photo-${id}`}&gt;&lt;Image .../&gt;&lt;/ViewTransition&gt;\n\n/* CSS はクラスで受ける */\n::view-transition-group(.slide-in) { /* ... */ }</code></pre>\n<h4>実務での使いどころ</h4>\n<p>サムネ→ヒーロー画像のモーフ（同一 <code>name</code>）、Suspenseスケルトン→本体のリビール（fallbackに <code>exit</code>・本体に <code>enter</code>・<code>default=\"none\"</code>）、<code>&lt;Link transitionTypes={['nav-forward']}&gt;</code> による方向付きスライド、同一ルート内の <code>key</code> 差し替えクロスフェード——の4パターンが定石。まずは共有要素モーフから試すのが費用対効果が高い。</p>\n<h4>注意点・落とし穴</h4>\n<blockquote>enter/exitは<b>先頭配置のときだけ</b>発火（上に&lt;div&gt;があると起きない）。<b>name はアプリ全体で同時に1つだけ</b>——リストで同名を量産するとエラーになるため <code>item-${id}</code> で一意化する。<b>戻る/進む（popstate）はView Transitionをスキップ</b>するので方向スライドは戻るボタンでは鳴らない。<b>prefers-reduced-motion はReactが自動で切らない</b>——CSSで明示的に無効化する必要がある。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>フラグを立て、連続させたい要素に <code>name</code> を付け、カスタムは View Transition Class で。<code>startViewTransition</code> はReactに任せ、name一意化・先頭配置・reduced-motionだけ手当てすれば、宣言的にルート遷移が動く。</p>",
+      "sources": [
+        {
+          "title": "React: <ViewTransition>",
+          "url": "https://react.dev/reference/react/ViewTransition"
+        },
+        {
+          "title": "Next.js Guides: Designing view transitions",
+          "url": "https://nextjs.org/docs/app/guides/view-transitions"
+        },
+        {
+          "title": "Next.js config: viewTransition",
+          "url": "https://nextjs.org/docs/app/api-reference/config/next-config-js/viewTransition"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-08-flutter",
+      "date": "2026-07-08",
+      "topic": "Flutter",
+      "title": "AI-Native な開発ループ — Agentic Hot Reload と Genkit Dart",
+      "lede": "2026のFlutterは AI/エージェント連携を開発ループの中核へ。目玉の Agentic Hot Reload は Dart & Flutter MCP Server を使い、エージェントがUIを書き換えるたびに手動設定なしで自動ホットリロードする。あわせて Genkit Dart がOSSで登場し、Gemini/Anthropic/OpenAI を統一APIで扱えるフルスタックAIアプリを any platform で構築できる。安定運用は Flutter 3.44.0 / Dart 3.12.2、Impeller が既定レンダラ。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>2026のFlutterは、コーディングエージェントを「補助」ではなく<b>開発ループの中核</b>に据える方向へ舵を切った。エージェントがUIコードを書いても、反映のたびに人がホットリロードを押していてはflowが途切れる。今日の焦点 <b>Agentic Hot Reload</b> は、まさにこの摩擦を消すために設計されている。</p>\n<h4>何が新しいか</h4>\n<p><b>Agentic Hot Reload</b> は <b>Dart &amp; Flutter MCP Server</b> を使い、<b>手動設定なしで自動ホットリロード</b>する。エージェントがUIを書き換えるたびに人手を介さず反映され、開発者とエージェントの両方をflowに保つ。あわせて <b>Genkit Dart</b> がOSSで登場——<b>フルスタック・AI駆動のエージェント型Dart/Flutterアプリ</b>を any platform で構築でき、モデル戦争に左右されず <b>Gemini/Anthropic/OpenAI</b> 系を統一APIで扱える。AIロジックは <code>genkit_shelf</code> でUI非依存のDartバックエンドへ退避でき、<b>APIキーをクライアントから外せる</b>。クライアント側の <b>GenUI SDK</b> は <b>A2UI（Agent-to-UI）プロトコル</b>上で、許可済みウィジェットカタログからランタイムに画面を組み立てる（experimental/alpha）。言語は <b>Dart 3.12.2</b> で <b>private named parameters</b> と <b>dot shorthands</b>（<code>.value</code> 省略）、<b>primary constructors</b> を experimental サポート。</p>\n<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg'>\n  <rect x='0' y='0' width='600' height='210' fill='#e8f6fd' rx='8'/>\n  <text x='16' y='26' font-size='13' fill='#0277bd' font-weight='700'>AI-Native な開発ループの構図</text>\n  <rect x='20' y='44' width='150' height='58' fill='#ffffff' stroke='#56c5f5' rx='6'/>\n  <text x='95' y='70' font-size='12' fill='#0277bd' font-weight='700' text-anchor='middle'>エージェント</text>\n  <text x='95' y='90' font-size='10.5' fill='#6b6b70' text-anchor='middle'>UIコードを書く</text>\n  <rect x='225' y='44' width='150' height='58' fill='#ffffff' stroke='#56c5f5' rx='6'/>\n  <text x='300' y='66' font-size='12' fill='#0277bd' font-weight='700' text-anchor='middle'>MCP Server</text>\n  <text x='300' y='84' font-size='10.5' fill='#6b6b70' text-anchor='middle'>Agentic Hot Reload</text>\n  <text x='300' y='98' font-size='10' fill='#6b6b70' text-anchor='middle'>手動設定なしで反映</text>\n  <rect x='430' y='44' width='150' height='58' fill='#ffffff' stroke='#0277bd' rx='6'/>\n  <text x='505' y='70' font-size='12' fill='#0277bd' font-weight='700' text-anchor='middle'>実機 / エミュ</text>\n  <text x='505' y='90' font-size='10.5' fill='#6b6b70' text-anchor='middle'>即座にUI更新</text>\n  <line x1='170' y1='73' x2='223' y2='73' stroke='#0277bd' stroke-width='2' marker-end='url(#a)'/>\n  <line x1='375' y1='73' x2='428' y2='73' stroke='#0277bd' stroke-width='2' marker-end='url(#a)'/>\n  <defs><marker id='a' markerWidth='8' markerHeight='8' refX='6' refY='3' orient='auto'><path d='M0,0 L6,3 L0,6 z' fill='#0277bd'/></marker></defs>\n  <rect x='20' y='120' width='560' height='72' fill='#ffffff' stroke='#56c5f5' rx='6'/>\n  <text x='34' y='142' font-size='12' fill='#0277bd' font-weight='700'>Genkit Dart（サーバ側）</text>\n  <text x='34' y='163' font-size='11' fill='#1c1c1e'>Gemini / Anthropic / OpenAI を統一APIで — genkit_shelf でUI非依存に退避</text>\n  <text x='34' y='183' font-size='11' fill='#6b6b70'>APIキーをクライアントから外せる／GenUI SDK は A2UI で画面を動的生成</text>\n</svg><figcaption>図1：エージェント→MCP→実機の自動反映と、Genkit Dart によるサーバ側AIロジック。</figcaption></figure>\n<h4>実務での使いどころ・自分が試すなら</h4>\n<p>まず Dart &amp; Flutter MCP Server を入れ、コーディングエージェントとつないで Agentic Hot Reload の反映速度を体感する。AI機能を持つアプリなら、推論ロジックを最初から <code>genkit_shelf</code> のDartバックエンドに置き、<b>APIキーをクライアントに埋めない</b>設計にしておくと後の監査が楽。状態管理は従来どおり<b>新規はRiverpod 3.x、大規模/監査はBloc 9.x</b>が基本線で、AI連携でもこの選定は変わらない。</p>\n<h4>注意点・落とし穴</h4>\n<blockquote>GenUI SDK と A2UI は<b>experimental/alpha</b>で本番投入は時期尚早。primary constructors も experimental フラグ段階。Impeller は既定だが Platform View / Texture を多用する画面は実機計測必須で、Rive等で描画差が出たら <code>--no-enable-impeller</code> で Skia にフォールバックして切り分ける。フレーム予算は 60fps=16ms / 120fps=8.3ms、最大の敵は依然として<b>不要な再ビルド</b>。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>エージェントが書いて即反映（Agentic Hot Reload）、AIロジックはGenkit Dartでサーバへ、鍵はクライアントから外す。安定運用は 3.44.0 / Dart 3.12.2・Impeller既定・状態管理はRiverpod/Blocの二択、が7/8の地図。</p>",
+      "sources": [
+        {
+          "title": "Flutter: What's new in the docs",
+          "url": "https://docs.flutter.dev/release/whats-new"
+        },
+        {
+          "title": "Announcing Dart 3.12",
+          "url": "https://dart.dev/blog/announcing-dart-3-12"
+        },
+        {
+          "title": "State of Flutter 2026",
+          "url": "https://devnewsletter.com/p/state-of-flutter-2026/"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-08-github-trending",
+      "date": "2026-07-08",
+      "topic": "GitHub Trending",
+      "title": "7/8の話題リポジトリ — エージェントに“スキル”を、UIに“エージェント対応”を、学びに“システム視点”を",
+      "lede": "本日の3本を貫くのは「AIエージェント時代に何を土台として整えるか」。エージェントへスキルを装備させる方法論（superpowers）、AIが扱いやすいデザインシステム（astryx）、そしてモデル単体でなくMLシステム全体を学ぶ教科書（cs249r_book）——道具・UI・知識の3層で“エージェント前提”への地ならしが進んでいる。",
+      "articleHtml": "<h4>今日の3本を貫くもの</h4>\n<p>本日のTrendingは、AIエージェントを実務に組み込む前提での<b>土台づくり</b>という共通線で読める。エージェントに<b>能力（スキル）</b>を与える枠組み、エージェントが扱いやすい<b>UIの器</b>、そしてモデルではなく<b>システム全体</b>を理解するための<b>知識</b>——道具・UI・学びの3方向から地ならしが進む。それぞれ「何を解決しようとしているか」「何を提供するか」で見ていく。</p>\n<figure class='fig'><svg viewBox='0 0 600 220' xmlns='http://www.w3.org/2000/svg'>\n  <rect x='0' y='0' width='600' height='220' fill='#eefcf1' rx='8'/>\n  <text x='16' y='26' font-size='13' fill='#1a7f37' font-weight='700'>リポジトリ × 解決したい課題 / 提供する機能</text>\n  <line x1='210' y1='36' x2='210' y2='210' stroke='#bfe6c8' stroke-width='1'/>\n  <line x1='405' y1='36' x2='405' y2='210' stroke='#bfe6c8' stroke-width='1'/>\n  <text x='24' y='52' font-size='11' fill='#6b6b70'>リポジトリ</text>\n  <text x='218' y='52' font-size='11' fill='#6b6b70'>解決したい課題</text>\n  <text x='413' y='52' font-size='11' fill='#6b6b70'>提供する機能</text>\n  <rect x='16' y='60' width='568' height='48' fill='#ffffff' stroke='#3fb950' rx='6'/>\n  <text x='24' y='80' font-size='11.5' fill='#1a7f37' font-weight='700'>obra/superpowers</text>\n  <text x='24' y='98' font-size='10' fill='#6b6b70'>Shell ⭐245.4k</text>\n  <text x='218' y='88' font-size='10.5' fill='#1c1c1e'>エージェントに再現性ある能力を</text>\n  <text x='413' y='88' font-size='10.5' fill='#1c1c1e'>再利用スキル＋開発手法を一体提供</text>\n  <rect x='16' y='114' width='568' height='48' fill='#ffffff' stroke='#3fb950' rx='6'/>\n  <text x='24' y='134' font-size='11.5' fill='#1a7f37' font-weight='700'>facebook/astryx</text>\n  <text x='24' y='152' font-size='10' fill='#6b6b70'>TypeScript ⭐4.4k</text>\n  <text x='218' y='142' font-size='10.5' fill='#1c1c1e'>AIが扱いにくいUIの器を刷新</text>\n  <text x='413' y='142' font-size='10.5' fill='#1c1c1e'>agent ready なデザインシステム</text>\n  <rect x='16' y='168' width='568' height='40' fill='#ffffff' stroke='#3fb950' rx='6'/>\n  <text x='24' y='186' font-size='11.5' fill='#1a7f37' font-weight='700'>harvard-edge/cs249r_book</text>\n  <text x='24' y='202' font-size='10' fill='#6b6b70'>Python ⭐26.1k</text>\n  <text x='218' y='192' font-size='10.5' fill='#1c1c1e'>モデル偏重の学びを是正</text>\n  <text x='413' y='192' font-size='10.5' fill='#1c1c1e'>MLシステムの体系的教科書</text>\n</svg><figcaption>図1：3本の「課題→機能」対応。道具・UI・知識の3層。</figcaption></figure>\n<h4>obra/superpowers（Shell・⭐245.4k）</h4>\n<p><b>解決したい課題：</b>コーディングエージェントは強力だが、都度その場のプロンプトに頼ると<b>再現性がなく、ノウハウが蓄積しない</b>。<b>提供する機能：</b>エージェントに<b>再利用可能な「スキル」を装備</b>させ、開発メソドロジーとツールを一体で提供する枠組み。Claude Code などのエージェントと組み合わせやすい。本日約1,200スターを獲得し、すでに24万超という規模から、AIエージェント開発の実践知として拡散していることがうかがえる。</p>\n<h4>facebook/astryx（TypeScript・⭐4.4k）</h4>\n<p><b>解決したい課題：</b>既存のUIコンポーネント群は人間の手作業前提で、<b>エージェントが安全にカスタマイズ・生成しづらい</b>。<b>提供する機能：</b>完全カスタマイズ可能で <b>“agent ready”</b> を掲げる、Meta製OSSのデザインシステム。AIによるUI構築の生産性向上を狙う。大手Metaが公開した信頼性と、エージェント対応という新規性が本日900超スターの急伸を後押ししている。</p>\n<h4>harvard-edge/cs249r_book（Python・⭐26.1k）</h4>\n<p><b>解決したい課題：</b>学習リソースはモデル単体に偏りがちで、<b>データ・運用・システム設計まで含む全体像</b>が学びにくい。<b>提供する機能：</b>ハーバード発、<b>機械学習システム（ML Systems）</b>を体系的に学べるオープンな教科書。モデル運用やシステム設計まで幅広くカバーする。大学発の無料教材という信頼性と網羅性から、本日約800スターを得て教育リソースとして広がっている。</p>\n<h4>まとめ — 自分が試すなら</h4>\n<p>実務のエージェント運用に直結するのは <b>superpowers</b>——手元のClaude Codeにスキルとして落とし込めば、日々の定型を再現性ある形で任せられる。UIの器を試すなら astryx、腰を据えて設計力を上げるなら cs249r_book を読み物として積む、という三段構えが今日の収穫だ。</p>",
+      "sources": [
+        {
+          "title": "obra/superpowers",
+          "url": "https://github.com/obra/superpowers"
+        },
+        {
+          "title": "facebook/astryx",
+          "url": "https://github.com/facebook/astryx"
+        },
+        {
+          "title": "harvard-edge/cs249r_book",
+          "url": "https://github.com/harvard-edge/cs249r_book"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-07-claude-code",
+      "date": "2026-07-07",
+      "topic": "Claude Code",
+      "title": "既定は「Manual」へ — v2.1.200の権限転換とArtifacts、拡張4層の地図",
+      "lede": "7/7のClaude Codeは“主導権をユーザーへ戻す”アップデート。v2.1.200で既定の権限モードがManualになり、AskUserQuestionは勝手に進まなくなった。あわせてセッション成果をライブWebページ化するArtifactsが登場し、拡張はhooks/subagents/skills/slashの4層で整理が定着。採用面では日次インストール29M・公開コミットの約4%と“ChatGPTの瞬間”が続く。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>ここ数日のClaude Codeは自律実行の速さを競ってきたが、7/7の焦点はむしろ逆で、<b>「重要な判断は人に戻す」</b>方向への調整だ。エージェントが長時間・並列で動くほど、意図しない実行や無言の続行が事故につながる。<b>v2.1.200</b>はその安全側の既定変更をまとめて入れてきた。</p>\n<h4>何が新しいか</h4>\n<p>Releasebotによると、<b>v2.1.200</b>では CLI・<code>--help</code>・VS Code・JetBrains を通じた<b>既定の権限モードが「Manual」</b>になった。<code>--permission-mode manual</code> と <code>\"defaultMode\": \"manual\"</code> はいずれも従来の <code>\"default\"</code> のエイリアスとして受理される（Manualラベルの表示はv2.1.200以降が必要）。さらに<b>AskUserQuestionのダイアログが既定で自動継続しなくなり</b>（<code>askUserQuestionTimeout</code>が<code>\"never\"</code>）、放置しても勝手に選択が進まない。アイドルで進めたい人は <code>/config</code> からタイムアウトへ<b>オプトイン</b>する。加えてバックグラウンドセッションの安定化、MCPサーバー信頼性、サンドボックスのネットワーク許可ダイアログ改善も含む。</p>\n<figure class='fig'><svg viewBox='0 0 600 170' xmlns='http://www.w3.org/2000/svg'>\n  <rect x='0' y='0' width='600' height='170' fill='#fff4ec' rx='8'/>\n  <text x='16' y='26' font-size='13' fill='#c2560f' font-weight='700'>v2.1.200：既定の“主導権”がユーザー側へ</text>\n  <rect x='16' y='40' width='270' height='110' fill='#ffffff' stroke='#e3a06d' rx='6'/>\n  <text x='30' y='62' font-size='12' fill='#6b6b70'>これまで（default）</text>\n  <text x='30' y='86' font-size='12' fill='#1c1c1e'>権限：自動寄りで実行</text>\n  <text x='30' y='108' font-size='12' fill='#1c1c1e'>AskUserQuestion：時間で自動継続</text>\n  <text x='30' y='130' font-size='11' fill='#6b6b70'>放置で選択が進むことがある</text>\n  <rect x='314' y='40' width='270' height='110' fill='#ffffff' stroke='#c2560f' rx='6'/>\n  <text x='328' y='62' font-size='12' fill='#c2560f' font-weight='700'>v2.1.200（Manual既定）</text>\n  <text x='328' y='86' font-size='12' fill='#1c1c1e'>権限：Manualで都度確認</text>\n  <text x='328' y='108' font-size='12' fill='#1c1c1e'>AskUserQuestion：自動継続しない</text>\n  <text x='328' y='130' font-size='11' fill='#6b6b70'>/config でアイドル継続にオプトイン</text>\n</svg><figcaption>図1：既定値が“確認優先”へ。無言の続行による事故を減らす調整。</figcaption></figure>\n<h4>もう一つの目玉：Artifacts</h4>\n<p>公式changelogによると、Claude Codeにセッションの作業内容を<b>ライブWebページにするArtifacts</b>が加わった。PRのウォークスルー、インシデント対応ページ、ダッシュボード、チェックリストなどを、使い捨てのログではなく<b>「開くたびに最新化される資産」</b>としてチームに共有できる。Team/Enterpriseでは<b>組織内限定の非公開共有とバージョン履歴</b>がベータで提供される。</p>\n<h4>拡張の地図（4層）</h4>\n<p>技術記事側は拡張機構の整理で一致している。<b>slashコマンド＝プロンプトの雛形</b>、<b>skill＝補助ファイルを伴う知識/プレイブック</b>（呼ばれるまで本文がロードされずコスト小）、<b>subagent＝隔離した並列ワーカー</b>、<b>hook＝コードでルールを強制</b>。Hooksは2026年に<b>全30種イベント・5種ハンドラー</b>（command/prompt/agent/http等）へ拡大し、設定は<b>管理者ポリシー&gt;プロジェクト&gt;ユーザー&gt;プラグイン/スキル</b>の優先順で評価される。<code>rm -rf</code>防御や<code>.env</code>保護は <code>.claude/settings.json</code> にコミット、個人実験は <code>settings.local.json</code> が定石だ。</p>\n<figure class='fig'><pre class='mermaid'>flowchart TD\n  A[\"プロンプト雛形\"] --> S[\"slash コマンド\"]\n  B[\"手順 規約 知識\"] --> SK[\"skill 呼ぶ時だけロード\"]\n  C[\"重い並列 隔離作業\"] --> SA[\"subagent 別文脈ワーカー\"]\n  D[\"ルールを強制したい\"] --> H[\"hook 30種イベント\"]</pre><figcaption>図2：やりたいことから拡張レイヤを引く早見。まずskillから始めると費用対効果が高い。</figcaption></figure>\n<h4>自分が試すなら</h4>\n<p>まず既定のManualで数タスク回し、確認が増えて煩わしい定型だけを許可ルールで緩める運用に切り替える。放置バッチには <code>/config</code> でアイドル継続をオプトイン。トラブル時は前バージョンで入った <code>--safe-mode</code> で全カスタマイズを無効化し、<code>/cd</code> でキャッシュを壊さず作業ディレクトリを移して切り分ける。</p>\n<h4>注意点</h4>\n<blockquote>Manual既定は安全側だが確認回数が増える。CIや無人実行では明示的に権限モードとタイムアウトを設定しないと止まりっぱなしになり得る。採用の勢いは続き、日次インストールは17.7M→29M、2026年2月時点で公開GitHubコミットの約4%（SemiAnalysisは年末20%超と予測）、Claude Code単体でラン・レート25億ドル超。国内でも楽天がリリースを24→5日、マネーフォワードはエンジニア約80%が利用と定着が進む。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>既定はManualへ、問いは勝手に進まない。成果はArtifactsで“生きたページ”に、拡張はslash/skill/subagent/hookの4層で組む——それが7/7時点の定石だ。</p>",
+      "sources": [
+        {
+          "title": "Releasebot: Claude Code updates (v2.1.200)",
+          "url": "https://releasebot.io/updates/anthropic/claude-code"
+        },
+        {
+          "title": "Claude Code changelog（Artifacts）",
+          "url": "https://code.claude.com/docs/en/changelog"
+        },
+        {
+          "title": "DevelopersIO: Claude Code v2.1.198 updates",
+          "url": "https://dev.classmethod.jp/en/articles/20260702-cc-updates-v2-1-198/"
+        },
+        {
+          "title": "ofox.ai: Hooks/Subagents/Skills complete guide",
+          "url": "https://ofox.ai/blog/claude-code-hooks-subagents-skills-complete-guide-2026/"
+        },
+        {
+          "title": "UncoverAlpha: Claude Code is having its ChatGPT moment",
+          "url": "https://www.uncoveralpha.com/p/anthropics-claude-code-is-having"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-07-nextjs",
+      "date": "2026-07-07",
+      "topic": "Next.js",
+      "title": "型を付けるとグラデが動く — @propertyでCSSだけの回転ボーダーと色溶け",
+      "lede": "カスタムプロパティは既定で“文字列”なので補間できず、--angleを0→360degにしてもカクッと切り替わるだけだった。@propertyで角度/色/数値と型を宣言すると、変数そのものが補間可能になり、conicの回転ボーダーや色停止の溶け込み、進捗リングが純CSSで書ける。Baseline 2024で主要3エンジン対応、RSCのまま use client 不要。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>CSS変数（<code>--x</code>）は既定で<b>すべて文字列扱い</b>のため、<code>--angle: 0deg → 360deg</code> と書いても<b>補間されず</b>カクッと切り替わるだけだった。グラデーションの角度や色停止は値の内部にあり、<code>transition</code>/<code>@keyframes</code>の対象にできない。だから従来は「要素ごと<code>transform: rotate()</code>」「JSでrAFループ」「重ね画像をクロスフェード」で回避していた。<b>@property</b>はこの前提を覆す。</p>\n<h4>何が新しいか</h4>\n<p><b>@property</b>はカスタムプロパティに<b>型（syntax）を宣言</b>する。型が付くと、ブラウザはその値を補間可能な<code>&lt;angle&gt;</code>/<code>&lt;color&gt;</code>/<code>&lt;number&gt;</code>等として理解し、<b>変数自体をアニメーションできる</b>。対応は<b>Baseline 2024（2024-07-09 Newly available）</b>で、Chrome/Edge 85+、Safari 16.4+、<b>Firefox 128+</b>と主要3エンジンが揃い、実務投入OKの段階だ。フォールバックは「動かない静的グラデ」に自然に縮退するので、加点演出に向く。</p>\n<figure class='fig'><svg viewBox='0 0 600 160' xmlns='http://www.w3.org/2000/svg'>\n  <rect x='0' y='0' width='600' height='160' fill='#eef4ff' rx='8'/>\n  <text x='16' y='26' font-size='13' fill='#1e4bb8' font-weight='700'>型を付けると“補間できる変数”になる</text>\n  <rect x='16' y='40' width='270' height='104' fill='#ffffff' stroke='#9db8ee' rx='6'/>\n  <text x='30' y='64' font-size='12' fill='#6b6b70'>型なし（既定：文字列）</text>\n  <text x='30' y='90' font-size='12' fill='#1c1c1e'>--angle: 0deg から 360deg</text>\n  <text x='30' y='114' font-size='12' fill='#c2560f'>補間されず一気に切替（カクッ）</text>\n  <rect x='314' y='40' width='270' height='104' fill='#ffffff' stroke='#1e4bb8' rx='6'/>\n  <text x='328' y='64' font-size='12' fill='#1e4bb8' font-weight='700'>@property で角度型を宣言</text>\n  <text x='328' y='90' font-size='12' fill='#1c1c1e'>--angle を @keyframes で回せる</text>\n  <text x='328' y='114' font-size='12' fill='#127a3e'>conic の from に差して滑らか回転</text>\n</svg><figcaption>図1：型宣言が“補間可能”のスイッチ。角度・色・数値が純CSSで動く。</figcaption></figure>\n<h4>仕組み・要点</h4>\n<p>宣言は3ディスクリプタ。<code>syntax</code>と<code>inherits</code>は<b>常に必須</b>、<code>initial-value</code>は<code>syntax:\"*\"</code>以外で必須（＝フォールバック値）。型に合わない代入は<code>initial-value</code>に落ちるので型安全だ。</p>\n<pre><code>@property --angle {\n  syntax: \"&lt;angle&gt;\"; inherits: false; initial-value: 0deg;\n}\n.spinner {\n  background: conic-gradient(from var(--angle), #6574cd, #3490dc, #ffb636, #6574cd);\n  animation: spin 1.2s linear infinite;\n}\n@keyframes spin { to { --angle: 360deg; } }</code></pre>\n<p><b>回転ボーダー</b>は擬似要素なしで作れる：回転するconicを背景に敷き、<code>padding</code>分だけ内側にソリッド背景の子を重ねると隙間が枠に見える。<b>中身は回らず枠だけ回る</b>のが利点。<b>色溶け</b>は各色停止を別々の<code>@property &lt;color&gt;</code>にして<code>var()</code>参照し、<code>transition: --c1 .6s</code>のように<b>変数を直接トランジション</b>する（素のグラデ同士のtransitionは効かない）。<code>&lt;number&gt;</code>を使えば<code>conic-gradient(#22c55e calc(var(--p)*1%), …)</code>で進捗リングも動かせる。</p>\n<h4>Next.js（App Router）での使いどころ</h4>\n<p><b>純CSS＝Server Componentのまま</b>で、<code>@property</code>も<code>@keyframes</code>もクライアントJSを要さない。ローダー、CTAの光る枠、ヒーロー背景をRSCで完結でき<b>hydrationゼロ・INP/LCP/CLSに悪影響なし</b>。<code>@property</code>は<code>app/globals.css</code>に<b>一度グローバル登録</b>すれば全ページで使える。サーバー値で決めたい進捗はインラインの<code>--p</code>変数でRSCが出力、カウントアップ等の動的変化だけ小さな<code>'use client'</code>島に閉じる。Tailwind v4の<code>@theme</code>トークンを<code>initial-value</code>へ流用も可。</p>\n<h4>注意点・落とし穴</h4>\n<blockquote><code>initial-value</code>忘れは登録無効化＝補間が効かない。色停止は<b>停止ごとに型付き変数が必要</b>（1変数に複数色は不可）。<code>inherits:true</code>の乱用で子孫が意図せずアニメを拾う。大面積conicの毎フレーム再ペイントは重く、領域は小さめ＋<code>contain: paint</code>を検討。JSの<code>CSS.registerProperty()</code>はSSR/RSCで実行されないので、SSRから確実に効かせたいならCSSの<code>@property</code>を使う。<code>@media (prefers-reduced-motion: reduce)</code>で<code>animation: none</code>にすれば静的グラデの完成形が残る。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>「型を付ける」だけでグラデが動く。回転ボーダー・色溶け・進捗リングをJSも擬似要素もなしにRSCで完結できる、コスパの高い装飾テクだ。</p>",
+      "sources": [
+        {
+          "title": "web.dev: @property — Baseline 2024",
+          "url": "https://web.dev/blog/at-property-baseline"
+        },
+        {
+          "title": "MDN: CSS Properties and Values API guide",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/CSS_Properties_and_Values_API/guide"
+        },
+        {
+          "title": "Ryan Mulligan: CSS @property and the New Style",
+          "url": "https://ryanmulligan.dev/blog/css-property-new-style/"
+        },
+        {
+          "title": "We can finally animate CSS gradient",
+          "url": "https://dev.to/afif/we-can-finally-animate-css-gradient-kdk"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-07-flutter",
+      "date": "2026-07-07",
+      "topic": "Flutter",
+      "title": "ImpellerがAOTで詰まりを消す — 3.44/Dart 3.12.2でネイティブ120fps",
+      "lede": "安定版は3.44.0/Dart 3.12.2。今日の主役はImpellerが2026の既定レンダラとして定着したこと。Skiaが実行時(JIT)にシェーダーをコンパイルして生むジャンクを、Impellerはビルド時(AOT)にコンパイルして排除。複雑シーンのラスタ時間を約50%短縮し120fps維持、電池ドレインも約17%減。アニメは「まずimplicit」、状態管理は新規Riverpod・大規模Bloc。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>Flutterの“カクつき”の代表格が<b>シェーダーコンパイルジャンク</b>だった。初回描画時にSkiaがJITでシェーダーを組み立て、その一瞬でフレームを落とす。2026年、<b>Impellerが全プラットフォームでSkiaを置換し既定</b>になったことで、この積年の詰まりが構造的に消える。State of Flutter 2026でも<b>Impeller移行完了</b>と<b>WebのWasm既定化</b>が節目として扱われた。</p>\n<h4>何が新しいか</h4>\n<p>安定版は<b>Flutter 3.44.0 / Dart 3.12.2</b>（次は2026年8月予定）。言語面では<b>private named parameters</b>と<b>dot shorthands</b>（<code>.value</code>省略）が入り、<b>dart compile wasm がstable</b>に昇格。Material/Cupertinoを<b>独立versionedパッケージ</b>へ分離する構造転換も進む。描画の主役Impellerは<b>AOTシェーダーコンパイル</b>で、複雑シーンの平均ラスタライズ時間を<b>約50%短縮</b>、高リフレッシュ端末で<b>120fps維持</b>、Skia比で<b>約17%電池ドレイン減</b>を達成する。</p>\n<figure class='fig'><svg viewBox='0 0 600 160' xmlns='http://www.w3.org/2000/svg'>\n  <rect x='0' y='0' width='600' height='160' fill='#e9f7ef' rx='8'/>\n  <text x='16' y='26' font-size='13' fill='#127a3e' font-weight='700'>シェーダーを“いつ”コンパイルするか</text>\n  <rect x='16' y='40' width='270' height='104' fill='#ffffff' stroke='#9cccb0' rx='6'/>\n  <text x='30' y='64' font-size='12' fill='#6b6b70'>Skia：実行時(JIT)</text>\n  <text x='30' y='90' font-size='12' fill='#1c1c1e'>初回描画でコンパイル→一瞬詰まる</text>\n  <text x='30' y='114' font-size='12' fill='#c2560f'>シェーダージャンクが発生</text>\n  <rect x='314' y='40' width='270' height='104' fill='#ffffff' stroke='#127a3e' rx='6'/>\n  <text x='328' y='64' font-size='12' fill='#127a3e' font-weight='700'>Impeller：ビルド時(AOT)</text>\n  <text x='328' y='90' font-size='12' fill='#1c1c1e'>起動前に重処理が完了済み</text>\n  <text x='328' y='114' font-size='12' fill='#127a3e'>ラスタ約50%減・120fps維持</text>\n</svg><figcaption>図1：コンパイルのタイミングを前倒しにするだけで“詰まり”が消える。</figcaption></figure>\n<h4>アニメーションの設計指針</h4>\n<p>黄金律は<b>「まずimplicitを試す」</b>。UIモーションの約<b>80%</b>は状態駆動で、<code>AnimatedContainer</code>等のコントローラ不要ウィジェットが割り込み処理まで面倒を見る。時間設計は<b>micro-interaction 50–200ms</b>、<b>Hero/page 300–600ms</b>で、合成可能なopacity/transformを優先。精密なループ・ジェスチャは<b>explicit</b>（<code>AnimationController</code>は<b>dispose必須</b>）、重い演出はRive/Lottieへオフロードする。</p>\n<figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg'>\n  <rect x='0' y='0' width='600' height='150' fill='#e9f7ef' rx='8'/>\n  <text x='16' y='24' font-size='13' fill='#127a3e' font-weight='700'>フレーム予算（ラスタライズ時間）</text>\n  <text x='16' y='52' font-size='12' fill='#1c1c1e'>60fps</text>\n  <rect x='120' y='42' width='300' height='14' fill='#9cccb0' rx='3'/>\n  <text x='430' y='53' font-size='11' fill='#6b6b70'>16ms</text>\n  <text x='16' y='84' font-size='12' fill='#1c1c1e'>90fps</text>\n  <rect x='120' y='74' width='200' height='14' fill='#5cae86' rx='3'/>\n  <text x='330' y='85' font-size='11' fill='#6b6b70'>約11ms</text>\n  <text x='16' y='116' font-size='12' fill='#1c1c1e'>120fps</text>\n  <rect x='120' y='106' width='150' height='14' fill='#127a3e' rx='3'/>\n  <text x='280' y='117' font-size='11' fill='#6b6b70'>約8.3ms（ラスタ4ms未満が目安）</text>\n</svg><figcaption>図2：計測は必ずprofileモードで。saveLayerの多用は1回2〜4ms食う。</figcaption></figure>\n<h4>状態管理・自分が試すなら</h4>\n<p>選定は<b>小規模(1〜3人)＝Riverpod 3.x（コード生成）</b>、<b>大規模/規制業界＝Bloc 9.x</b>が基本線。Riverpodは失敗providerの自動リトライ（200ms→最大6.4sの指数バックオフ）、画面外listenerの自動pause、Mutationsのidle/pending/success/error公開が効く。まずImpeller前提で既存の重いアニメ画面を<b>profileモード</b>で計測し、シェーダージャンクが消えているかDevToolsのImpellerビューで確認。移行はrepository抽出→feature単位（auth/catalog/cart）が定石だ。</p>\n<h4>注意点</h4>\n<blockquote>数値は必ず<b>profileモード</b>で測る（debug VMは大幅に遅い）。フルスクリーンの<code>saveLayer</code>は1回で約2〜4msのラスタ時間を消費するため多用回避。Rive FlutterはImpellerで描画/性能差が出る場合があり、<code>--no-enable-impeller</code>でSkiaにフォールバックして切り分ける。最大の敵は依然<b>不要な再ビルド</b>で、<code>const</code>/<code>Selector</code>/<code>RepaintBoundary</code>で独立レイヤーに隔離する。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>3.44＋ImpellerのAOTで“詰まり”が構造的に消え、120fpsが現実解に。アニメはimplicit優先、計測はprofile、状態管理は規模で二択——2026の堅実像だ。</p>",
+      "sources": [
+        {
+          "title": "Flutter release notes",
+          "url": "https://docs.flutter.dev/release/release-notes"
+        },
+        {
+          "title": "How Impeller Is Transforming Flutter UI Rendering in 2026",
+          "url": "https://dev.to/eira-wexford/how-impeller-is-transforming-flutter-ui-rendering-in-2026-3dpd"
+        },
+        {
+          "title": "Flutter + Impeller: Native 120fps in 2026",
+          "url": "https://shindekalpesharun.medium.com/flutter-impeller-how-to-achieve-native-120fps-performance-in-2026-68ec28cc71e5"
+        },
+        {
+          "title": "Dart whats new",
+          "url": "https://dart.dev/resources/whats-new"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-07-github-trending",
+      "date": "2026-07-07",
+      "topic": "GitHub Trending",
+      "title": "7/7の話題リポジトリ — 自律ペンテスト・エージェント多重化・トークン節約",
+      "lede": "今日の3本は「AIエージェントをどう仕事に効かせるか」で一貫。攻撃者視点でアプリを検査するstrix、複数エージェントを束ねるherdr、指示を切り詰めてコストを削るcaveman——守り・生産性・節約の三方向。",
+      "articleHtml": "<p>今日GitHub Trendingで急伸した3本は、いずれも<b>AIエージェントの“使い方”</b>を実務へ寄せる道具だ。攻撃側に立たせて守りを固めるもの、複数エージェントを一つの画面で捌くもの、そして冗長な指示を削ってコストを下げるもの。狙う課題は違うが、通底するのは<b>「エージェントを増やしても破綻させない」</b>という運用視点である。</p>\n<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg'>\n  <rect x='0' y='0' width='600' height='200' fill='#eefaf1' rx='8'/>\n  <text x='16' y='26' font-size='13' fill='#1a7f37' font-weight='700'>今日の3本：解決したい課題 から 提供する機能</text>\n  <line x1='16' y1='38' x2='584' y2='38' stroke='#bfe6c8'/>\n  <text x='16' y='60' font-size='12' fill='#1a7f37' font-weight='700'>strix</text>\n  <text x='120' y='60' font-size='11' fill='#1c1c1e'>脆弱性発見が人手頼み</text>\n  <text x='330' y='60' font-size='11' fill='#127a3e'>AIが自律ペンテスト＋修正提案</text>\n  <line x1='16' y1='72' x2='584' y2='72' stroke='#e0f0e5'/>\n  <text x='16' y='96' font-size='12' fill='#1a7f37' font-weight='700'>herdr</text>\n  <text x='120' y='96' font-size='11' fill='#1c1c1e'>複数エージェントの並行管理が煩雑</text>\n  <text x='330' y='96' font-size='11' fill='#127a3e'>tmux風TUIで多重化・切替</text>\n  <line x1='16' y1='108' x2='584' y2='108' stroke='#e0f0e5'/>\n  <text x='16' y='132' font-size='12' fill='#1a7f37' font-weight='700'>caveman</text>\n  <text x='120' y='132' font-size='11' fill='#1c1c1e'>冗長プロンプトでトークン浪費</text>\n  <text x='330' y='132' font-size='11' fill='#127a3e'>指示を切り詰め約65%節約</text>\n  <line x1='16' y1='144' x2='584' y2='144' stroke='#e0f0e5'/>\n  <text x='16' y='168' font-size='11' fill='#6b6b70'>言語：Python / Rust / JavaScript と多彩。守り・生産性・節約の三方向。</text>\n  <text x='16' y='188' font-size='11' fill='#6b6b70'>共通項：エージェントを増やしても運用を破綻させない工夫。</text>\n</svg><figcaption>図1：3リポジトリの「課題→機能」対応。狙う場所は違うが運用視点で通底する。</figcaption></figure>\n<h4>usestrix/strix（Python・⭐34.3k）</h4>\n<p><b>解決したい課題：</b>脆弱性診断は専門知識と工数が要り、人手のペネトレーションテストは頻度も網羅性も限られる。リリース速度が上がるほど「攻撃者視点の検査」が追いつかない。<b>提供する機能：</b>AIエージェントが<b>自律的にペンテストを実施</b>してアプリの脆弱性を洗い出し、<b>修正提案まで踏み込む</b>オープンソースツール。自分のアプリに導入して攻撃者目線の検査を自動化できる。本日約2,800スターを獲得、<b>セキュリティ×AIエージェント</b>という旬のテーマと実用性の高さで急上昇している。</p>\n<h4>ogulcancelik/herdr（Rust・⭐10.7k）</h4>\n<p><b>解決したい課題：</b>コーディングエージェントを複数同時に走らせたいが、ターミナルやセッションが分散して管理が煩雑になる。どれが何をしているか見失いやすい。<b>提供する機能：</b>複数のAIエージェントを<b>1つのターミナルで並行管理</b>する<b>エージェント・マルチプレクサ</b>。Rust製で軽量・高速、<b>tmux風の使い勝手</b>でセッションを切り替えられる。本日500超のスターを集めており、並列エージェント運用のニーズに軽快なTUIで応える新規性が支持されている。</p>\n<h4>JuliusBrussee/caveman（JavaScript・⭐82.8k）</h4>\n<p><b>解決したい課題：</b>丁寧で冗長なプロンプトはトークンを浪費し、コストとレスポンス時間を押し上げる。<b>提供する機能：</b>\"原始人\"のように短い言葉で話させ、<b>プロンプトを簡潔化してトークンを最大65%節約</b>するClaude Code向けスキル。導入が手軽で<b>コスト削減とレスポンス高速化</b>を同時に狙える。本日約2,850スターを獲得——ネタ性と実利を両立した発想がバズの理由だ。</p>\n<h4>まとめ：自分が試すなら</h4>\n<p>すぐ効くのは<b>caveman</b>——導入が軽くコストに直結する。エージェントを日常的に並列運用しているなら<b>herdr</b>で運用を一元化。プロダクトを持っているなら<b>strix</b>をCIに組み込み、攻撃者視点の検査を定期実行にするのが投資対効果が高い。</p>",
+      "sources": [
+        {
+          "title": "usestrix/strix",
+          "url": "https://github.com/usestrix/strix"
+        },
+        {
+          "title": "ogulcancelik/herdr",
+          "url": "https://github.com/ogulcancelik/herdr"
+        },
+        {
+          "title": "JuliusBrussee/caveman",
+          "url": "https://github.com/JuliusBrussee/caveman"
+        }
+      ]
+    },
     {
       "id": "2026-07-06-claude-code",
       "date": "2026-07-06",
