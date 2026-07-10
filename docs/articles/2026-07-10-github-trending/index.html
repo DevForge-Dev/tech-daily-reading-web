@@ -1,0 +1,70 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>7/10の話題リポジトリ — エージェントに実務作法・ローカル会議AI・WiFi空間センシング — デイリー技術深掘り 読み物</title><meta name="description" content="AIに実務の作法を教える、会議データを外に出さない、カメラなしで見守る——3本に共通するのは「便利さの裏で犠牲になっていたもの（品質・プライバシー）」を技術で取り戻す動き。"><meta name="theme-color" content="#238636"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-10-github-trending/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="7/10の話題リポジトリ — エージェントに実務作法・ローカル会議AI・WiFi空間センシング — デイリー技術深掘り 読み物"><meta property="og:description" content="AIに実務の作法を教える、会議データを外に出さない、カメラなしで見守る——3本に共通するのは「便利さの裏で犠牲になっていたもの（品質・プライバシー）」を技術で取り戻す動き。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-10-github-trending/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3fb950, #1a7f37)"> <span class="glyph" aria-hidden="true">★</span> <div class="kicker">GitHub Trending</div> <h1>7/10の話題リポジトリ — エージェントに実務作法・ローカル会議AI・WiFi空間センシング</h1> <p class="lede">AIに実務の作法を教える、会議データを外に出さない、カメラなしで見守る——3本に共通するのは「便利さの裏で犠牲になっていたもの（品質・プライバシー）」を技術で取り戻す動き。</p> <div class="meta"> <span>📅 2026年7月10日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#238636"> <div> <article class="prose" data-has-mermaid="0"><p>今日の3本は言語もジャンルもばらばらだが、「既存のやり方が犠牲にしてきたもの」を回収しにいく点で通じている。エージェントの出力品質、会議データのプライバシー、見守りにおけるカメラの侵襲性。それぞれの「課題」と「提供機能」を見ていく。</p>
+<figure class='fig'><svg viewBox='0 0 620 260' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='150' height='50' rx='8' fill='#eafaf0' stroke='#3fb950'></rect><text x='85' y='40' text-anchor='middle' font-size='12' font-weight='bold' fill='#1a7f37'>リポジトリ</text><rect x='170' y='10' width='215' height='50' rx='8' fill='#eafaf0' stroke='#3fb950'></rect><text x='277' y='40' text-anchor='middle' font-size='12' font-weight='bold' fill='#1a7f37'>解決したい課題</text><rect x='395' y='10' width='215' height='50' rx='8' fill='#eafaf0' stroke='#3fb950'></rect><text x='502' y='40' text-anchor='middle' font-size='12' font-weight='bold' fill='#1a7f37'>提供する機能</text><rect x='10' y='70' width='150' height='58' rx='8' fill='#fff' stroke='#3fb950'></rect><text x='85' y='95' text-anchor='middle' font-size='11.5' font-weight='bold' fill='#333'>agent-skills</text><text x='85' y='113' text-anchor='middle' font-size='10.5' fill='#666'>JS ・ ⭐75k</text><rect x='170' y='70' width='215' height='58' rx='8' fill='#fff' stroke='#d0e8d8'></rect><text x='277' y='95' text-anchor='middle' font-size='11' fill='#333'>エージェントのコードが</text><text x='277' y='112' text-anchor='middle' font-size='11' fill='#333'>実務品質に届かない</text><rect x='395' y='70' width='215' height='58' rx='8' fill='#fff' stroke='#d0e8d8'></rect><text x='502' y='95' text-anchor='middle' font-size='11' fill='#333'>実務作法のスキル集を</text><text x='502' y='112' text-anchor='middle' font-size='11' fill='#333'>エージェントに装備</text><rect x='10' y='136' width='150' height='58' rx='8' fill='#fff' stroke='#3fb950'></rect><text x='85' y='161' text-anchor='middle' font-size='11.5' font-weight='bold' fill='#333'>meetily</text><text x='85' y='179' text-anchor='middle' font-size='10.5' fill='#666'>Rust ・ ⭐22k</text><rect x='170' y='136' width='215' height='58' rx='8' fill='#fff' stroke='#d0e8d8'></rect><text x='277' y='161' text-anchor='middle' font-size='11' fill='#333'>会議AIがデータを</text><text x='277' y='178' text-anchor='middle' font-size='11' fill='#333'>外部クラウドへ送る</text><rect x='395' y='136' width='215' height='58' rx='8' fill='#fff' stroke='#d0e8d8'></rect><text x='502' y='161' text-anchor='middle' font-size='11' fill='#333'>完全ローカルで4倍速の</text><text x='502' y='178' text-anchor='middle' font-size='11' fill='#333'>ライブ文字起こし・要約</text><rect x='10' y='202' width='150' height='50' rx='8' fill='#fff' stroke='#3fb950'></rect><text x='85' y='223' text-anchor='middle' font-size='11.5' font-weight='bold' fill='#333'>RuView</text><text x='85' y='240' text-anchor='middle' font-size='10.5' fill='#666'>⭐77k</text><rect x='170' y='202' width='215' height='50' rx='8' fill='#fff' stroke='#d0e8d8'></rect><text x='277' y='223' text-anchor='middle' font-size='11' fill='#333'>見守りがカメラ前提で</text><text x='277' y='240' text-anchor='middle' font-size='11' fill='#333'>プライバシーの壁</text><rect x='395' y='202' width='215' height='50' rx='8' fill='#fff' stroke='#d0e8d8'></rect><text x='502' y='223' text-anchor='middle' font-size='11' fill='#333'>WiFi電波で存在・呼吸・</text><text x='502' y='240' text-anchor='middle' font-size='11' fill='#333'>心拍を壁越しに検知</text></svg><figcaption>図1：今日の3本 — 課題と提供機能の対応</figcaption></figure>
+<h4 id="sec-1">addyosmani/agent-skills（JavaScript・⭐75k）</h4>
+<p><b>解決したい課題:</b> AIコーディングエージェントのコードは「動く」が、コードレビューの観点、パフォーマンス改善の定石、保守性への配慮といった<b>実務品質（production-grade）のエンジニアリング作法</b>を欠きがち。個々の開発者がプロンプトで毎回教え直す非効率が常態化していた。</p>
+<p><b>提供する機能:</b> そうした実務知を「スキル」としてパッケージ化したキュレーション集。Claude Codeなど主要エージェントにそのまま導入でき、レビューや性能改善の作法を装備させられる。Chrome開発で知られるGoogleのAddy Osmani氏が編んでいる信頼性も効いており、直近7日で+約6,700スター、本日のTrending 1位。エージェントスキルブームの本命だ。</p>
+<h4 id="sec-2">Zackriya-Solutions/meetily（Rust・⭐22k）</h4>
+<p><b>解決したい課題:</b> クラウド型の会議AIアシスタントは便利な反面、<b>会議音声・議事内容という最も機密性の高いデータを外部に送信する</b>。コンプライアンス上クラウド利用が難しい企業や個人には採用しづらかった。</p>
+<p><b>提供する機能:</b> Parakeet/Whisperによる<b>従来比4倍速のライブ文字起こし</b>から要約・ノート生成までを<b>完全ローカル</b>で実行する会議アシスタント。データは一切外に出ない。直近7日で+約8,400スターと3本中最も勢いがあり、クラウド型会議AIの対抗馬として注目されている。</p>
+<h4 id="sec-3">ruvnet/RuView（⭐77k）</h4>
+<p><b>解決したい課題:</b> 高齢者の見守りや在室検知は<b>カメラやウェアラブルが前提</b>で、プライバシーの抵抗感・装着の手間・導入コストが壁だった。</p>
+<p><b>提供する機能:</b> 家庭のWiFi電波をセンサー化し、<b>壁越しに人の存在・呼吸・心拍・活動状態を検知</b>する空間センシングシステム。ESP32のような安価なエッジデバイスと<b>8KBの超軽量AIモデル</b>で動き、Home Assistant・Apple Home・Google Home・Alexaに統合できる。カメラ不要の見守りという切り口で本日Trending 2位を維持。</p>
+<p><b>まとめ:</b> 自分が試すならまずagent-skills。Claude Codeに数個入れてレビュー品質の変化を見るだけで元が取れる。meetilyは社内議事録フローのローカル化検証に、RuViewはESP32が手元にあれば週末プロジェクトとして面白い。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://github.com/addyosmani/agent-skills" target="_blank" rel="noopener noreferrer"> addyosmani/agent-skills </a> </li><li> <a href="https://github.com/Zackriya-Solutions/meetily" target="_blank" rel="noopener noreferrer"> Zackriya-Solutions/meetily </a> </li><li> <a href="https://github.com/ruvnet/RuView" target="_blank" rel="noopener noreferrer"> ruvnet/RuView </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> addyosmani/agent-skills（JavaScript・⭐75k） </a> </li><li> <a href="#sec-2" data-toc="sec-2"> Zackriya-Solutions/meetily（Rust・⭐22k） </a> </li><li> <a href="#sec-3" data-toc="sec-3"> ruvnet/RuView（⭐77k） </a> </li> </ul> <div class="reading-box"> <div>📅 2026-07-10</div> <div>⏱ 読了 約3分</div> <div>🏷 GitHub Trending</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

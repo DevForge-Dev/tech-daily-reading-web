@@ -1,0 +1,65 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Sonnet 5がClaude Codeの既定モデルに — 1Mコンテキスト標準化とv2.1.205の監査性強化 — デイリー技術深掘り 読み物</title><meta name="description" content="Claude Sonnet 5が既定モデルとなりネイティブ1Mトークンコンテキストが標準に。v2.1.205はautoモードのトランスクリプト改ざんブロックで無人運用の監査性を高め、/dataviz・/doctorと管理コンソール新タブが個人・組織の両面を底上げした。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-10-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Sonnet 5がClaude Codeの既定モデルに — 1Mコンテキスト標準化とv2.1.205の監査性強化 — デイリー技術深掘り 読み物"><meta property="og:description" content="Claude Sonnet 5が既定モデルとなりネイティブ1Mトークンコンテキストが標準に。v2.1.205はautoモードのトランスクリプト改ざんブロックで無人運用の監査性を高め、/dataviz・/doctorと管理コンソール新タブが個人・組織の両面を底上げした。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-10-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>Sonnet 5がClaude Codeの既定モデルに — 1Mコンテキスト標準化とv2.1.205の監査性強化</h1> <p class="lede">Claude Sonnet 5が既定モデルとなりネイティブ1Mトークンコンテキストが標準に。v2.1.205はautoモードのトランスクリプト改ざんブロックで無人運用の監査性を高め、/dataviz・/doctorと管理コンソール新タブが個人・組織の両面を底上げした。</p> <div class="meta"> <span>📅 2026年7月10日</span> <span>⏱ 約3分</span> <span>🔗 出典 6 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="0"><p>今日のClaude Codeは「基盤モデル」「安全性」「可視化」の3層が同時に動いた一日だった。単発の機能追加ではなく、大規模利用を前提としたプラットフォーム整備が進んでいる印象だ。</p>
+<p>最大のニュースは<b>Claude Sonnet 5がClaude Codeの既定モデルになった</b>こと。ネイティブで<b>100万トークンのコンテキストウィンドウ</b>を備え、大規模コードベースを分割せずに読み込める。しかも<b>8月31日まで$2/$10 per Mtokのプロモーション価格</b>が適用されるため、移行のコスト障壁も低い。モノレポ横断のリファクタリングや調査タスクで「コンテキストに入り切らないから分割する」という段取り自体が不要になる変化だ。</p>
+<p>安全性側では、7月8日公開の<b>v2.1.205</b>がautoモードに<b>セッショントランスクリプトファイルの改ざんをブロックする</b>ルールを追加した。エージェントが自身の実行記録を書き換えられないようにする強化で、無人運用の監査証跡が守られる。あわせてJSONスキーマ出力、max-turns制限時のメッセージ処理、Windowsのworktree操作、バックグラウンドエージェントのステータス表示も修正された。</p>
+<figure class='fig'><svg viewBox='0 0 620 220' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='14' width='190' height='190' rx='12' fill='#f3ecff' stroke='#7b3fe4'></rect><text x='105' y='42' text-anchor='middle' font-size='13' font-weight='bold' fill='#5a2ec4'>基盤モデル</text><text x='105' y='72' text-anchor='middle' font-size='11.5' fill='#333'>Sonnet 5 が既定に</text><text x='105' y='94' text-anchor='middle' font-size='11.5' fill='#333'>ネイティブ 1M tok</text><text x='105' y='116' text-anchor='middle' font-size='11.5' fill='#333'>$2/$10 per Mtok</text><text x='105' y='136' text-anchor='middle' font-size='10.5' fill='#666'>（8/31までのプロモ）</text><rect x='215' y='14' width='190' height='190' rx='12' fill='#fff' stroke='#7b3fe4'></rect><text x='310' y='42' text-anchor='middle' font-size='13' font-weight='bold' fill='#5a2ec4'>安全性 v2.1.205</text><text x='310' y='72' text-anchor='middle' font-size='11.5' fill='#333'>autoモードで記録の</text><text x='310' y='90' text-anchor='middle' font-size='11.5' fill='#333'>改ざんをブロック</text><text x='310' y='116' text-anchor='middle' font-size='11.5' fill='#333'>Windows worktree修正</text><text x='310' y='138' text-anchor='middle' font-size='11.5' fill='#333'>max-turns処理修正</text><rect x='420' y='14' width='190' height='190' rx='12' fill='#fff' stroke='#7b3fe4'></rect><text x='515' y='42' text-anchor='middle' font-size='13' font-weight='bold' fill='#5a2ec4'>可視化</text><text x='515' y='72' text-anchor='middle' font-size='11.5' fill='#333'>/dataviz スキル</text><text x='515' y='94' text-anchor='middle' font-size='11.5' fill='#333'>/doctor 総合診断</text><text x='515' y='120' text-anchor='middle' font-size='11.5' fill='#333'>管理コンソールに</text><text x='515' y='138' text-anchor='middle' font-size='11.5' fill='#333'>Usage/Valueタブ</text></svg><figcaption>図1：今日の3層 — モデル・安全性・可視化が同時に前進</figcaption></figure>
+<p>ツール面では、チャート・ダッシュボード設計をガイドする<b>/datavizスキル</b>と、セットアップを一括点検する<b>/doctorの総合診断</b>が追加。管理コンソールには<b>Usage/Valueの2タブ</b>が加わり、アクティブ開発者数・人気コマンド・コミット単価まで日次で可視化できるようになった。周辺記事では、ofox.aiの完全ガイドが「テンプレならスラッシュコマンド、ドメイン知識はスキル、隔離・並列はサブエージェント、強制はフック」という使い分け原則を提示しており、skills→hooks→subagentsの導入順は自分の整理としても採用したい。ニュース面ではCoworkのWeb・モバイル拡大、Epicで利用の過半数が非開発者という報道もあり、非エンジニア領域への浸透が数字で裏付けられた。</p>
+<p>自分が試すなら、まず<code>/doctor</code>で環境を点検し、大きめのリポジトリでSonnet 5の1Mコンテキストに横断調査を投げてプロモ期間中にコスト感を掴む。注意点は既定モデル変更で従来のOpus前提のワークフローと挙動・コストが変わり得ること。CIで使うバージョンはv2.1.205以降に上げ、autoモードの監査強化を有効に使いたい。</p>
+<p><b>ひとことまとめ:</b> 1Mコンテキストが「特別なもの」から既定になった日。安全性と可視化も揃い、組織展開のフェーズが本格化している。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://support.claude.com/en/articles/12138966-release-notes" target="_blank" rel="noopener noreferrer"> Claude Code release notes (support.claude.com) </a> </li><li> <a href="https://code.claude.com/docs/en/changelog" target="_blank" rel="noopener noreferrer"> Claude Code changelog </a> </li><li> <a href="https://releasebot.io/updates/anthropic/claude-code" target="_blank" rel="noopener noreferrer"> Releasebot: Claude Code updates </a> </li><li> <a href="https://ofox.ai/blog/claude-code-hooks-subagents-skills-complete-guide-2026/" target="_blank" rel="noopener noreferrer"> ofox.ai: Hooks/Subagents/Skills完全ガイド2026 </a> </li><li> <a href="https://techcrunch.com/2026/07/07/the-coding-agent-wars-are-spilling-into-the-rest-of-the-office-claude-cowork/" target="_blank" rel="noopener noreferrer"> TechCrunch: Claude Cowork拡大 </a> </li><li> <a href="https://venturebeat.com/orchestration/anthropic-says-claude-code-transformed-programming-now-claude-cowork-is" target="_blank" rel="noopener noreferrer"> VentureBeat: EpicのClaude Code利用 </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
