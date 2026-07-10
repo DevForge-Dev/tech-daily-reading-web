@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-07-09T04:46:58.584Z",
+  "generatedAt": "2026-07-10T04:47:14.291Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,122 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-07-10-claude-code",
+      "date": "2026-07-10",
+      "topic": "Claude Code",
+      "title": "Sonnet 5がClaude Codeの既定モデルに — 1Mコンテキスト標準化とv2.1.205の監査性強化",
+      "lede": "Claude Sonnet 5が既定モデルとなりネイティブ1Mトークンコンテキストが標準に。v2.1.205はautoモードのトランスクリプト改ざんブロックで無人運用の監査性を高め、/dataviz・/doctorと管理コンソール新タブが個人・組織の両面を底上げした。",
+      "articleHtml": "<p>今日のClaude Codeは「基盤モデル」「安全性」「可視化」の3層が同時に動いた一日だった。単発の機能追加ではなく、大規模利用を前提としたプラットフォーム整備が進んでいる印象だ。</p>\n<p>最大のニュースは<b>Claude Sonnet 5がClaude Codeの既定モデルになった</b>こと。ネイティブで<b>100万トークンのコンテキストウィンドウ</b>を備え、大規模コードベースを分割せずに読み込める。しかも<b>8月31日まで$2/$10 per Mtokのプロモーション価格</b>が適用されるため、移行のコスト障壁も低い。モノレポ横断のリファクタリングや調査タスクで「コンテキストに入り切らないから分割する」という段取り自体が不要になる変化だ。</p>\n<p>安全性側では、7月8日公開の<b>v2.1.205</b>がautoモードに<b>セッショントランスクリプトファイルの改ざんをブロックする</b>ルールを追加した。エージェントが自身の実行記録を書き換えられないようにする強化で、無人運用の監査証跡が守られる。あわせてJSONスキーマ出力、max-turns制限時のメッセージ処理、Windowsのworktree操作、バックグラウンドエージェントのステータス表示も修正された。</p>\n<figure class='fig'><svg viewBox='0 0 620 220' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='14' width='190' height='190' rx='12' fill='#f3ecff' stroke='#7b3fe4'/><text x='105' y='42' text-anchor='middle' font-size='13' font-weight='bold' fill='#5a2ec4'>基盤モデル</text><text x='105' y='72' text-anchor='middle' font-size='11.5' fill='#333'>Sonnet 5 が既定に</text><text x='105' y='94' text-anchor='middle' font-size='11.5' fill='#333'>ネイティブ 1M tok</text><text x='105' y='116' text-anchor='middle' font-size='11.5' fill='#333'>$2/$10 per Mtok</text><text x='105' y='136' text-anchor='middle' font-size='10.5' fill='#666'>（8/31までのプロモ）</text><rect x='215' y='14' width='190' height='190' rx='12' fill='#fff' stroke='#7b3fe4'/><text x='310' y='42' text-anchor='middle' font-size='13' font-weight='bold' fill='#5a2ec4'>安全性 v2.1.205</text><text x='310' y='72' text-anchor='middle' font-size='11.5' fill='#333'>autoモードで記録の</text><text x='310' y='90' text-anchor='middle' font-size='11.5' fill='#333'>改ざんをブロック</text><text x='310' y='116' text-anchor='middle' font-size='11.5' fill='#333'>Windows worktree修正</text><text x='310' y='138' text-anchor='middle' font-size='11.5' fill='#333'>max-turns処理修正</text><rect x='420' y='14' width='190' height='190' rx='12' fill='#fff' stroke='#7b3fe4'/><text x='515' y='42' text-anchor='middle' font-size='13' font-weight='bold' fill='#5a2ec4'>可視化</text><text x='515' y='72' text-anchor='middle' font-size='11.5' fill='#333'>/dataviz スキル</text><text x='515' y='94' text-anchor='middle' font-size='11.5' fill='#333'>/doctor 総合診断</text><text x='515' y='120' text-anchor='middle' font-size='11.5' fill='#333'>管理コンソールに</text><text x='515' y='138' text-anchor='middle' font-size='11.5' fill='#333'>Usage/Valueタブ</text></svg><figcaption>図1：今日の3層 — モデル・安全性・可視化が同時に前進</figcaption></figure>\n<p>ツール面では、チャート・ダッシュボード設計をガイドする<b>/datavizスキル</b>と、セットアップを一括点検する<b>/doctorの総合診断</b>が追加。管理コンソールには<b>Usage/Valueの2タブ</b>が加わり、アクティブ開発者数・人気コマンド・コミット単価まで日次で可視化できるようになった。周辺記事では、ofox.aiの完全ガイドが「テンプレならスラッシュコマンド、ドメイン知識はスキル、隔離・並列はサブエージェント、強制はフック」という使い分け原則を提示しており、skills→hooks→subagentsの導入順は自分の整理としても採用したい。ニュース面ではCoworkのWeb・モバイル拡大、Epicで利用の過半数が非開発者という報道もあり、非エンジニア領域への浸透が数字で裏付けられた。</p>\n<p>自分が試すなら、まず<code>/doctor</code>で環境を点検し、大きめのリポジトリでSonnet 5の1Mコンテキストに横断調査を投げてプロモ期間中にコスト感を掴む。注意点は既定モデル変更で従来のOpus前提のワークフローと挙動・コストが変わり得ること。CIで使うバージョンはv2.1.205以降に上げ、autoモードの監査強化を有効に使いたい。</p>\n<p><b>ひとことまとめ:</b> 1Mコンテキストが「特別なもの」から既定になった日。安全性と可視化も揃い、組織展開のフェーズが本格化している。</p>",
+      "sources": [
+        {
+          "title": "Claude Code release notes (support.claude.com)",
+          "url": "https://support.claude.com/en/articles/12138966-release-notes"
+        },
+        {
+          "title": "Claude Code changelog",
+          "url": "https://code.claude.com/docs/en/changelog"
+        },
+        {
+          "title": "Releasebot: Claude Code updates",
+          "url": "https://releasebot.io/updates/anthropic/claude-code"
+        },
+        {
+          "title": "ofox.ai: Hooks/Subagents/Skills完全ガイド2026",
+          "url": "https://ofox.ai/blog/claude-code-hooks-subagents-skills-complete-guide-2026/"
+        },
+        {
+          "title": "TechCrunch: Claude Cowork拡大",
+          "url": "https://techcrunch.com/2026/07/07/the-coding-agent-wars-are-spilling-into-the-rest-of-the-office-claude-cowork/"
+        },
+        {
+          "title": "VentureBeat: EpicのClaude Code利用",
+          "url": "https://venturebeat.com/orchestration/anthropic-says-claude-code-transformed-programming-now-claude-cowork-is"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-10-nextjs",
+      "date": "2026-07-10",
+      "topic": "Next.js",
+      "title": "CSS linear()でスプリング/バウンス — JSライブラリなしで物理アニメーションを書く",
+      "lede": "cubic-bezier()では原理的に不可能だったバネの揺り戻しを、純CSSのlinear()タイミング関数で表現できる。Baseline済みでhydrationゼロ、Server Componentのまま物理系の質感を出せるが、durationとのペア管理と中断への弱さが設計上の勘所。",
+      "articleHtml": "<p>スプリング（バネの揺り戻し）やバウンスは、これまでMotionやReact Springといった<b>メインスレッド駆動のJSライブラリ</b>でしか作れなかった。<code>cubic-bezier()</code>は値が0〜1に縛られ、ターゲットを行き過ぎて戻る「オーバーシュート」を表現できないからだ。<code>linear()</code>関数はこの制約を外す。点列（stop）を直線でつなぐ折れ線でイージング曲線を近似する仕組みで、<b>1を超える値を書ける</b>ため物理シミュレーションの記録をそのまま流し込める。2023年12月に主要3ブラウザが揃い<b>Baseline済み</b>（Chrome/Edge 113+・Firefox 112+・Safari 17.2+）、2026年は実戦投入フェーズだ。</p>\n<figure class='fig'><svg viewBox='0 0 600 230' xmlns='http://www.w3.org/2000/svg'><line x1='50' y1='190' x2='560' y2='190' stroke='#bbb' stroke-width='1'/><line x1='50' y1='30' x2='50' y2='190' stroke='#bbb' stroke-width='1'/><line x1='50' y1='70' x2='560' y2='70' stroke='#1f6feb' stroke-width='1' stroke-dasharray='5,4'/><text x='555' y='62' text-anchor='end' font-size='11' fill='#1f6feb'>ターゲット（1.0）</text><path d='M50 190 C 110 190 130 30 190 48 C 230 60 240 92 290 82 C 330 74 350 66 400 70 C 450 74 500 70 560 70' fill='none' stroke='#1f6feb' stroke-width='3'/><circle cx='190' cy='48' r='4' fill='#1f6feb'/><text x='190' y='34' text-anchor='middle' font-size='11' fill='#333'>オーバーシュート（約1.15）</text><path d='M50 190 C 150 60 300 70 560 70' fill='none' stroke='#f0883e' stroke-width='2' stroke-dasharray='6,4'/><text x='300' y='120' font-size='11' fill='#f0883e'>cubic-bezier()は1.0で頭打ち</text><text x='305' y='210' text-anchor='middle' font-size='11' fill='#8a8a90'>時間 →</text></svg><figcaption>図1：linear()は1.0を超えて揺り戻すバネ曲線を折れ線で近似できる</figcaption></figure>\n<p>構文は<code>linear(0, 0.25 75%, 1)</code>のようにstop列と時間%で書くが、<b>手書きは非現実的</b>。Jake ArchibaldとAdam Argyleのlinear() easing generatorやEasing Wizard、Motionのspring→CSS出力で<b>40〜50点を生成する</b>のが前提になる。Chrome DevTools 114+にはビジュアル編集エディタもある。</p>\n<p>Next.jsでの旨みは<b>純CSSなので<code>'use client'</code>が不要</b>なこと。Server Componentのままclassを付けるだけで、hydrationゼロ・バンドル増ゼロでINPに効く。実装は<code>app/globals.css</code>のトークンに集約する。</p>\n<pre><code>:root {\n  /* フォールバック（擬似スプリングbezier） */\n  --ease-spring: cubic-bezier(0.3, 1.4, 0.4, 1);\n  --ease-spring-time: 800ms;\n\n  @supports (animation-timing-function: linear(0, 1)) {\n    --ease-spring: linear(0, 0.32, 0.72, 1.03, 1.16,\n      1.15, 1.09, 1.02, 0.98, 0.99, 1.0, 1);\n    --ease-spring-time: 1200ms;\n  }\n}</code></pre>\n<p>ここで重要なのが、transition宣言を2行並べる古典的フォールバックは<b>CSS変数経由では機能しない</b>という点。ブラウザは<code>var()</code>の構文しか検証しないため、<code>@supports</code>で<b>変数定義側を上書きする</b>のが正解だ。Tailwind v4なら<code>@theme</code>に置けば<code>ease-spring</code>ユーティリティが生える。</p>\n<p>落とし穴は3つ。第一に<b>生成されたlinear()はセットのdurationとペアでのみ正しい</b>——durationだけ変えると別物の動きになる。第二に<b>中断に弱い</b>。遷移中に逆方向へ切り替わるとreversing shortening factorで慣性を無視して即反転するため、連打されるトグルUIはJSスプリングの方が自然で、linear()は出現・ドロップ・トーストなど<b>片道で完走する演出</b>に向く。第三は運用面で、100点超でも実測fps低下はなく大型スプリング3本でgzip後+1.3kB程度だが、コピペ濫用は膨らむのでデザイントークンに集約する。動きが大きいぶん<code>prefers-reduced-motion: no-preference</code>の中でのみ付与するのも必須だ。</p>\n<p><b>ひとことまとめ:</b> 「片道の演出はlinear()、中断される相互作用はJSスプリング」という線引きさえ守れば、JSゼロで物理の質感が手に入る。</p>",
+      "sources": [
+        {
+          "title": "Chrome: CSS linear() easing function",
+          "url": "https://developer.chrome.com/docs/css-ui/css-linear-easing-function"
+        },
+        {
+          "title": "Josh Comeau: The linear() timing function",
+          "url": "https://www.joshwcomeau.com/animation/linear-timing-function/"
+        },
+        {
+          "title": "linear() easing generator",
+          "url": "https://linear-easing-generator.netlify.app/"
+        },
+        {
+          "title": "Easing Wizard",
+          "url": "https://easingwizard.com/"
+        },
+        {
+          "title": "Motion: springをCSSへ出力",
+          "url": "https://motion.dev/docs/css"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-10-flutter",
+      "date": "2026-07-10",
+      "topic": "Flutter",
+      "title": "Widget Previewerのロードマップ — 3.35実験導入から3.47 interactive previewへ",
+      "lede": "アプリ全体を起動せず単一ウィジェットをIDE内でプレビューする開発ループが本格化。3.44でVS Code/IntelliJ統合が強化され、3.47ではinteractive previewが見込まれる。material_ui分離やWeb hot reload正式化と合わせ、今日の主題は反復速度。",
+      "articleHtml": "<p>Flutterの開発体験で長年の不満だったのが「小さなUI変更の確認にもアプリ全体の起動が要る」こと。今日の主役<b>Widget Previewer</b>はそこを直接解決する機能で、進化のロードマップが見えてきた。<b>3.35でexperimental導入</b>→<b>3.44でVS Code / IntelliJ（Android Studio含む）とのIDE統合を強化</b>し、アプリ全体を実行せずに単一ウィジェットをプレビュー→<b>3.47でinteractive previewとデバッグ強化</b>が見込まれる。UI単体の反復速度が段階的に上がっていく。</p>\n<figure class='fig'><svg viewBox='0 0 620 200' xmlns='http://www.w3.org/2000/svg'><line x1='40' y1='100' x2='580' y2='100' stroke='#0277bd' stroke-width='2'/><circle cx='110' cy='100' r='7' fill='#56c5f5' stroke='#0277bd' stroke-width='2'/><circle cx='310' cy='100' r='9' fill='#0277bd'/><circle cx='510' cy='100' r='7' fill='#e3f2fd' stroke='#0277bd' stroke-width='2' stroke-dasharray='3,2'/><text x='110' y='72' text-anchor='middle' font-size='13' font-weight='bold' fill='#0277bd'>3.35</text><text x='110' y='130' text-anchor='middle' font-size='11' fill='#333'>experimental導入</text><text x='310' y='72' text-anchor='middle' font-size='13' font-weight='bold' fill='#0277bd'>3.44（現行）</text><text x='310' y='130' text-anchor='middle' font-size='11' fill='#333'>VS Code / IntelliJ</text><text x='310' y='147' text-anchor='middle' font-size='11' fill='#333'>IDE統合を強化</text><text x='510' y='72' text-anchor='middle' font-size='13' font-weight='bold' fill='#0277bd'>3.47（予定）</text><text x='510' y='130' text-anchor='middle' font-size='11' fill='#333'>interactive preview</text><text x='510' y='147' text-anchor='middle' font-size='11' fill='#333'>デバッグ強化</text></svg><figcaption>図1：Widget Previewerの進化ロードマップ — 実験導入からinteractive previewへ</figcaption></figure>\n<p>足元の安定版は<b>Flutter 3.44.0 / Dart 3.12.2</b>（次の安定版は8月予定）。3.44の地殻変動はMaterial/Cupertinoの独立パッケージ<b>material_ui / cupertino_ui</b>への移行で、<b>3ヶ月のSDKサイクルに縛られずpub.devで随時更新</b>される体制になった。Material 3 Expressiveの新機能もSDKリリースを待たず届く。<b>Webのhot reloadがフラグ不要で正式利用可能</b>になり、Web開発の反復ループがモバイルと同等になったのも大きい。DevToolsは<b>WASMが既定</b>となり軽量化。なお3.38以降へ上げる際は<b>Apple必須のUIScene lifecycle対応でコード移行が必要</b>な点に注意。</p>\n<p>アニメーション側では<b>Rive 0.12+のnamed events</b>が面白い。アニメーション側からFlutterへイベントを発火でき、ハプティクス・サウンド・ナビゲーションを特定のインタラクション時点で正確にトリガーできる。state machineがアニメロジックを描画から分離するので、デザイナーはコードに触れず反復し、実装側はboolean/number/triggerの入力を繋ぐだけ。土台のImpellerはAOTシェーダーコンパイルでジャンクを排除し、複雑シーンの平均ラスタライズ時間を約50%短縮している。</p>\n<p>状態管理は基本線どおり<b>新規はRiverpod 3.x既定</b>（Mutations・オフライン永続化はexperimental、大規模アプリでProvider比20〜25%のメモリ削減）、<b>監査証跡が要る規制業界はBloc 9.x</b>（bloc v9.2.x / flutter_bloc v9.1.x）。今日の教訓は「選定はベンチマークでなくチーム習熟度に従う」——BLoCに習熟したチームは乗り換えるより出荷する方が速い。パフォーマンスは90/120Hz主流でフレーム予算<b>8〜11ms</b>、計測は必ずprofileモードで。</p>\n<p>自分が試すなら、3.44でWidget Previewerを有効化して普段のコンポーネント修正ループに組み込み、体感の差を確かめる。注意点はexperimental段階の機能ゆえIDE・プロジェクト構成によって挙動差があり得ること。</p>\n<p><b>ひとことまとめ:</b> 「アプリを起動しないUI開発」への布石が着々と進む。3.44は静かだが、反復速度という一番効く場所を変えつつある。</p>",
+      "sources": [
+        {
+          "title": "What's new in the docs",
+          "url": "https://docs.flutter.dev/release/whats-new"
+        },
+        {
+          "title": "Flutter 3.44.0 release notes",
+          "url": "https://docs.flutter.dev/release/release-notes/release-notes-3.44.0"
+        },
+        {
+          "title": "What's new in Flutter 3.44",
+          "url": "https://blog.flutter.dev/whats-new-in-flutter-3-44-b0cc1ad3c527"
+        },
+        {
+          "title": "Flutter Rive Guide",
+          "url": "https://rive.app/docs/runtimes/flutter/flutter"
+        },
+        {
+          "title": "Flutter State Management 2026",
+          "url": "https://sharpskill.dev/en/blog/flutter/flutter-state-management-2026-riverpod-bloc-getx"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-10-github-trending",
+      "date": "2026-07-10",
+      "topic": "GitHub Trending",
+      "title": "7/10の話題リポジトリ — エージェントに実務作法・ローカル会議AI・WiFi空間センシング",
+      "lede": "AIに実務の作法を教える、会議データを外に出さない、カメラなしで見守る——3本に共通するのは「便利さの裏で犠牲になっていたもの（品質・プライバシー）」を技術で取り戻す動き。",
+      "articleHtml": "<p>今日の3本は言語もジャンルもばらばらだが、「既存のやり方が犠牲にしてきたもの」を回収しにいく点で通じている。エージェントの出力品質、会議データのプライバシー、見守りにおけるカメラの侵襲性。それぞれの「課題」と「提供機能」を見ていく。</p>\n<figure class='fig'><svg viewBox='0 0 620 260' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='150' height='50' rx='8' fill='#eafaf0' stroke='#3fb950'/><text x='85' y='40' text-anchor='middle' font-size='12' font-weight='bold' fill='#1a7f37'>リポジトリ</text><rect x='170' y='10' width='215' height='50' rx='8' fill='#eafaf0' stroke='#3fb950'/><text x='277' y='40' text-anchor='middle' font-size='12' font-weight='bold' fill='#1a7f37'>解決したい課題</text><rect x='395' y='10' width='215' height='50' rx='8' fill='#eafaf0' stroke='#3fb950'/><text x='502' y='40' text-anchor='middle' font-size='12' font-weight='bold' fill='#1a7f37'>提供する機能</text><rect x='10' y='70' width='150' height='58' rx='8' fill='#fff' stroke='#3fb950'/><text x='85' y='95' text-anchor='middle' font-size='11.5' font-weight='bold' fill='#333'>agent-skills</text><text x='85' y='113' text-anchor='middle' font-size='10.5' fill='#666'>JS ・ ⭐75k</text><rect x='170' y='70' width='215' height='58' rx='8' fill='#fff' stroke='#d0e8d8'/><text x='277' y='95' text-anchor='middle' font-size='11' fill='#333'>エージェントのコードが</text><text x='277' y='112' text-anchor='middle' font-size='11' fill='#333'>実務品質に届かない</text><rect x='395' y='70' width='215' height='58' rx='8' fill='#fff' stroke='#d0e8d8'/><text x='502' y='95' text-anchor='middle' font-size='11' fill='#333'>実務作法のスキル集を</text><text x='502' y='112' text-anchor='middle' font-size='11' fill='#333'>エージェントに装備</text><rect x='10' y='136' width='150' height='58' rx='8' fill='#fff' stroke='#3fb950'/><text x='85' y='161' text-anchor='middle' font-size='11.5' font-weight='bold' fill='#333'>meetily</text><text x='85' y='179' text-anchor='middle' font-size='10.5' fill='#666'>Rust ・ ⭐22k</text><rect x='170' y='136' width='215' height='58' rx='8' fill='#fff' stroke='#d0e8d8'/><text x='277' y='161' text-anchor='middle' font-size='11' fill='#333'>会議AIがデータを</text><text x='277' y='178' text-anchor='middle' font-size='11' fill='#333'>外部クラウドへ送る</text><rect x='395' y='136' width='215' height='58' rx='8' fill='#fff' stroke='#d0e8d8'/><text x='502' y='161' text-anchor='middle' font-size='11' fill='#333'>完全ローカルで4倍速の</text><text x='502' y='178' text-anchor='middle' font-size='11' fill='#333'>ライブ文字起こし・要約</text><rect x='10' y='202' width='150' height='50' rx='8' fill='#fff' stroke='#3fb950'/><text x='85' y='223' text-anchor='middle' font-size='11.5' font-weight='bold' fill='#333'>RuView</text><text x='85' y='240' text-anchor='middle' font-size='10.5' fill='#666'>⭐77k</text><rect x='170' y='202' width='215' height='50' rx='8' fill='#fff' stroke='#d0e8d8'/><text x='277' y='223' text-anchor='middle' font-size='11' fill='#333'>見守りがカメラ前提で</text><text x='277' y='240' text-anchor='middle' font-size='11' fill='#333'>プライバシーの壁</text><rect x='395' y='202' width='215' height='50' rx='8' fill='#fff' stroke='#d0e8d8'/><text x='502' y='223' text-anchor='middle' font-size='11' fill='#333'>WiFi電波で存在・呼吸・</text><text x='502' y='240' text-anchor='middle' font-size='11' fill='#333'>心拍を壁越しに検知</text></svg><figcaption>図1：今日の3本 — 課題と提供機能の対応</figcaption></figure>\n<h4>addyosmani/agent-skills（JavaScript・⭐75k）</h4>\n<p><b>解決したい課題:</b> AIコーディングエージェントのコードは「動く」が、コードレビューの観点、パフォーマンス改善の定石、保守性への配慮といった<b>実務品質（production-grade）のエンジニアリング作法</b>を欠きがち。個々の開発者がプロンプトで毎回教え直す非効率が常態化していた。</p>\n<p><b>提供する機能:</b> そうした実務知を「スキル」としてパッケージ化したキュレーション集。Claude Codeなど主要エージェントにそのまま導入でき、レビューや性能改善の作法を装備させられる。Chrome開発で知られるGoogleのAddy Osmani氏が編んでいる信頼性も効いており、直近7日で+約6,700スター、本日のTrending 1位。エージェントスキルブームの本命だ。</p>\n<h4>Zackriya-Solutions/meetily（Rust・⭐22k）</h4>\n<p><b>解決したい課題:</b> クラウド型の会議AIアシスタントは便利な反面、<b>会議音声・議事内容という最も機密性の高いデータを外部に送信する</b>。コンプライアンス上クラウド利用が難しい企業や個人には採用しづらかった。</p>\n<p><b>提供する機能:</b> Parakeet/Whisperによる<b>従来比4倍速のライブ文字起こし</b>から要約・ノート生成までを<b>完全ローカル</b>で実行する会議アシスタント。データは一切外に出ない。直近7日で+約8,400スターと3本中最も勢いがあり、クラウド型会議AIの対抗馬として注目されている。</p>\n<h4>ruvnet/RuView（⭐77k）</h4>\n<p><b>解決したい課題:</b> 高齢者の見守りや在室検知は<b>カメラやウェアラブルが前提</b>で、プライバシーの抵抗感・装着の手間・導入コストが壁だった。</p>\n<p><b>提供する機能:</b> 家庭のWiFi電波をセンサー化し、<b>壁越しに人の存在・呼吸・心拍・活動状態を検知</b>する空間センシングシステム。ESP32のような安価なエッジデバイスと<b>8KBの超軽量AIモデル</b>で動き、Home Assistant・Apple Home・Google Home・Alexaに統合できる。カメラ不要の見守りという切り口で本日Trending 2位を維持。</p>\n<p><b>まとめ:</b> 自分が試すならまずagent-skills。Claude Codeに数個入れてレビュー品質の変化を見るだけで元が取れる。meetilyは社内議事録フローのローカル化検証に、RuViewはESP32が手元にあれば週末プロジェクトとして面白い。</p>",
+      "sources": [
+        {
+          "title": "addyosmani/agent-skills",
+          "url": "https://github.com/addyosmani/agent-skills"
+        },
+        {
+          "title": "Zackriya-Solutions/meetily",
+          "url": "https://github.com/Zackriya-Solutions/meetily"
+        },
+        {
+          "title": "ruvnet/RuView",
+          "url": "https://github.com/ruvnet/RuView"
+        }
+      ]
+    },
     {
       "id": "2026-07-09-claude-code",
       "date": "2026-07-09",
