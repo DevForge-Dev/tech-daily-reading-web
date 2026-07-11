@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-07-10T04:47:14.291Z",
+  "generatedAt": "2026-07-11T04:47:26.127Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,106 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-07-11-claude-code",
+      "date": "2026-07-11",
+      "topic": "Claude Code",
+      "title": "Claude CodeにArtifacts登場 — セッション成果のライブ共有と公式「Steering」ガイド",
+      "lede": "作業成果をライブなWebページとして共有できるArtifactsが追加。同時に公式ブログがCLAUDE.md・Skills・Hooks・Subagentsの使い分け決定版ガイドを公開し、「指示の置き場所」を再設計する日になった。",
+      "articleHtml": "<p>Claude Codeの公式changelogにArtifactsの追加が載った。セッションで作った成果物を、その場で更新されるライブなWebページとして共有できる機能で、Team/Enterprise向けには組織内限定共有とバージョン履歴がベータ提供される。「作業の途中経過をURLで見せる」がCLIだけで完結するようになる大きめの機能追加だ。あわせて<code>/cd</code>のディレクトリパス補完、コードベースから導出できる内容を削ってCLAUDE.mdのスリム化を提案する<code>/doctor</code>チェック、<code>/commit-push-pr</code>が設定済みリモートへのpushを自動許可する改善も入った。</p><h4>公式「Steering Claude Code」ガイドの要点</h4><p>同じタイミングでAnthropic公式ブログが、Claude Codeを狙い通りに動かすための機構の使い分けを整理した。基本線は3つ。(1) デプロイ手順やリリースチェックリストのような<b>手続き的な指示はCLAUDE.mdではなくSkillsへ</b>置く。(2) 100%確実に守らせたいルールは<b>指示ではなくHooksで決定論的に強制</b>する。(3) CLAUDE.mdは<b>ビルドコマンドやアーキテクチャノートなど常時必要な情報だけ</b>に絞って簡潔に保つ。<code>/doctor</code>のスリム化提案は、この方針をツール側から後押しする機能と読める。</p><figure class='fig'><svg viewBox='0 0 600 240' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='280' height='100' rx='10' fill='#f3ecff' stroke='#7b3fe4'/><text x='150' y='38' text-anchor='middle' font-size='14' font-weight='bold' fill='#4a2a90'>CLAUDE.md</text><text x='150' y='62' text-anchor='middle' font-size='12' fill='#333'>常時必要な情報だけ・簡潔に</text><text x='150' y='82' text-anchor='middle' font-size='11' fill='#666'>ビルドコマンド / アーキテクチャノート</text><rect x='310' y='10' width='280' height='100' rx='10' fill='#eaf3ff' stroke='#1f6feb'/><text x='450' y='38' text-anchor='middle' font-size='14' font-weight='bold' fill='#134a9e'>Skills</text><text x='450' y='62' text-anchor='middle' font-size='12' fill='#333'>手続き的な指示・手順書</text><text x='450' y='82' text-anchor='middle' font-size='11' fill='#666'>デプロイ手順 / リリースチェックリスト</text><rect x='10' y='125' width='280' height='100' rx='10' fill='#ffefe8' stroke='#d9552e'/><text x='150' y='153' text-anchor='middle' font-size='14' font-weight='bold' fill='#9e3a17'>Hooks</text><text x='150' y='177' text-anchor='middle' font-size='12' fill='#333'>100%守らせたいルールを強制</text><text x='150' y='197' text-anchor='middle' font-size='11' fill='#666'>安全ルールを決定論的に実行</text><rect x='310' y='125' width='280' height='100' rx='10' fill='#eafaf0' stroke='#1a7f37'/><text x='450' y='153' text-anchor='middle' font-size='14' font-weight='bold' fill='#14602a'>Subagents</text><text x='450' y='177' text-anchor='middle' font-size='12' fill='#333'>冗長な出力・探索の隔離</text><text x='450' y='197' text-anchor='middle' font-size='11' fill='#666'>コンテキスト肥大化の防止</text></svg><figcaption>図1：公式ガイドによる「指示の置き場所」マップ — 性質で4つに振り分ける</figcaption></figure><p>運用面では、Team/Enterprise管理者がリモートからのセッション閲覧・操作（ステアリング）の前に端末認証（Trusted Devices）を必須化できるようになり、バックグラウンドエージェントの自動アップグレードも入った。また報道ベースでは、週次利用上限が7月13日まで一時的に+50%されている（対Codexの利用促進策との見方）。VentureBeatによれば、Anthropic自身の新規プロダクションコードの80%はすでにClaudeが書いているという。</p><p>自分が試すなら、まず<code>/doctor</code>を走らせてCLAUDE.mdの削減提案を受け、手続き的な記述をSkillsへ移す棚卸しから。注意点は、Artifactsの組織内共有・バージョン履歴はベータかつTeam/Enterprise限定なこと、上限+50%は期間限定なこと。</p><p><b>ひとことまとめ:</b> 成果物はArtifactsでライブ共有、指示は「常時=CLAUDE.md / 手続き=Skill / 強制=Hook」へ再配置する日。</p>",
+      "sources": [
+        {
+          "title": "Claude Code Changelog",
+          "url": "https://code.claude.com/docs/en/changelog"
+        },
+        {
+          "title": "Steering Claude Code（Anthropic公式ブログ）",
+          "url": "https://claude.com/blog/steering-claude-code-skills-hooks-rules-subagents-and-more"
+        },
+        {
+          "title": "Releasebot: Anthropic updates",
+          "url": "https://releasebot.io/updates/anthropic/claude"
+        },
+        {
+          "title": "VentureBeat: 新規コードの80%をClaudeが執筆",
+          "url": "https://venturebeat.com/technology/anthropic-says-80-of-its-new-production-code-is-now-authored-by-claude-how-your-enterprise-can-keep-up"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-11-nextjs",
+      "date": "2026-07-11",
+      "topic": "Next.js",
+      "title": "React Compiler v1をNext.jsで — reactCompiler: trueで始める自動メモ化とRust版の現在地",
+      "lede": "手書きのuseMemo/useCallbackをビルド時の自動メモ化で置き換えるReact Compilerが実用段階に。Next.js 16はトップレベル設定で安定サポート、Rust移植でビルド40%以上高速化も視野に入った。",
+      "articleHtml": "<p>React Compilerは、<code>useMemo</code>/<code>useCallback</code>/<code>React.memo</code>を手書きしなくても、ビルド時にコンポーネントとフックを自動メモ化する最適化コンパイラだ。2025年10月7日にv1.0が安定版となり、Next.jsは16.0からトップレベル設定<code>reactCompiler: true</code>で安定サポート（15系は<code>experimental.reactCompiler</code>）。Metaの本番アプリで初期ロード/ページ間ナビゲーション最大12%改善、特定インタラクション2.5倍以上高速化・メモリ中立という報告があり、再レンダー削減はINP改善に直結するため「まず有効化を検討すべき」段階に入った。</p><p>仕組みとしてはBabelプラグインだが、内部ではASTを制御フローグラフベースの中間表現（HIR）に下ろし、データフローと可変性を解析してレンダーに使われる値を粒度細かくメモ化する。早期returnの後の値や条件付きメモ化、<code>a?.b</code>を依存として扱うなど、手書きでは書けない位置のメモ化ができるのが強み。同時にRules of Reactの検証パスを持ち、<code>eslint-plugin-react-hooks</code>のrecommendedにコンパイラ由来のlintが統合済みだ（旧<code>eslint-plugin-react-compiler</code>は削除してよい）。</p><figure class='fig'><svg viewBox='0 0 600 220' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='80' width='120' height='56' rx='9' fill='#eaf3ff' stroke='#1f6feb'/><text x='70' y='104' text-anchor='middle' font-size='12' font-weight='bold' fill='#134a9e'>ソースコード</text><text x='70' y='122' text-anchor='middle' font-size='10.5' fill='#555'>手書きメモ化不要</text><path d='M130 108 L168 108' stroke='#888' stroke-width='2' marker-end='url(#a)'/><rect x='170' y='80' width='140' height='56' rx='9' fill='#f0f6ff' stroke='#1f6feb'/><text x='240' y='100' text-anchor='middle' font-size='12' font-weight='bold' fill='#134a9e'>HIR解析</text><text x='240' y='118' text-anchor='middle' font-size='10.5' fill='#555'>データフロー・可変性</text><path d='M310 108 L348 108' stroke='#888' stroke-width='2'/><rect x='350' y='80' width='120' height='56' rx='9' fill='#f0f6ff' stroke='#1f6feb'/><text x='410' y='100' text-anchor='middle' font-size='12' font-weight='bold' fill='#134a9e'>Rules検証</text><text x='410' y='118' text-anchor='middle' font-size='10.5' fill='#555'>違反を診断</text><path d='M470 96 L508 46' stroke='#1a7f37' stroke-width='2'/><path d='M470 120 L508 172' stroke='#c0392b' stroke-width='2'/><rect x='480' y='16' width='112' height='52' rx='9' fill='#eafaf0' stroke='#1a7f37'/><text x='536' y='38' text-anchor='middle' font-size='12' font-weight='bold' fill='#14602a'>自動メモ化</text><text x='536' y='56' text-anchor='middle' font-size='10.5' fill='#555'>DevToolsにMemo✨</text><rect x='480' y='150' width='112' height='52' rx='9' fill='#fdeeee' stroke='#c0392b'/><text x='536' y='172' text-anchor='middle' font-size='12' font-weight='bold' fill='#8e2820'>サイレントスキップ</text><text x='536' y='190' text-anchor='middle' font-size='10.5' fill='#555'>動くが速くならない</text></svg><figcaption>図1：コンパイルの流れ — Rules違反は壊れず「黙って最適化対象外」になる</figcaption></figure><pre><code>// next.config.ts（Next.js 16）\nimport type { NextConfig } from 'next'\nconst nextConfig: NextConfig = {\n  reactCompiler: true,\n  // 段階導入: { compilationMode: 'annotation' } + 対象に 'use memo'\n}\nexport default nextConfig</code></pre><p>最大の落とし穴はこの「サイレントスキップ」だ。レンダー中のprops変異など違反のあるコンポーネントは壊れる代わりに黙って最適化から外れ、「動くが速くならない」新種のパフォーマンスバグになる。React DevTools（v5+）の「Memo ✨」バッジで最適化の有無を確認する。既存の<code>useMemo</code>/<code>useCallback</code>は急いで剥がさない — 特にeffectの依存に使う値は、コンパイラのメモ化粒度変更で<code>useEffect</code>の発火頻度が変わりうるため、手書きを残すのが公式推奨。バージョンは<code>--save-exact</code>で固定する。Server Componentsに再レンダーは無いので、恩恵は<code>'use client'</code>の島に集中する点も設計上は変わらない。</p><p>ビルド速度の懸念にも答えが出つつある。Rust移植版がNext.js 16.3のTurbopackに実験的統合され、直接リンクした計測ではコンパイル全体が40%以上高速化、16.4で本組み込みが進む。自分が試すなら、新規はコンパイラ有効テンプレート＋lint最新化で全体有効、既存アプリは頻出クライアントコンポーネントにバッジが付くかの確認から始める。</p><p><b>ひとことまとめ:</b> 「ビルドが遅くなるから見送り」という理由が消えつつある今、reactCompiler: trueは新規Next.jsの既定に置いてよい。</p>",
+      "sources": [
+        {
+          "title": "React Compiler v1.0（react.dev）",
+          "url": "https://react.dev/blog/2025/10/07/react-compiler-1"
+        },
+        {
+          "title": "Next.js Docs: reactCompiler",
+          "url": "https://nextjs.org/docs/app/api-reference/config/next-config-js/reactCompiler"
+        },
+        {
+          "title": "React Docs: 段階導入ガイド",
+          "url": "https://react.dev/learn/react-compiler/incremental-adoption"
+        },
+        {
+          "title": "Next.js Blog: Turbopack in 16.3",
+          "url": "https://nextjs.org/blog/next-16-3-turbopack"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-11-flutter",
+      "date": "2026-07-11",
+      "topic": "Flutter",
+      "title": "Flutter 3.44系の地雷ウォッチ — VS 2026非対応・iOS 26デバッグハング・APNGオーバーフロー",
+      "lede": "アップグレード前に踏むべき既知問題が3つ明確になった。アニメーションの指標は「60fps達成」から「120fps安定維持」へ、状態管理の教訓は「1つ選んで一貫し、テストを書く」。",
+      "articleHtml": "<p>今日の主役はFlutter 3.44系の既知問題ウォッチだ。アップグレード前に確認すべき地雷が3つはっきりした。(1) <b>Visual Studio 2026はWindowsデスクトップアプリのコンパイル非対応</b>で、ビルド環境はVS 2022を維持する。(2) <b>iOS 26実機をIDEからデバッグすると、アプリはインストールされるが起動時に白画面のままハング</b>する。(3) <b>animated PNG（APNG）処理に整数オーバーフローの可能性</b>が報告され、修正が進行中。安定運用の基準はFlutter 3.44.0 / Dart 3.12.2（次の安定版は2026年8月予定）。</p><figure class='fig'><svg viewBox='0 0 600 190' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='580' height='50' rx='8' fill='#e8f4fd' stroke='#0277bd'/><text x='24' y='31' font-size='12.5' font-weight='bold' fill='#01579b'>① VS 2026でWindowsビルド不可</text><text x='24' y='50' font-size='11.5' fill='#333'>対処: ビルド環境はVS 2022を維持</text><rect x='10' y='68' width='580' height='50' rx='8' fill='#e8f4fd' stroke='#0277bd'/><text x='24' y='89' font-size='12.5' font-weight='bold' fill='#01579b'>② iOS 26実機デバッグで起動時に白画面ハング</text><text x='24' y='108' font-size='11.5' fill='#333'>対処: 修正待ち。リリースビルドや別OSバージョン実機で検証</text><rect x='10' y='126' width='580' height='50' rx='8' fill='#fdf3e8' stroke='#c77b1e'/><text x='24' y='147' font-size='12.5' font-weight='bold' fill='#8a5410'>③ APNG処理に整数オーバーフローの可能性</text><text x='24' y='166' font-size='11.5' fill='#333'>対処: 修正進行中。APNG使用箇所を点検しておく</text></svg><figcaption>図1：3.44系アップグレード前チェックリスト — 3つの既知問題と対処</figcaption></figure><p>3.44の柱は「framework packagesのSDK分離・Appleツーリング近代化・AI支援開発への準備・デスクトップ再編」。Material/Cupertinoは独立パッケージ<code>material_ui</code>/<code>cupertino_ui</code>へ移行中で、SDKの3ヶ月サイクルに縛られずpub.devで随時更新される。MCP serverとコーディングエージェントが起動中のアプリを自動検出・接続し、AIのUI編集で自動hot reloadする<b>Agentic Hot Reload</b>も要注目だ。Dart 3.10のdot shorthands（型が明らかならprefix省略）は成熟期に入り、公式サンプルも移行中。</p><p>アニメーションの焦点は「60fpsを満たす」から<b>「高リフレッシュ端末で120fpsを安定維持」</b>へ移った。ImpellerはAOT（ビルド時）シェーダーコンパイルで重処理を起動前に済ませ、アニメ発火時には命令がGPU待機済み — シェーダーコンパイルジャンクを排除し、複雑シーンの平均ラスタライズ時間を約50%短縮した。フレーム予算は60fps=16ms、90〜120Hzでは8〜11ms。使い分けはまずimplicit（<code>AnimatedContainer</code>等）、精密なchoreographyはexplicit（<code>AnimationController</code>、dispose必須）、重い演出はRive（0.12+のeventsでハプティクスやナビゲーションを正確にトリガー）へオフロード。</p><p>状態管理の今日の教訓は<b>「1つ選んで一貫し、テストを書く」</b>。よくテストされたBlocアプリは、未テストのRiverpodアプリより保守しやすい — ライブラリはインフラで、テストが安全網だ。基本線は変わらず、新規はRiverpod 3.0（Mutations・200msから倍々で最大6.4sの指数バックオフ自動リトライ・画面外listenerの自動pause）、大規模・監査要件はBloc 9.0。パフォーマンスは<code>AutomaticKeepAliveClientMixin</code>でスクロールリストのstateを保持し、<code>KeyedSubtree</code>/<code>ValueKey</code>でdiffを効率化、計測は必ずprofileモードで行う。</p><p><b>ひとことまとめ:</b> 3.44へ上げる前にVS 2026・iOS 26・APNGの3点を確認。走り出したら次の指標は120fpsの安定維持。</p>",
+      "sources": [
+        {
+          "title": "Flutter release notes",
+          "url": "https://docs.flutter.dev/release/release-notes"
+        },
+        {
+          "title": "What's new in Flutter 3.44",
+          "url": "https://blog.flutter.dev/whats-new-in-flutter-3-44-b0cc1ad3c527"
+        },
+        {
+          "title": "How Impeller Is Transforming Flutter UI Rendering in 2026",
+          "url": "https://dev.to/eira-wexford/how-impeller-is-transforming-flutter-ui-rendering-in-2026-3dpd"
+        },
+        {
+          "title": "Best Flutter State Management Libraries 2026",
+          "url": "https://foresightmobile.com/blog/best-flutter-state-management"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-11-github-trending",
+      "date": "2026-07-11",
+      "topic": "GitHub Trending",
+      "title": "7/11の話題リポジトリ — 競合越境プラグイン・検索エンジンのAI回帰・PyTorch 10万⭐",
+      "lede": "OpenAIがClaude Code向け公式プラグインを出す異例の越境、AI基盤需要で再燃する老舗検索エンジン、10万スターを超えたデファクト — 今日は「AIが既存エコシステムを再加熱する」日。",
+      "articleHtml": "<p>今日の3本は、新興ツールの一発逆転ではなく「AIの波が既存のエコシステムを再加熱する」構図で貫ける。競合の垣根を越える公式プラグイン、AIの記憶基盤として再浮上した老舗検索エンジン、節目を超えてなお伸びるデファクトフレームワークだ。</p><h4>openai/codex-plugin-cc（JavaScript・⭐23.1k）</h4><p><b>解決したい課題:</b> コーディングエージェントの乱立で、開発者はClaude CodeとCodexを行き来し、レビュー品質や会話コンテキストがツール間で分断される不便が生まれていた。OpenAIは競合Anthropic製のCLIの内側に公式に入り込むことで、この切り替えコスト自体を無くしにきている。</p><p><b>提供する機能:</b> Claude Code内からCodex本体の<code>/review</code>と同品質のコードレビューを実行でき、会話コンテキストを引き継ぐCodexスレッドを作ってタスクを委譲できる。バックグラウンドのCodexジョブの一覧・結果確認・キャンセルにも対応。急上昇（本日+629）の理由は、この異例のクロスベンダー展開そのものだ。</p><h4>elastic/elasticsearch（Java・⭐77.3k）</h4><p><b>解決したい課題:</b> RAGやAIエージェントには「全文検索とベクトル検索の両立」と大規模ベクトルインデックスの構築速度が必要だが、専用ベクトルDBと既存検索基盤の使い分けは運用負担が大きい。</p><p><b>提供する機能:</b> ハイブリッド検索（全文＋ベクトル）をネイティブにサポートし、NVIDIA cuVS連携のGPUアクセラレーションでベクトルインデックス構築を最大12倍高速化。エンタープライズ実績が豊富な分散RESTful検索・分析エンジンとして、エージェントの検索/コンテキスト基盤に収まる。AI向け強化の連打が、老舗を本日のTrendingに押し戻した。</p><h4>pytorch/pytorch（Python・⭐101.4k）</h4><p><b>解決したい課題:</b> 研究に必要な柔軟なモデル記述と、プロダクションに必要な学習・推論速度の両立という、深層学習フレームワークの根源的な課題。</p><p><b>提供する機能:</b> 動的計算グラフによる柔軟な記述とGPUアクセラレーションを核に、<code>torch.compile</code>などで高速化が進む。LLMを含む主要AI研究/プロダクションの事実上の標準基盤だ。総スターが10万を超えた節目でTrending入りし（本日+290）、成熟した大型OSSとしては異例のペースで伸び続けている。</p><figure class='fig'><svg viewBox='0 0 600 230' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='170' height='30' rx='6' fill='#eafaf0' stroke='#1a7f37'/><text x='95' y='30' text-anchor='middle' font-size='12' font-weight='bold' fill='#14602a'>リポジトリ</text><rect x='185' y='10' width='200' height='30' rx='6' fill='#eafaf0' stroke='#1a7f37'/><text x='285' y='30' text-anchor='middle' font-size='12' font-weight='bold' fill='#14602a'>解決したい課題</text><rect x='390' y='10' width='200' height='30' rx='6' fill='#eafaf0' stroke='#1a7f37'/><text x='490' y='30' text-anchor='middle' font-size='12' font-weight='bold' fill='#14602a'>提供する機能</text><rect x='10' y='45' width='170' height='58' rx='6' fill='#fff' stroke='#c8e6c9'/><text x='95' y='70' text-anchor='middle' font-size='11.5' font-weight='bold' fill='#333'>codex-plugin-cc</text><text x='95' y='88' text-anchor='middle' font-size='10.5' fill='#666'>JS・⭐23.1k</text><rect x='185' y='45' width='200' height='58' rx='6' fill='#fff' stroke='#c8e6c9'/><text x='285' y='70' text-anchor='middle' font-size='10.5' fill='#333'>エージェント間の切替コスト</text><text x='285' y='88' text-anchor='middle' font-size='10.5' fill='#333'>文脈・レビュー品質の分断</text><rect x='390' y='45' width='200' height='58' rx='6' fill='#fff' stroke='#c8e6c9'/><text x='490' y='70' text-anchor='middle' font-size='10.5' fill='#333'>Claude Code内でCodexレビュー</text><text x='490' y='88' text-anchor='middle' font-size='10.5' fill='#333'>文脈引き継ぎのタスク委譲</text><rect x='10' y='108' width='170' height='58' rx='6' fill='#fff' stroke='#c8e6c9'/><text x='95' y='133' text-anchor='middle' font-size='11.5' font-weight='bold' fill='#333'>elasticsearch</text><text x='95' y='151' text-anchor='middle' font-size='10.5' fill='#666'>Java・⭐77.3k</text><rect x='185' y='108' width='200' height='58' rx='6' fill='#fff' stroke='#c8e6c9'/><text x='285' y='133' text-anchor='middle' font-size='10.5' fill='#333'>RAG向け検索基盤の複雑さ</text><text x='285' y='151' text-anchor='middle' font-size='10.5' fill='#333'>ベクトル構築の遅さ</text><rect x='390' y='108' width='200' height='58' rx='6' fill='#fff' stroke='#c8e6c9'/><text x='490' y='133' text-anchor='middle' font-size='10.5' fill='#333'>ハイブリッド検索ネイティブ</text><text x='490' y='151' text-anchor='middle' font-size='10.5' fill='#333'>GPUで indexing 最大12倍</text><rect x='10' y='171' width='170' height='52' rx='6' fill='#fff' stroke='#c8e6c9'/><text x='95' y='193' text-anchor='middle' font-size='11.5' font-weight='bold' fill='#333'>pytorch</text><text x='95' y='211' text-anchor='middle' font-size='10.5' fill='#666'>Python・⭐101.4k</text><rect x='185' y='171' width='200' height='52' rx='6' fill='#fff' stroke='#c8e6c9'/><text x='285' y='193' text-anchor='middle' font-size='10.5' fill='#333'>研究の柔軟性と本番速度の</text><text x='285' y='211' text-anchor='middle' font-size='10.5' fill='#333'>両立</text><rect x='390' y='171' width='200' height='52' rx='6' fill='#fff' stroke='#c8e6c9'/><text x='490' y='193' text-anchor='middle' font-size='10.5' fill='#333'>動的グラフ＋torch.compile</text><text x='490' y='211' text-anchor='middle' font-size='10.5' fill='#333'>AI研究の標準基盤</text></svg><figcaption>図1：今日の3本 — 「解決したい課題」と「提供する機能」の対応</figcaption></figure><p><b>まとめ:</b> 自分が試すなら文句なしにcodex-plugin-cc。普段のClaude Codeセッションに入れて、Codexの<code>/review</code>とClaude自身のレビューの指摘差分を1週間比べてみたい。</p>",
+      "sources": [
+        {
+          "title": "openai/codex-plugin-cc",
+          "url": "https://github.com/openai/codex-plugin-cc"
+        },
+        {
+          "title": "elastic/elasticsearch",
+          "url": "https://github.com/elastic/elasticsearch"
+        },
+        {
+          "title": "pytorch/pytorch",
+          "url": "https://github.com/pytorch/pytorch"
+        }
+      ]
+    },
     {
       "id": "2026-07-10-claude-code",
       "date": "2026-07-10",
