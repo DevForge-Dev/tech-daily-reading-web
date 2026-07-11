@@ -1,0 +1,59 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>7/11の話題リポジトリ — 競合越境プラグイン・検索エンジンのAI回帰・PyTorch 10万⭐ — デイリー技術深掘り 読み物</title><meta name="description" content="OpenAIがClaude Code向け公式プラグインを出す異例の越境、AI基盤需要で再燃する老舗検索エンジン、10万スターを超えたデファクト — 今日は「AIが既存エコシステムを再加熱する」日。"><meta name="theme-color" content="#238636"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-11-github-trending/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="7/11の話題リポジトリ — 競合越境プラグイン・検索エンジンのAI回帰・PyTorch 10万⭐ — デイリー技術深掘り 読み物"><meta property="og:description" content="OpenAIがClaude Code向け公式プラグインを出す異例の越境、AI基盤需要で再燃する老舗検索エンジン、10万スターを超えたデファクト — 今日は「AIが既存エコシステムを再加熱する」日。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-11-github-trending/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3fb950, #1a7f37)"> <span class="glyph" aria-hidden="true">★</span> <div class="kicker">GitHub Trending</div> <h1>7/11の話題リポジトリ — 競合越境プラグイン・検索エンジンのAI回帰・PyTorch 10万⭐</h1> <p class="lede">OpenAIがClaude Code向け公式プラグインを出す異例の越境、AI基盤需要で再燃する老舗検索エンジン、10万スターを超えたデファクト — 今日は「AIが既存エコシステムを再加熱する」日。</p> <div class="meta"> <span>📅 2026年7月11日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#238636"> <div> <article class="prose" data-has-mermaid="0"><p>今日の3本は、新興ツールの一発逆転ではなく「AIの波が既存のエコシステムを再加熱する」構図で貫ける。競合の垣根を越える公式プラグイン、AIの記憶基盤として再浮上した老舗検索エンジン、節目を超えてなお伸びるデファクトフレームワークだ。</p><h4 id="sec-1">openai/codex-plugin-cc（JavaScript・⭐23.1k）</h4><p><b>解決したい課題:</b> コーディングエージェントの乱立で、開発者はClaude CodeとCodexを行き来し、レビュー品質や会話コンテキストがツール間で分断される不便が生まれていた。OpenAIは競合Anthropic製のCLIの内側に公式に入り込むことで、この切り替えコスト自体を無くしにきている。</p><p><b>提供する機能:</b> Claude Code内からCodex本体の<code>/review</code>と同品質のコードレビューを実行でき、会話コンテキストを引き継ぐCodexスレッドを作ってタスクを委譲できる。バックグラウンドのCodexジョブの一覧・結果確認・キャンセルにも対応。急上昇（本日+629）の理由は、この異例のクロスベンダー展開そのものだ。</p><h4 id="sec-2">elastic/elasticsearch（Java・⭐77.3k）</h4><p><b>解決したい課題:</b> RAGやAIエージェントには「全文検索とベクトル検索の両立」と大規模ベクトルインデックスの構築速度が必要だが、専用ベクトルDBと既存検索基盤の使い分けは運用負担が大きい。</p><p><b>提供する機能:</b> ハイブリッド検索（全文＋ベクトル）をネイティブにサポートし、NVIDIA cuVS連携のGPUアクセラレーションでベクトルインデックス構築を最大12倍高速化。エンタープライズ実績が豊富な分散RESTful検索・分析エンジンとして、エージェントの検索/コンテキスト基盤に収まる。AI向け強化の連打が、老舗を本日のTrendingに押し戻した。</p><h4 id="sec-3">pytorch/pytorch（Python・⭐101.4k）</h4><p><b>解決したい課題:</b> 研究に必要な柔軟なモデル記述と、プロダクションに必要な学習・推論速度の両立という、深層学習フレームワークの根源的な課題。</p><p><b>提供する機能:</b> 動的計算グラフによる柔軟な記述とGPUアクセラレーションを核に、<code>torch.compile</code>などで高速化が進む。LLMを含む主要AI研究/プロダクションの事実上の標準基盤だ。総スターが10万を超えた節目でTrending入りし（本日+290）、成熟した大型OSSとしては異例のペースで伸び続けている。</p><figure class='fig'><svg viewBox='0 0 600 230' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='170' height='30' rx='6' fill='#eafaf0' stroke='#1a7f37'></rect><text x='95' y='30' text-anchor='middle' font-size='12' font-weight='bold' fill='#14602a'>リポジトリ</text><rect x='185' y='10' width='200' height='30' rx='6' fill='#eafaf0' stroke='#1a7f37'></rect><text x='285' y='30' text-anchor='middle' font-size='12' font-weight='bold' fill='#14602a'>解決したい課題</text><rect x='390' y='10' width='200' height='30' rx='6' fill='#eafaf0' stroke='#1a7f37'></rect><text x='490' y='30' text-anchor='middle' font-size='12' font-weight='bold' fill='#14602a'>提供する機能</text><rect x='10' y='45' width='170' height='58' rx='6' fill='#fff' stroke='#c8e6c9'></rect><text x='95' y='70' text-anchor='middle' font-size='11.5' font-weight='bold' fill='#333'>codex-plugin-cc</text><text x='95' y='88' text-anchor='middle' font-size='10.5' fill='#666'>JS・⭐23.1k</text><rect x='185' y='45' width='200' height='58' rx='6' fill='#fff' stroke='#c8e6c9'></rect><text x='285' y='70' text-anchor='middle' font-size='10.5' fill='#333'>エージェント間の切替コスト</text><text x='285' y='88' text-anchor='middle' font-size='10.5' fill='#333'>文脈・レビュー品質の分断</text><rect x='390' y='45' width='200' height='58' rx='6' fill='#fff' stroke='#c8e6c9'></rect><text x='490' y='70' text-anchor='middle' font-size='10.5' fill='#333'>Claude Code内でCodexレビュー</text><text x='490' y='88' text-anchor='middle' font-size='10.5' fill='#333'>文脈引き継ぎのタスク委譲</text><rect x='10' y='108' width='170' height='58' rx='6' fill='#fff' stroke='#c8e6c9'></rect><text x='95' y='133' text-anchor='middle' font-size='11.5' font-weight='bold' fill='#333'>elasticsearch</text><text x='95' y='151' text-anchor='middle' font-size='10.5' fill='#666'>Java・⭐77.3k</text><rect x='185' y='108' width='200' height='58' rx='6' fill='#fff' stroke='#c8e6c9'></rect><text x='285' y='133' text-anchor='middle' font-size='10.5' fill='#333'>RAG向け検索基盤の複雑さ</text><text x='285' y='151' text-anchor='middle' font-size='10.5' fill='#333'>ベクトル構築の遅さ</text><rect x='390' y='108' width='200' height='58' rx='6' fill='#fff' stroke='#c8e6c9'></rect><text x='490' y='133' text-anchor='middle' font-size='10.5' fill='#333'>ハイブリッド検索ネイティブ</text><text x='490' y='151' text-anchor='middle' font-size='10.5' fill='#333'>GPUで indexing 最大12倍</text><rect x='10' y='171' width='170' height='52' rx='6' fill='#fff' stroke='#c8e6c9'></rect><text x='95' y='193' text-anchor='middle' font-size='11.5' font-weight='bold' fill='#333'>pytorch</text><text x='95' y='211' text-anchor='middle' font-size='10.5' fill='#666'>Python・⭐101.4k</text><rect x='185' y='171' width='200' height='52' rx='6' fill='#fff' stroke='#c8e6c9'></rect><text x='285' y='193' text-anchor='middle' font-size='10.5' fill='#333'>研究の柔軟性と本番速度の</text><text x='285' y='211' text-anchor='middle' font-size='10.5' fill='#333'>両立</text><rect x='390' y='171' width='200' height='52' rx='6' fill='#fff' stroke='#c8e6c9'></rect><text x='490' y='193' text-anchor='middle' font-size='10.5' fill='#333'>動的グラフ＋torch.compile</text><text x='490' y='211' text-anchor='middle' font-size='10.5' fill='#333'>AI研究の標準基盤</text></svg><figcaption>図1：今日の3本 — 「解決したい課題」と「提供する機能」の対応</figcaption></figure><p><b>まとめ:</b> 自分が試すなら文句なしにcodex-plugin-cc。普段のClaude Codeセッションに入れて、Codexの<code>/review</code>とClaude自身のレビューの指摘差分を1週間比べてみたい。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://github.com/openai/codex-plugin-cc" target="_blank" rel="noopener noreferrer"> openai/codex-plugin-cc </a> </li><li> <a href="https://github.com/elastic/elasticsearch" target="_blank" rel="noopener noreferrer"> elastic/elasticsearch </a> </li><li> <a href="https://github.com/pytorch/pytorch" target="_blank" rel="noopener noreferrer"> pytorch/pytorch </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> openai/codex-plugin-cc（JavaScript・⭐23.1k） </a> </li><li> <a href="#sec-2" data-toc="sec-2"> elastic/elasticsearch（Java・⭐77.3k） </a> </li><li> <a href="#sec-3" data-toc="sec-3"> pytorch/pytorch（Python・⭐101.4k） </a> </li> </ul> <div class="reading-box"> <div>📅 2026-07-11</div> <div>⏱ 読了 約3分</div> <div>🏷 GitHub Trending</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
