@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-07-11T04:47:26.127Z",
+  "generatedAt": "2026-07-12T04:46:55.670Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,110 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-07-12-claude-code",
+      "date": "2026-07-12",
+      "topic": "Claude Code",
+      "title": "Sonnet 5がClaude Codeの既定モデルに — 1Mトークン時代の始まりとFable 5最終日",
+      "lede": "v2.1.197でSonnet 5がデフォルト化。ネイティブ1Mトークンと8/31までの$2/$10プロモ、そして有料プラン込みのFable 5アクセスは今日7/12が最終日。",
+      "articleHtml": "<p>Claude Codeの既定モデルがv2.1.197でClaude Sonnet 5に切り替わった。目玉はネイティブ1Mトークンのコンテキストウィンドウで、8月31日までは入力$2/出力$10（Mtokあたり）のプロモーション価格が適用される。あわせて/configに「Dynamic workflow size」設定が追加され、動的ワークフローの規模を制御できるようになった。</p><p>もうひとつ、今日が区切りになるのがFable 5だ。有料プランに含まれるFable 5アクセスは当初7月7日期限だったが7月12日（今日）まで延長されており、期限後は$10/$50のクレジット課金へ移行する。週次上限の50%キャップは据え置き。「日常はSonnet 5の1Mコンテキスト、勝負どころだけFable 5を従量で」という使い分けが現実的な運用になる。</p><figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='580' height='60' rx='10' fill='#f3edff' stroke='#7b3fe4'/><text x='30' y='35' font-size='14' font-weight='bold' fill='#4a2ba8'>Sonnet 5（新デフォルト / v2.1.197）</text><text x='30' y='57' font-size='12' fill='#333'>ネイティブ1Mトークン ・ $2/$10（〜8/31プロモ） ・ Dynamic workflow size設定</text><rect x='10' y='80' width='580' height='60' rx='10' fill='#fff4e5' stroke='#e08700'/><text x='30' y='105' font-size='14' font-weight='bold' fill='#8a5300'>Fable 5（プラン込みは7/12まで）</text><text x='30' y='127' font-size='12' fill='#333'>週次上限50%キャップ ・ 期限後は$10/$50のクレジット課金へ移行</text><rect x='10' y='150' width='580' height='50' rx='10' fill='#e8f4ff' stroke='#1f6feb'/><text x='30' y='172' font-size='14' font-weight='bold' fill='#1a4f9c'>クラウド経由（Bedrock / Vertex / Foundry）</text><text x='30' y='192' font-size='12' fill='#333'>autoモードがデフォルト化 ・ BedrockはOpus 4.8へ更新</text></svg><figcaption>図1：7/12時点のモデル・価格の整理（プロモは8/31まで）</figcaption></figure><p>クラウド側も足並みが揃った。Bedrock・Vertex AI・Microsoft Foundry経由のClaude Codeでautoモードがデフォルトになり、BedrockのモデルはOpus 4.8へ更新。政府機関向けにはFedRAMP High認証のClaude for Government DesktopでClaude Code/Coworkが公開ベータ入りし、改ざん検知可能な監査ログや支出ガバナンスまで備える。</p><p>記事面ではTotalumのSkills完全ガイドが実用的だった。プロンプトのテンプレはスラッシュコマンド、ドメイン知識＋補助ファイルはSkill（SKILL.mdを置くだけ）、隔離した並列作業はSubagent、コードで確実に強制するルールはHook、外部システム接続はMCPという判断基準は、CLAUDE.md肥大化の処方箋としてそのまま使える。</p><figure class='fig'><pre class='mermaid'>flowchart TD\n  Q[\"何を足したい？\"] --> T[\"定型プロンプト\"]\n  Q --> K[\"ドメイン知識と補助ファイル\"]\n  Q --> P[\"隔離した並列作業\"]\n  Q --> R[\"必ず守らせるルール\"]\n  Q --> X[\"外部システム接続\"]\n  T --> C1[\"スラッシュコマンド\"]\n  K --> C2[\"Skill\"]\n  P --> C3[\"Subagent\"]\n  R --> C4[\"Hook\"]\n  X --> C5[\"MCP\"]</pre><figcaption>図2：Skills / Hooks / Subagents / MCP の使い分け（Totalumの基準を図式化）</figcaption></figure><p>事例面では、Anthropicが新規AI法人買い手の73%を獲得し年換算売上190億ドル、Claude Code単体でも年換算25億ドルという報道も出た。自分が試すなら、プロモ期間中に1Mコンテキストへ「リポジトリ全体＋関連ドキュメント丸ごと」を渡すレビューを回し、コストと精度の体感を掴んでおきたい。ただし巨大コンテキストは万能ではなく、Zennやビジネス+ITのTips記事が言う通り「不要な文脈を切り、参照ファイルは直接渡す」文脈設計は1M時代でも品質を左右する。</p><p><b>ひとことまとめ:</b> 既定がSonnet 5・1Mトークンになり、工夫の軸は「文脈を削る」から「何を盛るか設計する」へ。Fable 5を試すなら今日が最終日。</p>",
+      "sources": [
+        {
+          "title": "Claude Code Changelog",
+          "url": "https://code.claude.com/docs/en/changelog"
+        },
+        {
+          "title": "Fable 5アクセス延長（7/12まで）",
+          "url": "https://www.digitalapplied.com/blog/anthropic-fable-5-access-extended-july-12-2026"
+        },
+        {
+          "title": "Releasebot: Anthropic updates",
+          "url": "https://releasebot.io/updates/anthropic/claude-code"
+        },
+        {
+          "title": "Totalum: Claude Code Skills完全ガイド2026",
+          "url": "https://www.totalum.app/blog/claude-code-skills-totalum"
+        },
+        {
+          "title": "eWeek: エンタープライズAI導入で先行",
+          "url": "https://www.eweek.com/artificial-intelligence/anthropic-overtakes-openai-enterprise-ai-adoption-neuron/"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-12-nextjs",
+      "date": "2026-07-12",
+      "topic": "Next.js",
+      "title": "WebGL不要のカード演出 — CSS 3D Transformsでフリップ＆ポインタ連動チルト",
+      "lede": "perspective・preserve-3d・backface-visibilityの3点セットだけで、依存ゼロ・バンドル増ゼロの3Dカードが作れる。鍵は「どこをClient島にするか」と「flat化の罠」。",
+      "articleHtml": "<p>プロダクトカードや料金カードに奥行きを足したいとき、react-three-fiberを持ち出すのは大袈裟だ。CSSの3D変換はGPUコンポジタで動くため軽量で、カードフリップ・ポインタ追従チルト程度なら依存ゼロで済む。R3Fが「本物の3Dシーン」用なら、こちらは「UI部品にちょっとした奥行き」用の定番という住み分けになる。</p><p>柱は3つ。まず<code>perspective</code>はカメラ距離で、親に置くプロパティ版は子全員が消失点を共有し、<code>transform: perspective(1000px)</code>の関数版は要素ごとに個別の消失点を持つ。カードが並ぶグリッドでは親版だと端のカードが歪むため、単体演出は関数版が自然なことが多い。値は1000〜1200pxが自然、500pxで劇的、2000px以上で控えめ。次に<code>transform-style: preserve-3d</code>で子を同じ3D空間に残し、最後に<code>backface-visibility: hidden</code>で回転中の鏡文字の裏写りを消す。<code>translateZ()</code>はperspectiveが無いと視覚上何も起きない点も忘れやすい。</p><figure class='fig'><svg viewBox='0 0 600 230' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='580' height='210' rx='12' fill='#eef4ff' stroke='#1f6feb'/><text x='30' y='38' font-size='13' font-weight='bold' fill='#1a4f9c'>.scene　perspective: 1000px（カメラ距離）</text><rect x='30' y='50' width='540' height='150' rx='10' fill='#fff' stroke='#74a8ff'/><text x='50' y='76' font-size='13' font-weight='bold' fill='#1a4f9c'>.card　transform-style: preserve-3d ・ transition .6s</text><rect x='50' y='90' width='250' height='90' rx='8' fill='#e8fff0' stroke='#2da44e'/><text x='65' y='115' font-size='12.5' font-weight='bold' fill='#1a7f37'>.face.front</text><text x='65' y='135' font-size='11.5' fill='#333'>backface-visibility: hidden</text><rect x='320' y='90' width='250' height='90' rx='8' fill='#fff0f0' stroke='#d1242f'/><text x='335' y='115' font-size='12.5' font-weight='bold' fill='#a40e26'>.face.back</text><text x='335' y='135' font-size='11.5' fill='#333'>backface-visibility: hidden</text><text x='335' y='153' font-size='11.5' fill='#333'>transform: rotateY(180deg)</text><text x='50' y='218' font-size='11.5' fill='#a40e26'>⚠ .card に overflow / opacity 1未満 / filter / clip-path を付けると flat 化して壊れる</text></svg><figcaption>図1：フリップカードの定石構造と、preserve-3dを無効化する「グループ化プロパティ」</figcaption></figure><p>最大の落とし穴がこの図の下段だ。<code>overflow</code>（visible以外）・opacityが1未満・<code>filter</code>・<code>clip-path</code>・<code>mask</code>などをpreserve-3dの要素に付けると、CSS Transforms Level 2の仕様によりused valueが<code>flat</code>へ強制的に戻る。「角丸＋overflow:hiddenを足した瞬間フリップが壊れた」の正体はほぼこれで、角丸クリップは面側の要素へ逃がすのが正解。</p><pre><code>.scene { perspective: 1000px; }\n.card  { transform-style: preserve-3d; transition: transform .6s; }\n.scene:hover .card,\n.scene:focus-within .card { transform: rotateY(180deg); }\n.face  { position: absolute; inset: 0; backface-visibility: hidden; }\n.back  { transform: rotateY(180deg); }</code></pre><p>Next.js（App Router）での組み込みは切り分けが気持ちいい。:hover/:focus-within駆動のフリップは純CSSなので<code>'use client'</code>不要、Server Componentのままhydrationゼロ。一方チルトはpointerイベント＋rAFが要るのでClient必須だが、カードの「枠」だけをClientにして中身はchildrenで差し込めばRSCの恩恵を保てる。ポインタ座標はstateに入れず<code>el.style.setProperty('--rx', ...)</code>とCSS変数経由で書けば再レンダー完全回避。rAFスロットリング、離脱時のリセット、そしてprefers-reduced-motionではフリップを即時切替・チルト無効化まで入れて完成形。</p><p><b>ひとことまとめ:</b> フリップはServer Componentのまま純CSS、チルトだけ薄いClient島。壊れたらまず「preserve-3dをflat化するプロパティ」を疑う。</p>",
+      "sources": [
+        {
+          "title": "Intro to CSS 3D transforms — Card Flip",
+          "url": "https://3dtransforms.desandro.com/card-flip"
+        },
+        {
+          "title": "MDN: transform-style",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/transform-style"
+        },
+        {
+          "title": "Frontend Masters: The Deep Card Conundrum",
+          "url": "https://frontendmasters.com/blog/the-deep-card-conundrum/"
+        },
+        {
+          "title": "Frontend.fyi: CSS Perspective 3D Card Tilt",
+          "url": "https://www.frontend.fyi/tutorials/css-3d-perspective-animations"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-12-flutter",
+      "date": "2026-07-12",
+      "topic": "Flutter",
+      "title": "Flutter 2026折り返しレビュー — 3.44とロードマップ『Finishing the Job』を読む",
+      "lede": "上半期は3.41→3.44を予定通り出荷、次の安定版は8月。material_uiのSDK分離、Impellerの120fps路線、Riverpod 3.0既定という下半期の軸を整理する。",
+      "articleHtml": "<p>2026年も折り返し。公式ロードマップ『Finishing the Job』は年4回以上の安定リリースをコミットし、上半期は3.41（2月）→3.44（5月・Google I/O 2026）を予定通り出荷、次の安定版は8月に控える。現行はFlutter 3.44.0 / Dart 3.12.2。名前の通り「やりかけを終わらせる」年で、柱はAndroidのImpeller移行完遂・WebのWasm既定化・GenUIとエージェント型アプリ・Full-Stack Dart・AI前提の開発体験の5本だ。</p><figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg'><line x1='40' y1='75' x2='560' y2='75' stroke='#0277bd' stroke-width='3'/><circle cx='100' cy='75' r='9' fill='#0277bd'/><text x='100' y='50' font-size='12.5' text-anchor='middle' font-weight='bold' fill='#01579b'>3.41</text><text x='100' y='105' font-size='11.5' text-anchor='middle' fill='#555'>2月</text><circle cx='290' cy='75' r='9' fill='#0277bd'/><text x='290' y='50' font-size='12.5' text-anchor='middle' font-weight='bold' fill='#01579b'>3.44 / Dart 3.12</text><text x='290' y='105' font-size='11.5' text-anchor='middle' fill='#555'>5月・Google I/O</text><circle cx='480' cy='75' r='9' fill='#fff' stroke='#0277bd' stroke-width='3'/><text x='480' y='50' font-size='12.5' text-anchor='middle' font-weight='bold' fill='#01579b'>次期安定版</text><text x='480' y='105' font-size='11.5' text-anchor='middle' fill='#555'>2026年8月予定</text><text x='300' y='135' font-size='11.5' text-anchor='middle' fill='#888'>年4回以上の安定リリースをコミット（Finishing the Job）</text></svg><figcaption>図1：2026年上半期のリリースと次の安定版</figcaption></figure><p>構造的に大きいのはmaterial_uiのpub.dev実体化だ。<code>package:flutter/material.dart</code>のライブラリを収める公式スタンドアロンパッケージで、分離後はSDKの3ヶ月サイクルに縛られず独自ペースで更新でき、アプリサイズも縮小する。M3の新機能がSDKリリースを待たず届く体制になる。Dart 3.12はprivate named parametersが正式化し、primary constructorsが実験的に入った。3.44移行ではSwift Package ManagerがiOS/macOS既定（CocoaPods置換）、UIScene lifecycle必須化対応が要チェック。採用事例としては2026年型Toyota RAV4が挙がる。</p><p>描画面の焦点は「60fps達成」から「120fps安定維持」へ移った。ImpellerはAOTシェーダーコンパイルでコンパイル起因のジャンクを排除し、複雑シーンの平均ラスタライズを約50%短縮。カスタムシェーダーは事前コンパイルと好相性だが、fragment shaderの重い分岐は避けmix/step/clampの数学演算に置き換え、実行4〜5ms以内が120fps維持の目安になる。フレーム予算はラスタライズ4ms未満で60fps、8.3ms未満で120fps。DevToolsのImpeller専用ビューがdraw callのバッチ処理を可視化し、テクスチャのメモリ過多を即ハイライトしてくれるので、当て推量の最適化から卒業できる。計測はprofileモード必須、Timeline Viewでrasterスレッドのスパイクを追う。</p><p>状態管理の基本線は変わらず、新規はRiverpod 3.0既定（unified Ref・指数バックオフの自動リトライ・実験的オフライン永続化）、大規模チームやfintech/healthcareの監査要件はBloc 9.0。実践則は「最小の状態スライスを最下層でwatch」「リストアイテムは分離ウィジェット化して必要最小限だけ渡す」。</p><p><b>ひとことまとめ:</b> 下半期はWasm既定化とImpeller完遂が本丸。手元では8月安定版に備えてSPM移行とprofileモード計測の習慣化を進めておきたい。</p>",
+      "sources": [
+        {
+          "title": "Flutter 2026 Roadmap: Finishing the Job",
+          "url": "https://webartdesign.com.au/blog/flutters-2026-roadmap-just-dropped-and-its-all-about-finishing-the-job/"
+        },
+        {
+          "title": "material_ui API docs",
+          "url": "https://pub.dev/documentation/material_ui/latest/"
+        },
+        {
+          "title": "Impeller Custom Shaders for 120fps",
+          "url": "https://dev.to/devin-rosario/mastering-impeller-custom-shaders-for-120fps-flutter-apps-2020"
+        },
+        {
+          "title": "Flutter Release Notes",
+          "url": "https://docs.flutter.dev/release/release-notes"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-12-github-trending",
+      "date": "2026-07-12",
+      "topic": "GitHub Trending",
+      "title": "7/12の話題リポジトリ — 744B MoEを25GBで動かす・PostgresをRustで全面リライト・AI就活エージェント",
+      "lede": "「データセンター級を個人の手に」「不可能とされた書き直しを現実に」「エージェントを日常の実務に」——AIが前提を書き換える3本。",
+      "articleHtml": "<p>今日の3本に共通するのは、これまで「無理」で片付けられていた前提をAIとエンジニアリングの工夫でひっくり返している点だ。巨大モデルのローカル実行、レガシー資産の全面リライト、就活という個人タスクのエージェント化——スケールも言語もバラバラだが、どれも既存の限界線を一段ずらしている。</p><figure class='fig'><svg viewBox='0 0 620 240' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='140' height='40' rx='6' fill='#e9f7ee' stroke='#1a7f37'/><text x='80' y='35' font-size='12' text-anchor='middle' font-weight='bold' fill='#1a7f37'>リポジトリ</text><rect x='155' y='10' width='225' height='40' rx='6' fill='#e9f7ee' stroke='#1a7f37'/><text x='267' y='35' font-size='12' text-anchor='middle' font-weight='bold' fill='#1a7f37'>解決したい課題</text><rect x='385' y='10' width='225' height='40' rx='6' fill='#e9f7ee' stroke='#1a7f37'/><text x='497' y='35' font-size='12' text-anchor='middle' font-weight='bold' fill='#1a7f37'>提供する機能</text><rect x='10' y='55' width='140' height='55' rx='6' fill='#fff' stroke='#3fb950'/><text x='80' y='80' font-size='11.5' text-anchor='middle' font-weight='bold' fill='#333'>colibri</text><text x='80' y='97' font-size='10.5' text-anchor='middle' fill='#666'>C ・ ⭐3.5k</text><rect x='155' y='55' width='225' height='55' rx='6' fill='#fff' stroke='#3fb950'/><text x='167' y='80' font-size='11' fill='#333'>744B MoEはデータセンター級の</text><text x='167' y='97' font-size='11' fill='#333'>メモリが必要で個人には無理</text><rect x='385' y='55' width='225' height='55' rx='6' fill='#fff' stroke='#3fb950'/><text x='397' y='80' font-size='11' fill='#333'>エキスパートをディスクから流し</text><text x='397' y='97' font-size='11' fill='#333'>25GB RAMでGLM-5.2を実行</text><rect x='10' y='115' width='140' height='55' rx='6' fill='#fff' stroke='#3fb950'/><text x='80' y='140' font-size='11.5' text-anchor='middle' font-weight='bold' fill='#333'>pgrust</text><text x='80' y='157' font-size='10.5' text-anchor='middle' fill='#666'>Rust ・ ⭐1.5k</text><rect x='155' y='115' width='225' height='55' rx='6' fill='#fff' stroke='#3fb950'/><text x='167' y='140' font-size='11' fill='#333'>巨大C資産の全面書き直しは</text><text x='167' y='157' font-size='11' fill='#333'>経済的に不可能とされてきた</text><rect x='385' y='115' width='225' height='55' rx='6' fill='#fff' stroke='#3fb950'/><text x='397' y='140' font-size='11' fill='#333'>Rust版Postgresが本家回帰</text><text x='397' y='157' font-size='11' fill='#333'>テストを100%通過</text><rect x='10' y='175' width='140' height='55' rx='6' fill='#fff' stroke='#3fb950'/><text x='80' y='200' font-size='11.5' text-anchor='middle' font-weight='bold' fill='#333'>ai-job-search</text><text x='80' y='217' font-size='10.5' text-anchor='middle' fill='#666'>TS ・ ⭐20.7k</text><rect x='155' y='175' width='225' height='55' rx='6' fill='#fff' stroke='#3fb950'/><text x='167' y='200' font-size='11' fill='#333'>就活の反復作業を文脈を保って</text><text x='167' y='217' font-size='11' fill='#333'>伴走してくれる仕組みが無い</text><rect x='385' y='175' width='225' height='55' rx='6' fill='#fff' stroke='#3fb950'/><text x='397' y='200' font-size='11' fill='#333'>フォークするだけで求人評価〜</text><text x='397' y='217' font-size='11' fill='#333'>CV調整・面接準備まで一貫支援</text></svg><figcaption>図1：今日の3本の「課題 → 機能」対応表</figcaption></figure><h4>JustVugg/colibri（C・⭐3.5k、本日+約1.4k）</h4><p><b>解決したい課題:</b> 744BパラメータのMoEモデルGLM-5.2のような巨大モデルは、本来データセンター級のメモリを要求し、個人がローカルで動かす道は事実上閉ざされていた。ローカルLLM需要が高まる中、この「サイズの壁」が最大の不便だった。</p><p><b>提供する機能:</b> 純C・依存ゼロの超軽量推論エンジン。MoEのエキスパート群をディスクから必要な分だけストリーミングする設計で、25GB RAMのコンシューマ機で744Bモデルを実行できる。Apache 2.0で導入しやすい。本日のTrendshift日次1位で、「小さなエンジンで巨大モデル」という発想の逆転が刺さった格好だ。</p><h4>malisper/pgrust（Rust・⭐1.5k、本日+約670）</h4><p><b>解決したい課題:</b> PostgreSQLは数十年分のC資産であり、メモリ安全性や保守性のための全面リライトは工数的に「経済的に不可能」とされてきた。レガシーの安全なモダン化は業界全体の宿題だった。</p><p><b>提供する機能:</b> PostgreSQLをRustで書き直し、本家のリグレッションテストを100%通過したデータベース実装（AGPLv3）。Hacker Newsでは「AIがソフトウェア書き直しの経済性を変える」文脈で議論されており、到達点そのものがAI時代の大規模リライトの実証例として注目されている。</p><h4>MadsLorentzen/ai-job-search（TypeScript・⭐20.7k、本日+約1.5k）</h4><p><b>解決したい課題:</b> 就活は求人の適合判断・CV調整・カバーレター作成・面接準備と反復作業が多く、汎用チャットでは自分のプロフィールという文脈を保った伴走が難しい。</p><p><b>提供する機能:</b> Claude Code上に構築された就活フレームワーク。フォークして自分のプロフィールを書き込むだけで、求人評価からCV調整・カバーレター生成・面接準備まで一貫支援する。MIT・フォーク6.2kと「実際に使われる」エージェントになっており、7/7のTrending 1位以降も勢いが続く。</p><p><b>まとめ:</b> 自分が試すならまずcolibri。エキスパートストリーミングの実装は、MoEをエッジで動かす発想の教材として一級品だ。ai-job-searchは「SKILL.md群でエージェントを組む」設計例としてフォークして中身を読むだけでも価値がある。</p>",
+      "sources": [
+        {
+          "title": "JustVugg/colibri",
+          "url": "https://github.com/JustVugg/colibri"
+        },
+        {
+          "title": "malisper/pgrust",
+          "url": "https://github.com/malisper/pgrust"
+        },
+        {
+          "title": "MadsLorentzen/ai-job-search",
+          "url": "https://github.com/MadsLorentzen/ai-job-search"
+        }
+      ]
+    },
     {
       "id": "2026-07-11-claude-code",
       "date": "2026-07-11",
