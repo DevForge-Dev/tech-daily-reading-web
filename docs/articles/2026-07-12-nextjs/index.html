@@ -1,0 +1,64 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>WebGL不要のカード演出 — CSS 3D Transformsでフリップ＆ポインタ連動チルト — デイリー技術深掘り 読み物</title><meta name="description" content="perspective・preserve-3d・backface-visibilityの3点セットだけで、依存ゼロ・バンドル増ゼロの3Dカードが作れる。鍵は「どこをClient島にするか」と「flat化の罠」。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-12-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="WebGL不要のカード演出 — CSS 3D Transformsでフリップ＆ポインタ連動チルト — デイリー技術深掘り 読み物"><meta property="og:description" content="perspective・preserve-3d・backface-visibilityの3点セットだけで、依存ゼロ・バンドル増ゼロの3Dカードが作れる。鍵は「どこをClient島にするか」と「flat化の罠」。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-12-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>WebGL不要のカード演出 — CSS 3D Transformsでフリップ＆ポインタ連動チルト</h1> <p class="lede">perspective・preserve-3d・backface-visibilityの3点セットだけで、依存ゼロ・バンドル増ゼロの3Dカードが作れる。鍵は「どこをClient島にするか」と「flat化の罠」。</p> <div class="meta"> <span>📅 2026年7月12日</span> <span>⏱ 約3分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="0"><p>プロダクトカードや料金カードに奥行きを足したいとき、react-three-fiberを持ち出すのは大袈裟だ。CSSの3D変換はGPUコンポジタで動くため軽量で、カードフリップ・ポインタ追従チルト程度なら依存ゼロで済む。R3Fが「本物の3Dシーン」用なら、こちらは「UI部品にちょっとした奥行き」用の定番という住み分けになる。</p><p>柱は3つ。まず<code>perspective</code>はカメラ距離で、親に置くプロパティ版は子全員が消失点を共有し、<code>transform: perspective(1000px)</code>の関数版は要素ごとに個別の消失点を持つ。カードが並ぶグリッドでは親版だと端のカードが歪むため、単体演出は関数版が自然なことが多い。値は1000〜1200pxが自然、500pxで劇的、2000px以上で控えめ。次に<code>transform-style: preserve-3d</code>で子を同じ3D空間に残し、最後に<code>backface-visibility: hidden</code>で回転中の鏡文字の裏写りを消す。<code>translateZ()</code>はperspectiveが無いと視覚上何も起きない点も忘れやすい。</p><figure class='fig'><svg viewBox='0 0 600 230' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='10' width='580' height='210' rx='12' fill='#eef4ff' stroke='#1f6feb'></rect><text x='30' y='38' font-size='13' font-weight='bold' fill='#1a4f9c'>.scene　perspective: 1000px（カメラ距離）</text><rect x='30' y='50' width='540' height='150' rx='10' fill='#fff' stroke='#74a8ff'></rect><text x='50' y='76' font-size='13' font-weight='bold' fill='#1a4f9c'>.card　transform-style: preserve-3d ・ transition .6s</text><rect x='50' y='90' width='250' height='90' rx='8' fill='#e8fff0' stroke='#2da44e'></rect><text x='65' y='115' font-size='12.5' font-weight='bold' fill='#1a7f37'>.face.front</text><text x='65' y='135' font-size='11.5' fill='#333'>backface-visibility: hidden</text><rect x='320' y='90' width='250' height='90' rx='8' fill='#fff0f0' stroke='#d1242f'></rect><text x='335' y='115' font-size='12.5' font-weight='bold' fill='#a40e26'>.face.back</text><text x='335' y='135' font-size='11.5' fill='#333'>backface-visibility: hidden</text><text x='335' y='153' font-size='11.5' fill='#333'>transform: rotateY(180deg)</text><text x='50' y='218' font-size='11.5' fill='#a40e26'>⚠ .card に overflow / opacity 1未満 / filter / clip-path を付けると flat 化して壊れる</text></svg><figcaption>図1：フリップカードの定石構造と、preserve-3dを無効化する「グループ化プロパティ」</figcaption></figure><p>最大の落とし穴がこの図の下段だ。<code>overflow</code>（visible以外）・opacityが1未満・<code>filter</code>・<code>clip-path</code>・<code>mask</code>などをpreserve-3dの要素に付けると、CSS Transforms Level 2の仕様によりused valueが<code>flat</code>へ強制的に戻る。「角丸＋overflow:hiddenを足した瞬間フリップが壊れた」の正体はほぼこれで、角丸クリップは面側の要素へ逃がすのが正解。</p><pre><code>.scene { perspective: 1000px; }
+.card  { transform-style: preserve-3d; transition: transform .6s; }
+.scene:hover .card,
+.scene:focus-within .card { transform: rotateY(180deg); }
+.face  { position: absolute; inset: 0; backface-visibility: hidden; }
+.back  { transform: rotateY(180deg); }</code></pre><p>Next.js（App Router）での組み込みは切り分けが気持ちいい。:hover/:focus-within駆動のフリップは純CSSなので<code>'use client'</code>不要、Server Componentのままhydrationゼロ。一方チルトはpointerイベント＋rAFが要るのでClient必須だが、カードの「枠」だけをClientにして中身はchildrenで差し込めばRSCの恩恵を保てる。ポインタ座標はstateに入れず<code>el.style.setProperty('--rx', ...)</code>とCSS変数経由で書けば再レンダー完全回避。rAFスロットリング、離脱時のリセット、そしてprefers-reduced-motionではフリップを即時切替・チルト無効化まで入れて完成形。</p><p><b>ひとことまとめ:</b> フリップはServer Componentのまま純CSS、チルトだけ薄いClient島。壊れたらまず「preserve-3dをflat化するプロパティ」を疑う。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://3dtransforms.desandro.com/card-flip" target="_blank" rel="noopener noreferrer"> Intro to CSS 3D transforms — Card Flip </a> </li><li> <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/transform-style" target="_blank" rel="noopener noreferrer"> MDN: transform-style </a> </li><li> <a href="https://frontendmasters.com/blog/the-deep-card-conundrum/" target="_blank" rel="noopener noreferrer"> Frontend Masters: The Deep Card Conundrum </a> </li><li> <a href="https://www.frontend.fyi/tutorials/css-3d-perspective-animations" target="_blank" rel="noopener noreferrer"> Frontend.fyi: CSS Perspective 3D Card Tilt </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

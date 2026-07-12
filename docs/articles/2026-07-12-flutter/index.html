@@ -1,0 +1,59 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Flutter 2026折り返しレビュー — 3.44とロードマップ『Finishing the Job』を読む — デイリー技術深掘り 読み物</title><meta name="description" content="上半期は3.41→3.44を予定通り出荷、次の安定版は8月。material_uiのSDK分離、Impellerの120fps路線、Riverpod 3.0既定という下半期の軸を整理する。"><meta name="theme-color" content="#0277bd"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-12-flutter/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Flutter 2026折り返しレビュー — 3.44とロードマップ『Finishing the Job』を読む — デイリー技術深掘り 読み物"><meta property="og:description" content="上半期は3.41→3.44を予定通り出荷、次の安定版は8月。material_uiのSDK分離、Impellerの120fps路線、Riverpod 3.0既定という下半期の軸を整理する。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-12-flutter/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #29b6f6, #01579b)"> <span class="glyph" aria-hidden="true">◆</span> <div class="kicker">Flutter</div> <h1>Flutter 2026折り返しレビュー — 3.44とロードマップ『Finishing the Job』を読む</h1> <p class="lede">上半期は3.41→3.44を予定通り出荷、次の安定版は8月。material_uiのSDK分離、Impellerの120fps路線、Riverpod 3.0既定という下半期の軸を整理する。</p> <div class="meta"> <span>📅 2026年7月12日</span> <span>⏱ 約3分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#0277bd"> <div> <article class="prose" data-has-mermaid="0"><p>2026年も折り返し。公式ロードマップ『Finishing the Job』は年4回以上の安定リリースをコミットし、上半期は3.41（2月）→3.44（5月・Google I/O 2026）を予定通り出荷、次の安定版は8月に控える。現行はFlutter 3.44.0 / Dart 3.12.2。名前の通り「やりかけを終わらせる」年で、柱はAndroidのImpeller移行完遂・WebのWasm既定化・GenUIとエージェント型アプリ・Full-Stack Dart・AI前提の開発体験の5本だ。</p><figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg'><line x1='40' y1='75' x2='560' y2='75' stroke='#0277bd' stroke-width='3'></line><circle cx='100' cy='75' r='9' fill='#0277bd'></circle><text x='100' y='50' font-size='12.5' text-anchor='middle' font-weight='bold' fill='#01579b'>3.41</text><text x='100' y='105' font-size='11.5' text-anchor='middle' fill='#555'>2月</text><circle cx='290' cy='75' r='9' fill='#0277bd'></circle><text x='290' y='50' font-size='12.5' text-anchor='middle' font-weight='bold' fill='#01579b'>3.44 / Dart 3.12</text><text x='290' y='105' font-size='11.5' text-anchor='middle' fill='#555'>5月・Google I/O</text><circle cx='480' cy='75' r='9' fill='#fff' stroke='#0277bd' stroke-width='3'></circle><text x='480' y='50' font-size='12.5' text-anchor='middle' font-weight='bold' fill='#01579b'>次期安定版</text><text x='480' y='105' font-size='11.5' text-anchor='middle' fill='#555'>2026年8月予定</text><text x='300' y='135' font-size='11.5' text-anchor='middle' fill='#888'>年4回以上の安定リリースをコミット（Finishing the Job）</text></svg><figcaption>図1：2026年上半期のリリースと次の安定版</figcaption></figure><p>構造的に大きいのはmaterial_uiのpub.dev実体化だ。<code>package:flutter/material.dart</code>のライブラリを収める公式スタンドアロンパッケージで、分離後はSDKの3ヶ月サイクルに縛られず独自ペースで更新でき、アプリサイズも縮小する。M3の新機能がSDKリリースを待たず届く体制になる。Dart 3.12はprivate named parametersが正式化し、primary constructorsが実験的に入った。3.44移行ではSwift Package ManagerがiOS/macOS既定（CocoaPods置換）、UIScene lifecycle必須化対応が要チェック。採用事例としては2026年型Toyota RAV4が挙がる。</p><p>描画面の焦点は「60fps達成」から「120fps安定維持」へ移った。ImpellerはAOTシェーダーコンパイルでコンパイル起因のジャンクを排除し、複雑シーンの平均ラスタライズを約50%短縮。カスタムシェーダーは事前コンパイルと好相性だが、fragment shaderの重い分岐は避けmix/step/clampの数学演算に置き換え、実行4〜5ms以内が120fps維持の目安になる。フレーム予算はラスタライズ4ms未満で60fps、8.3ms未満で120fps。DevToolsのImpeller専用ビューがdraw callのバッチ処理を可視化し、テクスチャのメモリ過多を即ハイライトしてくれるので、当て推量の最適化から卒業できる。計測はprofileモード必須、Timeline Viewでrasterスレッドのスパイクを追う。</p><p>状態管理の基本線は変わらず、新規はRiverpod 3.0既定（unified Ref・指数バックオフの自動リトライ・実験的オフライン永続化）、大規模チームやfintech/healthcareの監査要件はBloc 9.0。実践則は「最小の状態スライスを最下層でwatch」「リストアイテムは分離ウィジェット化して必要最小限だけ渡す」。</p><p><b>ひとことまとめ:</b> 下半期はWasm既定化とImpeller完遂が本丸。手元では8月安定版に備えてSPM移行とprofileモード計測の習慣化を進めておきたい。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://webartdesign.com.au/blog/flutters-2026-roadmap-just-dropped-and-its-all-about-finishing-the-job/" target="_blank" rel="noopener noreferrer"> Flutter 2026 Roadmap: Finishing the Job </a> </li><li> <a href="https://pub.dev/documentation/material_ui/latest/" target="_blank" rel="noopener noreferrer"> material_ui API docs </a> </li><li> <a href="https://dev.to/devin-rosario/mastering-impeller-custom-shaders-for-120fps-flutter-apps-2020" target="_blank" rel="noopener noreferrer"> Impeller Custom Shaders for 120fps </a> </li><li> <a href="https://docs.flutter.dev/release/release-notes" target="_blank" rel="noopener noreferrer"> Flutter Release Notes </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
