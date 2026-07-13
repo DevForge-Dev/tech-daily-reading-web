@@ -1,0 +1,84 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>nuqs 2.5 — URLを「第3の状態置き場」にする型安全searchParams管理 — デイリー技術深掘り 読み物</title><meta name="description" content="フィルタ・検索語・ページ番号のような「共有できるべきUI状態」の正しい置き場はZustandでもTanStack QueryでもなくURL。nuqsはそれをuseState互換のAPIで書けるようにする5.7kBのライブラリだ。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-13-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="nuqs 2.5 — URLを「第3の状態置き場」にする型安全searchParams管理 — デイリー技術深掘り 読み物"><meta property="og:description" content="フィルタ・検索語・ページ番号のような「共有できるべきUI状態」の正しい置き場はZustandでもTanStack QueryでもなくURL。nuqsはそれをuseState互換のAPIで書けるようにする5.7kBのライブラリだ。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-13-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>nuqs 2.5 — URLを「第3の状態置き場」にする型安全searchParams管理</h1> <p class="lede">フィルタ・検索語・ページ番号のような「共有できるべきUI状態」の正しい置き場はZustandでもTanStack QueryでもなくURL。nuqsはそれをuseState互換のAPIで書けるようにする5.7kBのライブラリだ。</p> <div class="meta"> <span>📅 2026年7月13日</span> <span>⏱ 約3分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="0"><p>Zustand（クライアント状態）とTanStack Query（サーバー状態）を押さえると、残る問題は「フィルタや検索語やタブ選択をどこに置くか」だ。これらはリロードしても共有リンクでも復元されてほしい状態で、正しい置き場はURLクエリ文字列になる。ただし素の<code>useSearchParams</code> + <code>router.push</code>は文字列変換とシリアライズのboilerplate地獄になりがち。nuqs（5.7kB gzip）はそこを「useStateのURL版」という一点突破で解決する。</p>
+<figure class='fig'><svg viewBox='0 0 620 190' xmlns='http://www.w3.org/2000/svg'>
+<rect x='15' y='30' width='185' height='120' rx='10' fill='#fff4e5' stroke='#e8963f' stroke-width='1.5'></rect>
+<text x='107' y='56' text-anchor='middle' font-size='13' font-weight='bold' fill='#1c1c1e'>クライアント状態</text>
+<text x='107' y='78' text-anchor='middle' font-size='12' fill='#b45309'>Zustand</text>
+<text x='107' y='102' text-anchor='middle' font-size='11' fill='#555'>モーダル開閉・下書き</text>
+<text x='107' y='120' text-anchor='middle' font-size='11' fill='#555'>共有不要なUI状態</text>
+<rect x='217' y='30' width='185' height='120' rx='10' fill='#fde8e8' stroke='#e05252' stroke-width='1.5'></rect>
+<text x='309' y='56' text-anchor='middle' font-size='13' font-weight='bold' fill='#1c1c1e'>サーバー状態</text>
+<text x='309' y='78' text-anchor='middle' font-size='12' fill='#b91c1c'>TanStack Query</text>
+<text x='309' y='102' text-anchor='middle' font-size='11' fill='#555'>APIデータ・キャッシュ</text>
+<text x='309' y='120' text-anchor='middle' font-size='11' fill='#555'>再取得・無効化の管理</text>
+<rect x='419' y='30' width='185' height='120' rx='10' fill='#e7f0fe' stroke='#1f6feb' stroke-width='2'></rect>
+<text x='511' y='56' text-anchor='middle' font-size='13' font-weight='bold' fill='#1c1c1e'>URL状態</text>
+<text x='511' y='78' text-anchor='middle' font-size='12' fill='#1d4ed8'>nuqs</text>
+<text x='511' y='102' text-anchor='middle' font-size='11' fill='#555'>フィルタ・検索語・ページ</text>
+<text x='511' y='120' text-anchor='middle' font-size='11' fill='#555'>共有・リロード・戻るが効く</text>
+<text x='310' y='176' text-anchor='middle' font-size='11.5' fill='#8a8a90'>「共有できるべきか？」が振り分けの判断基準</text>
+</svg><figcaption>図1：3種の状態の住み分け。nuqsが最後のピースを埋める。</figcaption></figure>
+<p>APIは<code>useQueryState('q', parseAsString.withDefault(''))</code>が<code>[value, setValue]</code>を返すuseState互換。integer/boolean/isoDateTime/enum/jsonなどのパーサーを宣言的にチェーンする。v2ではルートレイアウトを<code>NuqsAdapter</code>で包むのが必須（忘れるとランタイムエラー）。鍵になるオプションが<code>shallow</code>で、既定のtrueならURL更新はブラウザ内だけ、falseにするとNext.jsに通知されてsearchParamsを受けるRSCページが再レンダー＝サーバー側フィルタリングと連動する。</p>
+<pre><code>const [{ q, sort }, setFilters] = useQueryStates(productSearchParams, { shallow: false })
+// 検索入力ではURL書き込みをdebounce（stateは即時反映）
+setFilters({ q: value, page: 1 }, { limitUrlUpdates: debounce(300) })</code></pre>
+<p>サーバー側は<code>nuqs/server</code>から<code>createLoader(parsers)</code>でページやRoute Handlerを型安全にパースでき、<code>createSearchParamsCache</code>を使えば深くネストしたServer Componentからも参照可能（RSC版Contextに相当）。<code>loadSearchParams</code>をawaitせずPromiseのままSuspense内の子へ渡せばPPR/ストリーミングとも噛み合う。2.5.0では<code>limitUrlUpdates: debounce(ms)</code>（旧throttleMsを置換）、パーサー定義からバリデーションスキーマを導出するStandard Schema生成、キー単位サブスクリプションで再レンダーを減らすkey isolationが入った。</p>
+<p>自分が試すなら、一覧ページのフィルタ群をパーサー定義1ファイルに集約し、RSCページとClient島で同じ定義を共有する構成。落とし穴は4つ——パーサーはバリデーションではない（「正の整数のみ」等はZodで後段検証）、<code>useQueryState</code>を使うコンポーネントは<code>'use client'</code>必須、<code>shallow: false</code>は毎回サーバーリクエストなので検索入力では必ずdebounce併用、そして<code>clearOnDefault</code>が既定trueなのでdefault値と一致するとURLからキーが消える（意図的な仕様）。</p>
+<p><b>ひとことまとめ:</b> 「この状態は共有できるべきか？」と自問してYesならnuqs。Zustand・TanStack Queryと合わせ、状態の置き場所の三角形がこれで完成する。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://nuqs.dev/" target="_blank" rel="noopener noreferrer"> nuqs 公式サイト </a> </li><li> <a href="https://nuqs.dev/docs/server-side" target="_blank" rel="noopener noreferrer"> Server-Side usage </a> </li><li> <a href="https://nuqs.dev/blog/nuqs-2.5" target="_blank" rel="noopener noreferrer"> nuqs 2.5 リリースブログ </a> </li><li> <a href="https://github.com/47ng/nuqs" target="_blank" rel="noopener noreferrer"> GitHub 47ng/nuqs </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
