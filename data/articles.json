@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-07-12T04:46:55.670Z",
+  "generatedAt": "2026-07-13T04:46:49.628Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,106 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-07-13-claude-code",
+      "date": "2026-07-13",
+      "topic": "Claude Code",
+      "title": "v2.1.207と公式「Steering」ガイド — 決定論と確率論でClaude Codeを操縦する",
+      "lede": "7/11付v2.1.207がトランスクリプト保護・/doctor診断・約400MBのメモリ削減を実施。同時に公式ブログが CLAUDE.md/hooks（決定論）と skills/subagents（確率論）という制御レイヤーの設計軸を提示した。",
+      "articleHtml": "<p>Claude Codeの設定手段は CLAUDE.md・フック・スキル・サブエージェントと増え続け、「どれに何を書くべきか」が実務の悩みどころになっていた。そこへAnthropic公式ブログが「Steering Claude Code」という使い分けガイドを公開し、同じ週の7月11日にはv2.1.207がリリースされた。運用の指針と足回りの改善が同時に揃った週だ。</p>\n<p>まずv2.1.207。トランスクリプト保護と、セットアップ全体を点検する<code>/doctor</code>チェックアップが追加された。PR操作のスマートリンク（既存PRへの編集・マージ・コメント・pushがclaude agentsに自動で紐付く）も入り、エージェントワークフローの追跡性が上がっている。地味に効くのが自動アップデートの改善で、バイナリのダウンロードがディスクへのストリーミング書き込みになり、ピークメモリ使用量が約400MB削減された。長いリストや表のストリーミング中に端末がフリーズする問題も修正済みだ。</p>\n<figure class='fig'><svg viewBox='0 0 620 250' xmlns='http://www.w3.org/2000/svg'>\n<text x='160' y='26' text-anchor='middle' font-size='14' font-weight='bold' fill='#5a3fb0'>決定論的（毎回必ず実行）</text>\n<text x='460' y='26' text-anchor='middle' font-size='14' font-weight='bold' fill='#1a7f37'>確率論的（Claudeが判断して適用）</text>\n<rect x='20' y='40' width='280' height='85' rx='10' fill='#f3edff' stroke='#7b3fe4' stroke-width='1.5'/>\n<text x='160' y='66' text-anchor='middle' font-size='13' font-weight='bold' fill='#1c1c1e'>CLAUDE.md</text>\n<text x='160' y='88' text-anchor='middle' font-size='11.5' fill='#444'>常時コンテキストに読み込み</text>\n<text x='160' y='106' text-anchor='middle' font-size='11.5' fill='#444'>200行以内・超える分はimport</text>\n<rect x='20' y='140' width='280' height='85' rx='10' fill='#f3edff' stroke='#7b3fe4' stroke-width='1.5'/>\n<text x='160' y='166' text-anchor='middle' font-size='13' font-weight='bold' fill='#1c1c1e'>Hooks</text>\n<text x='160' y='188' text-anchor='middle' font-size='11.5' fill='#444'>禁止ルールを機械的に強制</text>\n<text x='160' y='206' text-anchor='middle' font-size='11.5' fill='#444'>遵守率 約70%→100%</text>\n<rect x='320' y='40' width='280' height='85' rx='10' fill='#e9f7ec' stroke='#3fb950' stroke-width='1.5'/>\n<text x='460' y='66' text-anchor='middle' font-size='13' font-weight='bold' fill='#1c1c1e'>Skills</text>\n<text x='460' y='88' text-anchor='middle' font-size='11.5' fill='#444'>手順書・専門知識のパッケージ</text>\n<text x='460' y='106' text-anchor='middle' font-size='11.5' fill='#444'>必要と判断した時に読み込む</text>\n<rect x='320' y='140' width='280' height='85' rx='10' fill='#e9f7ec' stroke='#3fb950' stroke-width='1.5'/>\n<text x='460' y='166' text-anchor='middle' font-size='13' font-weight='bold' fill='#1c1c1e'>Subagents</text>\n<text x='460' y='188' text-anchor='middle' font-size='11.5' fill='#444'>副次タスクをコンテキスト隔離</text>\n<text x='460' y='206' text-anchor='middle' font-size='11.5' fill='#444'>調査・ログ解析・依存監査の委譲</text>\n</svg><figcaption>図1：公式ガイドが示す制御レイヤーの2分類。確実性が必要なものは左、柔軟な適用は右へ。</figcaption></figure>\n<p>Steeringガイドの核心は「決定論的な仕組み（CLAUDE.mdとフック）」と「確率論的な仕組み（スキルとサブエージェント）」の区別を設計判断の軸に置くこと。CLAUDE.mdは200行以内に保ち、超える分はimportで分割するのが公式推奨だ。SmartScopeの上級テクニック集も同じ結論を裏付けていて、「rm -rfを実行しない」といった禁止指示をCLAUDE.mdに書いた場合の遵守率は約70%だが、フックなら100%ブロックできるという。つまり「守られないと困るルール」をプロンプトで頼むのは設計ミスで、フックに移すべきということになる。</p>\n<p>自分が試すなら、まず<code>/doctor</code>で現環境を点検し、CLAUDE.mdの中の「絶対に守ってほしい系」の記述をフックへ移植する棚卸しをやりたい。調査系タスクのサブエージェント委譲もコンテキスト節約に直結する。</p>\n<p>注意点はふたつ。週次利用上限50%増のプロモーションが本日7月13日で終了し、明日から通常上限に戻る見込みなので、ヘビーユーザーはペース配分の見直しが必要。もうひとつ、Trusted Devices（リモートセッション前のデバイス検証）はTeam/EnterpriseのRemote Control管理者向け機能だ。</p>\n<p><b>ひとことまとめ:</b> 「確実に守らせたいならフック、柔軟に任せたいならスキル/サブエージェント」——公式が示したこの一本の軸で、設定ファイルの置き場所の迷いはほぼ解消する。</p>",
+      "sources": [
+        {
+          "title": "Claude Code changelog (v2.1.207)",
+          "url": "https://code.claude.com/docs/en/changelog"
+        },
+        {
+          "title": "Steering Claude Code（Anthropic公式ブログ）",
+          "url": "https://claude.com/blog/steering-claude-code-skills-hooks-rules-subagents-and-more"
+        },
+        {
+          "title": "SmartScope: 上級テクニック11選",
+          "url": "https://smartscope.blog/en/generative-ai/claude/claude-code-best-practices-advanced-2026/"
+        },
+        {
+          "title": "週次上限+50%プロモ終了の報道",
+          "url": "https://pasqualepillitteri.it/en/news/2494/claude-code-weekly-limits-50-percent-anti-codex-anthropic-2026"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-13-nextjs",
+      "date": "2026-07-13",
+      "topic": "Next.js",
+      "title": "nuqs 2.5 — URLを「第3の状態置き場」にする型安全searchParams管理",
+      "lede": "フィルタ・検索語・ページ番号のような「共有できるべきUI状態」の正しい置き場はZustandでもTanStack QueryでもなくURL。nuqsはそれをuseState互換のAPIで書けるようにする5.7kBのライブラリだ。",
+      "articleHtml": "<p>Zustand（クライアント状態）とTanStack Query（サーバー状態）を押さえると、残る問題は「フィルタや検索語やタブ選択をどこに置くか」だ。これらはリロードしても共有リンクでも復元されてほしい状態で、正しい置き場はURLクエリ文字列になる。ただし素の<code>useSearchParams</code> + <code>router.push</code>は文字列変換とシリアライズのboilerplate地獄になりがち。nuqs（5.7kB gzip）はそこを「useStateのURL版」という一点突破で解決する。</p>\n<figure class='fig'><svg viewBox='0 0 620 190' xmlns='http://www.w3.org/2000/svg'>\n<rect x='15' y='30' width='185' height='120' rx='10' fill='#fff4e5' stroke='#e8963f' stroke-width='1.5'/>\n<text x='107' y='56' text-anchor='middle' font-size='13' font-weight='bold' fill='#1c1c1e'>クライアント状態</text>\n<text x='107' y='78' text-anchor='middle' font-size='12' fill='#b45309'>Zustand</text>\n<text x='107' y='102' text-anchor='middle' font-size='11' fill='#555'>モーダル開閉・下書き</text>\n<text x='107' y='120' text-anchor='middle' font-size='11' fill='#555'>共有不要なUI状態</text>\n<rect x='217' y='30' width='185' height='120' rx='10' fill='#fde8e8' stroke='#e05252' stroke-width='1.5'/>\n<text x='309' y='56' text-anchor='middle' font-size='13' font-weight='bold' fill='#1c1c1e'>サーバー状態</text>\n<text x='309' y='78' text-anchor='middle' font-size='12' fill='#b91c1c'>TanStack Query</text>\n<text x='309' y='102' text-anchor='middle' font-size='11' fill='#555'>APIデータ・キャッシュ</text>\n<text x='309' y='120' text-anchor='middle' font-size='11' fill='#555'>再取得・無効化の管理</text>\n<rect x='419' y='30' width='185' height='120' rx='10' fill='#e7f0fe' stroke='#1f6feb' stroke-width='2'/>\n<text x='511' y='56' text-anchor='middle' font-size='13' font-weight='bold' fill='#1c1c1e'>URL状態</text>\n<text x='511' y='78' text-anchor='middle' font-size='12' fill='#1d4ed8'>nuqs</text>\n<text x='511' y='102' text-anchor='middle' font-size='11' fill='#555'>フィルタ・検索語・ページ</text>\n<text x='511' y='120' text-anchor='middle' font-size='11' fill='#555'>共有・リロード・戻るが効く</text>\n<text x='310' y='176' text-anchor='middle' font-size='11.5' fill='#8a8a90'>「共有できるべきか？」が振り分けの判断基準</text>\n</svg><figcaption>図1：3種の状態の住み分け。nuqsが最後のピースを埋める。</figcaption></figure>\n<p>APIは<code>useQueryState('q', parseAsString.withDefault(''))</code>が<code>[value, setValue]</code>を返すuseState互換。integer/boolean/isoDateTime/enum/jsonなどのパーサーを宣言的にチェーンする。v2ではルートレイアウトを<code>NuqsAdapter</code>で包むのが必須（忘れるとランタイムエラー）。鍵になるオプションが<code>shallow</code>で、既定のtrueならURL更新はブラウザ内だけ、falseにするとNext.jsに通知されてsearchParamsを受けるRSCページが再レンダー＝サーバー側フィルタリングと連動する。</p>\n<pre><code>const [{ q, sort }, setFilters] = useQueryStates(productSearchParams, { shallow: false })\n// 検索入力ではURL書き込みをdebounce（stateは即時反映）\nsetFilters({ q: value, page: 1 }, { limitUrlUpdates: debounce(300) })</code></pre>\n<p>サーバー側は<code>nuqs/server</code>から<code>createLoader(parsers)</code>でページやRoute Handlerを型安全にパースでき、<code>createSearchParamsCache</code>を使えば深くネストしたServer Componentからも参照可能（RSC版Contextに相当）。<code>loadSearchParams</code>をawaitせずPromiseのままSuspense内の子へ渡せばPPR/ストリーミングとも噛み合う。2.5.0では<code>limitUrlUpdates: debounce(ms)</code>（旧throttleMsを置換）、パーサー定義からバリデーションスキーマを導出するStandard Schema生成、キー単位サブスクリプションで再レンダーを減らすkey isolationが入った。</p>\n<p>自分が試すなら、一覧ページのフィルタ群をパーサー定義1ファイルに集約し、RSCページとClient島で同じ定義を共有する構成。落とし穴は4つ——パーサーはバリデーションではない（「正の整数のみ」等はZodで後段検証）、<code>useQueryState</code>を使うコンポーネントは<code>'use client'</code>必須、<code>shallow: false</code>は毎回サーバーリクエストなので検索入力では必ずdebounce併用、そして<code>clearOnDefault</code>が既定trueなのでdefault値と一致するとURLからキーが消える（意図的な仕様）。</p>\n<p><b>ひとことまとめ:</b> 「この状態は共有できるべきか？」と自問してYesならnuqs。Zustand・TanStack Queryと合わせ、状態の置き場所の三角形がこれで完成する。</p>",
+      "sources": [
+        {
+          "title": "nuqs 公式サイト",
+          "url": "https://nuqs.dev/"
+        },
+        {
+          "title": "Server-Side usage",
+          "url": "https://nuqs.dev/docs/server-side"
+        },
+        {
+          "title": "nuqs 2.5 リリースブログ",
+          "url": "https://nuqs.dev/blog/nuqs-2.5"
+        },
+        {
+          "title": "GitHub 47ng/nuqs",
+          "url": "https://github.com/47ng/nuqs"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-13-flutter",
+      "date": "2026-07-13",
+      "topic": "Flutter",
+      "title": "M3 ExpressiveはコアSDKに来ない — material_ui時代の幕開けとFlutter 3.44の現在地",
+      "lede": "umbrella issue #168813が明言：Material 3 Expressiveの新規開発はコアSDKでは行わず、分離後の新パッケージmaterial_ui / cupertino_ui側で進む。安定版はFlutter 3.44.0 / Dart 3.12.2。",
+      "articleHtml": "<p>GoogleがMaterial 3 Expressiveを発表して以来、「FlutterのコアSDKにいつ入るのか」は多くの開発者の関心事だった。その答えがumbrella issue #168813で明確になっている。2025年7月29日の方針決定により、<b>コアSDKではM3 Expressiveを新規開発せず、contributionも受け付けない</b>。material/cupertinoライブラリの分離後、すべての新規開発は新パッケージ<code>material_ui</code> / <code>cupertino_ui</code>側で行われる体制だ。</p>\n<figure class='fig'><svg viewBox='0 0 620 230' xmlns='http://www.w3.org/2000/svg'>\n<rect x='20' y='40' width='260' height='150' rx='10' fill='#eef4fa' stroke='#90a4ae' stroke-width='1.5'/>\n<text x='150' y='68' text-anchor='middle' font-size='13.5' font-weight='bold' fill='#455a64'>コアSDK（flutter/flutter）</text>\n<text x='150' y='96' text-anchor='middle' font-size='11.5' fill='#555'>既存Material 3の安定運用</text>\n<text x='150' y='118' text-anchor='middle' font-size='11.5' fill='#555'>バグ修正・保守が中心</text>\n<text x='150' y='148' text-anchor='middle' font-size='11.5' font-weight='bold' fill='#c62828'>M3 Expressiveの新規開発なし</text>\n<text x='150' y='168' text-anchor='middle' font-size='11.5' fill='#c62828'>contributionも受付けない</text>\n<path d='M290 115 L330 115' stroke='#0277bd' stroke-width='2.5' marker-end='url(#arrw)'/>\n<defs><marker id='arrw' markerWidth='8' markerHeight='8' refX='6' refY='3' orient='auto'><path d='M0,0 L6,3 L0,6 Z' fill='#0277bd'/></marker></defs>\n<rect x='340' y='40' width='260' height='150' rx='10' fill='#e3f2fd' stroke='#0277bd' stroke-width='2'/>\n<text x='470' y='68' text-anchor='middle' font-size='13.5' font-weight='bold' fill='#01579b'>新パッケージ（分離後）</text>\n<text x='470' y='96' text-anchor='middle' font-size='12.5' font-weight='bold' fill='#0277bd'>material_ui / cupertino_ui</text>\n<text x='470' y='124' text-anchor='middle' font-size='11.5' fill='#555'>M3 Expressiveを含む</text>\n<text x='470' y='144' text-anchor='middle' font-size='11.5' fill='#555'>全ての新規デザイン開発</text>\n<text x='470' y='170' text-anchor='middle' font-size='11.5' fill='#555'>SDKリリースから独立して進化</text>\n<text x='310' y='218' text-anchor='middle' font-size='11.5' fill='#8a8a90'>方針決定: 2025-07-29（issue #168813）</text>\n</svg><figcaption>図1：Material実装の開発体制。新機能はコアSDKではなくmaterial_ui側で届く。</figcaption></figure>\n<p>足元の安定版はFlutter 3.44.0 / Dart 3.12.2（次の安定版は2026年8月予定）。3.44ではImpellerがAndroid 10+で必須化され、GenUI（A2UIプロトコル）サポート、Agentic Hot Reload、MediaQueryからのdisplay corner radii取得が入った。Dart 3.12はprivate named parametersの正式化とprimary constructors（experimental）。ツールチェーンも<code>flutter analyze --suggestions</code>がJava 25 / Gradle 9 / AGP 9 / Kotlin 2.2.20まで対応した。</p>\n<p>アニメーション側の今日の深掘りはRiveランタイム。stableはrive 0.13.20で、Rive Nativeベースに書き直した次世代0.14.0-dev.6が開発中だ。state machineで描画とロジックを分離し、events（0.12+）でハプティクスやサウンドを正確にトリガーできる。ImpellerはAOTシェーダーコンパイルでジャンクを排除し複雑シーンの平均ラスタライズを約50%短縮しているが、Rive併用時に描画差が出る場合は<code>--no-enable-impeller</code>で切り分ける。状態管理はRiverpod 3.3.1 / bloc 9.2.xが現行で、基本線は変わらず「新規はRiverpod 3.x、大規模・監査案件はBloc」。動いているProvider/BLoCアプリはrepositoryを先に抽出して1機能ずつ移行すればよく、書き換えない勇気も実践則だ。</p>\n<figure class='fig'><svg viewBox='0 0 620 170' xmlns='http://www.w3.org/2000/svg'>\n<text x='20' y='30' font-size='12.5' font-weight='bold' fill='#1c1c1e'>フレーム予算（1フレームに使える時間）</text>\n<rect x='90' y='48' width='480' height='22' rx='5' fill='#c8e6f8'/><text x='82' y='64' text-anchor='end' font-size='11.5' fill='#333'>60fps</text><text x='578' y='64' font-size='11.5' font-weight='bold' fill='#0277bd'>16ms</text>\n<rect x='90' y='82' width='330' height='22' rx='5' fill='#8ecdf0'/><text x='82' y='98' text-anchor='end' font-size='11.5' fill='#333'>90fps</text><text x='428' y='98' font-size='11.5' font-weight='bold' fill='#0277bd'>11ms</text>\n<rect x='90' y='116' width='249' height='22' rx='5' fill='#56c5f5'/><text x='82' y='132' text-anchor='end' font-size='11.5' fill='#333'>120fps</text><text x='347' y='132' font-size='11.5' font-weight='bold' fill='#0277bd'>8.3ms</text>\n<text x='310' y='160' text-anchor='middle' font-size='11' fill='#8a8a90'>ラスタライズは 4ms未満=60fps安定 / 8.3ms未満=120fps。計測はprofileモードで</text>\n</svg><figcaption>図2：リフレッシュレート別のフレーム予算。高リフレッシュ端末ほど余裕がない。</figcaption></figure>\n<p>実務では、レンダリング4フェーズ（Build/Layout/Paint/Composite）を意識したconst徹底・不要ラッパー除去・RepaintBoundaryの戦略配置が基本動作。DevToolsのPerformance ViewでUI/Rasterスレッドのjank位置を特定してから手を付ける。注意点として、M3 Expressive対応を今のコアSDKで待ち続けても来ないので、新デザインの採用計画はmaterial_uiパッケージの動向を見て立てること。</p>\n<p><b>ひとことまとめ:</b> Materialの進化はコアSDKから新パッケージへ主戦場を移した。3.44の安定運用と並行して、material_uiのウォッチを習慣にしたい。</p>",
+      "sources": [
+        {
+          "title": "M3 Expressive umbrella issue #168813",
+          "url": "https://github.com/flutter/flutter/issues/168813"
+        },
+        {
+          "title": "What's new in Flutter 3.44",
+          "url": "https://blog.flutter.dev/whats-new-in-flutter-3-44-b0cc1ad3c527"
+        },
+        {
+          "title": "rive versions (pub.dev)",
+          "url": "https://pub.dev/packages/rive/versions"
+        },
+        {
+          "title": "riverpod changelog",
+          "url": "https://pub.dev/packages/riverpod/changelog"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-13-github-trending",
+      "date": "2026-07-13",
+      "topic": "GitHub Trending",
+      "title": "7/13の話題リポジトリ — スキルブームの本体・規格・そしてCI/CDの土台",
+      "lede": "Claude Code本体、Agent Skillsの共通仕様、actions/checkout——エコシステムの「本体・標準・インフラ」が同日にトレンド入りした、地盤の強さが見える一日。",
+      "articleHtml": "<p>今日の3本は、派手な新顔ではなく「エコシステムの土台」が揃ってスターを集めた構図だ。エージェント開発の本体、その拡張を支える共通規格、そしてすべてのCIの最初の一歩。流行の中心が個別ツールから基盤レイヤーへ移りつつあることを示している。</p>\n<figure class='fig'><svg viewBox='0 0 640 250' xmlns='http://www.w3.org/2000/svg'>\n<rect x='20' y='16' width='180' height='34' rx='8' fill='#e9f7ec' stroke='#3fb950' stroke-width='1.5'/><text x='110' y='38' text-anchor='middle' font-size='12' font-weight='bold' fill='#1a7f37'>リポジトリ</text>\n<rect x='210' y='16' width='205' height='34' rx='8' fill='#fff8e6' stroke='#d4a72c' stroke-width='1.5'/><text x='312' y='38' text-anchor='middle' font-size='12' font-weight='bold' fill='#9a6700'>解決したい課題</text>\n<rect x='425' y='16' width='195' height='34' rx='8' fill='#e7f0fe' stroke='#1f6feb' stroke-width='1.5'/><text x='522' y='38' text-anchor='middle' font-size='12' font-weight='bold' fill='#1d4ed8'>提供する機能</text>\n<rect x='20' y='60' width='180' height='54' rx='8' fill='#fff' stroke='#d0d7de'/><text x='110' y='83' text-anchor='middle' font-size='11.5' font-weight='bold' fill='#1c1c1e'>claude-code</text><text x='110' y='101' text-anchor='middle' font-size='10.5' fill='#666'>Python ⭐135.8k (+245)</text>\n<rect x='210' y='60' width='205' height='54' rx='8' fill='#fff' stroke='#d0d7de'/><text x='312' y='83' text-anchor='middle' font-size='10.5' fill='#444'>ルーチン作業・git操作に</text><text x='312' y='100' text-anchor='middle' font-size='10.5' fill='#444'>費やす開発時間の削減</text>\n<rect x='425' y='60' width='195' height='54' rx='8' fill='#fff' stroke='#d0d7de'/><text x='522' y='83' text-anchor='middle' font-size='10.5' fill='#444'>自然言語で動くターミナル</text><text x='522' y='100' text-anchor='middle' font-size='10.5' fill='#444'>常駐エージェント＋拡張機構</text>\n<rect x='20' y='124' width='180' height='54' rx='8' fill='#fff' stroke='#d0d7de'/><text x='110' y='147' text-anchor='middle' font-size='11.5' font-weight='bold' fill='#1c1c1e'>agentskills</text><text x='110' y='165' text-anchor='middle' font-size='10.5' fill='#666'>Python ⭐21.9k</text>\n<rect x='210' y='124' width='205' height='54' rx='8' fill='#fff' stroke='#d0d7de'/><text x='312' y='147' text-anchor='middle' font-size='10.5' fill='#444'>スキルがツール間で</text><text x='312' y='164' text-anchor='middle' font-size='10.5' fill='#444'>持ち運べない断片化</text>\n<rect x='425' y='124' width='195' height='54' rx='8' fill='#fff' stroke='#d0d7de'/><text x='522' y='147' text-anchor='middle' font-size='10.5' fill='#444'>SKILL.mdベースの共通仕様</text><text x='522' y='164' text-anchor='middle' font-size='10.5' fill='#444'>と公式ドキュメント</text>\n<rect x='20' y='188' width='180' height='54' rx='8' fill='#fff' stroke='#d0d7de'/><text x='110' y='211' text-anchor='middle' font-size='11.5' font-weight='bold' fill='#1c1c1e'>actions/checkout</text><text x='110' y='229' text-anchor='middle' font-size='10.5' fill='#666'>TypeScript ⭐8.3k (+129)</text>\n<rect x='210' y='188' width='205' height='54' rx='8' fill='#fff' stroke='#d0d7de'/><text x='312' y='211' text-anchor='middle' font-size='10.5' fill='#444'>CIでリポジトリ取得を</text><text x='312' y='228' text-anchor='middle' font-size='10.5' fill='#444'>毎回手作りする手間</text>\n<rect x='425' y='188' width='195' height='54' rx='8' fill='#fff' stroke='#d0d7de'/><text x='522' y='211' text-anchor='middle' font-size='10.5' fill='#444'>公式チェックアウト機構</text><text x='522' y='228' text-anchor='middle' font-size='10.5' fill='#444'>submodule/LFS/sparse対応</text>\n</svg><figcaption>図1：今日の3本の「課題→機能」対応表。</figcaption></figure>\n<h4>anthropics/claude-code（Python・⭐135.8k）</h4>\n<p><b>解決したい課題:</b> コードベースの理解、ルーチン作業、git操作といった「書く以外」の開発時間が大きすぎる問題。エディタ補完の次の段階として、タスクそのものを委譲できる形が求められていた。</p>\n<p><b>提供する機能:</b> ターミナル上で動くエージェント型コーディングツール。コードベースを理解した上で作業実行・コード説明・gitワークフローまで自然言語で任せられ、プラグイン・スキル・MCPで拡張できる。総スター13.5万超でなお本日+245。agent-skillsやsuperpowersなどスキル系リポジトリが連日トレンドを賑わせる「スキルブーム」の中心にある本体として、改めて注目が集まっている。</p>\n<h4>agentskills/agentskills（Python・⭐21.9k）</h4>\n<p><b>解決したい課題:</b> エージェント向けスキルがツールごとにバラバラの書式で作られ、ポータビリティがない断片化の問題。ブームが大きくなるほど「共通の書き方」の不在が痛くなる。</p>\n<p><b>提供する機能:</b> SKILL.mdベースの「Agent Skills」共通仕様と公式ドキュメント。特定ベンダーに閉じないポータブルなスキル記述を目指す規格側のリポジトリで、スキル系リポジトリの連日の急上昇を受けて土台への関心が波及した形だ。</p>\n<h4>actions/checkout（TypeScript・⭐8.3k）</h4>\n<p><b>解決したい課題:</b> CI/CDワークフローの最初に必ず必要な「リポジトリの取得」を、認証やサブモジュールまで含めて毎回自前実装する手間。</p>\n<p><b>提供する機能:</b> <code>uses: actions/checkout</code>の一行で済む公式チェックアウトアクション。サブモジュール・LFS・sparse checkoutなど柔軟なオプションを持ち、GitHub公式メンテナンスで安定運用できる。AI系が席巻するトレンドの中で本日+129スターと、定番インフラが改めて評価される珍しい動きだった。</p>\n<p><b>まとめ:</b> 自分が今日試すならagentskills。手元のスキルをSKILL.md共通仕様に寄せておけば、ツールをまたいだ再利用の下地になる。</p>",
+      "sources": [
+        {
+          "title": "anthropics/claude-code",
+          "url": "https://github.com/anthropics/claude-code"
+        },
+        {
+          "title": "agentskills/agentskills",
+          "url": "https://github.com/agentskills/agentskills"
+        },
+        {
+          "title": "actions/checkout",
+          "url": "https://github.com/actions/checkout"
+        }
+      ]
+    },
     {
       "id": "2026-07-12-claude-code",
       "date": "2026-07-12",
@@ -2107,41 +2207,6 @@
           "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/transition-behavior"
         }
       ]
-    },
-    {
-      "id": "2026-06-16-flutter",
-      "date": "2026-06-16",
-      "topic": "Flutter",
-      "title": "Flutter 3.44 の構造改革 — Material/Cupertinoの独立化とSwiftPM既定化が意味すること",
-      "lede": "Material/Cupertinoが本体から分離してpub.dev配布へ。iOS/macOSの依存管理はSwiftPMが既定に昇格しCocoaPods終焉へ。Riverpod 3.3とImpellerの現在地も合わせて整理する。",
-      "articleHtml": "<h4>なぜ今これが話題か</h4><p>2026-05-18（Google I/O 2026）に出た <b>Flutter 3.44.0 / Dart 3.12</b> は、機能追加より「土台の作り替え」が主役のリリースだ。これまで SDK 本体に同梱されていた UI レイヤと iOS/macOS のビルド基盤が、より独立した形へ動いた。3ヶ月ごとの SDK サイクルに縛られず UI 改善を受け取れるようになる、という開発リズムの変化が肝になる。</p><figure class='fig'><svg viewBox='0 0 600 238' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='120' y='24' text-anchor='middle' font-size='12.5' font-weight='700' fill='#666'>〜3.43：同梱</text><rect x='24' y='38' width='192' height='168' rx='12' fill='#eef6fb' stroke='#0277bd'/><text x='120' y='60' text-anchor='middle' font-size='12' font-weight='700' fill='#015a8c'>Flutter SDK 本体</text><rect x='44' y='74' width='152' height='40' rx='8' fill='#fff' stroke='#7cc1e6'/><text x='120' y='99' text-anchor='middle' font-size='12' fill='#0277bd'>Material</text><rect x='44' y='122' width='152' height='40' rx='8' fill='#fff' stroke='#7cc1e6'/><text x='120' y='147' text-anchor='middle' font-size='12' fill='#0277bd'>Cupertino</text><text x='120' y='192' text-anchor='middle' font-size='10.5' fill='#777'>SDKリリースに同期</text><line x1='226' y1='122' x2='292' y2='122' stroke='#0277bd' stroke-width='2.5' marker-end='url(#fa)'/><defs><marker id='fa' markerWidth='10' markerHeight='10' refX='5' refY='5' orient='auto'><path d='M0 0 L10 5 L0 10 z' fill='#0277bd'/></marker></defs><text x='259' y='114' text-anchor='middle' font-size='10.5' font-weight='700' fill='#0277bd'>3.44</text><text x='450' y='24' text-anchor='middle' font-size='12.5' font-weight='700' fill='#666'>3.44〜：分離</text><rect x='306' y='38' width='150' height='168' rx='12' fill='#eef6fb' stroke='#0277bd'/><text x='381' y='60' text-anchor='middle' font-size='12' font-weight='700' fill='#015a8c'>SDK 本体</text><text x='381' y='128' text-anchor='middle' font-size='10.5' fill='#777'>UIレイヤを外出し</text><rect x='470' y='58' width='112' height='54' rx='8' fill='#e9f7ef' stroke='#46c08a'/><text x='526' y='80' text-anchor='middle' font-size='11.5' font-weight='700' fill='#1d8a5a'>material_ui</text><text x='526' y='98' text-anchor='middle' font-size='9.5' fill='#2f7d5b'>pub.dev</text><rect x='470' y='126' width='112' height='54' rx='8' fill='#e9f7ef' stroke='#46c08a'/><text x='526' y='148' text-anchor='middle' font-size='11.5' font-weight='700' fill='#1d8a5a'>cupertino_ui</text><text x='526' y='166' text-anchor='middle' font-size='9.5' fill='#2f7d5b'>独立リリース</text><line x1='456' y1='98' x2='470' y2='84' stroke='#46c08a' stroke-width='1.5'/><line x1='456' y1='146' x2='470' y2='152' stroke='#46c08a' stroke-width='1.5'/><text x='526' y='198' text-anchor='middle' font-size='10' fill='#1d8a5a'>SDKを待たず更新</text></svg><figcaption>図1：Material/Cupertino を本体から外し pub.dev 配布へ。SDKリリースを待たず UI を更新できる。</figcaption></figure><h4>何が新しいか</h4><p>最大の変化は <b>Material / Cupertino の本体リポジトリからの分離</b>。<code>material_ui</code> / <code>cupertino_ui</code> として pub.dev で配布され、Material 3 の新機能や Cupertino の修正を SDK リリースを待たずに随時取り込める。Cupertino には iOS ネイティブ感のある <b>CupertinoMenuAnchor</b> が追加。ビルド面では iOS/macOS の既定依存管理が <b>SwiftPM（Swift Package Manager）に昇格</b>し CocoaPods 終焉へ向かう。副産物として Apple Silicon Mac で <b>Rosetta 不要</b>になった。Widget Preview は Dart Analysis Server ベースへ刷新され IDE 利用時メモリを最大 <b>50%削減</b>。Dart 3.12 は <b>Agentic Hot Reload</b> と <b>Genkit</b> で AI/エージェント対応を強化し、private named parameters が正式、primary constructors が実験的に入った。</p><h4>状態管理とパフォーマンスの現在地</h4><p>新規プロジェクトは <b>Riverpod 3.3.1 + コード生成</b>が推奨デフォルト。コンパイル時安全・context-free read・first-class async に加え、3.0系で <b>Mutations API</b>・<b>指数バックオフの自動リトライ</b>・<b>stale-while-revalidate のオフライン永続化</b>が本番投入された。監査証跡が要る規制業界は Bloc 9.x、GetX は12ヶ月超のプロジェクトでは非推奨という棲み分け。描画は <b>Impeller</b> が iOS/モダン Android で既定（API 29+、Flutter 3.27以降）。シェーダー事前コンパイルで初回フレームからジャンクが無く、ラスタライズ約50%高速化・安定 <b>120fps</b> を狙える。</p><figure class='fig'><svg viewBox='0 0 600 188' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='10' y='22' font-size='12.5' font-weight='700' fill='#333'>1フレームの予算（短いほど高fps）</text><text x='12' y='58' font-size='12' fill='#555'>60fps</text><rect x='66' y='44' width='480' height='22' rx='5' fill='#bcdff3'/><text x='556' y='60' font-size='11' fill='#0277bd' text-anchor='end'>16.6ms</text><text x='12' y='98' font-size='12' fill='#555'>90fps</text><rect x='66' y='84' width='318' height='22' rx='5' fill='#6fc3ea'/><text x='392' y='100' font-size='11' fill='#015a8c'>11ms</text><text x='12' y='138' font-size='12' fill='#555'>120fps</text><rect x='66' y='124' width='240' height='22' rx='5' fill='#0277bd'/><text x='314' y='140' font-size='11' fill='#015a8c'>8.3ms ← Impellerの狙い</text><text x='12' y='172' font-size='10.5' fill='#888'>※ DevTools の Performance タブでラスタライズ時間をこの予算内に収める（必ず profile モードで計測）</text></svg><figcaption>図2：フレーム予算。60fps=16.6ms / 90fps=11ms / 120fps=8.3ms。Impeller は120fps域を狙う。</figcaption></figure><h4>自分が試すなら</h4><ul><li>iOS プロジェクトを SwiftPM 移行し、CocoaPods 依存と Rosetta 起動を外してビルドを軽くする。</li><li><code>material_ui</code>/<code>cupertino_ui</code> を pub 依存に切り出し、Material 3 更新を SDK と切り離して追えるようにする。</li><li>パフォーマンス検証は必ず <b>profile モード</b>で。DevTools の Performance タブでラスタライズ <code>&lt;8.3ms</code>（120fps予算）を確認する。</li></ul><h4>注意点</h4><blockquote>UI パッケージ分離は柔軟さと引き換えに依存バージョンの管理対象が増える。pub の更新と SDK の更新が別軸で動くので、CI でのバージョン固定とアップグレード手順を決めておきたい。SwiftPM 移行も既存の CocoaPods 前提のプラグインが残っていると詰まりやすい。</blockquote><h4>ひとことまとめ</h4><p>3.44 は「速くなった」より「分離して進化が速くなる土台ができた」リリース。Riverpod 3 と Impeller が安定路線に乗った今、新規はこの構成を素直に採るのが堅い。</p>",
-      "sources": [
-        {
-          "title": "What's new in Flutter 3.44",
-          "url": "https://blog.flutter.dev/whats-new-in-flutter-3-44-b0cc1ad3c527"
-        },
-        {
-          "title": "Flutter 3.44: SwiftPMが既定に",
-          "url": "https://medium.com/@vadiamohil/flutter-3-44-the-end-of-cocoapods-and-the-rise-of-swift-package-manager-453a662f51f3"
-        },
-        {
-          "title": "Announcing Dart 3.12",
-          "url": "https://dart.dev/blog/announcing-dart-3-12"
-        },
-        {
-          "title": "Best Flutter State Management 2026",
-          "url": "https://foresightmobile.com/blog/best-flutter-state-management"
-        }
-      ]
-    },
-    {
-      "id": "2026-06-16-intro",
-      "date": "2026-06-16",
-      "topic": "はじめに",
-      "title": "この読み物について",
-      "lede": "3つの日次リサーチ（Claude Code / Next.js / Flutter）を、自分が後で読み返すための深掘り記事としてまとめていきます。",
-      "articleHtml": "<p>このページは、毎日動いている3つのリサーチタスク（Claude Code / Next.js / Flutter）の成果を、箇条書きではなく『読み物』として再構成して蓄積する場所です。広告やアフィリエイトの要素はなく、純粋に自分用の知識アーカイブです。</p>",
-      "sources": []
     }
   ]
 }
