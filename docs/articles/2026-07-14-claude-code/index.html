@@ -1,0 +1,89 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Claude Code に Artifacts 正式導入 — セッションの成果を「更新され続けるライブWebページ」に — デイリー技術深掘り 読み物</title><meta name="description" content="セッション作業をライブ共有Webページ(Artifact)として発行し、同一URLで自動更新できる機能が正式導入。同週のv2.1.202〜207ではautoモードがBedrock/Vertex/Foundryで既定に、Opus 4.8が各クラウド基盤の既定モデルへ。/configには動的ワークフロー規模の設定も加わった。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-14-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Claude Code に Artifacts 正式導入 — セッションの成果を「更新され続けるライブWebページ」に — デイリー技術深掘り 読み物"><meta property="og:description" content="セッション作業をライブ共有Webページ(Artifact)として発行し、同一URLで自動更新できる機能が正式導入。同週のv2.1.202〜207ではautoモードがBedrock/Vertex/Foundryで既定に、Opus 4.8が各クラウド基盤の既定モデルへ。/configには動的ワークフロー規模の設定も加わった。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-14-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>Claude Code に Artifacts 正式導入 — セッションの成果を「更新され続けるライブWebページ」に</h1> <p class="lede">セッション作業をライブ共有Webページ(Artifact)として発行し、同一URLで自動更新できる機能が正式導入。同週のv2.1.202〜207ではautoモードがBedrock/Vertex/Foundryで既定に、Opus 4.8が各クラウド基盤の既定モデルへ。/configには動的ワークフロー規模の設定も加わった。</p> <div class="meta"> <span>📅 2026年7月14日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="0"><p>Claude Codeの設定・運用まわりが一段まとまった週だった。目玉はArtifactsの正式導入で、あわせて週次アップデート（v2.1.202〜v2.1.207）が基盤モデルと既定モードを大きく動かし、<code>/config</code>には新しい制御項目が加わった。単発の便利機能というより、「エージェントの成果をどう共有し、どう操縦するか」という運用面の底上げがまとめて来た格好だ。</p>
+<h4 id="sec-1">何が新しいか</h4>
+<p>Artifactsは、セッションでの作業内容をライブなWebページに変換して共有する仕組み。PRウォークスルー、インシデントのタイムライン、各種ダッシュボード、リリースチェックリストなどを、作業の進行に合わせて<b>同一URL上で自動更新</b>できる。公開はできず、認証済みの組織メンバーのみ閲覧可能。バージョン履歴からいつでも過去の状態に復元できるのも実務向きだ。提供はTeam/Enterprise向けのベータで、Pro/Maxにも解放が進んでいる。</p>
+<p>同週の週次アップデートでは、<b>autoモードがBedrock・Vertex AI・Foundryで既定利用可能</b>になり、<b>Opus 4.8がこれら各クラウド基盤上のClaude Platformの既定モデル</b>に昇格した。<code>/review</code>コマンド体系の刷新、<code>/doctor</code>によるCLAUDE.md簡素化提案も入っている。</p>
+<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg'>
+<text x='300' y='24' text-anchor='middle' font-size='14' font-weight='bold' fill='#5a3fb0'>Artifacts：セッション成果 → 同一URLのライブページ</text>
+<rect x='24' y='48' width='150' height='60' rx='10' fill='#f3edff' stroke='#7b3fe4' stroke-width='1.5'></rect>
+<text x='99' y='74' text-anchor='middle' font-size='12' font-weight='bold' fill='#1c1c1e'>セッション作業</text>
+<text x='99' y='94' text-anchor='middle' font-size='11' fill='#444'>PR/インシデント/ダッシュ</text>
+<path d='M180 78 L232 78' stroke='#7b3fe4' stroke-width='2' marker-end='url(#a)'></path>
+<rect x='236' y='48' width='150' height='60' rx='10' fill='#e9f7ec' stroke='#3fb950' stroke-width='1.5'></rect>
+<text x='311' y='74' text-anchor='middle' font-size='12' font-weight='bold' fill='#1c1c1e'>Artifact 発行</text>
+<text x='311' y='94' text-anchor='middle' font-size='11' fill='#444'>同一URL・組織内限定</text>
+<path d='M392 78 L444 78' stroke='#3fb950' stroke-width='2' marker-end='url(#a)'></path>
+<rect x='448' y='48' width='128' height='60' rx='10' fill='#eef4ff' stroke='#1f6feb' stroke-width='1.5'></rect>
+<text x='512' y='74' text-anchor='middle' font-size='12' font-weight='bold' fill='#1c1c1e'>自動更新</text>
+<text x='512' y='94' text-anchor='middle' font-size='11' fill='#444'>版履歴で復元可</text>
+<text x='300' y='150' text-anchor='middle' font-size='12' font-weight='bold' fill='#5a3fb0'>週次(v2.1.202〜207)：auto既定化 / Opus 4.8 既定 / /config 拡張</text>
+<rect x='60' y='166' width='150' height='30' rx='8' fill='#fff' stroke='#c9bdf5'></rect>
+<text x='135' y='186' text-anchor='middle' font-size='11' fill='#333'>auto → Bedrock/Vertex/Foundry</text>
+<rect x='225' y='166' width='150' height='30' rx='8' fill='#fff' stroke='#c9bdf5'></rect>
+<text x='300' y='186' text-anchor='middle' font-size='11' fill='#333'>既定モデル = Opus 4.8</text>
+<rect x='390' y='166' width='150' height='30' rx='8' fill='#fff' stroke='#c9bdf5'></rect>
+<text x='465' y='186' text-anchor='middle' font-size='11' fill='#333'>/config: workflow size</text>
+<defs><marker id='a' markerWidth='8' markerHeight='8' refX='6' refY='3' orient='auto'><path d='M0 0 L6 3 L0 6 z' fill='#7b3fe4'></path></marker></defs>
+</svg><figcaption>図1：Artifactsの発行フローと、同週の基盤アップデート。</figcaption></figure>
+<h4 id="sec-2">/config と細かな改善</h4>
+<p><code>/config</code>には「Dynamic workflow size」設定が加わり、動的ワークフローで動くエージェント数（small/medium/large）を制御できるようになった。<code>/cd</code>には<code>/add-dir</code>同様のディレクトリパス補完が付き、<code>/commit-push-pr</code>はリポジトリ設定済みのpushリモートへの<code>git push</code>を自動許可する。長いリスト・表・コードブロックのストリーミング中に端末がフリーズ／入力が遅延する問題も修正された。</p>
+<h4 id="sec-3">実務での使いどころと注意点</h4>
+<p>自分が試すなら、まずインシデント対応や長丁場の調査セッションをArtifact化して「同じリンクを見れば常に最新」という状態を作りたい。手元でも、まさにこのデイリー読み物のように、日次で追記されるライブページとして機能する。注意点は、Artifactsが組織内限定＝公開用途には使えないこと、そしてautoモードとOpus 4.8既定化でコスト特性が変わるため、重い定期タスクを回している場合は消費ペースを見直しておくとよい。</p>
+<p><b>ひとことまとめ:</b> 「成果をライブページで共有(Artifacts)」「基盤はauto＋Opus 4.8が既定」「規模と権限は/configで調整」——共有・モデル・制御が同時に底上げされた週。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://claude.com/blog/artifacts-in-claude-code" target="_blank" rel="noopener noreferrer"> Artifacts in Claude Code（公式ブログ） </a> </li><li> <a href="https://code.claude.com/docs/en/whats-new" target="_blank" rel="noopener noreferrer"> Claude Code What&#39;s new </a> </li><li> <a href="https://venturebeat.com/data/anthropics-claude-code-artifacts-update-brings-live-shared-dashboards-and-interactive-workspaces-to-enterprises" target="_blank" rel="noopener noreferrer"> VentureBeat: Claude Code Artifacts brings live shared dashboards </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 何が新しいか </a> </li><li> <a href="#sec-2" data-toc="sec-2"> /config と細かな改善 </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 実務での使いどころと注意点 </a> </li> </ul> <div class="reading-box"> <div>📅 2026-07-14</div> <div>⏱ 読了 約3分</div> <div>🏷 Claude Code</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
