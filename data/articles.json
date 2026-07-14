@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-07-13T04:46:49.628Z",
+  "generatedAt": "2026-07-14T04:47:55.765Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,94 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-07-14-claude-code",
+      "date": "2026-07-14",
+      "topic": "Claude Code",
+      "title": "Claude Code に Artifacts 正式導入 — セッションの成果を「更新され続けるライブWebページ」に",
+      "lede": "セッション作業をライブ共有Webページ(Artifact)として発行し、同一URLで自動更新できる機能が正式導入。同週のv2.1.202〜207ではautoモードがBedrock/Vertex/Foundryで既定に、Opus 4.8が各クラウド基盤の既定モデルへ。/configには動的ワークフロー規模の設定も加わった。",
+      "articleHtml": "<p>Claude Codeの設定・運用まわりが一段まとまった週だった。目玉はArtifactsの正式導入で、あわせて週次アップデート（v2.1.202〜v2.1.207）が基盤モデルと既定モードを大きく動かし、<code>/config</code>には新しい制御項目が加わった。単発の便利機能というより、「エージェントの成果をどう共有し、どう操縦するか」という運用面の底上げがまとめて来た格好だ。</p>\n<h4>何が新しいか</h4>\n<p>Artifactsは、セッションでの作業内容をライブなWebページに変換して共有する仕組み。PRウォークスルー、インシデントのタイムライン、各種ダッシュボード、リリースチェックリストなどを、作業の進行に合わせて<b>同一URL上で自動更新</b>できる。公開はできず、認証済みの組織メンバーのみ閲覧可能。バージョン履歴からいつでも過去の状態に復元できるのも実務向きだ。提供はTeam/Enterprise向けのベータで、Pro/Maxにも解放が進んでいる。</p>\n<p>同週の週次アップデートでは、<b>autoモードがBedrock・Vertex AI・Foundryで既定利用可能</b>になり、<b>Opus 4.8がこれら各クラウド基盤上のClaude Platformの既定モデル</b>に昇格した。<code>/review</code>コマンド体系の刷新、<code>/doctor</code>によるCLAUDE.md簡素化提案も入っている。</p>\n<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg'>\n<text x='300' y='24' text-anchor='middle' font-size='14' font-weight='bold' fill='#5a3fb0'>Artifacts：セッション成果 → 同一URLのライブページ</text>\n<rect x='24' y='48' width='150' height='60' rx='10' fill='#f3edff' stroke='#7b3fe4' stroke-width='1.5'/>\n<text x='99' y='74' text-anchor='middle' font-size='12' font-weight='bold' fill='#1c1c1e'>セッション作業</text>\n<text x='99' y='94' text-anchor='middle' font-size='11' fill='#444'>PR/インシデント/ダッシュ</text>\n<path d='M180 78 L232 78' stroke='#7b3fe4' stroke-width='2' marker-end='url(#a)'/>\n<rect x='236' y='48' width='150' height='60' rx='10' fill='#e9f7ec' stroke='#3fb950' stroke-width='1.5'/>\n<text x='311' y='74' text-anchor='middle' font-size='12' font-weight='bold' fill='#1c1c1e'>Artifact 発行</text>\n<text x='311' y='94' text-anchor='middle' font-size='11' fill='#444'>同一URL・組織内限定</text>\n<path d='M392 78 L444 78' stroke='#3fb950' stroke-width='2' marker-end='url(#a)'/>\n<rect x='448' y='48' width='128' height='60' rx='10' fill='#eef4ff' stroke='#1f6feb' stroke-width='1.5'/>\n<text x='512' y='74' text-anchor='middle' font-size='12' font-weight='bold' fill='#1c1c1e'>自動更新</text>\n<text x='512' y='94' text-anchor='middle' font-size='11' fill='#444'>版履歴で復元可</text>\n<text x='300' y='150' text-anchor='middle' font-size='12' font-weight='bold' fill='#5a3fb0'>週次(v2.1.202〜207)：auto既定化 / Opus 4.8 既定 / /config 拡張</text>\n<rect x='60' y='166' width='150' height='30' rx='8' fill='#fff' stroke='#c9bdf5'/>\n<text x='135' y='186' text-anchor='middle' font-size='11' fill='#333'>auto → Bedrock/Vertex/Foundry</text>\n<rect x='225' y='166' width='150' height='30' rx='8' fill='#fff' stroke='#c9bdf5'/>\n<text x='300' y='186' text-anchor='middle' font-size='11' fill='#333'>既定モデル = Opus 4.8</text>\n<rect x='390' y='166' width='150' height='30' rx='8' fill='#fff' stroke='#c9bdf5'/>\n<text x='465' y='186' text-anchor='middle' font-size='11' fill='#333'>/config: workflow size</text>\n<defs><marker id='a' markerWidth='8' markerHeight='8' refX='6' refY='3' orient='auto'><path d='M0 0 L6 3 L0 6 z' fill='#7b3fe4'/></marker></defs>\n</svg><figcaption>図1：Artifactsの発行フローと、同週の基盤アップデート。</figcaption></figure>\n<h4>/config と細かな改善</h4>\n<p><code>/config</code>には「Dynamic workflow size」設定が加わり、動的ワークフローで動くエージェント数（small/medium/large）を制御できるようになった。<code>/cd</code>には<code>/add-dir</code>同様のディレクトリパス補完が付き、<code>/commit-push-pr</code>はリポジトリ設定済みのpushリモートへの<code>git push</code>を自動許可する。長いリスト・表・コードブロックのストリーミング中に端末がフリーズ／入力が遅延する問題も修正された。</p>\n<h4>実務での使いどころと注意点</h4>\n<p>自分が試すなら、まずインシデント対応や長丁場の調査セッションをArtifact化して「同じリンクを見れば常に最新」という状態を作りたい。手元でも、まさにこのデイリー読み物のように、日次で追記されるライブページとして機能する。注意点は、Artifactsが組織内限定＝公開用途には使えないこと、そしてautoモードとOpus 4.8既定化でコスト特性が変わるため、重い定期タスクを回している場合は消費ペースを見直しておくとよい。</p>\n<p><b>ひとことまとめ:</b> 「成果をライブページで共有(Artifacts)」「基盤はauto＋Opus 4.8が既定」「規模と権限は/configで調整」——共有・モデル・制御が同時に底上げされた週。</p>",
+      "sources": [
+        {
+          "title": "Artifacts in Claude Code（公式ブログ）",
+          "url": "https://claude.com/blog/artifacts-in-claude-code"
+        },
+        {
+          "title": "Claude Code What's new",
+          "url": "https://code.claude.com/docs/en/whats-new"
+        },
+        {
+          "title": "VentureBeat: Claude Code Artifacts brings live shared dashboards",
+          "url": "https://venturebeat.com/data/anthropics-claude-code-artifacts-update-brings-live-shared-dashboards-and-interactive-workspaces-to-enterprises"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-14-nextjs",
+      "date": "2026-07-14",
+      "topic": "Next.js",
+      "title": "AutoAnimate — 親要素に1行、DOM変化を滑らかにするゼロコンフィグ・アニメ",
+      "lede": "@formkit/auto-animate v0.9.0。親要素にrefを渡すだけで、直下の子の「追加・削除・並び替え」をFLIPで自動アニメーション。約2.5kbでreduced-motionを既定で尊重。App Routerではリスト部分だけをClient化すればRSCと共存できる。",
+      "articleHtml": "<p>リストやカンバン、フィルタ結果、アコーディオン——要素が入れ替わる瞬間の「カクつき」を、演出を作り込まずに解消したい。そのニッチに刺さるのが<code>@formkit/auto-animate</code>だ。FormKitチーム製・MIT・GitHub 13.8k★、最新は<b>v0.9.0（2025-09-05）</b>で2026年も安定版。ランタイムは約<b>2.5kb</b>とMotionやReact Springより1〜2桁小さい。</p>\n<h4>何が新しい／何が違うか</h4>\n<p>思想は「Prettier for motion」。既存マークアップに後付けできる点が肝で、コンポーネントを書き直さずサードパーティ製UIにも<code>ref</code>を刺すだけで効く。Motion/GSAPが「演出を作る」ライブラリなのに対し、AutoAnimateは「DOMの構造変化を説明する」道具で、用途がきれいにすみ分かる。</p>\n<figure class='fig'><svg viewBox='0 0 600 170' xmlns='http://www.w3.org/2000/svg'>\n<text x='300' y='22' text-anchor='middle' font-size='13' font-weight='bold' fill='#1f6feb'>内部はFLIP（First・Last・Invert・Play）</text>\n<g font-size='11.5' fill='#333'>\n<rect x='18' y='44' width='130' height='72' rx='9' fill='#eef4ff' stroke='#1f6feb'/>\n<text x='83' y='70' text-anchor='middle' font-weight='bold'>First / Last</text>\n<text x='83' y='90' text-anchor='middle'>変化前後の座標を</text>\n<text x='83' y='106' text-anchor='middle'>MutationObserverで測定</text>\n<rect x='166' y='44' width='130' height='72' rx='9' fill='#eef4ff' stroke='#1f6feb'/>\n<text x='231' y='70' text-anchor='middle' font-weight='bold'>Invert</text>\n<text x='231' y='90' text-anchor='middle'>差分をtransformで</text>\n<text x='231' y='106' text-anchor='middle'>打ち消して初期化</text>\n<rect x='314' y='44' width='130' height='72' rx='9' fill='#eef4ff' stroke='#1f6feb'/>\n<text x='379' y='70' text-anchor='middle' font-weight='bold'>Play (WAAPI)</text>\n<text x='379' y='90' text-anchor='middle'>element.animate()で</text>\n<text x='379' y='106' text-anchor='middle'>transform/opacity補間</text>\n<rect x='462' y='44' width='120' height='72' rx='9' fill='#e9f7ec' stroke='#3fb950'/>\n<text x='522' y='70' text-anchor='middle' font-weight='bold' fill='#1a7f37'>GPU合成</text>\n<text x='522' y='90' text-anchor='middle'>ジャンク少</text>\n<text x='522' y='106' text-anchor='middle'>約2.5kb</text>\n</g>\n<text x='300' y='150' text-anchor='middle' font-size='11' fill='#666'>トリガーは「直下の子」の 追加 / 削除 / 移動 の3つだけ（孫は拾わない）</text>\n</svg><figcaption>図1：MutationObserverで変化を検知し、WAAPIでtransform/opacityを補間する。</figcaption></figure>\n<h4>App Router での組み込み</h4>\n<p>DOMを直接触るクライアント専用ユーティリティなので、フックを使うコンポーネントは<code>'use client'</code>必須。ただしページ全体をClient化する必要はなく、リストを描く部分だけ切り出せばデータ取得やページはRSCのまま保てる。</p>\n<pre><code>'use client'\nimport { useAutoAnimate } from '@formkit/auto-animate/react'\n\nexport default function Todos({ list }) {\n  const [parent] = useAutoAnimate()\n  // key は index ではなく安定・一意な id を使う\n  return &lt;ul ref={parent}&gt;{list.map(t =&gt; &lt;li key={t.id}&gt;{t.text}&lt;/li&gt;)}&lt;/ul&gt;\n}</code></pre>\n<p>これだけで<code>list</code>に要素を足す／消す／並び替えるとFLIPで滑らかに動く。楽観的更新（<code>useOptimistic</code>）で足した子も自動でアニメーションされる。</p>\n<h4>落とし穴</h4>\n<p>並び替えには<b>安定・一意なkeyが必須</b>。<code>key={index}</code>にすると「移動」ではなく「中身の差し替え」と見なされ移動アニメが鳴らない。Flexで<code>flex-grow:1</code>の子は幅確定が遅れて正しく測れないことがあり、明示的な幅で安定する。CSSトランジションの置き換えではなく、ホバー等の「スタイル変化」は従来どおりCSSで書く。数百件の同時リフローには不向きで、そこはMotion/GSAPへ。アクセシビリティ面では<code>prefers-reduced-motion: reduce</code>を既定で尊重し、その環境では即時反映になる（追加コード不要）。</p>\n<p><b>ひとことまとめ:</b> CRUD系UIの「入れ替わる瞬間」を最小コストで滑らかにする後付けFLIP。演出を作りたいときはMotion、変化を説明したいときはAutoAnimate。</p>",
+      "sources": [
+        {
+          "title": "AutoAnimate 公式ドキュメント",
+          "url": "https://auto-animate.formkit.com/"
+        },
+        {
+          "title": "formkit/auto-animate（GitHub, v0.9.0 / MIT / 13.8k★）",
+          "url": "https://github.com/formkit/auto-animate"
+        },
+        {
+          "title": "LogRocket: Animate React components using AutoAnimate",
+          "url": "https://blog.logrocket.com/animate-react-components-using-autoanimate/"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-14-flutter",
+      "date": "2026-07-14",
+      "topic": "Flutter",
+      "title": "Flutter 3.44.x ホットフィックス列車と、状態管理「三強の役割固定」",
+      "lede": "安定チャネルは3.44.4（Dart 3.12.2）まで連続出荷、3.44.6が7/8に着手。状態管理はRiverpod 3.x新規既定・Bloc 9.x大規模監査・GetX退潮で固定化。アニメは1本のControllerに時差を重ね、explicitはAnimatedBuilderのchildで再ビルドを限定。フレーム予算は90/120Hzの8〜11ms。",
+      "articleHtml": "<p>2026年中盤のFlutterは、派手な新機能より「安定運用の実像」がテーマだ。今日の主役は<b>3.44.xホットフィックス列車</b>で、あわせて状態管理の勢力図とパフォーマンス計測の勘所を押さえておきたい。</p>\n<h4>リリース：3.44.x の連続出荷</h4>\n<p>安定チャネルは<b>3.44.1（06-01・Dart 3.12.1）→ 3.44.3（06-22）→ 3.44.4（06-24・Dart 3.12.2）</b>と連続出荷され、<b>3.44.6のリリース手続きが2026-07-08に開始</b>（issue #189142）。「年4回の機能リリース＋随時ホットフィックス」が安定チャネルの実像で、CIは3.44.xへのパッチ追従を自動化しておくと安全。次の機能リリースは2026年8月予定。3.44の骨子はAgentic Hot Reload・SwiftPMがiOS/macOS既定・HCPP（opt-in）・ImpellerがAndroid既定で据え置き。Material/Cupertinoはコア凍結済みで<code>material_ui</code>/<code>cupertino_ui</code>へ移行中だ。</p>\n<figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg'>\n<text x='300' y='22' text-anchor='middle' font-size='13' font-weight='bold' fill='#0277bd'>状態管理「三強の役割固定」（2026年中盤）</text>\n<rect x='20' y='40' width='180' height='92' rx='10' fill='#e3f4fb' stroke='#0277bd' stroke-width='1.5'/>\n<text x='110' y='64' text-anchor='middle' font-size='13' font-weight='bold' fill='#1c1c1e'>Riverpod 3.3.x</text>\n<text x='110' y='86' text-anchor='middle' font-size='11' fill='#444'>新規の既定</text>\n<text x='110' y='104' text-anchor='middle' font-size='11' fill='#444'>compile安全・async-first</text>\n<text x='110' y='122' text-anchor='middle' font-size='11' fill='#444'>小規模(1〜3人)</text>\n<rect x='210' y='40' width='180' height='92' rx='10' fill='#e3f4fb' stroke='#0277bd' stroke-width='1.5'/>\n<text x='300' y='64' text-anchor='middle' font-size='13' font-weight='bold' fill='#1c1c1e'>Bloc 9.2.x</text>\n<text x='300' y='86' text-anchor='middle' font-size='11' fill='#444'>大規模/規制業界</text>\n<text x='300' y='104' text-anchor='middle' font-size='11' fill='#444'>event規律・監査証跡</text>\n<text x='300' y='122' text-anchor='middle' font-size='11' fill='#444'>5〜20+人・fintech/health</text>\n<rect x='400' y='40' width='180' height='92' rx='10' fill='#f4f4f6' stroke='#9aa0ad' stroke-width='1.5'/>\n<text x='490' y='64' text-anchor='middle' font-size='13' font-weight='bold' fill='#666'>GetX</text>\n<text x='490' y='86' text-anchor='middle' font-size='11' fill='#666'>退潮・新規採用は回避</text>\n<text x='490' y='104' text-anchor='middle' font-size='11' fill='#666'>Provider=レガシー保守のみ</text>\n</svg><figcaption>図1：新規はRiverpod、大規模・監査はBloc、GetX/Providerは回避／保守。</figcaption></figure>\n<h4>アニメーションとパフォーマンス</h4>\n<p>複数要素の時差（staggered）演出は<b>1本のAnimationControllerにCurvedAnimation（curve: Interval(0.0, 0.5)等）を重ねる</b>のが定石で、要素ごとにcontrollerを乱立させない。explicit側の最重要最適化は<b>AnimatedBuilderのchild引数</b>——重いサブツリーを1度だけ構築し、毎tickの再ビルドをbuilder内に限定する。土台のImpellerはAOTシェーダーコンパイルでジャンクを排除し、複雑シーンの平均ラスタライズを約50%短縮する。</p>\n<p>計測はprofileモード必須。DevToolsの<b>Memory View</b>でヒープとGC頻度を監視し、dispose漏れ（controller/subscription）を早期に潰す。<b>Performance View</b>でUI/Rasterスレッドとjank位置を把握する。</p>\n<figure class='fig'><svg viewBox='0 0 600 120' xmlns='http://www.w3.org/2000/svg'>\n<text x='300' y='20' text-anchor='middle' font-size='13' font-weight='bold' fill='#0277bd'>フレーム予算（2026フラッグシップは90/120Hz主流）</text>\n<text x='16' y='52' font-size='11.5' fill='#333'>60fps</text>\n<rect x='70' y='40' width='320' height='18' rx='4' fill='#56c5f5'/>\n<text x='400' y='53' font-size='11' fill='#333'>16ms</text>\n<text x='16' y='82' font-size='11.5' fill='#333'>90fps</text>\n<rect x='70' y='70' width='220' height='18' rx='4' fill='#29a3e0'/>\n<text x='300' y='83' font-size='11' fill='#333'>約11ms</text>\n<text x='16' y='112' font-size='11.5' fill='#333'>120fps</text>\n<rect x='70' y='100' width='166' height='14' rx='4' fill='#0277bd'/>\n<text x='246' y='112' font-size='11' fill='#333'>8.3ms（ラスタライズ&lt;8.3ms目標）</text>\n</svg><figcaption>図2：目標フレーム予算。const徹底・RepaintBoundaryの戦略配置で部分再描画に抑える。</figcaption></figure>\n<p><b>ひとことまとめ:</b> 3.44.xはパッチ追従をCIで自動化。新規はRiverpod／監査はBloc、演出は1コントローラ＋Interval、計測はprofileモードのDevToolsで。</p>",
+      "sources": [
+        {
+          "title": "What's new in Flutter 3.44（Flutter Blog）",
+          "url": "https://blog.flutter.dev/whats-new-in-flutter-3-44-b0cc1ad3c527"
+        },
+        {
+          "title": "3.44.6 hotfix issue #189142",
+          "url": "https://github.com/flutter/flutter/issues/189142"
+        },
+        {
+          "title": "Riverpod vs Bloc vs GetX 2026（sharpskill）",
+          "url": "https://sharpskill.dev/en/blog/flutter/flutter-state-management-2026-riverpod-bloc-getx"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-14-github-trending",
+      "date": "2026-07-14",
+      "topic": "GitHub Trending",
+      "title": "7/14の話題リポジトリ — 透かしなし動画編集・Vibe Trading・AI用Officeスイート",
+      "lede": "本日のモメンタム3本は、AIエージェント一色のトレンドの中で「手元で完結する道具」への揺り戻しが共通項。ブラウザ完結の動画編集、自然言語の投資エージェント、AI用の単一バイナリOfficeが急上昇した。",
+      "articleHtml": "<p>今日のトレンド上位は、AIエージェント系が席巻する中で「クラウドに預けず手元で完結させたい」という揺り戻しが共通して見える3本。純粋なクリエイター向けアプリ、研究室発の投資エージェント、そしてエージェント専用のOfficeスイートという顔ぶれだ。それぞれ「解決したい課題」と「提供する機能」を整理する。</p>\n<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg'>\n<text x='300' y='22' text-anchor='middle' font-size='13' font-weight='bold' fill='#1a7f37'>3本の「課題 → 提供機能」対応</text>\n<line x1='20' y1='40' x2='580' y2='40' stroke='#3fb950' stroke-width='1'/>\n<text x='30' y='58' font-size='11.5' font-weight='bold' fill='#1a7f37'>リポジトリ</text>\n<text x='210' y='58' font-size='11.5' font-weight='bold' fill='#1a7f37'>解決したい課題</text>\n<text x='420' y='58' font-size='11.5' font-weight='bold' fill='#1a7f37'>提供する機能</text>\n<line x1='20' y1='68' x2='580' y2='68' stroke='#d5ecd9' stroke-width='1'/>\n<text x='30' y='90' font-size='11' fill='#222'>OpenCut</text>\n<text x='30' y='104' font-size='9.5' fill='#777'>TS・66k★</text>\n<text x='210' y='90' font-size='10.5' fill='#333'>CapCutの有料化・規約変更</text>\n<text x='210' y='104' font-size='10.5' fill='#333'>クラウド送信への不安</text>\n<text x='420' y='90' font-size='10.5' fill='#333'>ブラウザ完結の編集</text>\n<text x='420' y='104' font-size='10.5' fill='#333'>透かしなし・自己ホスト</text>\n<line x1='20' y1='116' x2='580' y2='116' stroke='#d5ecd9' stroke-width='1'/>\n<text x='30' y='138' font-size='11' fill='#222'>Vibe-Trading</text>\n<text x='30' y='152' font-size='9.5' fill='#777'>Python・22k★</text>\n<text x='210' y='138' font-size='10.5' fill='#333'>投資リサーチが煩雑・専門的</text>\n<text x='210' y='152' font-size='10.5' fill='#333'>手作業の分析コスト</text>\n<text x='420' y='138' font-size='10.5' fill='#333'>自然言語→分析・戦略・検証</text>\n<text x='420' y='152' font-size='10.5' fill='#333'>マルチエージェント自動化</text>\n<line x1='20' y1='164' x2='580' y2='164' stroke='#d5ecd9' stroke-width='1'/>\n<text x='30' y='186' font-size='11' fill='#222'>OfficeCLI</text>\n<text x='30' y='200' font-size='9.5' fill='#777'>C#・16k★</text>\n<text x='210' y='186' font-size='10.5' fill='#333'>Officeなしで文書を扱えない</text>\n<text x='210' y='200' font-size='10.5' fill='#333'>エージェントからの操作が困難</text>\n<text x='420' y='186' font-size='10.5' fill='#333'>Word/Excel/PPTの読み書き</text>\n<text x='420' y='200' font-size='10.5' fill='#333'>単一バイナリ・導入容易</text>\n</svg><figcaption>図1：本日の3本を「解決したい課題」と「提供する機能」で一望。</figcaption></figure>\n<h4>OpenCut-app/OpenCut（TypeScript・⭐66k）</h4>\n<p><b>解決したい課題：</b>CapCutの規約変更・有料化への反発を背景に、「手元で完結し、動画をクラウドに預けず、透かしも入らない」動画編集への需要が再燃している。既存の無料ツールは透かしやアップロード必須が多く、プライバシーと自由度の両立が難しかった。</p>\n<p><b>提供する機能：</b>ブラウザ／デスクトップで動くオープンソースの動画編集ツール。タイムライン編集・トリミングなど基本機能をブラウザ完結で提供し、動画をクラウドにアップロードしない。透かしなし・完全オープンソースで自己ホストも可能。本日Trendshift日次2位に浮上し、AIエージェント系が上位を占める中で純粋なクリエイター向けアプリが急上昇した点が注目された。</p>\n<h4>HKUDS/Vibe-Trading（Python・⭐22k）</h4>\n<p><b>解決したい課題：</b>個人の投資リサーチは、市場データの収集・分析・戦略立案・検証と工程が多く専門的で、手作業のコストが高い。LLMを金融ワークフローに落とし込む実用的な枠組みが求められていた。</p>\n<p><b>提供する機能：</b>自然言語で指示すると相場分析から戦略立案・シミュレーションまで行う個人向けAIトレーディングエージェント。マルチエージェント／ワークフロー自動化で市場データ収集・分析・戦略検討を補助する。香港大学のデータ系研究室(HKUDS)発で手法が公開されカスタマイズしやすい。直近7日で約+3.5k★と急伸し、「Vibe Coding」ならぬ「Vibe Trading」のネーミングも拡散を後押しした。<em>※投資判断は自己責任で。自動化はあくまでリサーチ補助と捉えるのが安全。</em></p>\n<h4>iOfficeAI/OfficeCLI（C#・⭐16k）</h4>\n<p><b>解決したい課題：</b>AIエージェントにWord/Excel/PowerPointを操作させたいが、Officeのインストールが前提だと環境構築が重く、CIやサーバー上での自動化がしにくい。</p>\n<p><b>提供する機能：</b>AIエージェントがOffice文書を読み書き・自動化するための単一バイナリのOfficeスイート。Officeインストール不要でWord/Excel/PowerPointの読み取り・編集・生成を実行でき、無料・オープンソースでCIへの組み込みもしやすい。直近7日で約+7.6k★と非常に高い増加率で、「AIエージェント専用のOfficeスイート」という切り口の新しさが受けている。</p>\n<p><b>自分が試すなら：</b>DevForge文脈ではまずOfficeCLIを、帳票・ドキュメント生成の自動化に組み込みたい。文書処理をエージェントから完結できれば、Office依存の重い環境構築を外せる。</p>",
+      "sources": [
+        {
+          "title": "OpenCut-app/OpenCut",
+          "url": "https://github.com/OpenCut-app/OpenCut"
+        },
+        {
+          "title": "HKUDS/Vibe-Trading",
+          "url": "https://github.com/HKUDS/Vibe-Trading"
+        },
+        {
+          "title": "iOfficeAI/OfficeCLI",
+          "url": "https://github.com/iOfficeAI/OfficeCLI"
+        }
+      ]
+    },
     {
       "id": "2026-07-13-claude-code",
       "date": "2026-07-13",
