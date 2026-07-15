@@ -1,0 +1,68 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Claude Code v2.1系 — スクリーンリーダー対応・企業ラッパー、管理コンソールに費用対効果の可視化 — デイリー技術深掘り 読み物</title><meta name="description" content="7/14リリースでscreen reader mode（平文レンダリング）・vim挿入モードリマップ・企業向けプロセスラッパーを追加。管理コンソールにはValue/Usageタブが付き、Claude Codeの利用と費用対効果を日次で可視化。週次上限50%増は7/19まで延長。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-15-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Claude Code v2.1系 — スクリーンリーダー対応・企業ラッパー、管理コンソールに費用対効果の可視化 — デイリー技術深掘り 読み物"><meta property="og:description" content="7/14リリースでscreen reader mode（平文レンダリング）・vim挿入モードリマップ・企業向けプロセスラッパーを追加。管理コンソールにはValue/Usageタブが付き、Claude Codeの利用と費用対効果を日次で可視化。週次上限50%増は7/19まで延長。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-15-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>Claude Code v2.1系 — スクリーンリーダー対応・企業ラッパー、管理コンソールに費用対効果の可視化</h1> <p class="lede">7/14リリースでscreen reader mode（平文レンダリング）・vim挿入モードリマップ・企業向けプロセスラッパーを追加。管理コンソールにはValue/Usageタブが付き、Claude Codeの利用と費用対効果を日次で可視化。週次上限50%増は7/19まで延長。</p> <div class="meta"> <span>📅 2026年7月15日</span> <span>⏱ 約2分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="0"><p>今週のClaude Codeは、単機能の追加というより<b>アクセシビリティ・企業運用・コスト可視化</b>という運用面がまとめて底上げされた。派手さはないが、チームや企業でエージェント開発を回すうえで効く改善が並ぶ。</p>
+<h4 id="sec-1">何が新しいか</h4>
+<p>7/14リリースで、スクリーンリーダー向けの<b>平文レンダリング「screen reader mode」</b>が追加された。<code>claude --ax-screen-reader</code>、環境変数<code>CLAUDE_CODE_PROCESS_WRAPPER</code>、または<code>axScreenReader</code>設定で有効化する。あわせてvimモードで<code>jj→Esc</code>のような<b>2キーの挿入モードリマップ</b>（vimInsertModeRemaps）、全画面メニューのマウス操作、企業ランチャー経由で自己起動を包む<b>プロセスラッパー</b>も入った。fastモードがモデル復帰時に自動復元されない不具合や、バックグラウンドエージェントへの返信消失も修正されている。</p>
+<p>管理側では、Claude Enterpriseの管理コンソールに<b>Value（価値）・Usage（利用）の2タブ</b>が追加。Usageはアクティブ開発者数・セッション数・組織全体のトップコマンド・受理された行数を<b>日次更新</b>で表示し、Valueは利用とコストを突き合わせてシート当たり価値を推定する。算出式はタブ内に表示され、自社前提に合わせて編集できる。さらに<b>週次利用上限50%増プロモーションが7/19まで延長</b>（Pro/Max/Team/Enterprise対象）。</p>
+<figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg'><text x='300' y='22' text-anchor='middle' font-size='13' font-weight='bold' fill='#5a3fb0'>拡張3レイヤーの決定則</text><rect x='24' y='40' width='170' height='70' rx='10' fill='#f3edff' stroke='#7b3fe4' stroke-width='1.5'></rect><text x='109' y='66' text-anchor='middle' font-size='12' font-weight='bold' fill='#1c1c1e'>Skill</text><text x='109' y='88' text-anchor='middle' font-size='11' fill='#444'>手順を教える</text><rect x='215' y='40' width='170' height='70' rx='10' fill='#eef4ff' stroke='#1f6feb' stroke-width='1.5'></rect><text x='300' y='66' text-anchor='middle' font-size='12' font-weight='bold' fill='#1c1c1e'>Hook</text><text x='300' y='88' text-anchor='middle' font-size='11' fill='#444'>ルールを強制（25点で発火）</text><rect x='406' y='40' width='170' height='70' rx='10' fill='#e9f7ec' stroke='#3fb950' stroke-width='1.5'></rect><text x='491' y='66' text-anchor='middle' font-size='12' font-weight='bold' fill='#1c1c1e'>Subagent</text><text x='491' y='88' text-anchor='middle' font-size='11' fill='#444'>作業を隔離（最大3倍）</text><text x='300' y='134' text-anchor='middle' font-size='11' fill='#666'>本番構成は3つを併用する</text></svg><figcaption>図1：Hooks・Subagents・Skillsの役割分担。</figcaption></figure>
+<h4 id="sec-2">拡張3レイヤーの決定則</h4>
+<p>今週読んだ解説ガイドで刺さったのは、Hooks・Subagents・Skillsの使い分けを一言で表す決定則だ。<b>「Skillが手順を教え、Hookがルールを強制し、Subagentが作業を隔離する」</b>。Hooksは25のライフサイクルポイントで発火し、PreToolUse（実行前のセキュリティ関門）やPermissionRequest（自動承認/拒否）が要点。サブエージェントは独自コンテキスト・権限・モデルを持つ隔離インスタンスで、並列委譲すると作業速度が最大3倍とされる。</p>
+<h4 id="sec-3">使いどころと注意点</h4>
+<p>自分が試すなら、まず管理コンソールのUsageタブで自分の定期タスク群の消費を把握し、上限50%増の期間中に重いリサーチを寄せる。注意点は、Value/Usageの推定式はあくまで概算で、前提を自社に合わせないと過大／過小評価になりうること。プロモーション終了後（7/19以降）は通常上限に戻るので、恒常運用の設計は通常枠を基準にすべきだ。</p>
+<p><b>ひとことまとめ:</b> 機能追加より運用の底上げ。アクセシビリティと企業ラッパー、そして「何にいくら使っているか」が見えるようになった週。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://code.claude.com/docs/en/changelog" target="_blank" rel="noopener noreferrer"> Claude Code changelog（公式） </a> </li><li> <a href="https://claude.com/blog/giving-admins-more-visibility-and-control-over-claude-usage-and-spend" target="_blank" rel="noopener noreferrer"> Giving admins more visibility and control over Claude usage and spend（公式ブログ） </a> </li><li> <a href="https://www.helpnetsecurity.com/2026/07/13/claude-code-weekly-limits-promotion-extended/" target="_blank" rel="noopener noreferrer"> Claude Code weekly limits promotion extended（Help Net Security） </a> </li><li> <a href="https://ofox.ai/blog/claude-code-hooks-subagents-skills-complete-guide-2026/" target="_blank" rel="noopener noreferrer"> Claude Code Hooks・Subagents・Skills complete guide（ofox.ai） </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 何が新しいか </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 拡張3レイヤーの決定則 </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 使いどころと注意点 </a> </li> </ul> <div class="reading-box"> <div>📅 2026-07-15</div> <div>⏱ 読了 約2分</div> <div>🏷 Claude Code</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
