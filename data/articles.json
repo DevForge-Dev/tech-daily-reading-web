@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-07-14T04:47:55.765Z",
+  "generatedAt": "2026-07-15T04:49:11.484Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,98 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-07-15-claude-code",
+      "date": "2026-07-15",
+      "topic": "Claude Code",
+      "title": "Claude Code v2.1系 — スクリーンリーダー対応・企業ラッパー、管理コンソールに費用対効果の可視化",
+      "lede": "7/14リリースでscreen reader mode（平文レンダリング）・vim挿入モードリマップ・企業向けプロセスラッパーを追加。管理コンソールにはValue/Usageタブが付き、Claude Codeの利用と費用対効果を日次で可視化。週次上限50%増は7/19まで延長。",
+      "articleHtml": "<p>今週のClaude Codeは、単機能の追加というより<b>アクセシビリティ・企業運用・コスト可視化</b>という運用面がまとめて底上げされた。派手さはないが、チームや企業でエージェント開発を回すうえで効く改善が並ぶ。</p>\n<h4>何が新しいか</h4>\n<p>7/14リリースで、スクリーンリーダー向けの<b>平文レンダリング「screen reader mode」</b>が追加された。<code>claude --ax-screen-reader</code>、環境変数<code>CLAUDE_CODE_PROCESS_WRAPPER</code>、または<code>axScreenReader</code>設定で有効化する。あわせてvimモードで<code>jj→Esc</code>のような<b>2キーの挿入モードリマップ</b>（vimInsertModeRemaps）、全画面メニューのマウス操作、企業ランチャー経由で自己起動を包む<b>プロセスラッパー</b>も入った。fastモードがモデル復帰時に自動復元されない不具合や、バックグラウンドエージェントへの返信消失も修正されている。</p>\n<p>管理側では、Claude Enterpriseの管理コンソールに<b>Value（価値）・Usage（利用）の2タブ</b>が追加。Usageはアクティブ開発者数・セッション数・組織全体のトップコマンド・受理された行数を<b>日次更新</b>で表示し、Valueは利用とコストを突き合わせてシート当たり価値を推定する。算出式はタブ内に表示され、自社前提に合わせて編集できる。さらに<b>週次利用上限50%増プロモーションが7/19まで延長</b>（Pro/Max/Team/Enterprise対象）。</p>\n<figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg'><text x='300' y='22' text-anchor='middle' font-size='13' font-weight='bold' fill='#5a3fb0'>拡張3レイヤーの決定則</text><rect x='24' y='40' width='170' height='70' rx='10' fill='#f3edff' stroke='#7b3fe4' stroke-width='1.5'/><text x='109' y='66' text-anchor='middle' font-size='12' font-weight='bold' fill='#1c1c1e'>Skill</text><text x='109' y='88' text-anchor='middle' font-size='11' fill='#444'>手順を教える</text><rect x='215' y='40' width='170' height='70' rx='10' fill='#eef4ff' stroke='#1f6feb' stroke-width='1.5'/><text x='300' y='66' text-anchor='middle' font-size='12' font-weight='bold' fill='#1c1c1e'>Hook</text><text x='300' y='88' text-anchor='middle' font-size='11' fill='#444'>ルールを強制（25点で発火）</text><rect x='406' y='40' width='170' height='70' rx='10' fill='#e9f7ec' stroke='#3fb950' stroke-width='1.5'/><text x='491' y='66' text-anchor='middle' font-size='12' font-weight='bold' fill='#1c1c1e'>Subagent</text><text x='491' y='88' text-anchor='middle' font-size='11' fill='#444'>作業を隔離（最大3倍）</text><text x='300' y='134' text-anchor='middle' font-size='11' fill='#666'>本番構成は3つを併用する</text></svg><figcaption>図1：Hooks・Subagents・Skillsの役割分担。</figcaption></figure>\n<h4>拡張3レイヤーの決定則</h4>\n<p>今週読んだ解説ガイドで刺さったのは、Hooks・Subagents・Skillsの使い分けを一言で表す決定則だ。<b>「Skillが手順を教え、Hookがルールを強制し、Subagentが作業を隔離する」</b>。Hooksは25のライフサイクルポイントで発火し、PreToolUse（実行前のセキュリティ関門）やPermissionRequest（自動承認/拒否）が要点。サブエージェントは独自コンテキスト・権限・モデルを持つ隔離インスタンスで、並列委譲すると作業速度が最大3倍とされる。</p>\n<h4>使いどころと注意点</h4>\n<p>自分が試すなら、まず管理コンソールのUsageタブで自分の定期タスク群の消費を把握し、上限50%増の期間中に重いリサーチを寄せる。注意点は、Value/Usageの推定式はあくまで概算で、前提を自社に合わせないと過大／過小評価になりうること。プロモーション終了後（7/19以降）は通常上限に戻るので、恒常運用の設計は通常枠を基準にすべきだ。</p>\n<p><b>ひとことまとめ:</b> 機能追加より運用の底上げ。アクセシビリティと企業ラッパー、そして「何にいくら使っているか」が見えるようになった週。</p>",
+      "sources": [
+        {
+          "title": "Claude Code changelog（公式）",
+          "url": "https://code.claude.com/docs/en/changelog"
+        },
+        {
+          "title": "Giving admins more visibility and control over Claude usage and spend（公式ブログ）",
+          "url": "https://claude.com/blog/giving-admins-more-visibility-and-control-over-claude-usage-and-spend"
+        },
+        {
+          "title": "Claude Code weekly limits promotion extended（Help Net Security）",
+          "url": "https://www.helpnetsecurity.com/2026/07/13/claude-code-weekly-limits-promotion-extended/"
+        },
+        {
+          "title": "Claude Code Hooks・Subagents・Skills complete guide（ofox.ai）",
+          "url": "https://ofox.ai/blog/claude-code-hooks-subagents-skills-complete-guide-2026/"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-15-nextjs",
+      "date": "2026-07-15",
+      "topic": "Next.js",
+      "title": "CSS Motion Path — offset-path/offset-distanceで『軌道に沿う動き』をJSゼロで",
+      "lede": "path()やcircle()で軌道を定義し、offset-distanceを0→100%にアニメートするだけで要素がレール上を滑る。offset-distanceはコンポジタ(GPU)で動く数少ないプロパティで、Baseline 2022の成熟機能。純CSSなのでApp RouterのServer Componentのまま使える。",
+      "articleHtml": "<p>リストの並べ替えやフェードはよくあるが、<b>曲線や円に沿った動き</b>となると急に<code>left/top</code>やrAFでの座標計算が必要になりがちだ。これを純CSSだけで、しかも<b>GPU合成に載せて</b>実現するのがCSS Motion Path。まだ使っている現場が少なく、差がつく演出でもある。</p>\n<h4>何が新しい／なぜ効くか</h4>\n<p>仕組みは単純で、<code>offset-path</code>で軌道（レール）を定義し、<code>offset-distance</code>を<code>0%→100%</code>にアニメートすると要素がその上を滑る。進行方向へ頭を向ける<code>offset-rotate: auto</code>があるので、紙飛行機や彗星の尾のような演出もJSゼロ。ポイントは<b>offset-distanceがtransform/opacityと同格でコンポジタ（GPU）アニメート可能</b>なこと。スクロールやrAFの座標計算を排除でき、INPに悪影響を与えない。<code>path()</code>や<code>offset-distance</code>は<b>Baseline 2022</b>で全主要ブラウザ安定、フォールバック不要だ。</p>\n<figure class='fig'><svg viewBox='0 0 600 160' xmlns='http://www.w3.org/2000/svg'><text x='300' y='22' text-anchor='middle' font-size='13' font-weight='bold' fill='#1f6feb'>3つのプロパティの役割分担</text><rect x='24' y='42' width='170' height='72' rx='10' fill='#eef4ff' stroke='#1f6feb'/><text x='109' y='68' text-anchor='middle' font-size='12' font-weight='bold'>offset-path</text><text x='109' y='90' text-anchor='middle' font-size='11' fill='#444'>軌道=レール</text><text x='109' y='106' text-anchor='middle' font-size='10.5' fill='#666'>path()/circle()/ray()</text><rect x='215' y='42' width='170' height='72' rx='10' fill='#e9f7ec' stroke='#3fb950'/><text x='300' y='68' text-anchor='middle' font-size='12' font-weight='bold'>offset-distance</text><text x='300' y='90' text-anchor='middle' font-size='11' fill='#444'>位置＝アニメ対象</text><text x='300' y='106' text-anchor='middle' font-size='10.5' fill='#666'>0%→100% (GPU)</text><rect x='406' y='42' width='170' height='72' rx='10' fill='#fff7e6' stroke='#e8a13a'/><text x='491' y='68' text-anchor='middle' font-size='12' font-weight='bold'>offset-rotate</text><text x='491' y='90' text-anchor='middle' font-size='11' fill='#444'>進行方向へ向く</text><text x='491' y='106' text-anchor='middle' font-size='10.5' fill='#666'>auto / 0deg</text><text x='300' y='144' text-anchor='middle' font-size='11' fill='#666'>path()とoffset-distanceはBaseline 2022（全主要ブラウザ安定）</text></svg><figcaption>図1：レールを敷き（path）、位置を動かし（distance）、向きを合わせる（rotate）。</figcaption></figure>\n<h4>App Routerでの組み込み</h4>\n<p>純CSSなので<b>Server Componentのまま</b>動く。<code>'use client'</code>不要、hydrationゼロでCLS/INPに有利。時間ベースの常時ループはそのまま<code>animation</code>で回し、スクロール連動にしたいときだけ<code>animation-timeline: scroll()/view()</code>を併用すればこれもJS island無しで完結する。</p>\n<pre><code>.comet {\n  offset-path: path(\"M 20 120 C 120 -20, 280 260, 420 60\");\n  offset-rotate: auto;      /* 接線方向へ頭を向ける */\n  animation: run 4s linear infinite;\n}\n@keyframes run { to { offset-distance: 100%; } }</code></pre>\n<h4>落とし穴</h4>\n<p>座標系は<b>要素の含有ブロック基準</b>で、<code>path()</code>の数値はレスポンシブに追従しない。可変幅で正確に沿わせるなら親を固定サイズにするか、<code>%</code>やcalcが使える<code>shape()</code>を使う。ただし<code>shape()</code>は新しめなので<code>@supports</code>でオプトインし、非対応は<code>path()</code>に縮退させる。<code>filter/mask</code>を同じ要素に付けるとGPU合成から外れやすいので装飾は内側の子へ。<code>prefers-reduced-motion: reduce</code>では<code>animation: none</code>にし<code>offset-distance</code>を最終値へ固定する。</p>\n<p><b>ひとことまとめ:</b> 軌道に沿う動きを、成熟した純CSSで・GPUに載せて・RSCのまま。scroll-drivenと組み合わせると強い。</p>",
+      "sources": [
+        {
+          "title": "MDN — CSS motion path",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_motion_path"
+        },
+        {
+          "title": "MDN — offset-path",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/offset-path"
+        },
+        {
+          "title": "CSS-Tricks — offset-path almanac",
+          "url": "https://css-tricks.com/almanac/properties/o/offset-path/"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-15-flutter",
+      "date": "2026-07-15",
+      "topic": "Flutter",
+      "title": "Flutterの『AIで作る』が手順化 — MCP Server×Agentic Hot Reload、土台の3.44も描画改善",
+      "lede": "Gemini Code Assist・Gemini CLI・Dart＆Flutter MCP ServerでアプリにAI機能を組み込む手順が公式ドキュメント化。エージェントが起動中アプリを検出してUI編集をhot reloadするAgentic Hot Reloadと噛み合う。安定版はFlutter 3.44.0/Dart 3.12.2、Impellerの描画も改善。",
+      "articleHtml": "<p>Flutterの「AIで作る」が、ふわっとした期待から<b>公式の手順書</b>の段階に入った。目玉は<b>Create with AIの公式ガイド</b>で、あわせて安定版3.44の描画改善や状態管理の実務知見も更新されている。</p>\n<h4>何が新しいか</h4>\n<p>公式ドキュメントが、<b>Gemini Code Assist・Gemini CLI・Dart＆Flutter MCP Server</b>を使ってアプリにAI機能を組み込む手順を整理した。肝は<b>Agentic Hot Reload</b>との噛み合わせで、MCP Server経由でコーディングエージェントが<b>起動中のアプリを自動検出・接続</b>し、UI編集を人手なしでhot reloadできる。AIロジックは<b>Genkit Dart</b>（Google/Anthropic/OpenAI系を統一APIで扱う）でサーバ側Dartに退避でき、<b>APIキーをクライアントから外せる</b>のが実務的に重要だ。安定版は<b>Flutter 3.44.0 / Dart 3.12.2</b>（次の機能リリースは2026年8月予定）。</p>\n<figure class='fig'><pre class='mermaid'>flowchart LR\n  A[\"コーディングエージェント\"] --> B[\"Dart/Flutter MCP Server\"]\n  B --> C[\"起動中アプリを自動検出\"]\n  C --> D[\"UI編集を hot reload\"]\n  A --> E[\"Genkit Dart（サーバ側）\"]\n  E --> F[\"APIキーをクライアントから分離\"]</pre><figcaption>図1：MCP Server経由のAgentic Hot Reloadと、Genkit Dartによる鍵の分離。</figcaption></figure>\n<h4>土台の改善</h4>\n<p>描画エンジンImpellerはVulkan周りが進み、<b>キャッシュのメモリ管理改善</b>と<b>フレームドロップ時のGPU/CPU同期の効率化</b>でスタッターを削減。円のレンダリングが<b>signed-distance function（SDF）ベース</b>になりエイリアスが消え、perspective matrixの補正で影や3D風Transformが正確になった。フレーム予算は<b>60fps=16ms / 120fps=8.3ms</b>で、constの徹底とRepaintBoundaryの戦略配置が基本線のまま効く。</p>\n<h4>使いどころ・状態管理の注記</h4>\n<p>自分が試すなら、まずDart＆Flutter MCP Serverを繋いでAgentic Hot Reloadで小さなUI調整を丸ごとエージェントに任せ、AI呼び出しはGenkit Dartでサーバ側に寄せてキーを守る。状態管理は据え置きで、<b>新規はRiverpod 3.x（async-first）、大規模／監査はBloc 9.x</b>。Bloc 9はsearch-as-you-typeや連打を<code>bloc_concurrency</code>のrestartable/droppable/throttleで宣言的にさばける点が今も強い。注意点は、AI前提の手順はまだ発展途上でSDK/APIの更新が速いこと。ナレッジの日付を都度確認したい。</p>\n<p><b>ひとことまとめ:</b> 「MCPで起動中アプリに繋ぎ、Agentic Hot Reloadで編集、キーはGenkit Dartでサーバへ」。AI開発ループが手順として固まってきた。</p>",
+      "sources": [
+        {
+          "title": "What's new in the docs（Flutter公式）",
+          "url": "https://docs.flutter.dev/release/whats-new"
+        },
+        {
+          "title": "What's new in Flutter 3.44（Flutter Blog）",
+          "url": "https://blog.flutter.dev/whats-new-in-flutter-3-44-b0cc1ad3c527"
+        },
+        {
+          "title": "Announcing Dart 3.12",
+          "url": "https://dart.dev/blog/announcing-dart-3-12"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-15-github-trending",
+      "date": "2026-07-15",
+      "topic": "GitHub Trending",
+      "title": "7/15の話題リポジトリ — CPUで動く音声クローンTTS・NASA製Wasm・自然言語でWeb操作",
+      "lede": "この日の急上昇3本はいずれも『重い前提を外して軽くする』方向。GPU不要のTTS、宇宙機向けの決定的Wasm、拡張もPythonも要らないWebエージェント。",
+      "articleHtml": "<p>この日の急上昇3本を貫くのは<b>「重い前提を外して軽くする」</b>という方向性だ。GPUなしで動く音声合成、宇宙機のような極限環境で決定的に動くWasm、拡張機能もヘッドレスブラウザも要らないWebエージェント——いずれも導入の敷居を下げることで広がっている。</p>\n<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg'><text x='300' y='20' text-anchor='middle' font-size='13' font-weight='bold' fill='#1a7f37'>3本の「解決したい課題 → 提供する機能」</text><rect x='10' y='30' width='580' height='158' rx='8' fill='#f0fbf3' stroke='#3fb950'/><text x='85' y='50' text-anchor='middle' font-size='11' font-weight='bold' fill='#1a7f37'>リポジトリ</text><text x='270' y='50' text-anchor='middle' font-size='11' font-weight='bold' fill='#1a7f37'>解決したい課題</text><text x='470' y='50' text-anchor='middle' font-size='11' font-weight='bold' fill='#1a7f37'>提供する機能</text><line x1='10' y1='58' x2='590' y2='58' stroke='#bfe6c8'/><line x1='10' y1='101' x2='590' y2='101' stroke='#bfe6c8'/><line x1='10' y1='144' x2='590' y2='144' stroke='#bfe6c8'/><line x1='168' y1='30' x2='168' y2='188' stroke='#bfe6c8'/><line x1='372' y1='30' x2='372' y2='188' stroke='#bfe6c8'/><text x='89' y='84' text-anchor='middle' font-size='10.5' fill='#1c1c1e'>pocket-tts</text><text x='270' y='84' text-anchor='middle' font-size='10' fill='#444'>GPU前提で軽量TTSが難</text><text x='481' y='84' text-anchor='middle' font-size='10' fill='#444'>CPUで動く音声クローンTTS</text><text x='89' y='127' text-anchor='middle' font-size='10.5' fill='#1c1c1e'>spacewasm</text><text x='270' y='127' text-anchor='middle' font-size='10' fill='#444'>Wasm実行が非決定的</text><text x='481' y='127' text-anchor='middle' font-size='10' fill='#444'>決定的メモリ/実行のWasm</text><text x='89' y='170' text-anchor='middle' font-size='10.5' fill='#1c1c1e'>page-agent</text><text x='270' y='170' text-anchor='middle' font-size='10' fill='#444'>拡張/Python等が必要</text><text x='481' y='170' text-anchor='middle' font-size='10' fill='#444'>1行で自然言語Web操作</text></svg><figcaption>図1：3本を「課題→機能」で一望する。</figcaption></figure>\n<h4>kyutai-labs/pocket-tts（Python・⭐約6.7k）</h4>\n<p><b>解決したい課題</b>：高品質な音声合成はGPUや大きなモデルを前提にしがちで、オンデバイス／CPUだけで声のクローンまでやるのは難しかった。<b>提供する機能</b>：約1億パラメータと軽量ながら<b>CPUだけで動き、音声クローンに対応</b>するTTS。macOSはCore ML対応でオンデバイス完結する。Moshiで知られるKyutai Labs発で、公開3日で1kスター→現在約6.7kと急伸。オンデバイス音声生成の新星として拡散している。</p>\n<h4>nasa/spacewasm（Rust・⭐約749）</h4>\n<p><b>解決したい課題</b>：宇宙機のような資源制約環境では、実行時のメモリ使用や挙動が<b>決定的</b>であることが必須だが、汎用のWasmランタイムはそこまで保証しない。<b>提供する機能</b>：Wasm 1.0に追加制約を課して<b>メモリ使用と実行を決定的に</b>し、バイナリを単一パスでストリーミング復号・実行する、NASA/JPL製の飛行対応インタプリタ。火星ローバーのコマンドシーケンス実行という具体的文脈が驚きを呼び、OSS公開自体が話題に。</p>\n<h4>alibaba/page-agent（TypeScript・⭐約22.7k）</h4>\n<p><b>解決したい課題</b>：既存のWeb自動化は拡張機能やPython、ヘッドレスブラウザなどの重いインフラを要し、本番ページに載せにくかった。<b>提供する機能</b>：<b>1本のスクリプトを読み込むだけ</b>でDOMを読み、自然言語コマンドでUIを操作できるin-page GUIエージェント。モデル非依存・ゼロインフラでローカルモデルも使える。ピーク時1日+1,100スター超で累計2.2万超。</p>\n<h4>まとめ</h4>\n<p>自分が試すなら、まずpage-agentを社内の管理画面に1行差してみたい（インフラ不要で撤退も容易）。pocket-ttsはオンデバイス通知の読み上げに、spacewasmは決定的サンドボックスの発想の参考に。共通するのは「前提を外して手元で動かせる」ことの強さだ。</p>",
+      "sources": [
+        {
+          "title": "kyutai-labs/pocket-tts",
+          "url": "https://github.com/kyutai-labs/pocket-tts"
+        },
+        {
+          "title": "nasa/spacewasm",
+          "url": "https://github.com/nasa/spacewasm"
+        },
+        {
+          "title": "alibaba/page-agent",
+          "url": "https://github.com/alibaba/page-agent"
+        }
+      ]
+    },
     {
       "id": "2026-07-14-claude-code",
       "date": "2026-07-14",
