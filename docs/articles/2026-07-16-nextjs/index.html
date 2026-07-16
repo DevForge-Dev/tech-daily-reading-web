@@ -1,0 +1,70 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Auth.js v5 を App Router で — 現行セットアップと2026年の地殻変動（Better Auth移行・middleware→proxy改名） — デイリー技術深掘り 読み物</title><meta name="description" content="2025/9/22にAuth.jsはBetter Authチーム管理下へ入り実質メンテナンスモードに。新規はBetter Auth推奨、例外はDB無しステートレスセッション。Next.js 16でmiddleware.ts→proxy.tsに改名。単一auth.tsが{handlers,signIn,signOut,auth}を返し、auth()をRSC/Handler/Action/proxyで共用。proxyは境界でない（CVE-2025-29927）ためDALで再検証。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-16-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Auth.js v5 を App Router で — 現行セットアップと2026年の地殻変動（Better Auth移行・middleware→proxy改名） — デイリー技術深掘り 読み物"><meta property="og:description" content="2025/9/22にAuth.jsはBetter Authチーム管理下へ入り実質メンテナンスモードに。新規はBetter Auth推奨、例外はDB無しステートレスセッション。Next.js 16でmiddleware.ts→proxy.tsに改名。単一auth.tsが{handlers,signIn,signOut,auth}を返し、auth()をRSC/Handler/Action/proxyで共用。proxyは境界でない（CVE-2025-29927）ためDALで再検証。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-16-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>Auth.js v5 を App Router で — 現行セットアップと2026年の地殻変動（Better Auth移行・middleware→proxy改名）</h1> <p class="lede">2025/9/22にAuth.jsはBetter Authチーム管理下へ入り実質メンテナンスモードに。新規はBetter Auth推奨、例外はDB無しステートレスセッション。Next.js 16でmiddleware.ts→proxy.tsに改名。単一auth.tsが{handlers,signIn,signOut,auth}を返し、auth()をRSC/Handler/Action/proxyで共用。proxyは境界でない（CVE-2025-29927）ためDALで再検証。</p> <div class="meta"> <span>📅 2026年7月16日</span> <span>⏱ 約3分</span> <span>🔗 出典 5 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="1"><p>Auth.js（旧 NextAuth）は App Router 時代の定番認証ライブラリだが、2026年の今これを扱う理由は「使い方」以上に<b>立ち位置の激変</b>を正しく知るためだ。</p><h4 id="sec-1">何が新しいか（地殻変動）</h4><p><b>2025年9月22日、Auth.js は Better Auth チームの管理下に入った</b>。以後 next-auth/Auth.js は<b>実質メンテナンスモード</b>＝セキュリティパッチと緊急対応のみで、新機能は基本入らない。Better Auth 公式は「<b>新規は Better Auth を強く推奨</b>」と明言するが、例外として<b>DB無しのステートレスセッション</b>は現状 Auth.js の強み。さらに Better Auth 自体が<b>Vercel に参画</b>し、認証は Next.js/Vercel 側に一層寄っていく。加えて Next.js 16 では <code>middleware.ts</code> が <code>proxy.ts</code> に改名され、ガード用エクスポートも <code>export { auth as proxy }</code> になった。</p><h4 id="sec-2">仕組み（v5 の型）</h4><p>設定はプロジェクト直下の単一 <code>auth.ts</code> に集約し、<code>NextAuth(config)</code> が <code>{ handlers, signIn, signOut, auth }</code> を返す。中でも <b><code>auth()</code> が万能</b>で、Server Components / Route Handlers / Server Actions / proxy のすべてで同じ関数からセッションを読める。既定のセッション戦略は<b>JWT（暗号化Cookie・DBクエリ不要）</b>だ。</p><pre><code>// ./auth.ts
+export const { handlers, signIn, signOut, auth } = NextAuth({
+  providers: [GitHub],
+  session: { strategy: "jwt" }, // DB無しステートレス＝Auth.jsの強み
+})
+
+// ./proxy.ts （Next.js 16 / 旧 middleware.ts）
+export { auth as proxy } from "@/auth"</code></pre><figure class='fig'><pre class='mermaid'>flowchart TD
+  A["proxy.ts 楽観的ゲート（UXのみ・境界ではない）"] --> B["Server Component/Action で await auth()"]
+  B --> C["DAL: verifySession()（server-only・cacheでメモ化）"]
+  C --> D["認可（role/所有者）をデータ取得の直前で必ず実施"]
+  D --> E["DB / 外部API"]</pre><figcaption>図1：多層防御。proxyに認可を頼らず、データに最も近い所で再検証する。</figcaption></figure><h4 id="sec-3">落とし穴</h4><p>最大の注意は <b>proxy（旧middleware）はセキュリティ境界ではない</b>こと。<b>CVE-2025-29927</b>（ヘッダ偽装で middleware 認可をバイパス）がこれを決定づけた。認可は必ず DAL（Data Access Layer）で <code>auth()</code>/<code>verifySession()</code> を使って再検証する。Credentials プロバイダは<b>JWT戦略必須</b>、ロールは <code>jwt</code>/<code>session</code> コールバックで明示的に詰め替える（自動では入らない）。クライアントで <code>useSession()</code> を使うなら <code>&lt;SessionProvider&gt;</code> でラップが要る（RSC では <code>auth()</code> 直呼びで Provider 不要）。</p><h4 id="sec-4">自分が試すなら</h4><p>既存 Auth.js アプリはそのまま使い続けてよい（壊れない）。新規は Better Auth を第一候補に検討し、Auth.js を選ぶなら「DBを持たず JWT だけで回したい」等の明確な理由を持つ。まずは <code>npx auth secret</code> で <code>AUTH_SECRET</code> を生成し、<code>auth.ts</code> ＋ Route Handler ＋ <code>proxy.ts</code> の最小構成を組んで、DAL 再検証をテンプレ化しておくのが安全だ。</p><h4 id="sec-5">ひとことまとめ</h4><p>「Auth.js は延命、新規は Better Auth」。そして<b>認可はデータの隣で</b>——proxy に守ってもらうな。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://authjs.dev/getting-started/installation" target="_blank" rel="noopener noreferrer"> Auth.js — Installation (v5) </a> </li><li> <a href="https://authjs.dev/getting-started/session-management/protecting" target="_blank" rel="noopener noreferrer"> Auth.js — Protecting Resources </a> </li><li> <a href="https://better-auth.com/blog/authjs-joins-better-auth" target="_blank" rel="noopener noreferrer"> Auth.js is now part of Better Auth </a> </li><li> <a href="https://better-auth.com/blog/better-auth-joins-vercel" target="_blank" rel="noopener noreferrer"> Better Auth is joining Vercel </a> </li><li> <a href="https://authjs.dev/getting-started/migrating-to-v5" target="_blank" rel="noopener noreferrer"> Migrating to v5 </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 何が新しいか（地殻変動） </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 仕組み（v5 の型） </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 落とし穴 </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 自分が試すなら </a> </li><li> <a href="#sec-5" data-toc="sec-5"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-07-16</div> <div>⏱ 読了 約3分</div> <div>🏷 Next.js</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

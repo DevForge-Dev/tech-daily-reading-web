@@ -1,0 +1,63 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Dart 3.12の新構文を実務へ＋Riverpod 3.0 Mutations／自動リトライ＋Impellerで120fps — デイリー技術深掘り 読み物</title><meta name="description" content="Dart 3.12のdot shorthands・private named parameters・primary constructors(experimental)で記述を圧縮。安定版はFlutter 3.44.0/Dart 3.12.2、次は2026年8月。Riverpod 3.0のMutations(Idle/Pending/Success/Error)＋指数バックオフ自動リトライ(200ms→6.4s)で書き込みUXを強化。Impellerはラスタライズ約50%短縮で120fps、Skia比約17%省電力。"><meta name="theme-color" content="#0277bd"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-16-flutter/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Dart 3.12の新構文を実務へ＋Riverpod 3.0 Mutations／自動リトライ＋Impellerで120fps — デイリー技術深掘り 読み物"><meta property="og:description" content="Dart 3.12のdot shorthands・private named parameters・primary constructors(experimental)で記述を圧縮。安定版はFlutter 3.44.0/Dart 3.12.2、次は2026年8月。Riverpod 3.0のMutations(Idle/Pending/Success/Error)＋指数バックオフ自動リトライ(200ms→6.4s)で書き込みUXを強化。Impellerはラスタライズ約50%短縮で120fps、Skia比約17%省電力。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-16-flutter/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #29b6f6, #01579b)"> <span class="glyph" aria-hidden="true">◆</span> <div class="kicker">Flutter</div> <h1>Dart 3.12の新構文を実務へ＋Riverpod 3.0 Mutations／自動リトライ＋Impellerで120fps</h1> <p class="lede">Dart 3.12のdot shorthands・private named parameters・primary constructors(experimental)で記述を圧縮。安定版はFlutter 3.44.0/Dart 3.12.2、次は2026年8月。Riverpod 3.0のMutations(Idle/Pending/Success/Error)＋指数バックオフ自動リトライ(200ms→6.4s)で書き込みUXを強化。Impellerはラスタライズ約50%短縮で120fps、Skia比約17%省電力。</p> <div class="meta"> <span>📅 2026年7月16日</span> <span>⏱ 約3分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#0277bd"> <div> <article class="prose" data-has-mermaid="0"><p>今日のFlutterは<b>言語・状態管理・描画</b>の三方向で「2026年の実務ライン」が見えた日。<b>Dart 3.12</b>の新構文、<b>Riverpod 3.0</b>の書き込みUX、<b>Impeller</b>の120fpsを順に押さえる。</p><h4 id="sec-1">Dart 3.12：冗長さを削る新構文</h4><p>目玉は <b>dot shorthands</b>。型が文脈から明らかなら <code>.value</code> と書け、enum・static メンバー・named constructor に対応して型名の反復を減らせる。<b>private named parameters</b> は先頭 <code>_</code> を自動で外して公開名にでき、private フィールドを名前付きで直接初期化できる。<b>primary constructors</b> はクラス宣言を圧縮する（experimental、<code>primary-constructors</code> フラグ）。安定版は <b>Flutter 3.44.0 / Dart 3.12.2</b>、次の機能リリースは <b>2026年8月</b>予定（年4回：2/5/8/11月）。</p><pre><code>// dot shorthands（型が文脈から明らか）
+Color c = .blue;            // = Color.blue
+enum Mode { light, dark }
+Mode m = .dark;             // = Mode.dark
+// primary constructors はまだ実験的。本番は様子見</code></pre><h4 id="sec-2">Riverpod 3.0：書き込みUXのレジリエンス</h4><p>新機能 <b>Mutations</b> は「Login」「Post Comment」等のアクションを定義すると <b>Idle/Pending/Success/Error</b> のライフサイクルを UI へ自動公開し、ローディング/エラー表示を定型化する。さらに<b>自動リトライ</b>がネットワーク失敗時に<b>指数バックオフ（200ms→倍々で最大6.4s）</b>で再試行し、一時的な glitch を恒久エラー画面にしない。opt-in の<b>オフライン永続化</b>（stale-while-revalidate, <code>riverpod_sqflite</code>）も入った。現行版は Riverpod 3.3.x。新規の既定は Riverpod、監査/大規模は Bloc 9.x という役割分担は不変だ。</p><figure class='fig'><svg viewBox='0 0 600 190' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='16' y='26' font-size='13' font-weight='700' fill='#0277bd'>フレーム予算（1フレームで使える時間）</text><rect x='140' y='44' width='416' height='22' rx='4' fill='#e3f2fb' stroke='#56c5f5'></rect><text x='128' y='60' font-size='12' text-anchor='end' fill='#333'>60fps</text><text x='150' y='60' font-size='11' fill='#0277bd'>16ms</text><rect x='140' y='84' width='286' height='22' rx='4' fill='#d7ecf9' stroke='#56c5f5'></rect><text x='128' y='100' font-size='12' text-anchor='end' fill='#333'>90fps</text><text x='150' y='100' font-size='11' fill='#0277bd'>11ms</text><rect x='140' y='124' width='216' height='22' rx='4' fill='#c9e6f7' stroke='#0277bd'></rect><text x='128' y='140' font-size='12' text-anchor='end' fill='#333'>120fps</text><text x='150' y='140' font-size='11' fill='#01579b'>8.3ms ← Impeller狙い</text><text x='16' y='178' font-size='11' fill='#6b6b70'>短いほど厳しい。Impellerは実行時シェーダーコンパイルを排除して達成。</text></svg><figcaption>図1：フレーム予算。Impellerはラスタライズを約50%短縮し120fps（8.3ms）を安定維持。</figcaption></figure><h4 id="sec-3">Impeller：120fpsと電力効率</h4><p>Impeller は iOS＋モダンAndroid（<b>API 29+</b>）で既定。全シェーダーを<b>ビルド時（AOT）にオフラインコンパイル</b>して実行時のシェーダージャンクを排除し、<b>フレームラスタライズ約50%高速</b>で 120fps を安定維持、アニメ多用時は <b>Skia比 約17%低い電力ドレイン</b>。フレーム予算はラスタライズ <b>&lt;8.3ms＝120fps</b>。計測は必ず profile モードで、DevTools の Impeller ビューで overdraw を潰す。</p><h4 id="sec-4">自分が試すなら / 注意点</h4><p>まず Riverpod の Mutations を1つの書き込み画面に入れて、ローディング/リトライの定型を体感するのが早い。Dart 3.12 は dot shorthands から採り入れ、primary constructors は構文が変わり得るので本番は保留。Rive を多用するなら <code>Factory.rive</code> と大きな <code>.riv</code> のプリロード（build内でロードしない）を徹底する。</p><h4 id="sec-5">ひとことまとめ</h4><p>言語は短く、状態管理は粘り強く、描画は120fps。3つとも「2026年の既定」を今日更新した。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://dart.dev/blog/announcing-dart-3-12" target="_blank" rel="noopener noreferrer"> Announcing Dart 3.12 </a> </li><li> <a href="https://sharpskill.dev/en/blog/flutter/flutter-state-management-2026-riverpod-bloc-getx" target="_blank" rel="noopener noreferrer"> State Management 2026 (sharpskill) </a> </li><li> <a href="https://dev.to/eira-wexford/how-impeller-is-transforming-flutter-ui-rendering-in-2026-3dpd" target="_blank" rel="noopener noreferrer"> How Impeller Is Transforming Flutter UI Rendering in 2026 </a> </li><li> <a href="https://docs.flutter.dev/perf/impeller" target="_blank" rel="noopener noreferrer"> Impeller rendering engine (docs) </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> Dart 3.12：冗長さを削る新構文 </a> </li><li> <a href="#sec-2" data-toc="sec-2"> Riverpod 3.0：書き込みUXのレジリエンス </a> </li><li> <a href="#sec-3" data-toc="sec-3"> Impeller：120fpsと電力効率 </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 自分が試すなら / 注意点 </a> </li><li> <a href="#sec-5" data-toc="sec-5"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-07-16</div> <div>⏱ 読了 約3分</div> <div>🏷 Flutter</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
