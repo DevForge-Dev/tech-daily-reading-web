@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-07-15T04:49:11.484Z",
+  "generatedAt": "2026-07-16T04:47:48.507Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,114 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-07-16-claude-code",
+      "date": "2026-07-16",
+      "topic": "Claude Code",
+      "title": "/doctor が /checkup に刷新 — 診断だけから「修正＋コンテキスト掃除」まで。Autoモードの安全網も強化",
+      "lede": "v2.1.202〜206系で /doctor が読み取り専用レポートから、問題を診断し修正まで行う『フルセットアップ点検』に（エイリアス /checkup）。未使用Skills/MCP・CLAUDE.md重複を掃除。Autoモードは記録改ざんブロック・未解決変数のrm -rf確認、自動更新はピークメモリ約400MB削減。Bedrock/Vertex/FoundryでAutoモードが既定（Opus 4.8）。",
+      "articleHtml": "<p>今週のClaude Codeは派手な新機能より<b>運用の底上げ</b>が主役。目玉は <code>/doctor</code> の刷新で、これまで「レポートを出すだけ」だった診断コマンドが、問題を見つけたうえで<b>修正まで実行</b>する『フルセットアップ点検』に作り替えられた（エイリアスは <code>/checkup</code>）。</p><h4>何が新しいか</h4><p>v2.1.202〜206系で、<code>/checkup</code>（=<code>/doctor</code>）はインストールの健全性に加え、<b>未使用のSkills・MCPサーバー・プラグインがコンテキスト予算をどれだけ食っているか</b>を可視化し、複数の <code>CLAUDE.md</code> の重複排除・削減提案、遅い hooks の検出までやる。変更前に必ず所見を提示して確認を求める安全設計だ。あわせて Auto モードの安全性が強化され、<b>セッション記録（トランスクリプト）の改ざんをブロック</b>、文脈から解決できない変数に対する <code>rm -rf</code> は実行前に確認を挟むようになった。自動更新はバイナリをメモリに溜めずディスクへ直接ストリームする方式に変え、アップデータのピークメモリを<b>約400MB削減</b>している。</p><figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><defs><marker id='ah1' markerWidth='10' markerHeight='10' refX='8' refY='3' orient='auto'><path d='M0,0 L8,3 L0,6 Z' fill='#888'/></marker></defs><rect x='16' y='46' width='250' height='110' rx='12' fill='#faf3ea' stroke='#e0913f' stroke-width='1.5'/><text x='32' y='72' font-size='13' font-weight='700' fill='#b5701f'>旧 /doctor</text><text x='32' y='98' font-size='12' fill='#7a5a2e'>診断のみ</text><text x='32' y='118' font-size='12' fill='#7a5a2e'>レポートを出すだけ</text><text x='32' y='138' font-size='12' fill='#7a5a2e'>（読み取り専用）</text><path d='M272 101 L332 101' stroke='#888' stroke-width='2' marker-end='url(#ah1)'/><rect x='338' y='30' width='248' height='142' rx='12' fill='#eefaf0' stroke='#3fb950' stroke-width='1.5'/><text x='354' y='56' font-size='13' font-weight='700' fill='#1a7f37'>新 /checkup（=/doctor）</text><text x='354' y='82' font-size='12' fill='#256b34'>① 問題を診断</text><text x='354' y='104' font-size='12' fill='#256b34'>② 修正まで実行</text><text x='354' y='126' font-size='12' fill='#256b34'>③ 未使用Skills/MCP・CLAUDE.md掃除</text><text x='354' y='150' font-size='11' fill='#5a7d63'>変更前に必ず確認</text><text x='16' y='196' font-size='11' fill='#6b6b70'>自動更新: バイナリをディスク直書き → ピークメモリ 約 −400MB</text></svg><figcaption>図1：/doctor は「診断だけ」から「診断→修正→コンテキスト掃除」へ。</figcaption></figure><h4>基盤とエコシステム</h4><p>Amazon Bedrock・Google Vertex AI・Microsoft Foundry の各基盤で Auto モードが<b>既定利用可能</b>になり、これらの環境では <b>Opus 4.8 がデフォルトモデル</b>に。Artifacts も Pro/Max で解放され、<code>/review</code> コマンド体系の刷新も進んだ。</p><h4>実務での使いどころ</h4><p>毎日多数の定期タスクを走らせている分だけコンテキストのムダは積もりやすい。まず <code>/checkup</code> を週1で回し、使っていない Skills/MCP と肥大した <code>CLAUDE.md</code> を掃除してトークンを絞るのが効きそうだ。実際、Microsoft Research の査読論文（7/1公開）では Claude Code 採用者の<b>マージ済みPRが約24%増</b>（効果は4か月持続）と出た一方、<b>トークン費用は年数百万ドル規模</b>に達しコスト統制が課題になったと報告された。アルバータ州政府の事例では約50体のエージェント並列で<b>4.66億行を20時間</b>（従来約6年半相当）で走査——規模を出すほどコスト観測性が重要になる。</p><h4>注意点</h4><p><code>/checkup</code> の削減提案は<b>必ず確認してから適用</b>する（CLAUDE.md の重要な規約を誤って削らないよう）。<code>rm -rf</code> の確認は「変数が未解決のとき」限定なので、解決済みパスの破壊的コマンドは従来通り自分でガードする。</p><h4>ひとことまとめ</h4><p>今週は「散らかったセットアップを畳んでコストを締める」週。<code>/checkup</code> を定期化し、Auto モードの安全ネットに乗るのが吉。</p>",
+      "sources": [
+        {
+          "title": "Claude Code — What's new",
+          "url": "https://code.claude.com/docs/en/whats-new"
+        },
+        {
+          "title": "Claude Code updates (releasebot)",
+          "url": "https://releasebot.io/updates/anthropic/claude-code"
+        },
+        {
+          "title": "新 /checkup 徹底解説 (MCP.Directory)",
+          "url": "https://mcp.directory/blog/claude-code-checkup-command-2026"
+        },
+        {
+          "title": "Alberta government × Claude (Anthropic)",
+          "url": "https://www.anthropic.com/news/alberta-government-claude-cybersecurity"
+        },
+        {
+          "title": "Microsoft企業導入研究 (therouter)",
+          "url": "https://therouter.ai/news/claude-code-microsoft-enterprise-study-token-budget-governance/"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-16-nextjs",
+      "date": "2026-07-16",
+      "topic": "Next.js",
+      "title": "Auth.js v5 を App Router で — 現行セットアップと2026年の地殻変動（Better Auth移行・middleware→proxy改名）",
+      "lede": "2025/9/22にAuth.jsはBetter Authチーム管理下へ入り実質メンテナンスモードに。新規はBetter Auth推奨、例外はDB無しステートレスセッション。Next.js 16でmiddleware.ts→proxy.tsに改名。単一auth.tsが{handlers,signIn,signOut,auth}を返し、auth()をRSC/Handler/Action/proxyで共用。proxyは境界でない（CVE-2025-29927）ためDALで再検証。",
+      "articleHtml": "<p>Auth.js（旧 NextAuth）は App Router 時代の定番認証ライブラリだが、2026年の今これを扱う理由は「使い方」以上に<b>立ち位置の激変</b>を正しく知るためだ。</p><h4>何が新しいか（地殻変動）</h4><p><b>2025年9月22日、Auth.js は Better Auth チームの管理下に入った</b>。以後 next-auth/Auth.js は<b>実質メンテナンスモード</b>＝セキュリティパッチと緊急対応のみで、新機能は基本入らない。Better Auth 公式は「<b>新規は Better Auth を強く推奨</b>」と明言するが、例外として<b>DB無しのステートレスセッション</b>は現状 Auth.js の強み。さらに Better Auth 自体が<b>Vercel に参画</b>し、認証は Next.js/Vercel 側に一層寄っていく。加えて Next.js 16 では <code>middleware.ts</code> が <code>proxy.ts</code> に改名され、ガード用エクスポートも <code>export { auth as proxy }</code> になった。</p><h4>仕組み（v5 の型）</h4><p>設定はプロジェクト直下の単一 <code>auth.ts</code> に集約し、<code>NextAuth(config)</code> が <code>{ handlers, signIn, signOut, auth }</code> を返す。中でも <b><code>auth()</code> が万能</b>で、Server Components / Route Handlers / Server Actions / proxy のすべてで同じ関数からセッションを読める。既定のセッション戦略は<b>JWT（暗号化Cookie・DBクエリ不要）</b>だ。</p><pre><code>// ./auth.ts\nexport const { handlers, signIn, signOut, auth } = NextAuth({\n  providers: [GitHub],\n  session: { strategy: \"jwt\" }, // DB無しステートレス＝Auth.jsの強み\n})\n\n// ./proxy.ts （Next.js 16 / 旧 middleware.ts）\nexport { auth as proxy } from \"@/auth\"</code></pre><figure class='fig'><pre class='mermaid'>flowchart TD\n  A[\"proxy.ts 楽観的ゲート（UXのみ・境界ではない）\"] --> B[\"Server Component/Action で await auth()\"]\n  B --> C[\"DAL: verifySession()（server-only・cacheでメモ化）\"]\n  C --> D[\"認可（role/所有者）をデータ取得の直前で必ず実施\"]\n  D --> E[\"DB / 外部API\"]</pre><figcaption>図1：多層防御。proxyに認可を頼らず、データに最も近い所で再検証する。</figcaption></figure><h4>落とし穴</h4><p>最大の注意は <b>proxy（旧middleware）はセキュリティ境界ではない</b>こと。<b>CVE-2025-29927</b>（ヘッダ偽装で middleware 認可をバイパス）がこれを決定づけた。認可は必ず DAL（Data Access Layer）で <code>auth()</code>/<code>verifySession()</code> を使って再検証する。Credentials プロバイダは<b>JWT戦略必須</b>、ロールは <code>jwt</code>/<code>session</code> コールバックで明示的に詰め替える（自動では入らない）。クライアントで <code>useSession()</code> を使うなら <code>&lt;SessionProvider&gt;</code> でラップが要る（RSC では <code>auth()</code> 直呼びで Provider 不要）。</p><h4>自分が試すなら</h4><p>既存 Auth.js アプリはそのまま使い続けてよい（壊れない）。新規は Better Auth を第一候補に検討し、Auth.js を選ぶなら「DBを持たず JWT だけで回したい」等の明確な理由を持つ。まずは <code>npx auth secret</code> で <code>AUTH_SECRET</code> を生成し、<code>auth.ts</code> ＋ Route Handler ＋ <code>proxy.ts</code> の最小構成を組んで、DAL 再検証をテンプレ化しておくのが安全だ。</p><h4>ひとことまとめ</h4><p>「Auth.js は延命、新規は Better Auth」。そして<b>認可はデータの隣で</b>——proxy に守ってもらうな。</p>",
+      "sources": [
+        {
+          "title": "Auth.js — Installation (v5)",
+          "url": "https://authjs.dev/getting-started/installation"
+        },
+        {
+          "title": "Auth.js — Protecting Resources",
+          "url": "https://authjs.dev/getting-started/session-management/protecting"
+        },
+        {
+          "title": "Auth.js is now part of Better Auth",
+          "url": "https://better-auth.com/blog/authjs-joins-better-auth"
+        },
+        {
+          "title": "Better Auth is joining Vercel",
+          "url": "https://better-auth.com/blog/better-auth-joins-vercel"
+        },
+        {
+          "title": "Migrating to v5",
+          "url": "https://authjs.dev/getting-started/migrating-to-v5"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-16-flutter",
+      "date": "2026-07-16",
+      "topic": "Flutter",
+      "title": "Dart 3.12の新構文を実務へ＋Riverpod 3.0 Mutations／自動リトライ＋Impellerで120fps",
+      "lede": "Dart 3.12のdot shorthands・private named parameters・primary constructors(experimental)で記述を圧縮。安定版はFlutter 3.44.0/Dart 3.12.2、次は2026年8月。Riverpod 3.0のMutations(Idle/Pending/Success/Error)＋指数バックオフ自動リトライ(200ms→6.4s)で書き込みUXを強化。Impellerはラスタライズ約50%短縮で120fps、Skia比約17%省電力。",
+      "articleHtml": "<p>今日のFlutterは<b>言語・状態管理・描画</b>の三方向で「2026年の実務ライン」が見えた日。<b>Dart 3.12</b>の新構文、<b>Riverpod 3.0</b>の書き込みUX、<b>Impeller</b>の120fpsを順に押さえる。</p><h4>Dart 3.12：冗長さを削る新構文</h4><p>目玉は <b>dot shorthands</b>。型が文脈から明らかなら <code>.value</code> と書け、enum・static メンバー・named constructor に対応して型名の反復を減らせる。<b>private named parameters</b> は先頭 <code>_</code> を自動で外して公開名にでき、private フィールドを名前付きで直接初期化できる。<b>primary constructors</b> はクラス宣言を圧縮する（experimental、<code>primary-constructors</code> フラグ）。安定版は <b>Flutter 3.44.0 / Dart 3.12.2</b>、次の機能リリースは <b>2026年8月</b>予定（年4回：2/5/8/11月）。</p><pre><code>// dot shorthands（型が文脈から明らか）\nColor c = .blue;            // = Color.blue\nenum Mode { light, dark }\nMode m = .dark;             // = Mode.dark\n// primary constructors はまだ実験的。本番は様子見</code></pre><h4>Riverpod 3.0：書き込みUXのレジリエンス</h4><p>新機能 <b>Mutations</b> は「Login」「Post Comment」等のアクションを定義すると <b>Idle/Pending/Success/Error</b> のライフサイクルを UI へ自動公開し、ローディング/エラー表示を定型化する。さらに<b>自動リトライ</b>がネットワーク失敗時に<b>指数バックオフ（200ms→倍々で最大6.4s）</b>で再試行し、一時的な glitch を恒久エラー画面にしない。opt-in の<b>オフライン永続化</b>（stale-while-revalidate, <code>riverpod_sqflite</code>）も入った。現行版は Riverpod 3.3.x。新規の既定は Riverpod、監査/大規模は Bloc 9.x という役割分担は不変だ。</p><figure class='fig'><svg viewBox='0 0 600 190' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='16' y='26' font-size='13' font-weight='700' fill='#0277bd'>フレーム予算（1フレームで使える時間）</text><rect x='140' y='44' width='416' height='22' rx='4' fill='#e3f2fb' stroke='#56c5f5'/><text x='128' y='60' font-size='12' text-anchor='end' fill='#333'>60fps</text><text x='150' y='60' font-size='11' fill='#0277bd'>16ms</text><rect x='140' y='84' width='286' height='22' rx='4' fill='#d7ecf9' stroke='#56c5f5'/><text x='128' y='100' font-size='12' text-anchor='end' fill='#333'>90fps</text><text x='150' y='100' font-size='11' fill='#0277bd'>11ms</text><rect x='140' y='124' width='216' height='22' rx='4' fill='#c9e6f7' stroke='#0277bd'/><text x='128' y='140' font-size='12' text-anchor='end' fill='#333'>120fps</text><text x='150' y='140' font-size='11' fill='#01579b'>8.3ms ← Impeller狙い</text><text x='16' y='178' font-size='11' fill='#6b6b70'>短いほど厳しい。Impellerは実行時シェーダーコンパイルを排除して達成。</text></svg><figcaption>図1：フレーム予算。Impellerはラスタライズを約50%短縮し120fps（8.3ms）を安定維持。</figcaption></figure><h4>Impeller：120fpsと電力効率</h4><p>Impeller は iOS＋モダンAndroid（<b>API 29+</b>）で既定。全シェーダーを<b>ビルド時（AOT）にオフラインコンパイル</b>して実行時のシェーダージャンクを排除し、<b>フレームラスタライズ約50%高速</b>で 120fps を安定維持、アニメ多用時は <b>Skia比 約17%低い電力ドレイン</b>。フレーム予算はラスタライズ <b>&lt;8.3ms＝120fps</b>。計測は必ず profile モードで、DevTools の Impeller ビューで overdraw を潰す。</p><h4>自分が試すなら / 注意点</h4><p>まず Riverpod の Mutations を1つの書き込み画面に入れて、ローディング/リトライの定型を体感するのが早い。Dart 3.12 は dot shorthands から採り入れ、primary constructors は構文が変わり得るので本番は保留。Rive を多用するなら <code>Factory.rive</code> と大きな <code>.riv</code> のプリロード（build内でロードしない）を徹底する。</p><h4>ひとことまとめ</h4><p>言語は短く、状態管理は粘り強く、描画は120fps。3つとも「2026年の既定」を今日更新した。</p>",
+      "sources": [
+        {
+          "title": "Announcing Dart 3.12",
+          "url": "https://dart.dev/blog/announcing-dart-3-12"
+        },
+        {
+          "title": "State Management 2026 (sharpskill)",
+          "url": "https://sharpskill.dev/en/blog/flutter/flutter-state-management-2026-riverpod-bloc-getx"
+        },
+        {
+          "title": "How Impeller Is Transforming Flutter UI Rendering in 2026",
+          "url": "https://dev.to/eira-wexford/how-impeller-is-transforming-flutter-ui-rendering-in-2026-3dpd"
+        },
+        {
+          "title": "Impeller rendering engine (docs)",
+          "url": "https://docs.flutter.dev/perf/impeller"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-16-github-trending",
+      "date": "2026-07-16",
+      "topic": "GitHub Trending",
+      "title": "7/16の話題リポジトリ — AI生成の「質」、エージェントの「受け渡し」、「仕様先行」の規律",
+      "lede": "本日のTrendshift上位は、AIコーディングの周辺を整える道具が揃い踏み。見た目の質(hallmark)、コンテキストの受け渡し(waggle)、仕様先行の規律(spec-kit)——量から質・効率へ。",
+      "articleHtml": "<p>本日のTrendshift日次で上位に食い込んだ3本は、偶然にも<b>「AIコーディングをどう良くするか」</b>という一本の線で貫かれている。生成物の見た目の質、エージェント間のコンテキスト受け渡し、そして仕様を先に固める規律——量産フェーズを超えた「質・効率」への関心の表れだ。</p><figure class='fig'><svg viewBox='0 0 620 230' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='10' y='8' width='150' height='26' fill='#eafaf0' stroke='#cfe9d6'/><rect x='160' y='8' width='225' height='26' fill='#eafaf0' stroke='#cfe9d6'/><rect x='385' y='8' width='225' height='26' fill='#eafaf0' stroke='#cfe9d6'/><text x='20' y='26' font-size='12' font-weight='700' fill='#1a7f37'>リポジトリ</text><text x='170' y='26' font-size='12' font-weight='700' fill='#1a7f37'>解決したい課題</text><text x='395' y='26' font-size='12' font-weight='700' fill='#1a7f37'>提供する機能</text><rect x='10' y='34' width='150' height='62' fill='#ffffff' stroke='#cfe9d6'/><rect x='160' y='34' width='225' height='62' fill='#f7fdf9' stroke='#cfe9d6'/><rect x='385' y='34' width='225' height='62' fill='#ffffff' stroke='#cfe9d6'/><text x='20' y='60' font-size='11' font-weight='700' fill='#24292f'>Nutlope/</text><text x='20' y='76' font-size='11' font-weight='700' fill='#24292f'>hallmark</text><text x='170' y='58' font-size='10.5' fill='#333'>AI生成UIの没個性・</text><text x='170' y='74' font-size='10.5' fill='#333'>安っぽさ（AI slop）</text><text x='395' y='58' font-size='10.5' fill='#333'>Claude/Cursor/Codex向け</text><text x='395' y='74' font-size='10.5' fill='#333'>デザインスキル</text><rect x='10' y='96' width='150' height='62' fill='#ffffff' stroke='#cfe9d6'/><rect x='160' y='96' width='225' height='62' fill='#f7fdf9' stroke='#cfe9d6'/><rect x='385' y='96' width='225' height='62' fill='#ffffff' stroke='#cfe9d6'/><text x='20' y='122' font-size='11' font-weight='700' fill='#24292f'>modiqo/</text><text x='20' y='138' font-size='11' font-weight='700' fill='#24292f'>waggle</text><text x='170' y='120' font-size='10.5' fill='#333'>巨大コンテキストの貼付</text><text x='170' y='136' font-size='10.5' fill='#333'>＝トークン浪費</text><text x='395' y='120' font-size='10.5' fill='#333'>約30Bの参照トークンで</text><text x='395' y='136' font-size='10.5' fill='#333'>受け渡し（MCPネイティブ）</text><rect x='10' y='158' width='150' height='62' fill='#ffffff' stroke='#cfe9d6'/><rect x='160' y='158' width='225' height='62' fill='#f7fdf9' stroke='#cfe9d6'/><rect x='385' y='158' width='225' height='62' fill='#ffffff' stroke='#cfe9d6'/><text x='20' y='184' font-size='11' font-weight='700' fill='#24292f'>github/</text><text x='20' y='200' font-size='11' font-weight='700' fill='#24292f'>spec-kit</text><text x='170' y='182' font-size='10.5' fill='#333'>エージェントの手戻り・</text><text x='170' y='198' font-size='10.5' fill='#333'>仕様からの逸脱</text><text x='395' y='182' font-size='10.5' fill='#333'>仕様駆動開発の</text><text x='395' y='198' font-size='10.5' fill='#333'>公式ツールキット＋CLI</text></svg><figcaption>図1：3本の「解決したい課題」と「提供する機能」。</figcaption></figure><h4>Nutlope/hallmark（—・⭐—、Trendshift日次6位・New 2026）</h4><p><b>解決したい課題：</b>AI生成のUIにありがちな没個性で安っぽい見た目（いわゆる「AI slop」）。生成物が量産される一方で、どれも似た没個性に陥る問題に切り込む。<b>提供する機能：</b>Claude Code・Cursor・Codex 向けの<b>デザインスキル</b>で、AIっぽさを抑えて質感のある見た目に寄せる。著名開発者 Nutlope（Hassan El Mghari）発で、スキルブームの中「量ではなく質」に踏み込んだ点が刺さり急上昇している。</p><h4>modiqo/waggle（—・⭐—、Trendshift日次10位・New 2026）</h4><p><b>解決したい課題：</b>エージェント同士のハンドオフで巨大なコンテキストを丸ごと貼り付ける非効率（入力トークンのムダ）。<b>提供する機能：</b>貼り付けコンテキストの代わりに<b>約30バイトの「参照トークン」</b>で成果物を受け渡す、MCPネイティブの参照レイヤー。属性付き・解決可能な参照でコンテキストの再送を減らす。エージェント多重運用でのトークン圧縮という切実な空白に直撃し注目されている。</p><h4>github/spec-kit（Python・⭐—、Trendshift日次11位）</h4><p><b>解決したい課題：</b>AIコーディングエージェントの手戻り・仕様からの逸脱。実装を急いで方向がぶれる問題を、プロセスで抑えにいく。<b>提供する機能：</b><b>仕様駆動開発（Spec-Driven Development）</b>を始めるGitHub公式ツールキット＋CLI。「まず仕様、次に実装」を徹底させる方法論を公式が提供する安心感で支持を集める。</p><h4>まとめ：自分が試すなら</h4><p>1人×多PJ横断でエージェントを回す立場なら、まず<b>spec-kit</b>で逸脱を減らす規律を敷き、次に<b>waggle</b>でエージェント間の受け渡しコストを削るのが効きそう。hallmarkは生成UIの質が気になる場面でスキルとして差す。3本とも「AI開発の周辺整備」に効く実用枠だ。</p>",
+      "sources": [
+        {
+          "title": "Nutlope/hallmark",
+          "url": "https://github.com/Nutlope/hallmark"
+        },
+        {
+          "title": "modiqo/waggle",
+          "url": "https://github.com/modiqo/waggle"
+        },
+        {
+          "title": "github/spec-kit",
+          "url": "https://github.com/github/spec-kit"
+        }
+      ]
+    },
     {
       "id": "2026-07-15-claude-code",
       "date": "2026-07-15",
