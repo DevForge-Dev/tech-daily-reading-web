@@ -1,0 +1,80 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>v2.1.211 — プロンプトキャッシュ過大請求を修正、承認プレビュー偽装も封じる／--forward-subagent-text でサブエージェントの思考を可視化 — デイリー技術深掘り 読み物</title><meta name="description" content="今週は新機能より足回りの安定化とコスト是正が主役。v2.1.211 が基盤4種のプロンプトキャッシュ過大請求・停止エージェントの再起動・承認プレビュー偽装を続けて修正。--forward-subagent-text でサブエージェントのテキストと思考を stream-json に流せるように。週次上限+50%は7/19まで延長。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-17-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="v2.1.211 — プロンプトキャッシュ過大請求を修正、承認プレビュー偽装も封じる／--forward-subagent-text でサブエージェントの思考を可視化 — デイリー技術深掘り 読み物"><meta property="og:description" content="今週は新機能より足回りの安定化とコスト是正が主役。v2.1.211 が基盤4種のプロンプトキャッシュ過大請求・停止エージェントの再起動・承認プレビュー偽装を続けて修正。--forward-subagent-text でサブエージェントのテキストと思考を stream-json に流せるように。週次上限+50%は7/19まで延長。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-17-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>v2.1.211 — プロンプトキャッシュ過大請求を修正、承認プレビュー偽装も封じる／--forward-subagent-text でサブエージェントの思考を可視化</h1> <p class="lede">今週は新機能より足回りの安定化とコスト是正が主役。v2.1.211 が基盤4種のプロンプトキャッシュ過大請求・停止エージェントの再起動・承認プレビュー偽装を続けて修正。--forward-subagent-text でサブエージェントのテキストと思考を stream-json に流せるように。週次上限+50%は7/19まで延長。</p> <div class="meta"> <span>📅 2026年7月17日</span> <span>⏱ 約3分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="0"><p>今週のClaude Codeは新機能より<b>足回りの安定化とコスト是正</b>が主役だ。とくに <b>v2.1.211</b> は課金・セキュリティに関わる回帰を続けて潰した重要リリースで、毎日エージェントを回すユーザーほど恩恵が大きい。</p>
+<h4 id="sec-1">何が新しいか</h4>
+<p>最大の修正は<b>プロンプトキャッシュの過大請求</b>。Bedrock / Vertex / Mantle / Foundry で、末尾のシステムコンテキストブロックが<b>リクエストごとに新規入力トークンとして課金</b>されていた回帰を直した。あわせて、ユーザーが<b>停止したバックグラウンドエージェントが勝手に再起動</b>して古いプロンプトを再実行する不具合、承認プレビューが<b>紛らわしい文字（confusable characters）で視覚的に偽装</b>できる問題、<b>AutoモードがPreToolUse hookのask判断を上書き</b>する問題も解消している。</p>
+<figure class='fig'><svg viewBox='0 0 600 226' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+<rect x='14' y='14' width='286' height='34' rx='6' fill='#3a2f5c'></rect><text x='28' y='36' font-size='13' font-weight='700' fill='#fff'>回帰・脆弱性</text>
+<rect x='304' y='14' width='282' height='34' rx='6' fill='#1a7f37'></rect><text x='318' y='36' font-size='13' font-weight='700' fill='#fff'>v2.1.211 の対応</text>
+<rect x='14' y='52' width='286' height='52' rx='6' fill='#faf3ea' stroke='#e0913f' stroke-width='1.3'></rect><text x='28' y='75' font-size='12.5' fill='#7a5a2e'>プロンプトキャッシュ過大請求</text><text x='28' y='94' font-size='11' fill='#9a7a4e'>Bedrock/Vertex/Mantle/Foundry</text>
+<rect x='304' y='52' width='282' height='52' rx='6' fill='#eefaf0' stroke='#3fb950' stroke-width='1.3'></rect><text x='318' y='82' font-size='12.5' fill='#256b34'>末尾ブロックの新規課金を停止</text>
+<rect x='14' y='108' width='286' height='52' rx='6' fill='#faf3ea' stroke='#e0913f' stroke-width='1.3'></rect><text x='28' y='138' font-size='12.5' fill='#7a5a2e'>停止したエージェントの再起動</text>
+<rect x='304' y='108' width='282' height='52' rx='6' fill='#eefaf0' stroke='#3fb950' stroke-width='1.3'></rect><text x='318' y='138' font-size='12.5' fill='#256b34'>旧プロンプト再実行を解消</text>
+<rect x='14' y='164' width='286' height='52' rx='6' fill='#faf3ea' stroke='#e0913f' stroke-width='1.3'></rect><text x='28' y='194' font-size='12.5' fill='#7a5a2e'>承認プレビューの視覚偽装</text>
+<rect x='304' y='164' width='282' height='52' rx='6' fill='#eefaf0' stroke='#3fb950' stroke-width='1.3'></rect><text x='318' y='188' font-size='12.5' fill='#256b34'>confusable文字を封じる＋</text><text x='318' y='206' font-size='11' fill='#4a7d59'>AutoのPreToolUse ask上書きも修正</text>
+</svg><figcaption>図1：v2.1.211 が潰した3つの回帰・脆弱性と対応。</figcaption></figure>
+<h4 id="sec-2">サブエージェントの中身が見える</h4>
+<p>もう一つの目玉が <code>--forward-subagent-text</code> フラグ（環境変数 <code>CLAUDE_CODE_FORWARD_SUBAGENT_TEXT</code>）。<b>stream-json 出力にサブエージェントのテキストと思考（thinking）を含められる</b>ようになり、サブエージェントが内部でどうタスクを分解し推論しているかを可視化できる。デバッグや挙動把握に効く。</p>
+<pre><code>claude -p "..." --output-format stream-json --forward-subagent-text</code></pre>
+<h4 id="sec-3">実務での使いどころ</h4>
+<p>週次利用上限を<b>+50%引き上げるキャンペーンが7/19（PT）まで延長</b>された（Pro/Max/Team・レガシー席Enterprise対象、無料/従量課金席は対象外、Claude Code限定）。ヘビーに回すなら期限内に重い検証を寄せると得だ。運用設計では Totalum の指針——<b>「CLAUDE.mdやskillの指示は“お願い”で保証ではない。必ず起こしたい処理はhookに書け」</b>——が刺さる。領域外書込ブロックはPreToolUse、編集後のprettierはPostToolUse、停止時テストはStopへ。</p>
+<h4 id="sec-4">注意点</h4>
+<p><code>--forward-subagent-text</code> は出力が増えるぶんログが太る。CIで stream-json をパースしているなら、サブエージェントの thinking が混ざる前提でパーサを見直す。過大請求の修正は<b>更新して初めて効く</b>ので、旧版のまま基盤API課金を眺めていた人はまず <code>claude update</code> を。</p>
+<h4 id="sec-5">ひとことまとめ</h4>
+<p>「黙って更新して、hookで固めて、期限内に回す」週。v2.1.211 へ上げ、コスト観測と hook ガードを整えるのが吉。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://dev.classmethod.jp/en/articles/20260711-cc-updates-v2-1-211/" target="_blank" rel="noopener noreferrer"> Claude Code v2.1.211 (Classmethod) </a> </li><li> <a href="https://releasebot.io/updates/anthropic/claude-code" target="_blank" rel="noopener noreferrer"> Claude Code updates (releasebot) </a> </li><li> <a href="https://www.helpnetsecurity.com/2026/07/13/claude-code-weekly-limits-promotion-extended/" target="_blank" rel="noopener noreferrer"> 週次上限+50%延長 (Help Net Security) </a> </li><li> <a href="https://www.totalum.app/blog/claude-code-skills-totalum" target="_blank" rel="noopener noreferrer"> Skills/Hooks/Subagents/MCPの使い分け (Totalum) </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 何が新しいか </a> </li><li> <a href="#sec-2" data-toc="sec-2"> サブエージェントの中身が見える </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 実務での使いどころ </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 注意点 </a> </li><li> <a href="#sec-5" data-toc="sec-5"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-07-17</div> <div>⏱ 読了 約3分</div> <div>🏷 Claude Code</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

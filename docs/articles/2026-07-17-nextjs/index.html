@@ -1,0 +1,82 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>clip-path と mask で作るリビール＆ワイプ — JSゼロ・RSCのまま、view() でスクロール駆動まで — デイリー技術深掘り 読み物</title><meta name="description" content="画像を線で出す／ホバーでワイプ／円が広がるページ遷移。clip-path（ハードエッジ）と mask（ソフトエッジ）だけでJSほぼゼロ・Server Componentのまま実装でき、animation-timeline: view() と組めばスクロール駆動リビールもRSCのまま。使い分けと落とし穴を整理。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-17-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="clip-path と mask で作るリビール＆ワイプ — JSゼロ・RSCのまま、view() でスクロール駆動まで — デイリー技術深掘り 読み物"><meta property="og:description" content="画像を線で出す／ホバーでワイプ／円が広がるページ遷移。clip-path（ハードエッジ）と mask（ソフトエッジ）だけでJSほぼゼロ・Server Componentのまま実装でき、animation-timeline: view() と組めばスクロール駆動リビールもRSCのまま。使い分けと落とし穴を整理。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-17-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>clip-path と mask で作るリビール＆ワイプ — JSゼロ・RSCのまま、view() でスクロール駆動まで</h1> <p class="lede">画像を線で出す／ホバーでワイプ／円が広がるページ遷移。clip-path（ハードエッジ）と mask（ソフトエッジ）だけでJSほぼゼロ・Server Componentのまま実装でき、animation-timeline: view() と組めばスクロール駆動リビールもRSCのまま。使い分けと落とし穴を整理。</p> <div class="meta"> <span>📅 2026年7月17日</span> <span>⏱ 約3分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="0"><p>「画像を線でスッと出す」「ホバーで別レイヤーをワイプ」「ページ遷移で円が広がる」——こうしたリビール／ワイプ演出は、<code>clip-path</code> と <code>mask</code> の2つのネイティブCSSだけで<b>JSほぼゼロ・Server Componentのまま</b>実装できる。2026年に効くのは、両者が<b>スクロール駆動アニメーション（<code>animation-timeline: view()</code>）</b>と噛み合い、IntersectionObserverすら要らずRSCのまま LCP/INP/CLS に有利になる点だ。</p>
+<h4 id="sec-1">使い分けが要点：ハードエッジ vs ソフトエッジ</h4>
+<p><code>clip-path</code> は<b>ハードエッジ</b>で切り抜く（内か外かの2値）。<code>circle()</code>/<code>inset()</code>/<code>polygon()</code> で形を作り、その形をアニメートしてリビール・ワイプ・モーフを出す。対して <code>mask</code> は<b>ソフトエッジ</b>で透過（アルファ階調）。グラデーションを重ねて“ふわっと”フェード、帯状テキストリビール、破片状の消え方など、<b>境界をぼかせる</b>のが主戦場だ。</p>
+<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+<defs><linearGradient id='mk' x1='0' y1='0' x2='1' y2='0'><stop offset='0%' stop-color='#1f6feb'></stop><stop offset='55%' stop-color='#1f6feb'></stop><stop offset='100%' stop-color='#1f6feb' stop-opacity='0'></stop></linearGradient></defs>
+<text x='24' y='28' font-size='13' font-weight='700' fill='#1c1c1e'>clip-path ＝ ハードエッジ（くっきり切る）</text>
+<clipPath id='cp'><polygon points='24,44 210,44 260,150 24,150'></polygon></clipPath>
+<rect x='24' y='44' width='250' height='106' fill='#1f6feb' clip-path='url(#cp)'></rect>
+<text x='40' y='176' font-size='11.5' fill='#6b6b70'>内か外かの2値。inset/circle/polygon を補間</text>
+<text x='320' y='28' font-size='13' font-weight='700' fill='#1c1c1e'>mask ＝ ソフトエッジ（ぼかす）</text>
+<rect x='320' y='44' width='256' height='106' fill='url(#mk)'></rect>
+<text x='336' y='176' font-size='11.5' fill='#6b6b70'>アルファ階調でふわっと透過。値でなく</text>
+<text x='336' y='193' font-size='11.5' fill='#6b6b70'>mask-position/size をアニメート</text>
+</svg><figcaption>図1：切るなら clip-path、ぼかすなら mask。境界の質が正反対。</figcaption></figure>
+<h4 id="sec-2">黄金律と落とし穴</h4>
+<p><code>clip-path</code> が補間できるのは<b>同じ図形関数どうし</b>、かつ <code>polygon</code> は<b>頂点数が一致</b>するときだけ。噛み合わないとアニメせず瞬間切替になる。四角→星のように形を跨ぐなら<b>全部 polygon に変換して頂点数を揃える</b>。<code>mask</code> 側の要注意点は、<b><code>mask-image</code> の値そのものはアニメートできない</b>こと——代わりに <code>mask-position</code>/<code>mask-size</code> を動かす。対応も古いWebKit/Blink向けに <code>-webkit-mask-*</code> の<b>併記が安全</b>だ。</p>
+<pre><code>.wipe{clip-path:inset(0 100% 0 0);transition:clip-path .6s}
+.wipe:hover{clip-path:inset(0 0 0 0)}</code></pre>
+<h4 id="sec-3">Next.js（App Router）での組み込み</h4>
+<p>純CSSなので <code>'use client'</code> は不要。ワイプもスクロールリビールも Server Component に置ける。JSが要るのはポインタ追従スポットライトくらいで、その部分だけ小さな client 島にし、<b>再レンダーせず <code>style.setProperty()</code> でCSS変数を直更新</b>して <code>requestAnimationFrame</code> でバッチする。<code>next/image</code> にも効き、寸法を予約するので<b>CLSは出ない</b>。</p>
+<h4 id="sec-4">注意点</h4>
+<p>大きなワイプや円の拡大は前庭系に負担になり得る（WCAG 2.3.3）。<code>@media (prefers-reduced-motion: reduce)</code> で <code>clip-path: none</code>/<code>mask-image: none</code> にし、<b>リビール完了＝全面表示</b>へ即落とす。意味のある情報を動きに依存させないこと。</p>
+<h4 id="sec-5">ひとことまとめ</h4>
+<p>くっきり切るなら clip-path、ぼかすなら mask。<code>view()</code> と組めば JS ゼロで軽い演出になる。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/clip-path" target="_blank" rel="noopener noreferrer"> MDN: clip-path </a> </li><li> <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/mask-image" target="_blank" rel="noopener noreferrer"> MDN: mask-image </a> </li><li> <a href="https://css-tricks.com/animating-with-clip-path/" target="_blank" rel="noopener noreferrer"> CSS-Tricks: Animating with Clip-Path </a> </li><li> <a href="https://caniuse.com/css-masks" target="_blank" rel="noopener noreferrer"> caniuse: CSS Masks </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 使い分けが要点：ハードエッジ vs ソフトエッジ </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 黄金律と落とし穴 </a> </li><li> <a href="#sec-3" data-toc="sec-3"> Next.js（App Router）での組み込み </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 注意点 </a> </li><li> <a href="#sec-5" data-toc="sec-5"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-07-17</div> <div>⏱ 読了 約3分</div> <div>🏷 Next.js</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
