@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-07-16T04:47:48.507Z",
+  "generatedAt": "2026-07-17T04:48:45.474Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,106 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-07-17-claude-code",
+      "date": "2026-07-17",
+      "topic": "Claude Code",
+      "title": "v2.1.211 — プロンプトキャッシュ過大請求を修正、承認プレビュー偽装も封じる／--forward-subagent-text でサブエージェントの思考を可視化",
+      "lede": "今週は新機能より足回りの安定化とコスト是正が主役。v2.1.211 が基盤4種のプロンプトキャッシュ過大請求・停止エージェントの再起動・承認プレビュー偽装を続けて修正。--forward-subagent-text でサブエージェントのテキストと思考を stream-json に流せるように。週次上限+50%は7/19まで延長。",
+      "articleHtml": "<p>今週のClaude Codeは新機能より<b>足回りの安定化とコスト是正</b>が主役だ。とくに <b>v2.1.211</b> は課金・セキュリティに関わる回帰を続けて潰した重要リリースで、毎日エージェントを回すユーザーほど恩恵が大きい。</p>\n<h4>何が新しいか</h4>\n<p>最大の修正は<b>プロンプトキャッシュの過大請求</b>。Bedrock / Vertex / Mantle / Foundry で、末尾のシステムコンテキストブロックが<b>リクエストごとに新規入力トークンとして課金</b>されていた回帰を直した。あわせて、ユーザーが<b>停止したバックグラウンドエージェントが勝手に再起動</b>して古いプロンプトを再実行する不具合、承認プレビューが<b>紛らわしい文字（confusable characters）で視覚的に偽装</b>できる問題、<b>AutoモードがPreToolUse hookのask判断を上書き</b>する問題も解消している。</p>\n<figure class='fig'><svg viewBox='0 0 600 226' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n<rect x='14' y='14' width='286' height='34' rx='6' fill='#3a2f5c'/><text x='28' y='36' font-size='13' font-weight='700' fill='#fff'>回帰・脆弱性</text>\n<rect x='304' y='14' width='282' height='34' rx='6' fill='#1a7f37'/><text x='318' y='36' font-size='13' font-weight='700' fill='#fff'>v2.1.211 の対応</text>\n<rect x='14' y='52' width='286' height='52' rx='6' fill='#faf3ea' stroke='#e0913f' stroke-width='1.3'/><text x='28' y='75' font-size='12.5' fill='#7a5a2e'>プロンプトキャッシュ過大請求</text><text x='28' y='94' font-size='11' fill='#9a7a4e'>Bedrock/Vertex/Mantle/Foundry</text>\n<rect x='304' y='52' width='282' height='52' rx='6' fill='#eefaf0' stroke='#3fb950' stroke-width='1.3'/><text x='318' y='82' font-size='12.5' fill='#256b34'>末尾ブロックの新規課金を停止</text>\n<rect x='14' y='108' width='286' height='52' rx='6' fill='#faf3ea' stroke='#e0913f' stroke-width='1.3'/><text x='28' y='138' font-size='12.5' fill='#7a5a2e'>停止したエージェントの再起動</text>\n<rect x='304' y='108' width='282' height='52' rx='6' fill='#eefaf0' stroke='#3fb950' stroke-width='1.3'/><text x='318' y='138' font-size='12.5' fill='#256b34'>旧プロンプト再実行を解消</text>\n<rect x='14' y='164' width='286' height='52' rx='6' fill='#faf3ea' stroke='#e0913f' stroke-width='1.3'/><text x='28' y='194' font-size='12.5' fill='#7a5a2e'>承認プレビューの視覚偽装</text>\n<rect x='304' y='164' width='282' height='52' rx='6' fill='#eefaf0' stroke='#3fb950' stroke-width='1.3'/><text x='318' y='188' font-size='12.5' fill='#256b34'>confusable文字を封じる＋</text><text x='318' y='206' font-size='11' fill='#4a7d59'>AutoのPreToolUse ask上書きも修正</text>\n</svg><figcaption>図1：v2.1.211 が潰した3つの回帰・脆弱性と対応。</figcaption></figure>\n<h4>サブエージェントの中身が見える</h4>\n<p>もう一つの目玉が <code>--forward-subagent-text</code> フラグ（環境変数 <code>CLAUDE_CODE_FORWARD_SUBAGENT_TEXT</code>）。<b>stream-json 出力にサブエージェントのテキストと思考（thinking）を含められる</b>ようになり、サブエージェントが内部でどうタスクを分解し推論しているかを可視化できる。デバッグや挙動把握に効く。</p>\n<pre><code>claude -p \"...\" --output-format stream-json --forward-subagent-text</code></pre>\n<h4>実務での使いどころ</h4>\n<p>週次利用上限を<b>+50%引き上げるキャンペーンが7/19（PT）まで延長</b>された（Pro/Max/Team・レガシー席Enterprise対象、無料/従量課金席は対象外、Claude Code限定）。ヘビーに回すなら期限内に重い検証を寄せると得だ。運用設計では Totalum の指針——<b>「CLAUDE.mdやskillの指示は“お願い”で保証ではない。必ず起こしたい処理はhookに書け」</b>——が刺さる。領域外書込ブロックはPreToolUse、編集後のprettierはPostToolUse、停止時テストはStopへ。</p>\n<h4>注意点</h4>\n<p><code>--forward-subagent-text</code> は出力が増えるぶんログが太る。CIで stream-json をパースしているなら、サブエージェントの thinking が混ざる前提でパーサを見直す。過大請求の修正は<b>更新して初めて効く</b>ので、旧版のまま基盤API課金を眺めていた人はまず <code>claude update</code> を。</p>\n<h4>ひとことまとめ</h4>\n<p>「黙って更新して、hookで固めて、期限内に回す」週。v2.1.211 へ上げ、コスト観測と hook ガードを整えるのが吉。</p>",
+      "sources": [
+        {
+          "title": "Claude Code v2.1.211 (Classmethod)",
+          "url": "https://dev.classmethod.jp/en/articles/20260711-cc-updates-v2-1-211/"
+        },
+        {
+          "title": "Claude Code updates (releasebot)",
+          "url": "https://releasebot.io/updates/anthropic/claude-code"
+        },
+        {
+          "title": "週次上限+50%延長 (Help Net Security)",
+          "url": "https://www.helpnetsecurity.com/2026/07/13/claude-code-weekly-limits-promotion-extended/"
+        },
+        {
+          "title": "Skills/Hooks/Subagents/MCPの使い分け (Totalum)",
+          "url": "https://www.totalum.app/blog/claude-code-skills-totalum"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-17-nextjs",
+      "date": "2026-07-17",
+      "topic": "Next.js",
+      "title": "clip-path と mask で作るリビール＆ワイプ — JSゼロ・RSCのまま、view() でスクロール駆動まで",
+      "lede": "画像を線で出す／ホバーでワイプ／円が広がるページ遷移。clip-path（ハードエッジ）と mask（ソフトエッジ）だけでJSほぼゼロ・Server Componentのまま実装でき、animation-timeline: view() と組めばスクロール駆動リビールもRSCのまま。使い分けと落とし穴を整理。",
+      "articleHtml": "<p>「画像を線でスッと出す」「ホバーで別レイヤーをワイプ」「ページ遷移で円が広がる」——こうしたリビール／ワイプ演出は、<code>clip-path</code> と <code>mask</code> の2つのネイティブCSSだけで<b>JSほぼゼロ・Server Componentのまま</b>実装できる。2026年に効くのは、両者が<b>スクロール駆動アニメーション（<code>animation-timeline: view()</code>）</b>と噛み合い、IntersectionObserverすら要らずRSCのまま LCP/INP/CLS に有利になる点だ。</p>\n<h4>使い分けが要点：ハードエッジ vs ソフトエッジ</h4>\n<p><code>clip-path</code> は<b>ハードエッジ</b>で切り抜く（内か外かの2値）。<code>circle()</code>/<code>inset()</code>/<code>polygon()</code> で形を作り、その形をアニメートしてリビール・ワイプ・モーフを出す。対して <code>mask</code> は<b>ソフトエッジ</b>で透過（アルファ階調）。グラデーションを重ねて“ふわっと”フェード、帯状テキストリビール、破片状の消え方など、<b>境界をぼかせる</b>のが主戦場だ。</p>\n<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n<defs><linearGradient id='mk' x1='0' y1='0' x2='1' y2='0'><stop offset='0%' stop-color='#1f6feb'/><stop offset='55%' stop-color='#1f6feb'/><stop offset='100%' stop-color='#1f6feb' stop-opacity='0'/></linearGradient></defs>\n<text x='24' y='28' font-size='13' font-weight='700' fill='#1c1c1e'>clip-path ＝ ハードエッジ（くっきり切る）</text>\n<clipPath id='cp'><polygon points='24,44 210,44 260,150 24,150'/></clipPath>\n<rect x='24' y='44' width='250' height='106' fill='#1f6feb' clip-path='url(#cp)'/>\n<text x='40' y='176' font-size='11.5' fill='#6b6b70'>内か外かの2値。inset/circle/polygon を補間</text>\n<text x='320' y='28' font-size='13' font-weight='700' fill='#1c1c1e'>mask ＝ ソフトエッジ（ぼかす）</text>\n<rect x='320' y='44' width='256' height='106' fill='url(#mk)'/>\n<text x='336' y='176' font-size='11.5' fill='#6b6b70'>アルファ階調でふわっと透過。値でなく</text>\n<text x='336' y='193' font-size='11.5' fill='#6b6b70'>mask-position/size をアニメート</text>\n</svg><figcaption>図1：切るなら clip-path、ぼかすなら mask。境界の質が正反対。</figcaption></figure>\n<h4>黄金律と落とし穴</h4>\n<p><code>clip-path</code> が補間できるのは<b>同じ図形関数どうし</b>、かつ <code>polygon</code> は<b>頂点数が一致</b>するときだけ。噛み合わないとアニメせず瞬間切替になる。四角→星のように形を跨ぐなら<b>全部 polygon に変換して頂点数を揃える</b>。<code>mask</code> 側の要注意点は、<b><code>mask-image</code> の値そのものはアニメートできない</b>こと——代わりに <code>mask-position</code>/<code>mask-size</code> を動かす。対応も古いWebKit/Blink向けに <code>-webkit-mask-*</code> の<b>併記が安全</b>だ。</p>\n<pre><code>.wipe{clip-path:inset(0 100% 0 0);transition:clip-path .6s}\n.wipe:hover{clip-path:inset(0 0 0 0)}</code></pre>\n<h4>Next.js（App Router）での組み込み</h4>\n<p>純CSSなので <code>'use client'</code> は不要。ワイプもスクロールリビールも Server Component に置ける。JSが要るのはポインタ追従スポットライトくらいで、その部分だけ小さな client 島にし、<b>再レンダーせず <code>style.setProperty()</code> でCSS変数を直更新</b>して <code>requestAnimationFrame</code> でバッチする。<code>next/image</code> にも効き、寸法を予約するので<b>CLSは出ない</b>。</p>\n<h4>注意点</h4>\n<p>大きなワイプや円の拡大は前庭系に負担になり得る（WCAG 2.3.3）。<code>@media (prefers-reduced-motion: reduce)</code> で <code>clip-path: none</code>/<code>mask-image: none</code> にし、<b>リビール完了＝全面表示</b>へ即落とす。意味のある情報を動きに依存させないこと。</p>\n<h4>ひとことまとめ</h4>\n<p>くっきり切るなら clip-path、ぼかすなら mask。<code>view()</code> と組めば JS ゼロで軽い演出になる。</p>",
+      "sources": [
+        {
+          "title": "MDN: clip-path",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/clip-path"
+        },
+        {
+          "title": "MDN: mask-image",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/mask-image"
+        },
+        {
+          "title": "CSS-Tricks: Animating with Clip-Path",
+          "url": "https://css-tricks.com/animating-with-clip-path/"
+        },
+        {
+          "title": "caniuse: CSS Masks",
+          "url": "https://caniuse.com/css-masks"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-17-flutter",
+      "date": "2026-07-17",
+      "topic": "Flutter",
+      "title": "WebAssembly を Flutter Web の既定へ — dart compile wasm は stable、速度2〜3倍・ロード−40%・メモリ−30%",
+      "lede": "2026ロードマップ「Finishing the Job」は Wasm を Web の既定ターゲットに。dart compile wasm は stable 昇格済みで、JS比 速度2〜3倍・ロード約40%短縮・メモリ約30%削減。移行の鍵は dart:html/package:js を dart:js_interop へ置換し、flutter build web --wasm の dry-run で依存を棚卸しすること。",
+      "articleHtml": "<p>今日の主役は <b>「WebAssembly を Flutter Web の既定へ」</b>。2026 ロードマップ「Finishing the Job」は Wasm を Web の既定ターゲットに据えることを掲げ、<b><code>dart compile wasm</code> はすでに stable 昇格済み</b>だ。安定版は <b>Flutter 3.44.0 / Dart 3.12.2</b>。</p>\n<h4>何が変わるか（数値）</h4>\n<p>Dart→Wasm は <b>JSターゲット比 2〜3倍高速</b>。テストでは<b>ロード時間 約40%短縮・実行時メモリ 約30%削減</b>という結果が出ている。<b>Wasm-GC</b> が主要ブラウザのネイティブ機能となり、DevTools も WASM 既定で巨大ツリーを滑らかに描ける。</p>\n<figure class='fig'><svg viewBox='0 0 600 226' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n<text x='16' y='24' font-size='13' font-weight='700' fill='#01579b'>Dart→Wasm の効果（JSターゲット基準）</text>\n<line x1='150' y1='40' x2='150' y2='196' stroke='#dfe3e8' stroke-width='1'/>\n<text x='24' y='70' font-size='12' fill='#37474f'>実行速度</text>\n<rect x='150' y='56' width='120' height='18' rx='3' fill='#b0bec5'/><text x='276' y='70' font-size='11' fill='#607d8b'>JS 1x</text>\n<rect x='150' y='78' width='300' height='18' rx='3' fill='#0277bd'/><text x='456' y='92' font-size='11' fill='#0277bd'>Wasm 2〜3x</text>\n<text x='24' y='128' font-size='12' fill='#37474f'>ロード時間</text>\n<rect x='150' y='114' width='300' height='18' rx='3' fill='#b0bec5'/><text x='456' y='128' font-size='11' fill='#607d8b'>100%</text>\n<rect x='150' y='136' width='180' height='18' rx='3' fill='#0277bd'/><text x='336' y='150' font-size='11' fill='#0277bd'>約60%（−40%）</text>\n<text x='24' y='186' font-size='12' fill='#37474f'>メモリ</text>\n<rect x='150' y='172' width='300' height='18' rx='3' fill='#b0bec5'/>\n<rect x='150' y='172' width='210' height='18' rx='3' fill='#0277bd'/><text x='366' y='186' font-size='11' fill='#0277bd'>約70%（−30%）</text>\n<text x='16' y='218' font-size='10.5' fill='#78909c'>dart compile wasm は stable 昇格済み／Flutter 3.44.0・Dart 3.12.2</text>\n</svg><figcaption>図1：Wasm 化のインパクト。速度2〜3倍、ロード−40%、メモリ−30%。</figcaption></figure>\n<h4>移行の前提</h4>\n<p>鍵は<b>レガシーJS interop（<code>dart:html</code> / <code>package:js</code>）を Wasm-safe な <code>dart:js_interop</code> へ置換</b>すること。まず <code>flutter build web --wasm</code> の<b>dry-run</b>を走らせ、非対応依存（<code>dart:html</code> 直接依存プラグイン等）を棚卸しするのが第一歩だ。</p>\n<h4>その他の実務ネタ</h4>\n<p>アニメは <code>flutter_animate</code> で <code>.animate().fadeIn().slideY()</code> のように Effect をチェーンし、<code>onPlay:(c)=&gt;c.repeat(reverse:true)</code> でループも手組み不要。状態管理は <code>@riverpod</code>＋<code>build_runner</code> のコード生成が既定の書き方になり、テストは <code>ProviderContainer(overrides:[...])</code> で UI を起動せず検証できる。リストは <code>ListView.builder</code>＋<code>itemExtent</code> でレイアウト計算を省き、120fps（フレーム予算8.3ms）を狙う。</p>\n<h4>注意点</h4>\n<p>Wasm は<b>依存プラグインが足を引っ張る</b>のが最大の壁。<code>dart:html</code> 直参照のプラグインは差し替えが要る。次の機能リリースは2026年8月予定なので、いま dry-run で棚卸ししておくと移行がスムーズだ。</p>\n<h4>ひとことまとめ</h4>\n<p>Web 配信する Flutter は「Wasm 前提」へ。<code>--wasm</code> の dry-run で棚卸しし、interop を <code>dart:js_interop</code> に寄せるのが今やること。</p>",
+      "sources": [
+        {
+          "title": "Flutter — Web renderers / Wasm",
+          "url": "https://docs.flutter.dev/platform-integration/web/wasm"
+        },
+        {
+          "title": "Dart — JS interop",
+          "url": "https://dart.dev/interop/js-interop"
+        },
+        {
+          "title": "pub.dev — flutter_animate",
+          "url": "https://pub.dev/packages/flutter_animate"
+        },
+        {
+          "title": "Riverpod — About code generation",
+          "url": "https://riverpod.dev/docs/concepts/about_code_generation"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-17-github-trending",
+      "date": "2026-07-17",
+      "topic": "GitHub Trending",
+      "title": "7/17の話題リポジトリ — Grokのエージェント基盤・実務者スキル集・トークナイザ不要TTS",
+      "lede": "AIエージェントの“基盤そのもの”を公開する流れと、実運用スキルの共有が同時に加速した一日。grok-build・mattpocock/skills・VoxCPM を「解決したい課題→提供する機能」で読む。",
+      "articleHtml": "<p>今日の急上昇3本を貫くのは、<b>「エージェントの中身を開く」流れ</b>だ。巨大コーディングエージェントの基盤そのもの、著名開発者の実運用スキル、そしてオープンな音声生成——いずれも“作り方・使い方”を丸ごと共有する動きが速い。</p>\n<figure class='fig'><svg viewBox='0 0 600 250' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n<rect x='12' y='12' width='150' height='30' rx='5' fill='#1a7f37'/><text x='22' y='32' font-size='12' font-weight='700' fill='#fff'>リポジトリ</text>\n<rect x='166' y='12' width='210' height='30' rx='5' fill='#2f6f3e'/><text x='176' y='32' font-size='12' font-weight='700' fill='#fff'>解決したい課題</text>\n<rect x='380' y='12' width='206' height='30' rx='5' fill='#2f6f3e'/><text x='390' y='32' font-size='12' font-weight='700' fill='#fff'>提供する機能</text>\n<rect x='12' y='46' width='574' height='62' rx='5' fill='#f2fbf4' stroke='#3fb950' stroke-width='1'/>\n<text x='22' y='72' font-size='12' font-weight='700' fill='#1a7f37'>grok-build</text><text x='22' y='90' font-size='10.5' fill='#4a7d59'>Rust</text>\n<text x='176' y='72' font-size='11' fill='#33484f'>エージェント基盤が</text><text x='176' y='90' font-size='11' fill='#33484f'>ブラックボックス</text>\n<text x='390' y='72' font-size='11' fill='#33484f'>ループ+TUI+拡張を</text><text x='390' y='90' font-size='11' fill='#33484f'>Apache2.0で全公開</text>\n<rect x='12' y='112' width='574' height='62' rx='5' fill='#f2fbf4' stroke='#3fb950' stroke-width='1'/>\n<text x='22' y='138' font-size='12' font-weight='700' fill='#1a7f37'>mattpocock/skills</text><text x='22' y='156' font-size='10.5' fill='#4a7d59'>TypeScript</text>\n<text x='176' y='138' font-size='11' fill='#33484f'>実務で効くスキルの</text><text x='176' y='156' font-size='11' fill='#33484f'>見極めが難しい</text>\n<text x='390' y='138' font-size='11' fill='#33484f'>著名教育者の実運用</text><text x='390' y='156' font-size='11' fill='#33484f'>.claude をそのまま公開</text>\n<rect x='12' y='178' width='574' height='62' rx='5' fill='#f2fbf4' stroke='#3fb950' stroke-width='1'/>\n<text x='22' y='204' font-size='12' font-weight='700' fill='#1a7f37'>OpenBMB/VoxCPM</text><text x='22' y='222' font-size='10.5' fill='#4a7d59'>Python</text>\n<text x='176' y='204' font-size='11' fill='#33484f'>TTSはトークナイザ/</text><text x='176' y='222' font-size='11' fill='#33484f'>多言語・声クローン制約</text>\n<text x='390' y='204' font-size='11' fill='#33484f'>トークナイザ不要・30言語</text><text x='390' y='222' font-size='11' fill='#33484f'>48kHz・SFT/LoRA可</text>\n</svg><figcaption>図1：今日の3本を「解決したい課題→提供する機能」で一望。</figcaption></figure>\n<h4>xai-org/grok-build（Rust・急上昇）</h4>\n<p><b>解決したい課題：</b>高性能なコーディングCLIの“エージェント基盤”はブラックボックスになりがちで、ループ設計やツール層を学び・再利用しづらい。<b>提供する機能：</b>xAI が Grok 4.5 のコーディングCLIを支える<b>エージェントループ（コンテキスト組立→応答解析→ツール呼び出し）・フルスクリーンTUI・拡張（skills/hooks/MCP/subagents）</b>を約100万行の Rust ワークスペースとして Apache 2.0 で公開。対話TUI／ヘッドレスCI／ACP でのエディタ組込みの3形態を持つ。7/15公開で一斉に話題化したが、外部コントリビュート拒否・Issue 無効という異色運用や無断アップロード報道もあり、賛否込みで注目が集中している。</p>\n<h4>mattpocock/skills（TypeScript・急上昇）</h4>\n<p><b>解決したい課題：</b>Claude Code のスキルは増えたが、“実務で本当に効くもの”の見極めが難しい。<b>提供する機能：</b>TS界の著名教育者 Matt Pocock が<b>自分の <code>.claude</code> ディレクトリをそのまま公開</b>。抽象的な寄せ集めではなく<b>現場のワークフローに直結した実務系スキル</b>で、信頼性ドリブンに拡散している。</p>\n<h4>OpenBMB/VoxCPM（Python・Trending上位）</h4>\n<p><b>解決したい課題：</b>高品質TTSはトークナイザ依存や多言語・声クローンの制約が多い。<b>提供する機能：</b><b>トークナイザ不要</b>の2Bパラメータ diffusion 自己回帰モデルで、<b>30言語・48kHz のスタジオ品質</b>出力、自然言語プロンプトからの声デザインと制御クローンに対応。Apache 2.0 で SFT/LoRA ファインチューニングも可能だ。</p>\n<h4>まとめ — 自分が試すなら</h4>\n<p>DevForge 文脈でまず触るなら <b>mattpocock/skills</b>：実運用スキルを覗いて自分の <code>.claude</code> に取り込むのが低リスクで効く。grok-build はエージェント設計の“お手本”として読む価値が高い。</p>",
+      "sources": [
+        {
+          "title": "xai-org/grok-build",
+          "url": "https://github.com/xai-org/grok-build"
+        },
+        {
+          "title": "mattpocock/skills",
+          "url": "https://github.com/mattpocock/skills"
+        },
+        {
+          "title": "OpenBMB/VoxCPM",
+          "url": "https://github.com/OpenBMB/VoxCPM"
+        }
+      ]
+    },
     {
       "id": "2026-07-16-claude-code",
       "date": "2026-07-16",
