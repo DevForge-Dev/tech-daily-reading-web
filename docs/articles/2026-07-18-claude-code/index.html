@@ -1,0 +1,78 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Week28で内蔵ブラウザ＋“直す”/doctor、/fork はバックグラウンド化・暴走ガードも／v2.1.212 と Microsoft研究のPR+24% — デイリー技術深掘り 読み物</title><meta name="description" content="デスクトップ版にサンドボックス内蔵ブラウザ（Cmd/Ctrl+Shift+B）、/doctor は診断から自動修正へ。/fork はバックグラウンドセッション複製、旧サブエージェントは /subtask に分離し、WebSearch/サブエージェントに各200の上限。v2.1.212 で足回りを固め、Microsoft の査読研究はマージPR約24%増を実証。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-18-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Week28で内蔵ブラウザ＋“直す”/doctor、/fork はバックグラウンド化・暴走ガードも／v2.1.212 と Microsoft研究のPR+24% — デイリー技術深掘り 読み物"><meta property="og:description" content="デスクトップ版にサンドボックス内蔵ブラウザ（Cmd/Ctrl+Shift+B）、/doctor は診断から自動修正へ。/fork はバックグラウンドセッション複製、旧サブエージェントは /subtask に分離し、WebSearch/サブエージェントに各200の上限。v2.1.212 で足回りを固め、Microsoft の査読研究はマージPR約24%増を実証。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-18-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>Week28で内蔵ブラウザ＋“直す”/doctor、/fork はバックグラウンド化・暴走ガードも／v2.1.212 と Microsoft研究のPR+24%</h1> <p class="lede">デスクトップ版にサンドボックス内蔵ブラウザ（Cmd/Ctrl+Shift+B）、/doctor は診断から自動修正へ。/fork はバックグラウンドセッション複製、旧サブエージェントは /subtask に分離し、WebSearch/サブエージェントに各200の上限。v2.1.212 で足回りを固め、Microsoft の査読研究はマージPR約24%増を実証。</p> <div class="meta"> <span>📅 2026年7月18日</span> <span>⏱ 約2分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="0"><p>今週のClaude Codeは<b>「作業環境そのものをアプリに寄せる」</b>方向の更新が続いた。ターミナルの黒い画面から、ブラウザ内蔵・自己診断・セッション分割まで、日々回す人ほど効く土台整備が主役だ。</p>
+<h4 id="sec-1">何が新しいか</h4>
+<p>Week28（v2.1.202〜2.1.206）で<b>デスクトップ版にサンドボックス化された内蔵ブラウザ</b>が入った。ドキュメントやデザイン、ローカルの dev サーバープレビューを開いて読み・クリックでき、起動は <code>Cmd+Shift+B</code>（Windowsは <code>Ctrl+Shift+B</code>）。外部サイトへの操作は安全性分類器がレビューする。あわせて <code>/doctor</code> が<b>読み取り専用レポートから“診断して修正まで”へ進化</b>——未使用の skill/MCP/プラグインをコンテキストコストと対比し、ローカルとコミット済み CLAUDE.md の重複排除、遅い hook の検出まで行う。</p>
+<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+<text x='16' y='26' font-size='13' font-weight='700' fill='#1c1c1e'>/fork の挙動が変わった</text>
+<rect x='16' y='40' width='170' height='60' rx='6' fill='#f3eefc' stroke='#7b3fe4' stroke-width='1.2'></rect><text x='30' y='66' font-size='12' fill='#4a2f7a'>従来 /fork</text><text x='30' y='86' font-size='11' fill='#6b4fa0'>セッション内で起動</text>
+<text x='196' y='76' font-size='18' fill='#7b3fe4'>&#8594;</text>
+<rect x='224' y='40' width='170' height='60' rx='6' fill='#eef4ff' stroke='#1f6feb' stroke-width='1.2'></rect><text x='238' y='66' font-size='12' fill='#1a4fa0'>新 /fork</text><text x='238' y='86' font-size='11' fill='#3a6fc0'>背景セッション複製</text>
+<rect x='410' y='40' width='176' height='60' rx='6' fill='#eefaf0' stroke='#3fb950' stroke-width='1.2'></rect><text x='424' y='66' font-size='12' fill='#256b34'>/subtask</text><text x='424' y='86' font-size='11' fill='#3a7d59'>旧サブエージェント役</text>
+<rect x='16' y='120' width='570' height='40' rx='6' fill='#faf3ea' stroke='#e0913f' stroke-width='1.2'></rect><text x='30' y='145' font-size='12' fill='#7a5a2e'>暴走ガード：WebSearch 上限200／サブエージェント生成上限200（環境変数で調整可）</text>
+<rect x='16' y='168' width='570' height='30' rx='6' fill='#f5f5f7'></rect><text x='30' y='188' font-size='11.5' fill='#555'>claude auto-mode reset で自動モード設定を初期化（--yes で確認スキップ）</text>
+</svg><figcaption>図1：/fork はバックグラウンド複製へ、旧サブエージェントは /subtask に分離、上限で暴走を抑制。</figcaption></figure>
+<h4 id="sec-2">安定化とエビデンス</h4>
+<p>リリースは <b>v2.1.212</b>。Web検索・MCP・worktree・リモートセッションの信頼性修正が中心で、/fork・/resume・/background フローとガードレール強化の延長線上にある。事例面では、2026年7月公開の <b>Microsoft Research 査読論文</b>が、Claude Code 導入者は<b>マージ済みPRが約24%増</b>で効果が4ヶ月持続と報告。一方でトークン支出は組織規模で年数百万ドル級になり得るとし、予算ガバナンスの重要性も指摘した。</p>
+<h4 id="sec-3">自分が試すなら</h4>
+<p>まず <code>claude update</code> → <code>/doctor</code> を回し、肥大した CLAUDE.md 重複や未使用 skill/MCP を掃除してコンテキスト単価を下げる。重いリサーチは <code>/subtask</code> で隔離し、暴走上限を環境変数で自分のワークロードに合わせる。デスクトップ内蔵ブラウザはローカルプレビュー確認に使うと画面往復が減る。</p>
+<h4 id="sec-4">注意点</h4>
+<p>内蔵ブラウザの外部サイト操作は分類器レビュー前提で万能ではない。上限200はワークロード次第で早々に当たるので、長時間ジョブは <code>CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION</code> 等で明示調整を。24%増は特定環境の観測値で、CLAUDE.md/hook 整備なしに同じ伸びは出ない。</p>
+<h4 id="sec-5">ひとことまとめ</h4>
+<p>「更新して /doctor で掃除、/subtask で隔離、上限で暴走を止める」週。環境を整えるほどコストと安定性の両方が効いてくる。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://code.claude.com/docs/en/whats-new/2026-w28" target="_blank" rel="noopener noreferrer"> Claude Code Week28 (公式 What&#39;s new) </a> </li><li> <a href="https://releasebot.io/updates/anthropic/claude-code" target="_blank" rel="noopener noreferrer"> /fork・/subtask・上限 (releasebot) </a> </li><li> <a href="https://github.com/anthropics/claude-code/releases/tag/v2.1.212" target="_blank" rel="noopener noreferrer"> Claude Code v2.1.212 (GitHub Releases) </a> </li><li> <a href="https://therouter.ai/news/claude-code-microsoft-enterprise-study-token-budget-governance/" target="_blank" rel="noopener noreferrer"> Microsoft導入研究 PR+24% (TheRouter) </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 何が新しいか </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 安定化とエビデンス </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 自分が試すなら </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 注意点 </a> </li><li> <a href="#sec-5" data-toc="sec-5"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-07-18</div> <div>⏱ 読了 約2分</div> <div>🏷 Claude Code</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

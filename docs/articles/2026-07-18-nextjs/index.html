@@ -1,0 +1,72 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>ライブラリを足す前の第一選択肢 — Web Animations API（element.animate()）を App Router で使う — デイリー技術深掘り 読み物</title><meta name="description" content="element.animate() は2020年3月からBaselineで安定。CSSでは無理な動的値・play/pause/reverse・seek・getAnimations() 一括操作が“0バイト”で手に入る。終了状態は fill:'forwards' でなく commitStyles()、Animation は state でなく ref に退避が要点。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-18-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="ライブラリを足す前の第一選択肢 — Web Animations API（element.animate()）を App Router で使う — デイリー技術深掘り 読み物"><meta property="og:description" content="element.animate() は2020年3月からBaselineで安定。CSSでは無理な動的値・play/pause/reverse・seek・getAnimations() 一括操作が“0バイト”で手に入る。終了状態は fill:'forwards' でなく commitStyles()、Animation は state でなく ref に退避が要点。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-18-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>ライブラリを足す前の第一選択肢 — Web Animations API（element.animate()）を App Router で使う</h1> <p class="lede">element.animate() は2020年3月からBaselineで安定。CSSでは無理な動的値・play/pause/reverse・seek・getAnimations() 一括操作が“0バイト”で手に入る。終了状態は fill:&#39;forwards&#39; でなく commitStyles()、Animation は state でなく ref に退避が要点。</p> <div class="meta"> <span>📅 2026年7月18日</span> <span>⏱ 約3分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="0"><p>Motion や GSAP を入れる前に、まず検討すべきは<b>ブラウザ標準の Web Animations API（WAAPI）</b>だ。<code>element.animate(keyframes, options)</code> を呼ぶだけで CSS <code>@keyframes</code> 相当を<b>JSから生成・再生・停止・反転・シーク</b>できる。CSS Animations/Transitions は内部でこのAPIの上に実装され、<b>コンポジタ（GPU）駆動で requestAnimationFrame 手回しより速い</b>。<code>element.animate()</code> は<b>2020年3月から全モダンブラウザで安定（Baseline）</b>でフォールバック不要、Motion の <code>useAnimate</code> や AutoAnimate の内部もこれを薄くラップしているだけ——<b>バンドルに1バイトも足さずに済む</b>のが最大の魅力だ。</p>
+<h4 id="sec-1">CSSでは届かない領域</h4>
+<p>宣言的CSSが苦手な<b>動的な値・実行時制御</b>——データ由来の duration、ユーザー操作での <code>play()</code>/<code>pause()</code>/<code>reverse()</code>、スクロール量に応じた <code>currentTime</code> スクラブ、<code>document.getAnimations()</code> でサイト全体を一括減速（vestibular配慮）——が素の言語機能でできる。<code>anim.finished</code>（Promise）で <code>await</code> による連鎖も書きやすい。ただし用語がCSSと違う：<b>ms単位</b>（<code>3s</code>でなく<code>3000</code>）、<code>iterations:Infinity</code>、<code>easing</code>、そして<b>既定 easing は linear</b>。</p>
+<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+<text x='16' y='26' font-size='13' font-weight='700' fill='#1c1c1e'>終了状態の保持：fill:'forwards' より commitStyles()</text>
+<rect x='16' y='42' width='276' height='140' rx='6' fill='#fdf1f1' stroke='#d9534f' stroke-width='1.2'></rect><text x='30' y='66' font-size='12' font-weight='700' fill='#a33'>fill:'forwards'（非推奨）</text><text x='30' y='90' font-size='11' fill='#a55'>効果が生き続けリソースを食う</text><text x='30' y='112' font-size='11' fill='#a55'>カスケード優先度が高く</text><text x='30' y='128' font-size='11' fill='#a55'>通常CSSで上書きしづらい</text>
+<rect x='308' y='42' width='278' height='140' rx='6' fill='#eef7ff' stroke='#1f6feb' stroke-width='1.2'></rect><text x='322' y='66' font-size='12' font-weight='700' fill='#1a4fa0'>commitStyles()（正攻法）</text><text x='322' y='90' font-size='11' fill='#3a6fc0'>await anim.finished;</text><text x='322' y='108' font-size='11' fill='#3a6fc0'>anim.commitStyles();</text><text x='322' y='126' font-size='11' fill='#3a6fc0'>anim.cancel();</text><text x='322' y='150' font-size='10.5' fill='#5a7fb0'>style属性に焼き込み→以後CSSで上書き可</text>
+</svg><figcaption>図1：終端維持は commitStyles() で焼き込み、cancel() でカスケード汚染を残さない。</figcaption></figure>
+<h4 id="sec-2">App Router での組み込み</h4>
+<p>WAAPIはDOM API＝ブラウザ専用。だから<b>'use client' 必須</b>、<code>useRef</code> で要素参照、<b>Animation インスタンスも ref に退避</b>（stateに載せると毎フレーム再レンダー地獄）。<code>useEffect</code> 内で <code>el.animate(...)</code> を呼び、<b>クリーンアップで anim.cancel()</b>——Strict Mode の二重実行もこれで吸収。SSRでは走らないので hydration mismatch は起きず、初期表示は静的に返し<b>マウント後にアニメで強化</b>するプログレッシブエンハンスメント設計にする。<code>prefers-reduced-motion</code> は <code>matchMedia</code> で判定し、動きを消しつつ <code>finish()</code> で最終状態だけ残す。</p>
+<h4 id="sec-3">注意点</h4>
+<p><b>width/height/top/left の animate は毎フレーム再レイアウトで重い</b>——<code>transform</code>/<code>opacity</code> に寄せる。単一キーフレームは throw しうるので<b>必ず2キー以上</b>。<code>commitStyles()</code> は要素が可視でないと throw。JS版 <code>ScrollTimeline</code>/<code>ViewTimeline</code> は現状Chromium系のみで、宣言的でよいならCSSの <code>animation-timeline</code> が無難だ。</p>
+<h4 id="sec-4">ひとことまとめ</h4>
+<p>命令的コントロールが要るだけなら、ライブラリの前にWAAPI直で足りることが多い。ref退避・cancel掃除・commitStyles、この3点を押さえれば0バイトで戦える。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API/Using_the_Web_Animations_API" target="_blank" rel="noopener noreferrer"> MDN: Using the Web Animations API </a> </li><li> <a href="https://developer.mozilla.org/en-US/docs/Web/API/Element/animate" target="_blank" rel="noopener noreferrer"> MDN: Element.animate() </a> </li><li> <a href="https://caniuse.com/web-animation" target="_blank" rel="noopener noreferrer"> caniuse: Web Animations API (Baseline) </a> </li><li> <a href="https://motion.dev/docs/react-use-animate" target="_blank" rel="noopener noreferrer"> Motion: useAnimate（比較用） </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> CSSでは届かない領域 </a> </li><li> <a href="#sec-2" data-toc="sec-2"> App Router での組み込み </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 注意点 </a> </li><li> <a href="#sec-4" data-toc="sec-4"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-07-18</div> <div>⏱ 読了 約3分</div> <div>🏷 Next.js</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
