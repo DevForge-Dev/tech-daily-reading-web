@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-07-17T04:48:45.474Z",
+  "generatedAt": "2026-07-18T04:55:27.265Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,106 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-07-18-claude-code",
+      "date": "2026-07-18",
+      "topic": "Claude Code",
+      "title": "Week28で内蔵ブラウザ＋“直す”/doctor、/fork はバックグラウンド化・暴走ガードも／v2.1.212 と Microsoft研究のPR+24%",
+      "lede": "デスクトップ版にサンドボックス内蔵ブラウザ（Cmd/Ctrl+Shift+B）、/doctor は診断から自動修正へ。/fork はバックグラウンドセッション複製、旧サブエージェントは /subtask に分離し、WebSearch/サブエージェントに各200の上限。v2.1.212 で足回りを固め、Microsoft の査読研究はマージPR約24%増を実証。",
+      "articleHtml": "<p>今週のClaude Codeは<b>「作業環境そのものをアプリに寄せる」</b>方向の更新が続いた。ターミナルの黒い画面から、ブラウザ内蔵・自己診断・セッション分割まで、日々回す人ほど効く土台整備が主役だ。</p>\n<h4>何が新しいか</h4>\n<p>Week28（v2.1.202〜2.1.206）で<b>デスクトップ版にサンドボックス化された内蔵ブラウザ</b>が入った。ドキュメントやデザイン、ローカルの dev サーバープレビューを開いて読み・クリックでき、起動は <code>Cmd+Shift+B</code>（Windowsは <code>Ctrl+Shift+B</code>）。外部サイトへの操作は安全性分類器がレビューする。あわせて <code>/doctor</code> が<b>読み取り専用レポートから“診断して修正まで”へ進化</b>——未使用の skill/MCP/プラグインをコンテキストコストと対比し、ローカルとコミット済み CLAUDE.md の重複排除、遅い hook の検出まで行う。</p>\n<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n<text x='16' y='26' font-size='13' font-weight='700' fill='#1c1c1e'>/fork の挙動が変わった</text>\n<rect x='16' y='40' width='170' height='60' rx='6' fill='#f3eefc' stroke='#7b3fe4' stroke-width='1.2'/><text x='30' y='66' font-size='12' fill='#4a2f7a'>従来 /fork</text><text x='30' y='86' font-size='11' fill='#6b4fa0'>セッション内で起動</text>\n<text x='196' y='76' font-size='18' fill='#7b3fe4'>&#8594;</text>\n<rect x='224' y='40' width='170' height='60' rx='6' fill='#eef4ff' stroke='#1f6feb' stroke-width='1.2'/><text x='238' y='66' font-size='12' fill='#1a4fa0'>新 /fork</text><text x='238' y='86' font-size='11' fill='#3a6fc0'>背景セッション複製</text>\n<rect x='410' y='40' width='176' height='60' rx='6' fill='#eefaf0' stroke='#3fb950' stroke-width='1.2'/><text x='424' y='66' font-size='12' fill='#256b34'>/subtask</text><text x='424' y='86' font-size='11' fill='#3a7d59'>旧サブエージェント役</text>\n<rect x='16' y='120' width='570' height='40' rx='6' fill='#faf3ea' stroke='#e0913f' stroke-width='1.2'/><text x='30' y='145' font-size='12' fill='#7a5a2e'>暴走ガード：WebSearch 上限200／サブエージェント生成上限200（環境変数で調整可）</text>\n<rect x='16' y='168' width='570' height='30' rx='6' fill='#f5f5f7'/><text x='30' y='188' font-size='11.5' fill='#555'>claude auto-mode reset で自動モード設定を初期化（--yes で確認スキップ）</text>\n</svg><figcaption>図1：/fork はバックグラウンド複製へ、旧サブエージェントは /subtask に分離、上限で暴走を抑制。</figcaption></figure>\n<h4>安定化とエビデンス</h4>\n<p>リリースは <b>v2.1.212</b>。Web検索・MCP・worktree・リモートセッションの信頼性修正が中心で、/fork・/resume・/background フローとガードレール強化の延長線上にある。事例面では、2026年7月公開の <b>Microsoft Research 査読論文</b>が、Claude Code 導入者は<b>マージ済みPRが約24%増</b>で効果が4ヶ月持続と報告。一方でトークン支出は組織規模で年数百万ドル級になり得るとし、予算ガバナンスの重要性も指摘した。</p>\n<h4>自分が試すなら</h4>\n<p>まず <code>claude update</code> → <code>/doctor</code> を回し、肥大した CLAUDE.md 重複や未使用 skill/MCP を掃除してコンテキスト単価を下げる。重いリサーチは <code>/subtask</code> で隔離し、暴走上限を環境変数で自分のワークロードに合わせる。デスクトップ内蔵ブラウザはローカルプレビュー確認に使うと画面往復が減る。</p>\n<h4>注意点</h4>\n<p>内蔵ブラウザの外部サイト操作は分類器レビュー前提で万能ではない。上限200はワークロード次第で早々に当たるので、長時間ジョブは <code>CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION</code> 等で明示調整を。24%増は特定環境の観測値で、CLAUDE.md/hook 整備なしに同じ伸びは出ない。</p>\n<h4>ひとことまとめ</h4>\n<p>「更新して /doctor で掃除、/subtask で隔離、上限で暴走を止める」週。環境を整えるほどコストと安定性の両方が効いてくる。</p>",
+      "sources": [
+        {
+          "title": "Claude Code Week28 (公式 What's new)",
+          "url": "https://code.claude.com/docs/en/whats-new/2026-w28"
+        },
+        {
+          "title": "/fork・/subtask・上限 (releasebot)",
+          "url": "https://releasebot.io/updates/anthropic/claude-code"
+        },
+        {
+          "title": "Claude Code v2.1.212 (GitHub Releases)",
+          "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.212"
+        },
+        {
+          "title": "Microsoft導入研究 PR+24% (TheRouter)",
+          "url": "https://therouter.ai/news/claude-code-microsoft-enterprise-study-token-budget-governance/"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-18-nextjs",
+      "date": "2026-07-18",
+      "topic": "Next.js",
+      "title": "ライブラリを足す前の第一選択肢 — Web Animations API（element.animate()）を App Router で使う",
+      "lede": "element.animate() は2020年3月からBaselineで安定。CSSでは無理な動的値・play/pause/reverse・seek・getAnimations() 一括操作が“0バイト”で手に入る。終了状態は fill:'forwards' でなく commitStyles()、Animation は state でなく ref に退避が要点。",
+      "articleHtml": "<p>Motion や GSAP を入れる前に、まず検討すべきは<b>ブラウザ標準の Web Animations API（WAAPI）</b>だ。<code>element.animate(keyframes, options)</code> を呼ぶだけで CSS <code>@keyframes</code> 相当を<b>JSから生成・再生・停止・反転・シーク</b>できる。CSS Animations/Transitions は内部でこのAPIの上に実装され、<b>コンポジタ（GPU）駆動で requestAnimationFrame 手回しより速い</b>。<code>element.animate()</code> は<b>2020年3月から全モダンブラウザで安定（Baseline）</b>でフォールバック不要、Motion の <code>useAnimate</code> や AutoAnimate の内部もこれを薄くラップしているだけ——<b>バンドルに1バイトも足さずに済む</b>のが最大の魅力だ。</p>\n<h4>CSSでは届かない領域</h4>\n<p>宣言的CSSが苦手な<b>動的な値・実行時制御</b>——データ由来の duration、ユーザー操作での <code>play()</code>/<code>pause()</code>/<code>reverse()</code>、スクロール量に応じた <code>currentTime</code> スクラブ、<code>document.getAnimations()</code> でサイト全体を一括減速（vestibular配慮）——が素の言語機能でできる。<code>anim.finished</code>（Promise）で <code>await</code> による連鎖も書きやすい。ただし用語がCSSと違う：<b>ms単位</b>（<code>3s</code>でなく<code>3000</code>）、<code>iterations:Infinity</code>、<code>easing</code>、そして<b>既定 easing は linear</b>。</p>\n<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n<text x='16' y='26' font-size='13' font-weight='700' fill='#1c1c1e'>終了状態の保持：fill:'forwards' より commitStyles()</text>\n<rect x='16' y='42' width='276' height='140' rx='6' fill='#fdf1f1' stroke='#d9534f' stroke-width='1.2'/><text x='30' y='66' font-size='12' font-weight='700' fill='#a33'>fill:'forwards'（非推奨）</text><text x='30' y='90' font-size='11' fill='#a55'>効果が生き続けリソースを食う</text><text x='30' y='112' font-size='11' fill='#a55'>カスケード優先度が高く</text><text x='30' y='128' font-size='11' fill='#a55'>通常CSSで上書きしづらい</text>\n<rect x='308' y='42' width='278' height='140' rx='6' fill='#eef7ff' stroke='#1f6feb' stroke-width='1.2'/><text x='322' y='66' font-size='12' font-weight='700' fill='#1a4fa0'>commitStyles()（正攻法）</text><text x='322' y='90' font-size='11' fill='#3a6fc0'>await anim.finished;</text><text x='322' y='108' font-size='11' fill='#3a6fc0'>anim.commitStyles();</text><text x='322' y='126' font-size='11' fill='#3a6fc0'>anim.cancel();</text><text x='322' y='150' font-size='10.5' fill='#5a7fb0'>style属性に焼き込み→以後CSSで上書き可</text>\n</svg><figcaption>図1：終端維持は commitStyles() で焼き込み、cancel() でカスケード汚染を残さない。</figcaption></figure>\n<h4>App Router での組み込み</h4>\n<p>WAAPIはDOM API＝ブラウザ専用。だから<b>'use client' 必須</b>、<code>useRef</code> で要素参照、<b>Animation インスタンスも ref に退避</b>（stateに載せると毎フレーム再レンダー地獄）。<code>useEffect</code> 内で <code>el.animate(...)</code> を呼び、<b>クリーンアップで anim.cancel()</b>——Strict Mode の二重実行もこれで吸収。SSRでは走らないので hydration mismatch は起きず、初期表示は静的に返し<b>マウント後にアニメで強化</b>するプログレッシブエンハンスメント設計にする。<code>prefers-reduced-motion</code> は <code>matchMedia</code> で判定し、動きを消しつつ <code>finish()</code> で最終状態だけ残す。</p>\n<h4>注意点</h4>\n<p><b>width/height/top/left の animate は毎フレーム再レイアウトで重い</b>——<code>transform</code>/<code>opacity</code> に寄せる。単一キーフレームは throw しうるので<b>必ず2キー以上</b>。<code>commitStyles()</code> は要素が可視でないと throw。JS版 <code>ScrollTimeline</code>/<code>ViewTimeline</code> は現状Chromium系のみで、宣言的でよいならCSSの <code>animation-timeline</code> が無難だ。</p>\n<h4>ひとことまとめ</h4>\n<p>命令的コントロールが要るだけなら、ライブラリの前にWAAPI直で足りることが多い。ref退避・cancel掃除・commitStyles、この3点を押さえれば0バイトで戦える。</p>",
+      "sources": [
+        {
+          "title": "MDN: Using the Web Animations API",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API/Using_the_Web_Animations_API"
+        },
+        {
+          "title": "MDN: Element.animate()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/Element/animate"
+        },
+        {
+          "title": "caniuse: Web Animations API (Baseline)",
+          "url": "https://caniuse.com/web-animation"
+        },
+        {
+          "title": "Motion: useAnimate（比較用）",
+          "url": "https://motion.dev/docs/react-use-animate"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-18-flutter",
+      "date": "2026-07-18",
+      "topic": "Flutter",
+      "title": "GenUI SDK と A2UI プロトコル — エージェントが“実 Flutter ウィジェット”をその場で組む（3.44 / Dart 3.12）",
+      "lede": "Google I/O 2026 最大の構造転換。オープンな A2UI（Agent-to-UI）の上で、AIエージェントが実ウィジェットをランタイム構成し完全インタラクティブな画面を生成。安定版は Flutter 3.44.0 / Dart 3.12.2、Impeller は Android既定で120fpsが実務射程に。",
+      "articleHtml": "<p>今日の主役は <b>「GenUI SDK と A2UI プロトコル」</b>——Google I/O 2026 で最も構造的に重要な発表だ。事前定義レイアウトやアプリストア更新に頼らず、<b>AIエージェントが実 Flutter ウィジェットをその場で構成</b>し、ユーザーが達成したいことに応じて<b>完全インタラクティブな画面をランタイム生成</b>する。土台はオープンな <b>A2UI（Agent-to-UI）プロトコル</b>だ。</p>\n<h4>何が新しいか</h4>\n<p>3.44/3.12 は増分でなく<b>3方向の構造転換</b>：作り方（agentic/GenUI）、描画（Android Impeller-only＋HCPP）、構造（Material/Cupertino のデカップリング＝material_ui / cupertino_ui へ移行）。GenUI は <b>Agentic Hot Reload</b>（Dart MCP Server 経由でエージェントが起動中アプリを自動 hot reload）や <b>Genkit Dart</b>（Google/Anthropic/OpenAI 系をモデル非依存の統一APIで扱う）と噛み合い、AIロジックをサーバ側 Dart に退避できる。安定版は <b>Flutter 3.44.0 / Dart 3.12.2</b>、次の機能リリースは2026年8月予定（年4回：2/5/8/11月）。</p>\n<figure class='fig'><pre class='mermaid'>flowchart LR\n  U[\"ユーザーの意図\"] --> AG[\"AIエージェント\"]\n  AG -->|\"A2UI プロトコル\"| GS[\"GenUI SDK\"]\n  GS --> W[\"実 Flutter ウィジェット\"]\n  W --> UI[\"インタラクティブ画面\"]\n  UI -->|\"操作\"| AG\n  MCP[\"Dart MCP Server\"] -.->|\"Agentic Hot Reload\"| GS</pre><figcaption>図1：意図→エージェント→A2UI→GenUIが実ウィジェットを生成し、操作がまたエージェントに戻るループ。</figcaption></figure>\n<h4>描画とパフォーマンス</h4>\n<p><b>Impeller が iOS＋モダンAndroid（API 29+）で既定</b>。シェーダーをビルド時（AOT）にコンパイルしてコンパイルジャンクを排除し、<b>ラスタライズ約50%高速・120fps安定・アニメ多用でSkia比 約17%低い電力ドレイン</b>。<b>120fpsチェックリスト</b>は、<code>const</code> の積極活用、アニメ部を <code>RepaintBoundary</code> で囲む、<code>ListView</code> に固定 <code>itemExtent</code>。フレーム予算はラスタライズ<b>&lt;4ms=60fps／&lt;8.3ms=120fps</b>、計測は必ず profile モードで。</p>\n<h4>状態管理の基準線</h4>\n<p><b>迷ったら Riverpod 3.0 が既定</b>（unified Ref・Mutations・指数バックオフ自動リトライ・オフライン永続化・画面外で listener 自動pause）。<b>監査/大規模は Bloc 9.0</b>（イベント対応の監査証跡、<code>mounted</code> 安全チェック）。2026ベンチの widget rebuild は Bloc 2.3ms / Riverpod 2.0ms、テスト行数は Riverpod が平均30〜40%少ない。現行は Riverpod 3.3.x / flutter_bloc 9.1.x。</p>\n<h4>注意点</h4>\n<p>GenUI/A2UI は登場したての基盤で、実運用パターンはこれから固まる。Material/Cupertino のコアは凍結済みで <code>material_ui</code> / <code>cupertino_ui</code> へ移行中——依存の棚卸しが要る。Impeller はミッドレンジAndroid（一部 Adreno GPU にクセ）で実機検証必須、fragment shader の重い分岐は避け mix/step/clamp へ。</p>\n<h4>ひとことまとめ</h4>\n<p>「画面はエージェントがその場で組む」時代の入口。まずは GenUI/Genkit Dart の概念を掴みつつ、Impeller 前提で const・RepaintBoundary・itemExtent の120fps基礎を固めておくのが吉。</p>",
+      "sources": [
+        {
+          "title": "Flutter 3.44 & Dart 3.12 (Google I/O 2026)",
+          "url": "https://www.fluttersolution.com/2026/05/flutter-344-dart-312-everything-new-at.html"
+        },
+        {
+          "title": "What's new in the docs",
+          "url": "https://docs.flutter.dev/release/whats-new"
+        },
+        {
+          "title": "Impeller rendering engine",
+          "url": "https://docs.flutter.dev/perf/impeller"
+        },
+        {
+          "title": "State Management 2026 (sharpskill)",
+          "url": "https://sharpskill.dev/en/blog/flutter/flutter-state-management-2026-riverpod-bloc-getx"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-18-github-trending",
+      "date": "2026-07-18",
+      "topic": "GitHub Trending",
+      "title": "7/18の話題リポジトリ — デザインエンジニアのスキル集・OSS音声スタジオ・Zig製ネイティブ",
+      "lede": "AIエージェント一色のトレンドの中で、著名開発者の“実務知の共有”と“Web外・低レイヤへの越境”が同時に目立った日。emilkowalski/skills・jamiepine/voicebox・vercel-labs/native を「解決したい課題→提供する機能」で読む。",
+      "articleHtml": "<p>今日の急上昇3本を貫くのは、<b>「著名開発者が自分の得意領域を丸ごとOSSで開く」流れ</b>だ。UIの名手はスキルを、Spacedriveの作者は音声を、WebのVercelはZig製ネイティブを——それぞれ<b>コード生成AIが崩しがちな領域</b>や<b>Webの外側</b>を補いにいっている。</p>\n<figure class='fig'><svg viewBox='0 0 600 250' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n<rect x='12' y='12' width='150' height='30' rx='5' fill='#1a7f37'/><text x='22' y='32' font-size='12' font-weight='700' fill='#fff'>リポジトリ</text>\n<rect x='166' y='12' width='210' height='30' rx='5' fill='#2f6f3e'/><text x='176' y='32' font-size='12' font-weight='700' fill='#fff'>解決したい課題</text>\n<rect x='380' y='12' width='206' height='30' rx='5' fill='#2f6f3e'/><text x='390' y='32' font-size='12' font-weight='700' fill='#fff'>提供する機能</text>\n<rect x='12' y='46' width='574' height='62' rx='5' fill='#f2fbf4' stroke='#3fb950' stroke-width='1'/>\n<text x='22' y='72' font-size='12' font-weight='700' fill='#1a7f37'>emilkowalski/skills</text><text x='22' y='90' font-size='10.5' fill='#4a7d59'>スキル集</text>\n<text x='176' y='72' font-size='11' fill='#33484f'>AIが崩しがちな</text><text x='176' y='90' font-size='11' fill='#33484f'>アニメ/インタラクション設計</text>\n<text x='390' y='72' font-size='11' fill='#33484f'>デザインエンジニアの実務知を</text><text x='390' y='90' font-size='11' fill='#33484f'>エージェント用スキルに</text>\n<rect x='12' y='112' width='574' height='62' rx='5' fill='#f2fbf4' stroke='#3fb950' stroke-width='1'/>\n<text x='22' y='138' font-size='12' font-weight='700' fill='#1a7f37'>jamiepine/voicebox</text><text x='22' y='156' font-size='10.5' fill='#4a7d59'>TypeScript</text>\n<text x='176' y='138' font-size='11' fill='#33484f'>声クローン/音声生成が</text><text x='176' y='156' font-size='11' fill='#33484f'>クローズド・従量課金</text>\n<text x='390' y='138' font-size='11' fill='#33484f'>クローン/ディクテーション/生成を</text><text x='390' y='156' font-size='11' fill='#33484f'>統合しOSSで自前ホスト</text>\n<rect x='12' y='178' width='574' height='62' rx='5' fill='#f2fbf4' stroke='#3fb950' stroke-width='1'/>\n<text x='22' y='204' font-size='12' font-weight='700' fill='#1a7f37'>vercel-labs/native</text><text x='22' y='222' font-size='10.5' fill='#4a7d59'>Zig</text>\n<text x='176' y='204' font-size='11' fill='#33484f'>Electron/Tauri 以外の</text><text x='176' y='222' font-size='11' fill='#33484f'>ネイティブ選択肢が乏しい</text>\n<text x='390' y='204' font-size='11' fill='#33484f'>Zig製ネイティブデスクトップ</text><text x='390' y='222' font-size='11' fill='#33484f'>アプリ・ツールキット</text>\n</svg><figcaption>図1：今日の3本を「解決したい課題→提供する機能」で一望。</figcaption></figure>\n<h4>emilkowalski/skills（スキル集・OSSInsight日次3位）</h4>\n<p><b>解決したい課題：</b>コード生成AIは<b>アニメーションやインタラクション設計といった“質感”の領域を崩しがち</b>で、実務のデザイン勘が抜け落ちる。<b>提供する機能：</b>Sonner/Vaul で知られる著名デザインエンジニア <b>Emil Kowalski</b> が、<b>デザインエンジニアの実務知をAIエージェント用スキル集</b>として公開。続くスキル・ブームの中でも<b>著名開発者発の信頼感</b>で拡散が速く、本日New で日次3位に急浮上した。</p>\n<h4>jamiepine/voicebox（TypeScript・日次上位）</h4>\n<p><b>解決したい課題：</b>高品質な声クローン・音声生成は ElevenLabs 的な<b>クローズド／従量課金サービス</b>に依存しがち。<b>提供する機能：</b><b>声のクローン・ディクテーション（音声入力）・音声生成を1つに統合</b>したオープンソースの AIボイススタジオで、<b>自前ホスト</b>できる。Spacedrive のファウンダー <b>Jamie Pine</b> の新作という話題性も後押しし、AIエージェント一色の中で数少ない「音声クリエイティブ」枠として浮上した。</p>\n<h4>vercel-labs/native（Zig・日次ランクイン）</h4>\n<p><b>解決したい課題：</b>ネイティブなデスクトップアプリの選択肢は Electron/Tauri に偏り、<b>より低レイヤで軽量な土台</b>が乏しい。<b>提供する機能：</b><b>Zig で実装されたネイティブデスクトップ・ツールキット</b>。Web 領域で知られる Vercel の Labs が<b>Web外の低レイヤに踏み込んだ意外性</b>と、AIツールが並ぶトレンドでの<b>言語多様性（Zig）</b>で注目を集めている。</p>\n<h4>まとめ — 自分が試すなら</h4>\n<p>DevForge 文脈でまず低リスクに効くのは <b>emilkowalski/skills</b>：デザイン質感のスキルを覗いて自分の <code>.claude</code> に取り込める。voicebox は音声UIの実験に、native は Electron 依存を見直すときの観察対象として押さえておくとよい。</p>",
+      "sources": [
+        {
+          "title": "emilkowalski/skills",
+          "url": "https://github.com/emilkowalski/skills"
+        },
+        {
+          "title": "jamiepine/voicebox",
+          "url": "https://github.com/jamiepine/voicebox"
+        },
+        {
+          "title": "vercel-labs/native",
+          "url": "https://github.com/vercel-labs/native"
+        }
+      ]
+    },
     {
       "id": "2026-07-17-claude-code",
       "date": "2026-07-17",
