@@ -1,0 +1,77 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Lenisで慣性スムーススクロール（App Router）——ネイティブscrollTopを毎フレーム動かす設計 — デイリー技術深掘り 読み物</title><meta name="description" content="Lenis 1.3.x は自前のrAFループで「ネイティブのscrollTopを毎フレームlerpで更新」する設計。だからCSS scroll-driven animations・position:sticky・IntersectionObserver・GSAP ScrollTriggerがそのまま連動する。App Routerではプロバイダだけ use client にして配下のRSCは保つ。旧 @studio-freight 系は非推奨、現行は素の lenis（+ lenis/react）。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-19-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Lenisで慣性スムーススクロール（App Router）——ネイティブscrollTopを毎フレーム動かす設計 — デイリー技術深掘り 読み物"><meta property="og:description" content="Lenis 1.3.x は自前のrAFループで「ネイティブのscrollTopを毎フレームlerpで更新」する設計。だからCSS scroll-driven animations・position:sticky・IntersectionObserver・GSAP ScrollTriggerがそのまま連動する。App Routerではプロバイダだけ use client にして配下のRSCは保つ。旧 @studio-freight 系は非推奨、現行は素の lenis（+ lenis/react）。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-19-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>Lenisで慣性スムーススクロール（App Router）——ネイティブscrollTopを毎フレーム動かす設計</h1> <p class="lede">Lenis 1.3.x は自前のrAFループで「ネイティブのscrollTopを毎フレームlerpで更新」する設計。だからCSS scroll-driven animations・position:sticky・IntersectionObserver・GSAP ScrollTriggerがそのまま連動する。App Routerではプロバイダだけ use client にして配下のRSCは保つ。旧 @studio-freight 系は非推奨、現行は素の lenis（+ lenis/react）。</p> <div class="meta"> <span>📅 2026年7月19日</span> <span>⏱ 約3分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="0"><p>受賞サイト系の「ぬるっと動く」体感の定番、<b>Lenis</b>（darkroom.engineering製）を Next.js App Router に正しく組み込む話。ネイティブの <code>scroll-behavior: smooth</code> がアンカー移動時だけなのに対し、Lenisは<b>ホイール/タッチ操作そのものに慣性（lerp）を効かせて追従</b>させる。GitHub 13.9k★。</p>
+<h4 id="sec-1">何が新しい/重要か</h4>
+<p>核心は設計思想だ。Lenisは自前のrAFループで<b>ネイティブの scrollTop を毎フレーム更新する</b>。locomotive-scroll 等の旧世代がコンテンツを <code>transform</code> でズラしていたのと決定的に違い、<b>本物のスクロール位置が動く</b>。結果、CSS scroll-driven animations（<code>animation-timeline: scroll()/view()</code>）・<code>position:sticky</code>・IntersectionObserver・GSAP ScrollTrigger が<b>そのまま連動</b>する。「一つのスクロール駆動源」に複数演出を全部ぶら下げられるのが強い。</p>
+<figure class='fig'><svg viewBox='0 0 600 180' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+<rect x='16' y='26' width='270' height='130' rx='8' fill='#fbeeee' stroke='#c0392b' stroke-width='1.2'></rect><text x='30' y='50' font-size='12.5' font-weight='700' fill='#8a2f24'>旧世代 (locomotive)</text><text x='30' y='76' font-size='11.5' fill='#7a3a30'>content を transform でズラす</text><text x='30' y='98' font-size='11.5' fill='#7a3a30'>scrollTop は動かない</text><text x='30' y='120' font-size='11.5' fill='#7a3a30'>sticky / IO / scroll-timeline</text><text x='30' y='138' font-size='11.5' fill='#c0392b'>→ 連動が壊れる</text>
+<rect x='314' y='26' width='270' height='130' rx='8' fill='#eef4ff' stroke='#1f6feb' stroke-width='1.2'></rect><text x='328' y='50' font-size='12.5' font-weight='700' fill='#1a4fa0'>Lenis 1.3.x</text><text x='328' y='76' font-size='11.5' fill='#3a5a90'>rAFで scrollTop を毎フレーム更新</text><text x='328' y='98' font-size='11.5' fill='#3a5a90'>本物のスクロール位置が動く</text><text x='328' y='120' font-size='11.5' fill='#3a5a90'>sticky / IO / scroll-timeline</text><text x='328' y='138' font-size='11.5' fill='#1a7f37'>→ そのまま連動</text>
+</svg><figcaption>図1：Lenisはネイティブ scrollTop を動かすので既存のスクロール連動がそのまま効く。</figcaption></figure>
+<h4 id="sec-2">仕組みのポイント</h4>
+<p>virtual-scroll で wheel/touch を横取り→ <code>targetScroll</code> を更新→毎rAFで <code>lerp</code>（既定0.1）で寄せてネイティブ位置に反映。慣性の芯はこれだけだ：</p>
+<pre><code>let current=0, target=0; const LERP=0.1
+addEventListener('wheel', e=>{ e.preventDefault(); target+=e.deltaY }, {passive:false})
+function raf(){ current += (target-current)*LERP; scrollTo(0,current); requestAnimationFrame(raf) }</code></pre>
+<p>App Routerでは Lenis が <code>window</code> に触るため<b>Server Component不可</b>。プロバイダだけ <code>'use client'</code> にし、children で RSC を通せば配下は client 化しない。初期化は <code>useEffect</code>（ブラウザのみ）で走るので<b>hydration mismatch は出ず</b>、JS前でも素のスクロールで読めるプログレッシブエンハンスメント。</p>
+<h4 id="sec-3">GSAPと同期／自分が試すなら</h4>
+<p>複数rAFが走るとScrollTriggerがカクつくので、<code>autoRaf:false</code> で <code>gsap.ticker.add(t=>lenis.raf(t*1000))</code> と <code>lenis.on('scroll', ScrollTrigger.update)</code> で1ループに束ねる。まずは公式アダプタ <code>lenis/react</code> の <code>&lt;ReactLenis root&gt;</code> ＋必須CSS <code>import 'lenis/dist/lenis.css'</code> から始めるのが最短。</p>
+<h4 id="sec-4">注意点</h4>
+<p><b>CSS scroll-snap は非対応</b>（要るなら <code>lenis/snap</code>）。Safariは60fps上限、iframe上ではホイールが伝播しない。options を毎レンダー生成して依存に入れると「Maximum update depth exceeded」——<code>useRef</code>退避＋空依存で初期化。そして<b>アクセシビリティ上の是非</b>があるので <code>prefers-reduced-motion</code> を尊重し、モバイルは既定の <code>syncTouch:false</code> のままが無難。</p>
+<h4 id="sec-5">ひとことまとめ</h4>
+<p>「ネイティブscrollTopを動かす」一点で、Lenisは既存のスクロール演出資産をそのまま活かせる。加点演出として reduced-motion を必ず添えて。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://github.com/darkroomengineering/lenis" target="_blank" rel="noopener noreferrer"> Lenis 公式 README </a> </li><li> <a href="https://www.npmjs.com/package/lenis" target="_blank" rel="noopener noreferrer"> lenis (npm, 現行1.3.x) </a> </li><li> <a href="https://bridger.to/lenis-nextjs" target="_blank" rel="noopener noreferrer"> How to implement Lenis in Next.js (Bridger Tower) </a> </li><li> <a href="https://gsap.com/docs/v3/Plugins/ScrollTrigger/" target="_blank" rel="noopener noreferrer"> GSAP ScrollTrigger </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 何が新しい/重要か </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 仕組みのポイント </a> </li><li> <a href="#sec-3" data-toc="sec-3"> GSAPと同期／自分が試すなら </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 注意点 </a> </li><li> <a href="#sec-5" data-toc="sec-5"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-07-19</div> <div>⏱ 読了 約3分</div> <div>🏷 Next.js</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
