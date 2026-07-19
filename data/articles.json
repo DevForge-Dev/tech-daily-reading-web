@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-07-18T04:55:27.265Z",
+  "generatedAt": "2026-07-19T04:45:02.629Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,106 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-07-19-claude-code",
+      "date": "2026-07-19",
+      "topic": "Claude Code",
+      "title": "Opus 4.8が既定モデルに——Dynamic Workflowsで数百の並列サブエージェント、Week29でartifactがMCP接続",
+      "lede": "Claude Opus 4.8 が Max/Team/Enterprise/API の既定モデルに。Dynamic Workflows は1セッションで計画→数百の並列サブエージェント起動→検証→報告までを自動化（1Mトークン既定・最大128k出力、価格は4.7据え置き）。Week29では公開artifactが閲覧者のMCPコネクタでライブデータ取得・アクション実行が可能に。Hooks/Subagents/Skillsの3層整理と日本企業の定量効果も追う。",
+      "articleHtml": "<p>この日のClaude Codeは<b>基盤モデルの世代交代</b>が主役だ。Anthropicが最上位のエージェント/複雑コーディング用モデルとして <b>Claude Opus 4.8</b> を公開し、Max・Team Premium・Enterprise従量課金・API の<b>既定モデル</b>になった。Bedrock/Vertex/AWS でも既定が Opus 4.8 へ移る流れで、コーディングアシスタントの土台を一段引き上げるニュースとして各所が報じている。</p>\n<h4>何が新しいか</h4>\n<p>目玉は Claude Code 向けの <b>Dynamic Workflows</b>（Enterprise・Team・Max でリサーチプレビュー）。従来の単発補完を超え、Claudeが<b>作業を計画し、1セッション内で数百の並列サブエージェントを起動</b>、各出力を検証してから報告するところまでを自動で回す。コンテキストは<b>既定1Mトークン</b>、出力は<b>最大128kトークン</b>。価格は Opus 4.7 から据え置きで、入力$5／出力$25、fast mode $10/$50。</p>\n<figure class='fig'><pre class='mermaid'>flowchart LR\n  A[\"ユーザー指示\"] --> B[\"Opus 4.8 が計画\"]\n  B --> C[\"数百の並列サブエージェント\"]\n  C --> D[\"各出力を検証\"]\n  D --> E[\"統合して報告\"]</pre><figcaption>図1：Dynamic Workflows は計画→並列実行→検証→報告を1セッションで自動化する。</figcaption></figure>\n<p>あわせて <b>Week29（7/13〜17）</b>では、公開した artifact が<b>閲覧者それぞれのMCPコネクタ</b>を通じてライブデータ取得やアクション実行を行えるように。公開共有リンク、Team/Enterprise のエディタロール、Claude Tag 由来 artifact、スクリーンリーダーモードも加わった。</p>\n<h4>拡張の3レイヤーを整理する</h4>\n<p>実務ガイド系の記事では、Claude Codeの拡張性を <b>hook / subagent / skill</b> の3層で捉える枠組みが定着してきた。決定的にルールを効かせたいなら hook、隔離した並列作業は subagent、再利用可能なワークフローは skill、という住み分けだ。</p>\n<figure class='fig'><svg viewBox='0 0 600 170' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n<rect x='16' y='24' width='182' height='120' rx='8' fill='#f3eefc' stroke='#7b3fe4' stroke-width='1.2'/><text x='30' y='48' font-size='13' font-weight='700' fill='#4a2f7a'>Hook</text><text x='30' y='72' font-size='11.5' fill='#5a4a80'>ライフサイクルで発火</text><text x='30' y='92' font-size='11.5' fill='#5a4a80'>LLM判断なしで確実実行</text><text x='30' y='112' font-size='11.5' fill='#5a4a80'>deny設定と多層防御</text>\n<rect x='209' y='24' width='182' height='120' rx='8' fill='#eef4ff' stroke='#1f6feb' stroke-width='1.2'/><text x='223' y='48' font-size='13' font-weight='700' fill='#1a4fa0'>Subagent</text><text x='223' y='72' font-size='11.5' fill='#3a5a90'>隔離コンテキストで並列</text><text x='223' y='92' font-size='11.5' fill='#3a5a90'>重い読込→短い要約を返す</text><text x='223' y='112' font-size='11.5' fill='#c0392b'>トークン約7倍に注意</text>\n<rect x='402' y='24' width='182' height='120' rx='8' fill='#eefaf0' stroke='#3fb950' stroke-width='1.2'/><text x='416' y='48' font-size='13' font-weight='700' fill='#256b34'>Skill</text><text x='416' y='72' font-size='11.5' fill='#3a7d59'>再利用可能なワークフロー</text><text x='416' y='92' font-size='11.5' fill='#3a7d59'>descriptionが起動精度の鍵</text><text x='416' y='112' font-size='11.5' fill='#3a7d59'>ドメインロジックを同梱</text>\n</svg><figcaption>図2：hook＝決定的制御、subagent＝隔離並列、skill＝再利用ワークフロー。</figcaption></figure>\n<h4>自分が試すなら</h4>\n<p>まず既定が Opus 4.8 になったことを確認し、重いリサーチや横断調査を Dynamic Workflows（またはsubagent）に投げて検証まで任せる運用を試す。artifactのMCP接続は自分の定期タスク成果を「開くたびに最新化される画面」に育てる余地がある。日本企業の事例では楽天が新機能実装を最大80%短縮、みずほFGはグループ約3万人がClaudeを業務利用と報告され、テスト生成70%・ドキュメント更新80%削減など定量効果も出ている。</p>\n<h4>注意点</h4>\n<p>Dynamic Workflows は並列サブエージェントを多用するため<b>トークン支出が跳ねやすい</b>——subagentは単一スレッド比で約7倍という指摘もあり、Analytics APIでの利用・コスト可視化とセットで運用したい。リサーチプレビュー段階なのでプラン制限にも注意。</p>\n<h4>ひとことまとめ</h4>\n<p>「既定モデルがOpus 4.8になり、計画→並列→検証→報告を1セッションで回す時代」。効果は大きいがコスト観測を同時に握るのが要。</p>",
+      "sources": [
+        {
+          "title": "Claude Opus 4.8 (Anthropic)",
+          "url": "https://www.anthropic.com/news/claude-opus-4-8"
+        },
+        {
+          "title": "Claude Code Week29 (What's new)",
+          "url": "https://code.claude.com/docs/en/whats-new"
+        },
+        {
+          "title": "Hooks/Subagents/Skills 完全ガイド (ofox.ai)",
+          "url": "https://ofox.ai/blog/claude-code-hooks-subagents-skills-complete-guide-2026/"
+        },
+        {
+          "title": "日本企業のClaude Code導入事例10選 (uravation)",
+          "url": "https://uravation.com/media/claude-code-implementation-cases-10-japan-2026/"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-19-nextjs",
+      "date": "2026-07-19",
+      "topic": "Next.js",
+      "title": "Lenisで慣性スムーススクロール（App Router）——ネイティブscrollTopを毎フレーム動かす設計",
+      "lede": "Lenis 1.3.x は自前のrAFループで「ネイティブのscrollTopを毎フレームlerpで更新」する設計。だからCSS scroll-driven animations・position:sticky・IntersectionObserver・GSAP ScrollTriggerがそのまま連動する。App Routerではプロバイダだけ use client にして配下のRSCは保つ。旧 @studio-freight 系は非推奨、現行は素の lenis（+ lenis/react）。",
+      "articleHtml": "<p>受賞サイト系の「ぬるっと動く」体感の定番、<b>Lenis</b>（darkroom.engineering製）を Next.js App Router に正しく組み込む話。ネイティブの <code>scroll-behavior: smooth</code> がアンカー移動時だけなのに対し、Lenisは<b>ホイール/タッチ操作そのものに慣性（lerp）を効かせて追従</b>させる。GitHub 13.9k★。</p>\n<h4>何が新しい/重要か</h4>\n<p>核心は設計思想だ。Lenisは自前のrAFループで<b>ネイティブの scrollTop を毎フレーム更新する</b>。locomotive-scroll 等の旧世代がコンテンツを <code>transform</code> でズラしていたのと決定的に違い、<b>本物のスクロール位置が動く</b>。結果、CSS scroll-driven animations（<code>animation-timeline: scroll()/view()</code>）・<code>position:sticky</code>・IntersectionObserver・GSAP ScrollTrigger が<b>そのまま連動</b>する。「一つのスクロール駆動源」に複数演出を全部ぶら下げられるのが強い。</p>\n<figure class='fig'><svg viewBox='0 0 600 180' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n<rect x='16' y='26' width='270' height='130' rx='8' fill='#fbeeee' stroke='#c0392b' stroke-width='1.2'/><text x='30' y='50' font-size='12.5' font-weight='700' fill='#8a2f24'>旧世代 (locomotive)</text><text x='30' y='76' font-size='11.5' fill='#7a3a30'>content を transform でズラす</text><text x='30' y='98' font-size='11.5' fill='#7a3a30'>scrollTop は動かない</text><text x='30' y='120' font-size='11.5' fill='#7a3a30'>sticky / IO / scroll-timeline</text><text x='30' y='138' font-size='11.5' fill='#c0392b'>→ 連動が壊れる</text>\n<rect x='314' y='26' width='270' height='130' rx='8' fill='#eef4ff' stroke='#1f6feb' stroke-width='1.2'/><text x='328' y='50' font-size='12.5' font-weight='700' fill='#1a4fa0'>Lenis 1.3.x</text><text x='328' y='76' font-size='11.5' fill='#3a5a90'>rAFで scrollTop を毎フレーム更新</text><text x='328' y='98' font-size='11.5' fill='#3a5a90'>本物のスクロール位置が動く</text><text x='328' y='120' font-size='11.5' fill='#3a5a90'>sticky / IO / scroll-timeline</text><text x='328' y='138' font-size='11.5' fill='#1a7f37'>→ そのまま連動</text>\n</svg><figcaption>図1：Lenisはネイティブ scrollTop を動かすので既存のスクロール連動がそのまま効く。</figcaption></figure>\n<h4>仕組みのポイント</h4>\n<p>virtual-scroll で wheel/touch を横取り→ <code>targetScroll</code> を更新→毎rAFで <code>lerp</code>（既定0.1）で寄せてネイティブ位置に反映。慣性の芯はこれだけだ：</p>\n<pre><code>let current=0, target=0; const LERP=0.1\naddEventListener('wheel', e=>{ e.preventDefault(); target+=e.deltaY }, {passive:false})\nfunction raf(){ current += (target-current)*LERP; scrollTo(0,current); requestAnimationFrame(raf) }</code></pre>\n<p>App Routerでは Lenis が <code>window</code> に触るため<b>Server Component不可</b>。プロバイダだけ <code>'use client'</code> にし、children で RSC を通せば配下は client 化しない。初期化は <code>useEffect</code>（ブラウザのみ）で走るので<b>hydration mismatch は出ず</b>、JS前でも素のスクロールで読めるプログレッシブエンハンスメント。</p>\n<h4>GSAPと同期／自分が試すなら</h4>\n<p>複数rAFが走るとScrollTriggerがカクつくので、<code>autoRaf:false</code> で <code>gsap.ticker.add(t=>lenis.raf(t*1000))</code> と <code>lenis.on('scroll', ScrollTrigger.update)</code> で1ループに束ねる。まずは公式アダプタ <code>lenis/react</code> の <code>&lt;ReactLenis root&gt;</code> ＋必須CSS <code>import 'lenis/dist/lenis.css'</code> から始めるのが最短。</p>\n<h4>注意点</h4>\n<p><b>CSS scroll-snap は非対応</b>（要るなら <code>lenis/snap</code>）。Safariは60fps上限、iframe上ではホイールが伝播しない。options を毎レンダー生成して依存に入れると「Maximum update depth exceeded」——<code>useRef</code>退避＋空依存で初期化。そして<b>アクセシビリティ上の是非</b>があるので <code>prefers-reduced-motion</code> を尊重し、モバイルは既定の <code>syncTouch:false</code> のままが無難。</p>\n<h4>ひとことまとめ</h4>\n<p>「ネイティブscrollTopを動かす」一点で、Lenisは既存のスクロール演出資産をそのまま活かせる。加点演出として reduced-motion を必ず添えて。</p>",
+      "sources": [
+        {
+          "title": "Lenis 公式 README",
+          "url": "https://github.com/darkroomengineering/lenis"
+        },
+        {
+          "title": "lenis (npm, 現行1.3.x)",
+          "url": "https://www.npmjs.com/package/lenis"
+        },
+        {
+          "title": "How to implement Lenis in Next.js (Bridger Tower)",
+          "url": "https://bridger.to/lenis-nextjs"
+        },
+        {
+          "title": "GSAP ScrollTrigger",
+          "url": "https://gsap.com/docs/v3/Plugins/ScrollTrigger/"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-19-flutter",
+      "date": "2026-07-19",
+      "topic": "Flutter",
+      "title": "Pure Impeller VulkanがAndroid既定に（Flutter 3.44）——シェーダージャンク消滅とラスタライズ50%短縮",
+      "lede": "Flutter 3.44 でモダンAndroidの既定レンダラが Pure Impeller Vulkan に。全シェーダーをビルド時(AOT)にコンパイルするため初回描画のシェーダーコンパイルジャンクが消え、複雑シーンの平均ラスタライズ時間は約50%短縮。状態管理は Riverpod 3.0 が既定・Bloc 9.0 が監査向け、描画は Build/Layout/Paint/Composite の4フェーズで60fps=16msの予算管理が軸。",
+      "articleHtml": "<p>この日のFlutterは<b>描画エンジンの世代交代</b>が主役。<b>Flutter 3.44</b> でモダンAndroidの既定レンダラが <b>Pure Impeller Vulkan</b> になり、長年の悩みだった<b>初回描画のシェーダーコンパイルジャンクが消滅</b>した。安定版は Flutter 3.44.0 / Dart 3.12.2、Impeller は Android 既定（10+必須）で、次の機能リリースは2026年8月予定。</p>\n<h4>何が新しい/重要か</h4>\n<p>Impeller は<b>全シェーダーをビルド時（AOT）にコンパイル</b>してランタイムのシェーダー生成ジャンクを排除する。直近テストでは<b>複雑シーンの平均フレームラスタライズ時間を約50%短縮</b>、iOS端末の worst-case フレーム時間も大幅低下。Dart 3.12 では private named parameters（先頭 <code>_</code> の自動省略）、null-aware elements（<code>?</code> で null要素を条件付き追加）、dot shorthands も入った。視覚/性能問題が出たら <code>--no-enable-impeller</code> でSkiaにフォールバックし切り分ける。</p>\n<h4>状態管理の三強を選ぶ</h4>\n<p>2026は <b>Riverpod 3.0</b>（compile-time safety・Mutations・自動リトライ）／<b>Bloc 9.0</b>（監査証跡・event tracing）／GetX（退潮）の三強。パッケージサイズも判断材料になる。</p>\n<figure class='fig'><svg viewBox='0 0 600 190' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n<text x='16' y='24' font-size='13' font-weight='700' fill='#1c1c1e'>パッケージサイズ比較 (KB)</text>\n<rect x='120' y='40' width='90' height='22' rx='4' fill='#0277bd'/><text x='16' y='56' font-size='12' fill='#333'>Bloc 9.0</text><text x='218' y='56' font-size='11.5' fill='#0277bd'>~38KB</text>\n<rect x='120' y='74' width='106' height='22' rx='4' fill='#0288d1'/><text x='16' y='90' font-size='12' fill='#333'>Riverpod 3.0</text><text x='234' y='90' font-size='11.5' fill='#0277bd'>~45KB (既定)</text>\n<rect x='120' y='108' width='284' height='22' rx='4' fill='#c0392b'/><text x='16' y='124' font-size='12' fill='#333'>GetX</text><text x='412' y='124' font-size='11.5' fill='#c0392b'>~120KB</text>\n<line x1='120' y1='150' x2='584' y2='150' stroke='#ddd'/><text x='16' y='170' font-size='11' fill='#666'>新規/async取得＋自動回復=Riverpod、規制/監査/決済=Bloc 9.0（screen単位で共存移行可）</text>\n</svg><figcaption>図1：絞られた依存の Riverpod/Bloc に対し GetX は未使用機能を同梱して重い。</figcaption></figure>\n<h4>パフォーマンスは4フェーズと予算で</h4>\n<p>レンダリングは <b>Build / Layout / Paint / Composite</b> の4フェーズ。<code>RepaintBoundary</code> で部分再描画を限定、<code>AutomaticKeepAliveClientMixin</code> でリスト内stateを保持、<code>ValueKey</code> で diff を効率化する。フレーム予算は <b>60fps=16ms / 90fps=11ms / 120fps=8.3ms</b>（ラスタライズ&lt;4msで60fps）。計測は必ず profile モードで、DevTools の Performance View で UI/Raster スレッドを可視化する。</p>\n<h4>自分が試すなら／注意点</h4>\n<p>まず 3.44 に上げて Android 実機で起動→操作のジャンクが減るかを profile モードで確認。アニメは micro 50–200ms／component 200–400ms／Hero 300–600ms を目安に、実装は「まず implicit → 連鎖は flutter_animate → 精密は explicit（<code>dispose</code>必須）→重い演出は Rive/Lottie」。カスタムシェーダーは重い分岐（if/else）を避け mix/step/clamp へ。Impeller由来の描画差が出たら Skia フォールバックで切り分けるのを忘れずに。</p>\n<h4>ひとことまとめ</h4>\n<p>「シェーダージャンクが消え、ラスタライズ50%短縮」。土台が速くなった分、再ビルド削減とフレーム予算の基本がそのまま効く年。</p>",
+      "sources": [
+        {
+          "title": "Flutter 3.44 & Dart 3.12 (Google I/O 2026)",
+          "url": "https://www.fluttersolution.com/2026/05/flutter-344-dart-312-everything-new-at.html"
+        },
+        {
+          "title": "How Impeller Is Transforming Flutter UI Rendering 2026",
+          "url": "https://dev.to/eira-wexford/how-impeller-is-transforming-flutter-ui-rendering-in-2026-3dpd"
+        },
+        {
+          "title": "State Management 2026 (sharpskill)",
+          "url": "https://sharpskill.dev/en/blog/flutter/flutter-state-management-2026-riverpod-bloc-getx"
+        },
+        {
+          "title": "Improving rendering performance (Flutter docs)",
+          "url": "https://docs.flutter.dev/perf/rendering-performance"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-19-github-trending",
+      "date": "2026-07-19",
+      "topic": "GitHub Trending",
+      "title": "7/19の話題リポジトリ — 「怠惰なAI」ponytail・Xiaomi発MiMo-Code・ローカルファーストのreflect-open",
+      "lede": "この日の急上昇3本を貫くのは「AIエージェント前提の作り直し」。過剰実装を抑えるスキル、大手発の新コーディングモデル、AIと相性のよいOSSノートアプリ——課題と提供機能を対で読む。",
+      "articleHtml": "<p>この日の New & Rising を貫くのは、<b>「AIエージェントを前提に既存の何かを作り直す」</b>という共通線だ。エージェントの悪癖を抑えるスキル、基盤モデルそのもの、そしてエージェントが扱いやすいノートアプリ——毛色は違うが、いずれも「AIが書く/使う」前提で設計されている点で一致する。</p>\n<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n<text x='16' y='22' font-size='13' font-weight='700' fill='#1c1c1e'>リポジトリ × 解決する課題 / 提供する機能</text>\n<line x1='16' y1='34' x2='584' y2='34' stroke='#3fb950' stroke-width='1.5'/>\n<text x='20' y='58' font-size='12' font-weight='700' fill='#256b34'>ponytail</text><text x='150' y='58' font-size='11' fill='#555'>課題: AIの過剰実装</text><text x='360' y='58' font-size='11' fill='#555'>機能: 「書かない」スキル</text>\n<line x1='16' y1='72' x2='584' y2='72' stroke='#eee'/>\n<text x='20' y='96' font-size='12' font-weight='700' fill='#256b34'>MiMo-Code</text><text x='150' y='96' font-size='11' fill='#555'>課題: 新コーディング基盤不足</text><text x='360' y='96' font-size='11' fill='#555'>機能: Xiaomi発の特化モデル</text>\n<line x1='16' y1='110' x2='584' y2='110' stroke='#eee'/>\n<text x='20' y='134' font-size='12' font-weight='700' fill='#256b34'>reflect-open</text><text x='150' y='134' font-size='11' fill='#555'>課題: 有料/クラウド依存のPKM</text><text x='360' y='134' font-size='11' fill='#555'>機能: ローカルファーストOSSノート</text>\n<line x1='16' y1='148' x2='584' y2='148' stroke='#eee'/>\n<text x='16' y='176' font-size='11' fill='#666'>共通: いずれも「AIエージェントが書く/使う」前提の設計思想でバズっている</text>\n<text x='16' y='196' font-size='11' fill='#3fb950' font-weight='700'>スキル → モデル → プロダクトと、AI起点の作り直しが層を成す</text>\n</svg><figcaption>図1：3本の「解決したい課題」と「提供する機能」を一望。</figcaption></figure>\n<h4>DietrichGebert/ponytail（JavaScript・⭐85k）</h4>\n<p><b>解決したい課題：</b>AIコーディングエージェントは放っておくと過剰に実装し、余計なコードで複雑さを増やす。「最良のコードは書かないコード」という思想でこの癖を抑えたい。<b>提供する機能：</b>エージェントを「部屋で一番怠惰なシニア開発者」のように振る舞わせ、書かない・削るを優先させるスキル。Claude Code等の主要エージェントに導入できる。7日で+5.3k級の急伸で、caveman/hallmarkに続くスキル・ブームの中、ネタ性と実利の両立で拡散した。</p>\n<h4>XiaomiMiMo/MiMo-Code（TypeScript・⭐12k）</h4>\n<p><b>解決したい課題：</b>スキル集ばかりが並ぶトレンドの中で、コーディングに特化した新しい基盤モデル/ツールの選択肢が欲しい。<b>提供する機能：</b>Xiaomi の MiMo AI チームが公開したばかりのコーディング特化モデル一式。公開直後から New & Rising「FAST」に登場し、大手発の新モデルという話題性で急上昇。スキルに偏るトレンドで数少ない「モデル本体」枠として存在感を出している。</p>\n<h4>team-reflect/reflect-open（TypeScript・⭐1.2k）</h4>\n<p><b>解決したい課題：</b>人気ノートアプリ Reflect は有料でクラウド依存。自分のデータを所有し、AIエージェントが扱いやすいノート環境が欲しい。<b>提供する機能：</b>Reflect のオープンソース・リライトで、<b>ローカルファースト</b>かつ AIと相性のよい Markdown ノート設計。findarepo で計測開始とともに新星として浮上し、エージェント系スキルが席巻する中で数少ない「プロダクト/PKM」枠のジャンル多様性を担う。</p>\n<h4>まとめ — 自分が試すなら</h4>\n<p>いま自分の10PJ運用に一番効きそうなのは <b>ponytail</b>。エージェントの過剰実装を抑えるスキルは、既存のClaude Code運用にそのまま足せて副作用が小さい。MiMo-Codeはモデル比較の観測対象として、reflect-openはローカルファーストなナレッジ基盤の候補として様子見が妥当だ。</p>",
+      "sources": [
+        {
+          "title": "DietrichGebert/ponytail",
+          "url": "https://github.com/DietrichGebert/ponytail"
+        },
+        {
+          "title": "XiaomiMiMo/MiMo-Code",
+          "url": "https://github.com/XiaomiMiMo/MiMo-Code"
+        },
+        {
+          "title": "team-reflect/reflect-open",
+          "url": "https://github.com/team-reflect/reflect-open"
+        }
+      ]
+    },
     {
       "id": "2026-07-18-claude-code",
       "date": "2026-07-18",
