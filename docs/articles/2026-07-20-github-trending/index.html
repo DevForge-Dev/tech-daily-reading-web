@@ -1,0 +1,68 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>7/20の話題リポジトリ — エージェント運用の土台（コスト削減・永続記憶・隔離実行） — デイリー技術深掘り 読み物</title><meta name="description" content="今日の3本を貫くのは「多数のエージェント/定期タスクを回す現場の“高い・忘れる・危ない”に答える」こと。コストを削るゲートウェイ、記憶を永続化するメモリ基盤、安全に実行するサンドボックス。"><meta name="theme-color" content="#238636"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-20-github-trending/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="7/20の話題リポジトリ — エージェント運用の土台（コスト削減・永続記憶・隔離実行） — デイリー技術深掘り 読み物"><meta property="og:description" content="今日の3本を貫くのは「多数のエージェント/定期タスクを回す現場の“高い・忘れる・危ない”に答える」こと。コストを削るゲートウェイ、記憶を永続化するメモリ基盤、安全に実行するサンドボックス。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-20-github-trending/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3fb950, #1a7f37)"> <span class="glyph" aria-hidden="true">★</span> <div class="kicker">GitHub Trending</div> <h1>7/20の話題リポジトリ — エージェント運用の土台（コスト削減・永続記憶・隔離実行）</h1> <p class="lede">今日の3本を貫くのは「多数のエージェント/定期タスクを回す現場の“高い・忘れる・危ない”に答える」こと。コストを削るゲートウェイ、記憶を永続化するメモリ基盤、安全に実行するサンドボックス。</p> <div class="meta"> <span>📅 2026年7月20日</span> <span>⏱ 約2分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#238636"> <div> <article class="prose" data-has-mermaid="0"><p>今日GitHubで急上昇した中から、<b>エージェント運用の土台</b>を成す3本を取り上げる。<b>コストを削るゲートウェイ</b>、<b>記憶を永続化するメモリ基盤</b>、<b>安全に実行するサンドボックス</b>——多数のエージェントや定期タスクを日々回す現場が直面する「高い・忘れる・危ない」に、それぞれ正面から答える顔ぶれだ。</p>
+<figure class='fig'><svg viewBox='0 0 600 236' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='14' y='12' width='572' height='212' rx='10' fill='#f3fbf5' stroke='#3fb950' stroke-width='1.2'></rect><text x='28' y='38' font-size='12' font-weight='700' fill='#1a7f37'>リポジトリ</text><text x='190' y='38' font-size='12' font-weight='700' fill='#1a7f37'>解決したい課題</text><text x='410' y='38' font-size='12' font-weight='700' fill='#1a7f37'>提供する機能</text><line x1='24' y1='50' x2='576' y2='50' stroke='#cfe9d6' stroke-width='1'></line><text x='28' y='84' font-size='11.5' font-weight='700' fill='#256b34'>OmniRoute</text><text x='190' y='84' font-size='11' fill='#37533f'>接続先分散・トークン浪費・障害停止</text><text x='410' y='84' font-size='11' fill='#37533f'>231+を1本化・圧縮・自動代替</text><line x1='24' y1='102' x2='576' y2='102' stroke='#e0f0e4' stroke-width='1'></line><text x='28' y='140' font-size='11.5' font-weight='700' fill='#256b34'>cognee</text><text x='190' y='140' font-size='11' fill='#37533f'>セッションを跨ぐと文脈を忘れる</text><text x='410' y='140' font-size='11' fill='#37533f'>知識グラフで永続的な長期記憶</text><line x1='24' y1='158' x2='576' y2='158' stroke='#e0f0e4' stroke-width='1'></line><text x='28' y='196' font-size='11.5' font-weight='700' fill='#256b34'>CubeSandbox</text><text x='190' y='196' font-size='11' fill='#37533f'>生成コード実行の破壊的リスク</text><text x='410' y='196' font-size='11' fill='#37533f'>即時起動・並行・安全な隔離実行</text></svg><figcaption>図1：今日の3本を「課題→提供機能」で一望する。</figcaption></figure>
+<h4 id="sec-1">diegosouzapw/OmniRoute（TypeScript・⭐19k）</h4>
+<p><b>解決したい課題：</b>多数のモデル/プロバイダを使い分けるほど、接続先の分散・トークン浪費・障害時の全停止がコストと不安定さを生む。<b>提供する機能：</b>231以上のプロバイダ（50以上は無料）を1エンドポイントに集約し、Claude Code/Codex/Cursor/Cline/Copilotから各種モデルへ接続。RTK+Caveman方式のスタック圧縮でトークンを15〜95%削減し、障害時はスマート・フォールバックで自動切替。MCP/A2A対応で既存のtool-use運用に載せやすい。findarepoで直近7日+約3.3kスターと急伸中で、コスト削減文化に直撃している。</p>
+<h4 id="sec-2">topoteretes/cognee（Python）</h4>
+<p><b>解決したい課題：</b>エージェントはセッションを跨ぐと文脈を忘れ、毎回同じ前提を読み直してトークンを浪費する。<b>提供する機能：</b>会話・作業のたびに知識をナレッジグラフへ蓄積し、過去セッションを参照できる永続的な長期記憶を、セルフホストで与えるAIメモリ基盤。毎回のコンテキスト再読込を減らせるため入力トークン削減に直結する。Trendshift日次13位と着実に上昇し、機微データを外へ出さない運用とも整合する。</p>
+<h4 id="sec-3">TencentCloud/CubeSandbox（Rust）</h4>
+<p><b>解決したい課題：</b>エージェントが生成したコード/コマンドをそのまま実行するのは破壊的操作のリスクがあり、隔離が要る。<b>提供する機能：</b>即時起動・並行実行・安全・軽量なサンドボックス実行環境をRust製で提供し、生成コードを隔離環境で高速に実行する。OSSInsightの当日トレンドに登場、大手Tencent発で、多数の定期タスクを回す運用の安全網に適合する。</p>
+<h4 id="sec-4">まとめ</h4>
+<p>自分が試すなら、まず<b>OmniRoute</b>（即コスト効果）から。記憶の<b>cognee</b>と隔離実行の<b>CubeSandbox</b>を足せば、コスト・記憶・安全の三点が揃う。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://github.com/diegosouzapw/OmniRoute" target="_blank" rel="noopener noreferrer"> diegosouzapw/OmniRoute </a> </li><li> <a href="https://github.com/topoteretes/cognee" target="_blank" rel="noopener noreferrer"> topoteretes/cognee </a> </li><li> <a href="https://github.com/TencentCloud/CubeSandbox" target="_blank" rel="noopener noreferrer"> TencentCloud/CubeSandbox </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> diegosouzapw/OmniRoute（TypeScript・⭐19k） </a> </li><li> <a href="#sec-2" data-toc="sec-2"> topoteretes/cognee（Python） </a> </li><li> <a href="#sec-3" data-toc="sec-3"> TencentCloud/CubeSandbox（Rust） </a> </li><li> <a href="#sec-4" data-toc="sec-4"> まとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-07-20</div> <div>⏱ 読了 約2分</div> <div>🏷 GitHub Trending</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

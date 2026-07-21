@@ -1,0 +1,71 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Impeller 移行の完遂——Android の legacy Skia backend を 10+ で削除 — デイリー技術深掘り 読み物</title><meta name="description" content="2026ロードマップ『Finishing the Job』の柱として Android の Impeller 一本化が完了へ。ラスタライズ約50%高速・120fps 安定・Skia 比 約17%低い電力ドレイン。カスタム fragment shader はビルド時 AOT コンパイルでシェーダージャンクが出ず好相性。安定版は Flutter 3.44.0 / Dart 3.12.2、次の機能リリースは 2026年8月予定。"><meta name="theme-color" content="#0277bd"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-20-flutter/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Impeller 移行の完遂——Android の legacy Skia backend を 10+ で削除 — デイリー技術深掘り 読み物"><meta property="og:description" content="2026ロードマップ『Finishing the Job』の柱として Android の Impeller 一本化が完了へ。ラスタライズ約50%高速・120fps 安定・Skia 比 約17%低い電力ドレイン。カスタム fragment shader はビルド時 AOT コンパイルでシェーダージャンクが出ず好相性。安定版は Flutter 3.44.0 / Dart 3.12.2、次の機能リリースは 2026年8月予定。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-20-flutter/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #29b6f6, #01579b)"> <span class="glyph" aria-hidden="true">◆</span> <div class="kicker">Flutter</div> <h1>Impeller 移行の完遂——Android の legacy Skia backend を 10+ で削除</h1> <p class="lede">2026ロードマップ『Finishing the Job』の柱として Android の Impeller 一本化が完了へ。ラスタライズ約50%高速・120fps 安定・Skia 比 約17%低い電力ドレイン。カスタム fragment shader はビルド時 AOT コンパイルでシェーダージャンクが出ず好相性。安定版は Flutter 3.44.0 / Dart 3.12.2、次の機能リリースは 2026年8月予定。</p> <div class="meta"> <span>📅 2026年7月20日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#0277bd"> <div> <article class="prose" data-has-mermaid="0"><p>この日のFlutterは<b>Impeller移行の完遂</b>が主役だ。2026ロードマップ『Finishing the Job』の柱として<b>AndroidのImpeller一本化</b>が完了に向かい、<b>legacy Skia backendをAndroid 10以上で削除</b>、複数年の多段移行が終結する。新レンダラが「もう普通」になり、性能前提を一段引き上げる節目だ。</p>
+<h4 id="sec-1">ロードマップの5本柱と数値</h4>
+<p>柱は<b>Android Impeller完遂</b>・<b>WebのWebAssembly既定化</b>・<b>GenUI/エージェント型アプリ</b>・<b>Full-Stack Dart</b>・<b>AI前提の開発体験再設計</b>で、<b>年4回以上の安定リリース</b>（2/5/8/11月）をコミット。Impellerは<b>ラスタライズ約50%高速</b>・高リフレッシュ端末で<b>120fps安定</b>・アニメ多用時に<b>Skia比 約17%低い電力ドレイン</b>を、実行時シェーダーコンパイル排除とCPU/GPU同期削減で実現する。安定版は<b>Flutter 3.44.0／Dart 3.12.2</b>、次の機能リリースは<b>2026年8月予定</b>。</p>
+<figure class='fig'><svg viewBox='0 0 600 176' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='20' y='28' font-size='12.5' font-weight='700' fill='#0277bd'>フレーム予算（1フレームの持ち時間）</text><text x='20' y='64' font-size='12' fill='#333'>60fps</text><rect x='90' y='52' width='460' height='16' rx='4' fill='#56c5f5'></rect><text x='558' y='64' font-size='11' fill='#0277bd'>16ms</text><text x='20' y='100' font-size='12' fill='#333'>90fps</text><rect x='90' y='88' width='316' height='16' rx='4' fill='#3aa9e0'></rect><text x='414' y='100' font-size='11' fill='#0277bd'>11ms</text><text x='20' y='136' font-size='12' fill='#333'>120fps</text><rect x='90' y='124' width='238' height='16' rx='4' fill='#0277bd'></rect><text x='336' y='136' font-size='11' fill='#0277bd'>8.3ms</text><text x='20' y='164' font-size='11' fill='#666'>カスタムfragment shaderは実行4〜5ms以内が120fps維持の目安</text></svg><figcaption>図1：リフレッシュレート別のフレーム予算。120fpsは8.3ms。</figcaption></figure>
+<h4 id="sec-2">カスタムシェーダーで120fps</h4>
+<p>Impellerは<b>全シェーダーをビルド時（AOT）にコンパイル</b>するため、実行時のシェーダーコンパイルジャンクが出ず<b>カスタムfragment shaderと好相性</b>。実装のコツは重い分岐（if/else）を避け<code>mix</code>/<code>step</code>/<code>clamp</code>の数学演算へ置換し、<b>シェーダー実行を4〜5ms以内</b>に収めること（120fpsの予算は8.3ms）。アニメ区間は<code>RepaintBoundary</code>で囲み、実機（特にミッドレンジAndroid）で検証する。</p>
+<figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='16' y='22' width='270' height='108' rx='8' fill='#eef6fb' stroke='#7a8a95' stroke-width='1.1'></rect><text x='30' y='46' font-size='12.5' font-weight='700' fill='#55636b'>legacy Skia</text><text x='30' y='70' font-size='11' fill='#5a6a72'>実行時にシェーダーコンパイル</text><text x='30' y='90' font-size='11' fill='#5a6a72'>→ ジャンク（カクつき）</text><text x='30' y='114' font-size='11' fill='#5a6a72'>Android 10+ で削除へ</text><rect x='314' y='22' width='270' height='108' rx='8' fill='#e6f4fb' stroke='#0277bd' stroke-width='1.2'></rect><text x='328' y='46' font-size='12.5' font-weight='700' fill='#015b8f'>Impeller</text><text x='328' y='70' font-size='11' fill='#12688f'>全シェーダーをAOTで事前コンパイル</text><text x='328' y='90' font-size='11' fill='#12688f'>ラスタライズ約50%高速・120fps安定</text><text x='328' y='114' font-size='11' fill='#12688f'>Skia比 約17%低い電力ドレイン</text></svg><figcaption>図2：Skia と Impeller の描画コンパイル方式の違い。</figcaption></figure>
+<h4 id="sec-3">言語と計測</h4>
+<p>Dart 3.12は<b>private named parameters</b>（先頭<code>_</code>を自動省略）・<b>primary constructors</b>（experimental）・<b>dot shorthands</b>を追加。計測面ではDevToolsが<b>Inspector 2.0</b>へ刷新され、Impeller専用ビューでdraw callのバッチ化やテクスチャのメモリ過多を即可視化する。状態管理の2026ベンチはrebuildが<b>Bloc 2.3ms／Riverpod 2.0ms</b>とほぼ互角で、選定は性能でなく設計と運用で決まる。</p>
+<h4 id="sec-4">注意点</h4>
+<p>計測は必ず<b>profileモード</b>（debug VMは大幅に遅い）。カスタムシェーダーはGPU差（一部Adreno）で挙動が変わるため実機必須。Impeller描画の切り分けは<code>--no-enable-impeller</code>で行う。</p>
+<h4 id="sec-5">ひとことまとめ</h4>
+<p>「Android legacy Skiaを畳み、Impeller前提の120fps時代へ」。カスタムシェーダーは4〜5ms、計測はprofileモードが鉄則。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://blog.flutter.dev/flutter-darts-2026-roadmap-89378f17ebbd" target="_blank" rel="noopener noreferrer"> Flutter &amp; Dart&#39;s 2026 roadmap </a> </li><li> <a href="https://dev.to/devin-rosario/mastering-impeller-custom-shaders-for-120fps-flutter-apps-2020" target="_blank" rel="noopener noreferrer"> Mastering Impeller Custom Shaders for 120fps </a> </li><li> <a href="https://devnewsletter.com/p/state-of-flutter-2026/" target="_blank" rel="noopener noreferrer"> State of Flutter 2026 </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> ロードマップの5本柱と数値 </a> </li><li> <a href="#sec-2" data-toc="sec-2"> カスタムシェーダーで120fps </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 言語と計測 </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 注意点 </a> </li><li> <a href="#sec-5" data-toc="sec-5"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-07-20</div> <div>⏱ 読了 約3分</div> <div>🏷 Flutter</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

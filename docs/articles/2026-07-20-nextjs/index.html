@@ -1,0 +1,75 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>shadcn/ui はもう「コンポーネント集」ではない——レジストリ配布プロトコルへ（CLI v4） — デイリー技術深掘り 読み物</title><meta name="description" content="shadcn/ui は npm 公開ではなく、CLI がコード（.tsx/CSS変数/設定）を自分のリポジトリに書き込む &#34;open code&#34; 方式。2026年は @registry/name 名前空間・private registry・init --preset・registry:base/font・shadcn/skills まで備えた分散配布プロトコルに拡張。App Router では表示系は RSC のまま、イベント持ちは 'use client' 済みの Client 島として動く。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-20-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="shadcn/ui はもう「コンポーネント集」ではない——レジストリ配布プロトコルへ（CLI v4） — デイリー技術深掘り 読み物"><meta property="og:description" content="shadcn/ui は npm 公開ではなく、CLI がコード（.tsx/CSS変数/設定）を自分のリポジトリに書き込む &#34;open code&#34; 方式。2026年は @registry/name 名前空間・private registry・init --preset・registry:base/font・shadcn/skills まで備えた分散配布プロトコルに拡張。App Router では表示系は RSC のまま、イベント持ちは 'use client' 済みの Client 島として動く。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-20-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>shadcn/ui はもう「コンポーネント集」ではない——レジストリ配布プロトコルへ（CLI v4）</h1> <p class="lede">shadcn/ui は npm 公開ではなく、CLI がコード（.tsx/CSS変数/設定）を自分のリポジトリに書き込む &quot;open code&quot; 方式。2026年は @registry/name 名前空間・private registry・init --preset・registry:base/font・shadcn/skills まで備えた分散配布プロトコルに拡張。App Router では表示系は RSC のまま、イベント持ちは &#39;use client&#39; 済みの Client 島として動く。</p> <div class="meta"> <span>📅 2026年7月20日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="1"><p>この日のNext.jsテーマは<b>shadcn/uiの実像</b>だ。もはや「npmに公開されるUIライブラリ」ではなく、CLIが<b>コード（.tsx／CSS変数／設定）を自分のリポジトリに書き込む</b> "open code" 方式で、生成後は100%自分の所有物として直接編集できる。2026年、これは単なるコピー機を超えて<b>コンポーネント・テーマ・デザインシステム丸ごと・AIエージェント向け指示までを配る分散配布プロトコル</b>へ拡張された。App Routerはshadcn公式が第一級に扱うため、押さえる価値が高い。</p>
+<h4 id="sec-1">3つの節目</h4>
+<figure class='fig'><svg viewBox='0 0 600 132' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><line x1='40' y1='66' x2='560' y2='66' stroke='#74a8ff' stroke-width='2'></line><circle cx='120' cy='66' r='7' fill='#1f6feb'></circle><circle cx='300' cy='66' r='7' fill='#1f6feb'></circle><circle cx='480' cy='66' r='7' fill='#1f6feb'></circle><text x='120' y='40' font-size='12' font-weight='700' fill='#1a4fa0' text-anchor='middle'>CLI 3.0</text><text x='120' y='94' font-size='11' fill='#3a5a90' text-anchor='middle'>2025-08</text><text x='120' y='110' font-size='10.5' fill='#5a6a80' text-anchor='middle'>名前空間・MCP</text><text x='300' y='40' font-size='12' font-weight='700' fill='#1a4fa0' text-anchor='middle'>Unified Radix</text><text x='300' y='94' font-size='11' fill='#3a5a90' text-anchor='middle'>2026-02</text><text x='300' y='110' font-size='10.5' fill='#5a6a80' text-anchor='middle'>単一 radix-ui・data-slot</text><text x='480' y='40' font-size='12' font-weight='700' fill='#1a4fa0' text-anchor='middle'>CLI v4</text><text x='480' y='94' font-size='11' fill='#3a5a90' text-anchor='middle'>2026-03</text><text x='480' y='110' font-size='10.5' fill='#5a6a80' text-anchor='middle'>preset・skills・base/font</text></svg><figcaption>図1：単なるコピー機から分散配布プロトコルへ至る3つの節目。</figcaption></figure>
+<p><b>CLI 3.0（2025-08）</b>で<code>@registry/name</code>形式の名前空間・private registry・<code>view</code>/<code>search</code>/<code>list</code>・MCPサーバ・解決エンジン全面刷新。<b>Unified Radix／Tailwind v4（2026-02）</b>で個別<code>@radix-ui/react-*</code>が単一<code>radix-ui</code>へ集約され、全プリミティブに<code>data-slot</code>が付いた。<b>CLI v4（2026-03）</b>で<code>init --preset</code>（デザインシステム設定を短い文字列1本に凝縮）・<code>--dry-run</code>/<code>--diff</code>・<code>registry:base</code>/<code>registry:font</code>・<b>shadcn/skills</b>が加わった。</p>
+<h4 id="sec-2">仕組みのポイント</h4>
+<p>名前空間は<code>components.json</code>の<code>registries</code>にエイリアスを宣言し、<code>{name}</code>が導入時にリソース名へ置換される。private registryは<code>headers</code>に<code>${REGISTRY_TOKEN}</code>を書けば実行時展開され、ログには出さない。<code>registryDependencies</code>に<code>@shadcn/card</code>や<code>@acme/data-table</code>を混在でき、CLIが各ソースから再帰解決＋トポロジカルソート＋<b>同一パスは後勝ち</b>でマージする。レジストリのリソースは<b>データ（JSON）でありスクリプトではない</b>ため、任意コード実行はない。</p>
+<figure class='fig'><pre class='mermaid'>flowchart TD
+  A["add @acme/dashboard"] --> B["registryDependencies を再帰解決"]
+  B --> C["@shadcn/card / @v0/chart / @acme/data-table"]
+  C --> D["トポロジカルソート＋ファイル重複排除"]
+  D --> E["同一パスは後勝ちで書き込み"]</pre><figcaption>図2：クロスレジストリ依存の解決フロー（後勝ちマージ）。</figcaption></figure>
+<h4 id="sec-3">App Routerでの組み込み</h4>
+<p><code>pnpm dlx shadcn@latest init</code>で<code>components.json</code>を生成し、<code>add button card dialog</code>でコードが<code>components/ui/*.tsx</code>に書き込まれる。表示系（Card/Badge/Table）は<b>RSCのまま</b>使え、Dialog/Dropdown等イベント持ちは<b>先頭に <code>'use client'</code> が既に入った</b>Client島として動く。更新はnpmではなく<code>add --diff</code>で手元改変とマージ追従する運用だ。</p>
+<h4 id="sec-4">落とし穴</h4>
+<p>後勝ちマージの<b>順序</b>、信頼するレジストリだけを明示追加する点（自動発見なし・ENVトークンはコミットしない）、<code>--base radix</code>と<code>--base base</code>（Base UI）で実装/APIが異なる点に注意。生成コードは直接編集する前提なので、上流更新は手動マージになる。</p>
+<h4 id="sec-5">ひとことまとめ</h4>
+<p>「shadcn/uiはUIライブラリではなく配布プロトコル」。private registry＋<code>registry:base</code>で社内標準を1行の名前空間として配れるのが2026年の勘所。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://ui.shadcn.com/docs/changelog/2026-03-cli-v4" target="_blank" rel="noopener noreferrer"> shadcn/ui Changelog: March 2026 — CLI v4 </a> </li><li> <a href="https://ui.shadcn.com/docs/registry/namespace" target="_blank" rel="noopener noreferrer"> shadcn/ui Docs: Namespaces </a> </li><li> <a href="https://ui.shadcn.com/docs/installation/next" target="_blank" rel="noopener noreferrer"> shadcn/ui Docs: Next.js Installation </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 3つの節目 </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 仕組みのポイント </a> </li><li> <a href="#sec-3" data-toc="sec-3"> App Routerでの組み込み </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 落とし穴 </a> </li><li> <a href="#sec-5" data-toc="sec-5"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-07-20</div> <div>⏱ 読了 約3分</div> <div>🏷 Next.js</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
