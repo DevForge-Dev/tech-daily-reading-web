@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-07-21T04:51:40.935Z",
+  "generatedAt": "2026-07-22T04:55:31.910Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,90 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-07-22-claude-code",
+      "date": "2026-07-22",
+      "topic": "Claude Code",
+      "title": "v2.1.215〜216——/verify・/code-review を手動呼び出しへ、ripgrep 標準化、長時間セッションの二乗遅延を解消",
+      "lede": "v2.1.215 で /verify・/code-review の自発実行をやめ、必要なときに明示的に呼ぶ方式へ。ripgrep をコードベース検索の標準ツールとして明記。v2.1.216 は sandbox.filesystem.disabled を追加し、長時間セッションで正規化コストがターン数の二乗で膨らむストール、OAuth 失効後の HTTP 401 誤検知を修正。直前の v2.1.207〜212 では /fork のバックグラウンド化と WebSearch/サブエージェント上限も入った。",
+      "articleHtml": "<p>この日のClaude Codeは<b>自律実行の安全弁と検索基盤の整理</b>が主役だ。<b>v2.1.215〜216</b>で、暴走しがちな自動実行を手動呼び出しへ引き戻し、長時間セッションの構造的な遅延を潰した。号令一下で数十分走らせる運用が当たり前になったからこそ、\"止める・速くする\"側の更新が効く。</p>\n<h4>何が新しいか</h4>\n<p>v2.1.215の目玉は<b><code>/verify</code>・<code>/code-review</code>の自動実行停止</b>。これまでClaudeが自発的に走らせていたのをやめ、必要なときにユーザーが明示的に呼ぶ方式へ変えた。あわせて<b>ripgrepをコードベース検索の標準ツール</b>としてドキュメント上で明記し、検索を高速・一貫にした。v2.1.216では<b><code>sandbox.filesystem.disabled</code></b>を追加——ネットワーク下り制御は保ったままファイルシステム隔離だけ外せる。さらに<b>長時間セッションでメッセージ正規化コストがターン数の二乗で膨らみ数秒ストールする問題</b>と、<b>OAuthトークン失効/ローテーション後にautoモードがHTTP 401を誤検知してコマンドを拒否する不具合</b>を修正した。</p>\n<figure class='fig'><svg viewBox='0 0 600 176' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='16' y='14' width='568' height='148' rx='10' fill='#f7f5fc' stroke='#7b3fe4' stroke-width='1.2'/><text x='34' y='44' font-size='13' font-weight='700' fill='#5a2bbf'>/verify・/code-review</text><text x='250' y='44' font-size='12' fill='#43405a'>自動実行を停止 → 明示呼び出しへ</text><line x1='30' y1='60' x2='570' y2='60' stroke='#e5ddf7' stroke-width='1'/><text x='34' y='90' font-size='13' font-weight='700' fill='#5a2bbf'>ripgrep 標準化</text><text x='250' y='90' font-size='12' fill='#43405a'>コードベース検索の既定ツールに明記</text><line x1='30' y1='106' x2='570' y2='106' stroke='#e5ddf7' stroke-width='1'/><text x='34' y='134' font-size='13' font-weight='700' fill='#5a2bbf'>長時間セッション</text><text x='250' y='128' font-size='12' fill='#43405a'>正規化コストの二乗遅延を修正</text><text x='250' y='146' font-size='12' fill='#43405a'>OAuth 401 誤検知も解消</text></svg><figcaption>図1：v2.1.215〜216 の主要変更。</figcaption></figure>\n<h4>背景——/fork のバックグラウンド化と暴走ガード</h4>\n<p>直前の<b>v2.1.207〜212</b>では、<code>/fork</code>が会話を<b>新しいバックグラウンドセッション</b>へコピーし、メイン作業を止めずに分岐できるようになった。暴走ループ対策として<b>WebSearch呼び出しとサブエージェント生成にセッション単位の上限（既定200）</b>を導入（<code>CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION</code>等で調整可）。<b>2分を超えるMCP呼び出しは自動でバックグラウンドへ移り</b>、経過時間のライブカウンタで「止まって見える」問題も解消した。</p>\n<figure class='fig'><pre class='mermaid'>flowchart TD\n  A[\"メインセッション\"] --> B[\"/fork で分岐\"]\n  B --> C[\"バックグラウンドセッションへコピー\"]\n  A --> D[\"メイン作業は止めず継続\"]\n  C --> E[\"WebSearch/サブエージェント上限200で暴走防止\"]</pre><figcaption>図2：/fork のバックグラウンド化と安全弁。</figcaption></figure>\n<h4>自分が試すなら</h4>\n<p>自動実行停止は黙って効くが、CIやレビュー運用で<code>/verify</code>を回していたなら明示呼び出しへ書き換えが要る。長時間の定期タスクは二乗遅延修正で体感が改善するはず。<code>sandbox.filesystem.disabled</code>はネットワーク制御を残しつつFS隔離が邪魔な回に限定して使う。</p>\n<h4>注意点</h4>\n<p>明示呼び出し化で「勝手にレビューしてくれる」前提のワークフローは黙って素通りになる——呼び忘れに注意。サブエージェント/WebSearch上限200は重い調査タスクだと途中で頭打ちになるので、必要なら環境変数で引き上げる。</p>\n<h4>ひとことまとめ</h4>\n<p>「自動をやめて明示へ、検索はripgrepへ、長時間は二乗遅延を解消」。派手さはないが、毎日エージェントを回す人ほど効く\"守り\"の回だ。</p>",
+      "sources": [
+        {
+          "title": "Claude Code v2.1.215 リリースノート (GitHub)",
+          "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.215"
+        },
+        {
+          "title": "Anthropic / Claude Code updates (releasebot.io)",
+          "url": "https://releasebot.io/updates/anthropic/claude-code"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-22-nextjs",
+      "date": "2026-07-22",
+      "topic": "Next.js",
+      "title": "カスタムカーソル＆マグネティック要素——rAF+lerp の一本の骨格で全部書く",
+      "lede": "アワード系サイト定番のポインタ追従を、依存ゼロ〜最小で堅牢に書く定石。カスタムカーソル/マグネティック/スティッキー変形/スポットライトの4種は、OS座標をそのまま使わず rAF ループ内で lerp して滑らかに寄せるという同じ核を持つ。App Router では 'use client' の小さな Client 島に閉じ込め、毎フレームの setState を避け useRef＋transform 直書きで再レンダーを起こさないのが鉄則。",
+      "articleHtml": "<p>この日のNext.jsテーマは<b>カスタムカーソル＆マグネティック要素</b>——アワード系サイト定番の\"ポインタ追従\"を、依存ゼロ〜最小で堅牢に書くための定石だ。カスタムカーソル／マグネティック要素／スティッキー変形／スポットライトの4種があるが、<b>共通の技術核は一つ</b>。OSカーソルの座標をそのまま反映せず、rAFループ内で<b>lerp（線形補間）</b>して滑らかに寄せる。この一点で全種が同じ骨格になる。</p>\n<h4>共通の骨格——rAF + lerp</h4>\n<p><code>pointermove</code>では<b>目標座標を更新するだけ</b>（重い処理を書かない）。<code>requestAnimationFrame</code>ループで<code>current += (target - current) * ease</code>（easeは0.1〜0.2、小さいほど粘る）。反映は必ず<b><code>transform: translate3d()</code></b>で行い、<code>left/top</code>は使わない（レイアウトを起こす）。カーソル要素には<b><code>pointer-events: none</code></b>必須——付け忘れると自作カーソルがクリックを食う。</p>\n<figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><defs><marker id='arn' markerWidth='8' markerHeight='8' refX='6' refY='3' orient='auto'><path d='M0 0 L6 3 L0 6 z' fill='#9aa8c8'/></marker></defs><rect x='14' y='48' width='128' height='54' rx='8' fill='#eef5ff' stroke='#1f6feb' stroke-width='1.2'/><text x='78' y='72' font-size='11.5' text-anchor='middle' fill='#1a4fa0'>pointermove</text><text x='78' y='90' font-size='10.5' text-anchor='middle' fill='#33507a'>目標座標だけ更新</text><rect x='170' y='48' width='128' height='54' rx='8' fill='#eef5ff' stroke='#1f6feb' stroke-width='1.2'/><text x='234' y='72' font-size='11.5' text-anchor='middle' fill='#1a4fa0'>rAF ループ</text><text x='234' y='90' font-size='10.5' text-anchor='middle' fill='#33507a'>current += (t-c)*ease</text><rect x='326' y='48' width='128' height='54' rx='8' fill='#eef5ff' stroke='#1f6feb' stroke-width='1.2'/><text x='390' y='72' font-size='11.5' text-anchor='middle' fill='#1a4fa0'>translate3d</text><text x='390' y='90' font-size='10.5' text-anchor='middle' fill='#33507a'>GPU 合成で反映</text><rect x='482' y='48' width='104' height='54' rx='8' fill='#f3eeff' stroke='#7b3fe4' stroke-width='1.2'/><text x='534' y='72' font-size='11.5' text-anchor='middle' fill='#5a2bbf'>60fps</text><text x='534' y='90' font-size='10.5' text-anchor='middle' fill='#4a3f6a'>滑らかに追従</text><path d='M142 75 L168 75' stroke='#9aa8c8' stroke-width='1.5' marker-end='url(#arn)'/><path d='M298 75 L324 75' stroke='#9aa8c8' stroke-width='1.5' marker-end='url(#arn)'/><path d='M454 75 L480 75' stroke='#9aa8c8' stroke-width='1.5' marker-end='url(#arn)'/><text x='300' y='128' font-size='11' text-anchor='middle' fill='#8a8a90'>lerp = なめらかさダイヤル（ease 小ほど粘る）</text></svg><figcaption>図1：全種に共通する rAF + lerp の骨格。</figcaption></figure>\n<h4>マグネティック要素</h4>\n<p>要素中心とポインタの差分<code>dx,dy</code>を出し、<code>translate(dx*strength, dy*strength)</code>（strength 0.2〜0.4）だけ動かす。<b>発動半径</b>内でだけ引き寄せ、近いほど強くすると本物の磁石らしくなる。<code>getBoundingClientRect()</code>は<b><code>pointerenter</code>時に1回だけ</b>取得してキャッシュ（毎フレーム読むとレイアウトスラッシング）。<code>pointerleave</code>でlerp戻しするとバネ感が出る。</p>\n<h4>Next.js（App Router）での組み込み</h4>\n<p><b><code>'use client'</code>必須</b>だが、影響範囲はカーソル用の小さな<b>Client島</b>だけ。<code>app/layout.tsx</code>にグローバルな<code>&lt;CustomCursor /&gt;</code>を1つ差し、中身は<code>position: fixed</code>のオーバーレイ。<b>SSRでは描画しない</b>（<code>useEffect</code>でマウント後のみ生成、でないとhydration mismatch）。そして<b>毎フレームReact stateを更新しない</b>——座標は<code>useRef</code>＋<code>style.transform</code>直書きかCSS変数へ書き、再レンダーを一切起こさないのが鉄則だ。</p>\n<figure class='fig'><pre class='mermaid'>flowchart TD\n  A[\"入力デバイス判定\"] --> B[\"hover:hover かつ pointer:fine?\"]\n  B --> C[\"No → ネイティブカーソルのまま\"]\n  B --> D[\"Yes → prefers-reduced-motion?\"]\n  D --> E[\"reduce → 追従なし\"]\n  D --> F[\"OK → カスタムカーソル有効化\"]</pre><figcaption>図2：出す/出さないのゲート判定。</figcaption></figure>\n<h4>アクセシビリティ</h4>\n<p><code>@media (hover: hover) and (pointer: fine)</code>のときだけ有効化（タッチ端末では出さない）。<code>prefers-reduced-motion: reduce</code>ではネイティブカーソルへ戻す。<code>cursor: none</code>の乱用でキャレット/フォーカスを失わせない。装飾カーソルはあくまで加点演出（プログレッシブエンハンスメント）に留める。</p>\n<h4>ひとことまとめ</h4>\n<p>「rAF+lerpで寄せる／transformで反映／stateを触らない」の三点で、依存なしでも滑らかなポインタ体験は作れる。Motionの<code>Cursor</code>やMotion+のmagnetic/zoningも内部は同じ骨格だ。</p>",
+      "sources": [
+        {
+          "title": "Motion for React — Custom Cursor",
+          "url": "https://motion.dev/docs/cursor"
+        },
+        {
+          "title": "Olivier Larose — Sticky Cursor with Next.js & Trigonometry",
+          "url": "https://blog.olivierlarose.com/tutorials/sticky-cursor"
+        },
+        {
+          "title": "dbushell — Custom Cursor Accessibility",
+          "url": "https://dbushell.com/2025/10/27/custom-cursor-accessibility/"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-22-flutter",
+      "date": "2026-07-22",
+      "topic": "Flutter",
+      "title": "AI がコア開発ループへ——Agentic Hot Reload と Rive×GenUI、Riverpod 3.3.1 の DI overrides",
+      "lede": "Flutter 3.44 / Dart 3.12 のテーマ built by everyone, for everyone の下、Agentic Hot Reload・Agent Skills・GenUI・A2UI・Genkit Dart が「書く・デバッグ・出荷」の各段へ統合。描画は Pure Impeller Vulkan がモダン Android の既定に。状態管理は Riverpod 3.3.1 のコード生成＋DI overrides テストが主役で、規制/大規模は Bloc 9.1.1。GPU 目標は 4ms 未満=60fps / 8.3ms 未満=120fps。",
+      "articleHtml": "<p>この日のFlutterは<b>AIがコア開発ループへ統合された</b>ことが主役だ。<b>Flutter 3.44 / Dart 3.12</b>のテーマ\"Everywhere, everyday, built by everyone, for everyone\"の下、<b>Agentic Hot Reload・Agent Skills・GenUI・A2UIプロトコル・Genkit Dart</b>が「書く・デバッグ・出荷」の各段に組み込まれた。安定版はFlutter 3.44.0/Dart 3.12で、次の機能リリースは8月予定（年4回：2/5/8/11月）。</p>\n<h4>何が新しいか</h4>\n<p><b>Agentic Hot Reload</b>はコーディングエージェントが起動中アプリを自動検出・接続し、UI変更後に自動でhot reloadする（Dart &amp; Flutter MCP Server経由・手動設定不要）。描画は<b>Pure Impeller Vulkan</b>がモダンAndroidの既定になり、初回シェーダーコンパイルのジャンクを排除。到達領域も広がり、<b>2026 Toyota RAV4</b>のマルチメディアがFlutter製、大画面向けに<b>LG webOS SDK</b>が近日提供。Dart 3.12は<code>private named parameters</code>・<code>primary constructors</code>（experimental）・<code>dot shorthands</code>を追加した。</p>\n<figure class='fig'><svg viewBox='0 0 600 140' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='24' font-size='11.5' text-anchor='middle' font-weight='700' fill='#025b8f'>AI がコア開発ループへ統合（Flutter 3.44 / Dart 3.12）</text><rect x='16' y='40' width='176' height='60' rx='8' fill='#eef8fd' stroke='#0277bd' stroke-width='1.2'/><text x='104' y='64' font-size='12.5' font-weight='700' text-anchor='middle' fill='#025b8f'>書く</text><text x='104' y='84' font-size='10.5' text-anchor='middle' fill='#2a4a5a'>GenUI / Agent Skills</text><rect x='212' y='40' width='176' height='60' rx='8' fill='#eef8fd' stroke='#0277bd' stroke-width='1.2'/><text x='300' y='64' font-size='12.5' font-weight='700' text-anchor='middle' fill='#025b8f'>デバッグ</text><text x='300' y='84' font-size='10.5' text-anchor='middle' fill='#2a4a5a'>Agentic Hot Reload</text><rect x='408' y='40' width='176' height='60' rx='8' fill='#eef8fd' stroke='#0277bd' stroke-width='1.2'/><text x='496' y='64' font-size='12.5' font-weight='700' text-anchor='middle' fill='#025b8f'>出荷</text><text x='496' y='84' font-size='10.5' text-anchor='middle' fill='#2a4a5a'>Pure Impeller Vulkan</text><text x='300' y='126' font-size='11' text-anchor='middle' fill='#8a8a90'>A2UI プロトコル・Genkit Dart が各段を貫く</text></svg><figcaption>図1：AI が「書く・デバッグ・出荷」に組み込まれた。</figcaption></figure>\n<h4>Rive×GenUI とレンダラ選択</h4>\n<p>アニメの深掘りは<b>A2UIで動的生成されるUIにRiveを組み込む</b>パターン。Riveの<b>state machine</b>でアニメロジックを描画から分離し、デザイナーはFlutterコードに触れずloading stateを反復（実装側はboolean/number/triggerを繋ぐだけ）、eventsでハプティクス/サウンド/ナビゲーションを正確トリガーする。複雑グラフィックや多数同時表示は<b><code>Factory.rive</code></b>（Vector Featheringはこれのみ）、<code>.riv</code>は事前ロード＋<code>RepaintBoundary</code>が定石だ。</p>\n<h4>状態管理とパフォーマンス</h4>\n<p>状態管理は<b>Riverpod 3.3.1のコード生成とDI overridesテスト</b>が主役。<code>@riverpod</code>＋<code>build_runner</code>でcompile-safeなproviderを生成し、<b>BuildContext不要でテスト可能</b>。テストの勝ち筋は<b>DI overrides</b>——<code>ProviderContainer(overrides:)</code>でツリー全体をモックせず任意providerだけ差し替える（<code>addTearDown(container.dispose)</code>）。選定は<b>新規=Riverpod 3.3.1＋コード生成、規制/監査/大規模=Bloc 9.1.1</b>。描画側はImpellerが<b>shader jankをほぼ排除</b>し60/120fpsをネイティブ級で実現、DevToolsの<b>flame chart</b>でジャンク関数を特定する。</p>\n<figure class='fig'><svg viewBox='0 0 600 112' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='20' y='26' font-size='12' font-weight='700' fill='#333'>GPU スレッド時間の目標</text><text x='20' y='56' font-size='12' fill='#333'>60fps</text><rect x='96' y='45' width='200' height='16' rx='4' fill='#0277bd'/><text x='306' y='58' font-size='11.5' fill='#025b8f'>&lt;4ms</text><text x='20' y='84' font-size='12' fill='#333'>120fps</text><rect x='96' y='73' width='384' height='16' rx='4' fill='#56c5f5'/><text x='490' y='86' font-size='11.5' fill='#025b8f'>&lt;8.3ms</text><text x='20' y='106' font-size='10.5' fill='#8a8a90'>計測は profile モード必須。flame chart でジャンク関数を特定。</text></svg><figcaption>図2：GPU スレッド時間の目安（フレーム予算 60fps=16ms / 120fps=8.3ms）。</figcaption></figure>\n<h4>自分が試すなら</h4>\n<p>まずAgentic Hot Reloadを試し、エージェント駆動のUI反復を体感したい。新規はRiverpod 3.3.1のコード生成でボイラープレートを削り、テストはDI overridesで書く。パフォーマンスはprofileモードでtimeline traceを取り、flame chartで犯人関数を突き止めてから<code>const</code>徹底・最小スライスwatch・<code>RepaintBoundary</code>で削る。</p>\n<h4>注意点</h4>\n<p>GPUスレッド時間の目標は<b>&lt;4ms=60fps／&lt;8.3ms=120fps</b>、計測は必ずprofileモード（debugは当てにならない）。カスタムfragment shaderは重い分岐を避け<code>mix</code>/<code>step</code>/<code>clamp</code>へ。Material/Cupertinoは3.44でコア凍結され将来独立バージョニングへ移る点も把握しておく。</p>\n<h4>ひとことまとめ</h4>\n<p>「書く・デバッグ・出荷にAIが入り、描画はPure Impeller Vulkan、状態はRiverpod 3.3.1のコード生成＋DI overrides」。3.44は開発ループそのものを作り替える回だ。</p>",
+      "sources": [
+        {
+          "title": "Flutter at Google I/O 2026 (Medium)",
+          "url": "https://medium.com/flutter-community/flutter-at-google-i-o-2026-4fe9dcc8a849"
+        },
+        {
+          "title": "Rive Animations + GenUI (verygood.ventures)",
+          "url": "https://verygood.ventures/blog/rive-flutter-genui-integration/"
+        },
+        {
+          "title": "BLoC vs Riverpod 2026 (flutterstudio)",
+          "url": "https://flutterstudio.dev/blog/bloc-vs-riverpod.html"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-22-github-trending",
+      "date": "2026-07-22",
+      "topic": "GitHub Trending",
+      "title": "7/22の話題リポジトリ — エージェント協調・スキル自動最適化・自然言語からCAD",
+      "lede": "この日 Trendshift 上位に躍り出た3本は エージェント時代の各層 を映す。エージェント同士を束ねる通信基盤、スキルを人手で書く段階から自動最適化する段階へ、そして生成AIを物理世界（CAD/ハードウェア）へ広げる試みだ。",
+      "articleHtml": "<p>この日Trendshiftで急上昇した中から3本を選ぶと、共通するのは<b>「単発のツール」から「エージェントの各層を支える基盤」へ</b>という潮流だ。エージェント同士をどう束ねるか、スキルをどう育てるか、そして生成AIをどう物理世界へ広げるか——階層の異なる3つの試みが同日に伸びた。</p>\n<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='12' y='12' width='576' height='188' rx='10' fill='#f2fbf4' stroke='#3fb950' stroke-width='1.2'/><line x1='150' y1='20' x2='150' y2='192' stroke='#cdefd4' stroke-width='1'/><line x1='20' y1='56' x2='580' y2='56' stroke='#cdefd4' stroke-width='1'/><line x1='20' y1='102' x2='580' y2='102' stroke='#cdefd4' stroke-width='1'/><line x1='20' y1='148' x2='580' y2='148' stroke='#cdefd4' stroke-width='1'/><text x='28' y='42' font-size='11.5' font-weight='700' fill='#1a7f37'>repo</text><text x='300' y='42' font-size='11' font-weight='700' text-anchor='middle' fill='#1a7f37'>解決する課題 → 提供する機能</text><text x='28' y='84' font-size='11' font-weight='700' fill='#1a7f37'>block/buzz</text><text x='162' y='80' font-size='10.5' fill='#2a4a35'>協調の場が無い → ハイブマインド型の</text><text x='162' y='95' font-size='10.5' fill='#2a4a35'>エージェント通信基盤（セルフホスト）</text><text x='28' y='130' font-size='11' font-weight='700' fill='#1a7f37'>SkillOpt</text><text x='162' y='126' font-size='10.5' fill='#2a4a35'>スキルは手書き → 軌跡ベースで自動最適化し</text><text x='162' y='141' font-size='10.5' fill='#2a4a35'>best_skill.md を検証ゲート付きで出力</text><text x='28' y='176' font-size='11' font-weight='700' fill='#1a7f37'>text-to-cad</text><text x='162' y='172' font-size='10.5' fill='#2a4a35'>物理設計は未自動化 → 自然言語から</text><text x='162' y='187' font-size='10.5' fill='#2a4a35'>CAD／3D モデルを生成</text></svg><figcaption>図1：3本の「解決する課題 → 提供する機能」対応。</figcaption></figure>\n<h4>block/buzz（—・⭐1.3k）</h4>\n<p><b>解決したい課題:</b> 単体のAIエージェントは賢くても、複数を協調させて集合知として働かせる標準的な\"通信の場\"がない。各自がバラバラに動くと重複や取りこぼしが起きる。<b>提供する機能:</b> 決済大手Block（旧Square）発の、AIエージェント同士が協調する<b>\"ハイブマインド（hive mind）\"型コミュニケーション基盤</b>。セルフホスト可能でプライバシーにも配慮する。本日Trendshift日次3位（New 2026）に躍り出た新星で、\"エージェント協調・通信基盤\"という数少ない枠として急拡散している。</p>\n<h4>microsoft/SkillOpt（—・⭐540）</h4>\n<p><b>解決したい課題:</b> エージェント用のスキル（自然言語の指示パック）は今なお<b>人手で書いて手で直す</b>のが主流で、品質もトークン効率も職人技に依存する。<b>提供する機能:</b> 凍結LLMエージェント向けに、実行<b>軌跡（trajectory）ベースの編集</b>で再利用可能なスキル文を自動学習・最適化する<b>テキスト空間オプティマイザ</b>。検証ゲートを通し、デプロイ可能な<code>best_skill.md</code>を出力する。Microsoft発で本日日次18位。\"スキルを書く→自動で最適化する\"次段階として注目されている。</p>\n<h4>earthtojake/text-to-cad（—・⭐415）</h4>\n<p><b>解決したい課題:</b> ソフトウェア一色のエージェント活用に対し、<b>CAD・ロボティクス・ハードウェア設計</b>という物理世界の設計作業はまだ自動化の恩恵が薄い。<b>提供する機能:</b> <b>自然言語からCADを起こす</b>ためのagent skill集。設計をエージェントに委譲し、言葉から3D/CADモデルを生成する。本日日次24位（New 2026）。物理世界寄りの珍しい切り口で、3D生成/ハードウェアという希少ジャンルとしてトレンドの多様性を担う。</p>\n<h4>試すなら</h4>\n<p>自分の運用に最も刺さるのは<b>SkillOpt</b>。毎日多数のスキル/定期タスクを回すなら、手書きのSKILL.mdを検証データで自動改良でき、品質とトークン効率を同時に底上げできる。まず1つの定期タスクのスキル最適化から試験導入する価値がある。</p>",
+      "sources": [
+        {
+          "title": "block/buzz",
+          "url": "https://github.com/block/buzz"
+        },
+        {
+          "title": "microsoft/SkillOpt",
+          "url": "https://github.com/microsoft/SkillOpt"
+        },
+        {
+          "title": "earthtojake/text-to-cad",
+          "url": "https://github.com/earthtojake/text-to-cad"
+        }
+      ]
+    },
     {
       "id": "2026-07-21-claude-code",
       "date": "2026-07-21",
@@ -2133,94 +2217,6 @@
         {
           "title": "Announcing Dart 3.12",
           "url": "https://dart.dev/blog/announcing-dart-3-12"
-        }
-      ]
-    },
-    {
-      "id": "2026-06-27-claude-code",
-      "date": "2026-06-27",
-      "topic": "Claude Code",
-      "title": "Claude Code 週次更新（v2.1.166〜176）— /cd で作業ディレクトリを途中変更、サブエージェント入れ子化、--safe-mode と fallbackModel、sandbox.credentials で秘密情報を遮断",
-      "lede": "エージェントに長く任せるほど、作業ディレクトリの固定・秘密情報の漏れ・モデル障害時の停止といった地味な引っかかりが効いてくる。6月第2週の週次リリース（v2.1.166〜176）と公式changelogは、/cd の途中ディレクトリ変更、サブエージェントの入れ子生成（最大5階層）、--safe-mode、fallbackModel、sandbox.credentials を一気に投入した。派手さより「止まりにくく・壊れにくく・漏れにくく」を底上げする更新だ。",
-      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>エージェントに長時間任せるほど、地味な運用の引っかかりが効いてくる。作業ディレクトリが固定で別プロジェクトに移れない、サンドボックス内のコマンドが認証情報を読めてしまう、モデル側が一時的に落ちるとセッションごと止まる——こうした「事故と中断」を減らす運用系の改善が、6月第2週の週次リリース（<code>v2.1.166〜176</code>）と公式changelogでまとめて入った。</p>\n<h4>何が新しいか</h4>\n<p>目玉は5つ。<b>/cd</b> は会話の途中で作業ディレクトリを移動でき、<b>プロンプトキャッシュを再構築せず</b>に別ディレクトリへ切り替えられる。<b>サブエージェントの入れ子生成</b>が可能になり、バックグラウンドの連鎖は<b>最大5階層</b>まで。<b>--safe-mode</b> は全カスタマイズ（MCP・hooks・skills 等）を無効化して起動し、不具合の切り分けを容易にする。<b>fallbackModel</b> は<b>最大3モデル</b>を順に試すフォールバック構成に対応。安全面では <b>sandbox.credentials</b> がサンドボックス実行中のコマンドから<b>認証情報ファイルや秘密の環境変数の読取を遮断</b>する。あわせて、大きなツリーで <code>denyRead/allowRead</code> のグロブが Bash ツール説明文を肥大化させ Linux でセッションが使えなくなる不具合、スピナーが「running tool」で固着する問題を修正し、<b>ミッドストリーム切断時には生エラーを出さず部分応答を保持</b>するようになった。なお v2.1.161 単体でも22項目の変更（権限挙動・MCP レジリエンス・OAuth・省メモリ化）が入っている。</p>\n<figure class='fig'><svg viewBox='0 0 600 184' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='20' text-anchor='middle' font-size='12.5' font-weight='700' fill='#5b27b0'>週次更新の3つの軸</text><rect x='24' y='34' width='176' height='134' rx='10' fill='#f3eefb' stroke='#b58bd6'/><text x='112' y='56' text-anchor='middle' font-size='11.5' font-weight='700' fill='#5b27b0'>運用</text><text x='112' y='80' text-anchor='middle' font-size='10' fill='#6b4a93'>/cd で途中ディレクトリ変更</text><text x='112' y='100' text-anchor='middle' font-size='10' fill='#6b4a93'>（キャッシュ再構築なし）</text><text x='112' y='124' text-anchor='middle' font-size='10' fill='#6b4a93'>サブエージェント入れ子</text><text x='112' y='144' text-anchor='middle' font-size='10' fill='#6b4a93'>最大5階層</text><rect x='212' y='34' width='176' height='134' rx='10' fill='#fbeeee' stroke='#d68b8b'/><text x='300' y='56' text-anchor='middle' font-size='11.5' font-weight='700' fill='#a0335a'>安全</text><text x='300' y='80' text-anchor='middle' font-size='10' fill='#7a3b3b'>sandbox.credentials で</text><text x='300' y='100' text-anchor='middle' font-size='10' fill='#7a3b3b'>秘密情報の読取を遮断</text><text x='300' y='124' text-anchor='middle' font-size='10' fill='#7a3b3b'>--safe-mode で</text><text x='300' y='144' text-anchor='middle' font-size='10' fill='#7a3b3b'>全カスタマイズ無効化</text><rect x='400' y='34' width='176' height='134' rx='10' fill='#eef7f0' stroke='#6cc69a'/><text x='488' y='56' text-anchor='middle' font-size='11.5' font-weight='700' fill='#1d8a5a'>信頼性</text><text x='488' y='80' text-anchor='middle' font-size='10' fill='#27674a'>fallbackModel 最大3</text><text x='488' y='100' text-anchor='middle' font-size='10' fill='#27674a'>モデルを順に試行</text><text x='488' y='124' text-anchor='middle' font-size='10' fill='#27674a'>切断時に部分応答を保持</text><text x='488' y='144' text-anchor='middle' font-size='10' fill='#27674a'>スピナー固着を解消</text></svg><figcaption>図1：運用・安全・信頼性の三方向で「止まりにくく・漏れにくく」を底上げ。</figcaption></figure>\n<h4>fallbackModel の動き</h4>\n<p>fallbackModel は指定したモデルを<b>左から順に</b>試し、過負荷やエラーで失敗したら次へ自動で切り替える。長時間の自動実行中に主モデルが一時的に落ちても、セッションを止めずに継続できる。</p>\n<figure class='fig'><pre class='mermaid'>flowchart LR\n  A[\"primary model\"] -->|\"過負荷/エラー\"| B[\"fallback 1\"]\n  B -->|\"失敗\"| C[\"fallback 2\"]\n  A -->|\"成功\"| D[\"応答を継続\"]\n  B -->|\"成功\"| D\n  C -->|\"成功\"| D</pre><figcaption>図2：最大3モデルを順に試し、セッションを止めずに続ける。</figcaption></figure>\n<h4>自分が試すなら</h4>\n<ul><li>モノレポで <code>/cd</code> を使い、パッケージ間をキャッシュ維持のまま移動できるか確認する。</li><li>設定に <b>fallbackModel</b> を入れ、主モデル過負荷時に継続するか試す。</li><li>機密を扱う環境で <b>sandbox.credentials</b> を有効化し、秘密が読めないことを検証する。</li><li>不調時はまず <code>--safe-mode</code> で起動し、カスタマイズ起因かを切り分ける。</li></ul>\n<h4>注意点</h4>\n<blockquote>サブエージェントの入れ子は強力だが、5階層の連鎖はトークン消費とコストが膨らみやすい。Claude Code の年換算売上は25億ドル規模に達し利用が急増する一方、月次支出が跳ねる事例も報じられており、fallback や入れ子を使う前に予算・使用量の可視化を整えておきたい。--safe-mode は切り分け用で、常用すると必要な拡張まで無効化される点に注意。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>今回は「止まりにくく・壊れにくく・漏れにくく」を一段進めた運用アップデート。/cd と入れ子サブエージェントで作業の自由度を上げ、fallbackModel と部分応答保持で中断を減らし、sandbox.credentials で足元の安全を固める三方向の改善だ。</p>",
-      "sources": [
-        {
-          "title": "Claude Code What's new（公式）",
-          "url": "https://code.claude.com/docs/en/whats-new"
-        },
-        {
-          "title": "Claude Code changelog（公式）",
-          "url": "https://code.claude.com/docs/en/changelog"
-        },
-        {
-          "title": "Claude Code v2.1.161 リリースノート（Claude Updates）",
-          "url": "https://www.claudeupdates.dev/version/2.1.161"
-        }
-      ]
-    },
-    {
-      "id": "2026-06-27-nextjs",
-      "date": "2026-06-27",
-      "topic": "Next.js",
-      "title": "JSなしのネイティブCSSカルーセル — ::scroll-button() / ::scroll-marker で Server Component のまま送りボタンとドットを作る（Chrome/Edge 135）",
-      "lede": "カルーセルはこれまで embla や swiper などクライアントJS必須の代表格で、App Router では 'use client' 化とhydrationのコストを払ってきた。CSS Overflow Module Level 5 のプリミティブが Chrome / Edge 135（2025年3月）で出荷され、JavaScriptなしで送りボタンとドットページャを付けられるようになった。Server Component のまま動き、端での自動 disabled やキーボード巡回まで標準装備。ただし対応はChromium系のみで、プログレッシブエンハンスメント前提で使う。",
-      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>カルーセルはこれまで <code>embla</code> や <code>swiper</code> など<b>クライアントJS必須</b>の代表格で、App Router では <code>'use client'</code> 化と hydration のコストを払ってきた。CSS Overflow Module Level 5 が定義した一連のプリミティブが <b>Chrome / Edge 135（2025年3月）</b>で出荷され、<b>JavaScriptなし</b>で送りボタンとドットページャを付けられるようになった。Server Component のまま動くので、クライアントJSもhydrationも不要になり、バンドル削減とLCP/INPに効く。</p>\n<h4>何が新しいか</h4>\n<p>カルーセルの正体は「<b>スクロール領域＋最大2つのアフォーダンス</b>」。土台は普通のオーバーフロー領域に <code>scroll-snap-type: x mandatory</code> を付けるだけ。そこへ擬似要素を足す。<b><code>::scroll-button(left/right)</code></b> はブラウザ生成の本物の <code>&lt;button&gt;</code> で、押すとスクロール領域の<b>85%</b>送り（snapがあれば実質1枚送り）、<b>端で自動的に <code>:disabled</code></b> になる。第2引数で代替テキストも渡せる（<code>content: \"➡\" / \"次へ\"</code>）。<b><code>scroll-marker-group</code></b> でドット/サムネの入れ物を生成し、各アイテムの <b><code>::scroll-marker</code></b> がその項目への<b>アンカー <code>&lt;a&gt;</code></b> を作る。現在地は <b><code>:target-current</code></b> で装飾でき、キーボード巡回やスクリーンリーダーの tablist 相当の読み上げ、端での自動無効化までブラウザが面倒を見る。</p>\n<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='18' text-anchor='middle' font-size='12.5' font-weight='700' fill='#1456b8'>カルーセル＝スクロール領域＋2つのアフォーダンス</text><rect x='72' y='40' width='456' height='92' rx='10' fill='#eef4fd' stroke='#7aa8ef'/><rect x='92' y='58' width='120' height='56' rx='6' fill='#fff' stroke='#9cc0f5'/><rect x='240' y='58' width='120' height='56' rx='6' fill='#fff' stroke='#9cc0f5'/><rect x='388' y='58' width='120' height='56' rx='6' fill='#fff' stroke='#9cc0f5'/><text x='300' y='128' text-anchor='middle' font-size='9' fill='#3a6abf'>scroll-snap-type: x mandatory（土台は普通のオーバーフロー領域）</text><circle cx='44' cy='86' r='16' fill='#1f6feb'/><text x='44' y='91' text-anchor='middle' font-size='15' fill='#fff'>‹</text><circle cx='556' cy='86' r='16' fill='#1f6feb'/><text x='556' y='91' text-anchor='middle' font-size='15' fill='#fff'>›</text><text x='44' y='118' text-anchor='middle' font-size='8' fill='#1456b8'>::scroll-button()</text><text x='556' y='118' text-anchor='middle' font-size='8' fill='#1456b8'>端で自動 disabled</text><circle cx='270' cy='166' r='6' fill='#1f6feb'/><circle cx='292' cy='166' r='6' fill='none' stroke='#7aa8ef'/><circle cx='314' cy='166' r='6' fill='none' stroke='#7aa8ef'/><text x='300' y='190' text-anchor='middle' font-size='9' fill='#1456b8'>::scroll-marker（:target-current で現在地をハイライト）</text></svg><figcaption>図1：本物の button と a が生成され、端での自動 disabled・現在地ハイライトまで標準装備。</figcaption></figure>\n<h4>App Router での組み込みとフォールバック</h4>\n<p>純CSSなので <code>'use client'</code> 不要、<b>RSCで <code>map</code> して生成</b>できる。最大の注意は対応範囲で、<b>2026年6月時点でも Chromium 系のみ</b>（Firefox/Safari は実装中）。未対応ブラウザでは擬似要素が無視されるが、<b>素のスクロール領域としては成立</b>する。だから<b>プログレッシブエンハンスメント</b>前提で設計し、どうしても全ブラウザでボタン/ドットが要る場合だけ <code>CSS.supports('selector(::scroll-marker)')</code> で判定して未対応時に小さなクライアントコンポーネントで補う（＝対応ブラウザはJSゼロ）。スムーススクロールは <code>prefers-reduced-motion: no-preference</code> のときだけ有効化し、機能（送り・ジャンプ）は常に残す。</p>\n<figure class='fig'><pre class='mermaid'>flowchart TD\n  A[\"::scroll-marker をサポート?\"] -->|\"はい (Chrome/Edge 135+)\"| B[\"ネイティブのボタン＋ドット（JSゼロ）\"]\n  A -->|\"いいえ (Firefox/Safari)\"| C[\"素のスクロール領域として成立\"]\n  C -->|\"必要なら\"| D[\"小さな client component で prev/next を補完\"]</pre><figcaption>図2：対応ブラウザはJSゼロ、未対応は素のスクロール領域＋任意でclient補完。</figcaption></figure>\n<h4>自分が試すなら</h4>\n<ul><li>RSC のまま <code>&lt;ul class=\"carousel\"&gt;</code> を <code>map</code> で出し、<code>::scroll-button()</code> と <code>::scroll-marker</code> をCSSだけで足す最小カルーセルを組む。</li><li>Tailwind v4 を使う場合は、擬似要素は <code>@layer</code> で素のCSSを書き、配色は <code>@theme</code> トークンを <code>var()</code> 参照で統一する。</li><li>Firefox/Safari で素のスクロール領域として成立するかを必ず確認し、UI前提にしない。</li></ul>\n<h4>注意点</h4>\n<blockquote>対応は Chromium 135+ のみ。<code>scroll-behavior: smooth</code> × snap × 85%送りは相性で崩れることがあるので <code>grid-auto-columns</code> と gap で調整する。v1では自前要素の差し込み・循環スクロールは不可（将来対応）。「カルーセル」と呼ぶが本質はスクロール領域のナビ強化で、タブUI・スライド・ギャラリーにも同じ仕組みが使える（過剰にカルーセル化しない）。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>ネイティブCSSカルーセルは「JSを足さずにアクセシブルな送り＆ページャを得る」手段。Server Component と相性が良くバンドルとCWVに効くが、当面はChromium限定なので、未対応でも成立する設計を土台に進行的強化として載せるのが正解だ。</p>",
-      "sources": [
-        {
-          "title": "Carousels with CSS — Chrome for Developers",
-          "url": "https://developer.chrome.com/blog/carousels-with-css"
-        },
-        {
-          "title": "Creating CSS carousels — MDN",
-          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Overflow/Carousels"
-        },
-        {
-          "title": "::scroll-marker — MDN",
-          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Selectors/::scroll-marker"
-        }
-      ]
-    },
-    {
-      "id": "2026-06-27-flutter",
-      "date": "2026-06-27",
-      "topic": "Flutter",
-      "title": "Flutter コアSDKのスリム化 — Material/Cupertino がパッケージ独立へ（material_ui / cupertino_ui）、Dart 3.12 の dot shorthands と private named parameters",
-      "lede": "安定版は Flutter 3.44.0 / Dart 3.12.2（Google I/O 2026, 2026-05-18, 次は8月）。今日の主役は新ウィジェットではなく、コアSDKそのもののスリム化だ。長年同梱されてきた Material / Cupertino がコード凍結され、独立した pub.dev パッケージ（将来 material_ui / cupertino_ui）へ移行を始めた。3ヶ月のSDKサイクルから切り離して独立更新を可能にし、アプリサイズを縮小する狙いがある。Dart 3.12 の新文法とあわせて整理する。",
-      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>安定版は <b>Flutter 3.44.0 / Dart 3.12.2</b>（Google I/O 2026, 2026-05-18, 次の安定版は8月予定）。今日の主役は新ウィジェットではなく<b>コアSDKそのもののスリム化</b>だ。長年 <code>flutter/flutter</code> に同梱されてきた <b>Material / Cupertino がコード凍結</b>され、リポジトリの外の<b>独立した pub.dev パッケージ</b>（将来 <code>material_ui</code> / <code>cupertino_ui</code>）へ移行を始めた。3ヶ月のSDKサイクルから切り離してUIを独立更新できるようにしつつ、<b>アプリサイズを縮小</b>する狙いがある。</p>\n<h4>何が変わるか</h4>\n<p>SDK本体からUIライブラリが分離されると、<b>Material の更新（slider・theming・indicator の対応拡大など）がSDKリリースを待たずに出せる</b>ようになり、使わないUIを含めないことでバイナリも小さくなる。開発体験では <code>flutter run</code> が<b>構成ファイル</b>をサポートし、Web の <code>host / port / certification / header</code> に加え <b><code>proxy</code></b> 設定も書けるようになった。言語側の <b>Dart 3.12</b> は <b>dot shorthands</b>（<code>.value</code> の省略記法）で enum/静的メンバ参照を簡潔化、<b>private named parameters</b> と<b>実験的な primary constructors</b> でボイラープレートを削る。さらに <b>Agentic Hot Reload</b>（Dart MCP Server 経由の自動ホットリロード）や <b>Genkit</b> 追加など、AIエージェント連携も前進している。</p>\n<figure class='fig'><svg viewBox='0 0 600 188' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='18' text-anchor='middle' font-size='12.5' font-weight='700' fill='#066aa0'>コアSDKのスリム化：UIライブラリを分離</text><text x='150' y='40' text-anchor='middle' font-size='11' font-weight='700' fill='#444'>従来（同梱）</text><rect x='40' y='50' width='220' height='120' rx='10' fill='#e9f5fb' stroke='#6cc0e6'/><rect x='58' y='66' width='184' height='28' rx='5' fill='#fff' stroke='#9bd3ea'/><text x='150' y='84' text-anchor='middle' font-size='10' fill='#066aa0'>Flutter engine / framework</text><rect x='58' y='100' width='184' height='28' rx='5' fill='#d8eefb' stroke='#6cc0e6'/><text x='150' y='118' text-anchor='middle' font-size='10' fill='#066aa0'>Material</text><rect x='58' y='134' width='184' height='28' rx='5' fill='#d8eefb' stroke='#6cc0e6'/><text x='150' y='152' text-anchor='middle' font-size='10' fill='#066aa0'>Cupertino</text><text x='300' y='116' text-anchor='middle' font-size='20' fill='#9aa0ad'>→</text><text x='450' y='40' text-anchor='middle' font-size='11' font-weight='700' fill='#1d8a5a'>これから（分離）</text><rect x='340' y='50' width='220' height='40' rx='10' fill='#eef7f0' stroke='#6cc69a'/><text x='450' y='74' text-anchor='middle' font-size='10' fill='#1d8a5a'>スリムなコアSDK</text><rect x='340' y='100' width='104' height='62' rx='8' fill='#fff' stroke='#6cc69a'/><text x='392' y='126' text-anchor='middle' font-size='9.5' fill='#1d8a5a'>material_ui</text><text x='392' y='142' text-anchor='middle' font-size='8' fill='#3a8a66'>pub.dev で独立更新</text><rect x='456' y='100' width='104' height='62' rx='8' fill='#fff' stroke='#6cc69a'/><text x='508' y='126' text-anchor='middle' font-size='9.5' fill='#1d8a5a'>cupertino_ui</text><text x='508' y='142' text-anchor='middle' font-size='8' fill='#3a8a66'>アプリサイズ縮小</text></svg><figcaption>図1：Material/Cupertino を pub.dev パッケージへ。SDKサイクルに縛られず更新でき、アプリも軽くなる。</figcaption></figure>\n<h4>Dart 3.12 の書き味</h4>\n<p>dot shorthands は型が分かっている文脈で型名を省ける。enum や静的メンバの参照が短くなり、UIコードの定型句が減る。</p>\n<pre><code>// before\nsetMode(ThemeMode.dark);\nfinal align = MainAxisAlignment.center;\n\n// Dart 3.12: dot shorthands（型が推論できる文脈で型名を省略）\nsetMode(.dark);\nfinal align = .center;</code></pre>\n<figure class='fig'><svg viewBox='0 0 600 120' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='20' text-anchor='middle' font-size='12.5' font-weight='700' fill='#066aa0'>安定版リリースは年4回（2/5/8/11月）</text><line x1='80' y1='66' x2='540' y2='66' stroke='#cdd6dd' stroke-width='3'/><circle cx='100' cy='66' r='6' fill='#6cc0e6'/><text x='100' y='52' text-anchor='middle' font-size='10' fill='#2b6e8f'>2月</text><circle cx='250' cy='66' r='9' fill='#066aa0'/><text x='250' y='48' text-anchor='middle' font-size='10' font-weight='700' fill='#066aa0'>5月・3.44（現在）</text><circle cx='400' cy='66' r='7' fill='#56c5f5'/><text x='400' y='52' text-anchor='middle' font-size='10' fill='#2b6e8f'>8月（次の安定版）</text><circle cx='520' cy='66' r='6' fill='#6cc0e6'/><text x='520' y='52' text-anchor='middle' font-size='10' fill='#2b6e8f'>11月</text><text x='300' y='94' text-anchor='middle' font-size='9' fill='#888'>3.44.0 / Dart 3.12.2（Google I/O 2026, 2026-05-18）</text></svg><figcaption>図2：現行は5月の3.44系、次の安定版は8月予定。</figcaption></figure>\n<h4>自分が試すなら</h4>\n<ul><li>検証ブランチで 3.44 にし、Material/Cupertino の import が将来 <code>material_ui</code> 等へ移る前提で依存を棚卸しする。</li><li>Dart 3.12 の dot shorthands を enum/定数の多い箇所に部分導入して可読性を測る。</li><li><code>flutter run</code> の構成ファイルに <code>proxy</code> を書き、社内プロキシ越しのWeb実行を試す。</li></ul>\n<h4>注意点</h4>\n<blockquote>primary constructors は<b>実験プレビュー</b>で本番不可。Material/Cupertino のパッケージ分離は移行作業が当面続くため、将来 import パスやバージョン指定の置き換えが発生しうる。状態管理の基本線は変わらず、新規/非同期取得＝Riverpod 3.0、監査・規制・複雑な並行処理＝Bloc 9.0。性能は profile モードで計測し、フレーム予算 <b>60fps=16ms / 120fps=11ms</b>（ラスタライズは各 4ms / 8.3ms 目安）を物差しにする。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>3.44 の本質は「コアの軽量化と分離」。UIライブラリをパッケージへ出して独立更新とサイズ削減を進め、Dart 3.12 の新文法で日常コードを整理する。まずは依存の棚卸しと dot shorthands の部分導入から始めるのが現実的だ。</p>",
-      "sources": [
-        {
-          "title": "What's new in the docs（Flutter 公式）",
-          "url": "https://docs.flutter.dev/release/whats-new"
-        },
-        {
-          "title": "Announcing Dart 3.12",
-          "url": "https://dart.dev/blog/announcing-dart-3-12"
-        },
-        {
-          "title": "Flutter 3.44 & Dart 3.12 at Google I/O 2026",
-          "url": "https://yawarothman.medium.com/flutter-3-44-dart-3-12-everything-that-changed-at-google-i-o-2026-16f73a0c03d5"
-        }
-      ]
-    },
-    {
-      "id": "2026-06-26-claude-code",
-      "date": "2026-06-26",
-      "topic": "Claude Code",
-      "title": "Claude Code、自動モードが破壊的コマンドを既定ブロック — git reset --hard / terraform destroy を遮断、Claude Design も大型刷新",
-      "lede": "エージェントに自動実行を任せるほど、取り返しのつかない操作の事故が怖い。最新の公式changelogでは、自動（auto）モードが git reset --hard・git clean -fd・terraform destroy などの破壊的コマンドを既定でブロックするようになった。あわせてストール表示の文言・しきい値の調整、JetBrains/Kitty端末の不具合修正、6月17日の Claude Design 大型刷新（/design-sync・/design）も到来している。",
-      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>自律的に走る時間が延びるほど、エージェントが<b>不可逆な操作</b>を踏んだときの被害が大きくなる。<code>git reset --hard</code> でローカル変更を吹き飛ばす、<code>terraform destroy</code> でスタックを消す——こうした事故を「明示的に指示していない限り起こさない」よう、自動モードの安全装置が一段強化された。</p>\n<h4>何が新しいか</h4>\n<p>公式changelogによると、自動モードはローカルの変更破棄を明示的に指示していない場合、<code>git reset --hard</code>・<code>git checkout -- .</code>・<code>git clean -fd</code>・<code>git stash drop</code> といった破壊的gitコマンドを<b>既定でブロック</b>する。さらに当該セッションで<b>エージェント自身が作成していないコミット</b>への <code>git commit --amend</code> を遮断し、<code>terraform destroy</code>・<code>pulumi destroy</code>・<code>cdk destroy</code> も特定スタックを指定して依頼した場合を除いて停止する。信頼性面では、ストリーミングが滞った際のヒントが「No response from API · Retrying…」から「Waiting for API response · will retry…」に変わり、発火が<b>10秒の沈黙から20秒</b>に緩和。JetBrains系IDE(2026.1+)端末のちらつきを同期出力で解消し、Kitty系端末(WezTerm・Ghostty・kitty)で <code>Shift+非ASCII</code>(例 Shift+ä→Ä)が欠落する不具合、2.1.169 混入の起動リグレッション(約120ms増)も修正された。</p>\n<figure class='fig'><svg viewBox='0 0 600 184' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='20' text-anchor='middle' font-size='12.5' font-weight='700' fill='#5b27b0'>自動モード：破壊的コマンドを既定でブロック</text><rect x='20' y='36' width='262' height='128' rx='10' fill='#fbeeee' stroke='#d68b8b'/><text x='151' y='58' text-anchor='middle' font-size='11.5' font-weight='700' fill='#a05'>遮断対象（明示依頼がなければ）</text><text x='151' y='82' text-anchor='middle' font-size='10.5' fill='#7a3b3b'>git reset --hard / checkout -- .</text><text x='151' y='102' text-anchor='middle' font-size='10.5' fill='#7a3b3b'>git clean -fd / stash drop</text><text x='151' y='122' text-anchor='middle' font-size='10.5' fill='#7a3b3b'>他者コミットへの --amend</text><text x='151' y='142' text-anchor='middle' font-size='10.5' fill='#7a3b3b'>terraform / pulumi / cdk destroy</text><rect x='318' y='36' width='262' height='128' rx='10' fill='#eef7f0' stroke='#5bb98a'/><text x='449' y='58' text-anchor='middle' font-size='11.5' font-weight='700' fill='#1d8a5a'>挙動</text><text x='449' y='84' text-anchor='middle' font-size='10.5' fill='#27674a'>明示指示がなければ実行を停止</text><text x='449' y='106' text-anchor='middle' font-size='10.5' fill='#27674a'>スタック指定の destroy のみ許可</text><text x='449' y='128' text-anchor='middle' font-size='10.5' fill='#1d8a5a'>→ 不可逆操作の事故を抑止</text></svg><figcaption>図1：自動実行中の「やり直せない」操作を既定で止める。</figcaption></figure>\n<h4>Claude Design の大型刷新</h4>\n<p>6月17日、Anthropic は <b>Claude Design</b> を大型刷新し、Claude Code との<b>デザイン⇔コード双方向連携</b>を追加した。<code>/design-sync</code> で既存コードベースのデザインシステムを Claude Design に取り込み、<code>/design</code> で Claude Design 側の修正・追加を Claude Code に同期する。9プラットフォームへのコネクタやブランドコントロールも加わり、ブランド一貫性を保ったまま UI 実装まで一本の流れにつなぐ狙いだ。</p>\n<figure class='fig'><pre class='mermaid'>flowchart LR\n  A[\"既存コードのデザインシステム\"] -->|\"/design-sync\"| B[\"Claude Design\"]\n  B -->|\"修正・追加\"| C[\"更新されたデザイン\"]\n  C -->|\"/design\"| D[\"Claude Code で実装へ同期\"]</pre><figcaption>図2：design-sync で取り込み、design で実装へ。デザインとコードを往復する。</figcaption></figure>\n<h4>自分が試すなら</h4>\n<ul><li>自動モードを使う既存リポジトリで、<code>reset --hard</code> 等が確かに止まるかを安全な検証用ブランチで確認する。</li><li>IaC を扱うなら、<code>destroy</code> 系がスタック指定なしで止まる挙動を前提に運用ルールを更新する。</li><li>UIのある案件で <code>/design-sync</code>→<code>/design</code> の往復を一度通し、コード化までの分断が減るか体感する。</li></ul>\n<h4>注意点</h4>\n<blockquote>ブロックは「明示的に指示していない場合」の安全弁であり、意図的に破棄したいときは明示すれば実行できる。逆に言えば、危険な操作を雑に依頼すると通ってしまう余地は残るので、自動モードでも重要ブランチの保護や予算・権限のスコープ管理は別途必要。Claude Design 連携は対応プラットフォームやプランの条件を確認しておきたい。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>今回は「自動実行の安全性」を底上げした更新。破壊的 git/IaC コマンドの既定ブロックでまず足元の事故を防ぎ、Claude Design 連携でデザイン→実装の流れを縮める、という二本立てで効いてくる。</p>",
-      "sources": [
-        {
-          "title": "Claude Code changelog（公式）",
-          "url": "https://code.claude.com/docs/en/changelog"
-        },
-        {
-          "title": "Claude Code What's new（公式・Claude Design 刷新）",
-          "url": "https://code.claude.com/docs/en/whats-new"
-        },
-        {
-          "title": "SitePoint「Claude Code June 2026: 10 new features」",
-          "url": "https://www.sitepoint.com/claude-code-june-2026-10-new-features-devs-need-to-know/"
         }
       ]
     }
