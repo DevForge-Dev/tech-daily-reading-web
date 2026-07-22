@@ -1,0 +1,76 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>カスタムカーソル＆マグネティック要素——rAF+lerp の一本の骨格で全部書く — デイリー技術深掘り 読み物</title><meta name="description" content="アワード系サイト定番のポインタ追従を、依存ゼロ〜最小で堅牢に書く定石。カスタムカーソル/マグネティック/スティッキー変形/スポットライトの4種は、OS座標をそのまま使わず rAF ループ内で lerp して滑らかに寄せるという同じ核を持つ。App Router では 'use client' の小さな Client 島に閉じ込め、毎フレームの setState を避け useRef＋transform 直書きで再レンダーを起こさないのが鉄則。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-22-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="カスタムカーソル＆マグネティック要素——rAF+lerp の一本の骨格で全部書く — デイリー技術深掘り 読み物"><meta property="og:description" content="アワード系サイト定番のポインタ追従を、依存ゼロ〜最小で堅牢に書く定石。カスタムカーソル/マグネティック/スティッキー変形/スポットライトの4種は、OS座標をそのまま使わず rAF ループ内で lerp して滑らかに寄せるという同じ核を持つ。App Router では 'use client' の小さな Client 島に閉じ込め、毎フレームの setState を避け useRef＋transform 直書きで再レンダーを起こさないのが鉄則。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-22-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>カスタムカーソル＆マグネティック要素——rAF+lerp の一本の骨格で全部書く</h1> <p class="lede">アワード系サイト定番のポインタ追従を、依存ゼロ〜最小で堅牢に書く定石。カスタムカーソル/マグネティック/スティッキー変形/スポットライトの4種は、OS座標をそのまま使わず rAF ループ内で lerp して滑らかに寄せるという同じ核を持つ。App Router では &#39;use client&#39; の小さな Client 島に閉じ込め、毎フレームの setState を避け useRef＋transform 直書きで再レンダーを起こさないのが鉄則。</p> <div class="meta"> <span>📅 2026年7月22日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="1"><p>この日のNext.jsテーマは<b>カスタムカーソル＆マグネティック要素</b>——アワード系サイト定番の"ポインタ追従"を、依存ゼロ〜最小で堅牢に書くための定石だ。カスタムカーソル／マグネティック要素／スティッキー変形／スポットライトの4種があるが、<b>共通の技術核は一つ</b>。OSカーソルの座標をそのまま反映せず、rAFループ内で<b>lerp（線形補間）</b>して滑らかに寄せる。この一点で全種が同じ骨格になる。</p>
+<h4 id="sec-1">共通の骨格——rAF + lerp</h4>
+<p><code>pointermove</code>では<b>目標座標を更新するだけ</b>（重い処理を書かない）。<code>requestAnimationFrame</code>ループで<code>current += (target - current) * ease</code>（easeは0.1〜0.2、小さいほど粘る）。反映は必ず<b><code>transform: translate3d()</code></b>で行い、<code>left/top</code>は使わない（レイアウトを起こす）。カーソル要素には<b><code>pointer-events: none</code></b>必須——付け忘れると自作カーソルがクリックを食う。</p>
+<figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><defs><marker id='arn' markerWidth='8' markerHeight='8' refX='6' refY='3' orient='auto'><path d='M0 0 L6 3 L0 6 z' fill='#9aa8c8'></path></marker></defs><rect x='14' y='48' width='128' height='54' rx='8' fill='#eef5ff' stroke='#1f6feb' stroke-width='1.2'></rect><text x='78' y='72' font-size='11.5' text-anchor='middle' fill='#1a4fa0'>pointermove</text><text x='78' y='90' font-size='10.5' text-anchor='middle' fill='#33507a'>目標座標だけ更新</text><rect x='170' y='48' width='128' height='54' rx='8' fill='#eef5ff' stroke='#1f6feb' stroke-width='1.2'></rect><text x='234' y='72' font-size='11.5' text-anchor='middle' fill='#1a4fa0'>rAF ループ</text><text x='234' y='90' font-size='10.5' text-anchor='middle' fill='#33507a'>current += (t-c)*ease</text><rect x='326' y='48' width='128' height='54' rx='8' fill='#eef5ff' stroke='#1f6feb' stroke-width='1.2'></rect><text x='390' y='72' font-size='11.5' text-anchor='middle' fill='#1a4fa0'>translate3d</text><text x='390' y='90' font-size='10.5' text-anchor='middle' fill='#33507a'>GPU 合成で反映</text><rect x='482' y='48' width='104' height='54' rx='8' fill='#f3eeff' stroke='#7b3fe4' stroke-width='1.2'></rect><text x='534' y='72' font-size='11.5' text-anchor='middle' fill='#5a2bbf'>60fps</text><text x='534' y='90' font-size='10.5' text-anchor='middle' fill='#4a3f6a'>滑らかに追従</text><path d='M142 75 L168 75' stroke='#9aa8c8' stroke-width='1.5' marker-end='url(#arn)'></path><path d='M298 75 L324 75' stroke='#9aa8c8' stroke-width='1.5' marker-end='url(#arn)'></path><path d='M454 75 L480 75' stroke='#9aa8c8' stroke-width='1.5' marker-end='url(#arn)'></path><text x='300' y='128' font-size='11' text-anchor='middle' fill='#8a8a90'>lerp = なめらかさダイヤル（ease 小ほど粘る）</text></svg><figcaption>図1：全種に共通する rAF + lerp の骨格。</figcaption></figure>
+<h4 id="sec-2">マグネティック要素</h4>
+<p>要素中心とポインタの差分<code>dx,dy</code>を出し、<code>translate(dx*strength, dy*strength)</code>（strength 0.2〜0.4）だけ動かす。<b>発動半径</b>内でだけ引き寄せ、近いほど強くすると本物の磁石らしくなる。<code>getBoundingClientRect()</code>は<b><code>pointerenter</code>時に1回だけ</b>取得してキャッシュ（毎フレーム読むとレイアウトスラッシング）。<code>pointerleave</code>でlerp戻しするとバネ感が出る。</p>
+<h4 id="sec-3">Next.js（App Router）での組み込み</h4>
+<p><b><code>'use client'</code>必須</b>だが、影響範囲はカーソル用の小さな<b>Client島</b>だけ。<code>app/layout.tsx</code>にグローバルな<code>&lt;CustomCursor /&gt;</code>を1つ差し、中身は<code>position: fixed</code>のオーバーレイ。<b>SSRでは描画しない</b>（<code>useEffect</code>でマウント後のみ生成、でないとhydration mismatch）。そして<b>毎フレームReact stateを更新しない</b>——座標は<code>useRef</code>＋<code>style.transform</code>直書きかCSS変数へ書き、再レンダーを一切起こさないのが鉄則だ。</p>
+<figure class='fig'><pre class='mermaid'>flowchart TD
+  A["入力デバイス判定"] --> B["hover:hover かつ pointer:fine?"]
+  B --> C["No → ネイティブカーソルのまま"]
+  B --> D["Yes → prefers-reduced-motion?"]
+  D --> E["reduce → 追従なし"]
+  D --> F["OK → カスタムカーソル有効化"]</pre><figcaption>図2：出す/出さないのゲート判定。</figcaption></figure>
+<h4 id="sec-4">アクセシビリティ</h4>
+<p><code>@media (hover: hover) and (pointer: fine)</code>のときだけ有効化（タッチ端末では出さない）。<code>prefers-reduced-motion: reduce</code>ではネイティブカーソルへ戻す。<code>cursor: none</code>の乱用でキャレット/フォーカスを失わせない。装飾カーソルはあくまで加点演出（プログレッシブエンハンスメント）に留める。</p>
+<h4 id="sec-5">ひとことまとめ</h4>
+<p>「rAF+lerpで寄せる／transformで反映／stateを触らない」の三点で、依存なしでも滑らかなポインタ体験は作れる。Motionの<code>Cursor</code>やMotion+のmagnetic/zoningも内部は同じ骨格だ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://motion.dev/docs/cursor" target="_blank" rel="noopener noreferrer"> Motion for React — Custom Cursor </a> </li><li> <a href="https://blog.olivierlarose.com/tutorials/sticky-cursor" target="_blank" rel="noopener noreferrer"> Olivier Larose — Sticky Cursor with Next.js &amp; Trigonometry </a> </li><li> <a href="https://dbushell.com/2025/10/27/custom-cursor-accessibility/" target="_blank" rel="noopener noreferrer"> dbushell — Custom Cursor Accessibility </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 共通の骨格——rAF + lerp </a> </li><li> <a href="#sec-2" data-toc="sec-2"> マグネティック要素 </a> </li><li> <a href="#sec-3" data-toc="sec-3"> Next.js（App Router）での組み込み </a> </li><li> <a href="#sec-4" data-toc="sec-4"> アクセシビリティ </a> </li><li> <a href="#sec-5" data-toc="sec-5"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-07-22</div> <div>⏱ 読了 約3分</div> <div>🏷 Next.js</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
