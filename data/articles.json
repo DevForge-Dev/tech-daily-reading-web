@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-07-22T04:55:31.910Z",
+  "generatedAt": "2026-07-23T04:46:49.081Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,94 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-07-23-claude-code",
+      "date": "2026-07-23",
+      "topic": "Claude Code",
+      "title": "v2.1.217——同時サブエージェントに既定20の上限・ネスト生成を既定オフ、暴走とコスト膨張への安全弁",
+      "lede": "7/21の v2.1.217 は、同時に走るサブエージェントを既定20で頭打ちにし、サブエージェントが入れ子でさらにサブを生む挙動を既定オフにした。--max-budget-usd がバックグラウンドのサブを止めない不具合も修正。号令一下で並列に走らせる運用が普通になった今、\"広げすぎ・課金膨張\"を抑える守りの回だ。あわせて絵文字ショートコード補完やログイン失効警告の前倒し(5→3日)も入った。",
+      "articleHtml": "<p>この日の主役は<b>v2.1.217（7/21リリース）</b>。エージェントを号令一下で並列に走らせる使い方が当たり前になった結果、いちばん怖いのは「サブエージェントが際限なく増えて時間と課金が膨らむ」こと。今回はそこにまとめて安全弁を入れた回だ。</p>\n<h4>何が新しいか</h4>\n<p>核は3点。まず<b>同時実行サブエージェントに既定20の上限</b>を設けた。次に、サブエージェントが<b>入れ子（ネスト）でさらにサブを生む挙動を既定オフ</b>に変更（ネスト自体は最大5階層まで技術的には可能だが、暴発を防ぐため既定は無効）。そして<b><code>--max-budget-usd</code> がバックグラウンドのサブエージェントを停止できない不具合を修正</b>し、予算上限が本当に効くようにした。UI面では<b>絵文字ショートコード補完</b>（<code>:heart:</code> 等）、CLAUDE.md/SKILL.md のパス系frontmatter値の扱い、フッターPRバッジのリンク化を改善。<b>ログイン失効の警告は5日前→3日前</b>に前倒しされた。</p>\n<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='16' y='14' width='568' height='172' rx='10' fill='#f7f5fc' stroke='#7b3fe4' stroke-width='1.2'/><text x='34' y='44' font-size='13' font-weight='700' fill='#5a2bbf'>同時サブエージェント</text><text x='250' y='44' font-size='12' fill='#43405a'>既定20で頭打ち（暴走・課金の上限）</text><line x1='30' y1='60' x2='570' y2='60' stroke='#e5ddf7' stroke-width='1'/><text x='34' y='90' font-size='13' font-weight='700' fill='#5a2bbf'>ネスト生成</text><text x='250' y='90' font-size='12' fill='#43405a'>既定オフ（最大5階層は可、既定で無効）</text><line x1='30' y1='106' x2='570' y2='106' stroke='#e5ddf7' stroke-width='1'/><text x='34' y='136' font-size='13' font-weight='700' fill='#5a2bbf'>--max-budget-usd</text><text x='250' y='136' font-size='12' fill='#43405a'>背景サブを止めない不具合を修正</text><line x1='30' y1='152' x2='570' y2='152' stroke='#e5ddf7' stroke-width='1'/><text x='34' y='176' font-size='13' font-weight='700' fill='#5a2bbf'>ログイン失効警告</text><text x='250' y='176' font-size='12' fill='#43405a'>5日前 → 3日前へ前倒し</text></svg><figcaption>図1：v2.1.217 の主要変更（守りの4点）。</figcaption></figure>\n<h4>背景——週次アップデートの潮流</h4>\n<p>直近の週次まとめでは、<b>Bedrock/Vertex/Foundry で auto モードがオプトイン不要の既定</b>になり、これらの環境で <b>Opus 4.8 がデフォルトモデル</b>に。<b>Artifacts が Pro/Max へ解放</b>され、公開したアーティファクトが MCP コネクタを呼んでライブデータを表示できるようになった。<code>/review</code> の刷新、<code>/doctor</code> による肥大化 CLAUDE.md の簡素化提案、<code>--forward-subagent-text</code>（stream-json にサブの思考/テキストを含める）も入っている。</p>\n<h4>実務での使いどころ・注意点</h4>\n<p>設計指針は「<b>広い探索（走査・発見・要約）はfork、重い深掘りはinline</b>」。副作業を隔離コンテキストのサブに逃がすとメイン会話のコンテキスト氾濫を防げる。hooks は<b>100%確実に発火する強制レイヤー</b>として、lint 自動実行や <code>rm -rf</code> の事前ブロックに使う。落とし穴は、これまで既定20超・ネスト前提で重い調査を回していた場合に途中で頭打ちになること——必要なら明示的に上限を上げる。</p>\n<h4>ひとことまとめ</h4>\n<p>「並列は既定20まで・ネストは既定オフ・予算上限は本当に効く」。派手さはないが、毎日エージェントを回す人ほど効く安全弁の回だ。</p>",
+      "sources": [
+        {
+          "title": "Claude Code v2.1.217 リリースノート (GitHub)",
+          "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.217"
+        },
+        {
+          "title": "Claude Code 週次アップデート 2026/07/11週 (Qiita)",
+          "url": "https://qiita.com/saitoko/items/992631068d62dfef46b0"
+        },
+        {
+          "title": "Tembo — Claude Code サブエージェント実践ガイド2026",
+          "url": "https://www.tembo.io/blog/claude-code-subagents"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-23-nextjs",
+      "date": "2026-07-23",
+      "topic": "Next.js",
+      "title": "App Router の国際化(i18n)——[locale]セグメント × proxy.ts × next-intl で静的化とhreflangまで通す",
+      "lede": "多言語化はURL設計・ロケール検出・静的化・SEO(hreflang)までを含む横断課題。前提として App Router には Pages Router の組み込みi18nが無く、next.config の i18n は効かない。2026年は next-intl が事実上の標準。Next.js 16 で middleware.ts が proxy.ts に改名され、next-intl v4 も追従済み。静的化には generateStaticParams＋setRequestLocale＋メタデータへの locale 明示の3点セットが要る。",
+      "articleHtml": "<p>この日のNext.jsは<b>App Router の国際化(i18n)</b>。翻訳文字列の差し替えだけでなく、<b>URL設計・ロケール検出・静的化・SEO(hreflang)</b>までを含む横断的な設計課題で、App Router では特に落とし穴が多い。</p>\n<h4>最大の前提——組み込みi18nは無い</h4>\n<p><b>App Router には Pages Router のような組み込みi18nルーティングが無い</b>。<code>next.config</code> の <code>i18n</code>（locales/defaultLocale）は<b>Pages Router 専用</b>で App Router では効かない。公式も「動的セグメント <code>[locale]</code> ＋ 外部ライブラリ」で自前構成を推奨。2026年は <b>next-intl が事実上の標準</b>で、RSC前提で翻訳が素直に動く・1つのproxy設定でロケールネゴシエーション・全翻訳キーを型付けできる、が採用理由だ。もう一つ重要なのが、<b>Next.js 16 で <code>middleware.ts</code> が <code>proxy.ts</code> に改名</b>された点。next-intl v4 も <code>createMiddleware</code> を <code>proxy.ts</code> に置く構成へ更新済み。</p>\n<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><defs><marker id='ar2' markerWidth='8' markerHeight='8' refX='6' refY='3' orient='auto'><path d='M0 0 L6 3 L0 6 z' fill='#9aa8c8'/></marker></defs><rect x='16' y='16' width='150' height='48' rx='8' fill='#eef5ff' stroke='#1f6feb' stroke-width='1.2'/><text x='91' y='38' font-size='11.5' text-anchor='middle' fill='#1a4fa0'>リクエスト /</text><text x='91' y='55' font-size='10' text-anchor='middle' fill='#33507a'>ロケール無し</text><rect x='225' y='16' width='150' height='48' rx='8' fill='#eef5ff' stroke='#1f6feb' stroke-width='1.2'/><text x='300' y='34' font-size='11.5' text-anchor='middle' fill='#1a4fa0'>proxy.ts</text><text x='300' y='51' font-size='10' text-anchor='middle' fill='#33507a'>Accept-Language判定→redirect</text><rect x='434' y='16' width='150' height='48' rx='8' fill='#eef5ff' stroke='#1f6feb' stroke-width='1.2'/><text x='509' y='34' font-size='11.5' text-anchor='middle' fill='#1a4fa0'>/en/... /de/...</text><text x='509' y='51' font-size='10' text-anchor='middle' fill='#33507a'>[locale]セグメント</text><path d='M166 40 L223 40' stroke='#9aa8c8' stroke-width='1.5' marker-end='url(#ar2)'/><path d='M375 40 L432 40' stroke='#9aa8c8' stroke-width='1.5' marker-end='url(#ar2)'/><rect x='16' y='96' width='568' height='98' rx='8' fill='#f7f5fc' stroke='#7b3fe4' stroke-width='1.1'/><text x='30' y='120' font-size='12' font-weight='700' fill='#5a2bbf'>静的化の3点セット</text><text x='30' y='143' font-size='11' fill='#43405a'>1. generateStaticParams で全ロケール列挙</text><text x='30' y='163' font-size='11' fill='#43405a'>2. setRequestLocale を全layout/全pageで next-intl API 呼出前に</text><text x='30' y='183' font-size='11' fill='#43405a'>3. generateMetadata に locale を明示（ヘッダ参照させない）＝hreflangも静的化</text></svg><figcaption>図1：ロケール検出の流れと静的化に必要な3点。</figcaption></figure>\n<h4>静的化の落とし穴</h4>\n<p>locale-based routing では、Server Component で <code>useTranslations</code> を呼ぶと内部でヘッダ参照が走り<b>ルートが動的化</b>する。静的化するには (1) <code>generateStaticParams</code> で対応ロケールを列挙、(2) <code>setRequestLocale(locale)</code> を<b>全 layout / 全 page で next-intl API 呼出前</b>に実行（Next.js は layout と page を独立レンダリングするため両方に必要）、(3) メタデータも静的化対象なので <code>generateMetadata</code> では <code>getTranslations({locale, namespace})</code> に params の locale を明示、の3点が要る。<code>setRequestLocale</code> は React の <code>cache()</code> でリクエストスコープにロケールを書き、全 next-intl API がヘッダ代わりにそこから読む仕組みだ。</p>\n<h4>SEO(hreflang)と実務メモ</h4>\n<p>Metadata API の <code>alternates.languages</code> で hreflang link を生成し、<b><code>x-default</code> を必ず入れる</b>（どのロケールにも一致しないユーザー向けフォールバック＝既定ロケール）。<code>matcher</code> で <code>api</code>/<code>_next</code>/<code>_vercel</code>/ドット付き静的ファイルを除外し忘れると、アセットにまでロケールプレフィックスが付く。<code>useTranslations</code> は RSC/Client どちらでも動き、RSCで直接使うのに <code>'use client'</code> は不要（async な Server Component では <code>getTranslations</code> を await）。自分が試すなら、まず <code>routing.ts</code> に locales/defaultLocale を集約し、<code>proxy.ts</code> に <code>createMiddleware(routing)</code> を置く最小構成から始める。</p>\n<h4>ひとことまとめ</h4>\n<p>「組み込みi18nは無い→next-intl／middlewareはproxy.tsへ／静的化は3点セット＋hreflangにx-default」。この骨格を押さえれば App Router の多言語化は堅く通せる。</p>",
+      "sources": [
+        {
+          "title": "next-intl 公式 — App Router 導入",
+          "url": "https://next-intl.dev/docs/getting-started/app-router"
+        },
+        {
+          "title": "next-intl 公式 — locale-based routing セットアップ",
+          "url": "https://next-intl.dev/docs/routing/setup"
+        },
+        {
+          "title": "Next.js 公式 — generateMetadata (alternates.languages / hreflang)",
+          "url": "https://nextjs.org/docs/app/api-reference/functions/generate-metadata"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-23-flutter",
+      "date": "2026-07-23",
+      "topic": "Flutter",
+      "title": "Flutter 3.44 実測——Impeller が Android 既定に昇格、mid-range で描画フレーム30–40%短縮",
+      "lede": "2年のプレビューを経て Impeller が Android の既定レンダラに昇格。コミュニティの実機テストで mid-range Android の描画フレーム時間が30–40%短縮した。安定版は Flutter 3.44.0 / Dart 3.12（Google I/O 2026）。Impeller は全シェーダーをビルド時(AOT)にコンパイルし、iOS=Metal / Android=Vulkan で GPU に直結、初回アニメの shader jank をゼロにする。",
+      "articleHtml": "<p>この日のFlutterは<b>3.44 の実測レビュー</b>が主役。長年の宿題だった「初回アニメのカクつき（shader jank）」に、レンダラ刷新でまとまった答えが出た回だ。</p>\n<h4>何が新しいか</h4>\n<p>2年のプレビューを経て、<b>Impeller が Android の既定レンダラ</b>に昇格した。GitHub のコミュニティ実機テストでは <b>mid-range Android の描画フレーム時間が30–40%短縮</b>。安定版は <b>Flutter 3.44.0 / Dart 3.12</b>（Google I/O 2026・2026-05-18、リリースは年4回で次は8月予定）。DevTools は <b>WASM を既定</b>にして起動・スクロール・Timeline が高速化、Widget Preview は Dart Analysis Server ベースの検出書き直しで <b>flutter tool のメモリを最大50%削減</b>。Dart 3.12 は <code>private named parameters</code>・<code>primary constructors</code>(experimental)・<code>dot shorthands</code> を追加した。</p>\n<figure class='fig'><svg viewBox='0 0 600 180' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='30' y='30' font-size='12' font-weight='700' fill='#0553b1'>mid-range Android フレーム時間（相対・概念図）</text><text x='30' y='70' font-size='11' fill='#43405a'>Skia(従来)</text><rect x='150' y='58' width='380' height='18' rx='4' fill='#d7e3f5'/><rect x='150' y='58' width='380' height='18' rx='4' fill='none' stroke='#1f6feb' stroke-width='1'/><text x='540' y='72' font-size='10.5' fill='#1a4fa0'>基準</text><text x='30' y='108' font-size='11' fill='#43405a'>Impeller</text><rect x='150' y='96' width='247' height='18' rx='4' fill='#bfe6c9'/><rect x='150' y='96' width='247' height='18' rx='4' fill='none' stroke='#1a7f37' stroke-width='1'/><text x='405' y='110' font-size='10.5' fill='#1a7f37'>-30〜40%</text><line x1='150' y1='128' x2='150' y2='140' stroke='#9aa8c8' stroke-width='1'/><line x1='530' y1='128' x2='530' y2='140' stroke='#9aa8c8' stroke-width='1'/><text x='300' y='158' font-size='10.5' text-anchor='middle' fill='#8a8a90'>短いほど速い（フレーム予算 60fps=16ms / 90fps=11ms / 120fps=8.3ms）</text></svg><figcaption>図1：Impeller 昇格による描画フレーム短縮のイメージ。</figcaption></figure>\n<h4>仕組み——AOTシェーダーコンパイル</h4>\n<p>従来はシェーダーを<b>実行時</b>にコンパイルするため、初回描画で数フレーム分の停止（jank）が起きていた。Impeller は<b>全シェーダーをビルド時(AOT)にバイナリへ事前コンパイル</b>し、<b>iOS=Metal / Android=Vulkan</b> で GPU に直結。アプリ起動前に重処理を終えるので、初回アニメの shader jank が原理的に消える。もし描画/性能差が出たら公式トラブルシュートに従い <code>--no-enable-impeller</code> で切り分けられる。</p>\n<figure class='fig'><pre class='mermaid'>flowchart TD\n  A[\"シェーダー\"] --> B[\"ビルド時にAOTコンパイル\"]\n  B --> C[\"iOS=Metal / Android=Vulkan バイナリ\"]\n  C --> D[\"起動前にGPUへ直結\"]\n  D --> E[\"初回アニメの shader jank をゼロに\"]</pre><figcaption>図2：AOTシェーダーコンパイルの流れ。</figcaption></figure>\n<h4>実務での使いどころ・注意点</h4>\n<p>状態管理は2026も三強：<b>新規の既定は Riverpod 3.0</b>（compile-time safety・組込みオフライン永続化・最小ボイラープレート）、<b>監査/規制/大規模は Bloc 9.0</b>（event traceability）。計測は必ず profile モードで、フレーム予算（60fps=16ms/90fps=11ms/120fps=8.3ms）を基準に。再ビルド削減は <code>const</code> 徹底・build 分割・最小スライス watch・<code>RepaintBoundary</code>、画像は <code>cached_network_image</code>＋width/height 明示が定石。Impeller は Android 10+ が必須なので、旧端末サポートが要るプロジェクトは切替の影響を確認する。</p>\n<h4>ひとことまとめ</h4>\n<p>「Impeller が Android 既定へ→フレーム30–40%短縮、shader jank は AOT で原理的に解消」。2026の安定スタックは Impeller ＋ Material 3 ＋ 堅い状態管理（Riverpod/Bloc）だ。</p>",
+      "sources": [
+        {
+          "title": "What's new in Flutter 3.44 (blog.flutter.dev)",
+          "url": "https://blog.flutter.dev/whats-new-in-flutter-3-44-b0cc1ad3c527"
+        },
+        {
+          "title": "Announcing Dart 3.12 (dart.dev)",
+          "url": "https://dart.dev/blog/announcing-dart-3-12"
+        },
+        {
+          "title": "How Impeller Is Transforming Flutter UI Rendering in 2026 (dev.to)",
+          "url": "https://dev.to/eira-wexford/how-impeller-is-transforming-flutter-ui-rendering-in-2026-3dpd"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-23-github-trending",
+      "date": "2026-07-23",
+      "topic": "GitHub Trending",
+      "title": "7/23の話題リポジトリ——GB/s級トークナイザ・ブラウザ完結AI動画・学習まで一気通貫の取得アプリ",
+      "lede": "エージェント／スキル一色のトレンドの中で、今日のモメンタム3本はいずれも“非エージェント系”で多様性を担う。共通するのは「特定の前処理・制作・学習の面倒を、専用ツールで一点突破する」姿勢。NLP基盤・クリエイティブ・PKMという別ジャンルが同日に急伸した。",
+      "articleHtml": "<p>今日 GitHub で勢いを見せたモメンタム3本は、<b>エージェント／スキルが席巻するトレンドの中で数少ない“非エージェント系”</b>。NLP基盤・動画制作・学習PKMとジャンルはバラバラだが、共通するのは「日々の面倒な前処理・制作・学習を、専用ツールで一点突破する」という姿勢だ。以下、各リポジトリを「解決したい課題」と「提供する機能」で読む。</p>\n<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='12' y='12' width='576' height='186' rx='10' fill='#f2fbf4' stroke='#1a7f37' stroke-width='1.2'/><line x1='200' y1='12' x2='200' y2='198' stroke='#bfe6c9' stroke-width='1'/><line x1='394' y1='12' x2='394' y2='198' stroke='#bfe6c9' stroke-width='1'/><line x1='12' y1='52' x2='588' y2='52' stroke='#bfe6c9' stroke-width='1'/><text x='24' y='38' font-size='12' font-weight='700' fill='#146b2e'>リポジトリ</text><text x='212' y='38' font-size='12' font-weight='700' fill='#146b2e'>解決したい課題</text><text x='406' y='38' font-size='12' font-weight='700' fill='#146b2e'>提供する機能</text><text x='24' y='80' font-size='11' font-weight='700' fill='#1a7f37'>gigatoken</text><text x='212' y='80' font-size='10.5' fill='#2f4a38'>トークナイズが前処理の</text><text x='212' y='95' font-size='10.5' fill='#2f4a38'>地味なボトルネック</text><text x='406' y='80' font-size='10.5' fill='#2f4a38'>GB/s級の超高速</text><text x='406' y='95' font-size='10.5' fill='#2f4a38'>LLMトークナイザ</text><line x1='12' y1='108' x2='588' y2='108' stroke='#d6efdd' stroke-width='1'/><text x='24' y='134' font-size='11' font-weight='700' fill='#1a7f37'>pireel</text><text x='212' y='134' font-size='10.5' fill='#2f4a38'>動画編集が重い・</text><text x='212' y='149' font-size='10.5' fill='#2f4a38'>サーバー前提</text><text x='406' y='134' font-size='10.5' fill='#2f4a38'>ブラウザ完結の</text><text x='406' y='149' font-size='10.5' fill='#2f4a38'>AI動画エディタ(MCP)</text><line x1='12' y1='162' x2='588' y2='162' stroke='#d6efdd' stroke-width='1'/><text x='24' y='186' font-size='11' font-weight='700' fill='#1a7f37'>omniget</text><text x='212' y='186' font-size='10.5' fill='#2f4a38'>取得・整理・学習が分断</text><text x='406' y='186' font-size='10.5' fill='#2f4a38'>DL＋読書＋SRSを一体化</text></svg><figcaption>図1：今日の3本を「課題→機能」で一望。</figcaption></figure>\n<h4>marcelroed/gigatoken（⭐406・Trendshift日次5位）</h4>\n<p><b>解決したい課題：</b>LLMの学習・推論では、テキストをトークン列に変換する前処理が地味なボトルネックになりがち。ここが遅いとGPUが遊ぶ。<b>提供する機能：</b>トークナイゼーションを<b>GB/s級の速度</b>で行う一点特化の超高速トークナイザ。エージェント／スキル一色のトレンドの中で、<b>珍しいNLP基盤枠</b>として明確なベンチ訴求で拡散し、小型リポながら増加率が高い。</p>\n<h4>pireel/pireel（⭐241・Trendshift日次9位・New 2026）</h4>\n<p><b>解決したい課題：</b>トーキングヘッド動画の編集は重く、サーバー構築やアップロードが前提になりがち。<b>提供する機能：</b><b>バックエンド不要でブラウザ完結</b>するAI動画エディタ。ストーリーボード、デザイン済グラフィック、キネティック字幕、テーマ、WebCodecs によるブラウザ内書き出しを備え、<b>MCP経由でAIエージェントから駆動</b>できる。AIコーディング系が並ぶ中で数少ない「動画・クリエイティブ」枠として急伸した。</p>\n<h4>tonhowtf/omniget（⭐168・Trendshift日次17位・New 2026）</h4>\n<p><b>解決したい課題：</b>メディアの「取得・整理・学習」がツールごとに分断され、集めた素材が死蔵されがち。<b>提供する機能：</b>Tauri+Rust+Svelte 製のネイティブ・クロスプラットフォームアプリで、<b>yt-dlp で1,800+サイトから取得</b>しつつ、フォーカスモード付き PDF/EPUB リーダー・タイムスタンプ付きノート・<b>間隔反復(SRS)</b>まで一気通貫。「学習・PKM」ジャンルの新星として言語・ジャンルの多様性を担う。</p>\n<h4>まとめ——自分が試すなら</h4>\n<p>共通項は「エージェントではなく、面倒な一工程を専用ツールで速く・軽くする」。自分の用途にいちばん近いのは <b>omniget</b>——散らばりがちな技術記事や動画教材を1か所で取得→読書→SRS化できるなら、日々のインプット運用がまとまる。制作寄りなら pireel、基盤に興味があれば gigatoken を触ってみたい。</p>",
+      "sources": [
+        {
+          "title": "marcelroed/gigatoken",
+          "url": "https://github.com/marcelroed/gigatoken"
+        },
+        {
+          "title": "pireel/pireel",
+          "url": "https://github.com/pireel/pireel"
+        },
+        {
+          "title": "tonhowtf/omniget",
+          "url": "https://github.com/tonhowtf/omniget"
+        }
+      ]
+    },
     {
       "id": "2026-07-22-claude-code",
       "date": "2026-07-22",
@@ -2129,94 +2217,6 @@
         {
           "title": "SplitText Docs",
           "url": "https://gsap.com/docs/v3/Plugins/SplitText/"
-        }
-      ]
-    },
-    {
-      "id": "2026-06-29-flutter",
-      "date": "2026-06-29",
-      "topic": "Flutter",
-      "title": "Flutter 3.44 / Dart 3.12.2 — flutter run のWeb構成ファイル、画面共有の機密保護、Dart 3.12 dot shorthands",
-      "lede": "安定版はFlutter 3.44.0 / Dart 3.12.2（docs最終更新2026-06-24）。今日の焦点は派手な新ウィジェットより開発体験（DX）とセキュリティの底上げだ。flutter run がWeb構成ファイルに対応し、Androidは画面共有時に機密UIを隠せるようになった。Dart 3.12のdot shorthandsと合わせて、地ならし系のアップデートを読む。",
-      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>安定版は <b>Flutter 3.44.0 / Dart 3.12.2</b>（docs最終更新 2026-06-24）。リリースは年4回（2月/5月/8月/11月）で、次の安定版は<b>2026年8月</b>予定。今回の焦点は新ウィジェットの追加ではなく、<b>開発体験（DX）とセキュリティの底上げ</b>という地ならしにある。日々の <code>flutter run</code> やセキュアな画面まわりで効く、地味だが効用の大きい変更が入った。</p>\n<h4>何が新しい/重要か</h4>\n<p>第一に <code>flutter run</code> が<b>Web設定の構成ファイル</b>に対応し、<b>host / port / certification / header</b> をまとめて指定できる。構成ファイルは <b>proxy設定</b>にも対応し、同一ホストの動的エンドポイントへ繋ぐWebクライアント開発が容易になった。第二に、Androidで<b>画面共有・録画から指定UIを隠す</b>機能。顧客情報など機密コンテンツを共有画面で保護できる。第三に新設の<b>「Create with AI」ガイド</b>が、Gemini Code Assist / Gemini CLI / <b>Dart &amp; Flutter MCP Server</b> を使ったAI機能の組み込みを解説。Dart 3.12は <b>dot shorthands</b> と、initializing formals / primary constructor parameters での<b>private named parameters</b>（先頭 <code>_</code> を自動省略）をサポートする。</p>\n<figure class='fig'><svg viewBox='0 0 600 196' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='20' text-anchor='middle' font-size='12.5' font-weight='700' fill='#0b7285'>flutter run の Web 構成ファイル</text><rect x='30' y='36' width='200' height='140' rx='10' fill='#e7f6f8' stroke='#5bbccb'/><text x='130' y='58' text-anchor='middle' font-size='11' font-weight='700' fill='#0b7285'>config ファイル</text><text x='130' y='84' text-anchor='middle' font-size='9.5' fill='#21707f'>host</text><text x='130' y='102' text-anchor='middle' font-size='9.5' fill='#21707f'>port</text><text x='130' y='120' text-anchor='middle' font-size='9.5' fill='#21707f'>certification</text><text x='130' y='138' text-anchor='middle' font-size='9.5' fill='#21707f'>header</text><text x='130' y='160' text-anchor='middle' font-size='9.5' font-weight='700' fill='#21707f'>+ proxy 設定</text><line x1='230' y1='106' x2='360' y2='106' stroke='#5bbccb' stroke-width='2'/><polygon points='360,106 350,101 350,111' fill='#5bbccb'/><rect x='362' y='66' width='210' height='80' rx='10' fill='#eef7f0' stroke='#6cc69a'/><text x='467' y='92' text-anchor='middle' font-size='10' fill='#27674a'>同一ホストの</text><text x='467' y='110' text-anchor='middle' font-size='10' fill='#27674a'>動的エンドポイントへ</text><text x='467' y='128' text-anchor='middle' font-size='10' font-weight='700' fill='#1d8a5a'>Webクライアント開発が容易</text></svg><figcaption>図1：接続設定を一括管理し、proxyで動的エンドポイントへ繋ぐ。</figcaption></figure>\n<h4>仕組みと使いどころ</h4>\n<p>構成ファイルは、これまでコマンドラインフラグに散らばっていた接続設定を一箇所に集約する。proxy対応により、ローカル開発でAPIゲートウェイや動的なバックエンドへ透過的に繋げる。画面共有保護は、決済・本人確認・顧客台帳のような<b>映してはいけない画面</b>を持つ業務アプリで効く。</p>\n<figure class='fig'><svg viewBox='0 0 600 120' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='20' text-anchor='middle' font-size='12' font-weight='700' fill='#0b7285'>リリース周期（年4回）と次の安定版</text><line x1='40' y1='70' x2='560' y2='70' stroke='#bbb' stroke-width='2'/><circle cx='100' cy='70' r='6' fill='#5bbccb'/><text x='100' y='95' text-anchor='middle' font-size='10' fill='#21707f'>2月</text><circle cx='230' cy='70' r='6' fill='#5bbccb'/><text x='230' y='95' text-anchor='middle' font-size='10' fill='#21707f'>5月</text><circle cx='360' cy='70' r='8' fill='#1d8a5a'/><text x='360' y='95' text-anchor='middle' font-size='10' font-weight='700' fill='#1d8a5a'>8月（次の安定版）</text><circle cx='490' cy='70' r='6' fill='#5bbccb'/><text x='490' y='95' text-anchor='middle' font-size='10' fill='#21707f'>11月</text><text x='300' y='48' text-anchor='middle' font-size='9.5' fill='#888'>現行: 3.44.0 / Dart 3.12.2</text></svg><figcaption>図2：2月/5月/8月/11月の安定版。次は2026年8月。</figcaption></figure>\n<h4>自分が試すなら</h4>\n<p>Web開発では構成ファイルにproxyを書き、動的エンドポイント越しの開発フローを整える。機密画面を持つアプリではAndroidの画面共有保護を有効化し、共有/録画時に該当UIが隠れるか確認する。AI機能を足すなら「Create with AI」ガイドとDart &amp; Flutter MCP Serverから入るとよい。</p>\n<h4>注意点</h4>\n<blockquote>現行は3.44系で、ここでの情報は <b>docs 2026-06-24時点</b>。レンダリングは <b>Impeller が 3.27以降 iOS/Android API29+ で既定</b>（フレームラスタライズ約50%高速、120fpsを一貫維持）になっている点も合わせて押さえたい。計測は必ずprofileモードで行い、最大の敵である不要な再ビルドは <code>const</code>・build分割・<code>Selector</code> で抑える。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>3.44はDXとセキュリティの地ならし。flutter run のWeb構成ファイル（host/port/cert/header＋proxy）で接続設定が一元化し、画面共有保護が機密業務アプリを守る。Dart 3.12のdot shorthandsと合わせ、日々の開発の手触りを静かに改善する更新だ。</p>",
-      "sources": [
-        {
-          "title": "What's new in the docs（Flutter公式）",
-          "url": "https://docs.flutter.dev/release/whats-new"
-        },
-        {
-          "title": "What's new in Flutter 3.44",
-          "url": "https://blog.flutter.dev/whats-new-in-flutter-3-44-b0cc1ad3c527"
-        },
-        {
-          "title": "Dart what's new",
-          "url": "https://dart.dev/resources/whats-new"
-        }
-      ]
-    },
-    {
-      "id": "2026-06-28-claude-code",
-      "date": "2026-06-28",
-      "topic": "Claude Code",
-      "title": "Claude Code 週次更新（v2.1.185〜193）— claude mcp login/logout でCLIからMCP認証、!bash 出力に自動応答、/rewind で /clear 前に巻き戻し",
-      "lede": "エージェントに長く任せるほど、認証のしづらさ・出力の取りこぼし・誤って消した会話といった「運用の摩擦」が効いてくる。6月第4週の週次リリース（v2.1.185〜193）と v2.1.190 の changelog は、claude mcp login/logout、!bash 出力への自動応答、/rewind による巻き戻し、/workflows のステータス絞り込みを投入。あわせて有料プランの利用枠が「対話」と「自動化」に分離された。派手な新機能より、長時間運用を止めない地ならしのアップデートだ。",
-      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>Claude Code を長く動かすほど、地味な運用の摩擦が効いてくる。MCPサーバーへの認証は対話メニューを開かないと通せない、シェル実行の結果を毎回こちらが促さないと解説が進まない、<code>/clear</code> で会話を消したらもう戻れない——こうした「止まる・取りこぼす・消える」を減らす運用系の改善が、6月第4週の週次リリース（<code>v2.1.185〜193</code>）と <code>v2.1.190</code> の公式changelogでまとめて入った。</p>\n<h4>何が新しいか</h4>\n<p>目玉は4つ。<b>claude mcp login / claude mcp logout</b> は、対話的な <code>/mcp</code> メニューを開かずに<b>シェルから直接</b>設定済みMCPサーバーへ認証・資格情報クリアができ、<code>--no-browser</code> で<b>SSH越しの認証完了</b>にも対応する。<b>シェルモード（!bash）</b>はコマンド出力に<b>自動で応答</b>するようになり、<code>npm test</code> の結果を再プロンプトなしで解説する（<code>respondToBashCommands</code> で無効化可）。<b>/rewind</b> は <code>/clear</code> 実行<b>前</b>の会話状態を復元でき、誤クリアからの復旧手段になった。<b>/workflows</b> のエージェント詳細ビューでは <code>f</code> で<b>ステータス絞り込み</b>、<code>/plugin</code> の Installed タブには <b>Skills セクション</b>が追加。さらにバックグラウンドのサブエージェントは権限プロンプトを自動拒否せず<b>メインセッションに表示</b>、アイドルなbg shellは<b>メモリ圧迫時に自動回収</b>される（<code>CLAUDE_CODE_DISABLE_BG_SHELL_PRESSURE_REAP=1</code> で無効化）。</p>\n<figure class='fig'><svg viewBox='0 0 600 188' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='20' text-anchor='middle' font-size='12.5' font-weight='700' fill='#5b27b0'>週次更新の4本柱</text><rect x='20' y='34' width='132' height='138' rx='10' fill='#f3eefb' stroke='#b58bd6'/><text x='86' y='56' text-anchor='middle' font-size='11' font-weight='700' fill='#5b27b0'>認証</text><text x='86' y='80' text-anchor='middle' font-size='9.5' fill='#6b4a93'>claude mcp</text><text x='86' y='96' text-anchor='middle' font-size='9.5' fill='#6b4a93'>login/logout</text><text x='86' y='118' text-anchor='middle' font-size='9.5' fill='#6b4a93'>--no-browser で</text><text x='86' y='134' text-anchor='middle' font-size='9.5' fill='#6b4a93'>SSH越し認証</text><rect x='160' y='34' width='132' height='138' rx='10' fill='#eef4fd' stroke='#7aa8ef'/><text x='226' y='56' text-anchor='middle' font-size='11' font-weight='700' fill='#1456b8'>出力</text><text x='226' y='80' text-anchor='middle' font-size='9.5' fill='#3a6abf'>!bash 出力に</text><text x='226' y='96' text-anchor='middle' font-size='9.5' fill='#3a6abf'>自動応答</text><text x='226' y='118' text-anchor='middle' font-size='9.5' fill='#3a6abf'>再プロンプト不要</text><rect x='300' y='34' width='132' height='138' rx='10' fill='#eef7f0' stroke='#6cc69a'/><text x='366' y='56' text-anchor='middle' font-size='11' font-weight='700' fill='#1d8a5a'>復旧</text><text x='366' y='80' text-anchor='middle' font-size='9.5' fill='#27674a'>/rewind で</text><text x='366' y='96' text-anchor='middle' font-size='9.5' fill='#27674a'>/clear 前へ</text><text x='366' y='118' text-anchor='middle' font-size='9.5' fill='#27674a'>巻き戻し</text><rect x='440' y='34' width='140' height='138' rx='10' fill='#fbf4ea' stroke='#e0b271'/><text x='510' y='56' text-anchor='middle' font-size='11' font-weight='700' fill='#a76a16'>運用</text><text x='510' y='80' text-anchor='middle' font-size='9.5' fill='#80561a'>/workflows 絞り込み</text><text x='510' y='96' text-anchor='middle' font-size='9.5' fill='#80561a'>/plugin に Skills</text><text x='510' y='118' text-anchor='middle' font-size='9.5' fill='#80561a'>bg shell 自動回収</text><text x='510' y='134' text-anchor='middle' font-size='9.5' fill='#80561a'>権限はメインに表示</text></svg><figcaption>図1：認証・出力・復旧・運用の4方向で、長時間運用の摩擦を削る。</figcaption></figure>\n<h4>claude mcp login の動き</h4>\n<p>これまでMCP認証は <code>/mcp</code> の対話メニュー前提で、ヘッドレスやSSH環境では詰まりやすかった。新コマンドはシェルから完結し、ブラウザを開けない環境では <code>--no-browser</code> で表示されたURLを手元で開いてコードを貼り戻す方式に切り替わる。</p>\n<figure class='fig'><pre class='mermaid'>flowchart LR\n  A[\"claude mcp login\"] --> B{\"ブラウザ可?\"}\n  B -->|\"はい\"| C[\"ブラウザでOAuth\"]\n  B -->|\"いいえ (--no-browser)\"| D[\"URLを手元で開きコード貼付\"]\n  C --> E[\"資格情報を保存\"]\n  D --> E\n  E --> F[\"MCPツールが利用可能\"]</pre><figcaption>図2：SSH/ヘッドレスでも --no-browser で認証を完了できる。</figcaption></figure>\n<h4>自分が試すなら</h4>\n<ul><li>リモート開発のSSHセッションで <code>claude mcp login --no-browser</code> を試し、ブラウザなしで認証が通るか確認する。</li><li><code>!bash</code> でテストを流し、結果を再入力なしで解説してくれる流れを体験する。挙動が騒がしければ <code>respondToBashCommands</code> を切る。</li><li>誤って <code>/clear</code> した直後に <code>/rewind</code> で戻れるか試し、復旧手段として頭に入れておく。</li></ul>\n<h4>注意点</h4>\n<blockquote>同じ6月15日からClaude有料プラン（Pro/Max/Team/Enterprise）の利用枠が「対話（Interactive）」と「自動化（Programmatic）」に分離された。Claude Code の対話利用は対話枠だが、スケジュール起動やAPI連携などの自動実行は別枠扱いになる。本タスクのような毎朝の自動実行を多用する場合、自分の使い方がどちらの枠に当たるかを把握しておかないと、思わぬ枠の消費につながる。!bash の自動応答も、副作用のあるコマンドでは流れに任せすぎないこと。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>今回は新機能の派手さより、認証・出力・復旧・運用の摩擦をまとめて削った地ならしの更新。claude mcp login でヘッドレス認証が通り、!bash 自動応答で手数が減り、/rewind が安全網になる。あわせて利用枠が対話/自動化に分かれた点は、自動実行を組む側として必ず押さえておきたい。</p>",
-      "sources": [
-        {
-          "title": "Claude Code What's new（公式）",
-          "url": "https://code.claude.com/docs/en/whats-new"
-        },
-        {
-          "title": "Claude Code changelog（公式）",
-          "url": "https://code.claude.com/docs/en/changelog"
-        },
-        {
-          "title": "Claude 有料プラン改変（対話/自動化の利用枠分離）",
-          "url": "https://ai-advisors.jp/media/ai-news/claude-plan-change-20260615/"
-        }
-      ]
-    },
-    {
-      "id": "2026-06-28-nextjs",
-      "date": "2026-06-28",
-      "topic": "Next.js",
-      "title": "App Router の認可設計 — Data Access Layer × proxy.ts × Server Actions で「データに最も近い場所」を守る",
-      "lede": "App Router の認証・認可は「どこでチェックするか」を間違えると、ページは守れても Server Actions や子コンポーネントから素通りされる。公式が一貫して推すのは多層防御＋データに最も近い場所での認可で、その中心が Data Access Layer（DAL）に verifySession() を集約するパターンだ。Next.js 16 で middleware.ts は proxy.ts に改名され、CVE-2025-29927（CVSS 9.1）の middleware バイパス事件が「middleware に認可を依存するな」という設計を決定づけた。",
-      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>App Router では認可をどこに置くかで安全性が決まる。Layout やページの入口だけで <code>return null</code> する SPA 的な発想だと、ネストした route segment・Route Handler・Server Actions が止まらず素通りされる。公式は一貫して<b>多層防御（defense-in-depth）＋データに最も近い場所での認可</b>を推し、その本丸が <b>Data Access Layer（DAL）</b>だ。加えて <b>Next.js 16 で <code>middleware.ts</code> が <code>proxy.ts</code> に改名</b>され（公式認証ガイド v16.2.9 / 2026-06-23 更新）、<b>CVE-2025-29927（CVSS 9.1, 2025-03公開）</b>の middleware 認可バイパス事件が設計指針を固めた。</p>\n<h4>何が新しいか</h4>\n<p>認可は2種類に分けて考える。<b>楽観的（Optimistic）</b>は Cookie 内のセッションだけで判定し、UIの出し分けやリダイレクトなど軽い操作向けで <code>proxy.ts</code> が担う（<b>DBには触らない</b>——proxy はprefetch含め全ルートで走るためDBアクセスは性能事故になる）。<b>厳密（Secure）</b>は DB のセッション実体と突き合わせ、機微データ・重要操作向けで <b>DAL</b> が担う。<code>proxy.ts</code> は「最初の門番」であって<b>最後の砦ではない</b>。CVE-2025-29927 は <code>x-middleware-subrequest</code> ヘッダ偽装で middleware/proxy の認可を<b>完全バイパス</b>できた事件で、<code>next start</code> + <code>output: 'standalone'</code> のセルフホスト構成が影響対象（Vercel/Netlify ホストは非影響、15.2.3+ / 14.2.25+ 等で修正済）。だから<b>セキュリティチェックはデータソースに最も近い場所</b>へ寄せる。</p>\n<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='20' text-anchor='middle' font-size='12.5' font-weight='700' fill='#1456b8'>多層防御：楽観的チェックと厳密チェックの分業</text><rect x='40' y='38' width='520' height='52' rx='10' fill='#eef4fd' stroke='#7aa8ef'/><text x='300' y='60' text-anchor='middle' font-size='11' font-weight='700' fill='#1456b8'>proxy.ts（旧 middleware.ts）= 楽観的チェック</text><text x='300' y='78' text-anchor='middle' font-size='9.5' fill='#3a6abf'>Cookieのみで判定・リダイレクト集約／DBに触らない／唯一の防御にしない</text><text x='300' y='104' text-anchor='middle' font-size='15' fill='#9aa0ad'>↓</text><rect x='40' y='114' width='520' height='58' rx='10' fill='#eef7f0' stroke='#6cc69a'/><text x='300' y='136' text-anchor='middle' font-size='11' font-weight='700' fill='#1d8a5a'>Data Access Layer = 厳密チェック（最後の砦）</text><text x='300' y='154' text-anchor='middle' font-size='9.5' fill='#27674a'>verifySession() を react cache() でメモ化／import 'server-only'</text><text x='300' y='168' text-anchor='middle' font-size='9.5' fill='#27674a'>getUser() は必ず先に verifySession()／DTOで返す列を絞る</text><text x='300' y='194' text-anchor='middle' font-size='9.5' fill='#a0335a'>Server Actions / Route Handler は公開APIとして各自で verifySession() + ロール確認</text></svg><figcaption>図1：proxy.ts は最初の門番、DAL がデータに最も近い最後の砦。</figcaption></figure>\n<h4>DAL に認可を集約する</h4>\n<p>核は <code>verifySession()</code> を専用ファイルに置き、<b>React の <code>cache()</code> でメモ化</b>して1レンダーパス内の重複検証・重複クエリを防ぐこと。ファイル先頭に <code>import 'server-only'</code> を置けば、認証・DBロジックがクライアントへ混入するのを物理的に遮断できる。<code>getUser()</code> 等のデータ取得関数は<b>必ず先に <code>verifySession()</code> を呼ぶ</b>ことで「呼べばどこでも認可が走る」状態を担保する。返却は<b>DTO で必要な列だけ</b>に絞り、password や電話番号の漏洩を防ぐ。</p>\n<pre><code>// app/lib/dal.ts\nimport 'server-only'\nimport { cache } from 'react'\nimport { cookies } from 'next/headers'\nimport { redirect } from 'next/navigation'\nimport { decrypt } from '@/app/lib/session'\n\nexport const verifySession = cache(async () => {\n  const cookie = (await cookies()).get('session')?.value\n  const session = await decrypt(cookie)\n  if (!session?.userId) redirect('/login') // 未認証は弾く\n  return { isAuth: true, userId: session.userId }\n})</code></pre>\n<figure class='fig'><pre class='mermaid'>flowchart TD\n  A[\"リクエスト\"] --> B[\"proxy.ts: Cookieで楽観判定→必要ならリダイレクト\"]\n  B --> C[\"Server Component / Action / Route Handler\"]\n  C --> D[\"DAL.verifySession() でDB突き合わせ\"]\n  D -->|\"OK\"| E[\"DTOで必要列だけ返す\"]\n  D -->|\"NG\"| F[\"redirect('/login') / 401・403\"]</pre><figcaption>図2：入口は楽観、データ取得の直前で厳密チェックを必ず通す。</figcaption></figure>\n<h4>自分が試すなら</h4>\n<ul><li>既存プロジェクトの認可ロジックを <code>app/lib/dal.ts</code> に集約し、各データ取得関数の先頭で <code>verifySession()</code> を呼ぶ形に揃える。</li><li>各 Server Action / Route Handler の先頭にも <code>verifySession()</code> + ロール確認を入れる（Route Handler は未認証=401、権限不足=403 の二段）。</li><li>セルフホスト構成なら Next.js のバージョンを確認し、CVE-2025-29927 修正済み（15.2.3+ 等）かを点検する。</li></ul>\n<h4>注意点</h4>\n<blockquote>Layout はPartial Renderingでナビゲーション時に再レンダーされない＝ルート遷移ごとにセッションが再検証されないため、Layout で認可を完結させない。<code>'use server'</code> はサーバへ移すモジュール境界の指示にすぎず、認証・入力検証・レート制限を一切付与しない（markした関数は誰でも叩けるPOSTエンドポイント）。トークンは <code>localStorage</code> に置かず httpOnly Cookie（Secure / SameSite / Path 付き）を使い、セッションJWTのペイロードは userId・role など最小限に絞る。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>App Router の認可は「入口で守る」発想を捨て、<b>データに最も近い DAL で verifySession() を必ず通す</b>のが正解。proxy.ts は楽観的な門番、Server Actions / Route Handler は公開APIとして各自で認可。CVE-2025-29927 が示した通り、middleware/proxy を唯一の防御にしてはいけない。</p>",
-      "sources": [
-        {
-          "title": "How to implement authentication（Next.js 公式, v16.2.9）",
-          "url": "https://nextjs.org/docs/app/guides/authentication"
-        },
-        {
-          "title": "CVE-2025-29927 詳細（NVD）",
-          "url": "https://nvd.nist.gov/vuln/detail/CVE-2025-29927"
-        },
-        {
-          "title": "CVE-2025-29927 middleware auth bypass 解説（Datadog Security Labs）",
-          "url": "https://securitylabs.datadoghq.com/articles/nextjs-middleware-auth-bypass/"
-        }
-      ]
-    },
-    {
-      "id": "2026-06-28-flutter",
-      "date": "2026-06-28",
-      "topic": "Flutter",
-      "title": "Flutter 2026 の旗印「Platform Parity」と GenUI — A2UI でAIが実ウィジェットを動的構成、HCPP で Platform Views を刷新",
-      "lede": "安定版は Flutter 3.44.0 / Dart 3.12.2（Google I/O 2026）。2026 の旗印は「Platform Parity（プラットフォーム同等性）」で、ネイティブに近いが届かない uncanny valley の解消を狙う。目玉は GenUI SDK で、オープンな A2UI（Agent-to-UI）プロトコル上に構築され、AIエージェントが実 Flutter ウィジェットをその場で構成して静的ウィジェットツリーの制約を突破する。Android の Platform Views は Hybrid Composition++（HCPP）で刷新された。",
-      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>Flutter は2026年、<b>「Platform Parity（プラットフォーム同等性）」</b>を旗印に掲げた。アプリがネイティブに「近いが届かない」<b>uncanny valley の解消</b>が狙いで、レンダリングからプラットフォーム連携まで底上げが進む。安定版は <b>Flutter 3.44.0 / Dart 3.12.2</b>（Google I/O 2026, 2026-05-18）。次の安定版は2026年8月予定で、年4回（2/5/8/11月）のリズムは変わらない。</p>\n<h4>何が新しいか</h4>\n<p>今日の主役は <b>GenUI SDK</b> と <b>HCPP</b>。GenUI はオープンな <b>A2UI（Agent-to-UI）プロトコル</b>上に構築され、AIエージェントが<b>実 Flutter ウィジェットをその場で構成</b>し、<b>静的ウィジェットツリーの制約を突破</b>して、ユーザーの目的に応じた完全インタラクティブな画面を動的生成する。Android の <b>Platform Views は Hybrid Composition++（HCPP）</b>で刷新され、<b>Vulkan ＋ SurfaceControl</b> でコンポジットを Android OS へ委譲することで、長年の「性能 vs 正確性」のトレードオフを解消した。iOS/macOS は <b>SwiftPM が既定</b>に。<b>Dart 3.12.2</b> は private named parameters・実験的 primary constructors・<b>dot shorthands</b> で宣言を簡潔化し、<b>Agentic Hot Reload</b> と <b>Genkit</b> でAI/エージェント開発を標準装備した。採用例は 2026 Toyota RAV4、LG webOS SDK for Flutter が近日対応。</p>\n<figure class='fig'><svg viewBox='0 0 600 196' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='20' text-anchor='middle' font-size='12.5' font-weight='700' fill='#0277bd'>静的ツリー vs GenUI（A2UI で動的構成）</text><rect x='30' y='36' width='250' height='148' rx='10' fill='#eef5fa' stroke='#7ab8da'/><text x='155' y='58' text-anchor='middle' font-size='11' font-weight='700' fill='#0277bd'>従来：静的ウィジェットツリー</text><rect x='120' y='70' width='70' height='20' rx='4' fill='#fff' stroke='#9ccbe6'/><rect x='95' y='100' width='52' height='18' rx='4' fill='#fff' stroke='#9ccbe6'/><rect x='163' y='100' width='52' height='18' rx='4' fill='#fff' stroke='#9ccbe6'/><text x='155' y='150' text-anchor='middle' font-size='9.5' fill='#36739a'>ビルド時に画面構成が固定</text><text x='155' y='168' text-anchor='middle' font-size='9.5' fill='#36739a'>目的別の動的生成は不得手</text><rect x='320' y='36' width='250' height='148' rx='10' fill='#e9f7ef' stroke='#6cc69a'/><text x='445' y='58' text-anchor='middle' font-size='11' font-weight='700' fill='#1d8a5a'>GenUI：A2UI で動的構成</text><text x='445' y='84' text-anchor='middle' font-size='9.5' fill='#27674a'>AIエージェント</text><text x='445' y='102' text-anchor='middle' font-size='13' fill='#6cc69a'>↓ A2UI プロトコル</text><text x='445' y='124' text-anchor='middle' font-size='9.5' fill='#27674a'>実 Flutter ウィジェットを生成</text><text x='445' y='150' text-anchor='middle' font-size='9.5' fill='#27674a'>目的に応じた完全</text><text x='445' y='166' text-anchor='middle' font-size='9.5' fill='#27674a'>インタラクティブ画面</text></svg><figcaption>図1：GenUI は静的ツリーの制約を超え、エージェントが実ウィジェットでUIを組み立てる。</figcaption></figure>\n<h4>足回り：レンダリングと状態管理</h4>\n<p>描画は <b>Impeller</b> が既定（Skia 置換）。シェーダーを<b>ビルド時(AOT)に事前コンパイル</b>して初回ジャンクを解消し、複雑シーンの平均ラスタライズ時間を<b>約50%短縮</b>、高リフレッシュ端末で <b>120fps</b> を維持する。状態管理は新規なら <b>Riverpod 3.0</b> が既定（コンパイル時安全・組込みオフライン永続化・最小ボイラープレート、初期化失敗時は 200ms→倍々で最大6.4s の指数バックオフで自動リトライ）。監査証跡が要る規制業界（金融/医療）は完全な event traceability を持つ <b>Bloc 9.0</b> が標準で、v9.0 の mounted 安全チェックが disposed widget へのコールバック実行を防ぐ。</p>\n<figure class='fig'><pre class='mermaid'>flowchart LR\n  A[\"新規プロジェクト?\"] -->|\"はい・非同期取得が中心\"| B[\"Riverpod 3.0（自動リトライ/オフライン永続化）\"]\n  A -->|\"規制・監査・複雑な並行処理\"| C[\"Bloc 9.0（event traceability）\"]\n  A -->|\"レガシー保守\"| D[\"Provider（保守のみ）\"]</pre><figcaption>図2：選定はベンチ数値よりチームの習熟度に従うのが原則。</figcaption></figure>\n<h4>自分が試すなら</h4>\n<ul><li>Platform Views を多用する画面で <b>HCPP</b>（Vulkan＋SurfaceControl）の効果を、地図やWebView混在のスクロール性能で確認する。</li><li>新規の小さな画面で <b>GenUI / A2UI</b> の動的UI生成を試し、静的ツリーで書く場合との差を体感する。</li><li>Dart 3.12 の <b>dot shorthands</b> や primary constructors（実験的）で、enum/定数まわりの宣言がどれだけ短くなるか試す。</li></ul>\n<h4>注意点</h4>\n<blockquote>GenUI / A2UI と HCPP は2026の新しい柱で、APIや既定動作が今後の安定版（8月予定）で変わりうる。primary constructors は実験フラグ段階。Rive×Impeller で描画や性能に差が出る場合は <code>--no-enable-impeller</code> で Skia にフォールバックして切り分ける。パフォーマンスの最頻出問題は依然として不要な再ビルドで、不変部分は <code>const</code> で完全スキップ、大きな <code>build()</code> は分割、計測は必ず profile モードで（フレーム予算 60fps=16ms / 120fps=8.3ms）。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>2026の Flutter は「Platform Parity」を軸に、GenUI/A2UI で<b>UIの作り方そのもの</b>を動的化し、HCPP で Platform Views の長年の弱点を解消する。足回りは Impeller の120fpsと Riverpod 3.0/Bloc 9.0 の使い分けが安定線。新しい柱は積極的に触りつつ、安定版での変化に備えておきたい。</p>",
-      "sources": [
-        {
-          "title": "State of Flutter 2026",
-          "url": "https://devnewsletter.com/p/state-of-flutter-2026/"
-        },
-        {
-          "title": "Flutter 2026 Technical Review（UI Thread Merge, GenUI, Cross-Platform）",
-          "url": "https://intercode.com/blog/flutter-2026-technical-review"
-        },
-        {
-          "title": "Announcing Dart 3.12",
-          "url": "https://dart.dev/blog/announcing-dart-3-12"
         }
       ]
     }
