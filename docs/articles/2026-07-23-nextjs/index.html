@@ -1,0 +1,68 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>App Router の国際化(i18n)——[locale]セグメント × proxy.ts × next-intl で静的化とhreflangまで通す — デイリー技術深掘り 読み物</title><meta name="description" content="多言語化はURL設計・ロケール検出・静的化・SEO(hreflang)までを含む横断課題。前提として App Router には Pages Router の組み込みi18nが無く、next.config の i18n は効かない。2026年は next-intl が事実上の標準。Next.js 16 で middleware.ts が proxy.ts に改名され、next-intl v4 も追従済み。静的化には generateStaticParams＋setRequestLocale＋メタデータへの locale 明示の3点セットが要る。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-23-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="App Router の国際化(i18n)——[locale]セグメント × proxy.ts × next-intl で静的化とhreflangまで通す — デイリー技術深掘り 読み物"><meta property="og:description" content="多言語化はURL設計・ロケール検出・静的化・SEO(hreflang)までを含む横断課題。前提として App Router には Pages Router の組み込みi18nが無く、next.config の i18n は効かない。2026年は next-intl が事実上の標準。Next.js 16 で middleware.ts が proxy.ts に改名され、next-intl v4 も追従済み。静的化には generateStaticParams＋setRequestLocale＋メタデータへの locale 明示の3点セットが要る。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-23-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>App Router の国際化(i18n)——[locale]セグメント × proxy.ts × next-intl で静的化とhreflangまで通す</h1> <p class="lede">多言語化はURL設計・ロケール検出・静的化・SEO(hreflang)までを含む横断課題。前提として App Router には Pages Router の組み込みi18nが無く、next.config の i18n は効かない。2026年は next-intl が事実上の標準。Next.js 16 で middleware.ts が proxy.ts に改名され、next-intl v4 も追従済み。静的化には generateStaticParams＋setRequestLocale＋メタデータへの locale 明示の3点セットが要る。</p> <div class="meta"> <span>📅 2026年7月23日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="0"><p>この日のNext.jsは<b>App Router の国際化(i18n)</b>。翻訳文字列の差し替えだけでなく、<b>URL設計・ロケール検出・静的化・SEO(hreflang)</b>までを含む横断的な設計課題で、App Router では特に落とし穴が多い。</p>
+<h4 id="sec-1">最大の前提——組み込みi18nは無い</h4>
+<p><b>App Router には Pages Router のような組み込みi18nルーティングが無い</b>。<code>next.config</code> の <code>i18n</code>（locales/defaultLocale）は<b>Pages Router 専用</b>で App Router では効かない。公式も「動的セグメント <code>[locale]</code> ＋ 外部ライブラリ」で自前構成を推奨。2026年は <b>next-intl が事実上の標準</b>で、RSC前提で翻訳が素直に動く・1つのproxy設定でロケールネゴシエーション・全翻訳キーを型付けできる、が採用理由だ。もう一つ重要なのが、<b>Next.js 16 で <code>middleware.ts</code> が <code>proxy.ts</code> に改名</b>された点。next-intl v4 も <code>createMiddleware</code> を <code>proxy.ts</code> に置く構成へ更新済み。</p>
+<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><defs><marker id='ar2' markerWidth='8' markerHeight='8' refX='6' refY='3' orient='auto'><path d='M0 0 L6 3 L0 6 z' fill='#9aa8c8'></path></marker></defs><rect x='16' y='16' width='150' height='48' rx='8' fill='#eef5ff' stroke='#1f6feb' stroke-width='1.2'></rect><text x='91' y='38' font-size='11.5' text-anchor='middle' fill='#1a4fa0'>リクエスト /</text><text x='91' y='55' font-size='10' text-anchor='middle' fill='#33507a'>ロケール無し</text><rect x='225' y='16' width='150' height='48' rx='8' fill='#eef5ff' stroke='#1f6feb' stroke-width='1.2'></rect><text x='300' y='34' font-size='11.5' text-anchor='middle' fill='#1a4fa0'>proxy.ts</text><text x='300' y='51' font-size='10' text-anchor='middle' fill='#33507a'>Accept-Language判定→redirect</text><rect x='434' y='16' width='150' height='48' rx='8' fill='#eef5ff' stroke='#1f6feb' stroke-width='1.2'></rect><text x='509' y='34' font-size='11.5' text-anchor='middle' fill='#1a4fa0'>/en/... /de/...</text><text x='509' y='51' font-size='10' text-anchor='middle' fill='#33507a'>[locale]セグメント</text><path d='M166 40 L223 40' stroke='#9aa8c8' stroke-width='1.5' marker-end='url(#ar2)'></path><path d='M375 40 L432 40' stroke='#9aa8c8' stroke-width='1.5' marker-end='url(#ar2)'></path><rect x='16' y='96' width='568' height='98' rx='8' fill='#f7f5fc' stroke='#7b3fe4' stroke-width='1.1'></rect><text x='30' y='120' font-size='12' font-weight='700' fill='#5a2bbf'>静的化の3点セット</text><text x='30' y='143' font-size='11' fill='#43405a'>1. generateStaticParams で全ロケール列挙</text><text x='30' y='163' font-size='11' fill='#43405a'>2. setRequestLocale を全layout/全pageで next-intl API 呼出前に</text><text x='30' y='183' font-size='11' fill='#43405a'>3. generateMetadata に locale を明示（ヘッダ参照させない）＝hreflangも静的化</text></svg><figcaption>図1：ロケール検出の流れと静的化に必要な3点。</figcaption></figure>
+<h4 id="sec-2">静的化の落とし穴</h4>
+<p>locale-based routing では、Server Component で <code>useTranslations</code> を呼ぶと内部でヘッダ参照が走り<b>ルートが動的化</b>する。静的化するには (1) <code>generateStaticParams</code> で対応ロケールを列挙、(2) <code>setRequestLocale(locale)</code> を<b>全 layout / 全 page で next-intl API 呼出前</b>に実行（Next.js は layout と page を独立レンダリングするため両方に必要）、(3) メタデータも静的化対象なので <code>generateMetadata</code> では <code>getTranslations({locale, namespace})</code> に params の locale を明示、の3点が要る。<code>setRequestLocale</code> は React の <code>cache()</code> でリクエストスコープにロケールを書き、全 next-intl API がヘッダ代わりにそこから読む仕組みだ。</p>
+<h4 id="sec-3">SEO(hreflang)と実務メモ</h4>
+<p>Metadata API の <code>alternates.languages</code> で hreflang link を生成し、<b><code>x-default</code> を必ず入れる</b>（どのロケールにも一致しないユーザー向けフォールバック＝既定ロケール）。<code>matcher</code> で <code>api</code>/<code>_next</code>/<code>_vercel</code>/ドット付き静的ファイルを除外し忘れると、アセットにまでロケールプレフィックスが付く。<code>useTranslations</code> は RSC/Client どちらでも動き、RSCで直接使うのに <code>'use client'</code> は不要（async な Server Component では <code>getTranslations</code> を await）。自分が試すなら、まず <code>routing.ts</code> に locales/defaultLocale を集約し、<code>proxy.ts</code> に <code>createMiddleware(routing)</code> を置く最小構成から始める。</p>
+<h4 id="sec-4">ひとことまとめ</h4>
+<p>「組み込みi18nは無い→next-intl／middlewareはproxy.tsへ／静的化は3点セット＋hreflangにx-default」。この骨格を押さえれば App Router の多言語化は堅く通せる。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://next-intl.dev/docs/getting-started/app-router" target="_blank" rel="noopener noreferrer"> next-intl 公式 — App Router 導入 </a> </li><li> <a href="https://next-intl.dev/docs/routing/setup" target="_blank" rel="noopener noreferrer"> next-intl 公式 — locale-based routing セットアップ </a> </li><li> <a href="https://nextjs.org/docs/app/api-reference/functions/generate-metadata" target="_blank" rel="noopener noreferrer"> Next.js 公式 — generateMetadata (alternates.languages / hreflang) </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 最大の前提——組み込みi18nは無い </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 静的化の落とし穴 </a> </li><li> <a href="#sec-3" data-toc="sec-3"> SEO(hreflang)と実務メモ </a> </li><li> <a href="#sec-4" data-toc="sec-4"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-07-23</div> <div>⏱ 読了 約3分</div> <div>🏷 Next.js</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

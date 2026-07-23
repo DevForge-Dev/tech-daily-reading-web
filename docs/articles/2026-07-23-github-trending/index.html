@@ -1,0 +1,68 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>7/23の話題リポジトリ——GB/s級トークナイザ・ブラウザ完結AI動画・学習まで一気通貫の取得アプリ — デイリー技術深掘り 読み物</title><meta name="description" content="エージェント／スキル一色のトレンドの中で、今日のモメンタム3本はいずれも“非エージェント系”で多様性を担う。共通するのは「特定の前処理・制作・学習の面倒を、専用ツールで一点突破する」姿勢。NLP基盤・クリエイティブ・PKMという別ジャンルが同日に急伸した。"><meta name="theme-color" content="#238636"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-23-github-trending/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="7/23の話題リポジトリ——GB/s級トークナイザ・ブラウザ完結AI動画・学習まで一気通貫の取得アプリ — デイリー技術深掘り 読み物"><meta property="og:description" content="エージェント／スキル一色のトレンドの中で、今日のモメンタム3本はいずれも“非エージェント系”で多様性を担う。共通するのは「特定の前処理・制作・学習の面倒を、専用ツールで一点突破する」姿勢。NLP基盤・クリエイティブ・PKMという別ジャンルが同日に急伸した。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-23-github-trending/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3fb950, #1a7f37)"> <span class="glyph" aria-hidden="true">★</span> <div class="kicker">GitHub Trending</div> <h1>7/23の話題リポジトリ——GB/s級トークナイザ・ブラウザ完結AI動画・学習まで一気通貫の取得アプリ</h1> <p class="lede">エージェント／スキル一色のトレンドの中で、今日のモメンタム3本はいずれも“非エージェント系”で多様性を担う。共通するのは「特定の前処理・制作・学習の面倒を、専用ツールで一点突破する」姿勢。NLP基盤・クリエイティブ・PKMという別ジャンルが同日に急伸した。</p> <div class="meta"> <span>📅 2026年7月23日</span> <span>⏱ 約2分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#238636"> <div> <article class="prose" data-has-mermaid="0"><p>今日 GitHub で勢いを見せたモメンタム3本は、<b>エージェント／スキルが席巻するトレンドの中で数少ない“非エージェント系”</b>。NLP基盤・動画制作・学習PKMとジャンルはバラバラだが、共通するのは「日々の面倒な前処理・制作・学習を、専用ツールで一点突破する」という姿勢だ。以下、各リポジトリを「解決したい課題」と「提供する機能」で読む。</p>
+<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='12' y='12' width='576' height='186' rx='10' fill='#f2fbf4' stroke='#1a7f37' stroke-width='1.2'></rect><line x1='200' y1='12' x2='200' y2='198' stroke='#bfe6c9' stroke-width='1'></line><line x1='394' y1='12' x2='394' y2='198' stroke='#bfe6c9' stroke-width='1'></line><line x1='12' y1='52' x2='588' y2='52' stroke='#bfe6c9' stroke-width='1'></line><text x='24' y='38' font-size='12' font-weight='700' fill='#146b2e'>リポジトリ</text><text x='212' y='38' font-size='12' font-weight='700' fill='#146b2e'>解決したい課題</text><text x='406' y='38' font-size='12' font-weight='700' fill='#146b2e'>提供する機能</text><text x='24' y='80' font-size='11' font-weight='700' fill='#1a7f37'>gigatoken</text><text x='212' y='80' font-size='10.5' fill='#2f4a38'>トークナイズが前処理の</text><text x='212' y='95' font-size='10.5' fill='#2f4a38'>地味なボトルネック</text><text x='406' y='80' font-size='10.5' fill='#2f4a38'>GB/s級の超高速</text><text x='406' y='95' font-size='10.5' fill='#2f4a38'>LLMトークナイザ</text><line x1='12' y1='108' x2='588' y2='108' stroke='#d6efdd' stroke-width='1'></line><text x='24' y='134' font-size='11' font-weight='700' fill='#1a7f37'>pireel</text><text x='212' y='134' font-size='10.5' fill='#2f4a38'>動画編集が重い・</text><text x='212' y='149' font-size='10.5' fill='#2f4a38'>サーバー前提</text><text x='406' y='134' font-size='10.5' fill='#2f4a38'>ブラウザ完結の</text><text x='406' y='149' font-size='10.5' fill='#2f4a38'>AI動画エディタ(MCP)</text><line x1='12' y1='162' x2='588' y2='162' stroke='#d6efdd' stroke-width='1'></line><text x='24' y='186' font-size='11' font-weight='700' fill='#1a7f37'>omniget</text><text x='212' y='186' font-size='10.5' fill='#2f4a38'>取得・整理・学習が分断</text><text x='406' y='186' font-size='10.5' fill='#2f4a38'>DL＋読書＋SRSを一体化</text></svg><figcaption>図1：今日の3本を「課題→機能」で一望。</figcaption></figure>
+<h4 id="sec-1">marcelroed/gigatoken（⭐406・Trendshift日次5位）</h4>
+<p><b>解決したい課題：</b>LLMの学習・推論では、テキストをトークン列に変換する前処理が地味なボトルネックになりがち。ここが遅いとGPUが遊ぶ。<b>提供する機能：</b>トークナイゼーションを<b>GB/s級の速度</b>で行う一点特化の超高速トークナイザ。エージェント／スキル一色のトレンドの中で、<b>珍しいNLP基盤枠</b>として明確なベンチ訴求で拡散し、小型リポながら増加率が高い。</p>
+<h4 id="sec-2">pireel/pireel（⭐241・Trendshift日次9位・New 2026）</h4>
+<p><b>解決したい課題：</b>トーキングヘッド動画の編集は重く、サーバー構築やアップロードが前提になりがち。<b>提供する機能：</b><b>バックエンド不要でブラウザ完結</b>するAI動画エディタ。ストーリーボード、デザイン済グラフィック、キネティック字幕、テーマ、WebCodecs によるブラウザ内書き出しを備え、<b>MCP経由でAIエージェントから駆動</b>できる。AIコーディング系が並ぶ中で数少ない「動画・クリエイティブ」枠として急伸した。</p>
+<h4 id="sec-3">tonhowtf/omniget（⭐168・Trendshift日次17位・New 2026）</h4>
+<p><b>解決したい課題：</b>メディアの「取得・整理・学習」がツールごとに分断され、集めた素材が死蔵されがち。<b>提供する機能：</b>Tauri+Rust+Svelte 製のネイティブ・クロスプラットフォームアプリで、<b>yt-dlp で1,800+サイトから取得</b>しつつ、フォーカスモード付き PDF/EPUB リーダー・タイムスタンプ付きノート・<b>間隔反復(SRS)</b>まで一気通貫。「学習・PKM」ジャンルの新星として言語・ジャンルの多様性を担う。</p>
+<h4 id="sec-4">まとめ——自分が試すなら</h4>
+<p>共通項は「エージェントではなく、面倒な一工程を専用ツールで速く・軽くする」。自分の用途にいちばん近いのは <b>omniget</b>——散らばりがちな技術記事や動画教材を1か所で取得→読書→SRS化できるなら、日々のインプット運用がまとまる。制作寄りなら pireel、基盤に興味があれば gigatoken を触ってみたい。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://github.com/marcelroed/gigatoken" target="_blank" rel="noopener noreferrer"> marcelroed/gigatoken </a> </li><li> <a href="https://github.com/pireel/pireel" target="_blank" rel="noopener noreferrer"> pireel/pireel </a> </li><li> <a href="https://github.com/tonhowtf/omniget" target="_blank" rel="noopener noreferrer"> tonhowtf/omniget </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> marcelroed/gigatoken（⭐406・Trendshift日次5位） </a> </li><li> <a href="#sec-2" data-toc="sec-2"> pireel/pireel（⭐241・Trendshift日次9位・New 2026） </a> </li><li> <a href="#sec-3" data-toc="sec-3"> tonhowtf/omniget（⭐168・Trendshift日次17位・New 2026） </a> </li><li> <a href="#sec-4" data-toc="sec-4"> まとめ——自分が試すなら </a> </li> </ul> <div class="reading-box"> <div>📅 2026-07-23</div> <div>⏱ 読了 約2分</div> <div>🏷 GitHub Trending</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
