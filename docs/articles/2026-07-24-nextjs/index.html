@@ -1,0 +1,68 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>useLinkStatus——「押した瞬間」に反応するナビゲーション・ペンディングUI（pending と loading.js の住み分け） — デイリー技術深掘り 読み物</title><meta name="description" content="App Router には router.events が無く、リンクを押しても裏で処理中なのに無反応、という体感遅延が弱点だった。Next.js 15.3.0 で入り現行16.2.x の useLinkStatus は、クリックしたリンクが遷移完了するまでの pending 状態を返し、押した箇所の近くにインラインで即応を返す。派手なグローバルバーではなく、遅い動的ルートの離脱を減らすマイクロインタラクションだ。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-24-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="useLinkStatus——「押した瞬間」に反応するナビゲーション・ペンディングUI（pending と loading.js の住み分け） — デイリー技術深掘り 読み物"><meta property="og:description" content="App Router には router.events が無く、リンクを押しても裏で処理中なのに無反応、という体感遅延が弱点だった。Next.js 15.3.0 で入り現行16.2.x の useLinkStatus は、クリックしたリンクが遷移完了するまでの pending 状態を返し、押した箇所の近くにインラインで即応を返す。派手なグローバルバーではなく、遅い動的ルートの離脱を減らすマイクロインタラクションだ。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-24-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>useLinkStatus——「押した瞬間」に反応するナビゲーション・ペンディングUI（pending と loading.js の住み分け）</h1> <p class="lede">App Router には router.events が無く、リンクを押しても裏で処理中なのに無反応、という体感遅延が弱点だった。Next.js 15.3.0 で入り現行16.2.x の useLinkStatus は、クリックしたリンクが遷移完了するまでの pending 状態を返し、押した箇所の近くにインラインで即応を返す。派手なグローバルバーではなく、遅い動的ルートの離脱を減らすマイクロインタラクションだ。</p> <div class="meta"> <span>📅 2026年7月24日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="0"><p>背景。Pages Router 時代の <code>router.events</code>（routeChangeStart 等）は App Router に存在しない。だから NProgress 的なグローバルローディングが素直に配線できず、「リンクを押したのに何も起きない（実際は裏でプリフェッチ/レンダリング中）」という体感遅延が長年の弱点だった。<b>useLinkStatus</b>（Next.js 15.3.0 導入、現行16.2.x）はこの穴を「リンク単位」で塞ぐ公式フックだ。</p>
+<h4 id="sec-1">何が新しいか（APIはこれだけ）</h4>
+<p><code>import { useLinkStatus } from 'next/link'</code> → <code>const { pending } = useLinkStatus()</code>。引数なし、返りは <code>{ pending: boolean }</code> のみ。pending は「URL が更新される前は true、更新後は false」。必ず &lt;Link&gt; の子孫の Client Component（<code>'use client'</code> 必須）で呼ぶ。</p>
+<figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='20' y='26' font-size='13' font-weight='700' fill='#1f6feb'>ナビゲーションの2フェーズ</text><line x1='60' y1='68' x2='540' y2='68' stroke='#cfe0ff' stroke-width='4'></line><circle cx='60' cy='68' r='7' fill='#1f6feb'></circle><circle cx='300' cy='68' r='7' fill='#1f6feb'></circle><circle cx='540' cy='68' r='7' fill='#1f6feb'></circle><text x='44' y='94' font-size='11' fill='#43405a'>クリック</text><text x='262' y='94' font-size='11' fill='#43405a'>URL更新</text><text x='500' y='94' font-size='11' fill='#43405a'>新ルート表示</text><text x='96' y='54' font-size='11.5' font-weight='700' fill='#1f6feb'>pending（useLinkStatus）</text><text x='340' y='54' font-size='11.5' font-weight='700' fill='#7a4fd0'>loading（loading.js）</text><text x='80' y='120' font-size='11' fill='#6b6b70'>まだ現ルート／押下箇所に即応</text><text x='330' y='120' font-size='11' fill='#6b6b70'>Suspense フォールバックで骨組み</text></svg><figcaption>図1：pending は URL 更新の前（useLinkStatus）、loading は更新の後（loading.js）が担当。</figcaption></figure>
+<h4 id="sec-2">仕組み——2フェーズを分ける</h4>
+<p>ナビゲーションは2フェーズ。<b>pending フェーズ</b>は遷移確定・URL更新の「前」（まだ現在ルートに居る）で、useLinkStatus が捉えるのはここ。<b>loading フェーズ</b>は URL 更新の「後」〜新ルートの中身が出るまでで、ここは <code>loading.js</code>（ルートレベルの Suspense フォールバック）の担当。押下直後の即応は useLinkStatus、遷移後の骨組みは loading.js、と重ねて使う。</p>
+<h4 id="sec-3">落とし穴</h4>
+<p>最大の罠は<b>プリフェッチ済みだと pending が立たない</b>こと。本番でリンクがビューポートに入りプリフェッチ完了していると遷移がほぼ即時になり、出したい時に出ない。だから効くのは <code>prefetch={false}</code> のリンクや、プリフェッチが間に合わない動的ルート。次に<b>レイアウトシフト</b>——pending 時だけ要素を出し入れすると CLS が出るので、固定サイズで常時レンダリングし opacity/visibility のトグルだけで見せ隠しする。速い遷移のチラつきは <code>animation-delay: 100ms</code> で「実際に時間を要したときだけ」フェードインさせる疑似デバウンスが定石。Pages Router は常に <code>false</code>、<code>router.push</code> 由来の遷移も対象外だ。</p>
+<h4 id="sec-4">ひとことまとめ</h4>
+<p>公式の位置づけは "quick patch"。まずプリフェッチと loading.js で根本を速くし、それでも残る遅い遷移にだけ useLinkStatus を当てる。乱用してどこでもスピナーを出す設計は非推奨。グローバルなトップバーが要る場合は <code>useRouter</code> をラップして <code>startTransition</code> の isPending を使う自前フックで補う。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://nextjs.org/docs/app/api-reference/functions/use-link-status" target="_blank" rel="noopener noreferrer"> Next.js 公式: useLinkStatus </a> </li><li> <a href="https://nextjs.org/docs/app/api-reference/file-conventions/loading" target="_blank" rel="noopener noreferrer"> Next.js 公式: loading.js </a> </li><li> <a href="https://buildui.com/posts/global-progress-in-nextjs" target="_blank" rel="noopener noreferrer"> Build UI: Global progress in Next.js </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 何が新しいか（APIはこれだけ） </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 仕組み——2フェーズを分ける </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 落とし穴 </a> </li><li> <a href="#sec-4" data-toc="sec-4"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-07-24</div> <div>⏱ 読了 約3分</div> <div>🏷 Next.js</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
