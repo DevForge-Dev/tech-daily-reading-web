@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-07-23T04:46:49.081Z",
+  "generatedAt": "2026-07-24T04:47:33.850Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,94 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-07-24-claude-code",
+      "date": "2026-07-24",
+      "topic": "Claude Code",
+      "title": "v2.1.215——/verify・/code-review を「手動起動限定」に変更、7月は fork のバックグラウンド化・FS隔離の独立制御まで",
+      "lede": "7/24 の v2.1.215 は、これまで状況に応じて自動発火していた /verify と /code-review を、打ったときだけ走る手動起動限定に切り替えた。重い長時間チェックのコストを予期せず払わされないための制御性強化だ。7月通してみると /fork のバックグラウンドセッション化・ファイルシステム隔離の独立制御・スクリーンリーダー対応など、レビュー動線と信頼性の底上げが軸になっている。",
+      "articleHtml": "<p>背景から。エージェントに号令一下でコードを書かせる使い方が普通になり、生成された差分の<b>検証(/verify)とレビュー(/code-review)</b>をどう回すかが日々の運用課題になっていた。この2つは実行時間もトークン消費も大きい「重いチェック」で、勝手に走ると予期せぬコストになる。<b>v2.1.215</b>はそこに手を入れた回だ。</p>\n<h4>何が新しいか</h4>\n<p>核心は、<b>/verify と /code-review を自動実行から外し、ユーザーが明示的に打ったときだけ走る手動起動限定にした</b>こと。バンドルされた他のスキルは従来どおり関連時に自動起動されるが、この重い2つだけは発火タイミングの主導権を利用者に戻した。「気づいたら長時間チェックが走っていた」を避けつつ、必要なときは <code>/verify</code> / <code>/code-review</code> と打てばよい。</p>\n<figure class='fig'><svg viewBox='0 0 600 190' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='16' y='16' width='250' height='158' rx='10' fill='#faf5ff' stroke='#7b3fe4' stroke-width='1.2'/><text x='30' y='42' font-size='13' font-weight='700' fill='#5a2bbf'>変更前（自動発火）</text><text x='30' y='72' font-size='12' fill='#43405a'>/verify … 状況に応じ自動実行</text><text x='30' y='96' font-size='12' fill='#43405a'>/code-review … 自動実行</text><text x='30' y='128' font-size='11.5' fill='#8a7bbf'>重いチェックが予期せず走る</text><text x='30' y='150' font-size='11.5' fill='#8a7bbf'>→ 時間・トークンを消費</text><text x='288' y='102' font-size='24' fill='#7b3fe4'>→</text><rect x='334' y='16' width='250' height='158' rx='10' fill='#f0fff4' stroke='#1a7f37' stroke-width='1.2'/><text x='348' y='42' font-size='13' font-weight='700' fill='#1a7f37'>変更後（手動起動限定）</text><text x='348' y='72' font-size='12' fill='#43405a'>/verify … 打った時だけ実行</text><text x='348' y='96' font-size='12' fill='#43405a'>/code-review … 手動限定</text><text x='348' y='128' font-size='11.5' fill='#3f8f5a'>発火の主導権は利用者へ</text><text x='348' y='150' font-size='11.5' fill='#3f8f5a'>他スキルは従来どおり自動</text></svg><figcaption>図1：v2.1.215 の要点——重いチェックを自動から手動へ。</figcaption></figure>\n<h4>7月全体の潮流</h4>\n<p>月間で見ると、<b>/fork が会話を新しいバックグラウンドセッション（claude agents に独立した行として現れる）へ複製する挙動</b>に変わり、旧来の「セッション内サブエージェント起動」は <code>/subtask</code> に分離された。<b>v2.1.216 ではファイルシステム隔離を独立して制御</b>でき、コード実行の柔軟性が上がった。<b>v2.1.208 ではスクリーンリーダー対応</b>や vim インサートのリマップ（jj で Esc）などアクセシビリティ改善が入り、折りたたみツール要約に経過時間のライブカウンタも付いた。全体として review ワークフロー・アクセシビリティ・信頼性の底上げが今月の軸だ。</p>\n<h4>実務での使いどころ</h4>\n<p>実務ガイドは口を揃えて「効くのは良いプロンプトより<b>良いハーネス</b>」と言う。ハーネスとは、引き締まったメモリ(CLAUDE.md)、実効的な権限ポリシー、スキルのライブラリ、譲れない一線を強制する少数の hooks、そして「広く探索するなら fork・深く推論するなら inline」という判断の総体。何でもフォークするのは失敗モードで、推論の重い作業は inline に残す。ある30名の開発組織は共有スキル22個＋結線済み hooks 11個を整え、4か月で35%の生産性向上を持続したという。</p>\n<h4>注意点・ひとことまとめ</h4>\n<p>注意は、これまで自動 /verify・/code-review に頼っていた人が「レビューが走らなくなった」と感じる点——今後は自分で打つ運用に切り替える。まとめると「重いチェックは手動に、探索は fork・深掘りは inline、成果はハーネスで積む」。派手さより制御性の回だ。</p>",
+      "sources": [
+        {
+          "title": "Claude Code v2.1.215 リリースノート (GitHub)",
+          "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.215"
+        },
+        {
+          "title": "Claude Code 7月リリース総まとめ (havoptic)",
+          "url": "https://www.havoptic.com/tools/claude-code"
+        },
+        {
+          "title": "Claude Code Best Practices (AIXplore)",
+          "url": "https://ai.rundatarun.io/ai-development-agents/claude-code-best-practices"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-24-nextjs",
+      "date": "2026-07-24",
+      "topic": "Next.js",
+      "title": "useLinkStatus——「押した瞬間」に反応するナビゲーション・ペンディングUI（pending と loading.js の住み分け）",
+      "lede": "App Router には router.events が無く、リンクを押しても裏で処理中なのに無反応、という体感遅延が弱点だった。Next.js 15.3.0 で入り現行16.2.x の useLinkStatus は、クリックしたリンクが遷移完了するまでの pending 状態を返し、押した箇所の近くにインラインで即応を返す。派手なグローバルバーではなく、遅い動的ルートの離脱を減らすマイクロインタラクションだ。",
+      "articleHtml": "<p>背景。Pages Router 時代の <code>router.events</code>（routeChangeStart 等）は App Router に存在しない。だから NProgress 的なグローバルローディングが素直に配線できず、「リンクを押したのに何も起きない（実際は裏でプリフェッチ/レンダリング中）」という体感遅延が長年の弱点だった。<b>useLinkStatus</b>（Next.js 15.3.0 導入、現行16.2.x）はこの穴を「リンク単位」で塞ぐ公式フックだ。</p>\n<h4>何が新しいか（APIはこれだけ）</h4>\n<p><code>import { useLinkStatus } from 'next/link'</code> → <code>const { pending } = useLinkStatus()</code>。引数なし、返りは <code>{ pending: boolean }</code> のみ。pending は「URL が更新される前は true、更新後は false」。必ず &lt;Link&gt; の子孫の Client Component（<code>'use client'</code> 必須）で呼ぶ。</p>\n<figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='20' y='26' font-size='13' font-weight='700' fill='#1f6feb'>ナビゲーションの2フェーズ</text><line x1='60' y1='68' x2='540' y2='68' stroke='#cfe0ff' stroke-width='4'/><circle cx='60' cy='68' r='7' fill='#1f6feb'/><circle cx='300' cy='68' r='7' fill='#1f6feb'/><circle cx='540' cy='68' r='7' fill='#1f6feb'/><text x='44' y='94' font-size='11' fill='#43405a'>クリック</text><text x='262' y='94' font-size='11' fill='#43405a'>URL更新</text><text x='500' y='94' font-size='11' fill='#43405a'>新ルート表示</text><text x='96' y='54' font-size='11.5' font-weight='700' fill='#1f6feb'>pending（useLinkStatus）</text><text x='340' y='54' font-size='11.5' font-weight='700' fill='#7a4fd0'>loading（loading.js）</text><text x='80' y='120' font-size='11' fill='#6b6b70'>まだ現ルート／押下箇所に即応</text><text x='330' y='120' font-size='11' fill='#6b6b70'>Suspense フォールバックで骨組み</text></svg><figcaption>図1：pending は URL 更新の前（useLinkStatus）、loading は更新の後（loading.js）が担当。</figcaption></figure>\n<h4>仕組み——2フェーズを分ける</h4>\n<p>ナビゲーションは2フェーズ。<b>pending フェーズ</b>は遷移確定・URL更新の「前」（まだ現在ルートに居る）で、useLinkStatus が捉えるのはここ。<b>loading フェーズ</b>は URL 更新の「後」〜新ルートの中身が出るまでで、ここは <code>loading.js</code>（ルートレベルの Suspense フォールバック）の担当。押下直後の即応は useLinkStatus、遷移後の骨組みは loading.js、と重ねて使う。</p>\n<h4>落とし穴</h4>\n<p>最大の罠は<b>プリフェッチ済みだと pending が立たない</b>こと。本番でリンクがビューポートに入りプリフェッチ完了していると遷移がほぼ即時になり、出したい時に出ない。だから効くのは <code>prefetch={false}</code> のリンクや、プリフェッチが間に合わない動的ルート。次に<b>レイアウトシフト</b>——pending 時だけ要素を出し入れすると CLS が出るので、固定サイズで常時レンダリングし opacity/visibility のトグルだけで見せ隠しする。速い遷移のチラつきは <code>animation-delay: 100ms</code> で「実際に時間を要したときだけ」フェードインさせる疑似デバウンスが定石。Pages Router は常に <code>false</code>、<code>router.push</code> 由来の遷移も対象外だ。</p>\n<h4>ひとことまとめ</h4>\n<p>公式の位置づけは \"quick patch\"。まずプリフェッチと loading.js で根本を速くし、それでも残る遅い遷移にだけ useLinkStatus を当てる。乱用してどこでもスピナーを出す設計は非推奨。グローバルなトップバーが要る場合は <code>useRouter</code> をラップして <code>startTransition</code> の isPending を使う自前フックで補う。</p>",
+      "sources": [
+        {
+          "title": "Next.js 公式: useLinkStatus",
+          "url": "https://nextjs.org/docs/app/api-reference/functions/use-link-status"
+        },
+        {
+          "title": "Next.js 公式: loading.js",
+          "url": "https://nextjs.org/docs/app/api-reference/file-conventions/loading"
+        },
+        {
+          "title": "Build UI: Global progress in Next.js",
+          "url": "https://buildui.com/posts/global-progress-in-nextjs"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-24-flutter",
+      "date": "2026-07-24",
+      "topic": "Flutter",
+      "title": "3.44 安定運用フェーズの実利——Riverpod 3.0 の4新機能とフレーム予算で足元を固める",
+      "lede": "いまは8月の機能リリースへの助走期。安定版は Flutter 3.44.0 / Dart 3.12（3.44.7 まで hotfix）で、次は2026年8月予定。派手な新機能より、Riverpod 3.0 の stale-while-revalidate／自動リトライ／Mutations／unified Ref と、不要リビルド撲滅＋フレーム予算（60fps=16ms）の地固めが今日の実利だ。",
+      "articleHtml": "<p>いまは<b>8月の機能リリースへの助走</b>。安定版は <b>Flutter 3.44.0 / Dart 3.12</b>（Google I/O 2026・以後 3.44.7 まで patch hotfix）で、次の機能リリースは2026年8月予定（年4回 2/5/8/11月）。iOS 26 / Xcode 26 / macOS 26 を正式サポートし、描画は Impeller が Android 既定、依存は SwiftPM が iOS/macOS 既定。派手さより「3.44 系で何を固めるか」の局面だ。</p>\n<h4>状態管理——Riverpod 3.0 の4つ</h4>\n<p>新規プロジェクトの de facto 標準になった <b>Riverpod 3.0</b> の要点は4つ。<b>stale-while-revalidate のオフライン永続化</b>、失敗プロバイダの<b>自動リトライ（指数バックオフ）</b>、書き込みの中間状態を扱う <b>Mutations API</b>、Ref 型を統一する <b>unified Ref</b>。選ぶ理由は compile-time safety・少ないボイラープレート・BuildContext 不要・provider override でテスト容易。監査証跡が要る fintech/healthcare や大規模の一貫パターンは <b>Bloc 9.0</b> が理想で、現行版は Riverpod 3.3.x / bloc 9.2.x。移行は screen-by-screen で共存できる。</p>\n<figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='16' y='14' width='568' height='122' rx='10' fill='#eef7ff' stroke='#0277bd' stroke-width='1.2'/><text x='32' y='40' font-size='13' font-weight='700' fill='#01579b'>1. stale-while-revalidate</text><text x='300' y='40' font-size='12' fill='#37474f'>オフライン永続化（古い値を出しつつ再取得）</text><text x='32' y='70' font-size='13' font-weight='700' fill='#01579b'>2. 自動リトライ</text><text x='300' y='70' font-size='12' fill='#37474f'>失敗プロバイダを指数バックオフで再試行</text><text x='32' y='100' font-size='13' font-weight='700' fill='#01579b'>3. Mutations API</text><text x='300' y='100' font-size='12' fill='#37474f'>書き込みの中間状態（送信中/成功/失敗）</text><text x='32' y='126' font-size='13' font-weight='700' fill='#01579b'>4. unified Ref</text><text x='300' y='126' font-size='12' fill='#37474f'>Ref 型を統一しAPIを一貫化</text></svg><figcaption>図1：Riverpod 3.0 の4新機能。</figcaption></figure>\n<h4>パフォーマンス——不要リビルドとフレーム予算</h4>\n<p>最も多い性能問題は<b>不要な再ビルド</b>。プロパティ不変なら <code>const</code> でリビルドを完全スキップできる。計測は DevTools（Performance/Memory/Network）か、実行中に <code>P</code> キーで UI/GPU スレッドのフレーム時間をリアルタイム確認（profile モード必須）。フラッグシップは 90/120Hz が主流で、フレーム予算は下図の通り。予算を超えるとユーザーがジャンクを知覚する。</p>\n<figure class='fig'><svg viewBox='0 0 600 160' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='20' y='26' font-size='13' font-weight='700' fill='#0277bd'>フレーム予算（1フレームの時間）</text><text x='20' y='58' font-size='12' fill='#37474f'>60fps</text><rect x='90' y='46' width='480' height='16' rx='3' fill='#56c5f5'/><text x='560' y='58' font-size='11' fill='#fff' text-anchor='end'>16ms</text><text x='20' y='94' font-size='12' fill='#37474f'>90fps</text><rect x='90' y='82' width='330' height='16' rx='3' fill='#29a3df'/><text x='410' y='94' font-size='11' fill='#fff' text-anchor='end'>11ms</text><text x='20' y='130' font-size='12' fill='#37474f'>120fps</text><rect x='90' y='118' width='249' height='16' rx='3' fill='#0277bd'/><text x='329' y='130' font-size='11' fill='#fff' text-anchor='end'>8.3ms</text></svg><figcaption>図2：リフレッシュレート別のフレーム予算。高レートほど1フレームは短い。</figcaption></figure>\n<h4>実務・まとめ</h4>\n<p>再ビルド削減は const 徹底・build 分割・最小スライス watch・RepaintBoundary の戦略配置。リストは <code>ListView.builder</code>＋固定 itemExtent、画像は cached_network_image＋width/height 明示。アニメは「まず implicit、連鎖は flutter_animate、精密は explicit（dispose 必須）、重い演出は Rive/Lottie」。Rive は build() 内でロードせず initState/FutureBuilder で事前ロードし、同一アニメは RiveFile インスタンスを再利用する。まとめると、3.44 は新機能待ちより<b>Riverpod 3.0＋フレーム予算＋const で足元を固める</b>回だ。</p>",
+      "sources": [
+        {
+          "title": "Flutter release notes",
+          "url": "https://docs.flutter.dev/release/release-notes"
+        },
+        {
+          "title": "Flutter State Management 2026 (robocitrus)",
+          "url": "https://robocitrus.com/en/blog/flutter-state-management-2026"
+        },
+        {
+          "title": "Flutter Performance best practices",
+          "url": "https://docs.flutter.dev/perf/best-practices"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-24-github-trending",
+      "date": "2026-07-24",
+      "topic": "GitHub Trending",
+      "title": "7/24の話題リポジトリ——エージェントが書いたコードを『守る・整える・見直す』3本",
+      "lede": "今日 OSSInsight 当日トレンドに並んだ3本は、いずれも『AIエージェントが量産するコード』の品質を人間側で担保する道具立て。脆弱性を突く deepsec、UI品質を底上げする ui-skills、差分レビューを速める hunk——攻め・仕上げ・確認の三層がそろった。",
+      "articleHtml": "<p>今日の3本を貫くのは「<b>エージェントが書いたコードを、人間が守り・整え・見直す</b>」という一本の線だ。コード生成が速くなるほど、脆弱性・UI品質・レビュー速度がボトルネックになる。その三層をそれぞれ埋める道具が同日にトレンド入りした。</p>\n<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='14' y='14' width='572' height='182' rx='10' fill='#f2fbf4' stroke='#1a7f37' stroke-width='1.2'/><line x1='14' y1='52' x2='586' y2='52' stroke='#bfe6c8' stroke-width='1'/><line x1='176' y1='14' x2='176' y2='196' stroke='#bfe6c8' stroke-width='1'/><line x1='372' y1='14' x2='372' y2='196' stroke='#bfe6c8' stroke-width='1'/><text x='28' y='40' font-size='12' font-weight='700' fill='#1a7f37'>リポジトリ</text><text x='190' y='40' font-size='12' font-weight='700' fill='#1a7f37'>解決したい課題</text><text x='386' y='40' font-size='12' font-weight='700' fill='#1a7f37'>提供する機能</text><text x='28' y='84' font-size='11.5' font-weight='700' fill='#37474f'>deepsec</text><text x='190' y='84' font-size='10.5' fill='#455a64'>CIに自動セキュリティ</text><text x='190' y='100' font-size='10.5' fill='#455a64'>検査が無い/手動監査</text><text x='386' y='84' font-size='10.5' fill='#455a64'>エージェントで攻撃者</text><text x='386' y='100' font-size='10.5' fill='#455a64'>視点の脆弱性発見</text><text x='28' y='134' font-size='11.5' font-weight='700' fill='#37474f'>ui-skills</text><text x='190' y='134' font-size='10.5' fill='#455a64'>AI生成でUI/操作の</text><text x='190' y='150' font-size='10.5' fill='#455a64'>品質が崩れがち</text><text x='386' y='134' font-size='10.5' fill='#455a64'>UI実務知をスキル化し</text><text x='386' y='150' font-size='10.5' fill='#455a64'>エージェントに付与</text><text x='28' y='180' font-size='11.5' font-weight='700' fill='#37474f'>hunk</text><text x='190' y='180' font-size='10.5' fill='#455a64'>大量の差分を人間が</text><text x='190' y='194' font-size='10.5' fill='#455a64'>素早く精査しにくい</text><text x='386' y='180' font-size='10.5' fill='#455a64'>レビュー最優先の</text><text x='386' y='194' font-size='10.5' fill='#455a64'>ターミナルdiffビューア</text></svg><figcaption>図1：3本の「解決したい課題」と「提供する機能」の対応。</figcaption></figure>\n<h4>vercel-labs/deepsec（TypeScript・OSSInsight当日トレンド）</h4>\n<p><b>解決したい課題：</b>多くのプロジェクトで CI に自動アプリセキュリティ検査（SAST/DAST/pentest）が無く、セキュリティ監査が手動任せになっている。<b>提供する機能：</b>コーディングエージェントに攻撃者視点でコードベースを検査させ、脆弱性を発見するセキュリティ・ハーネス。Vercel Labs 製で Next.js スタックと相性がよく、本番SaaSのデプロイ前チェックや CI への組み込みに向く。エージェントに攻めさせる旬の切り口が急伸の理由だ。</p>\n<h4>ibelick/ui-skills（TypeScript・OSSInsight当日トレンド）</h4>\n<p><b>解決したい課題：</b>コード生成AIは UI・インタラクションの品質を崩しがちで、見栄えやアニメの一貫性が担保しにくい。<b>提供する機能：</b>デザインエンジニアの実務知を AIエージェントに与えるスキル集。motion-primitives で知られる ibelick 発という信頼感もあり、Next.js/React 前提のフロントで UI 品質ゲートとして効く。エージェントが書く画面の質を安定させたい層に刺さっている。</p>\n<h4>modem-dev/hunk（TypeScript・OSSInsight当日トレンド）</h4>\n<p><b>解決したい課題：</b>エージェントが生成する差分は量が多く、人間が素早く精査しにくい。<b>提供する機能：</b>レビュー最優先で設計されたターミナル用 diff ビューア。エージェントの変更を承認する前提の運用で、差分を効率よく読む導線になる。「提案→承認」を回す1人×多プロジェクト運用と噛み合うのが評価点だ。</p>\n<h4>まとめ</h4>\n<p>自分が試すなら、まず <b>hunk</b> でレビュー導線を軽くし、<b>deepsec</b> をデプロイ前チェックに、<b>ui-skills</b> をフロントの品質ゲートに——という順で個人環境から入れるのが現実的だ。</p>",
+      "sources": [
+        {
+          "title": "vercel-labs/deepsec",
+          "url": "https://github.com/vercel-labs/deepsec"
+        },
+        {
+          "title": "ibelick/ui-skills",
+          "url": "https://github.com/ibelick/ui-skills"
+        },
+        {
+          "title": "modem-dev/hunk",
+          "url": "https://github.com/modem-dev/hunk"
+        }
+      ]
+    },
     {
       "id": "2026-07-23-claude-code",
       "date": "2026-07-23",
