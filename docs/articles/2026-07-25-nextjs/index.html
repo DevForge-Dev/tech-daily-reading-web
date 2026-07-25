@@ -1,0 +1,70 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>CSS sibling-index() / sibling-count() — JSもinline styleも無しで「ずらし出現」スタッガーを純CSS化 — デイリー技術深掘り 読み物</title><meta name="description" content="リストを0.1sずつ遅らせて順に出す定番のスタッガー演出。これまでは nth-child の手列挙・inline styleで --i を流し込む・JS のどれかが必要だった。sibling-index() は「兄弟の中で何番目か」を整数で返す新しいCSS値関数で、animation-delay: calc((sibling-index()-1)*.06s) と書くだけ。RSCのままインラインstyleゼロ・use client不要でスタッガーが完成する。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-25-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="CSS sibling-index() / sibling-count() — JSもinline styleも無しで「ずらし出現」スタッガーを純CSS化 — デイリー技術深掘り 読み物"><meta property="og:description" content="リストを0.1sずつ遅らせて順に出す定番のスタッガー演出。これまでは nth-child の手列挙・inline styleで --i を流し込む・JS のどれかが必要だった。sibling-index() は「兄弟の中で何番目か」を整数で返す新しいCSS値関数で、animation-delay: calc((sibling-index()-1)*.06s) と書くだけ。RSCのままインラインstyleゼロ・use client不要でスタッガーが完成する。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-25-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>CSS sibling-index() / sibling-count() — JSもinline styleも無しで「ずらし出現」スタッガーを純CSS化</h1> <p class="lede">リストを0.1sずつ遅らせて順に出す定番のスタッガー演出。これまでは nth-child の手列挙・inline styleで --i を流し込む・JS のどれかが必要だった。sibling-index() は「兄弟の中で何番目か」を整数で返す新しいCSS値関数で、animation-delay: calc((sibling-index()-1)*.06s) と書くだけ。RSCのままインラインstyleゼロ・use client不要でスタッガーが完成する。</p> <div class="meta"> <span>📅 2026年7月25日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="0"><p>背景から。「リストの子要素を少しずつ遅らせて順番に出す（stagger）」は定番のUI演出だが、実装はどれも面倒だった。<code>:nth-child(1){delay:0} :nth-child(2){...}</code> の手列挙は項目数が可変だと破綻し、<code>style="--i:3"</code> を各要素に<b>inline style</b>で埋める方式は index を props/ループから流し込む必要があり、JS（Motion の stagger や <code>element.animate()</code>）はクライアント処理が増える。</p>
+<h4 id="sec-1">何が新しいか</h4>
+<p><b>sibling-index()</b> は要素が兄弟の中で何番目か（1始まりの整数）、<b>sibling-count()</b> は兄弟要素の総数を返す新しいCSS値関数。<code>counter()</code> と違い文字列でなく<b>整数</b>を返すので <code>calc()</code> の中でそのまま演算でき、<code>animation-delay: calc((sibling-index() - 1) * .06s)</code> と書くだけで、マークアップに index を一切書かずに位置依存スタッガーが完成する。Server Component でサーバ側に <code>map</code> したリストが、<b>inline styleゼロ・use client不要・hydrationコストゼロ</b>でずれて出現する——これが Next.js 文脈での一番のうまみ。さらに <code>(sibling-index()-1)/max(sibling-count()-1,1)*total</code> と正規化すれば、項目が3個でも30個でも<b>総演出時間を一定</b>に保てる。</p>
+<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='16' y='24' font-size='12.5' font-weight='700' fill='#1f6feb'>animation-delay = (sibling-index() - 1) × .06s</text><rect x='16' y='40' width='150' height='22' rx='5' fill='#eaf2ff' stroke='#1f6feb'></rect><text x='24' y='55' font-size='11' fill='#1a3f7a'>item 1  delay 0.00s</text><rect x='16' y='72' width='210' height='22' rx='5' fill='#eaf2ff' stroke='#1f6feb'></rect><text x='24' y='87' font-size='11' fill='#1a3f7a'>item 2  delay 0.06s</text><rect x='16' y='104' width='270' height='22' rx='5' fill='#eaf2ff' stroke='#1f6feb'></rect><text x='24' y='119' font-size='11' fill='#1a3f7a'>item 3  delay 0.12s</text><rect x='16' y='136' width='330' height='22' rx='5' fill='#eaf2ff' stroke='#1f6feb'></rect><text x='24' y='151' font-size='11' fill='#1a3f7a'>item 4  delay 0.18s</text><text x='16' y='184' font-size='11' fill='#6b6b70'>対応: Chrome/Edge 138・Safari 26.2 ／ Firefox 未対応（Baseline未達→フォールバック必須）</text></svg><figcaption>図1：indexを書かずに位置依存で遅延が自動計算される。</figcaption></figure>
+<h4 id="sec-2">実装（App Router / Server Componentのまま）</h4>
+<p>純CSSなので <code>'use client'</code> 不要。サーバで <code>data.map()</code> した各 <code>&lt;li&gt;</code> が位置情報を props で受け取らずにCSSだけで自動スタッガーする。動き系は必ず <code>@media (prefers-reduced-motion: no-preference)</code> の内側へ、初期の <code>opacity:0</code> もそのブロックに閉じ込める。</p>
+<pre><code>@supports (animation-delay: calc(sibling-index()*1s)) {
+  .item { opacity:0; animation:fadeUp .4s ease both;
+          animation-delay: calc((sibling-index() - 1) * .06s); }
+}</code></pre>
+<h4 id="sec-3">注意点・ひとことまとめ</h4>
+<p>落とし穴は3つ。①<b>セレクタでは使えない</b>（値関数であって <code>:nth-child(sibling-index())</code> は不可）。②数えるのは「同じ親の全要素」なので見出しや区切り線が混ざると番号がずれる→アニメ対象は専用の親でラップ。③Firefox など未対応で <code>opacity:0</code> のまま消えるリスク→ <code>@supports</code> で機能検出し、サポート外は最初から表示。index を流し込める場面では <code>style={{'--i':i}}</code>＋<code>calc(var(--i)*.06s)</code> の全対応版が堅く、真価は「index を渡せない/渡したくない純CSS」の場面。まとめると「indexを書かないスタッガーの決定版、ただし当面フォールバック前提」。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/sibling-index" target="_blank" rel="noopener noreferrer"> MDN: sibling-index() </a> </li><li> <a href="https://www.smashingmagazine.com/2026/05/mathematical-layouts-sibling-index-sibling-count/" target="_blank" rel="noopener noreferrer"> Smashing Magazine: Mathematical Layouts With sibling-index() And sibling-count() </a> </li><li> <a href="https://caniuse.com/wf-sibling-count" target="_blank" rel="noopener noreferrer"> Can I use: sibling-count() / sibling-index() </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 何が新しいか </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 実装（App Router / Server Componentのまま） </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 注意点・ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-07-25</div> <div>⏱ 読了 約3分</div> <div>🏷 Next.js</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

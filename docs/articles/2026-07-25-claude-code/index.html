@@ -1,0 +1,66 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>v2.1.218 — MCP接続失敗にHTTPステータスを表示、フロントマターbool柔軟化。公開Artifactが閲覧者ごとのライブデータに — デイリー技術深掘り 読み物</title><meta name="description" content="7/25の v2.1.218 は37変更の大きめリリース。目玉は MCP サーバ接続に失敗したとき claude mcp list と /mcp に HTTPステータス＋エラーテキストを出すようになったこと。原因切り分けが一気に楽になった。同じ週、公開Artifactが「開くたびに閲覧者自身のMCPコネクタ」を呼べるようになり、スナップショットではなくライブなダッシュボードを配れる。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-25-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="v2.1.218 — MCP接続失敗にHTTPステータスを表示、フロントマターbool柔軟化。公開Artifactが閲覧者ごとのライブデータに — デイリー技術深掘り 読み物"><meta property="og:description" content="7/25の v2.1.218 は37変更の大きめリリース。目玉は MCP サーバ接続に失敗したとき claude mcp list と /mcp に HTTPステータス＋エラーテキストを出すようになったこと。原因切り分けが一気に楽になった。同じ週、公開Artifactが「開くたびに閲覧者自身のMCPコネクタ」を呼べるようになり、スナップショットではなくライブなダッシュボードを配れる。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-25-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>v2.1.218 — MCP接続失敗にHTTPステータスを表示、フロントマターbool柔軟化。公開Artifactが閲覧者ごとのライブデータに</h1> <p class="lede">7/25の v2.1.218 は37変更の大きめリリース。目玉は MCP サーバ接続に失敗したとき claude mcp list と /mcp に HTTPステータス＋エラーテキストを出すようになったこと。原因切り分けが一気に楽になった。同じ週、公開Artifactが「開くたびに閲覧者自身のMCPコネクタ」を呼べるようになり、スナップショットではなくライブなダッシュボードを配れる。</p> <div class="meta"> <span>📅 2026年7月25日</span> <span>⏱ 約2分</span> <span>🔗 出典 2 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="0"><p>背景から。MCPサーバを複数ぶら下げて運用する構成が当たり前になり、「接続できない」トラブルの<b>原因切り分け</b>が日々の運用課題になっていた。従来はエラーが抽象的で、認証なのか URL なのか TLS なのか分かりづらかった。<b>v2.1.218</b>（37変更）はその不透明さに手を入れた回だ。</p>
+<h4 id="sec-1">何が新しいか</h4>
+<p>核心は、MCP接続に失敗した際に <code>claude mcp list</code> と <code>/mcp</code> が<b>HTTPステータスコードとエラーテキストを表示</b>するようになったこと。401なら認証、404ならURL、5xxならサーバ側、と一目で当たりが付く。加えて skill/plugin のフロントマターの真偽値が <code>yes/no/on/off/1/0</code>（大文字小文字問わず）を受理して記述が柔軟化。設定値に紛れた先頭・末尾の不可視空白に警告を出す改善、<code>/config model=&lt;x&gt;</code> やリモート操作でモデルを切り替えたとき fast モードの変化を通知する挙動も入った。「N個のMCPサーバが認証を必要としています」という起動通知が claude.ai コネクタを過剰カウントしていた不具合や、プロンプト履歴の欠落・重複も修正されている。</p>
+<figure class='fig'><svg viewBox='0 0 600 190' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='16' y='16' width='250' height='158' rx='10' fill='#faf5ff' stroke='#7b3fe4' stroke-width='1.2'></rect><text x='30' y='42' font-size='13' font-weight='700' fill='#5a2bbf'>これまで（不透明）</text><text x='30' y='72' font-size='12' fill='#43405a'>MCP接続失敗</text><text x='30' y='96' font-size='12' fill='#43405a'>→ 抽象的なエラー</text><text x='30' y='128' font-size='11.5' fill='#8a7bbf'>認証？URL？TLS？</text><text x='30' y='150' font-size='11.5' fill='#8a7bbf'>切り分けに手間</text><text x='288' y='102' font-size='24' fill='#7b3fe4'>→</text><rect x='334' y='16' width='250' height='158' rx='10' fill='#f0fff4' stroke='#1a7f37' stroke-width='1.2'></rect><text x='348' y='42' font-size='13' font-weight='700' fill='#1a7f37'>v2.1.218（可視化）</text><text x='348' y='72' font-size='12' fill='#43405a'>HTTPステータス表示</text><text x='348' y='96' font-size='12' fill='#43405a'>＋エラーテキスト</text><text x='348' y='128' font-size='11.5' fill='#3f8f5a'>401=認証 / 404=URL</text><text x='348' y='150' font-size='11.5' fill='#3f8f5a'>5xx=サーバ側</text></svg><figcaption>図1：接続失敗の原因が HTTPステータスで一目で当たる。</figcaption></figure>
+<h4 id="sec-2">もう一つの動き：公開Artifactがライブデータに</h4>
+<p>同じ週（Week29）、公開したArtifactが<b>閲覧されるたびに閲覧者自身のMCPコネクタを呼び出せる</b>ようになった。作成時点のスナップショットではなく、開くたびに最新データを取得して必要ならアクションもする「配れるダッシュボード」が作れる。各呼び出しは閲覧アカウント自身の接続を経由し、初回のコネクタ呼び出し前に閲覧者が明示的にアクセスを承認する。見えるのは本人の権限内データだけ。Pro/Max/Team/Enterprise で使え、一般公開（publicly-shared）のArtifactでは無効だ。</p>
+<h4 id="sec-3">実務での使いどころ・注意点</h4>
+<p>自分ならまず、詰まりがちな社内MCPの接続チェックを <code>/mcp</code> でやり直して、ステータスで一発切り分けする運用に変える。Artifact のライブデータ化は、この読み物置き場のような自分用ダッシュボードを「作者が毎回セッションを回さなくても最新化される」形にできて相性が良い。注意は、ライブArtifactは閲覧者の承認と接続前提なので、権限のない相手には空に見えること。ひとことで言えば「エラーは可視化、Artifactは生モノ化」の回だ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://github.com/anthropics/claude-code/releases/tag/v2.1.218" target="_blank" rel="noopener noreferrer"> Claude Code v2.1.218 リリースノート (GitHub) </a> </li><li> <a href="https://code.claude.com/docs/en/whats-new/2026-w29" target="_blank" rel="noopener noreferrer"> What&#39;s new — Week 29 (公開Artifactのライブコネクタ) </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 何が新しいか </a> </li><li> <a href="#sec-2" data-toc="sec-2"> もう一つの動き：公開Artifactがライブデータに </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 実務での使いどころ・注意点 </a> </li> </ul> <div class="reading-box"> <div>📅 2026-07-25</div> <div>⏱ 読了 約2分</div> <div>🏷 Claude Code</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

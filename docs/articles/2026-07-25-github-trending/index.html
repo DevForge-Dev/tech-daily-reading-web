@@ -1,0 +1,68 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>7/25の話題リポジトリ — エージェント運用を支える3本：コードレビュー・並走ブラウザ・トークン圧縮 — デイリー技術深掘り 読み物</title><meta name="description" content="今日の急上昇は「AIエージェントを実運用する土台」に集中した。生成物の品質を担保するレビュー、人間とエージェントが並走するブラウジング、コンテキストを渡す前に削るトークン圧縮——エージェントを&#34;書かせる&#34;段階から&#34;回す&#34;段階へ進めるための周辺整備が3本そろって Trendshift 日次に入った。"><meta name="theme-color" content="#238636"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-25-github-trending/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="7/25の話題リポジトリ — エージェント運用を支える3本：コードレビュー・並走ブラウザ・トークン圧縮 — デイリー技術深掘り 読み物"><meta property="og:description" content="今日の急上昇は「AIエージェントを実運用する土台」に集中した。生成物の品質を担保するレビュー、人間とエージェントが並走するブラウジング、コンテキストを渡す前に削るトークン圧縮——エージェントを&#34;書かせる&#34;段階から&#34;回す&#34;段階へ進めるための周辺整備が3本そろって Trendshift 日次に入った。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-25-github-trending/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3fb950, #1a7f37)"> <span class="glyph" aria-hidden="true">★</span> <div class="kicker">GitHub Trending</div> <h1>7/25の話題リポジトリ — エージェント運用を支える3本：コードレビュー・並走ブラウザ・トークン圧縮</h1> <p class="lede">今日の急上昇は「AIエージェントを実運用する土台」に集中した。生成物の品質を担保するレビュー、人間とエージェントが並走するブラウジング、コンテキストを渡す前に削るトークン圧縮——エージェントを&quot;書かせる&quot;段階から&quot;回す&quot;段階へ進めるための周辺整備が3本そろって Trendshift 日次に入った。</p> <div class="meta"> <span>📅 2026年7月25日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#238636"> <div> <article class="prose" data-has-mermaid="0"><p>今日 Trendshift の日次上位に入った New 2026 の新星から、共通する傾向が読める。派手な生成AIそのものではなく、<b>エージェントを本番で回すための"周辺装備"</b>——品質保証・作業環境・コスト——が同時に伸びている。3本を「解決したい課題」と「提供する機能」で並べて見る。</p>
+<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='12' y='12' width='576' height='30' fill='#eafaef' stroke='#1a7f37'></rect><text x='150' y='32' font-size='12' font-weight='700' fill='#1a7f37' text-anchor='middle'>リポジトリ</text><text x='330' y='32' font-size='12' font-weight='700' fill='#1a7f37' text-anchor='middle'>解決したい課題</text><text x='510' y='32' font-size='12' font-weight='700' fill='#1a7f37' text-anchor='middle'>提供する機能</text><rect x='12' y='42' width='576' height='54' fill='#ffffff' stroke='#d7ecdd'></rect><text x='20' y='62' font-size='11' font-weight='700' fill='#24303a'>alibaba/</text><text x='20' y='78' font-size='11' font-weight='700' fill='#24303a'>open-code-review</text><text x='20' y='92' font-size='10' fill='#6b6b70'>⭐795・日次3位</text><text x='250' y='64' font-size='10.5' fill='#33413a'>生成物のレビューを</text><text x='250' y='80' font-size='10.5' fill='#33413a'>人手に頼りがち</text><text x='430' y='64' font-size='10.5' fill='#33413a'>決定的解析＋LLMで</text><text x='430' y='80' font-size='10.5' fill='#33413a'>XSS/SQLi等を行単位指摘</text><rect x='12' y='96' width='576' height='54' fill='#f7fbf8' stroke='#d7ecdd'></rect><text x='20' y='116' font-size='11' font-weight='700' fill='#24303a'>citrolabs/</text><text x='20' y='132' font-size='11' font-weight='700' fill='#24303a'>ego-lite</text><text x='20' y='146' font-size='10' fill='#6b6b70'>⭐665・日次5位</text><text x='250' y='118' font-size='10.5' fill='#33413a'>人の操作とエージェントの</text><text x='250' y='134' font-size='10.5' fill='#33413a'>操作が分断</text><text x='430' y='118' font-size='10.5' fill='#33413a'>人とAIが並行作業できる</text><text x='430' y='134' font-size='10.5' fill='#33413a'>AIネイティブWebブラウザ</text><rect x='12' y='150' width='576' height='54' fill='#ffffff' stroke='#d7ecdd'></rect><text x='20' y='170' font-size='11' font-weight='700' fill='#24303a'>headroomlabs-ai/</text><text x='20' y='186' font-size='11' font-weight='700' fill='#24303a'>headroom</text><text x='20' y='200' font-size='10' fill='#6b6b70'>⭐413・日次22位</text><text x='250' y='172' font-size='10.5' fill='#33413a'>LLMへの入力トークンが</text><text x='250' y='188' font-size='10.5' fill='#33413a'>嵩みコスト増</text><text x='430' y='172' font-size='10.5' fill='#33413a'>ログ/JSON/RAGを前段圧縮</text><text x='430' y='188' font-size='10.5' fill='#33413a'>JSONで60〜95%削減</text></svg><figcaption>図1：今日の3本を「課題→機能」で一望。</figcaption></figure>
+<h4 id="sec-1">alibaba/open-code-review（—・⭐795）</h4>
+<p><b>解決したい課題：</b>エージェントが吐く差分は量が多く、レビューを人手で追い切れない。とくに XSS や SQLインジェクションのような定型の脆弱性は見落としが致命傷になる。<b>提供する機能：</b>Alibaba規模で実戦投入されたハイブリッド型レビューツールで、決定的パイプライン（静的解析）＋LLMエージェントを組み合わせ、行単位の精密な指摘と NPE・スレッド安全性・XSS・SQLi の組み込みルールセットを備える。OpenAI/Anthropic 互換で動く。決定的解析とLLMを併せた"取りこぼしにくさ"が評価され、公開直後から日次トップ3という急伸を見せている。</p>
+<h4 id="sec-2">citrolabs/ego-lite（—・⭐665）</h4>
+<p><b>解決したい課題：</b>いまの Web ブラウジングは人間の操作とAIエージェントの操作が別世界で、エージェントに任せたい作業と自分の作業がぶつかる。<b>提供する機能：</b>あなたとAIエージェントが<b>同一ブラウザ上で並行して作業</b>できるよう設計されたAIネイティブなWebブラウザ。エージェント時代のブラウジングUXという旬の切り口が刺さり、New 2026・総スター665で日次5位まで駆け上がった。</p>
+<h4 id="sec-3">headroomlabs-ai/headroom（—・⭐413）</h4>
+<p><b>解決したい課題：</b>ツール出力・ログ・RAGチャンクをそのままLLMに渡すと入力トークンが膨らみ、回答品質と無関係なところでコストが増える。<b>提供する機能：</b>LLMに渡す前段でそれらを圧縮するライブラリ／プロキシ／MCPサーバー。コーディングエージェントで約20%、JSONで60〜95%のトークン削減をうたい、回答品質を保ったまま実利が明確。MCPサーバー形態でそのまま挟める導入容易さも支持されている。</p>
+<h4 id="sec-4">まとめ</h4>
+<p>自分が今すぐ試すなら headroom——毎日走る定期タスクや MCP/tool-use 定義の入力トークンにそのまま効く。open-code-review はデプロイ前のセキュリティ検査の試験導入先として筋が良い。3本を貫くのは「エージェントを回す土台を固める」流れだ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://github.com/alibaba/open-code-review" target="_blank" rel="noopener noreferrer"> alibaba/open-code-review </a> </li><li> <a href="https://github.com/citrolabs/ego-lite" target="_blank" rel="noopener noreferrer"> citrolabs/ego-lite </a> </li><li> <a href="https://github.com/headroomlabs-ai/headroom" target="_blank" rel="noopener noreferrer"> headroomlabs-ai/headroom </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> alibaba/open-code-review（—・⭐795） </a> </li><li> <a href="#sec-2" data-toc="sec-2"> citrolabs/ego-lite（—・⭐665） </a> </li><li> <a href="#sec-3" data-toc="sec-3"> headroomlabs-ai/headroom（—・⭐413） </a> </li><li> <a href="#sec-4" data-toc="sec-4"> まとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-07-25</div> <div>⏱ 読了 約3分</div> <div>🏷 GitHub Trending</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
