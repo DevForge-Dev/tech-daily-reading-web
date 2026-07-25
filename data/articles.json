@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-07-24T04:47:33.850Z",
+  "generatedAt": "2026-07-25T04:49:49.328Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,90 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-07-25-claude-code",
+      "date": "2026-07-25",
+      "topic": "Claude Code",
+      "title": "v2.1.218 — MCP接続失敗にHTTPステータスを表示、フロントマターbool柔軟化。公開Artifactが閲覧者ごとのライブデータに",
+      "lede": "7/25の v2.1.218 は37変更の大きめリリース。目玉は MCP サーバ接続に失敗したとき claude mcp list と /mcp に HTTPステータス＋エラーテキストを出すようになったこと。原因切り分けが一気に楽になった。同じ週、公開Artifactが「開くたびに閲覧者自身のMCPコネクタ」を呼べるようになり、スナップショットではなくライブなダッシュボードを配れる。",
+      "articleHtml": "<p>背景から。MCPサーバを複数ぶら下げて運用する構成が当たり前になり、「接続できない」トラブルの<b>原因切り分け</b>が日々の運用課題になっていた。従来はエラーが抽象的で、認証なのか URL なのか TLS なのか分かりづらかった。<b>v2.1.218</b>（37変更）はその不透明さに手を入れた回だ。</p>\n<h4>何が新しいか</h4>\n<p>核心は、MCP接続に失敗した際に <code>claude mcp list</code> と <code>/mcp</code> が<b>HTTPステータスコードとエラーテキストを表示</b>するようになったこと。401なら認証、404ならURL、5xxならサーバ側、と一目で当たりが付く。加えて skill/plugin のフロントマターの真偽値が <code>yes/no/on/off/1/0</code>（大文字小文字問わず）を受理して記述が柔軟化。設定値に紛れた先頭・末尾の不可視空白に警告を出す改善、<code>/config model=&lt;x&gt;</code> やリモート操作でモデルを切り替えたとき fast モードの変化を通知する挙動も入った。「N個のMCPサーバが認証を必要としています」という起動通知が claude.ai コネクタを過剰カウントしていた不具合や、プロンプト履歴の欠落・重複も修正されている。</p>\n<figure class='fig'><svg viewBox='0 0 600 190' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='16' y='16' width='250' height='158' rx='10' fill='#faf5ff' stroke='#7b3fe4' stroke-width='1.2'/><text x='30' y='42' font-size='13' font-weight='700' fill='#5a2bbf'>これまで（不透明）</text><text x='30' y='72' font-size='12' fill='#43405a'>MCP接続失敗</text><text x='30' y='96' font-size='12' fill='#43405a'>→ 抽象的なエラー</text><text x='30' y='128' font-size='11.5' fill='#8a7bbf'>認証？URL？TLS？</text><text x='30' y='150' font-size='11.5' fill='#8a7bbf'>切り分けに手間</text><text x='288' y='102' font-size='24' fill='#7b3fe4'>→</text><rect x='334' y='16' width='250' height='158' rx='10' fill='#f0fff4' stroke='#1a7f37' stroke-width='1.2'/><text x='348' y='42' font-size='13' font-weight='700' fill='#1a7f37'>v2.1.218（可視化）</text><text x='348' y='72' font-size='12' fill='#43405a'>HTTPステータス表示</text><text x='348' y='96' font-size='12' fill='#43405a'>＋エラーテキスト</text><text x='348' y='128' font-size='11.5' fill='#3f8f5a'>401=認証 / 404=URL</text><text x='348' y='150' font-size='11.5' fill='#3f8f5a'>5xx=サーバ側</text></svg><figcaption>図1：接続失敗の原因が HTTPステータスで一目で当たる。</figcaption></figure>\n<h4>もう一つの動き：公開Artifactがライブデータに</h4>\n<p>同じ週（Week29）、公開したArtifactが<b>閲覧されるたびに閲覧者自身のMCPコネクタを呼び出せる</b>ようになった。作成時点のスナップショットではなく、開くたびに最新データを取得して必要ならアクションもする「配れるダッシュボード」が作れる。各呼び出しは閲覧アカウント自身の接続を経由し、初回のコネクタ呼び出し前に閲覧者が明示的にアクセスを承認する。見えるのは本人の権限内データだけ。Pro/Max/Team/Enterprise で使え、一般公開（publicly-shared）のArtifactでは無効だ。</p>\n<h4>実務での使いどころ・注意点</h4>\n<p>自分ならまず、詰まりがちな社内MCPの接続チェックを <code>/mcp</code> でやり直して、ステータスで一発切り分けする運用に変える。Artifact のライブデータ化は、この読み物置き場のような自分用ダッシュボードを「作者が毎回セッションを回さなくても最新化される」形にできて相性が良い。注意は、ライブArtifactは閲覧者の承認と接続前提なので、権限のない相手には空に見えること。ひとことで言えば「エラーは可視化、Artifactは生モノ化」の回だ。</p>",
+      "sources": [
+        {
+          "title": "Claude Code v2.1.218 リリースノート (GitHub)",
+          "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.218"
+        },
+        {
+          "title": "What's new — Week 29 (公開Artifactのライブコネクタ)",
+          "url": "https://code.claude.com/docs/en/whats-new/2026-w29"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-25-nextjs",
+      "date": "2026-07-25",
+      "topic": "Next.js",
+      "title": "CSS sibling-index() / sibling-count() — JSもinline styleも無しで「ずらし出現」スタッガーを純CSS化",
+      "lede": "リストを0.1sずつ遅らせて順に出す定番のスタッガー演出。これまでは nth-child の手列挙・inline styleで --i を流し込む・JS のどれかが必要だった。sibling-index() は「兄弟の中で何番目か」を整数で返す新しいCSS値関数で、animation-delay: calc((sibling-index()-1)*.06s) と書くだけ。RSCのままインラインstyleゼロ・use client不要でスタッガーが完成する。",
+      "articleHtml": "<p>背景から。「リストの子要素を少しずつ遅らせて順番に出す（stagger）」は定番のUI演出だが、実装はどれも面倒だった。<code>:nth-child(1){delay:0} :nth-child(2){...}</code> の手列挙は項目数が可変だと破綻し、<code>style=\"--i:3\"</code> を各要素に<b>inline style</b>で埋める方式は index を props/ループから流し込む必要があり、JS（Motion の stagger や <code>element.animate()</code>）はクライアント処理が増える。</p>\n<h4>何が新しいか</h4>\n<p><b>sibling-index()</b> は要素が兄弟の中で何番目か（1始まりの整数）、<b>sibling-count()</b> は兄弟要素の総数を返す新しいCSS値関数。<code>counter()</code> と違い文字列でなく<b>整数</b>を返すので <code>calc()</code> の中でそのまま演算でき、<code>animation-delay: calc((sibling-index() - 1) * .06s)</code> と書くだけで、マークアップに index を一切書かずに位置依存スタッガーが完成する。Server Component でサーバ側に <code>map</code> したリストが、<b>inline styleゼロ・use client不要・hydrationコストゼロ</b>でずれて出現する——これが Next.js 文脈での一番のうまみ。さらに <code>(sibling-index()-1)/max(sibling-count()-1,1)*total</code> と正規化すれば、項目が3個でも30個でも<b>総演出時間を一定</b>に保てる。</p>\n<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='16' y='24' font-size='12.5' font-weight='700' fill='#1f6feb'>animation-delay = (sibling-index() - 1) × .06s</text><rect x='16' y='40' width='150' height='22' rx='5' fill='#eaf2ff' stroke='#1f6feb'/><text x='24' y='55' font-size='11' fill='#1a3f7a'>item 1  delay 0.00s</text><rect x='16' y='72' width='210' height='22' rx='5' fill='#eaf2ff' stroke='#1f6feb'/><text x='24' y='87' font-size='11' fill='#1a3f7a'>item 2  delay 0.06s</text><rect x='16' y='104' width='270' height='22' rx='5' fill='#eaf2ff' stroke='#1f6feb'/><text x='24' y='119' font-size='11' fill='#1a3f7a'>item 3  delay 0.12s</text><rect x='16' y='136' width='330' height='22' rx='5' fill='#eaf2ff' stroke='#1f6feb'/><text x='24' y='151' font-size='11' fill='#1a3f7a'>item 4  delay 0.18s</text><text x='16' y='184' font-size='11' fill='#6b6b70'>対応: Chrome/Edge 138・Safari 26.2 ／ Firefox 未対応（Baseline未達→フォールバック必須）</text></svg><figcaption>図1：indexを書かずに位置依存で遅延が自動計算される。</figcaption></figure>\n<h4>実装（App Router / Server Componentのまま）</h4>\n<p>純CSSなので <code>'use client'</code> 不要。サーバで <code>data.map()</code> した各 <code>&lt;li&gt;</code> が位置情報を props で受け取らずにCSSだけで自動スタッガーする。動き系は必ず <code>@media (prefers-reduced-motion: no-preference)</code> の内側へ、初期の <code>opacity:0</code> もそのブロックに閉じ込める。</p>\n<pre><code>@supports (animation-delay: calc(sibling-index()*1s)) {\n  .item { opacity:0; animation:fadeUp .4s ease both;\n          animation-delay: calc((sibling-index() - 1) * .06s); }\n}</code></pre>\n<h4>注意点・ひとことまとめ</h4>\n<p>落とし穴は3つ。①<b>セレクタでは使えない</b>（値関数であって <code>:nth-child(sibling-index())</code> は不可）。②数えるのは「同じ親の全要素」なので見出しや区切り線が混ざると番号がずれる→アニメ対象は専用の親でラップ。③Firefox など未対応で <code>opacity:0</code> のまま消えるリスク→ <code>@supports</code> で機能検出し、サポート外は最初から表示。index を流し込める場面では <code>style={{'--i':i}}</code>＋<code>calc(var(--i)*.06s)</code> の全対応版が堅く、真価は「index を渡せない/渡したくない純CSS」の場面。まとめると「indexを書かないスタッガーの決定版、ただし当面フォールバック前提」。</p>",
+      "sources": [
+        {
+          "title": "MDN: sibling-index()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Values/sibling-index"
+        },
+        {
+          "title": "Smashing Magazine: Mathematical Layouts With sibling-index() And sibling-count()",
+          "url": "https://www.smashingmagazine.com/2026/05/mathematical-layouts-sibling-index-sibling-count/"
+        },
+        {
+          "title": "Can I use: sibling-count() / sibling-index()",
+          "url": "https://caniuse.com/wf-sibling-count"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-25-flutter",
+      "date": "2026-07-25",
+      "topic": "Flutter",
+      "title": "Flutter 3.44 が「ネイティブに感じる」理由 — Impeller が Android 既定へ、描画・構造・AIの3方向転換",
+      "lede": "安定版は Flutter 3.44.0 / Dart 3.12（2026-05-18・Google I/O 2026）。増分アップデートではなく、描画（Android Impeller-only）・構造（Material/Cupertinoデカップリング）・作り方（agentic/GenUI）の3方向転換だ。約2年のプレビューを経て Impeller が Android の既定レンダラに昇格し、シェーダーをAOTで事前コンパイルして shader jank をゼロにした。",
+      "articleHtml": "<p>背景から。Flutter は「速いが、初回アニメで一瞬カクつく」問題を長く抱えていた。原因は実行時のシェーダーコンパイル（shader jank）。<b>3.44.0 / Dart 3.12</b>（2026-05-18・Google I/O 2026）はこの描画基盤を含む3方向を同時に切り替えた回で、単なる増分ではない。</p>\n<h4>何が新しいか</h4>\n<p><b>描画</b>：Skia backend を Android 10 以上で撤去し <b>Pure Impeller（Vulkan）が既定</b>に。シェーダーを<b>AOTでバイナリ事前コンパイル</b>することで初回描画のジャンクが消え、予測可能なアニメ性能と起動→操作の高速化を実現（iOS=Metal / Android=Vulkan でGPU直結）。円のレンダリングは signed-distance function（SDF）ベースでエイリアス解消、perspective matrix 補正で影と射影変換が正確に。<b>構造</b>：Material/Cupertino をコアから完全デカップリングし <code>material_ui</code> / <code>cupertino_ui</code> 独立パッケージへ。M3の新機能がSDKリリースを待たず独自 cadence で届く。<b>言語</b>：Dart 3.12 は private named parameters（先頭 <code>_</code> 自動省略）・primary constructors（experimental）・dot shorthands。次の機能リリースは2026年8月（年4回 2/5/8/11月）。</p>\n<figure class='fig'><svg viewBox='0 0 600 170' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='14' y='30' width='182' height='120' rx='10' fill='#e6f4fb' stroke='#0277bd' stroke-width='1.2'/><text x='105' y='52' font-size='13' font-weight='700' fill='#01597f' text-anchor='middle'>描画</text><text x='105' y='78' font-size='11' fill='#33586a' text-anchor='middle'>Impeller が既定</text><text x='105' y='98' font-size='11' fill='#33586a' text-anchor='middle'>AOTシェーダー</text><text x='105' y='118' font-size='11' fill='#0277bd' text-anchor='middle'>shader jank ゼロ</text><rect x='209' y='30' width='182' height='120' rx='10' fill='#eef7ee' stroke='#2e7d32' stroke-width='1.2'/><text x='300' y='52' font-size='13' font-weight='700' fill='#1f5c22' text-anchor='middle'>構造</text><text x='300' y='78' font-size='11' fill='#3a5a3a' text-anchor='middle'>Material/Cupertino</text><text x='300' y='98' font-size='11' fill='#3a5a3a' text-anchor='middle'>を独立パッケージ化</text><text x='300' y='118' font-size='11' fill='#2e7d32' text-anchor='middle'>独自cadenceで更新</text><rect x='404' y='30' width='182' height='120' rx='10' fill='#f3eefb' stroke='#6a3fb5' stroke-width='1.2'/><text x='495' y='52' font-size='13' font-weight='700' fill='#4e2a8e' text-anchor='middle'>AI/作り方</text><text x='495' y='78' font-size='11' fill='#4b3a63' text-anchor='middle'>Agentic Hot Reload</text><text x='495' y='98' font-size='11' fill='#4b3a63' text-anchor='middle'>GenUI / A2UI</text><text x='495' y='118' font-size='11' fill='#6a3fb5' text-anchor='middle'>DevTools は WASM既定</text><text x='300' y='20' font-size='12.5' font-weight='700' fill='#1c1c1e' text-anchor='middle'>Flutter 3.44 の3方向転換</text></svg><figcaption>図1：描画・構造・AIを同時に切り替えた。</figcaption></figure>\n<h4>状態管理の指針（2026）</h4>\n<p>本番向けの意思決定はシンプルに保てる。<b>新規プロジェクトは Riverpod 3.0 を既定</b>——compile-time safety・組込みオフライン永続化・async取得＋自動エラー回復・BuildContext 不要・override でテスト容易、と揃う。<b>監査証跡が要る規制業界（fintech/healthcare）や10人超の大規模は Bloc 9.0</b>——全状態遷移のログ化＋replay と厳格レビューに向く。鉄則は「1つ選んで一貫し、テストを書く」。現行版は Riverpod 3.3.x / bloc 9.2.x / flutter_bloc 9.1.x。上に feature 単位の Clean Architecture＋<code>go_router</code>、移行は screen-by-screen で共存可。</p>\n<h4>実務での使いどころ・注意点</h4>\n<p>自分なら Android 実機で profile モードの DevTools Timeline を開き、raster スレッドのスパイクが消えたかを確認する。アニメは用途で使い分け——まず implicit（<code>AnimatedContainer</code>）、pre-built 連鎖は flutter_animate、精密 choreography は explicit（<code>AnimationController</code> は<b>dispose必須</b>、忘れるとリーク）、重い演出は Rive。フレーム予算は 60fps=16ms / 90fps=11ms / 120fps=8.3ms。再ビルド削減は <code>const</code> 徹底・build分割・最小スライス watch・<code>RepaintBoundary</code> 戦略配置が軸。ひとことで言えば「初回ジャンクが消えて、やっと\"ネイティブに感じる\"」回だ。</p>",
+      "sources": [
+        {
+          "title": "What's new in Flutter 3.44",
+          "url": "https://blog.flutter.dev/whats-new-in-flutter-3-44-b0cc1ad3c527"
+        },
+        {
+          "title": "Flutter release notes 3.44.0",
+          "url": "https://docs.flutter.dev/release/release-notes/release-notes-3.44.0"
+        },
+        {
+          "title": "Impeller rendering engine",
+          "url": "https://docs.flutter.dev/perf/impeller"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-25-github-trending",
+      "date": "2026-07-25",
+      "topic": "GitHub Trending",
+      "title": "7/25の話題リポジトリ — エージェント運用を支える3本：コードレビュー・並走ブラウザ・トークン圧縮",
+      "lede": "今日の急上昇は「AIエージェントを実運用する土台」に集中した。生成物の品質を担保するレビュー、人間とエージェントが並走するブラウジング、コンテキストを渡す前に削るトークン圧縮——エージェントを\"書かせる\"段階から\"回す\"段階へ進めるための周辺整備が3本そろって Trendshift 日次に入った。",
+      "articleHtml": "<p>今日 Trendshift の日次上位に入った New 2026 の新星から、共通する傾向が読める。派手な生成AIそのものではなく、<b>エージェントを本番で回すための\"周辺装備\"</b>——品質保証・作業環境・コスト——が同時に伸びている。3本を「解決したい課題」と「提供する機能」で並べて見る。</p>\n<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='12' y='12' width='576' height='30' fill='#eafaef' stroke='#1a7f37'/><text x='150' y='32' font-size='12' font-weight='700' fill='#1a7f37' text-anchor='middle'>リポジトリ</text><text x='330' y='32' font-size='12' font-weight='700' fill='#1a7f37' text-anchor='middle'>解決したい課題</text><text x='510' y='32' font-size='12' font-weight='700' fill='#1a7f37' text-anchor='middle'>提供する機能</text><rect x='12' y='42' width='576' height='54' fill='#ffffff' stroke='#d7ecdd'/><text x='20' y='62' font-size='11' font-weight='700' fill='#24303a'>alibaba/</text><text x='20' y='78' font-size='11' font-weight='700' fill='#24303a'>open-code-review</text><text x='20' y='92' font-size='10' fill='#6b6b70'>⭐795・日次3位</text><text x='250' y='64' font-size='10.5' fill='#33413a'>生成物のレビューを</text><text x='250' y='80' font-size='10.5' fill='#33413a'>人手に頼りがち</text><text x='430' y='64' font-size='10.5' fill='#33413a'>決定的解析＋LLMで</text><text x='430' y='80' font-size='10.5' fill='#33413a'>XSS/SQLi等を行単位指摘</text><rect x='12' y='96' width='576' height='54' fill='#f7fbf8' stroke='#d7ecdd'/><text x='20' y='116' font-size='11' font-weight='700' fill='#24303a'>citrolabs/</text><text x='20' y='132' font-size='11' font-weight='700' fill='#24303a'>ego-lite</text><text x='20' y='146' font-size='10' fill='#6b6b70'>⭐665・日次5位</text><text x='250' y='118' font-size='10.5' fill='#33413a'>人の操作とエージェントの</text><text x='250' y='134' font-size='10.5' fill='#33413a'>操作が分断</text><text x='430' y='118' font-size='10.5' fill='#33413a'>人とAIが並行作業できる</text><text x='430' y='134' font-size='10.5' fill='#33413a'>AIネイティブWebブラウザ</text><rect x='12' y='150' width='576' height='54' fill='#ffffff' stroke='#d7ecdd'/><text x='20' y='170' font-size='11' font-weight='700' fill='#24303a'>headroomlabs-ai/</text><text x='20' y='186' font-size='11' font-weight='700' fill='#24303a'>headroom</text><text x='20' y='200' font-size='10' fill='#6b6b70'>⭐413・日次22位</text><text x='250' y='172' font-size='10.5' fill='#33413a'>LLMへの入力トークンが</text><text x='250' y='188' font-size='10.5' fill='#33413a'>嵩みコスト増</text><text x='430' y='172' font-size='10.5' fill='#33413a'>ログ/JSON/RAGを前段圧縮</text><text x='430' y='188' font-size='10.5' fill='#33413a'>JSONで60〜95%削減</text></svg><figcaption>図1：今日の3本を「課題→機能」で一望。</figcaption></figure>\n<h4>alibaba/open-code-review（—・⭐795）</h4>\n<p><b>解決したい課題：</b>エージェントが吐く差分は量が多く、レビューを人手で追い切れない。とくに XSS や SQLインジェクションのような定型の脆弱性は見落としが致命傷になる。<b>提供する機能：</b>Alibaba規模で実戦投入されたハイブリッド型レビューツールで、決定的パイプライン（静的解析）＋LLMエージェントを組み合わせ、行単位の精密な指摘と NPE・スレッド安全性・XSS・SQLi の組み込みルールセットを備える。OpenAI/Anthropic 互換で動く。決定的解析とLLMを併せた\"取りこぼしにくさ\"が評価され、公開直後から日次トップ3という急伸を見せている。</p>\n<h4>citrolabs/ego-lite（—・⭐665）</h4>\n<p><b>解決したい課題：</b>いまの Web ブラウジングは人間の操作とAIエージェントの操作が別世界で、エージェントに任せたい作業と自分の作業がぶつかる。<b>提供する機能：</b>あなたとAIエージェントが<b>同一ブラウザ上で並行して作業</b>できるよう設計されたAIネイティブなWebブラウザ。エージェント時代のブラウジングUXという旬の切り口が刺さり、New 2026・総スター665で日次5位まで駆け上がった。</p>\n<h4>headroomlabs-ai/headroom（—・⭐413）</h4>\n<p><b>解決したい課題：</b>ツール出力・ログ・RAGチャンクをそのままLLMに渡すと入力トークンが膨らみ、回答品質と無関係なところでコストが増える。<b>提供する機能：</b>LLMに渡す前段でそれらを圧縮するライブラリ／プロキシ／MCPサーバー。コーディングエージェントで約20%、JSONで60〜95%のトークン削減をうたい、回答品質を保ったまま実利が明確。MCPサーバー形態でそのまま挟める導入容易さも支持されている。</p>\n<h4>まとめ</h4>\n<p>自分が今すぐ試すなら headroom——毎日走る定期タスクや MCP/tool-use 定義の入力トークンにそのまま効く。open-code-review はデプロイ前のセキュリティ検査の試験導入先として筋が良い。3本を貫くのは「エージェントを回す土台を固める」流れだ。</p>",
+      "sources": [
+        {
+          "title": "alibaba/open-code-review",
+          "url": "https://github.com/alibaba/open-code-review"
+        },
+        {
+          "title": "citrolabs/ego-lite",
+          "url": "https://github.com/citrolabs/ego-lite"
+        },
+        {
+          "title": "headroomlabs-ai/headroom",
+          "url": "https://github.com/headroomlabs-ai/headroom"
+        }
+      ]
+    },
     {
       "id": "2026-07-24-claude-code",
       "date": "2026-07-24",
