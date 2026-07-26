@@ -1,0 +1,68 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>7/26の話題リポジトリ — 単一GPUの世界モデル・成果物を返すローカルコワーカー・Bluetoothメッシュ会話 — デイリー技術深掘り 読み物</title><meta name="description" content="エージェント/スキル一色のトレンドの中で、今日は異色ジャンルが上位を占めた。単一デスクトップGPUで動く世界モデル、チャットではなく完成した成果物を返すローカルファーストのコワーカー、ネット不要のBluetoothメッシュ会話——「AI生成の外側」で手元完結する実体が3本そろって急上昇した。"><meta name="theme-color" content="#238636"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-26-github-trending/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="7/26の話題リポジトリ — 単一GPUの世界モデル・成果物を返すローカルコワーカー・Bluetoothメッシュ会話 — デイリー技術深掘り 読み物"><meta property="og:description" content="エージェント/スキル一色のトレンドの中で、今日は異色ジャンルが上位を占めた。単一デスクトップGPUで動く世界モデル、チャットではなく完成した成果物を返すローカルファーストのコワーカー、ネット不要のBluetoothメッシュ会話——「AI生成の外側」で手元完結する実体が3本そろって急上昇した。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-26-github-trending/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3fb950, #1a7f37)"> <span class="glyph" aria-hidden="true">★</span> <div class="kicker">GitHub Trending</div> <h1>7/26の話題リポジトリ — 単一GPUの世界モデル・成果物を返すローカルコワーカー・Bluetoothメッシュ会話</h1> <p class="lede">エージェント/スキル一色のトレンドの中で、今日は異色ジャンルが上位を占めた。単一デスクトップGPUで動く世界モデル、チャットではなく完成した成果物を返すローカルファーストのコワーカー、ネット不要のBluetoothメッシュ会話——「AI生成の外側」で手元完結する実体が3本そろって急上昇した。</p> <div class="meta"> <span>📅 2026年7月26日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#238636"> <div> <article class="prose" data-has-mermaid="0"><p>今日 Trendshift 日次の上位に入った New 2026 の新星を見ると、共通点は「派手なクラウド生成ではなく、<b>手元で完結する実体</b>(オンデバイス／ローカル／オフライン)」だ。3本を「解決したい課題」と「提供する機能」で並べる。</p>
+<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='12' y='12' width='576' height='30' fill='#eafaef' stroke='#1a7f37'></rect><text x='120' y='32' font-size='11.5' font-weight='700' fill='#1a7f37' text-anchor='middle'>リポジトリ</text><text x='320' y='32' font-size='11.5' font-weight='700' fill='#1a7f37' text-anchor='middle'>解決したい課題</text><text x='505' y='32' font-size='11.5' font-weight='700' fill='#1a7f37' text-anchor='middle'>提供する機能</text><rect x='12' y='42' width='576' height='54' fill='#ffffff' stroke='#d7ecdd'></rect><text x='20' y='62' font-size='11' font-weight='700' fill='#24303a'>amap-cvlab/</text><text x='20' y='78' font-size='11' font-weight='700' fill='#24303a'>ABot-World</text><text x='20' y='92' font-size='10' fill='#6b6b70'>Python・日次1位</text><text x='232' y='64' font-size='10.5' fill='#33413a'>遊べる世界の生成は</text><text x='232' y='80' font-size='10.5' fill='#33413a'>重い基盤が前提</text><text x='412' y='64' font-size='10.5' fill='#33413a'>単一GPUで720P/16FPS</text><text x='412' y='80' font-size='10.5' fill='#33413a'>の対話的世界を生成</text><rect x='12' y='96' width='576' height='54' fill='#f7fbf8' stroke='#d7ecdd'></rect><text x='20' y='116' font-size='11' font-weight='700' fill='#24303a'>andrewyng/</text><text x='20' y='132' font-size='11' font-weight='700' fill='#24303a'>openworker</text><text x='20' y='146' font-size='10' fill='#6b6b70'>Python・日次2位</text><text x='232' y='118' font-size='10.5' fill='#33413a'>AIに頼んでも結局</text><text x='232' y='134' font-size='10.5' fill='#33413a'>チャットが返るだけ</text><text x='412' y='118' font-size='10.5' fill='#33413a'>成果物を仕上げて返す</text><text x='412' y='134' font-size='10.5' fill='#33413a'>ローカル/BYOK/MIT</text><rect x='12' y='150' width='576' height='54' fill='#ffffff' stroke='#d7ecdd'></rect><text x='20' y='170' font-size='11' font-weight='700' fill='#24303a'>permissionlesstech/</text><text x='20' y='186' font-size='11' font-weight='700' fill='#24303a'>bitchat</text><text x='20' y='200' font-size='10' fill='#6b6b70'>Swift・日次7位</text><text x='232' y='172' font-size='10.5' fill='#33413a'>サーバ/回線依存は</text><text x='232' y='188' font-size='10.5' fill='#33413a'>検閲・障害に弱い</text><text x='412' y='172' font-size='10.5' fill='#33413a'>Bluetoothメッシュで</text><text x='412' y='188' font-size='10.5' fill='#33413a'>オフライン会話</text></svg><figcaption>図1：今日の3本を「課題→機能」で一望。</figcaption></figure>
+<h4 id="sec-1">amap-cvlab/ABot-World（Python・日次1位）</h4>
+<p><b>解決したい課題：</b>操作して遊べるインタラクティブな「世界」の生成は、これまで巨大なGPU基盤やクラウド前提で、手元では回しづらかった。<b>提供する機能：</b>Alibaba 傘下 AMAP CV Lab の世界モデルで、<b>RTX 5090 級の単一デスクトップGPU 1枚で 720P・16FPS・約1.2秒遅延</b>の action-conditioned な世界ロールアウトを実現する。テキストや画像から実時間で遊べるAI世界を生成・共有できる(ABot World Studio)。エージェント一色のトレンドの中で CV／ワールドモデルという希少枠が最上位に来た点が注目され、本日 Trendshift 日次1位。</p>
+<h4 id="sec-2">andrewyng/openworker（Python・日次2位）</h4>
+<p><b>解決したい課題：</b>AIに頼んでも結局チャットが返るだけで成果物化に手間がかかり、クラウド前提だとローカルのファイルやプライバシーと噛み合わない。<b>提供する機能：</b>プロンプトではなく<b>「成果」(清書した文書・数値入りの Slack 返信・整えたカレンダー)</b>を指定すると、ローカルのファイルや接続アプリを横断し、重要操作の前に確認しながら仕上げる<b>ローカルファーストのデスクトップ・コワーカー</b>。Tauri2＋React ＋ローカル Python(FastAPI/aisuite) 構成で BYOK・完全ローカル実行が可能(MIT)。Andrew Ng が 7/23 に公開したばかりで、公開直後から日次2位へ急伸した。</p>
+<h4 id="sec-3">permissionlesstech/bitchat（Swift・日次7位）</h4>
+<p><b>解決したい課題：</b>サーバ・アカウント・回線に依存する通信は、検閲や通信障害に弱い。<b>提供する機能：</b>インターネット不要で、近距離の <b>Bluetooth メッシュだけで IRC 風に会話</b>できる分散型チャット。サーバもアカウントも要らない。本日 約 +521 スターと明確なモメンタムで日次7位に再浮上し、分散通信という独立ジャンルの多様性を担った。</p>
+<h4 id="sec-4">まとめ</h4>
+<p>自分がいま試すなら openworker——このリサーチのようにローカルの成果物を仕上げて返す像が近く、BYOK で完全ローカルに寄せられる。ABot-World は「単一GPUで動く世界モデル」という技術デモとして触っておきたい。3本を貫くのは「AI生成の外側で、手元で完結する実体」という流れだ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://github.com/amap-cvlab/ABot-World" target="_blank" rel="noopener noreferrer"> amap-cvlab/ABot-World </a> </li><li> <a href="https://github.com/andrewyng/openworker" target="_blank" rel="noopener noreferrer"> andrewyng/openworker </a> </li><li> <a href="https://github.com/permissionlesstech/bitchat" target="_blank" rel="noopener noreferrer"> permissionlesstech/bitchat </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> amap-cvlab/ABot-World（Python・日次1位） </a> </li><li> <a href="#sec-2" data-toc="sec-2"> andrewyng/openworker（Python・日次2位） </a> </li><li> <a href="#sec-3" data-toc="sec-3"> permissionlesstech/bitchat（Swift・日次7位） </a> </li><li> <a href="#sec-4" data-toc="sec-4"> まとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-07-26</div> <div>⏱ 読了 約3分</div> <div>🏷 GitHub Trending</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

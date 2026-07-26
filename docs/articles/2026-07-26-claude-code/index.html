@@ -1,0 +1,66 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Claude Opus 5 リリースと、暴走fan-outを止めるサブエージェント統制 — v2.1.217〜changelog — デイリー技術深掘り 読み物</title><meta name="description" content="7/24に新フラッグシップ Claude Opus 5 が正式リリース。1Mトークン文脈・最大128k出力・思考(thinking)既定オン・新「xhigh」推論を備え、価格は据え置きの$5/$25のまま最上位 Fable 5 に迫る。同じ週、Claude Code 側は暴走的なサブエージェントの扇形展開(fan-out)を抑える統制を入れた。「強いモデル」と「安全に回す土台」が同時に来た回。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-26-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Claude Opus 5 リリースと、暴走fan-outを止めるサブエージェント統制 — v2.1.217〜changelog — デイリー技術深掘り 読み物"><meta property="og:description" content="7/24に新フラッグシップ Claude Opus 5 が正式リリース。1Mトークン文脈・最大128k出力・思考(thinking)既定オン・新「xhigh」推論を備え、価格は据え置きの$5/$25のまま最上位 Fable 5 に迫る。同じ週、Claude Code 側は暴走的なサブエージェントの扇形展開(fan-out)を抑える統制を入れた。「強いモデル」と「安全に回す土台」が同時に来た回。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-26-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>Claude Opus 5 リリースと、暴走fan-outを止めるサブエージェント統制 — v2.1.217〜changelog</h1> <p class="lede">7/24に新フラッグシップ Claude Opus 5 が正式リリース。1Mトークン文脈・最大128k出力・思考(thinking)既定オン・新「xhigh」推論を備え、価格は据え置きの$5/$25のまま最上位 Fable 5 に迫る。同じ週、Claude Code 側は暴走的なサブエージェントの扇形展開(fan-out)を抑える統制を入れた。「強いモデル」と「安全に回す土台」が同時に来た回。</p> <div class="meta"> <span>📅 2026年7月26日</span> <span>⏱ 約2分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="0"><p>背景から。エージェント型コーディングが日常運用に入り、課題は二つに分かれてきた。ひとつは<b>モデルの賢さ</b>、もうひとつは<b>エージェントを安全に回す統制</b>だ。7月24日はその両輪が同じ週に動いた日で、Opus 5 のリリースと Claude Code 側のサブエージェント制御が重なった。</p>
+<h4 id="sec-1">何が新しいか① — Claude Opus 5</h4>
+<p>新フラッグシップ <b>Claude Opus 5</b> は <b>1Mトークンの文脈ウィンドウ</b>（1Mが既定かつ最大）、最大 <b>128kトークン出力</b>、<b>思考が既定オン</b>で、新たな推論エフォート水準 <b>「xhigh」</b> を持つ。価格は Opus 4.8 から据え置きで <b>入力100万トークン$5 / 出力$25</b>。最上位 Fable 5 に迫る知能を約半額で出す位置づけで、Frontier-Bench や GDPval-AA などのコーディング・知識労働評価で社内の新最高水準を記録した。Claude Max の既定モデル、Claude Pro で使える最強モデルとして展開される。</p>
+<h4 id="sec-2">何が新しいか② — サブエージェントの統制</h4>
+<p><b>v2.1.217</b> はサブエージェント制御を見直した回。既定ではサブエージェントが入れ子(ネスト)のサブエージェントを生成しないよう変更し、深いネストが要る時だけ <code>CLAUDE_CODE_MAX_SUBAGENT_SPAWN_DEPTH</code> で明示許可する方式にした。あわせて<b>同時実行サブエージェント数の上限(既定20)</b>を <code>CLAUDE_CODE_MAX_CONCURRENT_SUBAGENTS</code> で新設し、1メッセージが無制限にバックグラウンドエージェントを扇形展開する事態を防ぐ。その後の changelog では、扇形展開の抑制と柔軟性のバランスを取り<b>ネスト深さ3が既定</b>へ緩和され(<code>=1</code>で無効化)、<code>/code-review</code> が<b>バックグラウンドのサブエージェント実行</b>になってメイン会話ログを埋めなくなった。<code>claude-api</code> スキルの既定モデルも Opus 5 に更新された。</p>
+<figure class='fig'><svg viewBox='0 0 600 190' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='20' font-size='12.5' font-weight='700' fill='#1c1c1e' text-anchor='middle'>サブエージェントの暴走fan-outを統制</text><rect x='16' y='34' width='250' height='142' rx='10' fill='#fff3f3' stroke='#c0392b' stroke-width='1.2'></rect><text x='30' y='58' font-size='13' font-weight='700' fill='#a2301f'>これまで</text><text x='30' y='84' font-size='11.5' fill='#43405a'>ネスト無制限に生成</text><text x='30' y='108' font-size='11.5' fill='#43405a'>同時実行に上限なし</text><text x='30' y='140' font-size='11' fill='#b56' >1メッセージが背景に</text><text x='30' y='158' font-size='11' fill='#b56'>無限fan-out</text><text x='288' y='110' font-size='24' fill='#7b3fe4'>→</text><rect x='334' y='34' width='250' height='142' rx='10' fill='#f0fff4' stroke='#1a7f37' stroke-width='1.2'></rect><text x='348' y='58' font-size='13' font-weight='700' fill='#1a7f37'>v2.1.217〜</text><text x='348' y='84' font-size='11.5' fill='#43405a'>既定ネスト無効→深さ3</text><text x='348' y='108' font-size='11.5' fill='#43405a'>同時実行 上限20</text><text x='348' y='140' font-size='11' fill='#3f8f5a'>深いネストは環境変数</text><text x='348' y='158' font-size='11' fill='#3f8f5a'>で明示許可</text></svg><figcaption>図1：既定を絞り、必要な時だけ環境変数で開ける方針。</figcaption></figure>
+<h4 id="sec-3">実務での使いどころ・注意点</h4>
+<p>自分なら Opus 5 を日常の既定に置きつつ、大量ファイル横断で並列サブエージェントを使う場面では同時実行上限(20)を意識してタスクを束ねる。レビューは <code>/code-review</code> をそのまま回せばログが汚れない。注意は、xhigh や 1M 文脈・思考既定オンは<b>トークンとコストが増える</b>方向なので、軽い作業では推論エフォートや思考を絞ること。深いサブエージェント階層は既定で抑えられているので、意図的な多段委譲は環境変数で明示的に開ける。ひとことで言えば「賢さは据え置き価格で底上げ、運用は統制で安全に」の回だ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://www.anthropic.com/news/claude-opus-5" target="_blank" rel="noopener noreferrer"> Anthropic — Introducing Claude Opus 5 </a> </li><li> <a href="https://github.com/anthropics/claude-code/releases/tag/v2.1.217" target="_blank" rel="noopener noreferrer"> Claude Code v2.1.217 リリースノート (GitHub) </a> </li><li> <a href="https://code.claude.com/docs/en/changelog" target="_blank" rel="noopener noreferrer"> Claude Code changelog </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 何が新しいか① — Claude Opus 5 </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 何が新しいか② — サブエージェントの統制 </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 実務での使いどころ・注意点 </a> </li> </ul> <div class="reading-box"> <div>📅 2026-07-26</div> <div>⏱ 読了 約2分</div> <div>🏷 Claude Code</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

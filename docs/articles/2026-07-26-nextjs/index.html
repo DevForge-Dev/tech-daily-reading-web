@@ -1,0 +1,70 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>可変フォントを純CSSでアニメ — font-variation-settings × @property × next/font — デイリー技術深掘り 読み物</title><meta name="description" content="1つのフォントファイルに太さ・幅・傾きを連続値の「軸」で持つ可変フォント。next/fontの推奨形態で、演出は純CSSだから Server Component のまま use client 不要・hydrationゼロ。最大の落とし穴は font-variation-settings が「非加算」で全軸を上書きすること。1軸だけ滑らかに動かす定石は @property で型を宣言したCSS変数。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-26-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="可変フォントを純CSSでアニメ — font-variation-settings × @property × next/font — デイリー技術深掘り 読み物"><meta property="og:description" content="1つのフォントファイルに太さ・幅・傾きを連続値の「軸」で持つ可変フォント。next/fontの推奨形態で、演出は純CSSだから Server Component のまま use client 不要・hydrationゼロ。最大の落とし穴は font-variation-settings が「非加算」で全軸を上書きすること。1軸だけ滑らかに動かす定石は @property で型を宣言したCSS変数。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-26-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>可変フォントを純CSSでアニメ — font-variation-settings × @property × next/font</h1> <p class="lede">1つのフォントファイルに太さ・幅・傾きを連続値の「軸」で持つ可変フォント。next/fontの推奨形態で、演出は純CSSだから Server Component のまま use client 不要・hydrationゼロ。最大の落とし穴は font-variation-settings が「非加算」で全軸を上書きすること。1軸だけ滑らかに動かす定石は @property で型を宣言したCSS変数。</p> <div class="meta"> <span>📅 2026年7月26日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="0"><p>背景から。可変フォントは太さ(wght)や幅(wdth)などを<b>連続レンジ</b>で持つので、CSSの <code>transition</code>/<code>@keyframes</code> に乗せるだけで「文字が太る・幅が伸びる・傾く」演出が<b>純CSS・ゼロ依存</b>で作れる。Next.js 文脈で効くのは、可変フォントが <code>next/font</code> の推奨形態で、1ファイルに全軸が入りリクエスト1本＋<code>size-adjust</code> でCLS0、しかも演出が純CSSなので<b>Server Component のまま</b> hydration ゼロで出せる点だ。</p>
+<h4 id="sec-1">何が新しい／落とし穴</h4>
+<p>軸は4文字タグで、<b>登録軸は小文字・カスタム軸は大文字</b>。登録軸には高レベルCSSプロパティが対応する。最大の落とし穴が <code>font-variation-settings</code> は<b>「非加算」で指定宣言が全軸を一括上書き</b>し、継承もされないこと。親に <code>"wght" 700</code>、子に <code>"opsz" 14</code> と書くと子の wght は既定へリセットされる。対策は二つ、(1)登録軸は <code>font-weight</code> 等の高レベルプロパティを使う、(2)1宣言で必要な全軸を書く。</p>
+<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='16' y='22' font-size='12.5' font-weight='700' fill='#1f6feb'>可変フォントの軸と高レベルプロパティ</text><rect x='16' y='34' width='568' height='24' fill='#eaf2ff' stroke='#1f6feb'></rect><text x='26' y='51' font-size='11' font-weight='700' fill='#1a3f7a'>軸タグ</text><text x='150' y='51' font-size='11' font-weight='700' fill='#1a3f7a'>意味</text><text x='330' y='51' font-size='11' font-weight='700' fill='#1a3f7a'>対応プロパティ</text><text x='26' y='78' font-size='11' fill='#24303a'>wght</text><text x='150' y='78' font-size='11' fill='#33413a'>太さ</text><text x='330' y='78' font-size='11' fill='#33413a'>font-weight</text><text x='26' y='100' font-size='11' fill='#24303a'>wdth</text><text x='150' y='100' font-size='11' fill='#33413a'>幅</text><text x='330' y='100' font-size='11' fill='#33413a'>font-width</text><text x='26' y='122' font-size='11' fill='#24303a'>slnt</text><text x='150' y='122' font-size='11' fill='#33413a'>傾き(角度)</text><text x='330' y='122' font-size='11' fill='#33413a'>font-style: oblique Ndeg</text><text x='26' y='144' font-size='11' fill='#24303a'>opsz</text><text x='150' y='144' font-size='11' fill='#33413a'>光学サイズ</text><text x='330' y='144' font-size='11' fill='#33413a'>font-optical-sizing: auto</text><text x='26' y='166' font-size='11' fill='#7b3fe4'>GRAD/MONO…</text><text x='150' y='166' font-size='11' fill='#33413a'>カスタム軸(大文字)</text><text x='330' y='166' font-size='11' fill='#a2301f'>無し→variation-settings必須</text><text x='16' y='190' font-size='10.5' fill='#6b6b70'>登録軸=高レベルプロパティ推奨（非加算問題を回避）／カスタム軸だけ variation-settings</text></svg><figcaption>図1：登録軸は高レベルプロパティ、variation-settings はカスタム軸専用と割り切る。</figcaption></figure>
+<h4 id="sec-2">1軸だけ滑らかに — CSS変数 ＋ @property</h4>
+<p>1軸だけ動かしたいのに全軸を書き直すのは辛い。定石は各軸をCSS変数へ逃がすことだが、素のカスタムプロパティは<b>既定で離散補間</b>でパッと切り替わる。ここで <code>@property</code> で型を宣言すると<b>数値として滑らかに補間</b>できる（Baseline 2024）。</p>
+<pre><code>@property --wght { syntax: "&lt;number&gt;"; inherits: false; initial-value: 400; }
+h1 { --wght: 400; font-variation-settings: "wght" var(--wght);
+     transition: --wght .3s ease; }
+h1:hover { --wght: 850; }</code></pre>
+<h4 id="sec-3">next/font 実装と注意点</h4>
+<p>可変フォントは <code>next/font</code> で <b>weight を渡さず</b>（レンジ全体が使える）、<code>opsz</code> 等の非既定軸は <code>axes</code> で opt-in、宣言は必ず module スコープで layout に適用する（<code>'use client'</code> 不要）。ポインタ追従など JS が要る演出だけ Client 島に閉じ込め、毎フレーム setState せず <code>useRef</code>＋<code>style.setProperty('--wght', v)</code> で直書きする。パフォの落とし穴は <code>font-variation-settings</code> のアニメが<b>GPUコンポジット対象外</b>で再ラスタライズ＋再レイアウトを誘発すること。見出し・短いラベル・単発トリガーに限定し、<code>prefers-reduced-motion</code> では動きを止めて到達状態(太字など)だけ残す。まとめると「純CSSで軽やかに、ただし動かすのは見出しだけ」。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_fonts/Variable_fonts_guide" target="_blank" rel="noopener noreferrer"> MDN — Variable fonts guide </a> </li><li> <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/font-variation-settings" target="_blank" rel="noopener noreferrer"> MDN — font-variation-settings </a> </li><li> <a href="https://nextjs.org/docs/app/getting-started/fonts" target="_blank" rel="noopener noreferrer"> Next.js — Font Optimization (App Router) </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 何が新しい／落とし穴 </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 1軸だけ滑らかに — CSS変数 ＋ @property </a> </li><li> <a href="#sec-3" data-toc="sec-3"> next/font 実装と注意点 </a> </li> </ul> <div class="reading-box"> <div>📅 2026-07-26</div> <div>⏱ 読了 約3分</div> <div>🏷 Next.js</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
