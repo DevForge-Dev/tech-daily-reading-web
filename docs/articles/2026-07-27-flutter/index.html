@@ -1,0 +1,69 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Flutter 4.0 が視界に — Impeller 2.0・Dart 4.x・Wasm 既定化への助走（安定版は 3.44 / Dart 3.12） — デイリー技術深掘り 読み物</title><meta name="description" content="今日の主役は次のメジャー。安定版は Flutter 3.44 / Dart 3.12 で、次の機能リリースは2026年8月（年4回 2/5/8/11月）。その先に控える Flutter 4.0 は Impeller 2.0 レンダリングエンジンと Dart 4.x 統合を予定し、2022年以来初のメジャー更新となる見込み。Web は Wasm を既定コンパイルターゲットにする方針で、DevTools は 3.44 で Wasm レンダラが既定になった。"><meta name="theme-color" content="#0277bd"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-27-flutter/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Flutter 4.0 が視界に — Impeller 2.0・Dart 4.x・Wasm 既定化への助走（安定版は 3.44 / Dart 3.12） — デイリー技術深掘り 読み物"><meta property="og:description" content="今日の主役は次のメジャー。安定版は Flutter 3.44 / Dart 3.12 で、次の機能リリースは2026年8月（年4回 2/5/8/11月）。その先に控える Flutter 4.0 は Impeller 2.0 レンダリングエンジンと Dart 4.x 統合を予定し、2022年以来初のメジャー更新となる見込み。Web は Wasm を既定コンパイルターゲットにする方針で、DevTools は 3.44 で Wasm レンダラが既定になった。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-27-flutter/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #29b6f6, #01579b)"> <span class="glyph" aria-hidden="true">◆</span> <div class="kicker">Flutter</div> <h1>Flutter 4.0 が視界に — Impeller 2.0・Dart 4.x・Wasm 既定化への助走（安定版は 3.44 / Dart 3.12）</h1> <p class="lede">今日の主役は次のメジャー。安定版は Flutter 3.44 / Dart 3.12 で、次の機能リリースは2026年8月（年4回 2/5/8/11月）。その先に控える Flutter 4.0 は Impeller 2.0 レンダリングエンジンと Dart 4.x 統合を予定し、2022年以来初のメジャー更新となる見込み。Web は Wasm を既定コンパイルターゲットにする方針で、DevTools は 3.44 で Wasm レンダラが既定になった。</p> <div class="meta"> <span>📅 2026年7月27日</span> <span>⏱ 約2分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#0277bd"> <div> <article class="prose" data-has-mermaid="0"><h4 id="sec-1">なぜ今これが話題か</h4>
+<p>2026 ロードマップ「Finishing the Job」は年<b>4回以上</b>の安定リリースをコミットし、積み残しの完遂を掲げる。その延長線上に、<b>2022年以来初のメジャー</b>となる <b>Flutter 4.0</b> が視界に入ってきた。現行の安定版は <b>Flutter 3.44 / Dart 3.12</b>（docs は 3.44.7 反映）で、次の機能リリースは<b>2026年8月</b>予定。いま起きているのは「4.0 への助走」だ。</p>
+<h4 id="sec-2">何が新しい/重要か</h4>
+<p>Flutter 4.0 は <b>Impeller 2.0 レンダリングエンジン</b>と <b>Dart 4.x 統合</b>を予定する。描画では <b>Impeller が iOS / Android（API 29+）で既定</b>となり、ロードマップは Android の Impeller 移行完遂を掲げる。Web は現状 <code>flutter build web --wasm</code> が必要だが、<b>Wasm を既定コンパイルターゲット</b>にする方針で、3.35+ で dry-run を実施、<b>DevTools は 3.44 で Wasm レンダラが既定</b>になった。言語面は <b>Dart 3.10</b> で <b>dot shorthands</b>・<b>analyzer plugin システム</b>・<b>build hooks 安定化</b>を導入、<b>Dart 3.11（2026年2月）</b>は言語追加なしで editor サポートを強化。<code>dart analyze/fix/format</code> は AOT 化で最大 <b>50% 高速</b>になった。</p>
+<figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='20' text-anchor='middle' font-size='12.5' font-weight='700' fill='#0277bd'>安定版から Flutter 4.0 への助走</text><line x1='50' y1='85' x2='560' y2='85' stroke='#56c5f5' stroke-width='2'></line><circle cx='110' cy='85' r='6' fill='#0277bd'></circle><text x='110' y='68' text-anchor='middle' font-size='10.5' font-weight='700' fill='#0277bd'>今</text><text x='110' y='108' text-anchor='middle' font-size='10' fill='#356'>3.44 / Dart 3.12</text><circle cx='320' cy='85' r='6' fill='#0277bd'></circle><text x='320' y='68' text-anchor='middle' font-size='10.5' fill='#356'>2026年8月</text><text x='320' y='108' text-anchor='middle' font-size='10' fill='#356'>次の機能リリース</text><circle cx='520' cy='85' r='7' fill='#1a7f37'></circle><text x='520' y='68' text-anchor='middle' font-size='10.5' font-weight='700' fill='#1a7f37'>Flutter 4.0</text><text x='520' y='108' text-anchor='middle' font-size='9.5' fill='#3f8f5a'>Impeller 2.0 / Dart 4.x / Wasm既定</text></svg><figcaption>図1：年4回の刻みで機能を積み、Impeller 2.0・Dart 4.x・Wasm 既定化を束ねて 4.0 へ。</figcaption></figure>
+<h4 id="sec-3">実務での使いどころ</h4>
+<p>自分なら、今は<b>3.44 / Dart 3.12 で安定運用</b>しつつ、Web ターゲットは <code>--wasm</code> ビルドを試験導入して JS レンダラとの体感差・バンドル差を実測しておく。Dart 3.10 の <b>dot shorthands</b> と <b>build hooks</b> は既存コードの整理に効くので、analyzer plugin と合わせて先に取り込む。AOT 化した <code>dart analyze/fix</code> は CI の短縮に直結する。</p>
+<h4 id="sec-4">注意点・落とし穴</h4>
+<blockquote>4.0 の内容は<b>ロードマップベースの見込み</b>で、時期・仕様は変わりうる。Wasm 既定化は<b>依存パッケージの Wasm 互換性</b>（dart:html 直叩き等の非互換）が前提になるので、移行前に依存の棚卸しが要る。Impeller は多くのシェーダー起因ジャンクを消すが<b>他要因のジャンクは残る</b>ため、profile モードでの計測は引き続き必須。</blockquote>
+<h4 id="sec-5">ひとことまとめ</h4>
+<p>いまは 3.44 / Dart 3.12 が地に足の着いた選択。その裏で Impeller 2.0・Dart 4.x・Wasm 既定化が 4.0 に向けて積み上がっている。Web の Wasm 化と依存互換の確認を、今のうちから小さく始めておきたい。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://webartdesign.com.au/blog/flutters-2026-roadmap-just-dropped-and-its-all-about-finishing-the-job/" target="_blank" rel="noopener noreferrer"> Flutter&#39;s 2026 Roadmap — Finishing the Job </a> </li><li> <a href="https://blog.dart.dev/announcing-dart-3-10-ea8b952b6088" target="_blank" rel="noopener noreferrer"> Announcing Dart 3.10 </a> </li><li> <a href="https://docs.flutter.dev/platform-integration/web/wasm" target="_blank" rel="noopener noreferrer"> Support for WebAssembly (Wasm) — Flutter Docs </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> なぜ今これが話題か </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 何が新しい/重要か </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 実務での使いどころ </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 注意点・落とし穴 </a> </li><li> <a href="#sec-5" data-toc="sec-5"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-07-27</div> <div>⏱ 読了 約2分</div> <div>🏷 Flutter</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

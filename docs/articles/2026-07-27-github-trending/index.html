@@ -1,0 +1,68 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>7/27の話題リポジトリ — 自前AIアシスタント・ESP32でローカルLLM・1分で立つCMS — デイリー技術深掘り 読み物</title><meta name="description" content="今日の3本を貫くのは「自前で持つ／自分のマシンで動かす」志向。クラウド前提を外し、個人がAI・LLM・CMSを手元に引き寄せる New 2026 が Trendshift 日次上位に並んだ。"><meta name="theme-color" content="#238636"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-27-github-trending/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="7/27の話題リポジトリ — 自前AIアシスタント・ESP32でローカルLLM・1分で立つCMS — デイリー技術深掘り 読み物"><meta property="og:description" content="今日の3本を貫くのは「自前で持つ／自分のマシンで動かす」志向。クラウド前提を外し、個人がAI・LLM・CMSを手元に引き寄せる New 2026 が Trendshift 日次上位に並んだ。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-27-github-trending/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3fb950, #1a7f37)"> <span class="glyph" aria-hidden="true">★</span> <div class="kicker">GitHub Trending</div> <h1>7/27の話題リポジトリ — 自前AIアシスタント・ESP32でローカルLLM・1分で立つCMS</h1> <p class="lede">今日の3本を貫くのは「自前で持つ／自分のマシンで動かす」志向。クラウド前提を外し、個人がAI・LLM・CMSを手元に引き寄せる New 2026 が Trendshift 日次上位に並んだ。</p> <div class="meta"> <span>📅 2026年7月27日</span> <span>⏱ 約2分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#238636"> <div> <article class="prose" data-has-mermaid="0"><p>本日 Trendshift の日次モメンタムで上位に入った3本は、いずれも <b>「自前・セルフホスト」</b>という共通の空気をまとう。クラウドサービスに預ける代わりに、AIアシスタント・ローカルLLM・CMS を<b>自分の管理下に置く</b>という選択肢が同時に伸びた日だ。各リポジトリを「解決したい課題」と「提供する機能」で見ていく。</p>
+<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='20' text-anchor='middle' font-size='12.5' font-weight='700' fill='#1a7f37'>3本の「解決したい課題 → 提供する機能」</text><rect x='16' y='34' width='568' height='52' rx='8' fill='#f0fff4' stroke='#3fb950'></rect><text x='28' y='54' font-size='11.5' font-weight='700' fill='#1a7f37'>QwenPaw</text><text x='28' y='72' font-size='10' fill='#356'>課題:AIを他社クラウドに預けたくない → 機能:ローカル/クラウド両対応の自前アシスタント</text><rect x='16' y='90' width='568' height='52' rx='8' fill='#eef7f0' stroke='#3fb950'></rect><text x='28' y='110' font-size='11.5' font-weight='700' fill='#1a7f37'>esp32-ai</text><text x='28' y='128' font-size='10' fill='#356'>課題:AIはGPU必須で高価 → 機能:数百円のESP32でローカルにAI/LLMを動かす</text><rect x='16' y='146' width='568' height='52' rx='8' fill='#f0fff4' stroke='#3fb950'></rect><text x='28' y='166' font-size='11.5' font-weight='700' fill='#1a7f37'>Instatic</text><text x='28' y='184' font-size='10' fill='#356'>課題:CMS導入が重い/SaaS依存 → 機能:1分で立つセルフホストのビジュアルCMS</text></svg><figcaption>図1：3本とも「他者依存を外し、手元に取り戻す」構図で共通する。</figcaption></figure>
+<h4 id="sec-1">agentscope-ai/QwenPaw（—・⭐—）</h4>
+<p><b>解決したい課題:</b> パーソナルAIアシスタントを他社クラウドに預けると、プライバシーとカスタマイズ性が犠牲になる。<b>提供する機能:</b> 自分のマシンにもクラウドにも簡単に導入でき、複数のチャットアプリから使える<b>セルフホスト型パーソナルAIアシスタント</b>。拡張しやすいスキル構成を持つ。AgentScope 陣営の New 2026 で、本日 <b>Trendshift 日次2位</b>。エージェント一色のトレンドの中で「個人が自前で持てる」という切り口が刺さり急伸した。</p>
+<h4 id="sec-2">slvDev/esp32-ai（—・⭐—）</h4>
+<p><b>解決したい課題:</b> AI/LLM は高価なGPUや常時接続のクラウドが前提になりがちで、組込み・IoT 領域には縁遠かった。<b>提供する機能:</b> 数百円級の Wi-Fi マイコン <b>ESP32 上でローカルに LLM/AI 機能を動かす</b>（Local LLM × IoT）。本日 <b>Trendshift 日次5位</b>。ソフト側のエージェント系が上位を占める中、ハードウェア寄りの異色ジャンルが食い込み、全体の多様性を担った。</p>
+<h4 id="sec-3">CoreBunch/Instatic（TypeScript・⭐—）</h4>
+<p><b>解決したい課題:</b> 既存CMSは導入・運用が重く、SaaS 依存だとデータの所在も縛られる。<b>提供する機能:</b> <b>1分で立ち上がるモダンなセルフホスト型ビジュアルCMS</b>。TypeScript 製で導入障壁が低い。本日 <b>Trendshift 日次15位</b>＋OSSInsight 当日新規。ヘッドレス/セルフホスト志向の流れに乗って伸びた New 2026。</p>
+<h4 id="sec-4">まとめ</h4>
+<p>自分が試すなら、まず <b>Instatic</b>。1分で立つ手軽さは検証コストが低く、自前CMSの体験を最短で確かめられる。AIを手元に置く思想を試すなら QwenPaw、遊びと学びを兼ねるなら esp32-ai が面白い。3本に共通する「他者依存を外して手元に取り戻す」流れは、しばらく続きそうだ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://github.com/agentscope-ai/QwenPaw" target="_blank" rel="noopener noreferrer"> agentscope-ai/QwenPaw </a> </li><li> <a href="https://github.com/slvDev/esp32-ai" target="_blank" rel="noopener noreferrer"> slvDev/esp32-ai </a> </li><li> <a href="https://github.com/CoreBunch/Instatic" target="_blank" rel="noopener noreferrer"> CoreBunch/Instatic </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> agentscope-ai/QwenPaw（—・⭐—） </a> </li><li> <a href="#sec-2" data-toc="sec-2"> slvDev/esp32-ai（—・⭐—） </a> </li><li> <a href="#sec-3" data-toc="sec-3"> CoreBunch/Instatic（TypeScript・⭐—） </a> </li><li> <a href="#sec-4" data-toc="sec-4"> まとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-07-27</div> <div>⏱ 読了 約2分</div> <div>🏷 GitHub Trending</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
