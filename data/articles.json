@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-07-26T04:50:21.709Z",
+  "generatedAt": "2026-07-27T04:51:38.757Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,94 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-07-27-claude-code",
+      "date": "2026-07-27",
+      "topic": "Claude Code",
+      "title": "v2.1.219 で Opus 5 が既定Opusに — strictAllowlist・DirectoryAddedフックと自走の安全弁",
+      "lede": "7/24 リリースの v2.1.219 が既定Opusを 1M文脈の Claude Opus 5 に切り替え、あわせて27件のCLI変更を投入。許可リスト外ホストを無確認で拒否する sandbox.network.strictAllowlist、作業ディレクトリ追加時に発火する DirectoryAdded フック、Dynamic workflow のサイズ指針 workflowSizeGuideline が加わった。「賢いモデル」と「安全に自走させる土台」が同じ回で進んだ。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>エージェント型コーディングが日常運用に入り、焦点は<b>モデルの賢さ</b>と<b>無人でも安全に回す統制</b>の二つに割れてきた。7/24 の <b>v2.1.219</b> はその両輪を同じ回で進めた大型アップデートで、既定Opusを刷新しつつサンドボックス・フック・ワークフロー周りの締め直しを一度に入れた。</p>\n<h4>何が新しいか</h4>\n<p>核心は既定Opusの切り替えだ。<b>Claude Opus 5（claude-opus-5）</b>が<b>1Mトークン文脈</b>を既定として載り、あわせて<b>27件のCLI変更</b>が入った。安全面では <code>sandbox.network.strictAllowlist</code> が<b>許可リスト外ホストへの接続を確認プロンプトなしで拒否</b>する。運用面では、セッション途中に <code>/add-dir</code> やSDKの <code>register_repo_root</code> で作業ディレクトリが増えたときに発火する <b>DirectoryAdded フック</b>、Dynamic workflow のサイズ指針を任意の設定から指定する <b>workflowSizeGuideline</b> キーが追加。Fast モードは2倍コストで約2.5倍速という位置づけも明示された。直前後の changelog では、サブエージェントの<b>テキストストリーミング</b>（途中経過のリアルタイム表示）に対応し、<code>/code-review</code> がバックグラウンドのサブエージェント実行へ、ネスト深さは既定3まで緩和された。</p>\n<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='20' text-anchor='middle' font-size='12.5' font-weight='700' fill='#5b27b0'>v2.1.219 の主な追加</text><rect x='20' y='36' width='180' height='150' rx='10' fill='#f6f2fd' stroke='#b58bd6'/><text x='110' y='60' text-anchor='middle' font-size='12' font-weight='700' fill='#6b4a93'>モデル</text><text x='110' y='92' text-anchor='middle' font-size='11' fill='#43405a'>既定Opus=</text><text x='110' y='110' text-anchor='middle' font-size='11.5' font-weight='700' fill='#5b27b0'>Claude Opus 5</text><text x='110' y='132' text-anchor='middle' font-size='11' fill='#43405a'>1M文脈・27件CLI変更</text><rect x='210' y='36' width='180' height='150' rx='10' fill='#fff3f3' stroke='#c0392b'/><text x='300' y='60' text-anchor='middle' font-size='12' font-weight='700' fill='#a2301f'>安全</text><text x='300' y='92' text-anchor='middle' font-size='10.5' fill='#43405a'>strictAllowlist</text><text x='300' y='112' text-anchor='middle' font-size='10.5' fill='#43405a'>許可リスト外を</text><text x='300' y='130' text-anchor='middle' font-size='10.5' fill='#43405a'>無確認で拒否</text><rect x='400' y='36' width='180' height='150' rx='10' fill='#f0fff4' stroke='#1a7f37'/><text x='490' y='60' text-anchor='middle' font-size='12' font-weight='700' fill='#1a7f37'>運用</text><text x='490' y='92' text-anchor='middle' font-size='10.5' fill='#43405a'>DirectoryAdded</text><text x='490' y='110' text-anchor='middle' font-size='10.5' fill='#43405a'>フック</text><text x='490' y='132' text-anchor='middle' font-size='10.5' fill='#43405a'>workflowSizeGuideline</text></svg><figcaption>図1：モデル刷新・ネットワーク安全・自走運用の3方向を同時に更新。</figcaption></figure>\n<h4>実務での使いどころ</h4>\n<p>自分なら Opus 5 を日常の既定に据えつつ、無人サンドボックス実行では <code>strictAllowlist</code> をオンにして外部到達を封じる。長時間の自動処理では DirectoryAdded フックで作業ディレクトリ追加を検知し、監査ログやフォーマッタ起動につなげる。<code>/code-review</code> はそのまま回せばバックグラウンド実行でメイン会話ログを汚さない。</p>\n<h4>注意点・落とし穴</h4>\n<blockquote>1M文脈・Fastモードは<b>トークンとコストが増える</b>方向。軽い作業では文脈や速度を欲張らない。strictAllowlist は正当な外部依存（パッケージ取得等）まで止めうるので、許可リストの初期設計が要る。ネスト深さ3の緩和は便利だが、多段委譲は暴走fan-outの温床になりやすく、同時実行数の把握は引き続き重要。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>v2.1.219 は「既定を強く、実行を安全に、運用を可視化」の回。Opus 5 を既定に置きつつ strictAllowlist と DirectoryAdded で自走の安全弁を締めるのが今日の実践だ。</p>",
+      "sources": [
+        {
+          "title": "Claude Code v2.1.219 リリースノート (GitHub)",
+          "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.219"
+        },
+        {
+          "title": "Claude Code changelog",
+          "url": "https://code.claude.com/docs/en/changelog"
+        },
+        {
+          "title": "Claude Platform リリースノート",
+          "url": "https://platform.claude.com/docs/en/release-notes/overview.md"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-27-nextjs",
+      "date": "2026-07-27",
+      "topic": "Next.js",
+      "title": "after() でレスポンス後に副作用を走らせる — ログ/分析をブロックせず、静的最適化も壊さない",
+      "lede": "after(callback)（next/server）は、レスポンス送信が終わった後にコールバックを実行するAPI。ロギング・分析・通知・キャッシュのウォームアップなど「応答をブロックしなくていい副作用」を本処理から切り離せる。15.1 で unstable_after から after へ安定化、16 でも推奨。肝は「リクエストタイムAPIではない＝ルートを動的化しない」点で、PPR/Cache Components を壊さず副作用フックを差し込める。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>RSC と Server Actions が定着し、「ユーザーへの応答」と「その裏で走らせたい副作用」を分けたい場面が増えた。<code>after()</code> は<b>レスポンス（またはプリレンダー）がユーザーへ送信し終わった後</b>にコールバックを走らせるAPIで、TTFB や応答完了を遅らせずにロギング・分析・監査・通知を後ろに逃がせる。<code>v15.0.0-rc</code> の <code>unstable_after</code> から <b>v15.1.0 で after として安定化</b>し、Next.js 16 系でも安定APIとして推奨されている。</p>\n<h4>何が新しい/重要か</h4>\n<p>最大のポイントは <b>「after はリクエストタイムAPIではない」</b>こと。呼んでもルートは動的化しないので、静的ページ内で使えばコールバックは<b>ビルド時、またはリバリデート時</b>に走る。つまり <b>PPR / Cache Components</b> の静的最適化を壊さずに副作用フックを差し込める。使える場所は Server Components（<code>generateMetadata</code> 含む）／ Server Functions／ Route Handlers／ Proxy（旧 middleware）。<b>エラー時・notFound()・redirect() でも実行される</b>ので、確実に走らせたいクリーンアップや監査に向く。</p>\n<figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='20' text-anchor='middle' font-size='12.5' font-weight='700' fill='#1456b8'>after() の実行タイミング</text><line x1='40' y1='80' x2='560' y2='80' stroke='#7aa8ef' stroke-width='2'/><circle cx='120' cy='80' r='6' fill='#1f6feb'/><text x='120' y='62' text-anchor='middle' font-size='10.5' fill='#2b5aa8'>本処理</text><circle cx='300' cy='80' r='6' fill='#1f6feb'/><text x='300' y='62' text-anchor='middle' font-size='10.5' fill='#2b5aa8'>応答をユーザーへ送信</text><circle cx='480' cy='80' r='6' fill='#1a7f37'/><text x='480' y='62' text-anchor='middle' font-size='10.5' font-weight='700' fill='#1a7f37'>after() 発火</text><text x='480' y='104' text-anchor='middle' font-size='10' fill='#3f8f5a'>ログ/分析/通知</text><text x='300' y='128' text-anchor='middle' font-size='10' font-style='italic' fill='#8a8a90'>応答完了を遅らせず副作用だけ後ろへ</text></svg><figcaption>図1：応答送信の完了後にコールバックが走る。ユーザー体感のレイテンシは増えない。</figcaption></figure>\n<h4>仕組み・実装のポイント</h4>\n<p>サーバー側APIなので <code>'use client'</code> は不要。サーバーレスでは内部的に <code>waitUntil(promise)</code> でインボケーション寿命を延ばして実現する。Route Handler / Server Function の after 内では <code>cookies()</code> / <code>headers()</code> を直接呼べる。</p>\n<pre><code>import { after } from 'next/server'\nimport { headers } from 'next/headers'\n\nexport async function POST() {\n  // 本処理（応答はここまでで確定）\n  after(async () => {\n    const ua = (await headers()).get('user-agent')\n    logUserAction({ ua }) // 応答送信後に非同期実行\n  })\n  return Response.json({ ok: true })\n}</code></pre>\n<h4>注意点・落とし穴</h4>\n<blockquote>Server Component 内の after コールバックでは <b>cookies()/headers() を呼べない</b>（レンダリング後に走り追跡外になるため）。対策は<b>リクエストデータをレンダリング中に読み、値をクロージャで渡す</b>。after 内で <b>Set-Cookie は不可</b>なのでクッキー書き込みは本体側で。処理時間は <code>maxDuration</code> に従うので、重い処理はキューやジョブ基盤へ逃がす。Cache Components では動的部分を <code>&lt;Suspense&gt;</code> で包み、その中で読んだ値を after へ渡す。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>after() は「応答をブロックしない後処理」の標準口。静的最適化を壊さず、失敗経路でも走るのが強み。cookies/headers の読み場所と maxDuration だけ押さえれば、ログ・分析・監査を素直に後ろへ逃がせる。</p>",
+      "sources": [
+        {
+          "title": "Functions: after — Next.js 公式ドキュメント",
+          "url": "https://nextjs.org/docs/app/api-reference/functions/after"
+        },
+        {
+          "title": "Next.js 15.1 リリースブログ（after 安定化）",
+          "url": "https://nextjs.org/blog/next-15-1"
+        },
+        {
+          "title": "How to optimize your Next.js app with after() — LogRocket",
+          "url": "https://blog.logrocket.com/how-to-optimize-next-js-app-after/"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-27-flutter",
+      "date": "2026-07-27",
+      "topic": "Flutter",
+      "title": "Flutter 4.0 が視界に — Impeller 2.0・Dart 4.x・Wasm 既定化への助走（安定版は 3.44 / Dart 3.12）",
+      "lede": "今日の主役は次のメジャー。安定版は Flutter 3.44 / Dart 3.12 で、次の機能リリースは2026年8月（年4回 2/5/8/11月）。その先に控える Flutter 4.0 は Impeller 2.0 レンダリングエンジンと Dart 4.x 統合を予定し、2022年以来初のメジャー更新となる見込み。Web は Wasm を既定コンパイルターゲットにする方針で、DevTools は 3.44 で Wasm レンダラが既定になった。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>2026 ロードマップ「Finishing the Job」は年<b>4回以上</b>の安定リリースをコミットし、積み残しの完遂を掲げる。その延長線上に、<b>2022年以来初のメジャー</b>となる <b>Flutter 4.0</b> が視界に入ってきた。現行の安定版は <b>Flutter 3.44 / Dart 3.12</b>（docs は 3.44.7 反映）で、次の機能リリースは<b>2026年8月</b>予定。いま起きているのは「4.0 への助走」だ。</p>\n<h4>何が新しい/重要か</h4>\n<p>Flutter 4.0 は <b>Impeller 2.0 レンダリングエンジン</b>と <b>Dart 4.x 統合</b>を予定する。描画では <b>Impeller が iOS / Android（API 29+）で既定</b>となり、ロードマップは Android の Impeller 移行完遂を掲げる。Web は現状 <code>flutter build web --wasm</code> が必要だが、<b>Wasm を既定コンパイルターゲット</b>にする方針で、3.35+ で dry-run を実施、<b>DevTools は 3.44 で Wasm レンダラが既定</b>になった。言語面は <b>Dart 3.10</b> で <b>dot shorthands</b>・<b>analyzer plugin システム</b>・<b>build hooks 安定化</b>を導入、<b>Dart 3.11（2026年2月）</b>は言語追加なしで editor サポートを強化。<code>dart analyze/fix/format</code> は AOT 化で最大 <b>50% 高速</b>になった。</p>\n<figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='20' text-anchor='middle' font-size='12.5' font-weight='700' fill='#0277bd'>安定版から Flutter 4.0 への助走</text><line x1='50' y1='85' x2='560' y2='85' stroke='#56c5f5' stroke-width='2'/><circle cx='110' cy='85' r='6' fill='#0277bd'/><text x='110' y='68' text-anchor='middle' font-size='10.5' font-weight='700' fill='#0277bd'>今</text><text x='110' y='108' text-anchor='middle' font-size='10' fill='#356'>3.44 / Dart 3.12</text><circle cx='320' cy='85' r='6' fill='#0277bd'/><text x='320' y='68' text-anchor='middle' font-size='10.5' fill='#356'>2026年8月</text><text x='320' y='108' text-anchor='middle' font-size='10' fill='#356'>次の機能リリース</text><circle cx='520' cy='85' r='7' fill='#1a7f37'/><text x='520' y='68' text-anchor='middle' font-size='10.5' font-weight='700' fill='#1a7f37'>Flutter 4.0</text><text x='520' y='108' text-anchor='middle' font-size='9.5' fill='#3f8f5a'>Impeller 2.0 / Dart 4.x / Wasm既定</text></svg><figcaption>図1：年4回の刻みで機能を積み、Impeller 2.0・Dart 4.x・Wasm 既定化を束ねて 4.0 へ。</figcaption></figure>\n<h4>実務での使いどころ</h4>\n<p>自分なら、今は<b>3.44 / Dart 3.12 で安定運用</b>しつつ、Web ターゲットは <code>--wasm</code> ビルドを試験導入して JS レンダラとの体感差・バンドル差を実測しておく。Dart 3.10 の <b>dot shorthands</b> と <b>build hooks</b> は既存コードの整理に効くので、analyzer plugin と合わせて先に取り込む。AOT 化した <code>dart analyze/fix</code> は CI の短縮に直結する。</p>\n<h4>注意点・落とし穴</h4>\n<blockquote>4.0 の内容は<b>ロードマップベースの見込み</b>で、時期・仕様は変わりうる。Wasm 既定化は<b>依存パッケージの Wasm 互換性</b>（dart:html 直叩き等の非互換）が前提になるので、移行前に依存の棚卸しが要る。Impeller は多くのシェーダー起因ジャンクを消すが<b>他要因のジャンクは残る</b>ため、profile モードでの計測は引き続き必須。</blockquote>\n<h4>ひとことまとめ</h4>\n<p>いまは 3.44 / Dart 3.12 が地に足の着いた選択。その裏で Impeller 2.0・Dart 4.x・Wasm 既定化が 4.0 に向けて積み上がっている。Web の Wasm 化と依存互換の確認を、今のうちから小さく始めておきたい。</p>",
+      "sources": [
+        {
+          "title": "Flutter's 2026 Roadmap — Finishing the Job",
+          "url": "https://webartdesign.com.au/blog/flutters-2026-roadmap-just-dropped-and-its-all-about-finishing-the-job/"
+        },
+        {
+          "title": "Announcing Dart 3.10",
+          "url": "https://blog.dart.dev/announcing-dart-3-10-ea8b952b6088"
+        },
+        {
+          "title": "Support for WebAssembly (Wasm) — Flutter Docs",
+          "url": "https://docs.flutter.dev/platform-integration/web/wasm"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-27-github-trending",
+      "date": "2026-07-27",
+      "topic": "GitHub Trending",
+      "title": "7/27の話題リポジトリ — 自前AIアシスタント・ESP32でローカルLLM・1分で立つCMS",
+      "lede": "今日の3本を貫くのは「自前で持つ／自分のマシンで動かす」志向。クラウド前提を外し、個人がAI・LLM・CMSを手元に引き寄せる New 2026 が Trendshift 日次上位に並んだ。",
+      "articleHtml": "<p>本日 Trendshift の日次モメンタムで上位に入った3本は、いずれも <b>「自前・セルフホスト」</b>という共通の空気をまとう。クラウドサービスに預ける代わりに、AIアシスタント・ローカルLLM・CMS を<b>自分の管理下に置く</b>という選択肢が同時に伸びた日だ。各リポジトリを「解決したい課題」と「提供する機能」で見ていく。</p>\n<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='20' text-anchor='middle' font-size='12.5' font-weight='700' fill='#1a7f37'>3本の「解決したい課題 → 提供する機能」</text><rect x='16' y='34' width='568' height='52' rx='8' fill='#f0fff4' stroke='#3fb950'/><text x='28' y='54' font-size='11.5' font-weight='700' fill='#1a7f37'>QwenPaw</text><text x='28' y='72' font-size='10' fill='#356'>課題:AIを他社クラウドに預けたくない → 機能:ローカル/クラウド両対応の自前アシスタント</text><rect x='16' y='90' width='568' height='52' rx='8' fill='#eef7f0' stroke='#3fb950'/><text x='28' y='110' font-size='11.5' font-weight='700' fill='#1a7f37'>esp32-ai</text><text x='28' y='128' font-size='10' fill='#356'>課題:AIはGPU必須で高価 → 機能:数百円のESP32でローカルにAI/LLMを動かす</text><rect x='16' y='146' width='568' height='52' rx='8' fill='#f0fff4' stroke='#3fb950'/><text x='28' y='166' font-size='11.5' font-weight='700' fill='#1a7f37'>Instatic</text><text x='28' y='184' font-size='10' fill='#356'>課題:CMS導入が重い/SaaS依存 → 機能:1分で立つセルフホストのビジュアルCMS</text></svg><figcaption>図1：3本とも「他者依存を外し、手元に取り戻す」構図で共通する。</figcaption></figure>\n<h4>agentscope-ai/QwenPaw（—・⭐—）</h4>\n<p><b>解決したい課題:</b> パーソナルAIアシスタントを他社クラウドに預けると、プライバシーとカスタマイズ性が犠牲になる。<b>提供する機能:</b> 自分のマシンにもクラウドにも簡単に導入でき、複数のチャットアプリから使える<b>セルフホスト型パーソナルAIアシスタント</b>。拡張しやすいスキル構成を持つ。AgentScope 陣営の New 2026 で、本日 <b>Trendshift 日次2位</b>。エージェント一色のトレンドの中で「個人が自前で持てる」という切り口が刺さり急伸した。</p>\n<h4>slvDev/esp32-ai（—・⭐—）</h4>\n<p><b>解決したい課題:</b> AI/LLM は高価なGPUや常時接続のクラウドが前提になりがちで、組込み・IoT 領域には縁遠かった。<b>提供する機能:</b> 数百円級の Wi-Fi マイコン <b>ESP32 上でローカルに LLM/AI 機能を動かす</b>（Local LLM × IoT）。本日 <b>Trendshift 日次5位</b>。ソフト側のエージェント系が上位を占める中、ハードウェア寄りの異色ジャンルが食い込み、全体の多様性を担った。</p>\n<h4>CoreBunch/Instatic（TypeScript・⭐—）</h4>\n<p><b>解決したい課題:</b> 既存CMSは導入・運用が重く、SaaS 依存だとデータの所在も縛られる。<b>提供する機能:</b> <b>1分で立ち上がるモダンなセルフホスト型ビジュアルCMS</b>。TypeScript 製で導入障壁が低い。本日 <b>Trendshift 日次15位</b>＋OSSInsight 当日新規。ヘッドレス/セルフホスト志向の流れに乗って伸びた New 2026。</p>\n<h4>まとめ</h4>\n<p>自分が試すなら、まず <b>Instatic</b>。1分で立つ手軽さは検証コストが低く、自前CMSの体験を最短で確かめられる。AIを手元に置く思想を試すなら QwenPaw、遊びと学びを兼ねるなら esp32-ai が面白い。3本に共通する「他者依存を外して手元に取り戻す」流れは、しばらく続きそうだ。</p>",
+      "sources": [
+        {
+          "title": "agentscope-ai/QwenPaw",
+          "url": "https://github.com/agentscope-ai/QwenPaw"
+        },
+        {
+          "title": "slvDev/esp32-ai",
+          "url": "https://github.com/slvDev/esp32-ai"
+        },
+        {
+          "title": "CoreBunch/Instatic",
+          "url": "https://github.com/CoreBunch/Instatic"
+        }
+      ]
+    },
     {
       "id": "2026-07-26-claude-code",
       "date": "2026-07-26",
