@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-07-27T04:51:38.757Z",
+  "generatedAt": "2026-07-28T04:45:16.506Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,80 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-07-28-claude-code",
+      "date": "2026-07-28",
+      "topic": "Claude Code",
+      "title": "v2.1.220 で /fork がバックグラウンド化・自律コマンドは手動起動へ — 「賢さ」より暴走させない設計",
+      "lede": "直近の Claude Code は /fork を独立バックグラウンドセッション化し、旧来のインライン子を /subtask に分離。加えて /verify・/code-review・/deep-research を手動起動のみに改め、WebSearch にセッション200回の上限を導入するなど、自律実行の安全弁を一気に締めた。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>エージェント型コーディングが日常運用に入り、関心は「モデルの賢さ」から「無人でどこまで安全に走らせられるか」へ移ってきた。7/24 系のリリース <b>v2.1.220</b> は、まさにその統制まわりを一度に締め直した回で、コマンドの役割整理・長時間セッションのメモリリーク一掃・自律実行の抑制がセットで入った。</p>\n<h4>何が新しいか</h4>\n<p>目玉は <b>/fork</b> の刷新だ。これまで /fork はインラインのサブエージェントを起動していたが、今回から会話を丸ごとコピーして<b>独立したバックグラウンドセッション</b>（claude agents に自分の行を持つ）として走らせ、本体の作業を止めずに続けられるようになった。旧来のインライン子は <b>/subtask</b> という別コマンドに分離され、「別文脈で長く走らせる＝/fork」「その場で短く委譲＝/subtask」と用途が明確になった。あわせて長時間セッションで問題化していた複数のメモリリーク——MCP stdio サーバの stderr が最大64MBまで肥大、LSP ドキュメントが開きっぱなし、バックグラウンド後もフック出力を保持、ヘッドレス/SDK で大きなツール結果が無制限に増加——を一括修正している。</p>\n<figure class='fig'><svg viewBox='0 0 600 250' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n<rect x='0' y='0' width='600' height='250' fill='#fff'/>\n<text x='300' y='24' text-anchor='middle' font-size='14' font-weight='bold' fill='#c2410c'>v2.1.220：コマンド再編と自律の安全弁</text>\n<rect x='18' y='42' width='268' height='150' rx='8' fill='#fff7ed' stroke='#fdba74'/>\n<text x='32' y='64' font-size='12' font-weight='bold' fill='#9a3412'>コマンド再編</text>\n<text x='32' y='86' font-size='11' fill='#7c2d12'>/fork → 独立バックグラウンド</text>\n<text x='32' y='102' font-size='11' fill='#7c2d12'>　セッション（本体は継続作業）</text>\n<text x='32' y='124' font-size='11' fill='#7c2d12'>旧 /fork のインライン子</text>\n<text x='32' y='140' font-size='11' fill='#7c2d12'>　→ /subtask に分離</text>\n<text x='32' y='168' font-size='11' fill='#7c2d12'>メモリリーク一括修正</text>\n<text x='32' y='184' font-size='11' fill='#7c2d12'>　（MCP stderr/LSP/フック/SDK）</text>\n<rect x='314' y='42' width='268' height='150' rx='8' fill='#eef2ff' stroke='#a5b4fc'/>\n<text x='328' y='64' font-size='12' font-weight='bold' fill='#3730a3'>自律の安全弁</text>\n<text x='328' y='86' font-size='11' fill='#3730a3'>/verify・/code-review・</text>\n<text x='328' y='102' font-size='11' fill='#3730a3'>　/deep-research は手動起動のみ</text>\n<text x='328' y='124' font-size='11' fill='#3730a3'>WebSearch セッション上限200回</text>\n<text x='328' y='140' font-size='11' fill='#3730a3'>　（環境変数で調整可）</text>\n<text x='328' y='168' font-size='11' fill='#3730a3'>strictAllowlist で許可外</text>\n<text x='328' y='184' font-size='11' fill='#3730a3'>　ホストを無確認拒否</text>\n<text x='300' y='222' text-anchor='middle' font-size='11' fill='#6b7280'>「賢さ」より「無人でも暴走させない設計」に寄った回</text>\n</svg><figcaption>図1：v2.1.220 の主な変更 — 左＝コマンド再編、右＝自律実行の安全弁</figcaption></figure>\n<h4>仕組み・ポイント</h4>\n<p>安全弁側の変更も実務に効く。<b>/verify・/code-review・/deep-research</b> はこれまで Claude が自律的に走らせていたが、「手動で呼んだときだけ実行」に改められ、意図しない自動起動が止まった。さらに検索ループの暴走を抑えるため、<b>WebSearch のセッション全体の呼び出しに既定200回の上限</b>（<code>CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION</code> で調整可）が入った。サンドボックス実行では <code>sandbox.network.strictAllowlist</code> が許可リスト外ホストへの接続を無確認で拒否する。</p>\n<h4>自分が試すなら</h4>\n<p>長時間の調査タスクは <b>/fork</b> でバックグラウンドに逃がし、本体では別作業を進める運用を試したい。CI やスケジュール実行など無人の文脈では、<code>strictAllowlist</code> と WebSearch 上限を明示設定して「勝手にどこかへ繋ぎに行く」余地を潰しておくと安心だ。</p>\n<h4>注意点</h4>\n<p>/verify や /code-review が自動で走らなくなった分、品質ゲートは自分で明示的に叩く運用へ切り替える必要がある。「昔は勝手にレビューしてくれた」前提のワークフローは取りこぼしが出るので、コミット前チェックを手順に組み込むこと。</p>\n<h4>ひとことまとめ</h4>\n<p>今回は派手な新機能というより、<b>自律エージェントを安心して無人運用するための土台固め</b>。/fork とバックグラウンド化、手動起動化と各種上限は、そのまま日々の運用テンプレに落とし込む価値がある。</p>",
+      "sources": [
+        {
+          "title": "Claude Code — v2.1.220 リリース",
+          "url": "https://www.havoptic.com/tools/claude-code"
+        },
+        {
+          "title": "Claude Code changelog",
+          "url": "https://www.gradually.ai/en/changelogs/claude-code/"
+        },
+        {
+          "title": "Claude Code updates (releasebot)",
+          "url": "https://releasebot.io/updates/anthropic/claude-code"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-28-nextjs",
+      "date": "2026-07-28",
+      "topic": "Next.js",
+      "title": "Rive を Next.js App Router で — 状態を持つベクターアニメを 'use client' の島に隔離する",
+      "lede": "Lottie が再生専用なのに対し、Rive は State Machine と Data Binding でユーザー操作に反応する。App Router では完全クライアント専用のこのランタイムを RSC ページの中の小さな島に閉じ込め、SSR を外して CLS を防ぐのが定石になる。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>マイクロインタラクションやオンボーディングのキャラクターなど「操作に反応して滑らかに変形する UI」を、動画でも大量の CSS でもなく<b>1つの .riv バイナリ</b>で賄いたい需要が増えている。<b>Rive</b> はデザインツールと各プラットフォーム共通ランタイムがセットで、成果物を実行時に WASM＋Canvas/WebGL2 で描画する。Lottie との決定的な差は<b>状態を持ち対話できる</b>こと。Lottie が録画済みアニメの宣言的プレイヤーなのに対し、Rive は <b>State Machine</b> をファイル内に内蔵し、実行時に Inputs を送り込むと状態遷移とブレンドで動きが変わる。</p>\n<h4>何が新しいか</h4>\n<p>2026 のランタイムの主役は <b>Data Binding（View Model / VMI）</b>。デザイン側で宣言した型付きプロパティ（number/boolean/string/color/enum など）に、コードから <code>autoBind</code> ＋ <code>useViewModelInstanceNumber</code> 等のフックで双方向に触れる。State Machine Input の上位互換的な「アプリ状態とアニメの共有言語」だ。パッケージは公式クイックスタートが <b>@rive-app/react-webgl2</b> を推奨（旧 react-webgl よりビルドが大幅に小さい）、軽量重視なら <b>@rive-app/react-canvas</b>。</p>\n<figure class='fig'><svg viewBox='0 0 600 260' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n<rect x='0' y='0' width='600' height='260' fill='#fff'/>\n<text x='300' y='24' text-anchor='middle' font-size='14' font-weight='bold' fill='#111827'>Rive を App Router に組み込む構造</text>\n<rect x='24' y='42' width='210' height='120' rx='8' fill='#f9fafb' stroke='#d1d5db'/>\n<text x='38' y='64' font-size='12' font-weight='bold' fill='#374151'>RSC ページ（SSR）</text>\n<text x='38' y='84' font-size='11' fill='#4b5563'>データ取得・本文は</text>\n<text x='38' y='99' font-size='11' fill='#4b5563'>サーバのまま</text>\n<rect x='48' y='112' width='168' height='38' rx='6' fill='#ede9fe' stroke='#a78bfa'/>\n<text x='58' y='129' font-size='11' font-weight='bold' fill='#5b21b6'>'use client' の島</text>\n<text x='58' y='144' font-size='10' fill='#6d28d9'>&lt;RiveComponent/&gt;（SSR不可）</text>\n<line x1='234' y1='131' x2='288' y2='131' stroke='#9ca3af' stroke-width='2' marker-end='url(#ar)'/>\n<defs><marker id='ar' markerWidth='8' markerHeight='8' refX='6' refY='3' orient='auto'><path d='M0,0 L6,3 L0,6 Z' fill='#9ca3af'/></marker></defs>\n<rect x='296' y='42' width='128' height='120' rx='8' fill='#eff6ff' stroke='#93c5fd'/>\n<text x='360' y='60' text-anchor='middle' font-size='11' font-weight='bold' fill='#1e40af'>Inputs</text>\n<text x='310' y='82' font-size='10' fill='#1d4ed8'>Boolean … hover</text>\n<text x='310' y='100' font-size='10' fill='#1d4ed8'>Trigger … click.fire()</text>\n<text x='310' y='118' font-size='10' fill='#1d4ed8'>Number … 強度 0–1</text>\n<text x='310' y='142' font-size='10' fill='#1d4ed8'>Data Binding(VMI)</text>\n<line x1='424' y1='102' x2='470' y2='102' stroke='#9ca3af' stroke-width='2' marker-end='url(#ar)'/>\n<rect x='478' y='60' width='104' height='84' rx='8' fill='#f0fdf4' stroke='#86efac'/>\n<text x='530' y='96' text-anchor='middle' font-size='11' font-weight='bold' fill='#166534'>State Machine</text>\n<text x='530' y='116' text-anchor='middle' font-size='10' fill='#15803d'>→ ベクター描画</text>\n<text x='530' y='132' text-anchor='middle' font-size='10' fill='#15803d'>（WebGL2）</text>\n<text x='300' y='196' text-anchor='middle' font-size='11' fill='#6b7280'>dynamic(import, {ssr:false}) ＋ 固定サイズプレースホルダで CLS ゼロ</text>\n<text x='300' y='226' text-anchor='middle' font-size='11' fill='#b45309'>落とし穴：親コンテナに幅・高さが無いと何も描画されない</text>\n</svg><figcaption>図1：RSC は据え置き、動く部分だけ 'use client' に隔離。入力3型が State Machine を駆動する</figcaption></figure>\n<h4>App Router での組み込み</h4>\n<p>大原則は「<b>Rive は完全にクライアント専用</b>」。WASM・Canvas/WebGL・window/document に依存するため <b>SSR 不可</b>。したがってページ本体とデータ取得は RSC のまま、<code>&lt;RiveComponent&gt;</code> を含む部品だけを <code>'use client'</code> の島にする。ちらつきや CLS を避けたいなら島を <code>dynamic(() =&gt; import('./RiveButton'), { ssr:false })</code> で読み込み、<b>固定サイズのプレースホルダ</b>を出しておく。State Machine を使うなら <code>useRive</code> ＋ <code>useStateMachineInput</code> のフック方式が推奨で、入力は Trigger=<code>fire()</code>、Boolean=<code>value=true/false</code>、Number=<code>value=0.5</code> の3型で使い分ける。</p>\n<h4>注意点・落とし穴</h4>\n<p>最頻の罠は<b>サイズ</b>。Canvas は親コンテナに追従するので、幅・高さの無い箱に入れると何も描画されない。入力名・ステートマシン名は<b>文字列一致</b>で、エディタ表記とズレると <code>useStateMachineInput</code> が null を返す（必ず optional chaining）。多数同時表示は WebGL のコンテキスト上限に当たるので <code>useOffscreenRenderer:true</code> を付ける。アクセシビリティは <code>prefers-reduced-motion</code> を検出して .riv に渡す（専用 Boolean 入力か autoplay:false）のが公式推奨。</p>\n<h4>ひとことまとめ</h4>\n<p>Rive は「RSC は据え置き、動く部分だけ小さなクライアント島」というApp Router の分割思想にきれいに乗る。SSR 外し＋固定サイズプレースホルダで CLS をゼロに保ちつつ、Data Binding でアプリ状態とアニメを同じ言葉で繋ぐのが2026の型だ。",
+      "sources": [
+        {
+          "title": "Rive — React ランタイム（公式）",
+          "url": "https://rive.app/docs/runtimes/react/react"
+        },
+        {
+          "title": "Rive — State Machines",
+          "url": "https://rive.app/docs/runtimes/state-machines"
+        },
+        {
+          "title": "Rive — Data Binding",
+          "url": "https://rive.app/docs/scripting/data-binding"
+        },
+        {
+          "title": "Codrops — Integrating Rive into a React Project",
+          "url": "https://tympanus.net/codrops/2025/05/12/integrating-rive-into-a-react-project-behind-the-scenes-of-valley-adventures/"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-28-flutter",
+      "date": "2026-07-28",
+      "topic": "Flutter",
+      "title": "Impeller 全プラットフォーム既定と 120fps 時代のフレーム予算 — 8.3ms をどう守るか",
+      "lede": "2026 の Flutter は Impeller がもはや experimental でなく iOS＋モダン Android の既定。120Hz が主流化し 1フレームの予算は 8.3ms まで縮む。予測可能なフレーム予算を活かす鍵は、不要な rebuild の撲滅と layout パス誤誘発の回避だ。",
+      "articleHtml": "<h4>なぜ今これが話題か</h4>\n<p>フラッグシップ端末の 90/120Hz 化で、ユーザーが期待する「滑らかさ」の基準が 60fps から <b>120fps「ProMotion」</b>へ上がった。同時に描画エンジン <b>Impeller</b> が iOS＋モダン Android（API 29+）の既定になり、シェーダーをビルド時に事前コンパイルすることで初回シェーダージャンクを排除、<b>予測可能なフレーム予算</b>を提供するようになった。2026 ロードマップは Android の Impeller 移行完遂（legacy Skia backend 撤去）を掲げる。</p>\n<h4>何が新しいか</h4>\n<p>安定版は <b>Flutter 3.44.0（2026-05-18・Google I/O 2026）/ Dart 3.12</b>、次の機能リリースは 2026年8月。トピックは <b>Material・Cupertino ライブラリのパッケージ分離</b>で、デザイン更新が四半期 SDK を待たず pub.dev から届く体制へ移り、<b>M3 Expressive</b> 等が独立 cadence で出荷される。状態管理は新規なら <b>Riverpod 3.3.1 ＋ code generation</b> が既定（compile-time safety・context-free read・first-class async）、監査証跡が要る fintech/healthcare は <b>Bloc 9.0</b> という住み分けが定着した。</p>\n<figure class='fig'><svg viewBox='0 0 600 230' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n<rect x='0' y='0' width='600' height='230' fill='#fff'/>\n<text x='300' y='24' text-anchor='middle' font-size='14' font-weight='bold' fill='#0553B1'>リフレッシュレート別 1フレームの予算</text>\n<text x='24' y='60' font-size='12' fill='#374151'>60fps</text>\n<rect x='90' y='48' width='460' height='20' rx='4' fill='#dbeafe' stroke='#60a5fa'/>\n<text x='556' y='63' text-anchor='end' font-size='11' font-weight='bold' fill='#1e3a8a'>16.0ms</text>\n<text x='24' y='104' font-size='12' fill='#374151'>90fps</text>\n<rect x='90' y='92' width='316' height='20' rx='4' fill='#bfdbfe' stroke='#3b82f6'/>\n<text x='412' y='107' font-size='11' font-weight='bold' fill='#1e3a8a'>11.0ms</text>\n<text x='24' y='148' font-size='12' fill='#374151'>120fps</text>\n<rect x='90' y='136' width='239' height='20' rx='4' fill='#93c5fd' stroke='#2563eb'/>\n<text x='335' y='151' font-size='11' font-weight='bold' fill='#1e3a8a'>8.3ms</text>\n<text x='300' y='190' text-anchor='middle' font-size='11' fill='#6b7280'>フラッグシップは90/120Hzが主流 — 「ProMotion」の滑らかさが標準期待に</text>\n<text x='300' y='214' text-anchor='middle' font-size='11' fill='#b45309'>この窓に収めるには rebuild 撲滅と layout パス誤誘発の回避が要</text>\n</svg><figcaption>図1：フレーム予算は 60fps=16ms／90fps=11ms／120fps=8.3ms。Impeller はこれを予測可能にする</figcaption></figure>\n<h4>フレーム予算の守り方</h4>\n<p>要は上の窓（120fps なら <b>8.3ms</b>）に毎フレーム収めること。基本は<b>不要な rebuild の撲滅</b>で、<code>const</code> の徹底、build の分割、最小スライスの watch、<code>RepaintBoundary</code> の戦略配置が効く。アニメで jank が出たら、純グラフィック変換のつもりが<b>layout パスを誤って誘発していないか</b>を疑い、合成可能な <code>Transform</code>/<code>Opacity</code> へ寄せる。UI モーションの約80%（hover・state 遷移・レイアウト変化）は implicit（<code>AnimatedSize</code> 等）で十分で、複雑な choreography や physics のときだけ explicit を残す。</p>\n<h4>自分が試すなら</h4>\n<p>計測は必ず <b>profile モード</b>で行い、DevTools の flame chart で jank を起こす関数を特定する。widget inspector の persistent selection で、想定外に rebuild されている部分を洗い出したい。<code>saveLayer</code> を誘発する nested Opacity・複雑な clip・重複する影は優先的に潰す対象だ。</p>\n<h4>注意点</h4>\n<p>Dart 3.12 の primary constructors はまだ experimental で構文が変わり得るため本番は様子見。フレーム予算の数字（16/11/8.3ms）はあくまで上限で、OS やプラットフォームのオーバーヘッドを差し引くと実効はさらに短い。「60fps 出ているから十分」ではなく、ターゲット端末のリフレッシュレートで測るのが前提になった。</p>\n<h4>ひとことまとめ</h4>\n<p>Impeller が既定になったことで土台のジャンクは減ったが、120fps 時代は<b>アプリ側の rebuild と layout の作法</b>が体感を左右する。8.3ms を意識した設計と profile モード計測を習慣にするのが 2026 の基本線だ。",
+      "sources": [
+        {
+          "title": "Flutter 3.44 & Dart 3.12 — Google I/O 2026",
+          "url": "https://www.fluttersolution.com/2026/05/flutter-344-dart-312-everything-new-at.html"
+        },
+        {
+          "title": "What's new (docs.flutter.dev)",
+          "url": "https://docs.flutter.dev/release/whats-new"
+        },
+        {
+          "title": "Improving rendering performance",
+          "url": "https://docs.flutter.dev/perf/rendering-performance"
+        },
+        {
+          "title": "State Management 2026: Riverpod vs Bloc vs GetX",
+          "url": "https://sharpskill.dev/en/blog/flutter/flutter-state-management-2026-riverpod-bloc-getx"
+        }
+      ]
+    },
     {
       "id": "2026-07-27-claude-code",
       "date": "2026-07-27",
