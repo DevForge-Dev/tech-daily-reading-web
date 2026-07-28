@@ -1,0 +1,91 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>v2.1.220 で /fork がバックグラウンド化・自律コマンドは手動起動へ — 「賢さ」より暴走させない設計 — デイリー技術深掘り 読み物</title><meta name="description" content="直近の Claude Code は /fork を独立バックグラウンドセッション化し、旧来のインライン子を /subtask に分離。加えて /verify・/code-review・/deep-research を手動起動のみに改め、WebSearch にセッション200回の上限を導入するなど、自律実行の安全弁を一気に締めた。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-28-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="v2.1.220 で /fork がバックグラウンド化・自律コマンドは手動起動へ — 「賢さ」より暴走させない設計 — デイリー技術深掘り 読み物"><meta property="og:description" content="直近の Claude Code は /fork を独立バックグラウンドセッション化し、旧来のインライン子を /subtask に分離。加えて /verify・/code-review・/deep-research を手動起動のみに改め、WebSearch にセッション200回の上限を導入するなど、自律実行の安全弁を一気に締めた。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-28-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>v2.1.220 で /fork がバックグラウンド化・自律コマンドは手動起動へ — 「賢さ」より暴走させない設計</h1> <p class="lede">直近の Claude Code は /fork を独立バックグラウンドセッション化し、旧来のインライン子を /subtask に分離。加えて /verify・/code-review・/deep-research を手動起動のみに改め、WebSearch にセッション200回の上限を導入するなど、自律実行の安全弁を一気に締めた。</p> <div class="meta"> <span>📅 2026年7月28日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="0"><h4 id="sec-1">なぜ今これが話題か</h4>
+<p>エージェント型コーディングが日常運用に入り、関心は「モデルの賢さ」から「無人でどこまで安全に走らせられるか」へ移ってきた。7/24 系のリリース <b>v2.1.220</b> は、まさにその統制まわりを一度に締め直した回で、コマンドの役割整理・長時間セッションのメモリリーク一掃・自律実行の抑制がセットで入った。</p>
+<h4 id="sec-2">何が新しいか</h4>
+<p>目玉は <b>/fork</b> の刷新だ。これまで /fork はインラインのサブエージェントを起動していたが、今回から会話を丸ごとコピーして<b>独立したバックグラウンドセッション</b>（claude agents に自分の行を持つ）として走らせ、本体の作業を止めずに続けられるようになった。旧来のインライン子は <b>/subtask</b> という別コマンドに分離され、「別文脈で長く走らせる＝/fork」「その場で短く委譲＝/subtask」と用途が明確になった。あわせて長時間セッションで問題化していた複数のメモリリーク——MCP stdio サーバの stderr が最大64MBまで肥大、LSP ドキュメントが開きっぱなし、バックグラウンド後もフック出力を保持、ヘッドレス/SDK で大きなツール結果が無制限に増加——を一括修正している。</p>
+<figure class='fig'><svg viewBox='0 0 600 250' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+<rect x='0' y='0' width='600' height='250' fill='#fff'></rect>
+<text x='300' y='24' text-anchor='middle' font-size='14' font-weight='bold' fill='#c2410c'>v2.1.220：コマンド再編と自律の安全弁</text>
+<rect x='18' y='42' width='268' height='150' rx='8' fill='#fff7ed' stroke='#fdba74'></rect>
+<text x='32' y='64' font-size='12' font-weight='bold' fill='#9a3412'>コマンド再編</text>
+<text x='32' y='86' font-size='11' fill='#7c2d12'>/fork → 独立バックグラウンド</text>
+<text x='32' y='102' font-size='11' fill='#7c2d12'>　セッション（本体は継続作業）</text>
+<text x='32' y='124' font-size='11' fill='#7c2d12'>旧 /fork のインライン子</text>
+<text x='32' y='140' font-size='11' fill='#7c2d12'>　→ /subtask に分離</text>
+<text x='32' y='168' font-size='11' fill='#7c2d12'>メモリリーク一括修正</text>
+<text x='32' y='184' font-size='11' fill='#7c2d12'>　（MCP stderr/LSP/フック/SDK）</text>
+<rect x='314' y='42' width='268' height='150' rx='8' fill='#eef2ff' stroke='#a5b4fc'></rect>
+<text x='328' y='64' font-size='12' font-weight='bold' fill='#3730a3'>自律の安全弁</text>
+<text x='328' y='86' font-size='11' fill='#3730a3'>/verify・/code-review・</text>
+<text x='328' y='102' font-size='11' fill='#3730a3'>　/deep-research は手動起動のみ</text>
+<text x='328' y='124' font-size='11' fill='#3730a3'>WebSearch セッション上限200回</text>
+<text x='328' y='140' font-size='11' fill='#3730a3'>　（環境変数で調整可）</text>
+<text x='328' y='168' font-size='11' fill='#3730a3'>strictAllowlist で許可外</text>
+<text x='328' y='184' font-size='11' fill='#3730a3'>　ホストを無確認拒否</text>
+<text x='300' y='222' text-anchor='middle' font-size='11' fill='#6b7280'>「賢さ」より「無人でも暴走させない設計」に寄った回</text>
+</svg><figcaption>図1：v2.1.220 の主な変更 — 左＝コマンド再編、右＝自律実行の安全弁</figcaption></figure>
+<h4 id="sec-3">仕組み・ポイント</h4>
+<p>安全弁側の変更も実務に効く。<b>/verify・/code-review・/deep-research</b> はこれまで Claude が自律的に走らせていたが、「手動で呼んだときだけ実行」に改められ、意図しない自動起動が止まった。さらに検索ループの暴走を抑えるため、<b>WebSearch のセッション全体の呼び出しに既定200回の上限</b>（<code>CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION</code> で調整可）が入った。サンドボックス実行では <code>sandbox.network.strictAllowlist</code> が許可リスト外ホストへの接続を無確認で拒否する。</p>
+<h4 id="sec-4">自分が試すなら</h4>
+<p>長時間の調査タスクは <b>/fork</b> でバックグラウンドに逃がし、本体では別作業を進める運用を試したい。CI やスケジュール実行など無人の文脈では、<code>strictAllowlist</code> と WebSearch 上限を明示設定して「勝手にどこかへ繋ぎに行く」余地を潰しておくと安心だ。</p>
+<h4 id="sec-5">注意点</h4>
+<p>/verify や /code-review が自動で走らなくなった分、品質ゲートは自分で明示的に叩く運用へ切り替える必要がある。「昔は勝手にレビューしてくれた」前提のワークフローは取りこぼしが出るので、コミット前チェックを手順に組み込むこと。</p>
+<h4 id="sec-6">ひとことまとめ</h4>
+<p>今回は派手な新機能というより、<b>自律エージェントを安心して無人運用するための土台固め</b>。/fork とバックグラウンド化、手動起動化と各種上限は、そのまま日々の運用テンプレに落とし込む価値がある。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://www.havoptic.com/tools/claude-code" target="_blank" rel="noopener noreferrer"> Claude Code — v2.1.220 リリース </a> </li><li> <a href="https://www.gradually.ai/en/changelogs/claude-code/" target="_blank" rel="noopener noreferrer"> Claude Code changelog </a> </li><li> <a href="https://releasebot.io/updates/anthropic/claude-code" target="_blank" rel="noopener noreferrer"> Claude Code updates (releasebot) </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> なぜ今これが話題か </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 何が新しいか </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 仕組み・ポイント </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 自分が試すなら </a> </li><li> <a href="#sec-5" data-toc="sec-5"> 注意点 </a> </li><li> <a href="#sec-6" data-toc="sec-6"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-07-28</div> <div>⏱ 読了 約3分</div> <div>🏷 Claude Code</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
