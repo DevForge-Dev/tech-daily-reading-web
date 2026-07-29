@@ -1,0 +1,72 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>数値だけを美しく回す — NumberFlow を App Router に組み込む — デイリー技術深掘り 読み物</title><meta name="description" content="指標・価格・いいね数が変わる瞬間を、依存ゼロ・アクセシブルに演出する @number-flow/react。Intl.NumberFormat × Web Animations API で、Client 島に隔離して使うのが定石。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-29-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="数値だけを美しく回す — NumberFlow を App Router に組み込む — デイリー技術深掘り 読み物"><meta property="og:description" content="指標・価格・いいね数が変わる瞬間を、依存ゼロ・アクセシブルに演出する @number-flow/react。Intl.NumberFormat × Web Animations API で、Client 島に隔離して使うのが定石。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-29-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>数値だけを美しく回す — NumberFlow を App Router に組み込む</h1> <p class="lede">指標・価格・いいね数が変わる瞬間を、依存ゼロ・アクセシブルに演出する @number-flow/react。Intl.NumberFormat × Web Animations API で、Client 島に隔離して使うのが定石。</p> <div class="meta"> <span>📅 2026年7月29日</span> <span>⏱ 約3分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="0"><p>ダッシュボードの指標やカート合計を「パッと差し替える」だけだと変化に気づかれない。桁がスロットのように転がる演出は効くが、自前だと桁揃え・ロケール/通貨・アクセシビリティ・reduced-motion が地味に重い。<b>NumberFlow</b>（Maxwell Barvian 作）はこの「変化する1つの数値」に特化した2026年の定番で、React 版が <code>@number-flow/react</code>（現行 v0.6.x、MIT）だ。</p><p>新しさは3点に集約される。<b>依存ゼロ</b>でランタイム依存を持たず、ブラウザ標準の <code>Intl.NumberFormat</code>（整形）と <b>Web Animations API</b>（桁のスピン）だけで動くので軽い。<b>アクセシブル</b>で、内部は Custom Element + Shadow DOM。読み上げには整形済みテキストを渡し、視覚的な桁アニメだけを分離、<code>prefers-reduced-motion</code> を既定で尊重する。そして <code>format</code>/<code>locales</code> に <code>Intl.NumberFormatOptions</code> をそのまま渡せる<b>フォーマット力</b>——通貨・パーセント・compact（1.2K）・端数処理が宣言的だ。</p><figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='210' rx='10' fill='#eef5ff'></rect><g font-family='sans-serif'><rect x='20' y='30' width='150' height='56' rx='10' fill='#fff' stroke='#74a8ff'></rect><text x='95' y='54' text-anchor='middle' font-size='12' font-weight='700' fill='#1f6feb'>Server Component</text><text x='95' y='72' text-anchor='middle' font-size='11' fill='#555'>数値を fetch</text><rect x='225' y='30' width='150' height='56' rx='10' fill='#fff' stroke='#74a8ff'></rect><text x='300' y='54' text-anchor='middle' font-size='12' font-weight='700' fill='#1f6feb'>Client 島</text><text x='300' y='72' text-anchor='middle' font-size='11' fill='#555'>初期値で hydrate</text><rect x='430' y='30' width='150' height='56' rx='10' fill='#fff' stroke='#74a8ff'></rect><text x='505' y='54' text-anchor='middle' font-size='12' font-weight='700' fill='#1f6feb'>value 変化</text><text x='505' y='72' text-anchor='middle' font-size='11' fill='#555'>桁がスピン</text><path d='M170 58 L225 58' stroke='#1f6feb' stroke-width='2' marker-end='url(#ah)'></path><path d='M375 58 L430 58' stroke='#1f6feb' stroke-width='2' marker-end='url(#ah)'></path><defs><marker id='ah' markerWidth='8' markerHeight='8' refX='7' refY='4' orient='auto'><path d='M0 0 L8 4 L0 8 z' fill='#1f6feb'></path></marker></defs><text x='300' y='130' text-anchor='middle' font-size='12.5' fill='#1c1c1e'>Intl.NumberFormat（整形）＋ Web Animations API（スピン）</text><text x='300' y='158' text-anchor='middle' font-size='11.5' fill='#6b6b70'>ページ全体はRSCのまま、値を持つ小さな島だけ 'use client'</text><text x='300' y='184' text-anchor='middle' font-size='11.5' fill='#6b6b70'>初期valueをサーバ値と一致させれば hydration mismatch なし</text></g></svg><figcaption>図1：RSC でデータ取得 → Client 島に初期値を渡す → value が変わると自動スピン。</figcaption></figure><p>App Router では、<code>&lt;NumberFlow&gt;</code> は state 変化で value を更新するインタラクティブ部品なので、それを使うコンポーネントに <code>'use client'</code> が要る。ただしページ全体をクライアント化せず、値を持つ小さな島に隔離するのが定石。SSR は安全で、初期 value をサーバー値と一致させれば hydration mismatch は起きない。</p><pre><code>'use client'
+import NumberFlow from '@number-flow/react'
+import { useState } from 'react'
+
+export function Price({ initial }: { initial: number }) {
+  const [value, setValue] = useState(initial) // サーバ値で初期化＝hydration一致
+  return (
+    &lt;span style={{ fontVariantNumeric: 'tabular-nums' }}&gt;
+      &lt;NumberFlow value={value}
+        format={{ style:'currency', currency:'JPY', trailingZeroDisplay:'stripIfInteger' }}
+        locales="ja-JP" /&gt;
+    &lt;/span&gt;
+  )
+}</code></pre><p>実務では、Server Action 更新→<code>revalidateTag</code> で新値が来て自動スピン、<code>useOptimistic</code> と併用で押下即カウントが動く、という通知系に効く。親に <code>font-variant-numeric: tabular-nums</code> を付けると桁シフトが起きにくい。<b>落とし穴</b>：scientific/engineering 記法・非ラテン数字・RTL は非対応（日本語ロケールの数字はラテンなのでOK）。要素自体の枠や背景を滑らかにスケールさせたい凝ったカードは Motion for React 併用が推奨。<b>まとめ</b>：数値専任と割り切れば、少ないコードでプロダクトの「変化」がきちんと伝わる。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://number-flow.barvian.me/" target="_blank" rel="noopener noreferrer"> NumberFlow 公式ドキュメント </a> </li><li> <a href="https://github.com/barvian/number-flow" target="_blank" rel="noopener noreferrer"> barvian/number-flow (GitHub) </a> </li><li> <a href="https://www.npmjs.com/package/@number-flow/react" target="_blank" rel="noopener noreferrer"> @number-flow/react (npm) </a> </li><li> <a href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat/NumberFormat#options" target="_blank" rel="noopener noreferrer"> Intl.NumberFormat options (MDN) </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

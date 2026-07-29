@@ -1,0 +1,59 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Claude Opus 5 が既定に — 1Mコンテキストと運用回りの地ならし — デイリー技術深掘り 読み物</title><meta name="description" content="既定Opusが Opus 5 へ更新。最大100万トークンの文脈と fast モード、/doctor の自動修復やサブエージェント3階層まで、開発フロー全体が静かに底上げされた。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-29-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Claude Opus 5 が既定に — 1Mコンテキストと運用回りの地ならし — デイリー技術深掘り 読み物"><meta property="og:description" content="既定Opusが Opus 5 へ更新。最大100万トークンの文脈と fast モード、/doctor の自動修復やサブエージェント3階層まで、開発フロー全体が静かに底上げされた。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-29-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>Claude Opus 5 が既定に — 1Mコンテキストと運用回りの地ならし</h1> <p class="lede">既定Opusが Opus 5 へ更新。最大100万トークンの文脈と fast モード、/doctor の自動修復やサブエージェント3階層まで、開発フロー全体が静かに底上げされた。</p> <div class="meta"> <span>📅 2026年7月29日</span> <span>⏱ 約2分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="0"><p>この数週間、Claude Code は派手な単発機能よりも「土台の底上げ」に寄っている。今日の目玉は、既定の Opus モデルが <b>Claude Opus 5（claude-opus-5）</b> に切り替わったこと。単なるモデル更新に見えて、扱えるコンテキストが最大<b>100万トークン</b>へ拡張されたのが効く。大規模コードベースや長時間の会話を、要約で削らずに丸ごと載せて考えさせられるようになった。</p><p>価格面では応答優先の <b>fast モード</b>が用意され、入力$10／出力$50（100万トークンあたり）が案内されている。深い推論が要る場面は通常、即応が欲しい対話は fast、と使い分ける前提だ。</p><figure class='fig'><svg viewBox='0 0 600 232' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='232' rx='10' fill='#f3fbf6'></rect><rect x='0' y='0' width='600' height='34' rx='10' fill='#1a7f37'></rect><text x='16' y='22' fill='#fff' font-size='14' font-family='sans-serif' font-weight='700'>直近の主な変更（2026-07）</text><g font-family='sans-serif' font-size='12.5' fill='#1c1c1e'><text x='16' y='60' font-weight='700'>既定モデル</text><text x='180' y='60'>Opus 5（claude-opus-5）に更新</text><text x='16' y='88' font-weight='700'>コンテキスト</text><text x='180' y='88'>最大 1,000,000 トークン</text><text x='16' y='116' font-weight='700'>fast モード</text><text x='180' y='116'>入力$10 / 出力$50（per 1M）</text><text x='16' y='144' font-weight='700'>サブエージェント</text><text x='180' y='144'>既定で深さ3までネスト可</text><text x='16' y='172' font-weight='700'>/doctor</text><text x='180' y='172'>環境診断＋その場で自動修復</text><text x='16' y='200' font-weight='700'>デスクトップ</text><text x='180' y='200'>内蔵ブラウザ／/code-review はバックグラウンド</text></g><line x1='170' y1='44' x2='170' y2='214' stroke='#cde9d6' stroke-width='1'></line></svg><figcaption>図1：7月後半のリリースを一望。「深く扱う（1M文脈）」と「静かに回す（バックグラウンド化）」が両輪。</figcaption></figure><p>運用回りも整った。<b>/doctor</b> はセットアップを点検し、見つけた問題をその場で修復まで試す。サブエージェントは既定で<b>深さ3</b>までネストでき、委譲フローを多段に組める。<b>/code-review</b> はバックグラウンドのサブエージェントとして走るので、レビュー出力が本体の会話を埋め尽くさない。デスクトップ版には内蔵ブラウザが加わり、ドキュメントや任意サイトを Claude Code 内で開いて操作できる。</p><p>効果は数字にも出ている。Microsoft Research の査読論文（7/1）では、Claude Code 導入者はマージPRが<b>約24%増</b>え、4か月の観測期間を通じて持続したという。市場側でも 2026年2月時点でラン率売上$2.5B超、エンタープライズ契約は年初から4倍と、CLIエージェントが主流化しつつある。</p><p>自分が試すなら、まず 1M 文脈を活かして「リポジトリまるごと読ませての設計レビュー」を深いモデルで、日常の反復は fast で、と役割を分ける。落とし穴はコスト。エンタープライズ規模ではトークン消費が数百万ドル規模に達しうるので、上限設定と可視化（予算ガバナンス）を先に敷くのが成功条件だ。<b>ひとことまとめ</b>：機能追加というより「広く扱い、静かに回す」ための地ならしの一週間。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://code.claude.com/docs/en/whats-new" target="_blank" rel="noopener noreferrer"> Claude Code — What&#39;s new </a> </li><li> <a href="https://www.havoptic.com/tools/claude-code" target="_blank" rel="noopener noreferrer"> Claude Code 直近リリースまとめ </a> </li><li> <a href="https://therouter.ai/news/claude-code-microsoft-enterprise-study-token-budget-governance/" target="_blank" rel="noopener noreferrer"> Microsoft 査読論文（マージPR +24%） </a> </li><li> <a href="https://www.uncoveralpha.com/p/anthropics-claude-code-is-having" target="_blank" rel="noopener noreferrer"> 市場動向：Claude Code のChatGPTモーメント </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

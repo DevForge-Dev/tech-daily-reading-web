@@ -1,0 +1,59 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>7/29の話題リポジトリ — オープン最前線モデル・Claudeに映像入力・プロンプト1発FPS — デイリー技術深掘り 読み物</title><meta name="description" content="今日の急上昇3本は「AIの土台を広げる」で一貫。巨大オープンモデル、Claudeへの映像入力、単一プロンプトからのゲーム生成が、それぞれ別の壁を崩そうとしている。"><meta name="theme-color" content="#238636"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-29-github-trending/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="7/29の話題リポジトリ — オープン最前線モデル・Claudeに映像入力・プロンプト1発FPS — デイリー技術深掘り 読み物"><meta property="og:description" content="今日の急上昇3本は「AIの土台を広げる」で一貫。巨大オープンモデル、Claudeへの映像入力、単一プロンプトからのゲーム生成が、それぞれ別の壁を崩そうとしている。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-29-github-trending/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3fb950, #1a7f37)"> <span class="glyph" aria-hidden="true">★</span> <div class="kicker">GitHub Trending</div> <h1>7/29の話題リポジトリ — オープン最前線モデル・Claudeに映像入力・プロンプト1発FPS</h1> <p class="lede">今日の急上昇3本は「AIの土台を広げる」で一貫。巨大オープンモデル、Claudeへの映像入力、単一プロンプトからのゲーム生成が、それぞれ別の壁を崩そうとしている。</p> <div class="meta"> <span>📅 2026年7月29日</span> <span>⏱ 約2分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#238636"> <div> <article class="prose" data-has-mermaid="0"><p>今日 Trendshift 日次の上位を占めた3本は、方向はバラバラに見えて「<b>AIが扱える範囲を一段広げる</b>」という一点で貫かれている。基盤モデルそのもの、入力モダリティ、そして生成の到達点——それぞれ別の壁を崩しにきた。</p><figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='210' rx='10' fill='#f0fbf3'></rect><rect x='0' y='0' width='600' height='32' rx='10' fill='#1a7f37'></rect><text x='14' y='21' fill='#fff' font-family='sans-serif' font-size='13' font-weight='700'>今日の3本：解決したい課題 → 提供する機能</text><g font-family='sans-serif' font-size='11.5' fill='#1c1c1e'><text x='14' y='58' font-weight='700'>Kimi-K3</text><text x='150' y='58'>閉じたフロンティア独占</text><text x='360' y='58'>→ オープンな最前線モデル本体</text><text x='14' y='104' font-weight='700'>claude-video</text><text x='150' y='104'>Claudeが動画を見られない</text><text x='360' y='104'>→ DL・フレーム抽出・文字起こし</text><text x='14' y='150' font-weight='700'>Claude-of-Duty</text><text x='150' y='150'>ゲーム制作の高い敷居</text><text x='360' y='150'>→ 1プロンプトでFPSを丸ごと生成</text></g><line x1='0' y1='76' x2='600' y2='76' stroke='#d6efdd'></line><line x1='0' y1='122' x2='600' y2='122' stroke='#d6efdd'></line><line x1='340' y1='40' x2='340' y2='170' stroke='#bfe7c9'></line></svg><figcaption>図1：3本の「解こうとしている問題」と「実際にできること」を対応させた一覧。</figcaption></figure><h4 id="sec-1">MoonshotAI/Kimi-K3（Python・Trendshift日次1位）</h4><p><b>解決したい課題</b>：最前線級の知能が一部の閉じたモデルに偏り、誰もが土台として使える大型オープンモデルが不足している状況。<b>提供する機能</b>：「Open Frontier Intelligence」を掲げる Kimi 系の新モデル本体で、NLP・コンピュータビジョン・エージェント用途に横断で使える基盤を公開する。エージェント／スキル一色のTrendingの中で、久々の大型オープンモデルとして他を引き離し日次1位まで急伸した。</p><h4 id="sec-2">bradautomates/claude-video（Python・Trendshift日次3位＋OSSInsight当日）</h4><p><b>解決したい課題</b>：テキストと画像が中心の Claude は、そのままでは動画コンテンツを理解できない。<b>提供する機能</b>：<code>/watch</code> で動画をダウンロードし、フレーム抽出と文字起こしまで自動化して一式を Claude に渡す。映像入力を橋渡しするという実用的な着眼が支持され、複数ソースで明確な急上昇を示した。</p><h4 id="sec-3">mshumer/Claude-of-Duty（JavaScript / Three.js・Trendshift日次12位）</h4><p><b>解決したい課題</b>：本格的なゲーム制作は、3D・物理・アセット・入力処理と参入障壁が高い。<b>提供する機能</b>：単一プロンプトから Call of Duty 品質の Three.js 製 FPS を丸ごと生成する。ブラウザ完結の WebGL 実装で、「プロンプト1発でゲーム」というデモ性が拡散を呼んでいる。</p><p><b>自分が試すなら</b>：実務に一番効くのは claude-video——日々の調査やレビューに映像ソースを取り込める。Kimi-K3 はオープン基盤としてウォッチ、Claude-of-Duty は生成AIの到達点を測るベンチマークとして眺めるのがちょうどよい。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://github.com/MoonshotAI/Kimi-K3" target="_blank" rel="noopener noreferrer"> MoonshotAI/Kimi-K3 </a> </li><li> <a href="https://github.com/bradautomates/claude-video" target="_blank" rel="noopener noreferrer"> bradautomates/claude-video </a> </li><li> <a href="https://github.com/mshumer/Claude-of-Duty" target="_blank" rel="noopener noreferrer"> mshumer/Claude-of-Duty </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> MoonshotAI/Kimi-K3（Python・Trendshift日次1位） </a> </li><li> <a href="#sec-2" data-toc="sec-2"> bradautomates/claude-video（Python・Trendshift日次3位＋OSSInsight当日） </a> </li><li> <a href="#sec-3" data-toc="sec-3"> mshumer/Claude-of-Duty（JavaScript / Three.js・Trendshift日次12位） </a> </li> </ul> <div class="reading-box"> <div>📅 2026-07-29</div> <div>⏱ 読了 約2分</div> <div>🏷 GitHub Trending</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

@@ -1,0 +1,59 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Dart 3.12 で定型を削り、Impeller で 120fps を出す — デイリー技術深掘り 読み物</title><meta name="description" content="primary constructors など3機能でボイラープレートを圧縮。Impeller は既定でラスタライズ約50%短縮・Skia比17%省電力。状態管理は Riverpod 3.3 と Bloc 9.0 の二枚看板。"><meta name="theme-color" content="#0277bd"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-29-flutter/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Dart 3.12 で定型を削り、Impeller で 120fps を出す — デイリー技術深掘り 読み物"><meta property="og:description" content="primary constructors など3機能でボイラープレートを圧縮。Impeller は既定でラスタライズ約50%短縮・Skia比17%省電力。状態管理は Riverpod 3.3 と Bloc 9.0 の二枚看板。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-29-flutter/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #29b6f6, #01579b)"> <span class="glyph" aria-hidden="true">◆</span> <div class="kicker">Flutter</div> <h1>Dart 3.12 で定型を削り、Impeller で 120fps を出す</h1> <p class="lede">primary constructors など3機能でボイラープレートを圧縮。Impeller は既定でラスタライズ約50%短縮・Skia比17%省電力。状態管理は Riverpod 3.3 と Bloc 9.0 の二枚看板。</p> <div class="meta"> <span>📅 2026年7月29日</span> <span>⏱ 約3分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#0277bd"> <div> <article class="prose" data-has-mermaid="0"><p>今日の Flutter は「書く量を減らす」と「速く描く」が同時に前進した。<b>Dart 3.12</b> は定型コード削減の3機能が軸だ。<b>primary constructors</b>（experimental・<code>primary-constructors</code> フラグ）は5行の Point クラスを1行に圧縮、<b>private named parameters</b> は先頭 <code>_</code> から公開名を自動決定、<b>dot shorthands</b>（3.10 で登場し3.12で成熟）で列挙や定数の記述が短くなる。安定版は Flutter 3.44.0 / Dart 3.12、次の機能リリースは2026年8月だ。</p><p>描画は <b>Impeller</b> が iOS＋モダンAndroid（API 29+）の既定になり、もはや experimental ではない。AOT でシェーダーを事前コンパイルして初回ジャンクをゼロにし、複雑シーンで<b>フレームラスタライズ時間を約50%短縮</b>。ランタイムのシェーダーコンパイル排除と CPU-GPU 同期削減で、Skia 比<b>約17%低いバッテリー消費</b>も報告されている。</p><figure class='fig'><svg viewBox='0 0 600 180' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='180' rx='10' fill='#eef7fc'></rect><text x='20' y='30' font-family='sans-serif' font-size='13' font-weight='700' fill='#0277bd'>フレーム予算（1フレームで使える時間）</text><g font-family='sans-serif' font-size='12' fill='#1c1c1e'><text x='20' y='66'>60fps</text><rect x='120' y='54' width='320' height='18' rx='4' fill='#56c5f5'></rect><text x='450' y='68'>16.0 ms</text><text x='20' y='104'>90fps</text><rect x='120' y='92' width='220' height='18' rx='4' fill='#29a3df'></rect><text x='350' y='106'>11.1 ms</text><text x='20' y='142'>120fps</text><rect x='120' y='130' width='166' height='18' rx='4' fill='#0277bd'></rect><text x='296' y='144'>8.3 ms</text></g></svg><figcaption>図1：リフレッシュレートが上がるほど1フレームの猶予は縮む。ラスタライズは60fpsで&lt;4ms、120fpsで&lt;8.3msを狙う。</figcaption></figure><p>計測は必ず profile モードで、DevTools の Performance タブでタイムラインを取る。基本は<b>不要な rebuild の撲滅</b>だ。<code>const</code> 徹底で const widget の再ビルドを完全スキップし、build を分割して最小スライスだけ watch、<code>RepaintBoundary</code> を戦略配置する。<code>saveLayer</code> を誘発する nested Opacity・複雑な clip・重なる影は避ける。</p><p>状態管理は2026も三強（Riverpod 3.0 / Bloc 9.0 / GetX〈退潮〉）で、新規は <b>Riverpod 3.3.1 ＋ code generation</b> が既定線。unified Ref・自動リトライ・context-free read で compile-time safety を保つ。監査証跡が要る規制業界（fintech/healthcare）や複雑な並行ワークフローは <b>Bloc 9.0</b>——<code>mapEventToState</code> を廃した <code>on&lt;Event&gt;</code> 構文で、全 state 変更が特定 event に対応する。上に feature 単位の Clean Architecture ＋ <code>go_router</code> を敷く。</p><p>自分が試すなら、まず private named parameters と dot shorthands だけ実務投入する。primary constructors は experimental preview で構文が変わり得るので本番は様子見。アニメーションは UI モーションの約80%（hover・state 遷移・レイアウト変化）を implicit（<code>AnimatedSize</code>/<code>AnimatedScale</code>）で、複雑な choreography や physics だけ explicit に。<b>まとめ</b>：定型は Dart 3.12 に任せ、浮いた労力を rebuild 削減と Impeller 活用に回すのが今の正解。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://ecorpit.com/dart-3-12-primary-constructors-dot-shorthands-guide-2026/" target="_blank" rel="noopener noreferrer"> Dart 3.12: primary constructors・dot shorthands </a> </li><li> <a href="https://dev.to/eira-wexford/how-impeller-is-transforming-flutter-ui-rendering-in-2026-3dpd" target="_blank" rel="noopener noreferrer"> How Impeller Is Transforming Flutter UI Rendering in 2026 </a> </li><li> <a href="https://sharpskill.dev/en/blog/flutter/flutter-state-management-2026-riverpod-bloc-getx" target="_blank" rel="noopener noreferrer"> State Management 2026: Riverpod vs Bloc vs GetX </a> </li><li> <a href="https://medium.com/codetodeploy/flutter-performance-optimization-a-practical-guide-for-2026-bc501e44ec6e" target="_blank" rel="noopener noreferrer"> Flutter Performance Optimization 2026 </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
