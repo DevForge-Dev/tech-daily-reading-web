@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-07-29T04:50:19.529Z",
+  "generatedAt": "2026-07-28T04:45:16.506Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,106 +8,6 @@
     "GitHub Trending"
   ],
   "articles": [
-    {
-      "id": "2026-07-29-claude-code",
-      "date": "2026-07-29",
-      "topic": "Claude Code",
-      "title": "Claude Opus 5 が既定に — 1Mコンテキストと運用回りの地ならし",
-      "lede": "既定Opusが Opus 5 へ更新。最大100万トークンの文脈と fast モード、/doctor の自動修復やサブエージェント3階層まで、開発フロー全体が静かに底上げされた。",
-      "articleHtml": "<p>この数週間、Claude Code は派手な単発機能よりも「土台の底上げ」に寄っている。今日の目玉は、既定の Opus モデルが <b>Claude Opus 5（claude-opus-5）</b> に切り替わったこと。単なるモデル更新に見えて、扱えるコンテキストが最大<b>100万トークン</b>へ拡張されたのが効く。大規模コードベースや長時間の会話を、要約で削らずに丸ごと載せて考えさせられるようになった。</p><p>価格面では応答優先の <b>fast モード</b>が用意され、入力$10／出力$50（100万トークンあたり）が案内されている。深い推論が要る場面は通常、即応が欲しい対話は fast、と使い分ける前提だ。</p><figure class='fig'><svg viewBox='0 0 600 232' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='232' rx='10' fill='#f3fbf6'/><rect x='0' y='0' width='600' height='34' rx='10' fill='#1a7f37'/><text x='16' y='22' fill='#fff' font-size='14' font-family='sans-serif' font-weight='700'>直近の主な変更（2026-07）</text><g font-family='sans-serif' font-size='12.5' fill='#1c1c1e'><text x='16' y='60' font-weight='700'>既定モデル</text><text x='180' y='60'>Opus 5（claude-opus-5）に更新</text><text x='16' y='88' font-weight='700'>コンテキスト</text><text x='180' y='88'>最大 1,000,000 トークン</text><text x='16' y='116' font-weight='700'>fast モード</text><text x='180' y='116'>入力$10 / 出力$50（per 1M）</text><text x='16' y='144' font-weight='700'>サブエージェント</text><text x='180' y='144'>既定で深さ3までネスト可</text><text x='16' y='172' font-weight='700'>/doctor</text><text x='180' y='172'>環境診断＋その場で自動修復</text><text x='16' y='200' font-weight='700'>デスクトップ</text><text x='180' y='200'>内蔵ブラウザ／/code-review はバックグラウンド</text></g><line x1='170' y1='44' x2='170' y2='214' stroke='#cde9d6' stroke-width='1'/></svg><figcaption>図1：7月後半のリリースを一望。「深く扱う（1M文脈）」と「静かに回す（バックグラウンド化）」が両輪。</figcaption></figure><p>運用回りも整った。<b>/doctor</b> はセットアップを点検し、見つけた問題をその場で修復まで試す。サブエージェントは既定で<b>深さ3</b>までネストでき、委譲フローを多段に組める。<b>/code-review</b> はバックグラウンドのサブエージェントとして走るので、レビュー出力が本体の会話を埋め尽くさない。デスクトップ版には内蔵ブラウザが加わり、ドキュメントや任意サイトを Claude Code 内で開いて操作できる。</p><p>効果は数字にも出ている。Microsoft Research の査読論文（7/1）では、Claude Code 導入者はマージPRが<b>約24%増</b>え、4か月の観測期間を通じて持続したという。市場側でも 2026年2月時点でラン率売上$2.5B超、エンタープライズ契約は年初から4倍と、CLIエージェントが主流化しつつある。</p><p>自分が試すなら、まず 1M 文脈を活かして「リポジトリまるごと読ませての設計レビュー」を深いモデルで、日常の反復は fast で、と役割を分ける。落とし穴はコスト。エンタープライズ規模ではトークン消費が数百万ドル規模に達しうるので、上限設定と可視化（予算ガバナンス）を先に敷くのが成功条件だ。<b>ひとことまとめ</b>：機能追加というより「広く扱い、静かに回す」ための地ならしの一週間。</p>",
-      "sources": [
-        {
-          "title": "Claude Code — What's new",
-          "url": "https://code.claude.com/docs/en/whats-new"
-        },
-        {
-          "title": "Claude Code 直近リリースまとめ",
-          "url": "https://www.havoptic.com/tools/claude-code"
-        },
-        {
-          "title": "Microsoft 査読論文（マージPR +24%）",
-          "url": "https://therouter.ai/news/claude-code-microsoft-enterprise-study-token-budget-governance/"
-        },
-        {
-          "title": "市場動向：Claude Code のChatGPTモーメント",
-          "url": "https://www.uncoveralpha.com/p/anthropics-claude-code-is-having"
-        }
-      ]
-    },
-    {
-      "id": "2026-07-29-nextjs",
-      "date": "2026-07-29",
-      "topic": "Next.js",
-      "title": "数値だけを美しく回す — NumberFlow を App Router に組み込む",
-      "lede": "指標・価格・いいね数が変わる瞬間を、依存ゼロ・アクセシブルに演出する @number-flow/react。Intl.NumberFormat × Web Animations API で、Client 島に隔離して使うのが定石。",
-      "articleHtml": "<p>ダッシュボードの指標やカート合計を「パッと差し替える」だけだと変化に気づかれない。桁がスロットのように転がる演出は効くが、自前だと桁揃え・ロケール/通貨・アクセシビリティ・reduced-motion が地味に重い。<b>NumberFlow</b>（Maxwell Barvian 作）はこの「変化する1つの数値」に特化した2026年の定番で、React 版が <code>@number-flow/react</code>（現行 v0.6.x、MIT）だ。</p><p>新しさは3点に集約される。<b>依存ゼロ</b>でランタイム依存を持たず、ブラウザ標準の <code>Intl.NumberFormat</code>（整形）と <b>Web Animations API</b>（桁のスピン）だけで動くので軽い。<b>アクセシブル</b>で、内部は Custom Element + Shadow DOM。読み上げには整形済みテキストを渡し、視覚的な桁アニメだけを分離、<code>prefers-reduced-motion</code> を既定で尊重する。そして <code>format</code>/<code>locales</code> に <code>Intl.NumberFormatOptions</code> をそのまま渡せる<b>フォーマット力</b>——通貨・パーセント・compact（1.2K）・端数処理が宣言的だ。</p><figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='210' rx='10' fill='#eef5ff'/><g font-family='sans-serif'><rect x='20' y='30' width='150' height='56' rx='10' fill='#fff' stroke='#74a8ff'/><text x='95' y='54' text-anchor='middle' font-size='12' font-weight='700' fill='#1f6feb'>Server Component</text><text x='95' y='72' text-anchor='middle' font-size='11' fill='#555'>数値を fetch</text><rect x='225' y='30' width='150' height='56' rx='10' fill='#fff' stroke='#74a8ff'/><text x='300' y='54' text-anchor='middle' font-size='12' font-weight='700' fill='#1f6feb'>Client 島</text><text x='300' y='72' text-anchor='middle' font-size='11' fill='#555'>初期値で hydrate</text><rect x='430' y='30' width='150' height='56' rx='10' fill='#fff' stroke='#74a8ff'/><text x='505' y='54' text-anchor='middle' font-size='12' font-weight='700' fill='#1f6feb'>value 変化</text><text x='505' y='72' text-anchor='middle' font-size='11' fill='#555'>桁がスピン</text><path d='M170 58 L225 58' stroke='#1f6feb' stroke-width='2' marker-end='url(#ah)'/><path d='M375 58 L430 58' stroke='#1f6feb' stroke-width='2' marker-end='url(#ah)'/><defs><marker id='ah' markerWidth='8' markerHeight='8' refX='7' refY='4' orient='auto'><path d='M0 0 L8 4 L0 8 z' fill='#1f6feb'/></marker></defs><text x='300' y='130' text-anchor='middle' font-size='12.5' fill='#1c1c1e'>Intl.NumberFormat（整形）＋ Web Animations API（スピン）</text><text x='300' y='158' text-anchor='middle' font-size='11.5' fill='#6b6b70'>ページ全体はRSCのまま、値を持つ小さな島だけ 'use client'</text><text x='300' y='184' text-anchor='middle' font-size='11.5' fill='#6b6b70'>初期valueをサーバ値と一致させれば hydration mismatch なし</text></g></svg><figcaption>図1：RSC でデータ取得 → Client 島に初期値を渡す → value が変わると自動スピン。</figcaption></figure><p>App Router では、<code>&lt;NumberFlow&gt;</code> は state 変化で value を更新するインタラクティブ部品なので、それを使うコンポーネントに <code>'use client'</code> が要る。ただしページ全体をクライアント化せず、値を持つ小さな島に隔離するのが定石。SSR は安全で、初期 value をサーバー値と一致させれば hydration mismatch は起きない。</p><pre><code>'use client'\nimport NumberFlow from '@number-flow/react'\nimport { useState } from 'react'\n\nexport function Price({ initial }: { initial: number }) {\n  const [value, setValue] = useState(initial) // サーバ値で初期化＝hydration一致\n  return (\n    &lt;span style={{ fontVariantNumeric: 'tabular-nums' }}&gt;\n      &lt;NumberFlow value={value}\n        format={{ style:'currency', currency:'JPY', trailingZeroDisplay:'stripIfInteger' }}\n        locales=\"ja-JP\" /&gt;\n    &lt;/span&gt;\n  )\n}</code></pre><p>実務では、Server Action 更新→<code>revalidateTag</code> で新値が来て自動スピン、<code>useOptimistic</code> と併用で押下即カウントが動く、という通知系に効く。親に <code>font-variant-numeric: tabular-nums</code> を付けると桁シフトが起きにくい。<b>落とし穴</b>：scientific/engineering 記法・非ラテン数字・RTL は非対応（日本語ロケールの数字はラテンなのでOK）。要素自体の枠や背景を滑らかにスケールさせたい凝ったカードは Motion for React 併用が推奨。<b>まとめ</b>：数値専任と割り切れば、少ないコードでプロダクトの「変化」がきちんと伝わる。</p>",
-      "sources": [
-        {
-          "title": "NumberFlow 公式ドキュメント",
-          "url": "https://number-flow.barvian.me/"
-        },
-        {
-          "title": "barvian/number-flow (GitHub)",
-          "url": "https://github.com/barvian/number-flow"
-        },
-        {
-          "title": "@number-flow/react (npm)",
-          "url": "https://www.npmjs.com/package/@number-flow/react"
-        },
-        {
-          "title": "Intl.NumberFormat options (MDN)",
-          "url": "https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Intl/NumberFormat/NumberFormat#options"
-        }
-      ]
-    },
-    {
-      "id": "2026-07-29-flutter",
-      "date": "2026-07-29",
-      "topic": "Flutter",
-      "title": "Dart 3.12 で定型を削り、Impeller で 120fps を出す",
-      "lede": "primary constructors など3機能でボイラープレートを圧縮。Impeller は既定でラスタライズ約50%短縮・Skia比17%省電力。状態管理は Riverpod 3.3 と Bloc 9.0 の二枚看板。",
-      "articleHtml": "<p>今日の Flutter は「書く量を減らす」と「速く描く」が同時に前進した。<b>Dart 3.12</b> は定型コード削減の3機能が軸だ。<b>primary constructors</b>（experimental・<code>primary-constructors</code> フラグ）は5行の Point クラスを1行に圧縮、<b>private named parameters</b> は先頭 <code>_</code> から公開名を自動決定、<b>dot shorthands</b>（3.10 で登場し3.12で成熟）で列挙や定数の記述が短くなる。安定版は Flutter 3.44.0 / Dart 3.12、次の機能リリースは2026年8月だ。</p><p>描画は <b>Impeller</b> が iOS＋モダンAndroid（API 29+）の既定になり、もはや experimental ではない。AOT でシェーダーを事前コンパイルして初回ジャンクをゼロにし、複雑シーンで<b>フレームラスタライズ時間を約50%短縮</b>。ランタイムのシェーダーコンパイル排除と CPU-GPU 同期削減で、Skia 比<b>約17%低いバッテリー消費</b>も報告されている。</p><figure class='fig'><svg viewBox='0 0 600 180' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='180' rx='10' fill='#eef7fc'/><text x='20' y='30' font-family='sans-serif' font-size='13' font-weight='700' fill='#0277bd'>フレーム予算（1フレームで使える時間）</text><g font-family='sans-serif' font-size='12' fill='#1c1c1e'><text x='20' y='66'>60fps</text><rect x='120' y='54' width='320' height='18' rx='4' fill='#56c5f5'/><text x='450' y='68'>16.0 ms</text><text x='20' y='104'>90fps</text><rect x='120' y='92' width='220' height='18' rx='4' fill='#29a3df'/><text x='350' y='106'>11.1 ms</text><text x='20' y='142'>120fps</text><rect x='120' y='130' width='166' height='18' rx='4' fill='#0277bd'/><text x='296' y='144'>8.3 ms</text></g></svg><figcaption>図1：リフレッシュレートが上がるほど1フレームの猶予は縮む。ラスタライズは60fpsで&lt;4ms、120fpsで&lt;8.3msを狙う。</figcaption></figure><p>計測は必ず profile モードで、DevTools の Performance タブでタイムラインを取る。基本は<b>不要な rebuild の撲滅</b>だ。<code>const</code> 徹底で const widget の再ビルドを完全スキップし、build を分割して最小スライスだけ watch、<code>RepaintBoundary</code> を戦略配置する。<code>saveLayer</code> を誘発する nested Opacity・複雑な clip・重なる影は避ける。</p><p>状態管理は2026も三強（Riverpod 3.0 / Bloc 9.0 / GetX〈退潮〉）で、新規は <b>Riverpod 3.3.1 ＋ code generation</b> が既定線。unified Ref・自動リトライ・context-free read で compile-time safety を保つ。監査証跡が要る規制業界（fintech/healthcare）や複雑な並行ワークフローは <b>Bloc 9.0</b>——<code>mapEventToState</code> を廃した <code>on&lt;Event&gt;</code> 構文で、全 state 変更が特定 event に対応する。上に feature 単位の Clean Architecture ＋ <code>go_router</code> を敷く。</p><p>自分が試すなら、まず private named parameters と dot shorthands だけ実務投入する。primary constructors は experimental preview で構文が変わり得るので本番は様子見。アニメーションは UI モーションの約80%（hover・state 遷移・レイアウト変化）を implicit（<code>AnimatedSize</code>/<code>AnimatedScale</code>）で、複雑な choreography や physics だけ explicit に。<b>まとめ</b>：定型は Dart 3.12 に任せ、浮いた労力を rebuild 削減と Impeller 活用に回すのが今の正解。</p>",
-      "sources": [
-        {
-          "title": "Dart 3.12: primary constructors・dot shorthands",
-          "url": "https://ecorpit.com/dart-3-12-primary-constructors-dot-shorthands-guide-2026/"
-        },
-        {
-          "title": "How Impeller Is Transforming Flutter UI Rendering in 2026",
-          "url": "https://dev.to/eira-wexford/how-impeller-is-transforming-flutter-ui-rendering-in-2026-3dpd"
-        },
-        {
-          "title": "State Management 2026: Riverpod vs Bloc vs GetX",
-          "url": "https://sharpskill.dev/en/blog/flutter/flutter-state-management-2026-riverpod-bloc-getx"
-        },
-        {
-          "title": "Flutter Performance Optimization 2026",
-          "url": "https://medium.com/codetodeploy/flutter-performance-optimization-a-practical-guide-for-2026-bc501e44ec6e"
-        }
-      ]
-    },
-    {
-      "id": "2026-07-29-github-trending",
-      "date": "2026-07-29",
-      "topic": "GitHub Trending",
-      "title": "7/29の話題リポジトリ — オープン最前線モデル・Claudeに映像入力・プロンプト1発FPS",
-      "lede": "今日の急上昇3本は「AIの土台を広げる」で一貫。巨大オープンモデル、Claudeへの映像入力、単一プロンプトからのゲーム生成が、それぞれ別の壁を崩そうとしている。",
-      "articleHtml": "<p>今日 Trendshift 日次の上位を占めた3本は、方向はバラバラに見えて「<b>AIが扱える範囲を一段広げる</b>」という一点で貫かれている。基盤モデルそのもの、入力モダリティ、そして生成の到達点——それぞれ別の壁を崩しにきた。</p><figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='210' rx='10' fill='#f0fbf3'/><rect x='0' y='0' width='600' height='32' rx='10' fill='#1a7f37'/><text x='14' y='21' fill='#fff' font-family='sans-serif' font-size='13' font-weight='700'>今日の3本：解決したい課題 → 提供する機能</text><g font-family='sans-serif' font-size='11.5' fill='#1c1c1e'><text x='14' y='58' font-weight='700'>Kimi-K3</text><text x='150' y='58'>閉じたフロンティア独占</text><text x='360' y='58'>→ オープンな最前線モデル本体</text><text x='14' y='104' font-weight='700'>claude-video</text><text x='150' y='104'>Claudeが動画を見られない</text><text x='360' y='104'>→ DL・フレーム抽出・文字起こし</text><text x='14' y='150' font-weight='700'>Claude-of-Duty</text><text x='150' y='150'>ゲーム制作の高い敷居</text><text x='360' y='150'>→ 1プロンプトでFPSを丸ごと生成</text></g><line x1='0' y1='76' x2='600' y2='76' stroke='#d6efdd'/><line x1='0' y1='122' x2='600' y2='122' stroke='#d6efdd'/><line x1='340' y1='40' x2='340' y2='170' stroke='#bfe7c9'/></svg><figcaption>図1：3本の「解こうとしている問題」と「実際にできること」を対応させた一覧。</figcaption></figure><h4>MoonshotAI/Kimi-K3（Python・Trendshift日次1位）</h4><p><b>解決したい課題</b>：最前線級の知能が一部の閉じたモデルに偏り、誰もが土台として使える大型オープンモデルが不足している状況。<b>提供する機能</b>：「Open Frontier Intelligence」を掲げる Kimi 系の新モデル本体で、NLP・コンピュータビジョン・エージェント用途に横断で使える基盤を公開する。エージェント／スキル一色のTrendingの中で、久々の大型オープンモデルとして他を引き離し日次1位まで急伸した。</p><h4>bradautomates/claude-video（Python・Trendshift日次3位＋OSSInsight当日）</h4><p><b>解決したい課題</b>：テキストと画像が中心の Claude は、そのままでは動画コンテンツを理解できない。<b>提供する機能</b>：<code>/watch</code> で動画をダウンロードし、フレーム抽出と文字起こしまで自動化して一式を Claude に渡す。映像入力を橋渡しするという実用的な着眼が支持され、複数ソースで明確な急上昇を示した。</p><h4>mshumer/Claude-of-Duty（JavaScript / Three.js・Trendshift日次12位）</h4><p><b>解決したい課題</b>：本格的なゲーム制作は、3D・物理・アセット・入力処理と参入障壁が高い。<b>提供する機能</b>：単一プロンプトから Call of Duty 品質の Three.js 製 FPS を丸ごと生成する。ブラウザ完結の WebGL 実装で、「プロンプト1発でゲーム」というデモ性が拡散を呼んでいる。</p><p><b>自分が試すなら</b>：実務に一番効くのは claude-video——日々の調査やレビューに映像ソースを取り込める。Kimi-K3 はオープン基盤としてウォッチ、Claude-of-Duty は生成AIの到達点を測るベンチマークとして眺めるのがちょうどよい。</p>",
-      "sources": [
-        {
-          "title": "MoonshotAI/Kimi-K3",
-          "url": "https://github.com/MoonshotAI/Kimi-K3"
-        },
-        {
-          "title": "bradautomates/claude-video",
-          "url": "https://github.com/bradautomates/claude-video"
-        },
-        {
-          "title": "mshumer/Claude-of-Duty",
-          "url": "https://github.com/mshumer/Claude-of-Duty"
-        }
-      ]
-    },
     {
       "id": "2026-07-28-claude-code",
       "date": "2026-07-28",
