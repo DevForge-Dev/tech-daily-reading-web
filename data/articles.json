@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-07-29T04:50:19.529Z",
+  "generatedAt": "2026-07-30T04:51:33.635Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,106 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-07-30-claude-code",
+      "date": "2026-07-30",
+      "topic": "Claude Code",
+      "title": "拡張の役割分担を決める — Hooks・Skills・Subagents・MCP の使い分けと自律コマンドの手動化",
+      "lede": "SmartScope/Tembo/Totalum の実践ガイドが揃って示す結論は「強制はHooks、知識はSkills、分離はSubagents、常時指針はCLAUDE.mdに短く」。あわせて /verify・/code-review・/deep-research が手動起動へ、EndConversation も追加された。",
+      "articleHtml": "<p>エージェント型コーディングが日常運用に入り、関心は「どんな機能があるか」より「どれをどこで使い分けるか」へ移った。今日は上級ベストプラクティスの記事が3本そろい（SmartScope／Tembo／Totalum）、拡張機構の<b>役割分担</b>という指針が固まった。</p><p>核心はシンプルだ。<b>ルールを強制したいならHooks／permissions</b>（決定論的にライフサイクルを制御し品質ゲートを敷く）、<b>知識・手順はSkills</b>（YAML＋Markdownの<code>SKILL.md</code>で、呼ばれるまで本文をロードしないコスト小の再利用プロンプト。メイン会話の文脈で動く）、<b>作業の分離はSubagents</b>（専用システムプロンプト・限定ツール・独立権限・固有コンテキストで隔離実行）、<b>外部連携はMCP</b>、そして常時参照する<code>CLAUDE.md</code>は短く保つ。Subagentは<code>name／description／tools／model</code>の4フィールドで挙動が決まり、とりわけ<b>descriptionが自動起動のトリガー</b>になる。</p><figure class='fig'><svg viewBox='0 0 600 214' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='214' rx='10' fill='#fff4ec'/><rect x='0' y='0' width='600' height='32' rx='10' fill='#c2410c'/><text x='14' y='21' fill='#fff' font-family='sans-serif' font-size='13' font-weight='700'>やりたいこと → 使う拡張</text><g font-family='sans-serif' font-size='12' fill='#1c1c1e'><text x='16' y='64' font-weight='700'>ルールを強制</text><text x='236' y='64'>Hooks / permissions（決定論的）</text><text x='16' y='96' font-weight='700'>知識・手順を再利用</text><text x='236' y='96'>Skills（SKILL.md・遅延ロード）</text><text x='16' y='128' font-weight='700'>重い作業を分離</text><text x='236' y='128'>Subagents（隔離コンテキスト）</text><text x='16' y='160' font-weight='700'>外部システム連携</text><text x='236' y='160'>MCP</text><text x='16' y='192' font-weight='700'>常時参照の指針</text><text x='236' y='192'>CLAUDE.md（短く）</text></g><line x1='220' y1='44' x2='220' y2='204' stroke='#f0c6a6'/></svg><figcaption>図1：課題から拡張レイヤを引く早見。まずSubagentを第一候補にし、インライン再利用したいときSkillsへ移すのが目安。</figcaption></figure><p>あわせて安全側の既定も動いた。Claudeは<b>/verify・/code-review を自発的に実行しなくなり</b>、使いたいときだけ手動起動する方式へ。<b>/deep-research も手動のみ</b>になり、極端に虐待的なセッションを閉じる<b>EndConversation</b>ツールが加わった。WebSearch・サブエージェント生成・Bash実行のセーフガードも強化されている。7/24の<b>v2.1.220</b>は新機能を足さずバグ修正に専念した安定化リリースで、直前の大型変更（/fork刷新等）を均す位置づけだ。</p><p><b>自分が試すなら</b>：副次タスクはSubagentの隔離コンテキストへ逃がし、本体の文脈を汚さない。コミット前チェックはHooks＋permissionsで固定する。<b>注意点</b>：/verify・/code-reviewが自動で走らなくなった分、品質ゲートは自分で明示的に叩く運用へ切り替える。descriptionが曖昧だとSubagentが「呼ばれない／呼ばれ過ぎる」ので一文で用途を絞ること。<b>ひとことまとめ</b>：機能を足すより、Hooks／Skills／Subagents／MCPとCLAUDE.mdの役割を決めることが、いまの生産性を左右する。</p>",
+      "sources": [
+        {
+          "title": "Claude Code — What's new",
+          "url": "https://code.claude.com/docs/en/whats-new"
+        },
+        {
+          "title": "SmartScope — 上級ベストプラクティス11選",
+          "url": "https://smartscope.blog/en/generative-ai/claude/claude-code-best-practices-advanced-2026/"
+        },
+        {
+          "title": "Tembo.io — Subagents 実践ガイド2026",
+          "url": "https://www.tembo.io/blog/claude-code-subagents"
+        },
+        {
+          "title": "Totalum — Skills 完全ガイド2026",
+          "url": "https://www.totalum.app/blog/claude-code-skills-totalum"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-30-nextjs",
+      "date": "2026-07-30",
+      "topic": "Next.js",
+      "title": "App Router のエラー処理を制する — error.tsx / catchError / retry() と「制御フローを握りつぶさない」",
+      "lede": "Error Boundary とフレームワークの制御フロー（notFound/redirect）が同じ throw に乗る二重性が落とし穴。Next.js 16 は reset() を retry()（サーバー再取得）へ進化させ、catchError（16.3安定）がコンポーネント単位の正しい境界を提供する。",
+      "articleHtml": "<p>App Router のエラー処理は、<b>React の Error Boundary</b> と、Next.js が制御フローとして投げる<b>特殊エラー</b>（<code>notFound()</code>／<code>redirect()</code>／<code>unauthorized()</code>／<code>forbidden()</code>）が<b>同じ throw の仕組み</b>に乗っているのが要だ。この二重性を理解しないと、<code>try/catch</code> や <code>react-error-boundary</code> が404やリダイレクトを握りつぶす、あるいは「Try again」を押してもServer Componentのデータが再取得されず何も直らない、という定番の罠にはまる。</p><p>2026年に状況を変えたのが3点。(1) Next.js 16 で回復コールバックが従来の <code>reset()</code>（クライアント再レンダーのみ）から <b><code>retry()</code>（サーバー側で再取得＆再レンダー）</b>へ進化。(2) <b><code>catchError</code></b>（<code>next/error</code>）が16.2で <code>unstable_catchError</code> として入り <b>16.3で安定化</b>——制御フローを正しく素通しし <code>retry()</code> でサーバーデータを取り直す、コンポーネント単位の境界。(3) <b><code>global-not-found.tsx</code></b>（16新規）でルーティング層から全体404を返せる。</p><figure class='fig'><svg viewBox='0 0 600 250' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='0' y='0' width='600' height='250' rx='10' fill='#eef5ff'/><text x='300' y='26' text-anchor='middle' font-size='13' font-weight='700' fill='#1f6feb'>Next.js が自動生成する境界の入れ子（外→内）</text><rect x='40' y='40' width='520' height='40' rx='6' fill='#fff' stroke='#9dc2ff'/><text x='52' y='65' font-size='12' fill='#1c1c1e'>Layout / Template（error.tsx では巻き込まれない）</text><rect x='70' y='86' width='460' height='40' rx='6' fill='#eaf2ff' stroke='#74a8ff'/><text x='82' y='111' font-size='12' fill='#1c1c1e'>ErrorBoundary → error.tsx（予期しない例外）</text><rect x='100' y='132' width='400' height='40' rx='6' fill='#fff' stroke='#74a8ff'/><text x='112' y='157' font-size='12' fill='#1c1c1e'>Suspense → loading.tsx（非同期の待ち）</text><rect x='130' y='178' width='340' height='40' rx='6' fill='#eaf2ff' stroke='#74a8ff'/><text x='142' y='203' font-size='12' fill='#1c1c1e'>ErrorBoundary → not-found.tsx（notFound 制御フロー）</text><text x='300' y='240' text-anchor='middle' font-size='11' fill='#6b6b70'>エラーは最も近い error.tsx まで上へバブリング</text></svg><figcaption>図1：境界の入れ子。深い所に置くほど周辺UIが生き残る。</figcaption></figure><p>設計の芯は「予期したエラー」と「予期しないエラー」を分けること。バリデーション失敗や在庫切れは <b>throw せず戻り値</b>にして <code>useActionState</code> で返す。DBダウン等の予期しないエラーだけを throw し <code>error.tsx</code>／<code>catchError</code> に拾わせる。<code>notFound()</code> や <code>redirect()</code> は throw で表現されるが<b>エラーではない</b>——握りつぶさないのが最重要だ。<code>try/catch</code> するServer Componentは、catch先頭で <code>unstable_rethrow(err)</code> を呼び、フレームワーク内部エラーだけを素通しする。</p><pre><code>'use client'\nimport { notFound, unstable_rethrow } from 'next/navigation'\nexport default async function Profile({ id }) {\n  try {\n    const u = await getUser(id)\n    if (!u) notFound()          // NEXT_NOT_FOUND を投げる\n    return &lt;p&gt;{u.name}&lt;/p&gt;\n  } catch (err) {\n    unstable_rethrow(err)       // 制御フローは素通し\n    throw new Error('取得に失敗しました')\n  }\n}</code></pre><p><b>実装のポイント</b>：<code>error.tsx</code>／<code>global-error.tsx</code> は <code>'use client'</code> 必須。<code>global-error.tsx</code> はルートレイアウト自体の例外専用で発火するとレイアウトを丸ごと置換するため <b><code>&lt;html&gt;</code>／<code>&lt;body&gt;</code> 込みの自己完結UI</b>にする。回復は一過性エラー向けの <code>retry()</code> を使う。<b>注意点</b>：<code>forbidden()</code>／<code>unauthorized()</code> は <code>experimental.authInterrupts</code> が必要で2026年時点でもまだ experimental（本番非推奨）、ルートレイアウトからは呼べない。本番ではErrorのメッセージは伏せられ <code>digest</code> だけが渡るので、サーバーログと突き合わせて原因を追う。<b>まとめ</b>：境界を島に切り、制御フローを素通しし、回復は retry() で——これがApp Routerのエラー処理の定石だ。</p>",
+      "sources": [
+        {
+          "title": "Next.js 公式: error.js / global-error 規約",
+          "url": "https://nextjs.org/docs/app/api-reference/file-conventions/error"
+        },
+        {
+          "title": "Next.js 公式: unstable_rethrow",
+          "url": "https://nextjs.org/docs/app/api-reference/functions/unstable_rethrow"
+        },
+        {
+          "title": "Aurora Scharff「Error Handling in Next.js with catchError」",
+          "url": "https://aurorascharff.no/posts/error-handling-in-nextjs-with-catch-error/"
+        },
+        {
+          "title": "Next.js 16.2 リリースノート",
+          "url": "https://nextjs.org/blog/next-16-2"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-30-flutter",
+      "date": "2026-07-30",
+      "topic": "Flutter",
+      "title": "Flutter が LG スマートTVへ — webOS 公式SDK と、Riverpod 3.0 の Mutations",
+      "lede": "Google×LG の公式 Flutter on webOS SDK が2026上期リリース目標で、配信先が大画面TVへ拡大。状態管理は Riverpod 3.0 の Mutations がアクションのライフサイクル（Idle/Pending/Success/Error）を自動でUIに公開し、失敗時は自動リトライする。",
+      "articleHtml": "<p>今日の主役は配信先の拡大だ。GoogleとLGが提携し、Flutterアプリを<b>LG webOS スマートTV</b>で動かす<b>公式 webOS SDK</b>を<b>2026年上半期リリース目標</b>で開発中。モバイル／デスクトップ／Webに加え<b>大画面TV</b>が正式な配信先に加わる。安定版は <b>Flutter 3.44.6 / Dart 3.12.2</b>（7/9のパッチ）、次の機能リリースは2026年8月だ。描画は <b>Impeller</b> がiOS＋モダンAndroid（API 29+）の既定で、TVのような常時描画UIでも滑らかさを稼ぎやすい。</p><p>もう一つの深掘りは <b>Riverpod 3.0 の Mutations</b>。「Login」「Post Comment」などのアクションを定義すると、その<b>ライフサイクル状態（Idle／Pending／Success／Error）を自動でUIに公開</b>してくれる。従来は自前で <code>isLoading</code> や <code>error</code> フラグを握っていた定型が、Mutationに集約される。さらにプロバイダは<b>ネットワーク失敗時に自動リトライ</b>し、一時的な通信障害が恒久的なエラー画面に化けない。compile-time safety・組込みオフライン永続化・最小ボイラープレートを備え、テストは平均で30〜40%行数が少ない。</p><figure class='fig'><svg viewBox='0 0 600 180' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='0' y='0' width='600' height='180' rx='10' fill='#eef7fc'/><text x='20' y='30' font-size='13' font-weight='700' fill='#0277bd'>Mutation のライフサイクル（自動でUIに公開）</text><g font-size='12' fill='#1c1c1e'><rect x='24' y='60' width='110' height='44' rx='8' fill='#fff' stroke='#7cc0e6'/><text x='79' y='87' text-anchor='middle'>Idle</text><rect x='168' y='60' width='110' height='44' rx='8' fill='#fff' stroke='#29a3df'/><text x='223' y='87' text-anchor='middle'>Pending</text><rect x='320' y='24' width='120' height='44' rx='8' fill='#e7f7ec' stroke='#1a7f37'/><text x='380' y='51' text-anchor='middle'>Success</text><rect x='320' y='100' width='120' height='44' rx='8' fill='#fdeceb' stroke='#c0392b'/><text x='380' y='127' text-anchor='middle'>Error → 自動リトライ</text></g><g stroke='#0277bd' stroke-width='2' fill='none'><path d='M134 82 L166 82' marker-end='url(#a)'/><path d='M278 76 L318 52' marker-end='url(#a)'/><path d='M278 88 L318 118' marker-end='url(#a)'/></g><defs><marker id='a' markerWidth='8' markerHeight='8' refX='7' refY='4' orient='auto'><path d='M0 0 L8 4 L0 8 z' fill='#0277bd'/></marker></defs></svg><figcaption>図1：アクションを定義するだけで Idle→Pending→Success/Error が自動公開。Error は自動リトライで自己回復を狙う。</figcaption></figure><p><b>使い分け</b>：新規プロジェクトは <b>Riverpod 3.3.x＋code generation</b> が既定線。監査証跡が要る規制業界（fintech／healthcare）や複雑な並行ワークフローは、event/state/業務ロジックを厳格分離する <b>Bloc 9.0</b> が向く。上に feature単位のClean Architecture＋<code>go_router</code> を敷く。<b>自分が試すなら</b>：まず既存の「Login」画面をMutationへ置き換え、ローディング／エラー表示の定型がどれだけ減るかを測る。<b>注意点</b>：webOS SDKは<b>リリース目標段階（未GA）</b>で、TVはリモコン主体のフォーカス移動・大画面レイアウト・10フィートUIの作法という別物の設計が要る（ここはナレッジ外なので実機検証で詰める）。<b>まとめ</b>：配信先はTVへ広がり、状態管理はMutationで定型が縮む。書く量を減らして体験の作り込みに時間を回すのが今の正解だ。</p>",
+      "sources": [
+        {
+          "title": "State of Flutter 2026（webOS/TV 展開）",
+          "url": "https://devnewsletter.com/p/state-of-flutter-2026/"
+        },
+        {
+          "title": "Announcing Dart 3.12",
+          "url": "https://dart.dev/blog/announcing-dart-3-12"
+        },
+        {
+          "title": "State Management 2026: Riverpod vs Bloc vs GetX",
+          "url": "https://sharpskill.dev/en/blog/flutter/flutter-state-management-2026-riverpod-bloc-getx"
+        },
+        {
+          "title": "Flutter 3.44.6 — Dart 3.12.2 (FlutterReleases)",
+          "url": "https://flutterreleases.com/release/3.44.6/"
+        }
+      ]
+    },
+    {
+      "id": "2026-07-30-github-trending",
+      "date": "2026-07-30",
+      "topic": "GitHub Trending",
+      "title": "7/30の話題リポジトリ — エージェント運用を「守る・束ねる・見る」3本",
+      "lede": "今日の急上昇はどれも New 2026 のエージェント運用ツール。コードを守る（SAST）、複数CLIを束ねるハーネス、ネットを見る目——エージェント運用の弱点を別々に補強する。",
+      "articleHtml": "<p>今日 Trendshift 日次の上位に並んだ3本は、方向は違えど「<b>AIエージェントを実運用するための足回りを固める</b>」で一貫している。いずれも New 2026 で、コードの安全性・複数CLIの統治・外部情報の取得という、運用で必ずぶつかる弱点を別々に埋めにきた。</p><figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='210' rx='10' fill='#f0fbf3'/><rect x='0' y='0' width='600' height='32' rx='10' fill='#1a7f37'/><text x='14' y='21' fill='#fff' font-family='sans-serif' font-size='13' font-weight='700'>今日の3本：解決したい課題 → 提供する機能</text><g font-family='sans-serif' font-size='11.5' fill='#1c1c1e'><text x='14' y='58' font-weight='700'>codex-security</text><text x='150' y='58'>エージェント時代のSAST空白</text><text x='360' y='58'>→ 公式SDK＋CLIで静的解析統合</text><text x='14' y='104' font-weight='700'>ECC</text><text x='150' y='104'>複数AI-CLI横断の非効率</text><text x='360' y='104'>→ スキル/記憶/安全を一括統治</text><text x='14' y='150' font-weight='700'>Agent-Reach</text><text x='150' y='150'>ネットを見られない/API課金</text><text x='360' y='150'>→ SNS/動画/フォーラム横断取得</text></g><line x1='0' y1='76' x2='600' y2='76' stroke='#d6efdd'/><line x1='0' y1='122' x2='600' y2='122' stroke='#d6efdd'/><line x1='344' y1='40' x2='344' y2='170' stroke='#bfe7c9'/></svg><figcaption>図1：3本の「解こうとしている問題」と「実際にできること」を対応させた一覧。</figcaption></figure><h4>openai/codex-security（New 2026・Trendshift日次1位）</h4><p><b>解決したい課題</b>：エージェントがコードを書く時代に、静的解析（SAST）などのセキュリティが運用フローに組み込まれておらず標準が未整備という空白。<b>提供する機能</b>：OpenAI公式の「Codex Security」向けSDK群とCLI。コードや依存の静的解析をエージェントのワークフローに統合するツールキットだ。<b>なぜ今急伸か</b>：公開直後からTrendshift日次1位まで駆け上がり、当日シグナル最上位。「エージェントのセキュリティ標準化」という旬の文脈で最も注目された。</p><h4>affaan-m/ECC（New 2026・Trendshift日次10位）</h4><p><b>解決したい課題</b>：一人が Claude Code／Codex／Cursor など複数のAI-CLIを横断すると、運用効率や観測性がバラつく。<b>提供する機能</b>：スキル・記憶・セキュリティ・research-first開発を束ねる「エージェントハーネス最適化システム」。複数CLIを横断して統治する発想だ。<b>なぜ今急伸か</b>：日次10位のNew 2026で増加率も高い純粋な急上昇株。マルチCLI運用の悩みに直接刺さる。</p><h4>Panniantong/Agent-Reach（New 2026・Trendshift日次11位）</h4><p><b>解決したい課題</b>：エージェントが外部の生きた情報（SNS・動画・フォーラム）を見られない、あるいはAPI費用がかさむ。<b>提供する機能</b>：Twitter／Reddit／YouTube／GitHub／Bilibili 等を<b>API課金ゼロ</b>で横断取得・検索するCLIで、エージェントに「インターネットを見る目」を与える。<b>なぜ今急伸か</b>：日次11位のNew 2026。ゼロコストで各種ソースを収集できる実利が評価された。</p><p><b>自分が試すなら</b>：毎朝の調査自動化（まさにこの種の定期タスク）の収集層を強化できる <b>Agent-Reach</b> が一番効く。CIのSAST空白には <b>codex-security</b>、複数CLIの運用統治には <b>ECC</b> を実験台に。3本とも New 2026 なので、まずは小さく試験導入して見極めるのが安全だ。</p>",
+      "sources": [
+        {
+          "title": "openai/codex-security",
+          "url": "https://github.com/openai/codex-security"
+        },
+        {
+          "title": "affaan-m/ECC",
+          "url": "https://github.com/affaan-m/ECC"
+        },
+        {
+          "title": "Panniantong/Agent-Reach",
+          "url": "https://github.com/Panniantong/Agent-Reach"
+        }
+      ]
+    },
     {
       "id": "2026-07-29-claude-code",
       "date": "2026-07-29",
