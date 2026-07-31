@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-07-31T04:47:14.370Z",
+  "generatedAt": "2026-07-30T04:51:33.635Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,106 +8,6 @@
     "GitHub Trending"
   ],
   "articles": [
-    {
-      "id": "2026-07-31-claude-code",
-      "date": "2026-07-31",
-      "topic": "Claude Code",
-      "title": "Opus 5 が既定Opusモデルに — 1Mコンテキスト・128K出力で価格据え置き、MCPはステートレス・コアへ",
-      "lede": "claude-opus-5 が Claude Code の既定Opusに。1Mコンテキスト/128K出力/thinking既定オンで価格は据え置き。MCP 2026-07-28 はステートフルからrequest/responseのステートレス・コアへ移行し、リモートMCPのデプロイが容易になった。",
-      "articleHtml": "<p>Opus 5 が Claude Code の既定Opusモデルに組み込まれ、エージェント的コーディングとコンピュータ操作の性能を底上げした。関心はモデル選定よりも「1Mコンテキストと effort をどう運用に落とすか」へ移っている。</p><p><b>何が新しいか</b>：<b>Opus 5（claude-opus-5）</b>はコンテキスト<b>1Mトークン</b>（既定かつ最大で小型版なし）・最大出力<b>128Kトークン</b>・<b>thinking既定オン</b>。価格は入力$5／出力$25（100万トークンあたり）と Opus 4.8 から<b>据え置き</b>で、性能だけが上がった。ただし既定の解決先はプランで割れる：<b>Max/Team Premium/Enterprise従量/API は Opus 5</b>、<b>Pro/Team Standard は引き続き Sonnet 5</b>。もう一つの目玉が <b>MCP 2026-07-28</b> で、双方向ステートフルから<b>request/responseのステートレス・コア</b>へ移行し、サーバレスやエッジ基盤に載せやすくなってリモートMCPサーバのデプロイ・スケールが大幅に容易になった。認可も Entra/Okta 等の企業ID基盤と整合する形に整理された。</p><figure class='fig'><svg viewBox='0 0 600 196' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='196' rx='10' fill='#fff4ec'/><rect x='0' y='0' width='600' height='30' rx='10' fill='#c2410c'/><text x='14' y='20' fill='#fff' font-family='sans-serif' font-size='13' font-weight='700'>Claude Opus 5（既定Opus）— 主要スペック</text><g font-family='sans-serif' font-size='12' fill='#1c1c1e'><text x='16' y='58' font-weight='700'>コンテキスト</text><text x='236' y='58'>1M トークン（既定=最大／小型版なし）</text><text x='16' y='88' font-weight='700'>最大出力</text><text x='236' y='88'>128K トークン</text><text x='16' y='118' font-weight='700'>thinking</text><text x='236' y='118'>既定オン</text><text x='16' y='148' font-weight='700'>価格（100万tok）</text><text x='236' y='148'>入力 $5 ／ 出力 $25（4.8から据え置き）</text><text x='16' y='178' font-weight='700'>既定の解決先</text><text x='236' y='178'>Max/Premium/Ent従量/API=Opus5・Pro/Std=Sonnet5</text></g><line x1='224' y1='40' x2='224' y2='190' stroke='#f0c6a6'/></svg><figcaption>図1：Opus 5 の要点。性能は上がり価格は据え置き、既定モデルはプラン依存。</figcaption></figure><p><b>仕組みの噛み砕き</b>：effort レベルは思考の深さ＝コスト/レイテンシと品質のトレードオフを握る。難しい設計・デバッグは高effort、定型作業は控えめ、が定石だ。運用面の後押しとして7月のチェンジログでは <code>sandbox.network.strictAllowlist</code>（許可リスト外ホストを無プロンプトで拒否）、スクリーンリーダー対応、<code>--forward-subagent-text</code>（サブエージェントの出力を stream-json に含める）が入った。</p><p><b>実務での使いどころ</b>：1Mコンテキストを活かし、大規模リポジトリを丸ごと文脈に載せた設計レビューや横断リファクタが現実的になる。Microsoft の数万人規模フィールド研究では CLI エージェント採用者が<b>約24%多くPRをマージ</b>し、普及は社内ソーシャル経由——チーム導入は「隣の席のデモ」が効く裏づけだ。<b>注意点</b>：Pro/Team Standard は既定が Sonnet 5 なので、Opus 前提の手順書をそのまま配ると挙動が変わる。thinking 既定オンでトークン消費が増えるため、定型作業は effort を絞る。<b>ひとことまとめ</b>：モデルは速く賢くなった。差がつくのは effort とコンテキスト設計の運用側だ。</p>",
-      "sources": [
-        {
-          "title": "Opus 5 whats-new（公式）",
-          "url": "https://platform.claude.com/docs/en/about-claude/models/whats-new-opus-5"
-        },
-        {
-          "title": "Bringing MCP 2026-07-28 to Claude",
-          "url": "https://claude.com/blog/bringing-mcp-2026-07-28-to-claude"
-        },
-        {
-          "title": "Claude Code changelog（7月）",
-          "url": "https://www.gradually.ai/en/changelogs/claude-code/"
-        },
-        {
-          "title": "Microsoft大規模導入研究（arXiv）",
-          "url": "https://arxiv.org/abs/2607.01418"
-        }
-      ]
-    },
-    {
-      "id": "2026-07-31-nextjs",
-      "date": "2026-07-31",
-      "topic": "Next.js",
-      "title": "分割テキストのリビール演出 — RSCでサーバー分割＋純CSS、行分割だけGSAPに任せる",
-      "lede": "文字/単語/行スタッガーの土台は共通。2025年のGSAP完全無償化でSplitTextが無料に、MotionのsplitTextはMotion+限定。単語/文字はRSCでサーバー分割＋純CSSでJSゼロ、行分割やスクラブだけGSAP島に寄せるのが2026の型。",
-      "articleHtml": "<p>見出しやヒーローコピーを文字/単語/行の単位でずらして出す<b>スタッガー・リビール</b>は、アワード系サイトの定番演出だ。仕組みは共通で「テキストを分割してラップ→各ユニットにずれた開始時刻を与えて順にフェード/スライドさせる」の2段構え。2026年は選択肢が整理された点が読みどころだ。</p><p><b>何が変わったか</b>：<b>GSAP SplitText</b> が2025年4月のGSAP完全無償化で誰でも無料に（3.13で全面書き直し、<code>mask:\"lines\"</code>・自動aria・フォント遅延ロード/リサイズで再分割する <code>autoSplit</code>）。<b>Motion</b> の <code>splitText</code>（0.7kb）は手軽だが<b>Motion+（有料）限定</b>が最大の注意点。<b>Splitting.js</b> は spans＋CSS変数（<code>--char-index</code> 等）を吐くだけで動きは純CSSで書ける。そして<b>完全自前</b>も現実的で、Next.js では自前が RSC と最も相性が良い。</p><figure class='fig'><pre class='mermaid'>flowchart TD\\n  T[\"見出しテキスト\"] --> A[\"方針A: RSCでサーバー分割\"]\\n  T --> B[\"方針B: GSAP島（use client）\"]\\n  A --> A1[\"chars/words を確定的に生成\"]\\n  A1 --> A2[\"純CSS stagger・JSゼロ\"]\\n  B --> B1[\"useGSAP + SplitText autoSplit\"]\\n  B1 --> B2[\"lines分割・ScrollTrigger\"]</pre><figcaption>図1：App Router での2方針。単語/文字はサーバー分割＋純CSSでJSゼロ、行分割やスクラブはGSAP島に寄せる。</figcaption></figure><p><b>仕組みの型</b>：行/単語を <code>overflow:hidden</code> のラッパで包み、中身を <code>translateY(110%)→0</code> でクリップして迫り上げる。分割 span は <code>display:inline-block</code> 必須（inline要素には transform が効かない）。スタッガーは <code>animation-delay: calc(var(--i)*.06s)</code> に <code>fill-mode:both</code> を添えて開始前のチラつきを防ぐ。スクロール連動は <code>animation-timeline: view()</code> でJSゼロにできる。</p><p><b>最大の落とし穴＝アクセシビリティ</b>：文字ごとに span を割ると読み上げが「H・E・L・L・O」と1字ずつになる。対策は分割<b>前</b>に親へ <code>aria-label</code>（全文）を付け、生成した span に <code>aria-hidden=\"true\"</code> をセットする。GSAP/Motion は自動付与するが、<b>自前実装は手動で必ず両方</b>やる。<code>prefers-reduced-motion: reduce</code> では最終の可読状態を即表示（動きゼロ）にする。<b>試すなら</b>：単語リビールを RSC＋純CSSで作り、行演出が要る箇所だけ GSAP を島化する。<b>まとめ</b>：土台は共通、面倒な行分割（レイアウト計測が要る）だけライブラリに任せるのが最適解だ。</p>",
-      "sources": [
-        {
-          "title": "GSAP SplitText 公式ドキュメント",
-          "url": "https://gsap.com/docs/v3/Plugins/SplitText/"
-        },
-        {
-          "title": "Motion splitText（0.7kb・Motion+）",
-          "url": "https://motion.dev/docs/split-text"
-        },
-        {
-          "title": "Splitting.js（spans＋CSS変数）",
-          "url": "https://splitting.js.org/"
-        },
-        {
-          "title": "Codrops: Stagger Reveal Animations",
-          "url": "https://tympanus.net/codrops/2020/06/17/making-stagger-reveal-animations-for-text/"
-        }
-      ]
-    },
-    {
-      "id": "2026-07-31-flutter",
-      "date": "2026-07-31",
-      "topic": "Flutter",
-      "title": "Flutter 3.44 の3つの転換 — Impeller が Android 既定・Skia 撤去・Material が独立パッケージへ",
-      "lede": "モダンAndroid（API 29+）の既定レンダラがImpellerになりSkiaがコアから撤去、Material/Cupertinoがコアから独立パッケージへ分離、Agentic Hot Reload/GenUIなどAIツーリングも強化。安定版はFlutter 3.44.6 / Dart 3.12.2。",
-      "articleHtml": "<p>今日の主役は <b>Flutter 3.44</b> がもたらす3つの転換だ。長く議論されてきたレンダラ刷新とパッケージ構成の見直しが、ついに既定として動いた。</p><p><b>何が新しいか</b>：(1) <b>Impeller</b> がモダン Android（API 29+）でも<b>既定レンダラ</b>になり、<b>Skia がコアから撤去</b>された。歴史的課題だったシェーダーコンパイルジャンクが解消され、ネイティブ級の 120fps が射程に入る。(2) <b>Material/Cupertino がコアから独立パッケージへ分離</b>——M3更新が四半期SDKリリースを待たず pub.dev から届き、アプリサイズも縮めやすい。(3) <b>Agentic Hot Reload・GenUI・Hybrid Composition++</b> など AI ツーリングを強化。安定版最新は <b>Flutter 3.44.6 / Dart 3.12.2</b>（2026-07-09）で、次の機能リリースは8月。Dart 3.12 は private named parameters・primary constructors（experimental）・dot shorthands で定型コードを削減する。</p><figure class='fig'><svg viewBox='0 0 600 168' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='168' rx='10' fill='#eef6ff'/><rect x='0' y='0' width='600' height='30' rx='10' fill='#0553b1'/><text x='14' y='20' fill='#fff' font-family='sans-serif' font-size='13' font-weight='700'>フレーム予算（1フレームの締切）</text><g font-family='sans-serif' font-size='12' fill='#1c1c1e'><text x='16' y='63'>60fps</text><rect x='72' y='51' width='480' height='18' rx='4' fill='#7fb3f0'/><text x='560' y='63'>16ms</text><text x='16' y='101'>90fps</text><rect x='72' y='89' width='330' height='18' rx='4' fill='#3f7fd0'/><text x='410' y='101'>11ms</text><text x='16' y='139'>120fps</text><rect x='72' y='127' width='249' height='18' rx='4' fill='#0553b1'/><text x='329' y='139'>8.3ms</text></g></svg><figcaption>図1：リフレッシュレート別フレーム予算。Impeller 既定化で 8–11ms 帯を狙いやすくなった。</figcaption></figure><p><b>状態管理の現在地</b>：新規は <b>Riverpod 3.0</b>（現行 3.3.x）が既定線。<b>Mutations</b> が Login/Post Comment 等のアクションを Idle/Pending/Success/Error として自動で UI に公開し、ネットワーク失敗時は<b>自動リトライ</b>、<b>ref.mounted</b> が非同期処理後の provider 生存を検証して disposed 後の副作用を防ぐ。テストは平均30–40%行数が少ない。監査/大規模・full event traceability が要るなら <b>Bloc 9.0</b>（現行 9.2.x）。アニメは Rive 0.13.20 の state machine events で描画ロジックを widget から分離できる。</p><p><b>試すなら</b>：ミッドレンジ Android 実機で Impeller 有無を profile モードで計測し、差が出たら <code>--no-enable-impeller</code> で切り分ける。<code>const</code> ウィジェットと <code>RepaintBoundary</code> の戦略配置で再ビルド/再描画を絞る。<b>注意点</b>：Impeller 使用時は Rive で描画差が出ることがあり実機検証が必須。<b>ひとことまとめ</b>：3.44 は「Finishing the Job」——Android の Impeller 完遂と Web の WASM 既定化へ向けた土台固めだ。</p>",
-      "sources": [
-        {
-          "title": "Latest Flutter Version 3.44",
-          "url": "https://www.cmarix.com/blog/latest-flutter-version/"
-        },
-        {
-          "title": "Announcing Dart 3.12",
-          "url": "https://dart.dev/blog/announcing-dart-3-12"
-        },
-        {
-          "title": "Impeller: Native 120fps in 2026",
-          "url": "https://shindekalpesharun.medium.com/flutter-impeller-how-to-achieve-native-120fps-performance-in-2026-68ec28cc71e5"
-        },
-        {
-          "title": "State Management 2026: Riverpod vs Bloc",
-          "url": "https://sharpskill.dev/en/blog/flutter/flutter-state-management-2026-riverpod-bloc-getx"
-        }
-      ]
-    },
-    {
-      "id": "2026-07-31-github-trending",
-      "date": "2026-07-31",
-      "topic": "GitHub Trending",
-      "title": "7/31の話題リポジトリ — Cowork代替・2GB RAMで26Bモデル・AIペンテスト自動化",
-      "lede": "今日の3本を貫くのは「AIの主導権を手元へ」。プロプライエタリなCoworkのOSS化、巨大モデルの省メモリ・ローカル化、そしてセキュリティ作業のAI自動化。",
-      "articleHtml": "<p>今日 GitHub で急伸したリポジトリから、共通する潮流「AIをオープンに・ローカルに・自動で」を体現する3本を取り上げる。いずれも Trendshift 日次上位の New 2026 だ。</p><figure class='fig'><svg viewBox='0 0 600 206' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='206' rx='10' fill='#eafaef'/><rect x='0' y='0' width='600' height='30' rx='10' fill='#1a7f37'/><text x='14' y='20' fill='#fff' font-family='sans-serif' font-size='13' font-weight='700'>今日の3本：解決したい課題 → 提供する機能</text><g font-family='sans-serif' font-size='11' fill='#5a6a5e'><text x='14' y='50'>リポジトリ</text><text x='150' y='50'>解決したい課題</text><text x='360' y='50'>提供する機能</text></g><g font-family='sans-serif' font-size='11' fill='#1c1c1e'><text x='14' y='84' font-weight='700'>openwork</text><text x='150' y='84'>Coworkが閉じている</text><text x='360' y='84'>opencode基盤のOSS Cowork代替</text><text x='14' y='128' font-weight='700'>turbo-fieldfare</text><text x='150' y='128'>大モデルは省メモリ困難</text><text x='360' y='128'>Gemma4 26Bを約2GB RAMで推論</text><text x='14' y='172' font-weight='700'>reverse-skill</text><text x='150' y='172'>pentestが手作業・属人的</text><text x='360' y='172'>AIが自動ルーティング＋自己進化</text></g><line x1='140' y1='58' x2='140' y2='196' stroke='#a9e0ba'/><line x1='350' y1='58' x2='350' y2='196' stroke='#a9e0ba'/><line x1='8' y1='60' x2='592' y2='60' stroke='#a9e0ba'/></svg><figcaption>図1：3本の「解決したい課題→提供する機能」対応。共通軸はAIの実行を手元に取り戻すこと。</figcaption></figure><h4>different-ai/openwork（—・⭐New 2026）</h4><p><b>解決したい課題</b>：Claude Cowork のようなエージェント常駐ツールはプロプライエタリで、自前ホストや拡張の自由が効かない。<b>提供する機能</b>：opencode を実行基盤に据えた<b>Cowork のオープンソース代替</b>で、ローカルのファイル操作やアプリ連携をエージェントに委譲して成果物を仕上げる。自前ホストで拡張の自由度を確保できる点が刺さり、Cowork/常駐エージェントへの関心の高まりに乗って Trendshift 日次7位まで急拡散した。</p><h4>drumih/turbo-fieldfare（—・⭐New 2026）</h4><p><b>解決したい課題</b>：高性能な大規模モデルはメモリ要求が大きく、一般的な Mac ではローカル推論しづらい。<b>提供する機能</b>：<b>Gemma 4 26B-A4B</b> を M シリーズ MacBook の<b>約2GB RAM</b> で推論できる軽量ローカル推論。26BクラスのMoEを小メモリで動かす「小メモリで大モデル」の技術的インパクトが、ローカルLLM需要の中で日次3位まで押し上げた。</p><h4>zhaoxuya520/reverse-skill（—・⭐New 2026）</h4><p><b>解決したい課題</b>：リバース/ペネトレーション等のセキュリティ作業は手作業が多く、必要なツールチェーンの用意も属人的になりがち。<b>提供する機能</b>：AI が必要に応じてツールを自動ブートストラップし、経験を蓄積して自己進化する<b>セキュリティ・スキルルーター</b>。Claude Code/Kiro/Cursor/Cline に対応する。日次8位で、スキル・ブームの中で拡散した。攻撃的ツールゆえ自前環境限定での慎重運用が前提だ。</p><p><b>試すなら</b>：まず openwork を触って Cowork の中身を理解しつつ、turbo-fieldfare で「手元で動くLLM」の体験を確かめる。reverse-skill は隔離環境でのみ。共通するのは、AIの実行をベンダー任せにせず手元に取り戻す志向だ。</p>",
-      "sources": [
-        {
-          "title": "different-ai/openwork",
-          "url": "https://github.com/different-ai/openwork"
-        },
-        {
-          "title": "drumih/turbo-fieldfare",
-          "url": "https://github.com/drumih/turbo-fieldfare"
-        },
-        {
-          "title": "zhaoxuya520/reverse-skill",
-          "url": "https://github.com/zhaoxuya520/reverse-skill"
-        }
-      ]
-    },
     {
       "id": "2026-07-30-claude-code",
       "date": "2026-07-30",
