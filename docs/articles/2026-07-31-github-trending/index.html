@@ -1,0 +1,59 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>7/31の話題リポジトリ — Cowork代替・2GB RAMで26Bモデル・AIペンテスト自動化 — デイリー技術深掘り 読み物</title><meta name="description" content="今日の3本を貫くのは「AIの主導権を手元へ」。プロプライエタリなCoworkのOSS化、巨大モデルの省メモリ・ローカル化、そしてセキュリティ作業のAI自動化。"><meta name="theme-color" content="#238636"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-31-github-trending/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="7/31の話題リポジトリ — Cowork代替・2GB RAMで26Bモデル・AIペンテスト自動化 — デイリー技術深掘り 読み物"><meta property="og:description" content="今日の3本を貫くのは「AIの主導権を手元へ」。プロプライエタリなCoworkのOSS化、巨大モデルの省メモリ・ローカル化、そしてセキュリティ作業のAI自動化。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-31-github-trending/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3fb950, #1a7f37)"> <span class="glyph" aria-hidden="true">★</span> <div class="kicker">GitHub Trending</div> <h1>7/31の話題リポジトリ — Cowork代替・2GB RAMで26Bモデル・AIペンテスト自動化</h1> <p class="lede">今日の3本を貫くのは「AIの主導権を手元へ」。プロプライエタリなCoworkのOSS化、巨大モデルの省メモリ・ローカル化、そしてセキュリティ作業のAI自動化。</p> <div class="meta"> <span>📅 2026年7月31日</span> <span>⏱ 約2分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#238636"> <div> <article class="prose" data-has-mermaid="0"><p>今日 GitHub で急伸したリポジトリから、共通する潮流「AIをオープンに・ローカルに・自動で」を体現する3本を取り上げる。いずれも Trendshift 日次上位の New 2026 だ。</p><figure class='fig'><svg viewBox='0 0 600 206' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='206' rx='10' fill='#eafaef'></rect><rect x='0' y='0' width='600' height='30' rx='10' fill='#1a7f37'></rect><text x='14' y='20' fill='#fff' font-family='sans-serif' font-size='13' font-weight='700'>今日の3本：解決したい課題 → 提供する機能</text><g font-family='sans-serif' font-size='11' fill='#5a6a5e'><text x='14' y='50'>リポジトリ</text><text x='150' y='50'>解決したい課題</text><text x='360' y='50'>提供する機能</text></g><g font-family='sans-serif' font-size='11' fill='#1c1c1e'><text x='14' y='84' font-weight='700'>openwork</text><text x='150' y='84'>Coworkが閉じている</text><text x='360' y='84'>opencode基盤のOSS Cowork代替</text><text x='14' y='128' font-weight='700'>turbo-fieldfare</text><text x='150' y='128'>大モデルは省メモリ困難</text><text x='360' y='128'>Gemma4 26Bを約2GB RAMで推論</text><text x='14' y='172' font-weight='700'>reverse-skill</text><text x='150' y='172'>pentestが手作業・属人的</text><text x='360' y='172'>AIが自動ルーティング＋自己進化</text></g><line x1='140' y1='58' x2='140' y2='196' stroke='#a9e0ba'></line><line x1='350' y1='58' x2='350' y2='196' stroke='#a9e0ba'></line><line x1='8' y1='60' x2='592' y2='60' stroke='#a9e0ba'></line></svg><figcaption>図1：3本の「解決したい課題→提供する機能」対応。共通軸はAIの実行を手元に取り戻すこと。</figcaption></figure><h4 id="sec-1">different-ai/openwork（—・⭐New 2026）</h4><p><b>解決したい課題</b>：Claude Cowork のようなエージェント常駐ツールはプロプライエタリで、自前ホストや拡張の自由が効かない。<b>提供する機能</b>：opencode を実行基盤に据えた<b>Cowork のオープンソース代替</b>で、ローカルのファイル操作やアプリ連携をエージェントに委譲して成果物を仕上げる。自前ホストで拡張の自由度を確保できる点が刺さり、Cowork/常駐エージェントへの関心の高まりに乗って Trendshift 日次7位まで急拡散した。</p><h4 id="sec-2">drumih/turbo-fieldfare（—・⭐New 2026）</h4><p><b>解決したい課題</b>：高性能な大規模モデルはメモリ要求が大きく、一般的な Mac ではローカル推論しづらい。<b>提供する機能</b>：<b>Gemma 4 26B-A4B</b> を M シリーズ MacBook の<b>約2GB RAM</b> で推論できる軽量ローカル推論。26BクラスのMoEを小メモリで動かす「小メモリで大モデル」の技術的インパクトが、ローカルLLM需要の中で日次3位まで押し上げた。</p><h4 id="sec-3">zhaoxuya520/reverse-skill（—・⭐New 2026）</h4><p><b>解決したい課題</b>：リバース/ペネトレーション等のセキュリティ作業は手作業が多く、必要なツールチェーンの用意も属人的になりがち。<b>提供する機能</b>：AI が必要に応じてツールを自動ブートストラップし、経験を蓄積して自己進化する<b>セキュリティ・スキルルーター</b>。Claude Code/Kiro/Cursor/Cline に対応する。日次8位で、スキル・ブームの中で拡散した。攻撃的ツールゆえ自前環境限定での慎重運用が前提だ。</p><p><b>試すなら</b>：まず openwork を触って Cowork の中身を理解しつつ、turbo-fieldfare で「手元で動くLLM」の体験を確かめる。reverse-skill は隔離環境でのみ。共通するのは、AIの実行をベンダー任せにせず手元に取り戻す志向だ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://github.com/different-ai/openwork" target="_blank" rel="noopener noreferrer"> different-ai/openwork </a> </li><li> <a href="https://github.com/drumih/turbo-fieldfare" target="_blank" rel="noopener noreferrer"> drumih/turbo-fieldfare </a> </li><li> <a href="https://github.com/zhaoxuya520/reverse-skill" target="_blank" rel="noopener noreferrer"> zhaoxuya520/reverse-skill </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> different-ai/openwork（—・⭐New 2026） </a> </li><li> <a href="#sec-2" data-toc="sec-2"> drumih/turbo-fieldfare（—・⭐New 2026） </a> </li><li> <a href="#sec-3" data-toc="sec-3"> zhaoxuya520/reverse-skill（—・⭐New 2026） </a> </li> </ul> <div class="reading-box"> <div>📅 2026-07-31</div> <div>⏱ 読了 約2分</div> <div>🏷 GitHub Trending</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

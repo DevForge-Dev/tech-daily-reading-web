@@ -1,0 +1,59 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>分割テキストのリビール演出 — RSCでサーバー分割＋純CSS、行分割だけGSAPに任せる — デイリー技術深掘り 読み物</title><meta name="description" content="文字/単語/行スタッガーの土台は共通。2025年のGSAP完全無償化でSplitTextが無料に、MotionのsplitTextはMotion+限定。単語/文字はRSCでサーバー分割＋純CSSでJSゼロ、行分割やスクラブだけGSAP島に寄せるのが2026の型。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-31-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="分割テキストのリビール演出 — RSCでサーバー分割＋純CSS、行分割だけGSAPに任せる — デイリー技術深掘り 読み物"><meta property="og:description" content="文字/単語/行スタッガーの土台は共通。2025年のGSAP完全無償化でSplitTextが無料に、MotionのsplitTextはMotion+限定。単語/文字はRSCでサーバー分割＋純CSSでJSゼロ、行分割やスクラブだけGSAP島に寄せるのが2026の型。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-07-31-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>分割テキストのリビール演出 — RSCでサーバー分割＋純CSS、行分割だけGSAPに任せる</h1> <p class="lede">文字/単語/行スタッガーの土台は共通。2025年のGSAP完全無償化でSplitTextが無料に、MotionのsplitTextはMotion+限定。単語/文字はRSCでサーバー分割＋純CSSでJSゼロ、行分割やスクラブだけGSAP島に寄せるのが2026の型。</p> <div class="meta"> <span>📅 2026年7月31日</span> <span>⏱ 約2分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="1"><p>見出しやヒーローコピーを文字/単語/行の単位でずらして出す<b>スタッガー・リビール</b>は、アワード系サイトの定番演出だ。仕組みは共通で「テキストを分割してラップ→各ユニットにずれた開始時刻を与えて順にフェード/スライドさせる」の2段構え。2026年は選択肢が整理された点が読みどころだ。</p><p><b>何が変わったか</b>：<b>GSAP SplitText</b> が2025年4月のGSAP完全無償化で誰でも無料に（3.13で全面書き直し、<code>mask:"lines"</code>・自動aria・フォント遅延ロード/リサイズで再分割する <code>autoSplit</code>）。<b>Motion</b> の <code>splitText</code>（0.7kb）は手軽だが<b>Motion+（有料）限定</b>が最大の注意点。<b>Splitting.js</b> は spans＋CSS変数（<code>--char-index</code> 等）を吐くだけで動きは純CSSで書ける。そして<b>完全自前</b>も現実的で、Next.js では自前が RSC と最も相性が良い。</p><figure class='fig'><pre class='mermaid'>flowchart TD\n  T["見出しテキスト"] --> A["方針A: RSCでサーバー分割"]\n  T --> B["方針B: GSAP島（use client）"]\n  A --> A1["chars/words を確定的に生成"]\n  A1 --> A2["純CSS stagger・JSゼロ"]\n  B --> B1["useGSAP + SplitText autoSplit"]\n  B1 --> B2["lines分割・ScrollTrigger"]</pre><figcaption>図1：App Router での2方針。単語/文字はサーバー分割＋純CSSでJSゼロ、行分割やスクラブはGSAP島に寄せる。</figcaption></figure><p><b>仕組みの型</b>：行/単語を <code>overflow:hidden</code> のラッパで包み、中身を <code>translateY(110%)→0</code> でクリップして迫り上げる。分割 span は <code>display:inline-block</code> 必須（inline要素には transform が効かない）。スタッガーは <code>animation-delay: calc(var(--i)*.06s)</code> に <code>fill-mode:both</code> を添えて開始前のチラつきを防ぐ。スクロール連動は <code>animation-timeline: view()</code> でJSゼロにできる。</p><p><b>最大の落とし穴＝アクセシビリティ</b>：文字ごとに span を割ると読み上げが「H・E・L・L・O」と1字ずつになる。対策は分割<b>前</b>に親へ <code>aria-label</code>（全文）を付け、生成した span に <code>aria-hidden="true"</code> をセットする。GSAP/Motion は自動付与するが、<b>自前実装は手動で必ず両方</b>やる。<code>prefers-reduced-motion: reduce</code> では最終の可読状態を即表示（動きゼロ）にする。<b>試すなら</b>：単語リビールを RSC＋純CSSで作り、行演出が要る箇所だけ GSAP を島化する。<b>まとめ</b>：土台は共通、面倒な行分割（レイアウト計測が要る）だけライブラリに任せるのが最適解だ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://gsap.com/docs/v3/Plugins/SplitText/" target="_blank" rel="noopener noreferrer"> GSAP SplitText 公式ドキュメント </a> </li><li> <a href="https://motion.dev/docs/split-text" target="_blank" rel="noopener noreferrer"> Motion splitText（0.7kb・Motion+） </a> </li><li> <a href="https://splitting.js.org/" target="_blank" rel="noopener noreferrer"> Splitting.js（spans＋CSS変数） </a> </li><li> <a href="https://tympanus.net/codrops/2020/06/17/making-stagger-reveal-animations-for-text/" target="_blank" rel="noopener noreferrer"> Codrops: Stagger Reveal Animations </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
