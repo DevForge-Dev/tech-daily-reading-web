@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-07-31T04:47:14.370Z",
+  "generatedAt": "2026-08-01T04:48:07.670Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,94 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-08-01-claude-code",
+      "date": "2026-08-01",
+      "topic": "Claude Code",
+      "title": "8月のコスト転換点 — 週次+50%増枠は8/19まで延長、Sonnet 5プロモは8/31終了で9/1から$3/$15＋トークナイザ増、/forkと暴走防止キャップ",
+      "lede": "利用枠の一時増枠が8/19まで延長、既定Sonnet 5のプロモ価格が8/31で終了し9/1から標準$3/$15＋実効トークン1.0〜1.35倍、/forkのバックグラウンド化とWebSearch/サブエージェントのキャップ(既定200)。9月以降は『どう安く安全に回すか』が主戦場。",
+      "articleHtml": "<p>週明けの予算・運用計画に効く更新が3つ重なった。利用枠の一時増枠が延長され、既定モデルの価格改定が目前に迫り、暴走防止のガードレールが入った——いずれも『どれだけ賢いか』より『どう安く安全に回すか』に関わる話だ。</p><p><b>何が新しいか</b>：まず<b>週次利用上限+50%ブースト</b>が当初期限から<b>2026年8月19日</b>まで延長。Pro/Maxに自動適用され、並列エージェントや大規模作業でクォータが律速になる人ほど恩恵が大きい（一部で <code>/usage</code> 表示に増枠が反映されない報告あり）。あわせて<b>Fable 5</b>が Max・Team Premium で選択可能に。次に価格：既定の<b>Sonnet 5</b>のプロモ（100万トークンあたり入力$2／出力$10）が<b>8月31日で終了</b>し、9月1日から標準の<b>入力$3／出力$15</b>へ。単価は約50%増で、さらに更新トークナイザが同一コンテンツを従来比<b>1.0〜1.35倍</b>のトークン数に写像するため、実効コストは価格改定幅以上に膨らみうる。最後に安全：<b>/fork</b>が会話をバックグラウンドセッションへコピーして分岐できるようになり、<b>WebSearch</b>のセッション呼び出し上限（既定200）と<b>サブエージェント生成キャップ</b>（既定200）が検索ループ・委譲の暴走を抑える。</p><figure class='fig'><svg viewBox='0 0 600 170' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='170' rx='10' fill='#fff4ec'/><text x='16' y='26' font-family='sans-serif' font-size='13' font-weight='700' fill='#c2410c'>Sonnet 5 コスト転換点（2026年）</text><line x1='40' y1='82' x2='560' y2='82' stroke='#e6a877' stroke-width='2'/><g font-family='sans-serif' font-size='11' fill='#1c1c1e'><circle cx='90' cy='82' r='6' fill='#3fb950'/><text x='66' y='110'>8/1 現在</text><text x='54' y='126' fill='#6b6b6b'>プロモ $2/$10</text><circle cx='250' cy='82' r='6' fill='#1f6feb'/><text x='218' y='62'>8/19 増枠終了</text><circle cx='400' cy='82' r='6' fill='#c2410c'/><text x='366' y='110'>8/31 プロモ終了</text><circle cx='540' cy='82' r='6' fill='#b91c1c'/><text x='474' y='62'>9/1 標準 $3/$15</text><text x='448' y='126' fill='#6b6b6b'>実効 ×1.0〜1.35</text></g></svg><figcaption>図1：8月中の3つの節目。単価とトークン係数が9月に同時上昇する。</figcaption></figure><p><b>仕組みの噛み砕き</b>：コストは『単価 × トークン数』で決まる。9月以降はこの両方が同時に上がるので、単価だけを見て『+50%』と見積もると外れる。同じPRレビューでも、コンテキストに載せる差分が大きいほどトークン係数(×1.35)の効きが大きくなる。</p><p><b>自分が試すなら</b>：8月中に典型ワークロード（中規模PRレビュー1本、横断リファクタ1本など）の入出力トークンを実測し、<b>×1.35と新単価</b>で9月の月額を先に出しておく。定型作業は effort を絞り、重い設計だけ厚く配分する。<b>注意点</b>：増枠が <code>/usage</code> に出ないことがあるので数字は自分のログで確認。<code>/fork</code> のバックグラウンド化は便利だが、長時間セッションでサブエージェント200キャップに当たるなら委譲設計を見直す。<b>ひとことまとめ</b>：モデル選定より『トークンをどう減らすか』が9月の主戦場になる。</p>",
+      "sources": [
+        {
+          "title": "Claude Code 利用上限＋Fable 5（DigitalApplied）",
+          "url": "https://www.digitalapplied.com/blog/claude-code-limits-raised-fable-5-max-team-premium-2026"
+        },
+        {
+          "title": "Claude Sonnet 5 価格・トークナイザ（claudefa.st）",
+          "url": "https://claudefa.st/blog/models/claude-sonnet-5"
+        },
+        {
+          "title": "Claude Code What's new（公式）",
+          "url": "https://code.claude.com/docs/en/whats-new"
+        }
+      ]
+    },
+    {
+      "id": "2026-08-01-nextjs",
+      "date": "2026-08-01",
+      "topic": "Next.js",
+      "title": "無限マーキーを純CSSで継ぎ目レスに — App RouterではServer Componentのまま、gapを移動量の式に入れるのが肝",
+      "lede": "中身を2セット複製しtranslateX(calc(-100% - gap))で1コピー分だけ流すと継ぎ目が消える。純CSSなので'use client'不要でhydrationゼロ、複製にaria-hidden、prefers-reduced-motionでは静止表示へ。",
+      "articleHtml": "<p>ロゴウォールや『Trusted by』帯のように途切れなく流れるバナーはマーケLPの定番だが、素朴に組むと<b>ループの継ぎ目でカクつく・画面幅を変えると隙間が出る・アクセシビリティが壊れる</b>。旧 <code>&lt;marquee&gt;</code> は非推奨（reduced-motion 無視・可読性の問題）で、いまは<b>HTML＋純CSS</b>で作るのが定石だ。</p><p><b>何が新しい/重要か</b>：核心のトリックは中身を<b>まるごと2セット</b>並べ、トラックを1コピー分だけ流すこと。1コピー分流れた瞬間に複製が元と<b>ピクセル単位で同じ位置</b>に来るので、<code>0</code> へ戻す瞬間が目に見えない＝継ぎ目レス。移動量は必ず<b>割合/変数</b>で送る（項目数で幅が変わっても同期するため）。<b>最頻出バグは gap を式に入れ忘れること</b>で、<code>translateX(-100%)</code> だと隙間1個分ずれて見える。端は <code>mask-image: linear-gradient(...)</code> でフェードし、<code>:hover / :focus-within</code> で <code>animation-play-state: paused</code>。</p><figure class='fig'><svg viewBox='0 0 600 160' xmlns='http://www.w3.org/2000/svg'><defs><marker id='mq' markerWidth='8' markerHeight='8' refX='6' refY='3' orient='auto'><path d='M0,0 L6,3 L0,6 z' fill='#1f6feb'/></marker></defs><rect x='0' y='0' width='600' height='160' rx='10' fill='#eef4ff'/><text x='16' y='26' font-family='sans-serif' font-size='13' font-weight='700' fill='#1f6feb'>継ぎ目レスの仕組み（2セット複製）</text><rect x='30' y='50' width='250' height='46' rx='6' fill='#cfe0ff' stroke='#1f6feb'/><text x='155' y='78' text-anchor='middle' font-family='sans-serif' font-size='12' fill='#1c1c1e'>元セット  A B C</text><rect x='300' y='50' width='250' height='46' rx='6' fill='#e6eeff' stroke='#74a8ff' stroke-dasharray='4 3'/><text x='425' y='72' text-anchor='middle' font-family='sans-serif' font-size='12' fill='#1c1c1e'>複製セット  A B C</text><text x='425' y='88' text-anchor='middle' font-family='sans-serif' font-size='10' fill='#6b6b6b'>aria-hidden='true'</text><line x1='300' y1='122' x2='40' y2='122' stroke='#1f6feb' stroke-width='2' marker-end='url(#mq)'/><text x='170' y='144' text-anchor='middle' font-family='sans-serif' font-size='11' fill='#1f6feb'>translateX(-100% - gap) で1コピー分だけ流す</text></svg><figcaption>図1：1コピー分流れると複製が元と同位置に来て、戻す瞬間が見えない。</figcaption></figure><pre><code>@keyframes scroll {\n  to { transform: translateX(calc(-100% - var(--gap))); }\n}</code></pre><p><b>App Routerでの使いどころ</b>：純CSSなので<b>'use client' 不要</b>、<b>Server Componentのまま</b>置けてhydrationゼロ・INP/CLS有利。データはRSCで取得し、配列を2回mapして複製側コンテナに <code>aria-hidden='true'</code> を付ける（SRの二重読み防止）。ロゴ画像は width/height を明示してCLSを回避。<b>注意点</b>：マーキー内にリンクや本文など<b>フォーカス可能/重要要素は置かない</b>（タブ順・可読性が壊れる。装飾に限定）。速すぎると酔うので duration は長めに。<b>prefers-reduced-motion</b> では単に一時停止するだけでなく、複製を隠し <code>flex-wrap</code> で<b>全ロゴが静止表示</b>されるレイアウトへ戻すのが丁寧だ。加点として <code>animation-timeline: scroll()</code> でスクロール駆動ティッカーもJSゼロで作れる（未対応は時間駆動へフォールバック）。<b>まとめ</b>：2セット複製＋gap込みの移動量＋a11y、この型さえ押さえれば安く堅い。</p>",
+      "sources": [
+        {
+          "title": "The Infinite Marquee（Ryan Mulligan）",
+          "url": "https://ryanmulligan.dev/blog/css-marquee/"
+        },
+        {
+          "title": "Infinite-Scrolling Logos In Pure CSS（Smashing）",
+          "url": "https://www.smashingmagazine.com/2024/04/infinite-scrolling-logos-html-css/"
+        },
+        {
+          "title": "CSS scroll-driven animations（MDN）",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Scroll-driven_animations"
+        }
+      ]
+    },
+    {
+      "id": "2026-08-01-flutter",
+      "date": "2026-08-01",
+      "topic": "Flutter",
+      "title": "8月リリース目前のFlutter 3.44系 総点検 — ImpellerがAndroid既定・Material/Cupertino分離、AOTでraster約50%短縮",
+      "lede": "現行安定は3.44.6/Dart 3.12.2。3.44はImpellerがAndroid既定でSkia撤去・Material/Cupertino分離・AI強化。ImpellerのAOTでraster約50%短縮・バッテリー約17%減、予算はraster<4ms(60fps)/frame<8.3ms(120fps)。",
+      "articleHtml": "<p>Flutter は年4回（2/5/8/11月）の機能リリースで、次は<b>2026年8月</b>。区切り前のいまは、現行安定版<b>Flutter 3.44.6 / Dart 3.12.2</b>（2026-07-09）で足場を固める好機だ。</p><p><b>何が新しいか</b>：3.44の3本柱は、<b>ImpellerがAndroidの既定になりSkiaがコアから撤去</b>、<b>Material・Cupertinoがコアから独立パッケージへ分離</b>、そしてAIツーリング（Agentic Hot Reload・Generative UI）の強化。<b>Dart 3.12</b>は private named parameters・primary constructors(experimental)・dot shorthands で定型コードを削減する。2026ロードマップ『Finishing the Job』は Android の Impeller 移行完遂と Web の WebAssembly 既定化を掲げる。</p><figure class='fig'><svg viewBox='0 0 600 172' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='172' rx='10' fill='#e8f6fd'/><text x='16' y='26' font-family='sans-serif' font-size='13' font-weight='700' fill='#0277bd'>Impeller (AOT) の効き（Skia比）</text><g font-family='sans-serif' font-size='11' fill='#1c1c1e'><text x='16' y='66'>raster時間</text><rect x='120' y='54' width='420' height='16' rx='3' fill='#cfe9f7'/><rect x='120' y='54' width='210' height='16' rx='3' fill='#0277bd'/><text x='340' y='67'>約 -50%</text><text x='16' y='104'>バッテリー</text><rect x='120' y='92' width='420' height='16' rx='3' fill='#cfe9f7'/><rect x='120' y='92' width='349' height='16' rx='3' fill='#0288d1'/><text x='478' y='105'>約 -17%</text><text x='16' y='144' font-weight='700'>フレーム予算</text><text x='120' y='144'>60fps: raster&lt;4ms ／ 120fps: frame&lt;8.3ms</text></g></svg><figcaption>図1：raster約50%短縮・バッテリー約17%減。計測はDevToolsをprofileモードで。</figcaption></figure><p><b>仕組みとパフォーマンス</b>：Impeller は<b>AOT（ビルド時）シェーダー事前コンパイル</b>でランタイムのシェーダージャンクを排除し、iOSは Metal、Androidは Vulkan をネイティブ利用する。結果、複雑シーンで<b>frame rasterization を約50%短縮</b>、アニメ重負荷では<b>Skia比 約17%低いバッテリー消費</b>。目安は<b>60fps=raster&lt;4ms、120fps=frame&lt;8.3ms</b>（UIスレッド4ms＋Rasterスレッド4ms）。フレーム予算は 60fps=16ms / 90fps=11ms / 120fps=8.3ms。</p><p><b>自分が試すなら</b>：8月アップデート前に <code>flutter --version</code> で 3.44.6 を確認し、<b>const</b> ウィジェットと <b>RepaintBoundary</b> の戦略配置で再ビルド/再描画を削る。60Hz端末では <code>MediaQuery</code> でリフレッシュレートを取得して<b>120fps狙いの過剰最適化を避ける</b>（バッテリーの無駄）。状態管理は新規なら<b>Riverpod 3.3.x＋codegen</b>、監査・大規模は<b>Bloc 9</b>が基本線。<b>注意点</b>：Material/Cupertino が別パッケージ化されたので、移行時は依存とimportを点検する。<b>まとめ</b>：8月の機能リリースは3.44の地ならしの上に来る。const/RepaintBoundary/Impellerで足場を固めておこう。</p>",
+      "sources": [
+        {
+          "title": "Latest Flutter Version 3.44（CMARIX）",
+          "url": "https://www.cmarix.com/blog/latest-flutter-version/"
+        },
+        {
+          "title": "Dart — What's new",
+          "url": "https://dart.dev/resources/whats-new"
+        },
+        {
+          "title": "Advanced Performance with Impeller",
+          "url": "https://differ.blog/p/advanced-performance-optimization-with-the-impeller-rendering-engine-d3b2c5"
+        }
+      ]
+    },
+    {
+      "id": "2026-08-01-github-trending",
+      "date": "2026-08-01",
+      "topic": "GitHub Trending",
+      "title": "8/1の話題リポジトリ — 動画生成基盤・ターミナル内ブラウザ・自前ホストPM",
+      "lede": "生成AIの基盤と、エージェントに実務を任せる道具。LongCat-Video/terminal-browser/kaneo の3本を『解決する課題→提供機能』で読む。",
+      "articleHtml": "<p>今日の3本は毛色が違うが、<b>『生成AIの基盤』と『エージェント／開発者に実務を任せる道具』</b>という2軸で括れる。動画生成の大型モデル、ターミナルに溶け込むブラウザ、そして軽量な自前ホスト型PMツール——AI一色のトレンドの中で実装の幅を映す3本だ。</p><figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='210' rx='10' fill='#eafaf0'/><rect x='0' y='0' width='600' height='30' rx='10' fill='#1a7f37'/><text x='14' y='20' fill='#fff' font-family='sans-serif' font-size='12' font-weight='700'>8/1 話題の3本 — 解決する課題 × 提供機能</text><g font-family='sans-serif' font-size='10.5' fill='#1c1c1e'><text x='14' y='56' font-weight='700'>LongCat-Video</text><text x='176' y='56'>課題: 用途別に動画モデルを使い分けるのが重い</text><text x='176' y='72'>機能: T2V / I2V / 動画継続を13.6B 1モデルで</text><text x='14' y='104' font-weight='700'>terminal-browser</text><text x='176' y='104'>課題: 端末中心の作業でGUIに切替えたくない</text><text x='176' y='120'>機能: 端末内にChromium描画・SSH越しプレビュー</text><text x='14' y='152' font-weight='700'>kaneo</text><text x='176' y='152'>課題: Jira/Linearは重い・SaaS依存</text><text x='176' y='168'>機能: 軽量PMをHono+PG+Reactで自前ホスト</text></g><line x1='166' y1='40' x2='166' y2='196' stroke='#a8d8ba'/><line x1='14' y1='84' x2='586' y2='84' stroke='#d3efdd'/><line x1='14' y1='132' x2='586' y2='132' stroke='#d3efdd'/></svg><figcaption>図1：3本を『課題→機能』で一望する。</figcaption></figure><h4>meituan-longcat/LongCat-Video（Python・⭐約5.3k）</h4><p><b>解決したい課題</b>：テキスト・画像・既存動画から高品質な映像を作りたいが、用途ごとにモデルを使い分けるのは重い。<b>提供する機能</b>：Text-to-Video / Image-to-Video / 動画継続生成を<b>1つの13.6Bパラメータ基盤モデル</b>で担う、Meituan LongCatチーム発のオープンモデル。<b>なぜ急上昇</b>：Trendshift日次17位。動画生成の競争激化と大手研究チーム発の信頼性が拡散を後押ししている。</p><h4>zenbu-labs/terminal-browser（New 2026）</h4><p><b>解決したい課題</b>：SSH越しやターミナル中心の作業で、いちいちGUIブラウザに切り替えたくない／エージェントにWeb操作を任せたい。<b>提供する機能</b>：<b>kitty graphics protocol</b>でChromiumをターミナル内にピクセル描画する『本物のブラウザ』。マウス/キーボード入力を合成イベントで送り、<b>SSH越しにリモートで動くローカルサイトをプレビュー</b>でき、エージェントからも直接操作できる。<b>なぜ急上昇</b>：Trendshift日次16位のNew。『ターミナル内にChromium』という発想の新鮮さが刺さった。</p><h4>usekaneo/kaneo（TypeScript）</h4><p><b>解決したい課題</b>：Jira/Linearは多機能すぎて重く、SaaS依存になる。もっと軽く自前で持てるプロジェクト管理が欲しい。<b>提供する機能</b>：かんばん/リスト・担当/優先度/ラベル/期限・時間計測を過剰設定なしで提供。<b>Hono＋PostgreSQL(Drizzle)＋React</b>のTSモノレポで、GitHub/Gitea連携やSlack/Discord通知のプラグイン、Docker/Helmで<b>セルフホスト</b>できる。<b>なぜ急上昇</b>：Trendshift日次13位。エージェント一色の中で数少ない自前ホスト生産性ツール枠として存在感を出した。</p><p><b>自分が試すなら</b>：まず <b>terminal-browser</b>——SSH先のローカルプレビューとエージェントのWeb操作は日々の開発に直に効く。kaneo はセルフホストPMの候補、LongCat-Video は動画生成の当たりを付ける実験用に置いておく。</p>",
+      "sources": [
+        {
+          "title": "meituan-longcat/LongCat-Video",
+          "url": "https://github.com/meituan-longcat/LongCat-Video"
+        },
+        {
+          "title": "zenbu-labs/terminal-browser",
+          "url": "https://github.com/zenbu-labs/terminal-browser"
+        },
+        {
+          "title": "usekaneo/kaneo",
+          "url": "https://github.com/usekaneo/kaneo"
+        }
+      ]
+    },
     {
       "id": "2026-07-31-claude-code",
       "date": "2026-07-31",
