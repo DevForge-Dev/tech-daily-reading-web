@@ -1,0 +1,61 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>無限マーキーを純CSSで継ぎ目レスに — App RouterではServer Componentのまま、gapを移動量の式に入れるのが肝 — デイリー技術深掘り 読み物</title><meta name="description" content="中身を2セット複製しtranslateX(calc(-100% - gap))で1コピー分だけ流すと継ぎ目が消える。純CSSなので'use client'不要でhydrationゼロ、複製にaria-hidden、prefers-reduced-motionでは静止表示へ。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-01-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="無限マーキーを純CSSで継ぎ目レスに — App RouterではServer Componentのまま、gapを移動量の式に入れるのが肝 — デイリー技術深掘り 読み物"><meta property="og:description" content="中身を2セット複製しtranslateX(calc(-100% - gap))で1コピー分だけ流すと継ぎ目が消える。純CSSなので'use client'不要でhydrationゼロ、複製にaria-hidden、prefers-reduced-motionでは静止表示へ。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-01-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>無限マーキーを純CSSで継ぎ目レスに — App RouterではServer Componentのまま、gapを移動量の式に入れるのが肝</h1> <p class="lede">中身を2セット複製しtranslateX(calc(-100% - gap))で1コピー分だけ流すと継ぎ目が消える。純CSSなので&#39;use client&#39;不要でhydrationゼロ、複製にaria-hidden、prefers-reduced-motionでは静止表示へ。</p> <div class="meta"> <span>📅 2026年8月1日</span> <span>⏱ 約2分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="0"><p>ロゴウォールや『Trusted by』帯のように途切れなく流れるバナーはマーケLPの定番だが、素朴に組むと<b>ループの継ぎ目でカクつく・画面幅を変えると隙間が出る・アクセシビリティが壊れる</b>。旧 <code>&lt;marquee&gt;</code> は非推奨（reduced-motion 無視・可読性の問題）で、いまは<b>HTML＋純CSS</b>で作るのが定石だ。</p><p><b>何が新しい/重要か</b>：核心のトリックは中身を<b>まるごと2セット</b>並べ、トラックを1コピー分だけ流すこと。1コピー分流れた瞬間に複製が元と<b>ピクセル単位で同じ位置</b>に来るので、<code>0</code> へ戻す瞬間が目に見えない＝継ぎ目レス。移動量は必ず<b>割合/変数</b>で送る（項目数で幅が変わっても同期するため）。<b>最頻出バグは gap を式に入れ忘れること</b>で、<code>translateX(-100%)</code> だと隙間1個分ずれて見える。端は <code>mask-image: linear-gradient(...)</code> でフェードし、<code>:hover / :focus-within</code> で <code>animation-play-state: paused</code>。</p><figure class='fig'><svg viewBox='0 0 600 160' xmlns='http://www.w3.org/2000/svg'><defs><marker id='mq' markerWidth='8' markerHeight='8' refX='6' refY='3' orient='auto'><path d='M0,0 L6,3 L0,6 z' fill='#1f6feb'></path></marker></defs><rect x='0' y='0' width='600' height='160' rx='10' fill='#eef4ff'></rect><text x='16' y='26' font-family='sans-serif' font-size='13' font-weight='700' fill='#1f6feb'>継ぎ目レスの仕組み（2セット複製）</text><rect x='30' y='50' width='250' height='46' rx='6' fill='#cfe0ff' stroke='#1f6feb'></rect><text x='155' y='78' text-anchor='middle' font-family='sans-serif' font-size='12' fill='#1c1c1e'>元セット  A B C</text><rect x='300' y='50' width='250' height='46' rx='6' fill='#e6eeff' stroke='#74a8ff' stroke-dasharray='4 3'></rect><text x='425' y='72' text-anchor='middle' font-family='sans-serif' font-size='12' fill='#1c1c1e'>複製セット  A B C</text><text x='425' y='88' text-anchor='middle' font-family='sans-serif' font-size='10' fill='#6b6b6b'>aria-hidden='true'</text><line x1='300' y1='122' x2='40' y2='122' stroke='#1f6feb' stroke-width='2' marker-end='url(#mq)'></line><text x='170' y='144' text-anchor='middle' font-family='sans-serif' font-size='11' fill='#1f6feb'>translateX(-100% - gap) で1コピー分だけ流す</text></svg><figcaption>図1：1コピー分流れると複製が元と同位置に来て、戻す瞬間が見えない。</figcaption></figure><pre><code>@keyframes scroll {
+  to { transform: translateX(calc(-100% - var(--gap))); }
+}</code></pre><p><b>App Routerでの使いどころ</b>：純CSSなので<b>'use client' 不要</b>、<b>Server Componentのまま</b>置けてhydrationゼロ・INP/CLS有利。データはRSCで取得し、配列を2回mapして複製側コンテナに <code>aria-hidden='true'</code> を付ける（SRの二重読み防止）。ロゴ画像は width/height を明示してCLSを回避。<b>注意点</b>：マーキー内にリンクや本文など<b>フォーカス可能/重要要素は置かない</b>（タブ順・可読性が壊れる。装飾に限定）。速すぎると酔うので duration は長めに。<b>prefers-reduced-motion</b> では単に一時停止するだけでなく、複製を隠し <code>flex-wrap</code> で<b>全ロゴが静止表示</b>されるレイアウトへ戻すのが丁寧だ。加点として <code>animation-timeline: scroll()</code> でスクロール駆動ティッカーもJSゼロで作れる（未対応は時間駆動へフォールバック）。<b>まとめ</b>：2セット複製＋gap込みの移動量＋a11y、この型さえ押さえれば安く堅い。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://ryanmulligan.dev/blog/css-marquee/" target="_blank" rel="noopener noreferrer"> The Infinite Marquee（Ryan Mulligan） </a> </li><li> <a href="https://www.smashingmagazine.com/2024/04/infinite-scrolling-logos-html-css/" target="_blank" rel="noopener noreferrer"> Infinite-Scrolling Logos In Pure CSS（Smashing） </a> </li><li> <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Scroll-driven_animations" target="_blank" rel="noopener noreferrer"> CSS scroll-driven animations（MDN） </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

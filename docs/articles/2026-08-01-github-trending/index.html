@@ -1,0 +1,59 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>8/1の話題リポジトリ — 動画生成基盤・ターミナル内ブラウザ・自前ホストPM — デイリー技術深掘り 読み物</title><meta name="description" content="生成AIの基盤と、エージェントに実務を任せる道具。LongCat-Video/terminal-browser/kaneo の3本を『解決する課題→提供機能』で読む。"><meta name="theme-color" content="#238636"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-01-github-trending/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="8/1の話題リポジトリ — 動画生成基盤・ターミナル内ブラウザ・自前ホストPM — デイリー技術深掘り 読み物"><meta property="og:description" content="生成AIの基盤と、エージェントに実務を任せる道具。LongCat-Video/terminal-browser/kaneo の3本を『解決する課題→提供機能』で読む。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-01-github-trending/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3fb950, #1a7f37)"> <span class="glyph" aria-hidden="true">★</span> <div class="kicker">GitHub Trending</div> <h1>8/1の話題リポジトリ — 動画生成基盤・ターミナル内ブラウザ・自前ホストPM</h1> <p class="lede">生成AIの基盤と、エージェントに実務を任せる道具。LongCat-Video/terminal-browser/kaneo の3本を『解決する課題→提供機能』で読む。</p> <div class="meta"> <span>📅 2026年8月1日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#238636"> <div> <article class="prose" data-has-mermaid="0"><p>今日の3本は毛色が違うが、<b>『生成AIの基盤』と『エージェント／開発者に実務を任せる道具』</b>という2軸で括れる。動画生成の大型モデル、ターミナルに溶け込むブラウザ、そして軽量な自前ホスト型PMツール——AI一色のトレンドの中で実装の幅を映す3本だ。</p><figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='210' rx='10' fill='#eafaf0'></rect><rect x='0' y='0' width='600' height='30' rx='10' fill='#1a7f37'></rect><text x='14' y='20' fill='#fff' font-family='sans-serif' font-size='12' font-weight='700'>8/1 話題の3本 — 解決する課題 × 提供機能</text><g font-family='sans-serif' font-size='10.5' fill='#1c1c1e'><text x='14' y='56' font-weight='700'>LongCat-Video</text><text x='176' y='56'>課題: 用途別に動画モデルを使い分けるのが重い</text><text x='176' y='72'>機能: T2V / I2V / 動画継続を13.6B 1モデルで</text><text x='14' y='104' font-weight='700'>terminal-browser</text><text x='176' y='104'>課題: 端末中心の作業でGUIに切替えたくない</text><text x='176' y='120'>機能: 端末内にChromium描画・SSH越しプレビュー</text><text x='14' y='152' font-weight='700'>kaneo</text><text x='176' y='152'>課題: Jira/Linearは重い・SaaS依存</text><text x='176' y='168'>機能: 軽量PMをHono+PG+Reactで自前ホスト</text></g><line x1='166' y1='40' x2='166' y2='196' stroke='#a8d8ba'></line><line x1='14' y1='84' x2='586' y2='84' stroke='#d3efdd'></line><line x1='14' y1='132' x2='586' y2='132' stroke='#d3efdd'></line></svg><figcaption>図1：3本を『課題→機能』で一望する。</figcaption></figure><h4 id="sec-1">meituan-longcat/LongCat-Video（Python・⭐約5.3k）</h4><p><b>解決したい課題</b>：テキスト・画像・既存動画から高品質な映像を作りたいが、用途ごとにモデルを使い分けるのは重い。<b>提供する機能</b>：Text-to-Video / Image-to-Video / 動画継続生成を<b>1つの13.6Bパラメータ基盤モデル</b>で担う、Meituan LongCatチーム発のオープンモデル。<b>なぜ急上昇</b>：Trendshift日次17位。動画生成の競争激化と大手研究チーム発の信頼性が拡散を後押ししている。</p><h4 id="sec-2">zenbu-labs/terminal-browser（New 2026）</h4><p><b>解決したい課題</b>：SSH越しやターミナル中心の作業で、いちいちGUIブラウザに切り替えたくない／エージェントにWeb操作を任せたい。<b>提供する機能</b>：<b>kitty graphics protocol</b>でChromiumをターミナル内にピクセル描画する『本物のブラウザ』。マウス/キーボード入力を合成イベントで送り、<b>SSH越しにリモートで動くローカルサイトをプレビュー</b>でき、エージェントからも直接操作できる。<b>なぜ急上昇</b>：Trendshift日次16位のNew。『ターミナル内にChromium』という発想の新鮮さが刺さった。</p><h4 id="sec-3">usekaneo/kaneo（TypeScript）</h4><p><b>解決したい課題</b>：Jira/Linearは多機能すぎて重く、SaaS依存になる。もっと軽く自前で持てるプロジェクト管理が欲しい。<b>提供する機能</b>：かんばん/リスト・担当/優先度/ラベル/期限・時間計測を過剰設定なしで提供。<b>Hono＋PostgreSQL(Drizzle)＋React</b>のTSモノレポで、GitHub/Gitea連携やSlack/Discord通知のプラグイン、Docker/Helmで<b>セルフホスト</b>できる。<b>なぜ急上昇</b>：Trendshift日次13位。エージェント一色の中で数少ない自前ホスト生産性ツール枠として存在感を出した。</p><p><b>自分が試すなら</b>：まず <b>terminal-browser</b>——SSH先のローカルプレビューとエージェントのWeb操作は日々の開発に直に効く。kaneo はセルフホストPMの候補、LongCat-Video は動画生成の当たりを付ける実験用に置いておく。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://github.com/meituan-longcat/LongCat-Video" target="_blank" rel="noopener noreferrer"> meituan-longcat/LongCat-Video </a> </li><li> <a href="https://github.com/zenbu-labs/terminal-browser" target="_blank" rel="noopener noreferrer"> zenbu-labs/terminal-browser </a> </li><li> <a href="https://github.com/usekaneo/kaneo" target="_blank" rel="noopener noreferrer"> usekaneo/kaneo </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> meituan-longcat/LongCat-Video（Python・⭐約5.3k） </a> </li><li> <a href="#sec-2" data-toc="sec-2"> zenbu-labs/terminal-browser（New 2026） </a> </li><li> <a href="#sec-3" data-toc="sec-3"> usekaneo/kaneo（TypeScript） </a> </li> </ul> <div class="reading-box"> <div>📅 2026-08-01</div> <div>⏱ 読了 約3分</div> <div>🏷 GitHub Trending</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

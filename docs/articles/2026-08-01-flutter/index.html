@@ -1,0 +1,59 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>8月リリース目前のFlutter 3.44系 総点検 — ImpellerがAndroid既定・Material/Cupertino分離、AOTでraster約50%短縮 — デイリー技術深掘り 読み物</title><meta name="description" content="現行安定は3.44.6/Dart 3.12.2。3.44はImpellerがAndroid既定でSkia撤去・Material/Cupertino分離・AI強化。ImpellerのAOTでraster約50%短縮・バッテリー約17%減、予算はraster<4ms(60fps)/frame<8.3ms(120fps)。"><meta name="theme-color" content="#0277bd"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-01-flutter/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="8月リリース目前のFlutter 3.44系 総点検 — ImpellerがAndroid既定・Material/Cupertino分離、AOTでraster約50%短縮 — デイリー技術深掘り 読み物"><meta property="og:description" content="現行安定は3.44.6/Dart 3.12.2。3.44はImpellerがAndroid既定でSkia撤去・Material/Cupertino分離・AI強化。ImpellerのAOTでraster約50%短縮・バッテリー約17%減、予算はraster<4ms(60fps)/frame<8.3ms(120fps)。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-01-flutter/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #29b6f6, #01579b)"> <span class="glyph" aria-hidden="true">◆</span> <div class="kicker">Flutter</div> <h1>8月リリース目前のFlutter 3.44系 総点検 — ImpellerがAndroid既定・Material/Cupertino分離、AOTでraster約50%短縮</h1> <p class="lede">現行安定は3.44.6/Dart 3.12.2。3.44はImpellerがAndroid既定でSkia撤去・Material/Cupertino分離・AI強化。ImpellerのAOTでraster約50%短縮・バッテリー約17%減、予算はraster&lt;4ms(60fps)/frame&lt;8.3ms(120fps)。</p> <div class="meta"> <span>📅 2026年8月1日</span> <span>⏱ 約2分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#0277bd"> <div> <article class="prose" data-has-mermaid="0"><p>Flutter は年4回（2/5/8/11月）の機能リリースで、次は<b>2026年8月</b>。区切り前のいまは、現行安定版<b>Flutter 3.44.6 / Dart 3.12.2</b>（2026-07-09）で足場を固める好機だ。</p><p><b>何が新しいか</b>：3.44の3本柱は、<b>ImpellerがAndroidの既定になりSkiaがコアから撤去</b>、<b>Material・Cupertinoがコアから独立パッケージへ分離</b>、そしてAIツーリング（Agentic Hot Reload・Generative UI）の強化。<b>Dart 3.12</b>は private named parameters・primary constructors(experimental)・dot shorthands で定型コードを削減する。2026ロードマップ『Finishing the Job』は Android の Impeller 移行完遂と Web の WebAssembly 既定化を掲げる。</p><figure class='fig'><svg viewBox='0 0 600 172' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='172' rx='10' fill='#e8f6fd'></rect><text x='16' y='26' font-family='sans-serif' font-size='13' font-weight='700' fill='#0277bd'>Impeller (AOT) の効き（Skia比）</text><g font-family='sans-serif' font-size='11' fill='#1c1c1e'><text x='16' y='66'>raster時間</text><rect x='120' y='54' width='420' height='16' rx='3' fill='#cfe9f7'></rect><rect x='120' y='54' width='210' height='16' rx='3' fill='#0277bd'></rect><text x='340' y='67'>約 -50%</text><text x='16' y='104'>バッテリー</text><rect x='120' y='92' width='420' height='16' rx='3' fill='#cfe9f7'></rect><rect x='120' y='92' width='349' height='16' rx='3' fill='#0288d1'></rect><text x='478' y='105'>約 -17%</text><text x='16' y='144' font-weight='700'>フレーム予算</text><text x='120' y='144'>60fps: raster&lt;4ms ／ 120fps: frame&lt;8.3ms</text></g></svg><figcaption>図1：raster約50%短縮・バッテリー約17%減。計測はDevToolsをprofileモードで。</figcaption></figure><p><b>仕組みとパフォーマンス</b>：Impeller は<b>AOT（ビルド時）シェーダー事前コンパイル</b>でランタイムのシェーダージャンクを排除し、iOSは Metal、Androidは Vulkan をネイティブ利用する。結果、複雑シーンで<b>frame rasterization を約50%短縮</b>、アニメ重負荷では<b>Skia比 約17%低いバッテリー消費</b>。目安は<b>60fps=raster&lt;4ms、120fps=frame&lt;8.3ms</b>（UIスレッド4ms＋Rasterスレッド4ms）。フレーム予算は 60fps=16ms / 90fps=11ms / 120fps=8.3ms。</p><p><b>自分が試すなら</b>：8月アップデート前に <code>flutter --version</code> で 3.44.6 を確認し、<b>const</b> ウィジェットと <b>RepaintBoundary</b> の戦略配置で再ビルド/再描画を削る。60Hz端末では <code>MediaQuery</code> でリフレッシュレートを取得して<b>120fps狙いの過剰最適化を避ける</b>（バッテリーの無駄）。状態管理は新規なら<b>Riverpod 3.3.x＋codegen</b>、監査・大規模は<b>Bloc 9</b>が基本線。<b>注意点</b>：Material/Cupertino が別パッケージ化されたので、移行時は依存とimportを点検する。<b>まとめ</b>：8月の機能リリースは3.44の地ならしの上に来る。const/RepaintBoundary/Impellerで足場を固めておこう。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://www.cmarix.com/blog/latest-flutter-version/" target="_blank" rel="noopener noreferrer"> Latest Flutter Version 3.44（CMARIX） </a> </li><li> <a href="https://dart.dev/resources/whats-new" target="_blank" rel="noopener noreferrer"> Dart — What&#39;s new </a> </li><li> <a href="https://differ.blog/p/advanced-performance-optimization-with-the-impeller-rendering-engine-d3b2c5" target="_blank" rel="noopener noreferrer"> Advanced Performance with Impeller </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
