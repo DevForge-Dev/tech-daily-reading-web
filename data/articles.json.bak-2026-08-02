@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-08-02T04:55:51.502Z",
+  "generatedAt": "2026-08-01T04:48:07.670Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,114 +8,6 @@
     "GitHub Trending"
   ],
   "articles": [
-    {
-      "id": "2026-08-02-claude-code",
-      "date": "2026-08-02",
-      "topic": "Claude Code",
-      "title": "Opus 4.1 が8/5廃止・Opus 5 へ移行 — 同時に効く『ハーネス設計』、30人チームで22スキル11フックが生産性+35%を4か月維持",
-      "lede": "Opus 4.1(claude-opus-4-1-20250805)は8/5にAPI廃止、移行先はOpus 5(1Mコンテキスト・新xhigh推論・$5/$25でOpus 4.8据え置き)。モデル選定より効くのは「ルール=Hooks/権限・知識=Skills・委譲=Subagents・指針=短いCLAUDE.md」のハーネス設計。実例では22スキル11フックで生産性+35%を4か月維持。",
-      "articleHtml": "<p>週末のClaude Code周りは「モデルの世代交代」と「使いこなしの型」が同時に動いた。8月5日には旧モデルがAPIから消え、後継のOpus 5が主力に座る。だが実務の成果を左右するのはモデルの賢さより、Hooks・Skills・Subagentsをどう配線するかという“ハーネス設計”のほうだ——という論調が今日の技術記事・ケーススタディで揃った。</p><p><b>何が新しいか</b>：まず期限もの。<b>Claude Opus 4.1（claude-opus-4-1-20250805）</b>は6月5日にdeprecate、<b>8月5日にAPIから完全retire</b>される。deprecateからretireまで<b>ちょうど60日</b>という短さで、以降は当該モデルIDへの呼び出しが失敗する。既定モデルを使う一般利用は影響が小さいが、<b>モデルをピン留めした自動化・CI・ルーター</b>は廃止前に切り替えが要る。移行先は7月24日公開の<b>Opus 5（claude-opus-5）</b>で、<b>1Mトークンのコンテキスト</b>と、より深い思考へ振る新しい<b>「xhigh」推論モード</b>を備えつつ価格は<b>100万トークンあたり入力$5／出力$25</b>とOpus 4.8に据え置き。最上位フロンティアはFable 5のままで、Opus 5は“実務主力（ワークホース）”枠を置き換える。あわせて<b>Claude for Open Source</b>が7月8日に拡大し、対象メンテナ／主要コントリビュータに<b>Max 20x（月$200相当）を6か月無償</b>提供（依存数・DL数・OpenSSF criticality等の5トラック、個人限定・自動有料継続なし）。</p><figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='150' rx='10' fill='#f3ecff'/><text x='16' y='26' font-family='sans-serif' font-size='13' font-weight='700' fill='#5a2ec4'>Opus 4.1 → Opus 5 移行タイムライン（2026年）</text><line x1='60' y1='84' x2='540' y2='84' stroke='#b98bff' stroke-width='2'/><g font-family='sans-serif' font-size='11' fill='#1c1c1e'><circle cx='90' cy='84' r='6' fill='#9a6bff'/><text x='62' y='112'>6/5 deprecate</text><text x='58' y='128' fill='#6b6b6b'>4.1 非推奨化</text><circle cx='300' cy='84' r='6' fill='#7b3fe4'/><text x='268' y='64'>7/24 Opus 5</text><text x='250' y='48' fill='#6b6b6b'>1M・xhigh・$5/$25</text><circle cx='510' cy='84' r='7' fill='#b91c1c'/><text x='470' y='112'>8/5 retire</text><text x='456' y='128' fill='#6b6b6b'>4.1 呼び出し失敗</text></g></svg><figcaption>図1：非推奨6/5→廃止8/5の60日猶予。8/5までにピン留めをOpus 5へ。</figcaption></figure><p><b>本題＝ハーネス設計</b>：SmartScope・AIXplore・Totalumの上級ガイドが口を揃えるのは、プロンプトを磨くより<b>「記憶ファイル・権限・スキル群・少数の強制フック」からなるハーネスを整えたチームが最大の成果を出す</b>という点。役割分担はシンプルで、<b>強制すべきルールはHooks／権限</b>（ライフサイクルイベントで決定論的に発火し、モデルの解釈に依存せずシステムレベルで固定できる）、<b>文脈知識はSkills</b>（SKILL.md＋補助資産のフォルダ単位で、必要時だけオンデマンド読込＝コンテキストを常時圧迫しない）、<b>委譲境界はSubagents</b>（独自コンテキストで並列にタスクを切り出す）、<b>常時参照する短い指針はCLAUDE.md</b>。</p><figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='200' rx='10' fill='#faf7ff'/><text x='16' y='24' font-family='sans-serif' font-size='13' font-weight='700' fill='#5a2ec4'>Claude Code ハーネスの4分担</text><g font-family='sans-serif' font-size='11'><rect x='20' y='40' width='270' height='64' rx='8' fill='#fff' stroke='#7b3fe4'/><text x='34' y='62' font-weight='700' fill='#5a2ec4'>ルール・強制 → Hooks / 権限</text><text x='34' y='82' fill='#333'>決定論的に発火、システムで固定</text><rect x='310' y='40' width='270' height='64' rx='8' fill='#fff' stroke='#7b3fe4'/><text x='324' y='62' font-weight='700' fill='#5a2ec4'>文脈知識 → Skills</text><text x='324' y='82' fill='#333'>SKILL.md、オンデマンド読込</text><rect x='20' y='116' width='270' height='64' rx='8' fill='#fff' stroke='#7b3fe4'/><text x='34' y='138' font-weight='700' fill='#5a2ec4'>委譲境界 → Subagents</text><text x='34' y='158' fill='#333'>独自コンテキストで並列委譲</text><rect x='310' y='116' width='270' height='64' rx='8' fill='#fff' stroke='#7b3fe4'/><text x='324' y='138' font-weight='700' fill='#5a2ec4'>常時の指針 → CLAUDE.md</text><text x='324' y='158' fill='#333'>短く保つ（400行未満が目安）</text></g></svg><figcaption>図2：知識=Skills／強制=Hooks／委譲=Subagents／指針=短いCLAUDE.md。</figcaption></figure><p><b>実例の数字</b>：Digital Appliedの30人チーム合成ケースは、90日で<b>22の共有スキル・11のフック・3つのサブエージェント</b>を整備し、エンゲージメント加重の生産性指標で<b>+35%を4か月目まで維持</b>。導入監査は<b>19→41点（50点満点）</b>へ改善した。鍵は3点——<b>スキルライブラリが最大ROI</b>、<b>CLAUDE.mdを400行未満に保つ規律</b>、そして<b>毎週金曜30分のレトロ</b>で摩擦を週内に拾い“継続フェーズ”をスプリントと同じカレンダーに載せること。市場観測（Uncover Alpha／利用統計）でも、開発チームの73%がAIコーディングツールを日常利用し、常用者の71%がClaude Codeを主力に、46%が“最も愛される”と回答している。</p><p><b>自分が試すなら</b>：①8/5前に、自分の自動化・定期タスク・CIで<b>モデルIDをピン留めしていないか</b>を洗い出し、していれば<b>Opus 5</b>へ差し替えて動作確認。②ハーネスは<b>スキルから着手</b>（最大ROI）——普段の作法をSKILL.md化して数個入れる。③CLAUDE.mdは<b>400行未満</b>を死守し、肥大したら知識をSkillsへ逃がす。④暴走対策や規約は<b>Hooks／権限</b>で固定する。<b>注意点</b>：deprecate通知に気づかず8/5に呼び出しが落ちる事故が一番怖い。プロンプト調整に時間を溶かすより、ハーネスの土台を先に作るほうが効く。<b>ひとことまとめ</b>：8月はモデルを乗り換える月であり、同時に“どう配線して安く賢く回すか”を仕込む月だ。</p>",
-      "sources": [
-        {
-          "title": "Claude Opus 4.1 の廃止と移行（therouter.ai）",
-          "url": "https://therouter.ai/news/anthropic-deprecates-claude-opus-4-1-august-5-migration-guide/"
-        },
-        {
-          "title": "Claude Opus 5 ローンチ（bitsminds）",
-          "url": "https://www.bitsminds.com/news/claude-opus-5-launch-1m-context-xhigh-2026"
-        },
-        {
-          "title": "Claude for Open Source 拡大（explainx.ai）",
-          "url": "https://www.explainx.ai/blog/claude-for-open-source-expanded-max-20x-july-2026"
-        },
-        {
-          "title": "Claude Code 上級ベストプラクティス11（SmartScope）",
-          "url": "https://smartscope.blog/en/generative-ai/claude/claude-code-best-practices-advanced-2026/"
-        },
-        {
-          "title": "30人チーム導入ケーススタディ（Digital Applied）",
-          "url": "https://www.digitalapplied.com/blog/case-study-claude-code-team-adoption-30-dev-shop-2026"
-        }
-      ]
-    },
-    {
-      "id": "2026-08-02-nextjs",
-      "date": "2026-08-02",
-      "topic": "Next.js",
-      "title": "App RouterのSEOはRSCで完結 — Metadata API・動的OG画像・ストリーミングメタデータ、metadataBaseとparams awaitが落とし穴",
-      "lede": "generateMetadataは人間には非ブロッキング／ボットにはブロッキングで配信されSEOを壊さない。opengraph-image.tsxで動的OG画像、sitemap.ts/robots.tsを型付きコード生成。Server Component専用でJSに依存せずクローラに強い。落とし穴はmetadataBase未設定とNext.js 16のparams await忘れ。",
-      "articleHtml": "<p>直近はアニメーション寄りが続いたので、今日は毎回必要になる“土台”テーマ——App RouterのSEO。ポイントは、Next.jsのSEOが<b>&lt;head&gt;を手で書く時代を終わらせた</b>こと。型付きの<code>metadata</code>オブジェクトと<code>generateMetadata</code>関数、そして<code>opengraph-image</code>・<code>sitemap.ts</code>・<code>robots.ts</code>といったファイル規約で、<code>&lt;head&gt;</code>とクローラ向けファイルをフレームワークが自動生成する。</p><p><b>何が新しい/重要か</b>：2026年（Next.js 16）の勘所は3つ。第一に<b>ストリーミングメタデータ</b>（15.2導入・16で標準）。async <code>generateMetadata</code>は<b>人間のブラウザには非ブロッキング</b>（UIを先に流し、解決後にmetadataを注入）、<b>ボットにはブロッキング</b>（初期HTMLの<code>&lt;head&gt;</code>に完全なタグを入れる）という二段構えで、体感速度とSEOを両立する。第二に<b>動的OG画像</b>——<code>opengraph-image.tsx</code>を置くだけでルートごとに1200×630の画像を<code>ImageResponse</code>（<code>next/og</code>）がJSX+CSSから生成。第三に<b><code>sitemap.ts</code>/<code>robots.ts</code>のコード生成</b>でDBと同期し、TypeScriptの型で構造ミスをビルド時に検出できる。</p><figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='200' rx='10' fill='#eef4ff'/><text x='16' y='24' font-family='sans-serif' font-size='13' font-weight='700' fill='#1f6feb'>ストリーミングメタデータの二段構え</text><rect x='24' y='40' width='250' height='140' rx='8' fill='#fff' stroke='#74a8ff'/><text x='40' y='64' font-family='sans-serif' font-size='12' font-weight='700' fill='#1f6feb'>人間のブラウザ</text><text x='40' y='88' font-family='sans-serif' font-size='11' fill='#333'>UIを先にストリーム（非ブロッキング）</text><text x='40' y='110' font-family='sans-serif' font-size='11' fill='#333'>metadataは解決後に注入</text><text x='40' y='140' font-family='sans-serif' font-size='11' fill='#1a7f37'>→ 体感速度が向上</text><rect x='326' y='40' width='250' height='140' rx='8' fill='#fff' stroke='#74a8ff'/><text x='342' y='64' font-family='sans-serif' font-size='12' font-weight='700' fill='#1f6feb'>ボット / クローラ</text><text x='342' y='88' font-family='sans-serif' font-size='11' fill='#333'>ストリーミングを無効化</text><text x='342' y='110' font-family='sans-serif' font-size='11' fill='#333'>初期HTMLの&lt;head&gt;に完全タグ</text><text x='342' y='140' font-family='sans-serif' font-size='11' fill='#1a7f37'>→ SEOを壊さない</text></svg><figcaption>図1：Googlebot等はUAで検出しブロッキング配信。既定リストはhtmlLimitedBotsで調整可。</figcaption></figure><p><b>実装の型</b>：ルートレイアウトで<code>metadataBase</code>と<code>title.template</code>／<code>title.default</code>を定義しておけば、子ページは短いタイトル文字列だけ返せば<code>&lt;title&gt;CLI Reference | MySite&lt;/title&gt;</code>のように合成される。<code>metadata</code>と<code>generateMetadata</code>は<b>同一ファイルで併用不可</b>（どちらか一方）で、<b>いずれもServer Component専用</b>（<code>'use client'</code>からはエクスポート不可）。だからSEOは<b>JSに依存しないRSCの世界で完結</b>し、クローラに強い。</p><pre><code>// app/blog/[slug]/page.tsx（Next.js 16）\nexport async function generateMetadata(\n  { params }: { params: Promise&lt;{ slug: string }&gt; }\n): Promise&lt;Metadata&gt; {\n  const { slug } = await params        // ← 16は await 必須\n  const post = await getPost(slug)      // ← react cache() で page と共有\n  return { title: post.title, alternates: { canonical: `/blog/${slug}` } }\n}</code></pre><figure class='fig'><svg viewBox='0 0 600 170' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='170' rx='10' fill='#f1f6ff'/><text x='16' y='24' font-family='sans-serif' font-size='13' font-weight='700' fill='#1f6feb'>よくある落とし穴チェック</text><g font-family='sans-serif' font-size='11.5' fill='#1c1c1e'><text x='24' y='54'>✕ metadataBase 未設定 → OG/canonical が相対URLで壊れる</text><text x='24' y='80'>✕ params を await し忘れ（16で型/実行時エラー）</text><text x='24' y='106'>✕ metadata と generateMetadata を同一ファイルに併用</text><text x='24' y='132'>✕ ImageResponse で grid 使用（flex サブセットのみ対応）</text><text x='24' y='158'>✕ メタとページで二重フェッチ → react cache() で1回に</text></g></svg><figcaption>図2：SEOが壊れる典型パターン。metadataBaseとawaitが二大事故。</figcaption></figure><p><b>自分が試すなら</b>：新規App Routerでは、まず<code>app/layout.tsx</code>に<code>metadataBase: new URL('https://…')</code>・<code>title.template</code>・OGのデフォルトを入れる。動的ルートには<code>opengraph-image.tsx</code>（<b><code>display:flex</code>必須・<code>grid</code>不可</b>）と<code>sitemap.ts</code>を置き、記事/商品ページは<b>JSON-LDをRSCで出力</b>してリッチリザルトを狙う。<code>generateMetadata</code>と<code>page</code>が同じデータを使うなら<b>React <code>cache()</code></b>で二重フェッチを排除。<b>注意点</b>：<code>metadataBase</code>未設定だと開発は<code>localhost</code>、本番は<code>VERCEL_URL</code>にフォールバックしてOG画像URLが壊れる。<code>params</code>のawait忘れは16で即エラー。<b>ひとことまとめ</b>：SEOはRSCで完結する領域。metadataBaseとparams awaitさえ外さなければ、ボット最適な<code>&lt;head&gt;</code>が自動で手に入る。</p>",
-      "sources": [
-        {
-          "title": "Next.js — Metadata and OG images",
-          "url": "https://nextjs.org/docs/app/getting-started/metadata-and-og-images"
-        },
-        {
-          "title": "Next.js — generateMetadata (API)",
-          "url": "https://nextjs.org/docs/app/api-reference/functions/generate-metadata"
-        },
-        {
-          "title": "Next.js — ImageResponse",
-          "url": "https://nextjs.org/docs/app/api-reference/functions/image-response"
-        },
-        {
-          "title": "Next.js SEO & Metadata API Guide 2026 (Launchpad)",
-          "url": "https://nextjslaunchpad.com/article/nextjs-seo-metadata-api-sitemaps-json-ld-og-images"
-        }
-      ]
-    },
-    {
-      "id": "2026-08-02-flutter",
-      "date": "2026-08-02",
-      "topic": "Flutter",
-      "title": "8月リリース直前チェックリスト — 3.44系で足場を固める：Impeller実機検証・Hero遷移・Riverpod3/Bloc9・120fpsシェーダー",
-      "lede": "次の機能リリースは2026年8月（3.45系は未リリース）。現行安定は3.44.6/Dart 3.12.2。移行前は flutter upgrade→Impellerを実機検証→Material/Cupertino分離に備え依存整理→dart fix/analyze。共有要素はHero、状態管理は新規Riverpod 3.3.x/監査はBloc 9、120fpsはシェーダー4–5msが軸。",
-      "articleHtml": "<p>Flutterは年4回（2/5/8/11月）の機能リリースで、次は<b>2026年8月が目前</b>（3.45系はまだ未リリース）。区切り前のいまは、現行安定版<b>Flutter 3.44.6 / Dart 3.12.2</b>（2026-07-09）で足場を固める好機だ。3.44の3本柱は<b>ImpellerがAndroidの既定になりSkiaがコアから撤去</b>、<b>Material・Cupertinoがコアから独立パッケージへ分離</b>、そして<b>AIツーリング</b>（Agentic Hot Reload・Agent Skills・GenUI・A2UI・Genkit Dart）の強化。<b>Dart 3.12</b>はprivate named parameters・primary constructors(experimental)・dot shorthandsで定型コードを削減する。</p><p><b>移行前チェックリスト</b>：8月アップデート前に、①<code>flutter upgrade</code>で3.44最新パッチへ追随、②<b>Impellerを実機（特にミッドレンジAndroid）で検証</b>し、差が出たら<code>--no-enable-impeller</code>で切り分け、③<b>Material/Cupertinoのパッケージ分離</b>に備えて依存とimportを整理、④<code>dart fix</code>／<code>flutter analyze</code>で警告を解消。ロードマップ『Finishing the Job』は<b>AndroidのImpeller移行完遂</b>（Android 10+でlegacy Skia backend撤去）と<b>WebのWebAssembly（Wasm）既定化</b>を掲げる。</p><figure class='fig'><svg viewBox='0 0 600 175' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='175' rx='10' fill='#e8f6fd'/><text x='16' y='24' font-family='sans-serif' font-size='13' font-weight='700' fill='#0277bd'>3.44系 移行前チェックリスト</text><g font-family='sans-serif' font-size='11.5' fill='#1c1c1e'><circle cx='34' cy='52' r='9' fill='#0288d1'/><text x='30' y='56' fill='#fff' font-size='11' font-weight='700'>1</text><text x='54' y='56'>flutter upgrade で 3.44 最新パッチへ</text><circle cx='34' cy='82' r='9' fill='#0288d1'/><text x='30' y='86' fill='#fff' font-size='11' font-weight='700'>2</text><text x='54' y='86'>Impeller を実機検証（ミッドレンジ Android）</text><circle cx='34' cy='112' r='9' fill='#0288d1'/><text x='30' y='116' fill='#fff' font-size='11' font-weight='700'>3</text><text x='54' y='116'>Material/Cupertino 分離に備え依存を整理</text><circle cx='34' cy='142' r='9' fill='#0288d1'/><text x='30' y='146' fill='#fff' font-size='11' font-weight='700'>4</text><text x='54' y='146'>dart fix / flutter analyze で警告解消</text></g></svg><figcaption>図1：8月の機能リリース前に3.44系で安定運用を固める4手。</figcaption></figure><p><b>アニメーション（Hero共有要素遷移）</b>：<b>Hero</b>は2画面のwidgetを同じ<code>tag</code>で包むと、size・position・appearanceを自動補間してオーバーレイ上を飛ばす共有要素遷移になる（円→四角の形状変化も可）。肝は<b>source/destinationでアスペクト比・整列・視覚アイデンティティを一貫</b>させること。飛行中の外観は<code>flightShuttleBuilder</code>、グループ制御は<code>HeroMode</code>。黄金律は<b>「まず implicit」</b>——UIモーションの約80%（hover・state遷移・レイアウト変化）は<code>AnimatedOpacity</code>/<code>AnimatedContainer</code>、複雑なchoreographyやphysicsだけexplicit（<code>AnimationController</code>＋<code>Tween</code>）、重い演出はRive/flutter_animate/Lottieへオフロード。時間設計はmicro 50–200ms／component 200–400ms／Hero・page 300–600ms。</p><figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='150' rx='10' fill='#e6f7ee'/><text x='16' y='24' font-family='sans-serif' font-size='13' font-weight='700' fill='#1a7f37'>「まず implicit」の切り分け</text><rect x='20' y='40' width='180' height='92' rx='8' fill='#fff' stroke='#3fb950'/><text x='110' y='62' text-anchor='middle' font-family='sans-serif' font-size='11.5' font-weight='700' fill='#1a7f37'>implicit（約80%）</text><text x='110' y='84' text-anchor='middle' font-family='sans-serif' font-size='10.5' fill='#333'>hover / state 遷移</text><text x='110' y='102' text-anchor='middle' font-family='sans-serif' font-size='10.5' fill='#333'>Animated* で完結</text><rect x='210' y='40' width='180' height='92' rx='8' fill='#fff' stroke='#0288d1'/><text x='300' y='62' text-anchor='middle' font-family='sans-serif' font-size='11.5' font-weight='700' fill='#0277bd'>explicit</text><text x='300' y='84' text-anchor='middle' font-family='sans-serif' font-size='10.5' fill='#333'>choreography / physics</text><text x='300' y='102' text-anchor='middle' font-family='sans-serif' font-size='10.5' fill='#333'>Controller + Tween</text><rect x='400' y='40' width='180' height='92' rx='8' fill='#fff' stroke='#f0883e'/><text x='490' y='62' text-anchor='middle' font-family='sans-serif' font-size='11.5' font-weight='700' fill='#c2410c'>オフロード</text><text x='490' y='84' text-anchor='middle' font-family='sans-serif' font-size='10.5' fill='#333'>重い演出</text><text x='490' y='102' text-anchor='middle' font-family='sans-serif' font-size='10.5' fill='#333'>Rive / Lottie</text></svg><figcaption>図2：多くはimplicitで足り、explicit・外部エンジンは必要な所だけ。</figcaption></figure><p><b>状態管理とパフォーマンス</b>：BLoCとRiverpodは同じ問題を異なるメンタルモデルで解く。API差の暗記よりBLoCの<b>Command→Process→State</b>の理解が重要。<b>新規はRiverpod 3.3.x＋@riverpod codegen</b>（unified Ref・<code>@mutation</code>・自動リトライ／backoff・opt-in offline persistence）が2026の最良の既定、<b>監査証跡が要る規制業界（fintech/healthcare）や複雑並行はBloc 9.2.x</b>（<code>on&lt;Event&gt;</code>ハンドラ）。移行はscreen-by-screenで、<code>ProviderScope</code>を既存の<code>MultiBlocProvider</code>の脇に足せば競合なく共存できる。パフォーマンスは<b>Impeller</b>のAOTシェーダー事前コンパイルがjankを排除し、カスタムfragment shaderは<b>重い分岐を避け<code>mix()</code>/<code>smoothstep()</code>/<code>clamp()</code>へ寄せ、実行を4–5ms以内</b>に収めて8.33ms予算を守る。計測は<b>DevTools Performanceをprofileモード</b>で、GPU（raster）スレッドを監視。予算は<b>60fps=16ms / 90fps=11ms / 120fps=8.3ms</b>（60fpsはraster&lt;4ms）。<code>const</code>徹底とアニメ区間の<code>RepaintBoundary</code>隔離、巨大リストは<code>ListView.builder</code>＋<code>addRepaintBoundaries:true</code>＋固定<code>itemExtent</code>が効く。</p><p><b>自分が試すなら</b>：この週末に<code>flutter --version</code>で3.44.6を確認し、チェックリストの4手を回す。Hero遷移を1つ実装してアスペクト比の一貫を体感し、状態管理は新規画面をRiverpod 3.3で切ってみる。<b>注意点</b>：Material/Cupertinoが別パッケージ化されたので移行時はimportを点検。60Hz端末で120fps狙いの過剰最適化はバッテリーの無駄。<b>ひとことまとめ</b>：8月の新機能は3.44の地ならしの上に来る。今のうちにImpeller検証・const/RepaintBoundary・状態管理の基本線を固めておこう。</p>",
-      "sources": [
-        {
-          "title": "Flutter & Dart's 2026 roadmap",
-          "url": "https://blog.flutter.dev/flutter-darts-2026-roadmap-89378f17ebbd"
-        },
-        {
-          "title": "Flutter 3.44 & Dart 3.12 — I/O 2026",
-          "url": "https://yawarothman.medium.com/flutter-3-44-dart-3-12-everything-that-changed-at-google-i-o-2026-16f73a0c03d5"
-        },
-        {
-          "title": "Hero animations (docs)",
-          "url": "https://docs.flutter.dev/ui/animations/hero-animations"
-        },
-        {
-          "title": "BLoC vs Riverpod (3.x) 2026",
-          "url": "https://asoasis.tech/articles/2026-04-17-2054-flutter-bloc-vs-riverpod-comparison-2026/"
-        },
-        {
-          "title": "Mastering Impeller Custom Shaders for 120fps",
-          "url": "https://dev.to/devin-rosario/mastering-impeller-custom-shaders-for-120fps-flutter-apps-2020"
-        }
-      ]
-    },
-    {
-      "id": "2026-08-02-github-trending",
-      "date": "2026-08-02",
-      "topic": "GitHub Trending",
-      "title": "8/2の話題リポジトリ — 画像→3D生成・HTML→動画・Attention高速化カーネル",
-      "lede": "エージェント一色のTrendingの中で“素材と基盤”に振れた3本。画像1枚から3Dを作るTRELLIS.2、HTMLを書けば動画になるhyperframes、Attentionを2倍速にするFlashKDA。それぞれ「解決する課題→提供機能」で読む。",
-      "articleHtml": "<p>今日の急上昇3本は、AIエージェントそのものではなく<b>その周辺の“素材づくり”と“基盤の速度”</b>に寄っている。1枚の画像から3Dアセットを起こすモデル、コードで動画をレンダリングするフレームワーク、そして推論を高速化するGPUカーネル——生成物のモダリティ（3D・動画）と、それを支えるインフラという二層の多様性が見える。</p><figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='210' rx='10' fill='#eafaf0'/><rect x='0' y='0' width='600' height='30' rx='10' fill='#1a7f37'/><text x='14' y='20' fill='#fff' font-family='sans-serif' font-size='12' font-weight='700'>8/2 話題の3本 — 解決する課題 × 提供機能</text><g font-family='sans-serif' font-size='10.5' fill='#1c1c1e'><text x='14' y='56' font-weight='700'>TRELLIS.2</text><text x='150' y='56'>課題: 高精細な image-to-3D が難しい</text><text x='150' y='72'>機能: 4Bモデルで画像→3D・PBR/透明対応</text><text x='14' y='104' font-weight='700'>hyperframes</text><text x='150' y='104'>課題: 動画制作がコード/エージェントと断絶</text><text x='150' y='120'>機能: HTML/CSS/JS→決定論的MP4を生成</text><text x='14' y='152' font-weight='700'>FlashKDA</text><text x='150' y='152'>課題: 線形Attentionの推論が遅い</text><text x='150' y='168'>機能: CUTLASSカーネルで最大2.22倍高速化</text></g><line x1='140' y1='40' x2='140' y2='196' stroke='#a8d8ba'/><line x1='14' y1='84' x2='586' y2='84' stroke='#d3efdd'/><line x1='14' y1='132' x2='586' y2='132' stroke='#d3efdd'/></svg><figcaption>図1：3本を『課題→機能』で一望する。</figcaption></figure><h4>microsoft/TRELLIS.2（Python・⭐約8.9k）</h4><p><b>解決したい課題</b>：1枚の画像から高精細な3Dアセットを作りたいが、複雑なトポロジー・鋭いエッジ・透明/半透明を含むPBRマテリアルまで扱えるimage-to-3Dは難しかった。<b>提供する機能</b>：Microsoft発の<b>4Bパラメータの大規模3D生成モデル</b>で、field-freeなスパースボクセル構造<b>「O-Voxel」</b>により複雑形状とPBR（透明表現含む）を両立する画像→3Dを実現。flow-matching Transformerで生成し、ComfyUI/Blender連携も進む。<b>なぜ急上昇</b>：本日OSSInsight当日trending入り。約6k→8.9kと短期急伸し、エージェント一色の中で数少ない3D・コンピュータビジョン枠として多様性を担っている。</p><h4>heygen-com/hyperframes（TypeScript・⭐約32.5k）</h4><p><b>解決したい課題</b>：動画制作はGUIツールに閉じており、コーディングエージェントやコードベースのワークフローから<b>プログラムで動画を生成・編集</b>しづらかった。<b>提供する機能</b>：HTML/CSS/JS（GSAP）を書くと<b>決定論的なMP4</b>をレンダリングする、エージェント向けのHTML→動画フレームワーク。Claude Code/Cursor/Codex等から動画を生成・編集・レンダリングでき、Keyframesビジュアルエディタも備える（Apache 2.0）。<b>なぜ急上昇</b>：HeyGenがOSS化。「HTMLを書く→動画になる」という切り口と、<b>Remotionの対抗</b>という位置づけが刺さり注目を集めた。</p><h4>MoonshotAI/FlashKDA（Cuda・⭐約1.1k）</h4><p><b>解決したい課題</b>：Kimi系モデルが使う<b>Kimi Delta Attention</b>の推論を、既存の線形Attention実装より速くしたい。<b>提供する機能</b>：<b>CUTLASSベースの高性能カーネル群</b>で、H20上でflash-linear-attention比<b>1.72〜2.22倍のprefill高速化</b>を達成。flash-linear-attentionの<code>chunk_kda</code>から自動ディスパッチされる<b>drop-inバックエンド</b>として使える（MIT）。<b>なぜ急上昇</b>：本日trending入り。総スター1.1kと小さいぶん急伸時の増加率が高く、Kimi系への関心の高まりも追い風。GPU/推論インフラという骨太ジャンルで多様性も担う。</p><p><b>自分が試すなら</b>：手を動かしやすいのは<b>hyperframes</b>——普段のコード資産とエージェントで動画が作れるので、図解や告知の自動生成に直に効く。TRELLIS.2はComfyUI/Blender連携で3D生成の当たりを付ける実験用、FlashKDAはKimi系や線形Attentionを触るときの高速化オプションとして頭の隅に置いておくとよい。</p>",
-      "sources": [
-        {
-          "title": "microsoft/TRELLIS.2",
-          "url": "https://github.com/microsoft/TRELLIS.2"
-        },
-        {
-          "title": "heygen-com/hyperframes",
-          "url": "https://github.com/heygen-com/hyperframes"
-        },
-        {
-          "title": "MoonshotAI/FlashKDA",
-          "url": "https://github.com/MoonshotAI/FlashKDA"
-        }
-      ]
-    },
     {
       "id": "2026-08-01-claude-code",
       "date": "2026-08-01",
