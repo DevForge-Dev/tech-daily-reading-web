@@ -1,0 +1,59 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Opus 4.1 が8/5廃止・Opus 5 へ移行 — 同時に効く『ハーネス設計』、30人チームで22スキル11フックが生産性+35%を4か月維持 — デイリー技術深掘り 読み物</title><meta name="description" content="Opus 4.1(claude-opus-4-1-20250805)は8/5にAPI廃止、移行先はOpus 5(1Mコンテキスト・新xhigh推論・$5/$25でOpus 4.8据え置き)。モデル選定より効くのは「ルール=Hooks/権限・知識=Skills・委譲=Subagents・指針=短いCLAUDE.md」のハーネス設計。実例では22スキル11フックで生産性+35%を4か月維持。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-02-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Opus 4.1 が8/5廃止・Opus 5 へ移行 — 同時に効く『ハーネス設計』、30人チームで22スキル11フックが生産性+35%を4か月維持 — デイリー技術深掘り 読み物"><meta property="og:description" content="Opus 4.1(claude-opus-4-1-20250805)は8/5にAPI廃止、移行先はOpus 5(1Mコンテキスト・新xhigh推論・$5/$25でOpus 4.8据え置き)。モデル選定より効くのは「ルール=Hooks/権限・知識=Skills・委譲=Subagents・指針=短いCLAUDE.md」のハーネス設計。実例では22スキル11フックで生産性+35%を4か月維持。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-02-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>Opus 4.1 が8/5廃止・Opus 5 へ移行 — 同時に効く『ハーネス設計』、30人チームで22スキル11フックが生産性+35%を4か月維持</h1> <p class="lede">Opus 4.1(claude-opus-4-1-20250805)は8/5にAPI廃止、移行先はOpus 5(1Mコンテキスト・新xhigh推論・$5/$25でOpus 4.8据え置き)。モデル選定より効くのは「ルール=Hooks/権限・知識=Skills・委譲=Subagents・指針=短いCLAUDE.md」のハーネス設計。実例では22スキル11フックで生産性+35%を4か月維持。</p> <div class="meta"> <span>📅 2026年8月2日</span> <span>⏱ 約4分</span> <span>🔗 出典 5 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="0"><p>週末のClaude Code周りは「モデルの世代交代」と「使いこなしの型」が同時に動いた。8月5日には旧モデルがAPIから消え、後継のOpus 5が主力に座る。だが実務の成果を左右するのはモデルの賢さより、Hooks・Skills・Subagentsをどう配線するかという“ハーネス設計”のほうだ——という論調が今日の技術記事・ケーススタディで揃った。</p><p><b>何が新しいか</b>：まず期限もの。<b>Claude Opus 4.1（claude-opus-4-1-20250805）</b>は6月5日にdeprecate、<b>8月5日にAPIから完全retire</b>される。deprecateからretireまで<b>ちょうど60日</b>という短さで、以降は当該モデルIDへの呼び出しが失敗する。既定モデルを使う一般利用は影響が小さいが、<b>モデルをピン留めした自動化・CI・ルーター</b>は廃止前に切り替えが要る。移行先は7月24日公開の<b>Opus 5（claude-opus-5）</b>で、<b>1Mトークンのコンテキスト</b>と、より深い思考へ振る新しい<b>「xhigh」推論モード</b>を備えつつ価格は<b>100万トークンあたり入力$5／出力$25</b>とOpus 4.8に据え置き。最上位フロンティアはFable 5のままで、Opus 5は“実務主力（ワークホース）”枠を置き換える。あわせて<b>Claude for Open Source</b>が7月8日に拡大し、対象メンテナ／主要コントリビュータに<b>Max 20x（月$200相当）を6か月無償</b>提供（依存数・DL数・OpenSSF criticality等の5トラック、個人限定・自動有料継続なし）。</p><figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='150' rx='10' fill='#f3ecff'></rect><text x='16' y='26' font-family='sans-serif' font-size='13' font-weight='700' fill='#5a2ec4'>Opus 4.1 → Opus 5 移行タイムライン（2026年）</text><line x1='60' y1='84' x2='540' y2='84' stroke='#b98bff' stroke-width='2'></line><g font-family='sans-serif' font-size='11' fill='#1c1c1e'><circle cx='90' cy='84' r='6' fill='#9a6bff'></circle><text x='62' y='112'>6/5 deprecate</text><text x='58' y='128' fill='#6b6b6b'>4.1 非推奨化</text><circle cx='300' cy='84' r='6' fill='#7b3fe4'></circle><text x='268' y='64'>7/24 Opus 5</text><text x='250' y='48' fill='#6b6b6b'>1M・xhigh・$5/$25</text><circle cx='510' cy='84' r='7' fill='#b91c1c'></circle><text x='470' y='112'>8/5 retire</text><text x='456' y='128' fill='#6b6b6b'>4.1 呼び出し失敗</text></g></svg><figcaption>図1：非推奨6/5→廃止8/5の60日猶予。8/5までにピン留めをOpus 5へ。</figcaption></figure><p><b>本題＝ハーネス設計</b>：SmartScope・AIXplore・Totalumの上級ガイドが口を揃えるのは、プロンプトを磨くより<b>「記憶ファイル・権限・スキル群・少数の強制フック」からなるハーネスを整えたチームが最大の成果を出す</b>という点。役割分担はシンプルで、<b>強制すべきルールはHooks／権限</b>（ライフサイクルイベントで決定論的に発火し、モデルの解釈に依存せずシステムレベルで固定できる）、<b>文脈知識はSkills</b>（SKILL.md＋補助資産のフォルダ単位で、必要時だけオンデマンド読込＝コンテキストを常時圧迫しない）、<b>委譲境界はSubagents</b>（独自コンテキストで並列にタスクを切り出す）、<b>常時参照する短い指針はCLAUDE.md</b>。</p><figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='200' rx='10' fill='#faf7ff'></rect><text x='16' y='24' font-family='sans-serif' font-size='13' font-weight='700' fill='#5a2ec4'>Claude Code ハーネスの4分担</text><g font-family='sans-serif' font-size='11'><rect x='20' y='40' width='270' height='64' rx='8' fill='#fff' stroke='#7b3fe4'></rect><text x='34' y='62' font-weight='700' fill='#5a2ec4'>ルール・強制 → Hooks / 権限</text><text x='34' y='82' fill='#333'>決定論的に発火、システムで固定</text><rect x='310' y='40' width='270' height='64' rx='8' fill='#fff' stroke='#7b3fe4'></rect><text x='324' y='62' font-weight='700' fill='#5a2ec4'>文脈知識 → Skills</text><text x='324' y='82' fill='#333'>SKILL.md、オンデマンド読込</text><rect x='20' y='116' width='270' height='64' rx='8' fill='#fff' stroke='#7b3fe4'></rect><text x='34' y='138' font-weight='700' fill='#5a2ec4'>委譲境界 → Subagents</text><text x='34' y='158' fill='#333'>独自コンテキストで並列委譲</text><rect x='310' y='116' width='270' height='64' rx='8' fill='#fff' stroke='#7b3fe4'></rect><text x='324' y='138' font-weight='700' fill='#5a2ec4'>常時の指針 → CLAUDE.md</text><text x='324' y='158' fill='#333'>短く保つ（400行未満が目安）</text></g></svg><figcaption>図2：知識=Skills／強制=Hooks／委譲=Subagents／指針=短いCLAUDE.md。</figcaption></figure><p><b>実例の数字</b>：Digital Appliedの30人チーム合成ケースは、90日で<b>22の共有スキル・11のフック・3つのサブエージェント</b>を整備し、エンゲージメント加重の生産性指標で<b>+35%を4か月目まで維持</b>。導入監査は<b>19→41点（50点満点）</b>へ改善した。鍵は3点——<b>スキルライブラリが最大ROI</b>、<b>CLAUDE.mdを400行未満に保つ規律</b>、そして<b>毎週金曜30分のレトロ</b>で摩擦を週内に拾い“継続フェーズ”をスプリントと同じカレンダーに載せること。市場観測（Uncover Alpha／利用統計）でも、開発チームの73%がAIコーディングツールを日常利用し、常用者の71%がClaude Codeを主力に、46%が“最も愛される”と回答している。</p><p><b>自分が試すなら</b>：①8/5前に、自分の自動化・定期タスク・CIで<b>モデルIDをピン留めしていないか</b>を洗い出し、していれば<b>Opus 5</b>へ差し替えて動作確認。②ハーネスは<b>スキルから着手</b>（最大ROI）——普段の作法をSKILL.md化して数個入れる。③CLAUDE.mdは<b>400行未満</b>を死守し、肥大したら知識をSkillsへ逃がす。④暴走対策や規約は<b>Hooks／権限</b>で固定する。<b>注意点</b>：deprecate通知に気づかず8/5に呼び出しが落ちる事故が一番怖い。プロンプト調整に時間を溶かすより、ハーネスの土台を先に作るほうが効く。<b>ひとことまとめ</b>：8月はモデルを乗り換える月であり、同時に“どう配線して安く賢く回すか”を仕込む月だ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://therouter.ai/news/anthropic-deprecates-claude-opus-4-1-august-5-migration-guide/" target="_blank" rel="noopener noreferrer"> Claude Opus 4.1 の廃止と移行（therouter.ai） </a> </li><li> <a href="https://www.bitsminds.com/news/claude-opus-5-launch-1m-context-xhigh-2026" target="_blank" rel="noopener noreferrer"> Claude Opus 5 ローンチ（bitsminds） </a> </li><li> <a href="https://www.explainx.ai/blog/claude-for-open-source-expanded-max-20x-july-2026" target="_blank" rel="noopener noreferrer"> Claude for Open Source 拡大（explainx.ai） </a> </li><li> <a href="https://smartscope.blog/en/generative-ai/claude/claude-code-best-practices-advanced-2026/" target="_blank" rel="noopener noreferrer"> Claude Code 上級ベストプラクティス11（SmartScope） </a> </li><li> <a href="https://www.digitalapplied.com/blog/case-study-claude-code-team-adoption-30-dev-shop-2026" target="_blank" rel="noopener noreferrer"> 30人チーム導入ケーススタディ（Digital Applied） </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
