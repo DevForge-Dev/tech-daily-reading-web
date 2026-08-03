@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-08-03T04:55:55.518Z",
+  "generatedAt": "2026-08-02T04:55:51.502Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,106 +8,6 @@
     "GitHub Trending"
   ],
   "articles": [
-    {
-      "id": "2026-08-03-claude-code",
-      "date": "2026-08-03",
-      "topic": "Claude Code",
-      "title": "/fork がバックグラウンド分岐に刷新・旧来の分岐は /subtask へ改名 — 暴走を止めるWebSearch/サブエージェント各200上限、2分超MCPは自動バックグラウンド化",
-      "lede": "v2.1.212で /fork は会話をバックグラウンドセッションへ丸ごとコピーして並行実行、従来のセッション内分岐は /subtask に改名。WebSearch(既定200)とサブエージェント生成(既定200)の上限で暴走ループを抑止し、2分超のMCP呼び出しは自動でバックグラウンドへ退避。企業導入研究ではマージPRが約24%増、年換算売上は約$2.5B規模。",
-      "articleHtml": "<p>7月中旬、AnthropicはClaude Codeを v2.1.207 から v2.1.218 まで矢継ぎ早に出し、v2.1.212 で <code>/fork</code> の意味を作り替えた。背景にあるのは「長時間エージェントを本体の作業を止めずに、暴走させずに回したい」という運用側の要求だ。これまで一つのセッションに何でも詰め込むと、深い検索やサブ委譲が膨らんで本流が固まる問題があった。今回の更新はそこへ効く。</p><p><b>何が新しいか</b>。<code>/fork</code> は従来セッション内サブエージェントを起動していたが、新仕様では会話を<b>新しいバックグラウンドセッション</b>（<code>claude agents</code> の独立した行）へ丸ごとコピーし、本体を止めずに並行実行する。これまでの「セッション内フォーク」は <code>/subtask</code> に改名して住み分けた。名前の意味が入れ替わった点に注意が要る。</p><figure class='fig'><svg viewBox='0 0 600 170' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='170' rx='10' fill='#faf7ff'/><text x='16' y='24' font-family='sans-serif' font-size='13' font-weight='700' fill='#5a2ec4'>/fork の意味が入れ替わった（v2.1.212）</text><g font-family='sans-serif' font-size='11'><rect x='20' y='40' width='270' height='110' rx='8' fill='#fff' stroke='#b91c1c'/><text x='34' y='62' font-weight='700' fill='#b91c1c'>旧: /fork</text><text x='34' y='84' fill='#333'>セッション内サブエージェント起動</text><text x='34' y='104' fill='#333'>→ 新名称は /subtask</text><text x='34' y='132' fill='#6b6b6b'>本流と同じセッション内で分岐</text><rect x='310' y='40' width='270' height='110' rx='8' fill='#fff' stroke='#7b3fe4'/><text x='324' y='62' font-weight='700' fill='#5a2ec4'>新: /fork</text><text x='324' y='84' fill='#333'>会話をBGセッションへ丸ごとコピー</text><text x='324' y='104' fill='#333'>→ 本体を止めず並行実行</text><text x='324' y='132' fill='#6b6b6b'>独立した claude agents の行で走る</text></g></svg><figcaption>図1：/fork は「BGへ会話コピー」、旧来のセッション内分岐は /subtask へ改名。</figcaption></figure><p><b>暴走対策のガードレール</b>も同時に入った。<b>WebSearch</b> のセッション全体の呼び出し上限（既定<b>200</b>、<code>CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION</code> で調整）と、<b>サブエージェント生成</b>の上限（既定<b>200</b>）を追加し、検索・委譲の無限ループを止める。さらに<b>2分を超えるMCPツール呼び出しは自動でバックグラウンドへ移り</b>、セッションが固まらない。7月22日前後の更新では <code>/code-review</code> もバックグラウンド実行できるようになり、レビュー中も対話を続けられる。既定Opusは<b>Opus 5</b>に切り替わっている。</p><figure class='fig'><svg viewBox='0 0 600 140' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='140' rx='10' fill='#f3ecff'/><text x='16' y='24' font-family='sans-serif' font-size='13' font-weight='700' fill='#5a2ec4'>暴走を止める3つの既定ガードレール</text><g font-family='sans-serif' font-size='11'><rect x='20' y='40' width='180' height='80' rx='8' fill='#fff' stroke='#7b3fe4'/><text x='34' y='64' font-weight='700' fill='#5a2ec4'>WebSearch</text><text x='34' y='88' fill='#333'>セッション上限 200</text><text x='34' y='108' fill='#6b6b6b'>env で調整可</text><rect x='210' y='40' width='180' height='80' rx='8' fill='#fff' stroke='#7b3fe4'/><text x='224' y='64' font-weight='700' fill='#5a2ec4'>サブエージェント</text><text x='224' y='88' fill='#333'>生成上限 200</text><text x='224' y='108' fill='#6b6b6b'>委譲ループを抑止</text><rect x='400' y='40' width='180' height='80' rx='8' fill='#fff' stroke='#7b3fe4'/><text x='414' y='64' font-weight='700' fill='#5a2ec4'>MCP 2分超</text><text x='414' y='88' fill='#333'>自動バックグラウンド</text><text x='414' y='108' fill='#6b6b6b'>セッション固着を回避</text></g></svg><figcaption>図2：WebSearch200／サブエージェント200／2分超MCPの自動退避。</figcaption></figure><p><b>自分が試すなら</b>：長い調査を投げるときは <code>/fork</code> でBGへ逃がし、本体では別の実装を進める二正面運用を試す。逆に「この会話の派生で軽く分岐したい」だけなら <code>/subtask</code>。深い検索やログ解析など後で参照しない中間作業はサブエージェントへ切り出し、上限200を頼りに暴走を気にせず回す。<b>注意点</b>：名前の意味が反転したので、既存の手順書やエイリアスに <code>/fork</code> と書いてある箇所は挙動が変わる。<b>事業文脈</b>としては、Microsoft Researchの7/1論文で導入者のマージPRが<b>約24%増</b>、年換算売上は<b>約$2.5B</b>規模と報じられ、週次枠+50%プロモも<b>8月19日</b>まで延長。生産性の実証とトークン支出の統制が同時に問われる局面だ。<b>まとめ</b>：8月のClaude Codeは「並行させる自由」と「暴走させない既定」を同じリリースで手に入れた。</p>",
-      "sources": [
-        {
-          "title": "Claude Code v2.1.212 アップデート（classmethod）",
-          "url": "https://dev.classmethod.jp/en/articles/20260717-cc-updates-v2-1-212/"
-        },
-        {
-          "title": "週次利用枠+50%プロモ延長（explainx.ai）",
-          "url": "https://www.explainx.ai/blog/claude-usage-limits-2026-timeline-explained"
-        },
-        {
-          "title": "7/22 Claude Code 更新（releasebot.io）",
-          "url": "https://releasebot.io/updates/anthropic/claude-code"
-        },
-        {
-          "title": "Microsoft企業導入研究：マージPR+24%（therouter.ai）",
-          "url": "https://therouter.ai/news/claude-code-microsoft-enterprise-study-token-budget-governance/"
-        },
-        {
-          "title": "年換算売上$2.5B規模の分析（mindstudio.ai）",
-          "url": "https://www.mindstudio.ai/blog/claude-code-2-5-billion-annualized-revenue-saas-comparison"
-        }
-      ]
-    },
-    {
-      "id": "2026-08-03-nextjs",
-      "date": "2026-08-03",
-      "topic": "Next.js",
-      "title": "Invoker Commands API（command / commandfor）— popover・dialog をJSなし宣言的に開閉、App RouterではServer Componentのまま動く",
-      "lede": "「ボタンを押したらモーダル/ポップオーバーを開く」を2つのHTML属性 command / commandfor だけで宣言的に書ける。2025年12月にBaseline『Newly available』入り。show-modal / close / *-popover は純HTMLで動くため RSC のまま 'use client' 不要で、hydration前から開閉が効く。カスタムコマンド（--接頭辞）だけ command イベントで拡張。",
-      "articleHtml": "<p>Webで最頻出のUIは「ボタンを押したらポップオーバーやモーダルを開く」だ。これまでは <code>&lt;button&gt;</code> に <code>addEventListener('click', …)</code> を書いて <code>showModal()</code> / <code>showPopover()</code> を呼ぶJS実装が定番だった。<b>Invoker Commands API</b> は、これを<b>2つのHTML属性 <code>command</code> / <code>commandfor</code> だけ</b>で宣言的に書けるようにする。<b>2025年12月にBaseline『Newly available』入り</b>し（Chrome/Edge 135・Opera 120・Safari・Firefox が出揃った）、いま実務投入を検討できる段階に来た。</p><pre><code>&lt;button command=\"show-modal\" commandfor=\"dlg\"&gt;開く&lt;/button&gt;\n&lt;dialog id=\"dlg\"&gt;\n  &lt;button command=\"close\" commandfor=\"dlg\"&gt;閉じる&lt;/button&gt;\n&lt;/dialog&gt;</code></pre><p><b>何が新しいか</b>。既存の <code>popovertarget</code> は popover 専用で dialog を開けなかった。Invoker Commands は<b>popover と dialog を同じ語彙で扱え</b>、さらに <code>--</code> で始まるカスタムコマンドで任意操作に拡張できる。組み込みコマンドは下図の6つ。</p><figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='210' rx='10' fill='#eef4ff'/><text x='16' y='24' font-family='sans-serif' font-size='13' font-weight='700' fill='#1d4ed8'>組み込み command と相当するJS</text><g font-family='sans-serif' font-size='11' fill='#1c1c1e'><line x1='16' y1='38' x2='584' y2='38' stroke='#9dbcff'/><text x='24' y='60' font-weight='700'>command</text><text x='230' y='60' font-weight='700'>相当するJS</text><text x='440' y='60' font-weight='700'>対象</text><text x='24' y='86'>show-modal</text><text x='230' y='86'>dialog.showModal()</text><text x='440' y='86'>&lt;dialog&gt;</text><text x='24' y='108'>close</text><text x='230' y='108'>dialog.close()</text><text x='440' y='108'>&lt;dialog&gt;</text><text x='24' y='130'>request-close</text><text x='230' y='130'>dialog.requestClose()</text><text x='440' y='130'>&lt;dialog&gt;</text><text x='24' y='152'>show-popover</text><text x='230' y='152'>el.showPopover()</text><text x='440' y='152'>[popover]</text><text x='24' y='174'>hide-popover</text><text x='230' y='174'>el.hidePopover()</text><text x='440' y='174'>[popover]</text><text x='24' y='196'>toggle-popover</text><text x='230' y='196'>el.togglePopover()</text><text x='440' y='196'>[popover]</text></g></svg><figcaption>図1：組み込みは6コマンド。dialogを宣言的に開けるのが固有の価値。</figcaption></figure><p><b>Next.js（App Router）でうまい理由</b>。<code>show-modal</code> / <code>close</code> / <code>*-popover</code> は<b>純粋にHTMLだけで動く</b>ため、Server Component がそのままボタンと dialog を出力すればよい。<b><code>'use client'</code> 不要＝クライアントJSゼロ</b>で hydration 負荷なし、INP/CLS に有利、しかも<b>JS到達前から開閉が動く</b>プログレッシブエンハンスメントになる。<code>command</code> / <code>commandfor</code> は小文字のプレーンHTML属性で、React 19 は未知の小文字属性をそのまま出力するので JSX にそのまま書ける（camelCaseにしない＝綴りは <code>commandfor</code>）。SSRで <code>window</code> に触れないので hydration mismatch も起きない。</p><figure class='fig'><pre class='mermaid'>flowchart TD\n  A[\"ボタン押下\"] --> B{\"command 属性\"}\n  B -->|\"組み込み: show-modal / close / *-popover\"| C[\"純HTMLで開閉 / RSCのまま\"]\n  B -->|\"カスタム: --rotate-left 等\"| D[\"command イベント発火\"]\n  D --> E[\"Client島で addEventListener('command')\"]</pre><figcaption>図2：組み込みはJSゼロ、カスタムだけClient島でイベント処理。</figcaption></figure><p><b>カスタムはClient島に隔離</b>：<code>--rotate-left</code> のような独自操作は対象要素に飛ぶ <code>command</code> イベント（<code>event.command</code> / <code>event.source</code>）をJSで拾う。Reactに <code>onCommand</code> 合成イベントは無いので、その部分だけ <code>'use client'</code> にして <code>useRef</code>＋<code>useEffect</code> で <code>addEventListener('command', …)</code> を手動登録し、cleanupで解除する。ページ本体とデータ取得はRSCのまま、動く島だけ切り出す。</p><p><b>落とし穴</b>：属性が効くのは本物の <code>&lt;button&gt;</code>（button系input）だけで、<code>&lt;div role=button&gt;</code> では効かない。古いブラウザは属性を無視して<b>ボタンが無反応</b>になるため、必須操作なら <code>\"command\" in HTMLButtonElement.prototype</code> で機能検出してJSフォールバックを用意する。<code>id</code> は一意に。開閉の見た目アニメは Invoker の役割外で、<code>@starting-style</code> / <code>transition-behavior: allow-discrete</code> / <code>::backdrop</code> など純CSS側で付け、<code>prefers-reduced-motion</code> では <code>transition: none</code> にして動きだけ消す。<b>まとめ</b>：トリガはHTML、演出はCSS、拡張だけJS——という素直な分業で、モーダル開閉から <code>'use client'</code> を消せる。</p>",
-      "sources": [
-        {
-          "title": "MDN: Invoker Commands API",
-          "url": "https://developer.mozilla.org/en-US/docs/Web/API/Invoker_Commands_API"
-        },
-        {
-          "title": "MDN: CommandEvent",
-          "url": "https://developer.mozilla.org/en-US/docs/Web/API/CommandEvent"
-        },
-        {
-          "title": "CSS-Tricks: Invoker Commands",
-          "url": "https://css-tricks.com/invoker-commands-additional-ways-to-work-with-dialog-popover-and-more/"
-        },
-        {
-          "title": "Web Platform DX: Invoker commands（Baseline状況）",
-          "url": "https://web-platform-dx.github.io/web-features-explorer/features/invoker-commands/"
-        }
-      ]
-    },
-    {
-      "id": "2026-08-03-flutter",
-      "date": "2026-08-03",
-      "topic": "Flutter",
-      "title": "Dart 3.12 の3機能でボイラープレート削減 — private named parameters・primary constructors・dot shorthands、値クラス5行を1行に",
-      "lede": "現行安定版は Flutter 3.44.7 / Dart 3.12。①private named parameters は先頭_で公開名を自動決定しカプセル化を保ったまま named 引数化、②primary constructors（experimental）はクラス宣言にコンストラクタを畳み込み5行の値クラスを1行に、③dot shorthands は文脈から型が明らかなら enum/static を .value に省略。3.44系のうちに dart fix で段階適用。",
-      "articleHtml": "<p>Dartの直近テーマは一貫して「定型コードを言語機能で削る」ことだ。現行安定版は <b>Flutter 3.44.7 / Dart 3.12</b>で、次の機能リリースは2026年8月（年4回・2/5/8/11月、3.45系はまだ未リリース）。今日の主役は、値クラスやコンストラクタ周りの冗長さを消す<b>3つの新機能</b>である。実務では小さな値クラスやenum参照が積み重なってノイズになりがちで、そこへ直接効く。</p><p><b>何が新しいか</b>。<b>①private named parameters</b>：初期化仮引数やprimary constructor引数で先頭 <code>_</code> を付けると、公開名は <code>_</code> を除いた名前に自動で決まる。<b>カプセル化（privateフィールド）を保ったまま named 引数で受けられ</b>、<code>this._x</code> を本体に書く定型が消える。<b>②primary constructors</b>（experimental・<code>primary-constructors</code> フラグ）：クラス宣言そのものにコンストラクタを畳み込み、<b>5行の値クラスを1行に</b>圧縮する。<b>③dot shorthands</b>：型が文脈から明らかなら enum値やstaticを <code>.value</code> と略記できる。</p><figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='200' rx='10' fill='#e8f7fb'/><text x='16' y='24' font-family='monospace' font-size='13' font-weight='700' fill='#0e7490'>値クラス: 5行 → 1行（primary constructors）</text><g font-family='monospace' font-size='10.5' fill='#1c1c1e'><rect x='16' y='38' width='270' height='150' rx='8' fill='#fff' stroke='#94d3e0'/><text x='28' y='60' fill='#b91c1c'>従来</text><text x='28' y='82'>class Point {</text><text x='28' y='100'>  final int x;</text><text x='28' y='118'>  final int y;</text><text x='28' y='136'>  Point(this.x, this.y);</text><text x='28' y='154'>}</text><rect x='314' y='38' width='270' height='150' rx='8' fill='#fff' stroke='#3fb0c9'/><text x='326' y='60' fill='#0e7490'>Dart 3.12</text><text x='326' y='86'>class Point(</text><text x='326' y='104'>  final int x,</text><text x='326' y='122'>  final int y,</text><text x='326' y='140'>);</text><text x='326' y='170' font-family='sans-serif' fill='#6b6b6b'>宣言にコンストラクタを畳み込み</text></g></svg><figcaption>図1：primary constructors で値クラスの定型を1行へ（experimental）。</figcaption></figure><p><b>仕組みのポイント</b>。private named parameters は「privateにしたいが呼び出し側は named で書きたい」という長年の綱引きを、公開名と内部名を機械的に対応づけて解消する。dot shorthands は型推論が効く文脈（引数、戻り値、switch/case のパターン等）でのみ働くので、あいまいな場所では従来通り明示が要る。primary constructors は<b>構文が今後変わり得る</b>ため、experimentalフラグを外すのは時期尚早だ。</p><figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='150' rx='10' fill='#effcf4'/><text x='16' y='24' font-family='sans-serif' font-size='13' font-weight='700' fill='#1a7f37'>3機能の採用可否（2026-08時点）</text><g font-family='sans-serif' font-size='11' fill='#1c1c1e'><rect x='16' y='38' width='185' height='96' rx='8' fill='#fff' stroke='#57c98a'/><text x='28' y='60' font-weight='700'>private named params</text><text x='28' y='84' fill='#1a7f37'>安定・すぐ採用可</text><text x='28' y='108' fill='#6b6b6b'>カプセル化を維持</text><rect x='208' y='38' width='185' height='96' rx='8' fill='#fff' stroke='#57c98a'/><text x='220' y='60' font-weight='700'>dot shorthands</text><text x='220' y='84' fill='#1a7f37'>安定・すぐ採用可</text><text x='220' y='108' fill='#6b6b6b'>型が明らかな文脈のみ</text><rect x='400' y='38' width='185' height='96' rx='8' fill='#fff' stroke='#e0a93f'/><text x='412' y='60' font-weight='700'>primary constructors</text><text x='412' y='84' fill='#b45309'>experimental・様子見</text><text x='412' y='108' fill='#6b6b6b'>構文が変わり得る</text></g></svg><figcaption>図2：2つは即採用、primary constructorsは本番様子見。</figcaption></figure><p><b>自分が試すなら</b>：まず private named parameters と dot shorthands を新規コードで使い、<code>dart fix</code> / <code>dart format</code> / <code>flutter analyze</code> で警告を潰しながら<b>3.44系のうちに段階適用</b>する。primary constructors は実験ブランチで感触を見るに留める。土台側は Impeller が Android 既定・Skia 撤去、Material/Cupertino のパッケージ分離、AIツーリング（Agentic Hot Reload・GenUI・Genkit Dart）が進み、2026ロードマップ『Finishing the Job』は Android の Impeller 移行完遂と Web の WebAssembly 既定化を掲げる。<b>注意点</b>：experimentalフラグ前提の構文をチーム共有リポジトリに混ぜると、フラグ未設定の環境でビルドが割れる。<b>まとめ</b>：3.12は「安定した2機能を今すぐ、実験の1機能は待つ」で取りこぼしなく定型を削れる。</p>",
-      "sources": [
-        {
-          "title": "Dart what's new",
-          "url": "https://dart.dev/resources/whats-new"
-        },
-        {
-          "title": "Dart changelog",
-          "url": "https://dart.dev/changelog"
-        },
-        {
-          "title": "Flutter release notes",
-          "url": "https://docs.flutter.dev/release/release-notes"
-        }
-      ]
-    },
-    {
-      "id": "2026-08-03-github-trending",
-      "date": "2026-08-03",
-      "topic": "GitHub Trending",
-      "title": "8/3の話題リポジトリ — PDFを撮る前に仕分けるRust、AIが解いた数学10問のLean証明、CRMを裏返した『エージェントが本体』",
-      "lede": "本日のモメンタム枠3本は、ドキュメント処理・形式検証・営業支援とジャンルはバラバラだが、どれも『重い処理やDBを主役から外す』発想で急上昇している。無駄なOCRを避ける、証明を機械検証で担保する、CRMを作業メモに格下げする——共通するのは主役の置き換えだ。",
-      "articleHtml": "<p>今日のTrendshift日次で上位に並んだ3本は、扱う領域こそ違えど「これまで主役だったもの（OCR・人手の証明・DB）を脇役に落とす」という共通の運動を見せている。以下、各リポジトリについて<b>解決したい課題</b>と<b>提供する機能</b>を分けて読む。</p><figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='210' rx='10' fill='#eafbf0'/><text x='16' y='24' font-family='sans-serif' font-size='13' font-weight='700' fill='#1a7f37'>3本の「課題 → 提供機能」対応</text><g font-family='sans-serif' font-size='10.5' fill='#1c1c1e'><line x1='16' y1='36' x2='584' y2='36' stroke='#9be0b6'/><text x='22' y='54' font-weight='700'>リポジトリ</text><text x='190' y='54' font-weight='700'>解決したい課題</text><text x='400' y='54' font-weight='700'>提供する機能</text><text x='22' y='84' font-weight='700' fill='#1a7f37'>pdf-inspector</text><text x='190' y='78'>無駄なOCRで時間と精度を</text><text x='190' y='92'>浪費している</text><text x='400' y='78'>PDFを10〜50msで型分類し</text><text x='400' y='92'>OCR要否をルーティング</text><line x1='16' y1='104' x2='584' y2='104' stroke='#d6f0e0'/><text x='22' y='128' font-weight='700' fill='#1a7f37'>ten-proofs</text><text x='190' y='122'>AIの数学的主張を人が</text><text x='190' y='136'>検証しきれない</text><text x='400' y='122'>10問の証明をLean 4の</text><text x='400' y='136'>機械検証証明書で公開</text><line x1='16' y1='148' x2='584' y2='148' stroke='#d6f0e0'/><text x='22' y='172' font-weight='700' fill='#1a7f37'>trycompai/crm</text><text x='190' y='166'>CRMが人手入力の台帳に</text><text x='190' y='180'>とどまっている</text><text x='400' y='166'>エージェントを本体化しDBを</text><text x='400' y='180'>その作業メモに格下げ</text></g></svg><figcaption>図1：3本に共通する「主役を置き換える」設計。</figcaption></figure><h4>firecrawl/pdf-inspector（Rust・⭐— / Trendshift日次1位）</h4><p><b>解決したい課題</b>：PDFは中身がテキスト型か、スキャン画像か、混在かがまちまちで、全ページに一律OCRをかけると時間もコストも精度も無駄になる。<b>提供する機能</b>：ページをレンダリングせずPDF内部（フォント符号化・テキスト演算子・画像被覆率）を解析し、<b>約10〜50msで「テキスト/スキャン/画像/混在」に分類</b>してOCR要否をページ単位でルーティングする。位置情報付き抽出と見出し/表/リスト検出でMarkdown変換まで行い、<b>MLモデル不要の純Rust</b>（単一依存lopdf）でPython/Node/WebAssemblyバインディングも同梱。OCRの前段として「撮る前に仕分ける」発想が支持され、複数ソース言及のトップ新星になった。</p><h4>openai/ten-proofs（Lean・⭐— / Trendshift日次24位）</h4><p><b>解決したい課題</b>：AIが「未解決問題を解いた」と主張しても、人間がその証明を独立に検証するのは難しい。<b>提供する機能</b>：OpenAIが次世代モデル「Astra」で得た、10年以上未解決だった数学・理論計算機科学の<b>10問の証明を Lean 4 の機械検証可能な証明書</b>として公開した。高次元球充填の上界改善、27年ぶりの非ソフィック群の構成、Connesの剛性予想の反例などを含み、<b>Lean compiler さえあれば誰でも真偽を独立検証できる</b>（Apache 2.0）。8/1に249ページの原稿とともに公開され一斉報道。エージェント一色のトレンドの中で希少な「形式検証・数学」ジャンルとして急上昇した。</p><h4>trycompai/crm（TypeScript・⭐— / Trendshift日次3位）</h4><p><b>解決したい課題</b>：既存CRMはエージェントを「機能として後付け」する程度で、依然として人手入力の台帳から抜け出せていない。<b>提供する機能</b>：発想を裏返し、<b>永続的なリサーチ・エージェントを本体、DBをその作業メモの置き場</b>と位置づけたオープンソースのエージェント・ファーストCRM。エージェントは自前のスケジュール・作業キュー・リサーチ予算で動き、<b>ブラウザを閉じても走り続ける</b>。外部連携はすべて任意で、APIキー無しでも会話/会議/署名から動く。この逆転設計がHacker News等で話題になり急上昇した。</p><p><b>自分が試すなら</b>：一番すぐ効くのは <b>pdf-inspector</b> だ。ドキュメント処理パイプラインの前段に挟めば、OCRに回すページを絞ってコストと時間を素直に削れる。ten-proofs はLean環境があれば主張を自分で検証でき、AI生成物を「信じる」から「確かめる」へ動かす好例。trycompai/crm は設計思想の参照先として、既存プロダクトに「エージェントを本体に据えたら何が変わるか」を考える叩き台になる。<b>まとめ</b>：今日の3本は、重い処理・人手・DBという“当たり前の主役”を疑うと新しいプロダクトが立ち上がる、を別々の分野で同時に示した。</p>",
-      "sources": [
-        {
-          "title": "firecrawl/pdf-inspector",
-          "url": "https://github.com/firecrawl/pdf-inspector"
-        },
-        {
-          "title": "openai/ten-proofs",
-          "url": "https://github.com/openai/ten-proofs"
-        },
-        {
-          "title": "trycompai/crm",
-          "url": "https://github.com/trycompai/crm"
-        }
-      ]
-    },
     {
       "id": "2026-08-02-claude-code",
       "date": "2026-08-02",
