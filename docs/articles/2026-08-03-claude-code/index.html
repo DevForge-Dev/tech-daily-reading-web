@@ -1,0 +1,59 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>/fork がバックグラウンド分岐に刷新・旧来の分岐は /subtask へ改名 — 暴走を止めるWebSearch/サブエージェント各200上限、2分超MCPは自動バックグラウンド化 — デイリー技術深掘り 読み物</title><meta name="description" content="v2.1.212で /fork は会話をバックグラウンドセッションへ丸ごとコピーして並行実行、従来のセッション内分岐は /subtask に改名。WebSearch(既定200)とサブエージェント生成(既定200)の上限で暴走ループを抑止し、2分超のMCP呼び出しは自動でバックグラウンドへ退避。企業導入研究ではマージPRが約24%増、年換算売上は約$2.5B規模。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-03-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="/fork がバックグラウンド分岐に刷新・旧来の分岐は /subtask へ改名 — 暴走を止めるWebSearch/サブエージェント各200上限、2分超MCPは自動バックグラウンド化 — デイリー技術深掘り 読み物"><meta property="og:description" content="v2.1.212で /fork は会話をバックグラウンドセッションへ丸ごとコピーして並行実行、従来のセッション内分岐は /subtask に改名。WebSearch(既定200)とサブエージェント生成(既定200)の上限で暴走ループを抑止し、2分超のMCP呼び出しは自動でバックグラウンドへ退避。企業導入研究ではマージPRが約24%増、年換算売上は約$2.5B規模。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-03-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>/fork がバックグラウンド分岐に刷新・旧来の分岐は /subtask へ改名 — 暴走を止めるWebSearch/サブエージェント各200上限、2分超MCPは自動バックグラウンド化</h1> <p class="lede">v2.1.212で /fork は会話をバックグラウンドセッションへ丸ごとコピーして並行実行、従来のセッション内分岐は /subtask に改名。WebSearch(既定200)とサブエージェント生成(既定200)の上限で暴走ループを抑止し、2分超のMCP呼び出しは自動でバックグラウンドへ退避。企業導入研究ではマージPRが約24%増、年換算売上は約$2.5B規模。</p> <div class="meta"> <span>📅 2026年8月3日</span> <span>⏱ 約3分</span> <span>🔗 出典 5 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="0"><p>7月中旬、AnthropicはClaude Codeを v2.1.207 から v2.1.218 まで矢継ぎ早に出し、v2.1.212 で <code>/fork</code> の意味を作り替えた。背景にあるのは「長時間エージェントを本体の作業を止めずに、暴走させずに回したい」という運用側の要求だ。これまで一つのセッションに何でも詰め込むと、深い検索やサブ委譲が膨らんで本流が固まる問題があった。今回の更新はそこへ効く。</p><p><b>何が新しいか</b>。<code>/fork</code> は従来セッション内サブエージェントを起動していたが、新仕様では会話を<b>新しいバックグラウンドセッション</b>（<code>claude agents</code> の独立した行）へ丸ごとコピーし、本体を止めずに並行実行する。これまでの「セッション内フォーク」は <code>/subtask</code> に改名して住み分けた。名前の意味が入れ替わった点に注意が要る。</p><figure class='fig'><svg viewBox='0 0 600 170' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='170' rx='10' fill='#faf7ff'></rect><text x='16' y='24' font-family='sans-serif' font-size='13' font-weight='700' fill='#5a2ec4'>/fork の意味が入れ替わった（v2.1.212）</text><g font-family='sans-serif' font-size='11'><rect x='20' y='40' width='270' height='110' rx='8' fill='#fff' stroke='#b91c1c'></rect><text x='34' y='62' font-weight='700' fill='#b91c1c'>旧: /fork</text><text x='34' y='84' fill='#333'>セッション内サブエージェント起動</text><text x='34' y='104' fill='#333'>→ 新名称は /subtask</text><text x='34' y='132' fill='#6b6b6b'>本流と同じセッション内で分岐</text><rect x='310' y='40' width='270' height='110' rx='8' fill='#fff' stroke='#7b3fe4'></rect><text x='324' y='62' font-weight='700' fill='#5a2ec4'>新: /fork</text><text x='324' y='84' fill='#333'>会話をBGセッションへ丸ごとコピー</text><text x='324' y='104' fill='#333'>→ 本体を止めず並行実行</text><text x='324' y='132' fill='#6b6b6b'>独立した claude agents の行で走る</text></g></svg><figcaption>図1：/fork は「BGへ会話コピー」、旧来のセッション内分岐は /subtask へ改名。</figcaption></figure><p><b>暴走対策のガードレール</b>も同時に入った。<b>WebSearch</b> のセッション全体の呼び出し上限（既定<b>200</b>、<code>CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION</code> で調整）と、<b>サブエージェント生成</b>の上限（既定<b>200</b>）を追加し、検索・委譲の無限ループを止める。さらに<b>2分を超えるMCPツール呼び出しは自動でバックグラウンドへ移り</b>、セッションが固まらない。7月22日前後の更新では <code>/code-review</code> もバックグラウンド実行できるようになり、レビュー中も対話を続けられる。既定Opusは<b>Opus 5</b>に切り替わっている。</p><figure class='fig'><svg viewBox='0 0 600 140' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='140' rx='10' fill='#f3ecff'></rect><text x='16' y='24' font-family='sans-serif' font-size='13' font-weight='700' fill='#5a2ec4'>暴走を止める3つの既定ガードレール</text><g font-family='sans-serif' font-size='11'><rect x='20' y='40' width='180' height='80' rx='8' fill='#fff' stroke='#7b3fe4'></rect><text x='34' y='64' font-weight='700' fill='#5a2ec4'>WebSearch</text><text x='34' y='88' fill='#333'>セッション上限 200</text><text x='34' y='108' fill='#6b6b6b'>env で調整可</text><rect x='210' y='40' width='180' height='80' rx='8' fill='#fff' stroke='#7b3fe4'></rect><text x='224' y='64' font-weight='700' fill='#5a2ec4'>サブエージェント</text><text x='224' y='88' fill='#333'>生成上限 200</text><text x='224' y='108' fill='#6b6b6b'>委譲ループを抑止</text><rect x='400' y='40' width='180' height='80' rx='8' fill='#fff' stroke='#7b3fe4'></rect><text x='414' y='64' font-weight='700' fill='#5a2ec4'>MCP 2分超</text><text x='414' y='88' fill='#333'>自動バックグラウンド</text><text x='414' y='108' fill='#6b6b6b'>セッション固着を回避</text></g></svg><figcaption>図2：WebSearch200／サブエージェント200／2分超MCPの自動退避。</figcaption></figure><p><b>自分が試すなら</b>：長い調査を投げるときは <code>/fork</code> でBGへ逃がし、本体では別の実装を進める二正面運用を試す。逆に「この会話の派生で軽く分岐したい」だけなら <code>/subtask</code>。深い検索やログ解析など後で参照しない中間作業はサブエージェントへ切り出し、上限200を頼りに暴走を気にせず回す。<b>注意点</b>：名前の意味が反転したので、既存の手順書やエイリアスに <code>/fork</code> と書いてある箇所は挙動が変わる。<b>事業文脈</b>としては、Microsoft Researchの7/1論文で導入者のマージPRが<b>約24%増</b>、年換算売上は<b>約$2.5B</b>規模と報じられ、週次枠+50%プロモも<b>8月19日</b>まで延長。生産性の実証とトークン支出の統制が同時に問われる局面だ。<b>まとめ</b>：8月のClaude Codeは「並行させる自由」と「暴走させない既定」を同じリリースで手に入れた。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://dev.classmethod.jp/en/articles/20260717-cc-updates-v2-1-212/" target="_blank" rel="noopener noreferrer"> Claude Code v2.1.212 アップデート（classmethod） </a> </li><li> <a href="https://www.explainx.ai/blog/claude-usage-limits-2026-timeline-explained" target="_blank" rel="noopener noreferrer"> 週次利用枠+50%プロモ延長（explainx.ai） </a> </li><li> <a href="https://releasebot.io/updates/anthropic/claude-code" target="_blank" rel="noopener noreferrer"> 7/22 Claude Code 更新（releasebot.io） </a> </li><li> <a href="https://therouter.ai/news/claude-code-microsoft-enterprise-study-token-budget-governance/" target="_blank" rel="noopener noreferrer"> Microsoft企業導入研究：マージPR+24%（therouter.ai） </a> </li><li> <a href="https://www.mindstudio.ai/blog/claude-code-2-5-billion-annualized-revenue-saas-comparison" target="_blank" rel="noopener noreferrer"> 年換算売上$2.5B規模の分析（mindstudio.ai） </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

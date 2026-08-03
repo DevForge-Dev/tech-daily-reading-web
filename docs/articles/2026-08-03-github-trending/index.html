@@ -1,0 +1,59 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>8/3の話題リポジトリ — PDFを撮る前に仕分けるRust、AIが解いた数学10問のLean証明、CRMを裏返した『エージェントが本体』 — デイリー技術深掘り 読み物</title><meta name="description" content="本日のモメンタム枠3本は、ドキュメント処理・形式検証・営業支援とジャンルはバラバラだが、どれも『重い処理やDBを主役から外す』発想で急上昇している。無駄なOCRを避ける、証明を機械検証で担保する、CRMを作業メモに格下げする——共通するのは主役の置き換えだ。"><meta name="theme-color" content="#238636"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-03-github-trending/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="8/3の話題リポジトリ — PDFを撮る前に仕分けるRust、AIが解いた数学10問のLean証明、CRMを裏返した『エージェントが本体』 — デイリー技術深掘り 読み物"><meta property="og:description" content="本日のモメンタム枠3本は、ドキュメント処理・形式検証・営業支援とジャンルはバラバラだが、どれも『重い処理やDBを主役から外す』発想で急上昇している。無駄なOCRを避ける、証明を機械検証で担保する、CRMを作業メモに格下げする——共通するのは主役の置き換えだ。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-03-github-trending/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3fb950, #1a7f37)"> <span class="glyph" aria-hidden="true">★</span> <div class="kicker">GitHub Trending</div> <h1>8/3の話題リポジトリ — PDFを撮る前に仕分けるRust、AIが解いた数学10問のLean証明、CRMを裏返した『エージェントが本体』</h1> <p class="lede">本日のモメンタム枠3本は、ドキュメント処理・形式検証・営業支援とジャンルはバラバラだが、どれも『重い処理やDBを主役から外す』発想で急上昇している。無駄なOCRを避ける、証明を機械検証で担保する、CRMを作業メモに格下げする——共通するのは主役の置き換えだ。</p> <div class="meta"> <span>📅 2026年8月3日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#238636"> <div> <article class="prose" data-has-mermaid="0"><p>今日のTrendshift日次で上位に並んだ3本は、扱う領域こそ違えど「これまで主役だったもの（OCR・人手の証明・DB）を脇役に落とす」という共通の運動を見せている。以下、各リポジトリについて<b>解決したい課題</b>と<b>提供する機能</b>を分けて読む。</p><figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='210' rx='10' fill='#eafbf0'></rect><text x='16' y='24' font-family='sans-serif' font-size='13' font-weight='700' fill='#1a7f37'>3本の「課題 → 提供機能」対応</text><g font-family='sans-serif' font-size='10.5' fill='#1c1c1e'><line x1='16' y1='36' x2='584' y2='36' stroke='#9be0b6'></line><text x='22' y='54' font-weight='700'>リポジトリ</text><text x='190' y='54' font-weight='700'>解決したい課題</text><text x='400' y='54' font-weight='700'>提供する機能</text><text x='22' y='84' font-weight='700' fill='#1a7f37'>pdf-inspector</text><text x='190' y='78'>無駄なOCRで時間と精度を</text><text x='190' y='92'>浪費している</text><text x='400' y='78'>PDFを10〜50msで型分類し</text><text x='400' y='92'>OCR要否をルーティング</text><line x1='16' y1='104' x2='584' y2='104' stroke='#d6f0e0'></line><text x='22' y='128' font-weight='700' fill='#1a7f37'>ten-proofs</text><text x='190' y='122'>AIの数学的主張を人が</text><text x='190' y='136'>検証しきれない</text><text x='400' y='122'>10問の証明をLean 4の</text><text x='400' y='136'>機械検証証明書で公開</text><line x1='16' y1='148' x2='584' y2='148' stroke='#d6f0e0'></line><text x='22' y='172' font-weight='700' fill='#1a7f37'>trycompai/crm</text><text x='190' y='166'>CRMが人手入力の台帳に</text><text x='190' y='180'>とどまっている</text><text x='400' y='166'>エージェントを本体化しDBを</text><text x='400' y='180'>その作業メモに格下げ</text></g></svg><figcaption>図1：3本に共通する「主役を置き換える」設計。</figcaption></figure><h4 id="sec-1">firecrawl/pdf-inspector（Rust・⭐— / Trendshift日次1位）</h4><p><b>解決したい課題</b>：PDFは中身がテキスト型か、スキャン画像か、混在かがまちまちで、全ページに一律OCRをかけると時間もコストも精度も無駄になる。<b>提供する機能</b>：ページをレンダリングせずPDF内部（フォント符号化・テキスト演算子・画像被覆率）を解析し、<b>約10〜50msで「テキスト/スキャン/画像/混在」に分類</b>してOCR要否をページ単位でルーティングする。位置情報付き抽出と見出し/表/リスト検出でMarkdown変換まで行い、<b>MLモデル不要の純Rust</b>（単一依存lopdf）でPython/Node/WebAssemblyバインディングも同梱。OCRの前段として「撮る前に仕分ける」発想が支持され、複数ソース言及のトップ新星になった。</p><h4 id="sec-2">openai/ten-proofs（Lean・⭐— / Trendshift日次24位）</h4><p><b>解決したい課題</b>：AIが「未解決問題を解いた」と主張しても、人間がその証明を独立に検証するのは難しい。<b>提供する機能</b>：OpenAIが次世代モデル「Astra」で得た、10年以上未解決だった数学・理論計算機科学の<b>10問の証明を Lean 4 の機械検証可能な証明書</b>として公開した。高次元球充填の上界改善、27年ぶりの非ソフィック群の構成、Connesの剛性予想の反例などを含み、<b>Lean compiler さえあれば誰でも真偽を独立検証できる</b>（Apache 2.0）。8/1に249ページの原稿とともに公開され一斉報道。エージェント一色のトレンドの中で希少な「形式検証・数学」ジャンルとして急上昇した。</p><h4 id="sec-3">trycompai/crm（TypeScript・⭐— / Trendshift日次3位）</h4><p><b>解決したい課題</b>：既存CRMはエージェントを「機能として後付け」する程度で、依然として人手入力の台帳から抜け出せていない。<b>提供する機能</b>：発想を裏返し、<b>永続的なリサーチ・エージェントを本体、DBをその作業メモの置き場</b>と位置づけたオープンソースのエージェント・ファーストCRM。エージェントは自前のスケジュール・作業キュー・リサーチ予算で動き、<b>ブラウザを閉じても走り続ける</b>。外部連携はすべて任意で、APIキー無しでも会話/会議/署名から動く。この逆転設計がHacker News等で話題になり急上昇した。</p><p><b>自分が試すなら</b>：一番すぐ効くのは <b>pdf-inspector</b> だ。ドキュメント処理パイプラインの前段に挟めば、OCRに回すページを絞ってコストと時間を素直に削れる。ten-proofs はLean環境があれば主張を自分で検証でき、AI生成物を「信じる」から「確かめる」へ動かす好例。trycompai/crm は設計思想の参照先として、既存プロダクトに「エージェントを本体に据えたら何が変わるか」を考える叩き台になる。<b>まとめ</b>：今日の3本は、重い処理・人手・DBという“当たり前の主役”を疑うと新しいプロダクトが立ち上がる、を別々の分野で同時に示した。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://github.com/firecrawl/pdf-inspector" target="_blank" rel="noopener noreferrer"> firecrawl/pdf-inspector </a> </li><li> <a href="https://github.com/openai/ten-proofs" target="_blank" rel="noopener noreferrer"> openai/ten-proofs </a> </li><li> <a href="https://github.com/trycompai/crm" target="_blank" rel="noopener noreferrer"> trycompai/crm </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> firecrawl/pdf-inspector（Rust・⭐— / Trendshift日次1位） </a> </li><li> <a href="#sec-2" data-toc="sec-2"> openai/ten-proofs（Lean・⭐— / Trendshift日次24位） </a> </li><li> <a href="#sec-3" data-toc="sec-3"> trycompai/crm（TypeScript・⭐— / Trendshift日次3位） </a> </li> </ul> <div class="reading-box"> <div>📅 2026-08-03</div> <div>⏱ 読了 約3分</div> <div>🏷 GitHub Trending</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
