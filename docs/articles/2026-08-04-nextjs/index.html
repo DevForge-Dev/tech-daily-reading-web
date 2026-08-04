@@ -1,0 +1,65 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>App Router のテストは「層で分ける」— async Server Component は単体不可、Playwright で E2E／同期は Vitest + RTL — デイリー技術深掘り 読み物</title><meta name="description" content="RSC が主流でも詰まりやすいのがテスト。核心は async Server Component を単体テストできない一点。Next 16.2 公式は Vitest/Jest の async RSC 非対応を明記し、async は E2E（Playwright）推奨。三層で役割を分けるのが2026年の実務解。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-04-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="App Router のテストは「層で分ける」— async Server Component は単体不可、Playwright で E2E／同期は Vitest + RTL — デイリー技術深掘り 読み物"><meta property="og:description" content="RSC が主流でも詰まりやすいのがテスト。核心は async Server Component を単体テストできない一点。Next 16.2 公式は Vitest/Jest の async RSC 非対応を明記し、async は E2E（Playwright）推奨。三層で役割を分けるのが2026年の実務解。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-04-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>App Router のテストは「層で分ける」— async Server Component は単体不可、Playwright で E2E／同期は Vitest + RTL</h1> <p class="lede">RSC が主流でも詰まりやすいのがテスト。核心は async Server Component を単体テストできない一点。Next 16.2 公式は Vitest/Jest の async RSC 非対応を明記し、async は E2E（Playwright）推奨。三層で役割を分けるのが2026年の実務解。</p> <div class="meta"> <span>📅 2026年8月4日</span> <span>⏱ 約3分</span> <span>🔗 出典 5 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="0"><p>App Router / RSC が定着した後も、もっとも情報が散らばるのが「どうテストするか」だ。核心はシンプルで、<b>async Server Component（<code>async function Page()</code> でデータ取得するコンポーネント）を単体テストできない</b>という一点にある。ここを踏み外すと「テストできない」と行き詰まる。</p>
+<p><b>なぜ落ちるか</b>。async コンポーネントは Promise を返す。<code>render(&lt;Page/&gt;)</code> に Promise を渡すと、同期前提の React レンダラが <code>Error: Objects are not valid as a React child (found: [object Promise])</code> を投げる。await して解決してから描画する必要があるが、RTL/React は現状それを公式サポートしていない。</p>
+<p><b>何が重要か</b>。Next.js 公式（16.2）は Cypress・Playwright・Vitest・Jest の4ツールをサポートしつつ、<b>Vitest / Jest は async Server Component を公式サポートしない</b>と明記し、<b>async は E2E（Playwright / Cypress）を推奨</b>する。したがって解は「レイヤーで役割を分ける三層戦略」だ。① データ整形などのロジックは純関数に切り出して単体、② 同期 Server Component と Client Component は Vitest + React Testing Library で単体・結合、③ async Server Component・ハイドレーション・ブラウザ依存挙動は Playwright で E2E。</p>
+<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='210' rx='10' fill='#eef6ff'></rect><text x='16' y='24' font-family='sans-serif' font-size='13' font-weight='700' fill='#0b5cad'>App Router テストの三層戦略</text><g font-family='sans-serif' font-size='11'><rect x='20' y='36' width='560' height='46' rx='8' fill='#fff' stroke='#0b74d1'></rect><text x='34' y='56' font-weight='700' fill='#0b5cad'>① 純ロジック（データ整形・分岐）</text><text x='34' y='74' fill='#333'>Vitest / Jest で単体 — 一番速く、一番安定</text><rect x='20' y='90' width='560' height='46' rx='8' fill='#fff' stroke='#0b74d1'></rect><text x='34' y='110' font-weight='700' fill='#0b5cad'>② 同期 Server Component / Client Component</text><text x='34' y='128' fill='#333'>Vitest + React Testing Library で単体・結合</text><rect x='20' y='144' width='560' height='50' rx='8' fill='#fff' stroke='#b91c1c'></rect><text x='34' y='164' font-weight='700' fill='#b91c1c'>③ async Server Component・ハイドレーション</text><text x='34' y='182' fill='#333'>Playwright / Cypress で E2E（単体は避ける）</text></g></svg><figcaption>図1：下2層は Vitest、async とブラウザ依存は E2E に寄せる。</figcaption></figure>
+<p><b>どうしても単体で見たい場合</b>は、<code>&lt;Suspense&gt;</code> でラップして <code>findBy*</code> を await する非公式ワークアラウンドがある（React 19 前提）。ただし公式非サポートなので、基本は E2E に寄せ、切り出した純関数だけを単体で固めるのが堅い。</p>
+<p><b>落とし穴</b>。<code>import 'server-only'</code> や <code>next/headers</code> を含む RSC を jsdom で読むと落ちるため <code>vi.mock()</code> でモックする。Client Component が <code>useRouter</code>/<code>usePathname</code>/<code>useSearchParams</code> を使う場合は <code>vitest.setup.ts</code> で <code>next/navigation</code> をモック。<code>use</code> や <code>useFormStatus</code> など React 19 の新フックを含むならテスト側の React も 19 に揃える。E2E は dev ではなく <code>next build && next start</code> の<b>本番ビルド</b>に当てる（<code>webServer</code> で自動起動）。</p>
+<p><b>自分が試すなら</b>：Server Actions は入力→出力の純ロジックへ寄せて単体（DB/認証はモック）、実フォーム送信は Playwright で E2E。<b>まとめ</b>：「何でも単体」をやめ、async とブラウザ依存を E2E に渡すだけで、App Router のテストは一気にほどける。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://nextjs.org/docs/app/guides/testing" target="_blank" rel="noopener noreferrer"> Next.js Testing 概要（async は E2E 推奨・公式） </a> </li><li> <a href="https://nextjs.org/docs/app/guides/testing/vitest" target="_blank" rel="noopener noreferrer"> Next.js Vitest セットアップ（async RSC 未サポート明記） </a> </li><li> <a href="https://nextjs.org/docs/app/guides/testing/playwright" target="_blank" rel="noopener noreferrer"> Next.js Playwright セットアップ（本番ビルドに当てる） </a> </li><li> <a href="https://aurorascharff.no/posts/running-tests-with-rtl-and-vitest-on-internationalized-react-server-components-in-nextjs-app-router/" target="_blank" rel="noopener noreferrer"> Aurora Scharff: RTL+Vitest で async/i18n な RSC をテスト </a> </li><li> <a href="https://github.com/testing-library/react-testing-library/issues/1209" target="_blank" rel="noopener noreferrer"> RTL Issue #1209: RSC サポートの議論 </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
