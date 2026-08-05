@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-08-04T04:46:01.874Z",
+  "generatedAt": "2026-08-05T04:50:49.665Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,88 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-08-05-claude-code",
+      "date": "2026-08-05",
+      "topic": "Claude Code",
+      "title": "v2.1.221 & サブエージェント深さ3 — VSCode『Focus view』・サンドボックス資格情報マスキング・FastモードがOpus 5/4.8対応",
+      "lede": "8/3–4のv2.1.221でVSCodeに実行詳細を畳む『Focus view』、Linux/WSLで資格情報の mask モード、plugin validate に名前拒否警告。あわせてサブエージェントが深さ3までネスト可能に、/model ピッカー改善、FastモードがOpus 5/4.8へ拡大。Enterpriseはモデル別エンタイトルメント＋支出アラートを追加。",
+      "articleHtml": "<p>Anthropic社内では新規プロダクションコードの約80%を既にClaudeが書くと報じられ、CLI型エージェントは『人が主体・AIが補助』から『エージェント主体・人がレビュー』へ移りつつある。規模が上がるほど焦点になるのが、実行の見通しの良さ・秘匿情報の扱い・並列タスクの制御だ。8/3〜4のv2.1.221とその周辺リリースは、まさにこの3点に効く更新を束ねている。</p><p><b>何が新しいか</b>。VSCode拡張に <b>Focus view</b> が加わり、ツール実行の詳細をターンごとの展開式サマリーの背後へ隠して実行中インジケータだけを表示する（<code>Ctrl+Alt+F</code> または『Claude Code: Toggle Focus view』で切替）。セキュリティ面ではLinux/WSL向けにサンドボックス資格情報ファイルの <code>mode:\"mask\"</code> を追加——サンドボックス内のコマンドはセンチネルのコピーを読み、送信時にプロキシが実値へ差し替える（macOSは deny にフォールバック）。<code>claude plugin validate</code> にはDesktopの管理同期で名前が拒否される場合の警告が付き、zshの隠しコマンドでBash権限チェックを回避できる不具合も修正された。</p><figure class='fig'><svg viewBox='0 0 600 132' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='132' rx='10' fill='#f3ecff'/><text x='16' y='24' font-family='sans-serif' font-size='13' font-weight='700' fill='#5a2ec4'>v2.1.221 の3本柱</text><g font-family='sans-serif' font-size='11'><rect x='20' y='38' width='180' height='78' rx='8' fill='#fff' stroke='#7b3fe4'/><text x='34' y='60' font-weight='700' fill='#5a2ec4'>Focus view</text><text x='34' y='82' fill='#333'>実行詳細を畳む</text><text x='34' y='102' fill='#6b6b6b'>Ctrl+Alt+F / VSCode</text><rect x='210' y='38' width='180' height='78' rx='8' fill='#fff' stroke='#7b3fe4'/><text x='224' y='60' font-weight='700' fill='#5a2ec4'>資格情報 mask</text><text x='224' y='82' fill='#333'>センチネル→実値差替</text><text x='224' y='102' fill='#6b6b6b'>Linux/WSL（macは deny）</text><rect x='400' y='38' width='180' height='78' rx='8' fill='#fff' stroke='#7b3fe4'/><text x='414' y='60' font-weight='700' fill='#5a2ec4'>plugin validate</text><text x='414' y='82' fill='#333'>名前拒否を警告</text><text x='414' y='102' fill='#6b6b6b'>zsh権限バイパス修正</text></g></svg><figcaption>図1：見通し（Focus view）・秘匿（mask）・安全（validate）の3点更新。</figcaption></figure><p><b>並列制御も一段深く</b>。サブエージェントが入れ子のサブエージェントを <b>深さ3</b> まで生成できるようになり、大規模な並列タスクの分割がより柔軟になった。サブエージェントは独立コンテキスト・独立ツール・独立モデルを持つ別インスタンスで、メインには最終サマリーだけが返る——だから並列リサーチ・独立ファイルの並列改修・メイン会話を汚したくない隔離タスクが適所だ。<code>/model</code> ピッカーの表示・選択が見直され、<b>FastモードがOpus 5とOpus 4.8にも適用</b>されるよう拡張。autoモードでは並列ツール呼び出しの権限チェックがキャッシュ効率化され、保留中にモードを切り替えても古い結果を適用せず再プロンプトする。</p><figure class='fig'><pre class='mermaid'>flowchart TD\n  M[\"メイン\"] --> A[\"サブエージェント 深さ1\"]\n  A --> B[\"サブエージェント 深さ2\"]\n  B --> C[\"サブエージェント 深さ3\"]\n  C -.->|\"最終サマリーだけ返す\"| M</pre><figcaption>図2：深さ3までネスト可。各層は独立コンテキストで走り、上位へは要約だけ返る。</figcaption></figure><p><b>Enterprise</b>側は管理者アナリティクスを強化し、モデル別エンタイトルメント（利用可否制御）と支出アラートを追加、Teamプランの標準シートにもClaude Codeアクセスが入った。<b>自分が試すなら</b>：VSCodeで長い自律実行を回すときにFocus viewで画面ノイズを消し、深さ3のサブエージェントで『調査』『改修A』『改修B』を並列に切り出してメイン会話を軽く保つ。<b>注意点</b>：mask はLinux/WSL限定でmacOSは deny 動作、分割しすぎるとサマリー統合コストが増えるので境界設計が肝。<b>まとめ</b>：v2.1.221は『実行を見やすく・秘匿を安全に・並列をより深く』を同じ更新でそろえた。</p>",
+      "sources": [
+        {
+          "title": "Claude Code Changelog（v2.1.221・公式）",
+          "url": "https://code.claude.com/docs/en/changelog"
+        },
+        {
+          "title": "Claude Code 更新（サブエージェント深さ3・/model・Fast）",
+          "url": "https://releasebot.io/updates/anthropic/claude-code"
+        },
+        {
+          "title": "Claude Enterprise アナリティクス強化",
+          "url": "https://releasebot.io/updates/anthropic"
+        },
+        {
+          "title": "VentureBeat：新規コードの約80%をClaudeが生成",
+          "url": "https://venturebeat.com/technology/anthropic-says-80-of-its-new-production-code-is-now-authored-by-claude-how-your-enterprise-can-keep-up"
+        }
+      ]
+    },
+    {
+      "id": "2026-08-05-nextjs",
+      "date": "2026-08-05",
+      "topic": "Next.js",
+      "title": "テキストスクランブル & タイプライター — GSAP無償化で実務投入、a11yの型（aria-label/aria-hidden＋reduced-motion）とRSCのままの土台",
+      "lede": "「文字が乱れて解読される／1文字ずつ打たれる」定番テキスト演出。2025年のGSAP完全無償化で ScrambleTextPlugin が無料化。最大の論点はスクリーンリーダーが1字ずつ読む問題と reduced-motion。純CSSタイプライターはServer Componentのまま置け、スクランブルは小さなClient島に隔離してプログレッシブエンハンスメントで組む。",
+      "articleHtml": "<p>Web演出で定番の「テキストスクランブル（decode/decrypt）」は、最終文字列に落ち着くまでランダムな記号を高速に差し替え、徐々に正しい文字へ確定させる。並走する古典が1文字ずつ打鍵する「タイプライター」効果だ。07-31のSplit Text（透明→表示で「出す」）とは別物で、スクランブルは「化ける→確定する」、タイプライターは「文字数を増やす」。注目理由は3つ：①2025年のGSAP完全無償化で有料だった <code>ScrambleTextPlugin</code> が無料・商用可になり実務採用のハードルが消えた、②a11yの正解が固まった、③依存ゼロでも約40行で書ける。</p><p><b>スクランブルの仕組み</b>。各文字に開始フレーム <code>start</code> と終了フレーム <code>end</code> をランダムに割り当て、<code>requestAnimationFrame</code> のフレームカウンタを回す。<code>frame&lt;start</code> は元の文字、<code>start≤frame&lt;end</code> はランダム記号を確率的に引き直して「ちらつき」、<code>frame≥end</code> で確定文字。全文字が end を超えたら終了する。文字ごとに確定タイミングがずれることで「解読が波及する」見え方になる。</p><figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='150' rx='10' fill='#eef6ff'/><text x='16' y='24' font-family='sans-serif' font-size='13' font-weight='700' fill='#0b5cad'>1文字の状態遷移（フレーム進行）</text><g font-family='sans-serif' font-size='11'><rect x='20' y='42' width='170' height='66' rx='8' fill='#fff' stroke='#0b74d1'/><text x='34' y='66' font-weight='700' fill='#0b5cad'>frame &lt; start</text><text x='34' y='90' fill='#333'>元の文字/空</text><rect x='215' y='42' width='170' height='66' rx='8' fill='#fff' stroke='#e0a10b'/><text x='229' y='66' font-weight='700' fill='#a9780a'>start ≤ frame &lt; end</text><text x='229' y='90' fill='#333'>ランダム記号でちらつく</text><rect x='410' y='42' width='170' height='66' rx='8' fill='#fff' stroke='#0a7d55'/><text x='424' y='66' font-weight='700' fill='#0a7d55'>frame ≥ end</text><text x='424' y='90' fill='#333'>確定した最終文字</text><path d='M190 75 L215 75' stroke='#888' stroke-width='2' marker-end='url(#ar)'/><path d='M385 75 L410 75' stroke='#888' stroke-width='2' marker-end='url(#ar)'/><defs><marker id='ar' markerWidth='8' markerHeight='8' refX='6' refY='3' orient='auto'><path d='M0,0 L6,3 L0,6 Z' fill='#888'/></marker></defs><text x='300' y='134' text-anchor='middle' fill='#6b6b6b'>start/end を文字ごとにばらつかせると解読が波及して見える</text></g></svg><figcaption>図1：文字ごとに start/end をずらすのがスクランブルの肝。</figcaption></figure><p><b>タイプライターは純CSS</b>で完結する。<code>white-space:nowrap; overflow:hidden;</code> で1行固定し、<code>width:0→N ch</code> を <code>steps(N)</code> で刻む。<code>ch</code> は「0の字幅」なので等幅フォントなら文字数とほぼ一致し1字ずつ現れる。キャレットは <code>border-right</code> を別keyframesで点滅。純CSSなので <b>Server Componentのまま</b>置け、hydrationゼロ・INP/CLS有利だ。</p><p><b>Next.js（App Router）での型</b>。スクランブルの動き本体は <code>requestAnimationFrame</code> と <code>matchMedia</code> を使うため、<code>'use client'</code> の小さな島に隔離する。初期HTMLには「確定テキスト」を出し（JS到達前・SSRでも読めてSEO/SRに強く、hydration mismatchも起きない）、<code>useEffect</code> が乗ったら化けさせるプログレッシブエンハンスメントにする。毎フレームの <code>setState</code> は厳禁で、<code>el.innerHTML/textContent</code> を直接書いてReactの再レンダーを回さない（INP対策）。<code>return () =&gt; cancelAnimationFrame(raf)</code> でcleanupも必須。</p><figure class='fig'><svg viewBox='0 0 600 140' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='140' rx='10' fill='#eef4ff'/><text x='16' y='24' font-family='sans-serif' font-size='13' font-weight='700' fill='#1d4ed8'>a11yの2点セット</text><g font-family='sans-serif' font-size='11'><rect x='20' y='40' width='560' height='40' rx='8' fill='#fff' stroke='#1f6feb'/><text x='34' y='58' font-weight='700' fill='#1d4ed8'>親に aria-label=\"全文\"</text><text x='34' y='74' fill='#333'>内側のアニメspanに aria-hidden=\"true\" → SRは全文を1回だけ読む</text><rect x='20' y='88' width='560' height='40' rx='8' fill='#fff' stroke='#b45309'/><text x='34' y='106' font-weight='700' fill='#b45309'>prefers-reduced-motion: reduce</text><text x='34' y='122' fill='#333'>アニメを開始せず最終状態を即表示（キャレット点滅も止める）</text></g></svg><figcaption>図2：SRの読み上げ崩壊と前庭障害トリガを同時に防ぐ定型。</figcaption></figure><p><b>落とし穴</b>：毎フレーム <code>textContent</code> を書き換えるとSRが途中経過を読む→親aria-label＋内側aria-hiddenで回避。プロポーショナルフォントでは <code>ch</code> と実文字数がズレて末尾が欠ける→等幅推奨。空→全文で幅が変わるとCLS→領域を先に確保。長文・多数同時はINP悪化→同時発火数を絞りビューポート外は <code>IntersectionObserver</code> で停止。<b>自分が試すなら</b>：ヒーロー見出しだけスクランブル、ラベル群はCSSタイプライターにして依存ゼロで組む。<b>まとめ</b>：トリガと確定テキストはHTML/RSC、動きはClient島、守りは aria-label/aria-hidden＋reduced-motion——この分業でSEOもa11yも崩さず「化ける」見出しが作れる。</p>",
+      "sources": [
+        {
+          "title": "GSAP ScrambleTextPlugin（公式デモ）",
+          "url": "https://codepen.io/GreenSock/pen/jOxpVw"
+        },
+        {
+          "title": "Accessible Typewriter Animations（aria-label）",
+          "url": "https://www.cyishere.dev/blog/a11y-of-typewriter-animation"
+        },
+        {
+          "title": "Typewriter Effect（CSS-Tricks）",
+          "url": "https://css-tricks.com/snippets/css/typewriter-effect/"
+        },
+        {
+          "title": "Advanced Text Scramble with GSAP, React & Next.js",
+          "url": "https://medium.com/@moraromerojuan8/creating-an-advanced-text-scramble-with-gsap-react-and-nextjs-48b86b0e9767"
+        },
+        {
+          "title": "Design accessible animation and movement（Pope Tech）",
+          "url": "https://blog.pope.tech/2025/12/08/design-accessible-animation-and-movement/"
+        }
+      ]
+    },
+    {
+      "id": "2026-08-05-flutter",
+      "date": "2026-08-05",
+      "topic": "Flutter",
+      "title": "Flutter 3.44の実像 — Agentic Hot Reload・GenUI・SPM既定化・HCPP、Material/Cupertinoはコア凍結",
+      "lede": "現行安定版は Flutter 3.44.7 / Dart 3.12。3.44の目玉は Agentic Hot Reload・Generative UI・Androidの Hybrid Composition++・iOS/macOSで SPM が既定。Material/Cupertino は3.44でコア凍結され、将来 material_ui / cupertino_ui として独立パッケージへ分離。次の機能リリースは2026年8月。",
+      "articleHtml": "<p>Flutterは年4回（2/5/8/11月）の機能リリースで進み、3.44は <b>Google I/O 2026</b> で公開された。現行安定版は <b>Flutter 3.44.7 / Dart 3.12</b>。採用例としてFlutterが2026 Toyota RAV4のインフォテインメントで稼働するなど、組込み領域にも広がっている。次の機能リリースは2026年8月で、3.45系はまだ未リリース——いまは3.44系で足場を固める局面だ。</p><p><b>何が新しいか</b>。目玉は4つ。①<b>Agentic Hot Reload</b>＝AIエージェントの変更を即時反映、②<b>Generative UI（GenUI）</b>、③Androidの <b>Hybrid Composition++（HCPP）</b> でプラットフォームビュー合成を改善、④iOS/macOSで <b>Swift Package Manager（SPM）が既定</b>に。ロードマップ『Finishing the Job』はAndroidのImpeller移行完遂（Android 10+でlegacy Skiaバックエンド撤去）とWebのWebAssembly既定化を掲げる。</p><figure class='fig'><svg viewBox='0 0 600 132' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='132' rx='10' fill='#e8f7f0'/><text x='16' y='24' font-family='sans-serif' font-size='13' font-weight='700' fill='#0a7d55'>Flutter 3.44 の4本柱</text><g font-family='sans-serif' font-size='11'><rect x='18' y='38' width='138' height='78' rx='8' fill='#fff' stroke='#0277bd'/><text x='30' y='60' font-weight='700' fill='#0277bd'>Agentic</text><text x='30' y='78' fill='#333'>Hot Reload</text><text x='30' y='98' fill='#6b6b6b'>AI変更を即反映</text><rect x='166' y='38' width='138' height='78' rx='8' fill='#fff' stroke='#0277bd'/><text x='178' y='60' font-weight='700' fill='#0277bd'>GenUI</text><text x='178' y='78' fill='#333'>Generative UI</text><text x='178' y='98' fill='#6b6b6b'>A2UI系</text><rect x='314' y='38' width='138' height='78' rx='8' fill='#fff' stroke='#0277bd'/><text x='326' y='60' font-weight='700' fill='#0277bd'>HCPP</text><text x='326' y='78' fill='#333'>Android合成改善</text><text x='326' y='98' fill='#6b6b6b'>Platform View</text><rect x='462' y='38' width='120' height='78' rx='8' fill='#fff' stroke='#0277bd'/><text x='474' y='60' font-weight='700' fill='#0277bd'>SPM 既定</text><text x='474' y='78' fill='#333'>iOS/macOS</text><text x='474' y='98' fill='#6b6b6b'>CocoaPods脱却へ</text></g></svg><figcaption>図1：3.44の目玉。開発ループ・UI生成・合成・依存管理の各層に効く。</figcaption></figure><p><b>設計上の一番大きな変化</b>は、<b>Material・Cupertinoが3.44でコアに凍結</b>され、将来 <code>material_ui</code> / <code>cupertino_ui</code> として独立バージョニングのパッケージへ分離する点だ。狙いはM3更新を四半期SDKリリースを待たずに届けること。新デザイン（M3 Expressive等）はコアSDKでは新規開発されず、分離後の新パッケージ側で進むため、採用計画はコアSDKではなく新パッケージの動向で立てる必要がある。</p><figure class='fig'><svg viewBox='0 0 600 128' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='128' rx='10' fill='#eefcf6'/><text x='16' y='24' font-family='sans-serif' font-size='13' font-weight='700' fill='#0a7d55'>Material/Cupertino の主戦場が移る</text><g font-family='sans-serif' font-size='11'><rect x='20' y='40' width='250' height='68' rx='8' fill='#fff' stroke='#90a4ae'/><text x='34' y='62' font-weight='700' fill='#455a64'>コアSDK（3.44で凍結）</text><text x='34' y='84' fill='#333'>既存の安定運用・保守</text><text x='34' y='102' fill='#c62828'>新規デザイン開発なし</text><rect x='330' y='40' width='250' height='68' rx='8' fill='#fff' stroke='#0277bd'/><text x='344' y='62' font-weight='700' fill='#01579b'>material_ui / cupertino_ui</text><text x='344' y='84' fill='#333'>独立バージョニング</text><text x='344' y='102' fill='#333'>M3更新を四半期を待たず配布</text><path d='M270 74 L330 74' stroke='#0277bd' stroke-width='2.5' marker-end='url(#a2)'/><defs><marker id='a2' markerWidth='9' markerHeight='9' refX='6' refY='3' orient='auto'><path d='M0,0 L6,3 L0,6 Z' fill='#0277bd'/></marker></defs></g></svg><figcaption>図2：新機能はコアではなく material_ui 側で届く体制へ。</figcaption></figure><p><b>UIプリミティブ</b>も増えた。<code>ShapedInputBorder</code> は任意の <code>ShapeBorder</code> で入力枠を作れ、<code>RoundedSuperellipseBorder</code> で入力枠をiOS風にできる。<code>ExpansionTile</code> の基盤 <code>Expansible</code> が柔軟になり <code>toggle</code> メソッドが追加、Cupertinoには <code>CupertinoMenuAnchor</code>。土台の <b>Impeller</b>（iOS=Metal / Android=Vulkan、API 29+既定）は shader compilation jank を排除し、目標は UI〜4ms＋raster〜4ms。フレーム予算は60fps=16ms／90fps=11ms／120fps=8.3msで、計測はDevToolsをprofileモードで。</p><p><b>状態管理の基本線</b>は不変：新規の既定は <b>Riverpod 3.0</b>（compile-time safety・最小ボイラープレート、現行3.3.x）、監査証跡が要る規制業界（fintech/healthcare）は <b>Bloc 9.0</b>（現行9.2.x）。両者は共存でき移行はscreen-by-screen。<b>自分が試すなら</b>：iOS/macOSプロジェクトをSPMへ寄せてCocoaPods依存を減らし、入力枠は <code>RoundedSuperellipseBorder</code> でネイティブ感を出す。<b>注意点</b>：3.45待ちで機能を止めず3.44系の最新パッチへ追随し、Impellerは実機（特にミッドレンジAndroid）で検証。<b>まとめ</b>：3.44は『開発ループと合成と依存管理を底上げしつつ、Material進化の主戦場をパッケージへ移す』転換点だ。</p>",
+      "sources": [
+        {
+          "title": "What's new in Flutter 3.44（公式）",
+          "url": "https://flutter.dev/blog/whats-new-in-flutter-3-44"
+        },
+        {
+          "title": "Flutter 3.44 Highlights From Google I/O 2026",
+          "url": "https://dev.to/ianjasperrr/flutter-344-highlights-from-google-io-2026-whats-new-and-what-matters-g6f"
+        },
+        {
+          "title": "Latest Flutter Version 3.44",
+          "url": "https://www.cmarix.com/blog/latest-flutter-version/"
+        },
+        {
+          "title": "Best Flutter State Management 2026",
+          "url": "https://foresightmobile.com/blog/best-flutter-state-management"
+        }
+      ]
+    },
     {
       "id": "2026-08-04-claude-code",
       "date": "2026-08-04",
