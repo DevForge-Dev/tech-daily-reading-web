@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-08-06T04:49:37.410Z",
+  "generatedAt": "2026-08-07T04:47:45.275Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,118 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-08-07-claude-code",
+      "date": "2026-08-07",
+      "topic": "Claude Code",
+      "title": "v2.1.223/221 — org一括ガバナンス・Focus view・sandbox mask で\"組織で安全に回す\"へ",
+      "lede": "strictKnownMarketplaces/blockedMarketplaces が owner/* ワイルドカードに対応しプラグイン供給元をorg単位で一括許可/ブロック。Focus view でツール活動をターン単位に折りたたみ、Linux/WSLはsandbox資格情報のmaskモード。/teleport でクラウド作業をローカル継続。",
+      "articleHtml": "<p>今週の Claude Code は、個人の便利ツールから「組織で安全に運用する基盤」へと重心を移す更新が続いた。8/5 の <b>v2.1.223</b>、8/4 の <b>v2.1.221</b>（39件のCLI変更）を軸に、ガバナンス・可視性・サンドボックス強化の三方向が同時に前進している。折しも採用は\"ChatGPTモーメント\"と評される拡大局面で、企業導入を前提にした堅牢化が地に足の付いた形で入ってきた。</p>\n<p><b>何が新しいか。</b>まず管理設定 <code>strictKnownMarketplaces</code> / <code>blockedMarketplaces</code> が <b>owner/* 形式のワイルドカード</b>に対応し、特定 GitHub organization 配下のマーケットプレイスを丸ごと一括で許可またはブロックできるようになった。プラグイン供給元をorg単位でガバナンスできる。次に <b>Focus view</b>（Ctrl+Alt+F）が、実行中ツールのライブインジケータだけを残して詳細を<b>ターン単位のサマリー</b>へ折りたたみ、長時間・並列運用の画面煩雑さを抑える。さらに Linux/WSL 向けに <b>sandbox 資格情報の mask モード</b>が加わり、サンドボックス内コマンドにはセンチネル用のコピーを読ませ、<b>実際の値は egress 時にプロキシが差し替える</b>（macOSはdenyにフォールバック）。加えて <code>/teleport</code> のヒントでクラウドセッションを <code>claude --teleport &lt;id&gt;</code> でローカルへ引き継げる。zsh の <code>[[ ]]</code> 正規表現や不可視Unicodeを悪用した Bash 権限バイパスなど、複数のセキュリティ修正も同梱され、月内では ultraplan が削除された。</p>\n<figure class='fig'><svg viewBox='0 0 600 214' xmlns='http://www.w3.org/2000/svg'>\n  <rect x='0' y='0' width='600' height='214' fill='#f6f8fa' rx='10'/>\n  <text x='16' y='26' font-family='sans-serif' font-size='14' font-weight='bold' fill='#1a7f37'>今週の主眼：ガバナンス・可視性・安全性</text>\n  <line x1='16' y1='36' x2='584' y2='36' stroke='#d0d7de'/>\n  <g font-family='sans-serif' font-size='12' fill='#24292f'>\n    <text x='16' y='62' font-weight='bold'>マーケットプレイス</text>\n    <text x='190' y='62' fill='#8250df'>個別指定</text>\n    <text x='285' y='62' fill='#57606a'>→</text>\n    <text x='307' y='62' fill='#1f883d' font-weight='bold'>owner/* で org 一括 許可/ブロック</text>\n    <line x1='16' y1='76' x2='584' y2='76' stroke='#eaeef2'/>\n    <text x='16' y='102' font-weight='bold'>画面</text>\n    <text x='190' y='102' fill='#8250df'>全ツール詳細を羅列</text>\n    <text x='285' y='102' fill='#57606a'>→</text>\n    <text x='307' y='102' fill='#1f883d' font-weight='bold'>Focus view でターン単位に折畳</text>\n    <line x1='16' y1='116' x2='584' y2='116' stroke='#eaeef2'/>\n    <text x='16' y='142' font-weight='bold'>Linux/WSL 資格情報</text>\n    <text x='190' y='142' fill='#8250df'>実値を露出</text>\n    <text x='285' y='142' fill='#57606a'>→</text>\n    <text x='307' y='142' fill='#1f883d' font-weight='bold'>mask：egress時にプロキシが差替</text>\n    <line x1='16' y1='156' x2='584' y2='156' stroke='#eaeef2'/>\n    <text x='16' y='182' font-weight='bold'>クラウド継続</text>\n    <text x='190' y='182' fill='#8250df'>手動コピー</text>\n    <text x='285' y='182' fill='#57606a'>→</text>\n    <text x='307' y='182' fill='#1f883d' font-weight='bold'>/teleport でローカルへ引継ぎ</text>\n  </g>\n  <text x='16' y='206' font-family='sans-serif' font-size='11.5' fill='#57606a'>ほかBash権限バイパス修正・ultraplan削除など計39件のCLI変更（v2.1.221）</text>\n</svg><figcaption>図1：v2.1.223/221 の要点。運用を org 単位で締め、画面と資格情報を守る。</figcaption></figure>\n<p><b>拡張レイヤーの使い分け。</b>ガバナンスの土台を押さえたら、拡張は Hooks・Subagents・Skills を役割で切り分けるのが定石だ。強制したいルールは決定論的に発火する <b>Hooks</b>（PreToolUse等）、文脈知識のオンデマンド注入は説明文一致で読み込む <b>Skills</b>、並列調査や委譲の隔離は <b>Subagents</b>。プラグインはこれらを束ねる配布フォーマットで、<code>.claude-plugin/plugin.json</code> と YAML 付き Skill が基本構成、<code>--plugin-dir</code> でローカルテストできる。</p>\n<figure class='fig'><pre class='mermaid'>flowchart TD\n  Q[\"何を足したい？\"] --> R[\"ルールを必ず強制\"]\n  Q --> K[\"領域知識を注入\"]\n  Q --> S[\"作業を隔離・委譲\"]\n  R --> RH[\"Hooks / 権限\"]\n  K --> KS[\"Skills（SKILL.md）\"]\n  S --> SS[\"Subagents（.claude/agents）\"]</pre><figcaption>図2：拡張の判断基準 — 強制はHooks、知識はSkills、委譲はSubagents。</figcaption></figure>\n<p><b>使いどころ・落とし穴。</b>チームでプラグインを配るなら、まず信頼する org を <code>strictKnownMarketplaces</code> に <code>your-org/*</code> で登録し、供給元を面で管理するのが安全だ。長時間運用は Focus view を既定にして「今どのツールが走っているか」だけ見える状態にすると事故に気づきやすい。一方 sandbox mask は<b>Linux/WSL限定</b>で macOS は deny に落ちるため、mask 前提の運用を macOS に持ち込むと挙動が変わる点に注意。ultraplan 廃止のように機能が消えることもあるので、ワークフローが特定機能に依存していないか点検しておきたい。</p>\n<p><b>ひとことまとめ。</b>「org一括ガバナンス＋Focus viewの可視性＋mask/権限修正の安全性」。個人の速さより、複数人・長時間で\"事故らせない\"方向に週次で堅牢化が進んでいる。</p>",
+      "sources": [
+        {
+          "title": "Claude Code — releasebot（v2.1.223）",
+          "url": "https://releasebot.io/updates/anthropic/claude-code"
+        },
+        {
+          "title": "Claude Code v2.1.221 リリースノート",
+          "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.221"
+        },
+        {
+          "title": "Claude Code チェンジログ（2026年8月）",
+          "url": "https://www.gradually.ai/en/changelogs/claude-code/"
+        },
+        {
+          "title": "Hooks・Subagents・Skills 完全ガイド",
+          "url": "https://ofox.ai/blog/claude-code-hooks-subagents-skills-complete-guide-2026/"
+        },
+        {
+          "title": "Claude Code プラグインの作り方（DataCamp）",
+          "url": "https://www.datacamp.com/tutorial/how-to-build-claude-code-plugins"
+        }
+      ]
+    },
+    {
+      "id": "2026-08-07-nextjs",
+      "date": "2026-08-07",
+      "topic": "Next.js",
+      "title": "WebGLフラグメントシェーダー背景 — 生WebGL島 と R3F、CSSでは届かない\"有機的な動き\"",
+      "lede": "Stripe風メッシュグラデや流体ノイズはGPUのフラグメントシェーダー(GLSL)の領域。全画面クアッド＋u_time/u_resolution/u_mouse の3 uniformが骨格。背景1枚は生WebGL（数KB・依存ゼロ）、3D連携はR3F+drei shaderMaterial。SSR不可・DPR上限・毎フレームsetState禁止が鉄則。",
+      "articleHtml": "<p>「ぬるぬる動くメッシュグラデ」「オーロラ状の流体ノイズ」「ホバーで歪む画像」——アワード系サイト定番の\"質感のある動き\"は、DOMの transform/opacity や <code>@property</code> グラデでは到達できない。担うのは <b>GPU上で走るフラグメントシェーダー（GLSL）</b>だ。フラグメントシェーダーは「1ピクセルにつき1回、色を返す関数」を<b>数千並列</b>でGPUが実行するため、CPUを焼かずに全画面グラデを毎フレーム塗り替えられる。既存の 3D/WebGL 系メモは react-three-fiber と CSS 3D までで、GLSL そのものは空白だった——今日はその穴を埋める。</p>\n<p><b>描画モデル（最小構成）。</b>背景用途では頂点シェーダーは<b>ただの全画面クアッド</b>（-1..1のクリップ空間に板2枚）で、表現はすべてフラグメントシェーダーが担う。<code>gl_FragCoord</code> を <code>resolution</code> で割って 0..1 の UV を作り、色 <code>vec4(r,g,b,a)</code> を返す。JS↔GPU の橋は <b>uniform</b> だけで、最小セットは3つ：アニメの駆動源 <code>u_time</code>、アスペクト/DPR 補正の <code>u_resolution</code>、ポインタ追従の <code>u_mouse</code>（0..1）。メッシュグラデの核は Simplex/Perlin <b>ノイズ関数を1つ貼る</b>だけ（依存ゼロ・約20行）で、数レイヤ重ねて <code>mix()</code> で2〜4色を補間すれば\"ゆっくり流れる面\"になる。3レイヤの simplex noise でモバイル60fps が定番の落としどころだ。</p>\n<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg'>\n  <rect x='0' y='0' width='600' height='200' fill='#f5f8ff' rx='10'/>\n  <text x='16' y='26' font-family='sans-serif' font-size='14' font-weight='bold' fill='#0b5cad'>2つの実装方針の使い分け</text>\n  <g font-family='sans-serif' font-size='12'>\n    <rect x='16' y='40' width='278' height='146' fill='#ffffff' stroke='#4c8bf5' stroke-width='2' rx='8'/>\n    <text x='30' y='62' font-weight='bold' fill='#0b5cad'>方針A：生WebGL</text>\n    <text x='30' y='84' fill='#57606a'>背景/ヒーローの1枚グラデ</text>\n    <text x='30' y='108' fill='#24292f'>数KB・three.js不要</text>\n    <text x='30' y='128' fill='#24292f'>useEffect内でのみ触る</text>\n    <text x='30' y='148' fill='#24292f'>SSR回避が楽</text>\n    <text x='30' y='172' fill='#1f883d' font-weight='bold'>→ 軽さ・依存ゼロで有利</text>\n    <rect x='306' y='40' width='278' height='146' fill='#ffffff' stroke='#4c8bf5' stroke-width='2' rx='8'/>\n    <text x='320' y='62' font-weight='bold' fill='#0b5cad'>方針B：R3F + drei</text>\n    <text x='320' y='84' fill='#57606a'>3Dシーン/複数マテリアル</text>\n    <text x='320' y='108' fill='#24292f'>shaderMaterialでuniform自動宣言</text>\n    <text x='320' y='128' fill='#24292f'>dynamic(..,{ssr:false})</text>\n    <text x='320' y='148' fill='#24292f'>frameloop=demandで休止</text>\n    <text x='320' y='172' fill='#1f883d' font-weight='bold'>→ エコシステムの恩恵</text>\n  </g>\n</svg><figcaption>図1：1枚のグラデは生WebGL、3D連携やポストプロセスはR3F。</figcaption></figure>\n<pre><code>precision highp float;\nuniform float u_time; uniform vec2 u_resolution, u_mouse;\nfloat noise(vec2 p){ /* simplex を貼る（依存ゼロ） */ return 0.0; }\nvoid main(){\n  vec2 uv = (gl_FragCoord.xy - 0.5*u_resolution)/u_resolution.y;\n  float n = 0.6*noise(uv*1.5 + u_time*0.05) + 0.4*noise(uv*3.0 - u_time*0.08);\n  n += 0.3*smoothstep(0.6, 0.0, distance(uv, (u_mouse-0.5)*2.0));\n  gl_FragColor = vec4(mix(vec3(0.13,0.16,0.55), vec3(0.9,0.35,0.55), clamp(n,0.,1.)), 1.0);\n}</code></pre>\n<figure class='fig'><pre class='mermaid'>flowchart LR\n  T[\"u_time 毎フレーム加算\"] --> F[\"フラグメントシェーダー\"]\n  R[\"u_resolution DPR反映\"] --> F\n  M[\"u_mouse lerpで滑らかに\"] --> F\n  F --> P[\"各ピクセルの色 vec4\"]</pre><figcaption>図2：3つのuniformが唯一の入力。時間で動かし、解像度で補正し、マウスで反応。</figcaption></figure>\n<p><b>Next.js（App Router）での組み込み。</b>WebGL は <code>window</code>/<code>canvas</code> 依存で <b>SSR不可</b>なので、<code>'use client'</code> の島に隔離し <code>useEffect</code> 内でだけ触る（JS前は背面のCSSグラデが見える＝プログレッシブエンハンスメント）。<code>layout.tsx</code> にこの島を1つ差し、<code>children</code>（RSC）を上に重ねればページはサーバー描画のまま背景だけクライアントで動く。R3F なら Canvas を積む wrapper を <code>dynamic(..., {ssr:false})</code> で読む。</p>\n<p><b>落とし穴。</b>Retina(dpr=3)で全画面フラグメントは3倍のピクセル数——<code>Math.min(devicePixelRatio, 2)</code> で上限を掛ける（R3Fは <code>dpr={[1,2]}</code>）。時間・マウスは <b>毎フレーム setState で回さない</b>（再レンダー地獄でINPが死ぬ）。<code>useRef</code>＋<code>useFrame</code> または生rAF内で uniform を直接書き換える。R3F の uniforms は <code>useMemo</code> で固定しないと再生成で値が飛ぶ。アンマウントで <code>cancelAnimationFrame</code>＋<code>WEBGL_lose_context</code> の <b>cleanup 必須</b>——Safari/iOS は同時WebGLコンテキスト数に上限があり、SPA遷移でCanvasを積むと「Too many active WebGL contexts」で真っ黒になる。動きに敏感な層には <code>prefers-reduced-motion</code> でrAFを回さず1フレームだけ描いて止める。</p>\n<p><b>ひとことまとめ。</b>「全画面クアッド＋3 uniform、背景は生WebGL・3DはR3F」。まずCSSで足りるか（@property/conic）を先に検討し、<b>有機的に揺れる・ポインタに反応する</b>要件が出てからシェーダーへ。</p>",
+      "sources": [
+        {
+          "title": "drei shaderMaterial 公式ドキュメント",
+          "url": "https://drei.docs.pmnd.rs/shaders/shader-material"
+        },
+        {
+          "title": "R3F — Scaling performance",
+          "url": "https://r3f.docs.pmnd.rs/advanced/scaling-performance"
+        },
+        {
+          "title": "A flowing WebGL gradient, deconstructed",
+          "url": "https://alexharri.com/blog/webgl-gradients"
+        },
+        {
+          "title": "The Study of Shaders with R3F（Maxime Heckel）",
+          "url": "https://blog.maximeheckel.com/posts/the-study-of-shaders-with-react-three-fiber/"
+        },
+        {
+          "title": "Too many active WebGL contexts on Safari",
+          "url": "https://github.com/pmndrs/react-three-fiber/discussions/2457"
+        }
+      ]
+    },
+    {
+      "id": "2026-08-07-flutter",
+      "date": "2026-08-07",
+      "topic": "Flutter",
+      "title": "Dart 3.12 が減らすボイラープレート — dot shorthands・private named params と Agentic Hot Reload 本番昇格",
+      "lede": "Flutter 3.44 / Dart 3.12。文脈から型が自明なら .foo で省略できる dot shorthands が成熟、初期化仮引数の先頭 _ で公開名を自動決定する private named parameters、Agentic Hot Reload が experimental→productionへ（Dart MCP server 経由で自動hot reload）。UIは Material 3 Expressive。",
+      "articleHtml": "<p>今日の Flutter は「書く量を減らす言語機能」と「エージェント連携」が主役だった。現行安定版は <b>Flutter 3.44 / Dart 3.12</b>（3.44 は Google I/O 2026 で公開）、次の機能リリースは年4回サイクルの <b>2026年8月</b>。8月版が来る前に 3.44 系で足場を固める好機だ。</p>\n<p><b>何が新しいか（言語）。</b>Dart 3.10 で導入された <b>dot shorthands</b> が 3.12 で成熟し、型が文脈から自明なら enum 値・static メンバー・コンストラクタを <code>.foo</code> と省略できる（Flutter 公式サンプルも移行済み）。<b>private named parameters</b> は初期化仮引数・primary constructor 引数の先頭 <code>_</code> で公開名を自動決定し、カプセル化を保ったままボイラープレートを削る。実験的な <b>primary constructors</b> はクラスヘッダにフィールドとコンストラクタを畳み込み、3行の値クラスを1行にする。</p>\n<figure class='fig'><svg viewBox='0 0 600 176' xmlns='http://www.w3.org/2000/svg'>\n  <rect x='0' y='0' width='600' height='176' fill='#f2fbf6' rx='10'/>\n  <text x='16' y='26' font-family='sans-serif' font-size='14' font-weight='bold' fill='#0a7d55'>dot shorthands：型が自明なら .foo で省略</text>\n  <g font-family='monospace' font-size='12.5'>\n    <rect x='16' y='40' width='268' height='118' fill='#ffffff' stroke='#9aa0a6' stroke-width='1.5' rx='8'/>\n    <text x='30' y='64' fill='#8250df'>// これまで</text>\n    <text x='30' y='90' fill='#24292f'>Alignment a =</text>\n    <text x='30' y='110' fill='#24292f'>  Alignment.center;</text>\n    <text x='30' y='138' fill='#24292f'>color: Colors.blue,</text>\n    <text x='300' y='104' font-family='sans-serif' font-size='22' fill='#0a7d55'>→</text>\n    <rect x='330' y='40' width='254' height='118' fill='#ffffff' stroke='#1f883d' stroke-width='2' rx='8'/>\n    <text x='344' y='64' fill='#1f883d'>// Dart 3.12</text>\n    <text x='344' y='90' fill='#24292f'>Alignment a =</text>\n    <text x='344' y='110' fill='#24292f'>  .center;</text>\n    <text x='344' y='138' fill='#24292f'>color: .blue,</text>\n  </g>\n</svg><figcaption>図1：enum/static/コンストラクタを .foo に短縮。冗長な型名の反復が消える。</figcaption></figure>\n<p><b>何が新しいか（エージェント）。</b><b>Agentic Hot Reload</b> が experimental から <b>production へ昇格</b>した。<b>Dart MCP server</b> 経由でコーディングエージェントが DTD 接続 URI を手動コピーせず<b>自動で hot reload</b> でき、AI にコードを直させながら即座に反映——という反復が滑らかになる。あわせて <b>Generative UI（GenUI）</b> も追加された。描画基盤は <b>Impeller が iOS＋Android API 29+（Vulkan）の既定</b>で、非対応端末は Skia にフォールバックする。</p>\n<figure class='fig'><pre class='mermaid'>flowchart LR\n  A[\"コーディングエージェント\"] --> B[\"Dart MCP server\"]\n  B --> C[\"DTDへ自動接続（URI手動コピー不要）\"]\n  C --> D[\"hot reload 自動実行\"]\n  D --> E[\"変更が即反映\"]</pre><figcaption>図2：Agentic Hot Reload — エージェントがMCP経由で自律的に反映まで回す。</figcaption></figure>\n<p><b>UI/状態管理の現在地。</b>UI は <b>Material 3 Expressive</b> が焦点で、15の新規/更新コンポーネント・<b>spring ベースの新モーション物理</b>・35 のシェイプと shape morphing を追加し、より感情に訴える動的UXを作る（<code>useMaterial3</code> は既定、2026 は M2 のままだと古く見える）。状態管理は「新規＝<b>Riverpod 3.0</b>（自動リトライ・offline persistence・Mutations・画面外リスナーの自動pause）、監査/大規模＝<b>Bloc 9.0</b>（<code>on&lt;Event&gt;</code> で event→state を直列化し監査証跡）」が基本線。アニメは約80%を implicit（<code>AnimatedContainer</code> 等）で、複雑な choreography だけ explicit に寄せる。</p>\n<p><b>使いどころ・落とし穴。</b>dot shorthands と private named parameters は<b>すぐ使える生産性機能</b>で、Widget ツリーの型名反復を大きく削れる。一方 <b>primary constructors は experimental</b> なので本番投入は様子見が無難。Agentic Hot Reload は MCP 対応エージェントとの組み合わせが前提で、まずは既存プロジェクトで Dart MCP server を繋いで自動反映を体験するのがよい。パフォーマンスはフレーム予算（60fps=16ms / 120fps=8.3ms）と再ビルド削減が軸で、<code>const</code> 徹底・<code>select</code> による局所再描画を効かせる。</p>\n<p><b>ひとことまとめ。</b>「言語で書く量を減らし、エージェントで反映を速く、UIはExpressiveで today らしく」。まずは <code>.foo</code> 省略と <code>_</code> 付き名前付き引数への置換から手をつけたい。</p>",
+      "sources": [
+        {
+          "title": "Latest Flutter Version 3.44",
+          "url": "https://www.cmarix.com/blog/latest-flutter-version/"
+        },
+        {
+          "title": "Dart 3.12: 3 features that cut Flutter boilerplate",
+          "url": "https://ecorpit.com/dart-3-12-primary-constructors-dot-shorthands-guide-2026/"
+        },
+        {
+          "title": "Dart — What is new",
+          "url": "https://dart.dev/resources/whats-new"
+        },
+        {
+          "title": "Material 3 Expressive: New Components, Motion, Shapes",
+          "url": "https://supercharge.design/blog/material-3-expressive"
+        },
+        {
+          "title": "What is new in Riverpod 3.0",
+          "url": "https://riverpod.dev/docs/whats_new"
+        }
+      ]
+    },
+    {
+      "id": "2026-08-07-github-trending",
+      "date": "2026-08-07",
+      "topic": "GitHub Trending",
+      "title": "8/7の話題リポジトリ — 自己改善RLMエージェント・エッジのエージェントOS・編集可能AIスライド",
+      "lede": "エージェントを\"常駐・自前・実用\"へ寄せる3本。PrimeIntellect/prime-agent（自己改善RLM）、cloudflare/cloudflare-os（Workers上のエージェントOS）、Binaryify/open-kimi-ppt-skill（編集可能PPTX生成）。すべてTrendshift日次New 2026。",
+      "articleHtml": "<p>8/7 の Trending を貫くのは「AIエージェントを、常駐させ・自前基盤に載せ・実用の成果物まで出す」流れ。長時間走る自己改善エージェント、会社の文脈で動くエッジ上のエージェントOS、そして\"そのまま編集できる\"スライド生成——上流の実行基盤から下流の成果物まで、New 2026 の新顔3本が同日に急上昇した。データ源は Trendshift 日次（momentum ランキング）で、いずれも公開直後の勢いが突出している。</p>\n<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg'>\n  <rect x='0' y='0' width='600' height='210' fill='#f2fdf5' rx='10'/>\n  <text x='16' y='26' font-family='sans-serif' font-size='14' font-weight='bold' fill='#1a7f37'>今日の3本：解決したい課題 → 提供する機能</text>\n  <line x1='16' y1='36' x2='584' y2='36' stroke='#cfead9'/>\n  <g font-family='sans-serif' font-size='11.5' fill='#24292f'>\n    <text x='16' y='58' font-weight='bold' fill='#1f883d'>prime-agent</text>\n    <text x='150' y='58'>エージェントが伸び悩む</text>\n    <text x='352' y='58' fill='#57606a'>→</text>\n    <text x='372' y='58'>使うほど自己改善するRLM</text>\n    <line x1='16' y1='72' x2='584' y2='72' stroke='#eaf6ee'/>\n    <text x='16' y='102' font-weight='bold' fill='#1f883d'>cloudflare-os</text>\n    <text x='150' y='102'>社内文脈で動く基盤が無い</text>\n    <text x='352' y='102' fill='#57606a'>→</text>\n    <text x='372' y='102'>Workers上のエージェントOS</text>\n    <line x1='16' y1='116' x2='584' y2='116' stroke='#eaf6ee'/>\n    <text x='16' y='146' font-weight='bold' fill='#1f883d'>open-kimi-ppt</text>\n    <text x='150' y='146'>AI生成スライドが直せない</text>\n    <text x='352' y='146' fill='#57606a'>→</text>\n    <text x='372' y='146'>編集可能PPTX＋ブラウザ編集</text>\n    <line x1='16' y1='160' x2='584' y2='160' stroke='#eaf6ee'/>\n    <text x='16' y='188' font-weight='bold' fill='#57606a'>共通点</text>\n    <text x='150' y='188' fill='#57606a'>実行の常駐・基盤の自前化・成果物の実用性——3層で\"使えるエージェント\"へ。</text>\n  </g>\n</svg><figcaption>図1：自己改善の実行体→エッジのOS→編集可能な成果物。エージェント活用の3層。</figcaption></figure>\n<h4>PrimeIntellect-ai/prime-agent（Trendshift 日次1位・New 2026）</h4>\n<p><b>解決したい課題。</b>多くのコーディングエージェントは固定された能力で、使い込んでも賢くならず、ブラウザを閉じれば止まる。<b>提供する機能。</b>Prime Intellect 製の<b>自己改善型 RLM（強化学習）エージェント</b>で、コーディングのワークフローから長時間の自律タスクまでをこなす。「使うほど自己改善する」「常駐して走り続ける」という切り口が、本日 Trendshift 日次<b>1位</b>・New 2026 の突出したモメンタムを生んだ。常駐エージェント志向の高まりの中核にある。</p>\n<h4>cloudflare/cloudflare-os（Trendshift 日次2位・New 2026）</h4>\n<p><b>解決したい課題。</b>汎用チャットは会社のシステムや文脈を知らず、社内文書やアプリを\"その組織のやり方\"で作るのは難しい。<b>提供する機能。</b>Cloudflare Workers 上に構築された公式の<b>エージェント・ワークスペース（OS）</b>で、会社のコンテキストやシステムを取り込み、文書作成・アプリ構築・エージェント実行を行う。エッジ実行基盤の上に「会社の文脈で動くエージェントOS」を載せた発想が支持され、先行の @cloudflare/computer に続くエージェントスタック整備として話題化した。</p>\n<h4>Binaryify/open-kimi-ppt-skill（Trendshift 日次7位・New 2026）</h4>\n<p><b>解決したい課題。</b>AI生成のスライドは体裁が固定で、生成後に手直しできない・画像として吐かれて再編集不能、という不便があった。<b>提供する機能。</b>AI エージェントに<b>編集可能な PPTD+PPTX</b> を生成させ、手直し用の<b>ローカル・ブラウザエディタ</b>まで同梱する非公式の Kimi Slides スキル。当日増加率が上位群で最高クラスで、エージェント一色の Trending の中で文書・プレゼン生成というジャンル多様性も担う。</p>\n<p><b>自分が試すなら。</b>実務に最短で効くのは <b>open-kimi-ppt-skill</b>。手元の要点メモから編集可能な PPTX を吐かせ、ブラウザエディタでの手直し体験と崩れ具合を既存フローと比べたい。基盤として面白いのは <b>cloudflare-os</b>——既に Workers を使うなら、社内文脈を与えたエージェントで小さな社内ツールを1つ作ってみる価値がある。prime-agent は「自己改善×常駐」の思想を確かめる観察対象として追っておきたい。</p>",
+      "sources": [
+        {
+          "title": "PrimeIntellect-ai/prime-agent",
+          "url": "https://github.com/PrimeIntellect-ai/prime-agent"
+        },
+        {
+          "title": "cloudflare/cloudflare-os",
+          "url": "https://github.com/cloudflare/cloudflare-os"
+        },
+        {
+          "title": "Binaryify/open-kimi-ppt-skill",
+          "url": "https://github.com/Binaryify/open-kimi-ppt-skill"
+        }
+      ]
+    },
     {
       "date": "2026-08-06",
       "topic": "Claude Code",
