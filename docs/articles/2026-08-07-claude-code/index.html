@@ -1,0 +1,97 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>v2.1.223/221 — org一括ガバナンス・Focus view・sandbox mask で&quot;組織で安全に回す&quot;へ — デイリー技術深掘り 読み物</title><meta name="description" content="strictKnownMarketplaces/blockedMarketplaces が owner/* ワイルドカードに対応しプラグイン供給元をorg単位で一括許可/ブロック。Focus view でツール活動をターン単位に折りたたみ、Linux/WSLはsandbox資格情報のmaskモード。/teleport でクラウド作業をローカル継続。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-07-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="v2.1.223/221 — org一括ガバナンス・Focus view・sandbox mask で&#34;組織で安全に回す&#34;へ — デイリー技術深掘り 読み物"><meta property="og:description" content="strictKnownMarketplaces/blockedMarketplaces が owner/* ワイルドカードに対応しプラグイン供給元をorg単位で一括許可/ブロック。Focus view でツール活動をターン単位に折りたたみ、Linux/WSLはsandbox資格情報のmaskモード。/teleport でクラウド作業をローカル継続。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-07-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>v2.1.223/221 — org一括ガバナンス・Focus view・sandbox mask で&quot;組織で安全に回す&quot;へ</h1> <p class="lede">strictKnownMarketplaces/blockedMarketplaces が owner/* ワイルドカードに対応しプラグイン供給元をorg単位で一括許可/ブロック。Focus view でツール活動をターン単位に折りたたみ、Linux/WSLはsandbox資格情報のmaskモード。/teleport でクラウド作業をローカル継続。</p> <div class="meta"> <span>📅 2026年8月7日</span> <span>⏱ 約3分</span> <span>🔗 出典 5 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="1"><p>今週の Claude Code は、個人の便利ツールから「組織で安全に運用する基盤」へと重心を移す更新が続いた。8/5 の <b>v2.1.223</b>、8/4 の <b>v2.1.221</b>（39件のCLI変更）を軸に、ガバナンス・可視性・サンドボックス強化の三方向が同時に前進している。折しも採用は"ChatGPTモーメント"と評される拡大局面で、企業導入を前提にした堅牢化が地に足の付いた形で入ってきた。</p>
+<p><b>何が新しいか。</b>まず管理設定 <code>strictKnownMarketplaces</code> / <code>blockedMarketplaces</code> が <b>owner/* 形式のワイルドカード</b>に対応し、特定 GitHub organization 配下のマーケットプレイスを丸ごと一括で許可またはブロックできるようになった。プラグイン供給元をorg単位でガバナンスできる。次に <b>Focus view</b>（Ctrl+Alt+F）が、実行中ツールのライブインジケータだけを残して詳細を<b>ターン単位のサマリー</b>へ折りたたみ、長時間・並列運用の画面煩雑さを抑える。さらに Linux/WSL 向けに <b>sandbox 資格情報の mask モード</b>が加わり、サンドボックス内コマンドにはセンチネル用のコピーを読ませ、<b>実際の値は egress 時にプロキシが差し替える</b>（macOSはdenyにフォールバック）。加えて <code>/teleport</code> のヒントでクラウドセッションを <code>claude --teleport &lt;id&gt;</code> でローカルへ引き継げる。zsh の <code>[[ ]]</code> 正規表現や不可視Unicodeを悪用した Bash 権限バイパスなど、複数のセキュリティ修正も同梱され、月内では ultraplan が削除された。</p>
+<figure class='fig'><svg viewBox='0 0 600 214' xmlns='http://www.w3.org/2000/svg'>
+  <rect x='0' y='0' width='600' height='214' fill='#f6f8fa' rx='10'></rect>
+  <text x='16' y='26' font-family='sans-serif' font-size='14' font-weight='bold' fill='#1a7f37'>今週の主眼：ガバナンス・可視性・安全性</text>
+  <line x1='16' y1='36' x2='584' y2='36' stroke='#d0d7de'></line>
+  <g font-family='sans-serif' font-size='12' fill='#24292f'>
+    <text x='16' y='62' font-weight='bold'>マーケットプレイス</text>
+    <text x='190' y='62' fill='#8250df'>個別指定</text>
+    <text x='285' y='62' fill='#57606a'>→</text>
+    <text x='307' y='62' fill='#1f883d' font-weight='bold'>owner/* で org 一括 許可/ブロック</text>
+    <line x1='16' y1='76' x2='584' y2='76' stroke='#eaeef2'></line>
+    <text x='16' y='102' font-weight='bold'>画面</text>
+    <text x='190' y='102' fill='#8250df'>全ツール詳細を羅列</text>
+    <text x='285' y='102' fill='#57606a'>→</text>
+    <text x='307' y='102' fill='#1f883d' font-weight='bold'>Focus view でターン単位に折畳</text>
+    <line x1='16' y1='116' x2='584' y2='116' stroke='#eaeef2'></line>
+    <text x='16' y='142' font-weight='bold'>Linux/WSL 資格情報</text>
+    <text x='190' y='142' fill='#8250df'>実値を露出</text>
+    <text x='285' y='142' fill='#57606a'>→</text>
+    <text x='307' y='142' fill='#1f883d' font-weight='bold'>mask：egress時にプロキシが差替</text>
+    <line x1='16' y1='156' x2='584' y2='156' stroke='#eaeef2'></line>
+    <text x='16' y='182' font-weight='bold'>クラウド継続</text>
+    <text x='190' y='182' fill='#8250df'>手動コピー</text>
+    <text x='285' y='182' fill='#57606a'>→</text>
+    <text x='307' y='182' fill='#1f883d' font-weight='bold'>/teleport でローカルへ引継ぎ</text>
+  </g>
+  <text x='16' y='206' font-family='sans-serif' font-size='11.5' fill='#57606a'>ほかBash権限バイパス修正・ultraplan削除など計39件のCLI変更（v2.1.221）</text>
+</svg><figcaption>図1：v2.1.223/221 の要点。運用を org 単位で締め、画面と資格情報を守る。</figcaption></figure>
+<p><b>拡張レイヤーの使い分け。</b>ガバナンスの土台を押さえたら、拡張は Hooks・Subagents・Skills を役割で切り分けるのが定石だ。強制したいルールは決定論的に発火する <b>Hooks</b>（PreToolUse等）、文脈知識のオンデマンド注入は説明文一致で読み込む <b>Skills</b>、並列調査や委譲の隔離は <b>Subagents</b>。プラグインはこれらを束ねる配布フォーマットで、<code>.claude-plugin/plugin.json</code> と YAML 付き Skill が基本構成、<code>--plugin-dir</code> でローカルテストできる。</p>
+<figure class='fig'><pre class='mermaid'>flowchart TD
+  Q["何を足したい？"] --> R["ルールを必ず強制"]
+  Q --> K["領域知識を注入"]
+  Q --> S["作業を隔離・委譲"]
+  R --> RH["Hooks / 権限"]
+  K --> KS["Skills（SKILL.md）"]
+  S --> SS["Subagents（.claude/agents）"]</pre><figcaption>図2：拡張の判断基準 — 強制はHooks、知識はSkills、委譲はSubagents。</figcaption></figure>
+<p><b>使いどころ・落とし穴。</b>チームでプラグインを配るなら、まず信頼する org を <code>strictKnownMarketplaces</code> に <code>your-org/*</code> で登録し、供給元を面で管理するのが安全だ。長時間運用は Focus view を既定にして「今どのツールが走っているか」だけ見える状態にすると事故に気づきやすい。一方 sandbox mask は<b>Linux/WSL限定</b>で macOS は deny に落ちるため、mask 前提の運用を macOS に持ち込むと挙動が変わる点に注意。ultraplan 廃止のように機能が消えることもあるので、ワークフローが特定機能に依存していないか点検しておきたい。</p>
+<p><b>ひとことまとめ。</b>「org一括ガバナンス＋Focus viewの可視性＋mask/権限修正の安全性」。個人の速さより、複数人・長時間で"事故らせない"方向に週次で堅牢化が進んでいる。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://releasebot.io/updates/anthropic/claude-code" target="_blank" rel="noopener noreferrer"> Claude Code — releasebot（v2.1.223） </a> </li><li> <a href="https://github.com/anthropics/claude-code/releases/tag/v2.1.221" target="_blank" rel="noopener noreferrer"> Claude Code v2.1.221 リリースノート </a> </li><li> <a href="https://www.gradually.ai/en/changelogs/claude-code/" target="_blank" rel="noopener noreferrer"> Claude Code チェンジログ（2026年8月） </a> </li><li> <a href="https://ofox.ai/blog/claude-code-hooks-subagents-skills-complete-guide-2026/" target="_blank" rel="noopener noreferrer"> Hooks・Subagents・Skills 完全ガイド </a> </li><li> <a href="https://www.datacamp.com/tutorial/how-to-build-claude-code-plugins" target="_blank" rel="noopener noreferrer"> Claude Code プラグインの作り方（DataCamp） </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
