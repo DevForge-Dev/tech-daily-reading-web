@@ -1,0 +1,77 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>dnd-kit 新アーキ（@dnd-kit/react v0.5.0）— App Routerで並び替えを「{ref}一発」に — デイリー技術深掘り 読み物</title><meta name="description" content="掴んで並び替えを最小配線で。旧@dnd-kit/coreのattributes/listeners/transform手配線が、新@dnd-kit/reactでは{ref}を刺すだけに。moveヘルパ・PointerSensor統合・アクセシビリティ既定ON・prefers-reduced-motion自動対応。0.xゆえ本番はバージョン厳密固定で。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-08-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="dnd-kit 新アーキ（@dnd-kit/react v0.5.0）— App Routerで並び替えを「{ref}一発」に — デイリー技術深掘り 読み物"><meta property="og:description" content="掴んで並び替えを最小配線で。旧@dnd-kit/coreのattributes/listeners/transform手配線が、新@dnd-kit/reactでは{ref}を刺すだけに。moveヘルパ・PointerSensor統合・アクセシビリティ既定ON・prefers-reduced-motion自動対応。0.xゆえ本番はバージョン厳密固定で。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-08-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>dnd-kit 新アーキ（@dnd-kit/react v0.5.0）— App Routerで並び替えを「{ref}一発」に</h1> <p class="lede">掴んで並び替えを最小配線で。旧@dnd-kit/coreのattributes/listeners/transform手配線が、新@dnd-kit/reactでは{ref}を刺すだけに。moveヘルパ・PointerSensor統合・アクセシビリティ既定ON・prefers-reduced-motion自動対応。0.xゆえ本番はバージョン厳密固定で。</p> <div class="meta"> <span>📅 2026年8月8日</span> <span>⏱ 約4分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="0"><p>ドラッグ&ドロップと並び替え（sortable / Kanban / リスト整列）は、Reactが最も苦手にしてきたインタラクションの一つ。デファクトの <b>dnd-kit</b> がここ1年でゼロから作り直され、旧 <code>@dnd-kit/core</code> 系（v6・安定）とは別物の新パッケージ <b>@dnd-kit/react（現行 v0.5.0・2026年6月）</b> が実用段階に入った。旧版の「<code>useSortable</code> が返す attributes/listeners/setNodeRef/transform/transition を全部自分で配線する」冗長さが、新版では <b>{ref} を要素に刺すだけ</b>に激減する。</p>
+<h4 id="sec-1">何が新しいか</h4>
+<p>層構造は、FW非依存コア <code>@dnd-kit/abstract</code> → DOM実装 <code>@dnd-kit/dom</code> → 薄いReactアダプタ <code>@dnd-kit/react</code>。インストールは <code>@dnd-kit/react</code> と sortable用の <code>@dnd-kit/helpers</code> の2つで足りる。API は <code>DragDropProvider</code>（旧 DndContext）で包み、<code>useSortable({id, index})</code> が返す <code>{ref}</code> を刺すだけ。<b>SortableContext ラッパは不要</b>。並び替え結果は <code>move(prev, event)</code> ヘルパが計算する（旧 arrayMove 相当）。<b>PointerSensor</b> がマウス・タッチ・ペンを Pointer Events で統合し、KeyboardSensor と共に自動登録される＝<b>無設定でキーボード操作可</b>。アクセシビリティプラグインが既定で有効で、ライブリージョン読み上げ込みで <b>WCAG 2.1 AA</b> を満たす。<b>prefers-reduced-motion も v0.2.4 で全アニメ自動尊重</b>。</p>
+<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='16' y='24' font-size='13' font-weight='700' fill='#111'>旧 @dnd-kit/core と 新 @dnd-kit/react</text><rect x='16' y='36' width='276' height='150' rx='8' fill='#fbeaea' stroke='#e0a3a3'></rect><text x='30' y='58' font-size='12' font-weight='700' fill='#b02a2a'>旧：core / sortable（v6）</text><text x='30' y='82' font-size='11' fill='#333'>DndContext + SortableContext</text><text x='30' y='102' font-size='11' fill='#333'>useSortable →</text><text x='30' y='120' font-size='11' fill='#333'>attributes / listeners / setNodeRef</text><text x='30' y='138' font-size='11' fill='#333'>/ transform / transition を手配線</text><text x='30' y='162' font-size='11' fill='#333'>arrayMove(prev, from, to)</text><rect x='308' y='36' width='276' height='150' rx='8' fill='#e8f3ec' stroke='#8fc7a3'></rect><text x='322' y='58' font-size='12' font-weight='700' fill='#1a7f37'>新：react（v0.5.0）</text><text x='322' y='82' font-size='11' fill='#333'>DragDropProvider で包むだけ</text><text x='322' y='102' font-size='11' fill='#333'>useSortable({id, index}) →</text><text x='322' y='120' font-size='11' fill='#333'>{ref} を刺すだけ</text><text x='322' y='138' font-size='11' fill='#333'>SortableContext 不要</text><text x='322' y='162' font-size='11' fill='#333'>move(prev, event) が並び替え</text></svg><figcaption>図1：手配線の旧APIから、{ref}を刺すだけの新APIへ。</figcaption></figure>
+<pre><code>'use client';
+import { DragDropProvider } from '@dnd-kit/react';
+import { useSortable } from '@dnd-kit/react/sortable';
+import { move } from '@dnd-kit/helpers';
+
+function Item({ id, index }) {
+  const { ref, isDragging } = useSortable({ id, index });
+  return <li ref={ref} style={{ touchAction: 'none', opacity: isDragging ? .5 : 1 }}>{id}</li>;
+}
+// <DragDropProvider onDragEnd={e => setItems(prev => move(prev, e))}> ... </DragDropProvider></code></pre>
+<h4 id="sec-2">App Routerでの組み込み</h4>
+<p>方針は<b>「掴む島」だけ Client、データ取得とページ本体は RSC のまま</b>。初期順序は RSC で取得して Client島に props で渡す。SSRハイドレーションは、<b>items state をサーバー由来の順序で初期化</b>し描画順と一致させれば mismatch は出ない。永続化は <code>onDragEnd</code> でまず <code>setItems(move(...))</code> の楽観更新 → Server Action で新順序をDB保存 → <code>revalidateTag</code>。保存失敗時は前配列にロールバック。認可・バリデーションは必ずサーバー側で行い、クライアントの並び順を鵜呑みにしない。</p>
+<h4 id="sec-3">落とし穴</h4>
+<p><b>touch-action: none</b> を付けないとモバイルでスクロールと競合。<b>key に配列 index は禁止</b>（安定idを使う。index だと並び替えが破綻）。<code>useSortable</code> の <code>index</code> が描画順とズレると同種の事故。センサはインライン配列で毎回生成せず安定参照に。そして <b>0.x は実験版</b>でマイナーに破壊的変更があり得るため <code>package.json</code> は厳密固定し、堅実運用なら旧安定版（core）も選択肢。Tailwind v4 併用時は <code>@layer dnd-kit</code> 対応済みの新しめのバージョンに上げる。</p>
+<p><b>ひとことまとめ：</b>並び替えの「操作そのもの」を、最小配線・a11y既定・reduced-motion自動で。実験版ゆえバージョン固定は必須。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://dndkit.com/react/quickstart/" target="_blank" rel="noopener noreferrer"> dnd kit — React Quickstart（新版公式） </a> </li><li> <a href="https://dndkit.com/react/guides/sortable-state-management/" target="_blank" rel="noopener noreferrer"> dnd kit — Managing sortable state（moveヘルパ） </a> </li><li> <a href="https://dndkit.com/changelog/" target="_blank" rel="noopener noreferrer"> dnd kit — Changelog（v0.1〜v0.5.0） </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 何が新しいか </a> </li><li> <a href="#sec-2" data-toc="sec-2"> App Routerでの組み込み </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 落とし穴 </a> </li> </ul> <div class="reading-box"> <div>📅 2026-08-08</div> <div>⏱ 読了 約4分</div> <div>🏷 Next.js</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

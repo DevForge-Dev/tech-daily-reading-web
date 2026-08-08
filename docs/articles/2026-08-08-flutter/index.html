@@ -1,0 +1,67 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Flutter 2026「Finishing the Job」— Impeller完遂・Web WasmGC既定化・Riverpod 3.0既定 — デイリー技術深掘り 読み物</title><meta name="description" content="安定版はFlutter 3.44/Dart 3.12、次の機能リリースは2026年8月。2026ロードマップはAndroid Impeller移行完遂・WebのWasmGC既定化・GenUI・Full-Stack Dartが柱。flutter build web --wasmでロード最大40%短縮/JS比2-3x。状態管理は新規=Riverpod 3.0、監査/大規模=Bloc 9.0。"><meta name="theme-color" content="#0277bd"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-08-flutter/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Flutter 2026「Finishing the Job」— Impeller完遂・Web WasmGC既定化・Riverpod 3.0既定 — デイリー技術深掘り 読み物"><meta property="og:description" content="安定版はFlutter 3.44/Dart 3.12、次の機能リリースは2026年8月。2026ロードマップはAndroid Impeller移行完遂・WebのWasmGC既定化・GenUI・Full-Stack Dartが柱。flutter build web --wasmでロード最大40%短縮/JS比2-3x。状態管理は新規=Riverpod 3.0、監査/大規模=Bloc 9.0。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-08-flutter/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #29b6f6, #01579b)"> <span class="glyph" aria-hidden="true">◆</span> <div class="kicker">Flutter</div> <h1>Flutter 2026「Finishing the Job」— Impeller完遂・Web WasmGC既定化・Riverpod 3.0既定</h1> <p class="lede">安定版はFlutter 3.44/Dart 3.12、次の機能リリースは2026年8月。2026ロードマップはAndroid Impeller移行完遂・WebのWasmGC既定化・GenUI・Full-Stack Dartが柱。flutter build web --wasmでロード最大40%短縮/JS比2-3x。状態管理は新規=Riverpod 3.0、監査/大規模=Bloc 9.0。</p> <div class="meta"> <span>📅 2026年8月8日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#0277bd"> <div> <article class="prose" data-has-mermaid="0"><p>今日のFlutterは、単発の新機能ではなく<b>2026年の年間ロードマップ「Finishing the Job」</b>が主役。安定版は <b>Flutter 3.44 / Dart 3.12</b>（3.44.0 は 2026-05-18・I/O 公開）で、次の機能リリースは <b>2026年8月</b>（年4回：2/5/8/11月）。8月版の前に 3.44 系で足場を固める好機だ。</p>
+<h4 id="sec-1">ロードマップ5本の柱</h4>
+<p>①<b>Android の Impeller 移行完遂</b>（Android 10+ で legacy Skia backend 撤去）②<b>Web の WebAssembly 既定化</b>③<b>GenUI / agentic app architecture</b>（AI駆動の動的UI）④<b>Full-Stack Dart</b>（Cloud Functions を Dart で）⑤ AI前提の開発体験。3.44 では Impeller が <b>Android API 29+（Vulkan）で既定</b>となり Skia 撤去、iOS/macOS は <b>Swift Package Manager が既定</b>（CocoaPods 段階的廃止）、<b>Agentic Hot Reload</b>（Dart MCP server 経由）と <b>GenUI</b> が production へ昇格した。Dart 3.12 は private named parameters・dot shorthands 成熟・primary constructors（experimental）。</p>
+<figure class='fig'><svg viewBox='0 0 600 180' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='16' y='24' font-size='13' font-weight='700' fill='#0277bd'>Web：WasmGC でロード時間短縮（相対）</text><rect x='150' y='44' width='400' height='24' rx='4' fill='#e3f2fb' stroke='#56c5f5'></rect><text x='138' y='61' font-size='12' text-anchor='end' fill='#333'>JS（従来）</text><text x='160' y='61' font-size='11' fill='#0277bd'>基準 100%</text><rect x='150' y='84' width='240' height='24' rx='4' fill='#c9e6f7' stroke='#0277bd'></rect><text x='138' y='101' font-size='12' text-anchor='end' fill='#333'>Wasm</text><text x='160' y='101' font-size='11' fill='#01579b'>平均ロード 最大40%短縮</text><text x='16' y='140' font-size='11.5' fill='#333'>compute-heavy な処理は JS比 <tspan font-weight='700' fill='#01579b'>2〜3x</tspan> 高速（WasmGC / Flutter 3.38+）</text><text x='16' y='162' font-size='11' fill='#6b6b70'>ビルドは flutter build web --wasm。dart:html/package:js → dart:js_interop へ移行。</text></svg><figcaption>図1：WebAssembly（WasmGC）で Flutter Web のロードは最大40%短縮、compute重処理は2-3x。</figcaption></figure>
+<h4 id="sec-2">状態管理は「新規＝Riverpod 3.0、監査＝Bloc 9.0」</h4>
+<p>エコシステムは <b>Riverpod 3.0</b>（compile-time safety・最小ボイラープレート）・<b>Bloc 9.0</b>（enterprise event tracing）・GetX（退潮）。Riverpod 3.0 は多くの新規の既定で、①初期化失敗時の指数バックオフ<b>自動リトライ</b>②opt-inの<b>オフライン永続化</b>③<b>Mutations</b>（@mutation・experimental で Idle/Pending/Success/Error を UI へ公開）④画面外widgetの listener 自動pause を備える。Bloc 9.0 は <code>on&lt;Event&gt;</code> ハンドラで event→state を直列化し<b>監査証跡</b>を生む＝規制業界向け。現行は Riverpod 3.3.x / bloc 9.2.x。両者は ProviderScope と MultiBlocProvider で共存可。</p>
+<h4 id="sec-3">自分が試すなら / 注意点</h4>
+<p>まず既存Web案件を <code>flutter build web --wasm</code> で計測し、<code>dart:html</code>/<code>package:js</code> を <code>dart:js_interop</code> に置換して WasmGC 経路に載せる。パフォーマンスのボトルネックは raster より <b>widget build・layout</b> に移っているので、<code>const</code> 徹底・大きな build() 分割・<code>select</code> で局所再描画を軸に。フレーム予算は <b>60fps=16ms / 90fps=11ms / 120fps=8.3ms</b>、計測は必ず profile モードで。primary constructors は構文が変わり得るので本番は保留。</p>
+<p><b>ひとことまとめ：</b>Impellerを完遂し、WebをWasmへ、状態管理はRiverpod 3.0を既定に。2026年の「土台」が確定した。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://www.deepcrazyworld.com/blog/flutter-2026-updates-latest-feature" target="_blank" rel="noopener noreferrer"> Flutter 2026 Updates — All Latest Features </a> </li><li> <a href="https://riverpod.dev/docs/whats_new" target="_blank" rel="noopener noreferrer"> What&#39;s new in Riverpod 3.0 </a> </li><li> <a href="https://sachinsharma.dev/blogs/flutter-web-wasm-seo-2026" target="_blank" rel="noopener noreferrer"> Flutter on Web (2026): WASM &amp; SEO </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> ロードマップ5本の柱 </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 状態管理は「新規＝Riverpod 3.0、監査＝Bloc 9.0」 </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 自分が試すなら / 注意点 </a> </li> </ul> <div class="reading-box"> <div>📅 2026-08-08</div> <div>⏱ 読了 約3分</div> <div>🏷 Flutter</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
