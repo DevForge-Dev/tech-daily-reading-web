@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-08-07T04:47:45.275Z",
+  "generatedAt": "2026-08-08T04:50:11.186Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,94 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-08-08-claude-code",
+      "date": "2026-08-08",
+      "topic": "Claude Code",
+      "title": "Claude Code v2.1.224 — セルフホスト環境とセッション間メッセージングで「チーム基盤」へ",
+      "lede": "8/7のv2.1.224は31件の大型更新。claude self-hosted-runnerで自社マシン/コンテナをweb・モバイル・デスクトップのセッション実行環境にでき、セッション間メッセージング（ListAgents/SendMessage）で並行セッションが破壊検知・回答共有を横断配送。HTTPS上zipのarchiveプラグイン（SHA-256ピン留め）も加わった。",
+      "articleHtml": "<p>Claude Code は 8/7 の <b>v2.1.224</b> で、単体のCLIから「チームの実行基盤」へと性格を変えた。31件の変更を含む大型リリースで、目玉は<b>セルフホスト環境</b>と<b>セッション間メッセージング</b>の2つ。クラウド実行の利便性（並列セッション・遠隔起動）は保ちつつ、実行の「場所」と複数セッションの「連携」という運用面の弱点を埋めにきた。</p>\n<h4>何が新しいか</h4>\n<p><code>claude self-hosted-runner</code> で、自社のマシンやコンテナを web/モバイル/デスクトップセッションの<b>実行ランナー</b>として登録できる（Team/Enterprise）。社内ネットワーク内・内部サービスの隣でエージェントを走らせられるため、コードやデータを外に出さずに済む。もう一つの目玉、セッション間メッセージングは、あるセッションの変更が別セッションの前提を壊す時に<b>警告</b>を、逆にブロック要因だった問いに答えが出た時に<b>回答</b>を横断配送する。仕組みは2つのツールで、<code>ListAgents</code> で到達可能なエージェントを発見し、<code>SendMessage</code> で名前を指定して届ける。あわせて git/npm を介さず HTTPS 上の zip からプラグインを導入する <b>archive プラグインソース</b>（任意で SHA-256 ピン留め）も追加された。</p>\n<figure class='fig'><pre class='mermaid'>flowchart LR\n  A[\"セッションA：変更が発生\"] --> B[\"ListAgents で到達先を発見\"]\n  B --> C[\"SendMessage で名前指定して配送\"]\n  C --> D[\"セッションB：警告 / 回答を受信\"]</pre><figcaption>図1：セッション間メッセージングの流れ（ListAgents で発見 → SendMessage で配送）。</figcaption></figure>\n<h4>実務での使いどころ</h4>\n<p>10PJを1人で横断する運用だと、セッション間メッセージングが効く。別PJのセッションで共通ライブラリを触った時に「この変更、依存側の前提を壊すよ」と自動で飛ばせれば、破壊的変更の取りこぼしが減る。セルフホストは、機密が絡む案件でクラウド実行を避けたい時の逃げ道になる。archiveプラグインは、自作プラグインを社内配布する際に marketplace を立てずに zip 一個で配れるのが軽い。</p>\n<h4>注意点</h4>\n<p>セルフホスト・セッション間メッセージングとも <b>macOS/Linux（WSL2内Linux含む）</b>が前提で、Windowsネイティブは対象外。セルフホストは Team/Enterprise プラン限定。archive の zip は <b>SHA-256 ピン留め</b>をしないと供給元の差し替えリスクが残るので、配布時は必ず固定する。</p>\n<p><b>ひとことまとめ：</b>「どこで走らせるか」「複数セッションをどう繋ぐか」に手が入った回。個人の並行運用でも、破壊検知の横断配送は地味に効く。</p>",
+      "sources": [
+        {
+          "title": "Claude Code v2.1.224（Release notes）",
+          "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.224"
+        },
+        {
+          "title": "Run Claude Code sessions on your own compute（公式ブログ）",
+          "url": "https://claude.com/blog/run-claude-code-sessions-on-your-own-compute"
+        },
+        {
+          "title": "Cross-Session Messaging（公式ドキュメント）",
+          "url": "https://code.claude.com/docs/en/cross-session-messaging"
+        }
+      ]
+    },
+    {
+      "id": "2026-08-08-nextjs",
+      "date": "2026-08-08",
+      "topic": "Next.js",
+      "title": "dnd-kit 新アーキ（@dnd-kit/react v0.5.0）— App Routerで並び替えを「{ref}一発」に",
+      "lede": "掴んで並び替えを最小配線で。旧@dnd-kit/coreのattributes/listeners/transform手配線が、新@dnd-kit/reactでは{ref}を刺すだけに。moveヘルパ・PointerSensor統合・アクセシビリティ既定ON・prefers-reduced-motion自動対応。0.xゆえ本番はバージョン厳密固定で。",
+      "articleHtml": "<p>ドラッグ&ドロップと並び替え（sortable / Kanban / リスト整列）は、Reactが最も苦手にしてきたインタラクションの一つ。デファクトの <b>dnd-kit</b> がここ1年でゼロから作り直され、旧 <code>@dnd-kit/core</code> 系（v6・安定）とは別物の新パッケージ <b>@dnd-kit/react（現行 v0.5.0・2026年6月）</b> が実用段階に入った。旧版の「<code>useSortable</code> が返す attributes/listeners/setNodeRef/transform/transition を全部自分で配線する」冗長さが、新版では <b>{ref} を要素に刺すだけ</b>に激減する。</p>\n<h4>何が新しいか</h4>\n<p>層構造は、FW非依存コア <code>@dnd-kit/abstract</code> → DOM実装 <code>@dnd-kit/dom</code> → 薄いReactアダプタ <code>@dnd-kit/react</code>。インストールは <code>@dnd-kit/react</code> と sortable用の <code>@dnd-kit/helpers</code> の2つで足りる。API は <code>DragDropProvider</code>（旧 DndContext）で包み、<code>useSortable({id, index})</code> が返す <code>{ref}</code> を刺すだけ。<b>SortableContext ラッパは不要</b>。並び替え結果は <code>move(prev, event)</code> ヘルパが計算する（旧 arrayMove 相当）。<b>PointerSensor</b> がマウス・タッチ・ペンを Pointer Events で統合し、KeyboardSensor と共に自動登録される＝<b>無設定でキーボード操作可</b>。アクセシビリティプラグインが既定で有効で、ライブリージョン読み上げ込みで <b>WCAG 2.1 AA</b> を満たす。<b>prefers-reduced-motion も v0.2.4 で全アニメ自動尊重</b>。</p>\n<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='16' y='24' font-size='13' font-weight='700' fill='#111'>旧 @dnd-kit/core と 新 @dnd-kit/react</text><rect x='16' y='36' width='276' height='150' rx='8' fill='#fbeaea' stroke='#e0a3a3'/><text x='30' y='58' font-size='12' font-weight='700' fill='#b02a2a'>旧：core / sortable（v6）</text><text x='30' y='82' font-size='11' fill='#333'>DndContext + SortableContext</text><text x='30' y='102' font-size='11' fill='#333'>useSortable →</text><text x='30' y='120' font-size='11' fill='#333'>attributes / listeners / setNodeRef</text><text x='30' y='138' font-size='11' fill='#333'>/ transform / transition を手配線</text><text x='30' y='162' font-size='11' fill='#333'>arrayMove(prev, from, to)</text><rect x='308' y='36' width='276' height='150' rx='8' fill='#e8f3ec' stroke='#8fc7a3'/><text x='322' y='58' font-size='12' font-weight='700' fill='#1a7f37'>新：react（v0.5.0）</text><text x='322' y='82' font-size='11' fill='#333'>DragDropProvider で包むだけ</text><text x='322' y='102' font-size='11' fill='#333'>useSortable({id, index}) →</text><text x='322' y='120' font-size='11' fill='#333'>{ref} を刺すだけ</text><text x='322' y='138' font-size='11' fill='#333'>SortableContext 不要</text><text x='322' y='162' font-size='11' fill='#333'>move(prev, event) が並び替え</text></svg><figcaption>図1：手配線の旧APIから、{ref}を刺すだけの新APIへ。</figcaption></figure>\n<pre><code>'use client';\nimport { DragDropProvider } from '@dnd-kit/react';\nimport { useSortable } from '@dnd-kit/react/sortable';\nimport { move } from '@dnd-kit/helpers';\n\nfunction Item({ id, index }) {\n  const { ref, isDragging } = useSortable({ id, index });\n  return <li ref={ref} style={{ touchAction: 'none', opacity: isDragging ? .5 : 1 }}>{id}</li>;\n}\n// <DragDropProvider onDragEnd={e => setItems(prev => move(prev, e))}> ... </DragDropProvider></code></pre>\n<h4>App Routerでの組み込み</h4>\n<p>方針は<b>「掴む島」だけ Client、データ取得とページ本体は RSC のまま</b>。初期順序は RSC で取得して Client島に props で渡す。SSRハイドレーションは、<b>items state をサーバー由来の順序で初期化</b>し描画順と一致させれば mismatch は出ない。永続化は <code>onDragEnd</code> でまず <code>setItems(move(...))</code> の楽観更新 → Server Action で新順序をDB保存 → <code>revalidateTag</code>。保存失敗時は前配列にロールバック。認可・バリデーションは必ずサーバー側で行い、クライアントの並び順を鵜呑みにしない。</p>\n<h4>落とし穴</h4>\n<p><b>touch-action: none</b> を付けないとモバイルでスクロールと競合。<b>key に配列 index は禁止</b>（安定idを使う。index だと並び替えが破綻）。<code>useSortable</code> の <code>index</code> が描画順とズレると同種の事故。センサはインライン配列で毎回生成せず安定参照に。そして <b>0.x は実験版</b>でマイナーに破壊的変更があり得るため <code>package.json</code> は厳密固定し、堅実運用なら旧安定版（core）も選択肢。Tailwind v4 併用時は <code>@layer dnd-kit</code> 対応済みの新しめのバージョンに上げる。</p>\n<p><b>ひとことまとめ：</b>並び替えの「操作そのもの」を、最小配線・a11y既定・reduced-motion自動で。実験版ゆえバージョン固定は必須。</p>",
+      "sources": [
+        {
+          "title": "dnd kit — React Quickstart（新版公式）",
+          "url": "https://dndkit.com/react/quickstart/"
+        },
+        {
+          "title": "dnd kit — Managing sortable state（moveヘルパ）",
+          "url": "https://dndkit.com/react/guides/sortable-state-management/"
+        },
+        {
+          "title": "dnd kit — Changelog（v0.1〜v0.5.0）",
+          "url": "https://dndkit.com/changelog/"
+        }
+      ]
+    },
+    {
+      "id": "2026-08-08-flutter",
+      "date": "2026-08-08",
+      "topic": "Flutter",
+      "title": "Flutter 2026「Finishing the Job」— Impeller完遂・Web WasmGC既定化・Riverpod 3.0既定",
+      "lede": "安定版はFlutter 3.44/Dart 3.12、次の機能リリースは2026年8月。2026ロードマップはAndroid Impeller移行完遂・WebのWasmGC既定化・GenUI・Full-Stack Dartが柱。flutter build web --wasmでロード最大40%短縮/JS比2-3x。状態管理は新規=Riverpod 3.0、監査/大規模=Bloc 9.0。",
+      "articleHtml": "<p>今日のFlutterは、単発の新機能ではなく<b>2026年の年間ロードマップ「Finishing the Job」</b>が主役。安定版は <b>Flutter 3.44 / Dart 3.12</b>（3.44.0 は 2026-05-18・I/O 公開）で、次の機能リリースは <b>2026年8月</b>（年4回：2/5/8/11月）。8月版の前に 3.44 系で足場を固める好機だ。</p>\n<h4>ロードマップ5本の柱</h4>\n<p>①<b>Android の Impeller 移行完遂</b>（Android 10+ で legacy Skia backend 撤去）②<b>Web の WebAssembly 既定化</b>③<b>GenUI / agentic app architecture</b>（AI駆動の動的UI）④<b>Full-Stack Dart</b>（Cloud Functions を Dart で）⑤ AI前提の開発体験。3.44 では Impeller が <b>Android API 29+（Vulkan）で既定</b>となり Skia 撤去、iOS/macOS は <b>Swift Package Manager が既定</b>（CocoaPods 段階的廃止）、<b>Agentic Hot Reload</b>（Dart MCP server 経由）と <b>GenUI</b> が production へ昇格した。Dart 3.12 は private named parameters・dot shorthands 成熟・primary constructors（experimental）。</p>\n<figure class='fig'><svg viewBox='0 0 600 180' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='16' y='24' font-size='13' font-weight='700' fill='#0277bd'>Web：WasmGC でロード時間短縮（相対）</text><rect x='150' y='44' width='400' height='24' rx='4' fill='#e3f2fb' stroke='#56c5f5'/><text x='138' y='61' font-size='12' text-anchor='end' fill='#333'>JS（従来）</text><text x='160' y='61' font-size='11' fill='#0277bd'>基準 100%</text><rect x='150' y='84' width='240' height='24' rx='4' fill='#c9e6f7' stroke='#0277bd'/><text x='138' y='101' font-size='12' text-anchor='end' fill='#333'>Wasm</text><text x='160' y='101' font-size='11' fill='#01579b'>平均ロード 最大40%短縮</text><text x='16' y='140' font-size='11.5' fill='#333'>compute-heavy な処理は JS比 <tspan font-weight='700' fill='#01579b'>2〜3x</tspan> 高速（WasmGC / Flutter 3.38+）</text><text x='16' y='162' font-size='11' fill='#6b6b70'>ビルドは flutter build web --wasm。dart:html/package:js → dart:js_interop へ移行。</text></svg><figcaption>図1：WebAssembly（WasmGC）で Flutter Web のロードは最大40%短縮、compute重処理は2-3x。</figcaption></figure>\n<h4>状態管理は「新規＝Riverpod 3.0、監査＝Bloc 9.0」</h4>\n<p>エコシステムは <b>Riverpod 3.0</b>（compile-time safety・最小ボイラープレート）・<b>Bloc 9.0</b>（enterprise event tracing）・GetX（退潮）。Riverpod 3.0 は多くの新規の既定で、①初期化失敗時の指数バックオフ<b>自動リトライ</b>②opt-inの<b>オフライン永続化</b>③<b>Mutations</b>（@mutation・experimental で Idle/Pending/Success/Error を UI へ公開）④画面外widgetの listener 自動pause を備える。Bloc 9.0 は <code>on&lt;Event&gt;</code> ハンドラで event→state を直列化し<b>監査証跡</b>を生む＝規制業界向け。現行は Riverpod 3.3.x / bloc 9.2.x。両者は ProviderScope と MultiBlocProvider で共存可。</p>\n<h4>自分が試すなら / 注意点</h4>\n<p>まず既存Web案件を <code>flutter build web --wasm</code> で計測し、<code>dart:html</code>/<code>package:js</code> を <code>dart:js_interop</code> に置換して WasmGC 経路に載せる。パフォーマンスのボトルネックは raster より <b>widget build・layout</b> に移っているので、<code>const</code> 徹底・大きな build() 分割・<code>select</code> で局所再描画を軸に。フレーム予算は <b>60fps=16ms / 90fps=11ms / 120fps=8.3ms</b>、計測は必ず profile モードで。primary constructors は構文が変わり得るので本番は保留。</p>\n<p><b>ひとことまとめ：</b>Impellerを完遂し、WebをWasmへ、状態管理はRiverpod 3.0を既定に。2026年の「土台」が確定した。</p>",
+      "sources": [
+        {
+          "title": "Flutter 2026 Updates — All Latest Features",
+          "url": "https://www.deepcrazyworld.com/blog/flutter-2026-updates-latest-feature"
+        },
+        {
+          "title": "What's new in Riverpod 3.0",
+          "url": "https://riverpod.dev/docs/whats_new"
+        },
+        {
+          "title": "Flutter on Web (2026): WASM & SEO",
+          "url": "https://sachinsharma.dev/blogs/flutter-web-wasm-seo-2026"
+        }
+      ]
+    },
+    {
+      "id": "2026-08-08-github-trending",
+      "date": "2026-08-08",
+      "topic": "GitHub Trending",
+      "title": "8/8の話題リポジトリ — 動画生成モデル・エディトリアル画像編集・中国教科書アーカイブ",
+      "lede": "エージェント／スキル一色の日次上位で、動画生成・画像編集・教育という多様な3本が急上昇。いずれもNew 2026で総スターは非公開だが、Trendshift日次2/3/6位に食い込む純度の高いモメンタム。",
+      "articleHtml": "<p>本日のTrendshift日次上位は、AIエージェントやスキルの話題が席巻するなかで、<b>動画生成・画像編集・教育</b>という毛色の違う3本が表彰台圏〜上位に食い込んだ点が面白い。いずれも <b>New 2026</b> の新規リポで総スターは非公開（—）だが、日次ランキングの順位そのものが「今まさに話題化している」勢いの証拠だ。共通するのは「生成AIの周辺が一色化するなかで、多様なジャンルが単発で跳ねている」こと。</p>\n<figure class='fig'><svg viewBox='0 0 620 230' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='10' y='8' width='150' height='26' fill='#eafaf0' stroke='#cfe9d6'/><rect x='160' y='8' width='225' height='26' fill='#eafaf0' stroke='#cfe9d6'/><rect x='385' y='8' width='225' height='26' fill='#eafaf0' stroke='#cfe9d6'/><text x='20' y='26' font-size='12' font-weight='700' fill='#1a7f37'>リポジトリ</text><text x='170' y='26' font-size='12' font-weight='700' fill='#1a7f37'>解決したい課題</text><text x='395' y='26' font-size='12' font-weight='700' fill='#1a7f37'>提供する機能</text><rect x='10' y='34' width='150' height='62' fill='#ffffff' stroke='#cfe9d6'/><rect x='160' y='34' width='225' height='62' fill='#f7fdf9' stroke='#cfe9d6'/><rect x='385' y='34' width='225' height='62' fill='#ffffff' stroke='#cfe9d6'/><text x='20' y='60' font-size='11' font-weight='700' fill='#24292f'>MiniMax-AI/</text><text x='20' y='76' font-size='11' font-weight='700' fill='#24292f'>MiniMax-H3</text><text x='170' y='58' font-size='10.5' fill='#333'>高品質な動画生成を</text><text x='170' y='74' font-size='10.5' fill='#333'>オープンに使える基盤の不足</text><text x='395' y='58' font-size='10.5' fill='#333'>MiniMax発の新しい</text><text x='395' y='74' font-size='10.5' fill='#333'>動画生成モデル公式リポ</text><rect x='10' y='96' width='150' height='62' fill='#ffffff' stroke='#cfe9d6'/><rect x='160' y='96' width='225' height='62' fill='#f7fdf9' stroke='#cfe9d6'/><rect x='385' y='96' width='225' height='62' fill='#ffffff' stroke='#cfe9d6'/><text x='20' y='122' font-size='11' font-weight='700' fill='#24292f'>ZzzLc0405/</text><text x='20' y='138' font-size='11' font-weight='700' fill='#24292f'>photo-abstract</text><text x='170' y='120' font-size='10.5' fill='#333'>写真を洗練された誌面風に</text><text x='170' y='136' font-size='10.5' fill='#333'>仕上げる手間</text><text x='395' y='120' font-size='10.5' fill='#333'>エディトリアル風に変換する</text><text x='395' y='136' font-size='10.5' fill='#333'>AI画像生成/編集スキル</text><rect x='10' y='158' width='150' height='62' fill='#ffffff' stroke='#cfe9d6'/><rect x='160' y='158' width='225' height='62' fill='#f7fdf9' stroke='#cfe9d6'/><rect x='385' y='158' width='225' height='62' fill='#ffffff' stroke='#cfe9d6'/><text x='20' y='184' font-size='11' font-weight='700' fill='#24292f'>TapXWorld/</text><text x='20' y='200' font-size='11' font-weight='700' fill='#24292f'>ChinaTextbook</text><text x='170' y='182' font-size='10.5' fill='#333'>教科書PDFが散在し</text><text x='170' y='198' font-size='10.5' fill='#333'>まとめて入手しづらい</text><text x='395' y='182' font-size='10.5' fill='#333'>小中高〜大学の中国教科書</text><text x='395' y='198' font-size='10.5' fill='#333'>PDFを網羅したキュレーション</text></svg><figcaption>図1：本日の3本の「解決したい課題」と「提供する機能」。</figcaption></figure>\n<h4>MiniMax-AI/MiniMax-H3（—・⭐—、New 2026／Trendshift日次6位）</h4>\n<p><b>解決したい課題：</b>高品質な動画生成をオープンに触れる基盤がまだ乏しいこと。フロンティア級の動画生成は限られたプロダクトに閉じがちで、手元で試せる公式実装が少ない。<b>提供する機能：</b>大手AIラボ MiniMax が公開した<b>新しい動画生成モデルの公式リポジトリ</b>。エージェント／スキル一色のトレンドの中で、数少ないフロンティア級の動画生成として公開直後から上位の勢いを示している。動画生成という希少ジャンルで、全体の多様性にも寄与する一本だ。</p>\n<h4>ZzzLc0405/photo-abstract-editorial（—・⭐—、New 2026／Trendshift日次3位）</h4>\n<p><b>解決したい課題：</b>普通の写真を、雑誌の誌面のような「アブストラクト／エディトリアル」な質感へ仕上げるのは手間もセンスも要る。<b>提供する機能：</b>写真をアブストラクトなエディトリアル風に変換する<b>AI画像生成・編集系のスキル／プロジェクト</b>。#AI image generation / #Image editing で話題化し、総スターの小さい新規リポが表彰台圏内まで一気に上がった、純度の高いモメンタム。動画・エージェントに寄りがちな上位で、視覚系ジャンルの多様性を担う。</p>\n<h4>TapXWorld/ChinaTextbook（—・⭐—、Trendshift日次2位）</h4>\n<p><b>解決したい課題：</b>小学校から大学までの教科書PDFが散在し、まとめて入手・参照しづらいこと。<b>提供する機能：</b>中国の小・中・高〜大学の<b>PDF教科書を網羅的に集めたキュレーション型リポジトリ</b>。AI／エージェント系が席巻する上位で、非AI・教育（Curated list）という異色ジャンルながら当日モメンタム2位まで浮上した。オープン教材という切り口で、ランキング全体の多様性を大きく広げている。</p>\n<h4>まとめ：自分が試すなら</h4>\n<p>実務に近いのは <b>photo-abstract-editorial</b>——UIやOGP画像のビジュアルづくりにスキルとして差せるか試す価値がある。<b>MiniMax-H3</b> は動画生成の到達点を触って把握しておく用。<b>ChinaTextbook</b> は直接使わずとも、「非AIの教育アーカイブが日次2位に来る」というトレンドの振れ幅を読む材料になる。3本とも詳細は公開直後で薄く、実装・ライセンスは各リポで要確認だ。</p>",
+      "sources": [
+        {
+          "title": "MiniMax-AI/MiniMax-H3",
+          "url": "https://github.com/MiniMax-AI/MiniMax-H3"
+        },
+        {
+          "title": "ZzzLc0405/photo-abstract-editorial",
+          "url": "https://github.com/ZzzLc0405/photo-abstract-editorial"
+        },
+        {
+          "title": "TapXWorld/ChinaTextbook",
+          "url": "https://github.com/TapXWorld/ChinaTextbook"
+        }
+      ]
+    },
     {
       "id": "2026-08-07-claude-code",
       "date": "2026-08-07",
