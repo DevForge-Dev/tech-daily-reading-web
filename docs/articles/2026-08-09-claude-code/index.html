@@ -1,0 +1,59 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Claude Code v2.1.225→226 — 支出上限の可視化とサブエージェント可観測性、暴走を止めるセッションキャップ — デイリー技術深掘り 読み物</title><meta name="description" content="8/8の2連続リリース(v2.1.225/226)は派手な新機能より地固め。ゲートウェイ支出上限を利用警告に統合し上限値・リセット時刻を明示、--forward-subagent-textでサブエージェントの推論をstream-jsonへ転送、WebSearch/サブエージェント起動を各既定200でキャップして暴走ループを封じる。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-09-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Claude Code v2.1.225→226 — 支出上限の可視化とサブエージェント可観測性、暴走を止めるセッションキャップ — デイリー技術深掘り 読み物"><meta property="og:description" content="8/8の2連続リリース(v2.1.225/226)は派手な新機能より地固め。ゲートウェイ支出上限を利用警告に統合し上限値・リセット時刻を明示、--forward-subagent-textでサブエージェントの推論をstream-jsonへ転送、WebSearch/サブエージェント起動を各既定200でキャップして暴走ループを封じる。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-09-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>Claude Code v2.1.225→226 — 支出上限の可視化とサブエージェント可観測性、暴走を止めるセッションキャップ</h1> <p class="lede">8/8の2連続リリース(v2.1.225/226)は派手な新機能より地固め。ゲートウェイ支出上限を利用警告に統合し上限値・リセット時刻を明示、--forward-subagent-textでサブエージェントの推論をstream-jsonへ転送、WebSearch/サブエージェント起動を各既定200でキャップして暴走ループを封じる。</p> <div class="meta"> <span>📅 2026年8月9日</span> <span>⏱ 約2分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="0"><p>8月8日に <b>v2.1.225</b> と <b>v2.1.226</b> が相次いで出た。目玉の新機能というより、直前の大型リリース群（セルフホスト実行・セッション間メッセージング）を<b>安定運用に乗せるための地固め</b>だ。長時間・並列でエージェントを回す運用ほど効いてくる回で、コストの見える化・可観測性・暴走防止という『事故らないための3点』が揃った。</p><h4 id="sec-1">何が新しいか</h4><p>まず <b>ゲートウェイ支出上限</b>を利用警告に統合。上限到達メッセージが<b>上限値・リセット時刻・運用者メッセージ</b>を明示するようになり（ゲートウェイ側も2.1.225が必要）、コスト超過時に『いつ・いくらで止まったか』が一目で分かる。次に公式changelog系の更新として、<code>--forward-subagent-text</code> フラグ（または <code>CLAUDE_CODE_FORWARD_SUBAGENT_TEXT</code>）で<b>サブエージェントの内部テキスト・推論を stream-json 出力に転送</b>できる。ログ基盤へのリアルタイム転送や、入れ子会話を見せるカスタムUI、デバッグ用の推論観測に使える。そして暴走対策として、<b>1セッションあたり WebSearch とサブエージェント起動を各既定200回でキャップ</b>（<code>CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION</code> / <code>CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION</code> で調整）。背景エージェントも結果を捏造せず、実完了後にのみステータスを報告するよう改善された。</p><figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='150' fill='#fff6ee'></rect><text x='16' y='26' font-size='13' font-weight='700' fill='#b45309'>2連続リリースで固めた3点</text><rect x='16' y='40' width='180' height='92' rx='8' fill='#fff' stroke='#f59e0b'></rect><text x='106' y='64' font-size='12' font-weight='700' fill='#b45309' text-anchor='middle'>コスト可視化</text><text x='106' y='86' font-size='10' fill='#7c4a12' text-anchor='middle'>支出上限を警告に統合</text><text x='106' y='102' font-size='10' fill='#7c4a12' text-anchor='middle'>上限値・リセット時刻</text><rect x='210' y='40' width='180' height='92' rx='8' fill='#fff' stroke='#f59e0b'></rect><text x='300' y='64' font-size='12' font-weight='700' fill='#b45309' text-anchor='middle'>可観測性</text><text x='300' y='86' font-size='10' fill='#7c4a12' text-anchor='middle'>--forward-subagent-text</text><text x='300' y='102' font-size='10' fill='#7c4a12' text-anchor='middle'>推論をstream-jsonへ</text><rect x='404' y='40' width='180' height='92' rx='8' fill='#fff' stroke='#f59e0b'></rect><text x='494' y='64' font-size='12' font-weight='700' fill='#b45309' text-anchor='middle'>暴走防止</text><text x='494' y='86' font-size='10' fill='#7c4a12' text-anchor='middle'>WebSearch/subagent</text><text x='494' y='102' font-size='10' fill='#7c4a12' text-anchor='middle'>各既定200でキャップ</text></svg><figcaption>図1：v2.1.225/226 が固めた『事故らない』3点。</figcaption></figure><h4 id="sec-2">実務での使いどころ</h4><p>毎朝の定期タスクを多数並列で回す運用だと、支出上限の明示は『予算内で自動停止＋理由が残る』ので事後の原因究明が楽になる。サブエージェント転送は、深掘りリサーチを子エージェントに委譲したとき『子が何を考えて何を検索したか』をログに残せるのが大きい。自分なら定期タスクのログ基盤に <code>--forward-subagent-text</code> を噛ませて、失敗時のトレースに使う。</p><h4 id="sec-3">注意点</h4><p>支出上限の表示にはゲートウェイ側も 2.1.225 以上が必要（片側だけ上げても効かない）。セッションキャップの既定200は<b>深掘り系の重いタスクだと途中で頭打ち</b>になりうるので、正当に多くの検索/委譲が要るタスクは環境変数で明示的に引き上げる。認証まわりも、保存済みログインの短命トークンが長命 <code>CLAUDE_CODE_OAUTH_TOKEN</code> を上書きしてヘッドレスを壊す401などが修正されたので、CI/ヘッドレス運用は更新推奨。</p><p><b>ひとことまとめ：</b>新機能を足す回ではなく、既存の強力機能を『安全に長時間回す』ための回。並列・自動運用ほど恩恵が大きい。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://github.com/anthropics/claude-code/releases/tag/v2.1.226" target="_blank" rel="noopener noreferrer"> Claude Code v2.1.226（Release notes） </a> </li><li> <a href="https://github.com/anthropics/claude-code/releases/tag/v2.1.225" target="_blank" rel="noopener noreferrer"> Claude Code v2.1.225（Release notes） </a> </li><li> <a href="https://code.claude.com/docs/en/changelog" target="_blank" rel="noopener noreferrer"> Claude Code changelog </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 何が新しいか </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 実務での使いどころ </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 注意点 </a> </li> </ul> <div class="reading-box"> <div>📅 2026-08-09</div> <div>⏱ 読了 約2分</div> <div>🏷 Claude Code</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
