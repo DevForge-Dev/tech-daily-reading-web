@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-08-08T04:50:11.186Z",
+  "generatedAt": "2026-08-09T04:47:52.261Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,94 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-08-09-claude-code",
+      "date": "2026-08-09",
+      "topic": "Claude Code",
+      "title": "Claude Code v2.1.225→226 — 支出上限の可視化とサブエージェント可観測性、暴走を止めるセッションキャップ",
+      "lede": "8/8の2連続リリース(v2.1.225/226)は派手な新機能より地固め。ゲートウェイ支出上限を利用警告に統合し上限値・リセット時刻を明示、--forward-subagent-textでサブエージェントの推論をstream-jsonへ転送、WebSearch/サブエージェント起動を各既定200でキャップして暴走ループを封じる。",
+      "articleHtml": "<p>8月8日に <b>v2.1.225</b> と <b>v2.1.226</b> が相次いで出た。目玉の新機能というより、直前の大型リリース群（セルフホスト実行・セッション間メッセージング）を<b>安定運用に乗せるための地固め</b>だ。長時間・並列でエージェントを回す運用ほど効いてくる回で、コストの見える化・可観測性・暴走防止という『事故らないための3点』が揃った。</p><h4>何が新しいか</h4><p>まず <b>ゲートウェイ支出上限</b>を利用警告に統合。上限到達メッセージが<b>上限値・リセット時刻・運用者メッセージ</b>を明示するようになり（ゲートウェイ側も2.1.225が必要）、コスト超過時に『いつ・いくらで止まったか』が一目で分かる。次に公式changelog系の更新として、<code>--forward-subagent-text</code> フラグ（または <code>CLAUDE_CODE_FORWARD_SUBAGENT_TEXT</code>）で<b>サブエージェントの内部テキスト・推論を stream-json 出力に転送</b>できる。ログ基盤へのリアルタイム転送や、入れ子会話を見せるカスタムUI、デバッグ用の推論観測に使える。そして暴走対策として、<b>1セッションあたり WebSearch とサブエージェント起動を各既定200回でキャップ</b>（<code>CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION</code> / <code>CLAUDE_CODE_MAX_SUBAGENTS_PER_SESSION</code> で調整）。背景エージェントも結果を捏造せず、実完了後にのみステータスを報告するよう改善された。</p><figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='150' fill='#fff6ee'/><text x='16' y='26' font-size='13' font-weight='700' fill='#b45309'>2連続リリースで固めた3点</text><rect x='16' y='40' width='180' height='92' rx='8' fill='#fff' stroke='#f59e0b'/><text x='106' y='64' font-size='12' font-weight='700' fill='#b45309' text-anchor='middle'>コスト可視化</text><text x='106' y='86' font-size='10' fill='#7c4a12' text-anchor='middle'>支出上限を警告に統合</text><text x='106' y='102' font-size='10' fill='#7c4a12' text-anchor='middle'>上限値・リセット時刻</text><rect x='210' y='40' width='180' height='92' rx='8' fill='#fff' stroke='#f59e0b'/><text x='300' y='64' font-size='12' font-weight='700' fill='#b45309' text-anchor='middle'>可観測性</text><text x='300' y='86' font-size='10' fill='#7c4a12' text-anchor='middle'>--forward-subagent-text</text><text x='300' y='102' font-size='10' fill='#7c4a12' text-anchor='middle'>推論をstream-jsonへ</text><rect x='404' y='40' width='180' height='92' rx='8' fill='#fff' stroke='#f59e0b'/><text x='494' y='64' font-size='12' font-weight='700' fill='#b45309' text-anchor='middle'>暴走防止</text><text x='494' y='86' font-size='10' fill='#7c4a12' text-anchor='middle'>WebSearch/subagent</text><text x='494' y='102' font-size='10' fill='#7c4a12' text-anchor='middle'>各既定200でキャップ</text></svg><figcaption>図1：v2.1.225/226 が固めた『事故らない』3点。</figcaption></figure><h4>実務での使いどころ</h4><p>毎朝の定期タスクを多数並列で回す運用だと、支出上限の明示は『予算内で自動停止＋理由が残る』ので事後の原因究明が楽になる。サブエージェント転送は、深掘りリサーチを子エージェントに委譲したとき『子が何を考えて何を検索したか』をログに残せるのが大きい。自分なら定期タスクのログ基盤に <code>--forward-subagent-text</code> を噛ませて、失敗時のトレースに使う。</p><h4>注意点</h4><p>支出上限の表示にはゲートウェイ側も 2.1.225 以上が必要（片側だけ上げても効かない）。セッションキャップの既定200は<b>深掘り系の重いタスクだと途中で頭打ち</b>になりうるので、正当に多くの検索/委譲が要るタスクは環境変数で明示的に引き上げる。認証まわりも、保存済みログインの短命トークンが長命 <code>CLAUDE_CODE_OAUTH_TOKEN</code> を上書きしてヘッドレスを壊す401などが修正されたので、CI/ヘッドレス運用は更新推奨。</p><p><b>ひとことまとめ：</b>新機能を足す回ではなく、既存の強力機能を『安全に長時間回す』ための回。並列・自動運用ほど恩恵が大きい。</p>",
+      "sources": [
+        {
+          "title": "Claude Code v2.1.226（Release notes）",
+          "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.226"
+        },
+        {
+          "title": "Claude Code v2.1.225（Release notes）",
+          "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.225"
+        },
+        {
+          "title": "Claude Code changelog",
+          "url": "https://code.claude.com/docs/en/changelog"
+        }
+      ]
+    },
+    {
+      "id": "2026-08-09-nextjs",
+      "date": "2026-08-09",
+      "topic": "Next.js",
+      "title": "next/dynamic とコード分割 — App Router で ssr:false を正しく効かせる土台",
+      "lede": "初期JSを削ってLCP/INPを稼ぐ、コンポーネント/ライブラリ単位の遅延読み込み。Server Componentsは既定で自動分割され、遅延が効くのはClient Componentsとライブラリだけ。ssr:falseはClient専用で、window/WASM依存の島は'use client'ラッパに隔離するのが王道。Next.js 16.3の作法を1本に。",
+      "articleHtml": "<p>アニメ島（Rive・three.js・WebGL・カスタムカーソル）を扱うメモの大半が前提にしている『<b>window/canvas/WASM に触るから SSR 不可 → dynamicの島に隔離</b>』。その土台を1本に集約する。狙いは初期ロードのJSを減らして <b>LCP/INP</b> を稼ぐこと、つまりルート単位より一段細かい<b>コンポーネント/ライブラリ単位</b>のコード分割だ。</p><h4>何が新しい/重要か</h4><p>Next.js <b>16.3.0</b>（更新 2026-03-10）の公式は、<b>Server Components は既定で自動コード分割</b>されクライアントJSに乗らないため、遅延読み込みの対象は<b>Client Components とインポートしたライブラリに限られる</b>と明言する。手段は3つ。①<code>next/dynamic</code>（<code>loading</code> と <code>ssr</code> を持つNextの抽象、React.lazy+Suspenseの合成）、②素の <code>React.lazy()</code>+<code>&lt;Suspense&gt;</code>、③<code>import()</code> 式でライブラリを操作時に遅延。最重要は <b>ssr:false の意味</b>：Client Component は既定でSSR（プリレンダー）されるが、ssr:false を付けると<b>サーバーでは描画せず最小プレースホルダだけ送り、クライアントでJS到達後に初めて描画</b>する。</p><figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='200' fill='#f5f7ff'/><text x='16' y='24' font-size='13' font-weight='700' fill='#1e3a8a'>ssr:false は Client Component 専用（ラッパに隔離）</text><rect x='16' y='40' width='260' height='140' rx='8' fill='#fff' stroke='#93c5fd'/><text x='146' y='60' font-size='11' font-weight='700' fill='#1e3a8a' text-anchor='middle'>app/page.tsx（Server）</text><text x='146' y='80' font-size='10' fill='#334155' text-anchor='middle'>RSCでfetch・自動分割</text><rect x='40' y='94' width='212' height='34' rx='6' fill='#eff6ff' stroke='#60a5fa'/><text x='146' y='115' font-size='10' fill='#1e40af' text-anchor='middle'>&lt;RiveHeroClient/&gt; を普通にimport</text><text x='146' y='150' font-size='10' fill='#64748b' text-anchor='middle'>Serverにssr:falseを直書きは</text><text x='146' y='166' font-size='10' fill='#b91c1c' text-anchor='middle'>ビルドエラー</text><path d='M276 110 L324 110' stroke='#60a5fa' stroke-width='2' marker-end='url(#a)'/><defs><marker id='a' markerWidth='8' markerHeight='8' refX='6' refY='3' orient='auto'><path d='M0 0 L6 3 L0 6 z' fill='#60a5fa'/></marker></defs><rect x='324' y='40' width='260' height='140' rx='8' fill='#fff' stroke='#93c5fd'/><text x='454' y='60' font-size='11' font-weight='700' fill='#1e3a8a' text-anchor='middle'>RiveHeroClient（'use client'）</text><rect x='344' y='74' width='220' height='40' rx='6' fill='#eff6ff' stroke='#60a5fa'/><text x='454' y='90' font-size='10' fill='#1e40af' text-anchor='middle'>dynamic(()=&gt;import('./RiveHero'),</text><text x='454' y='106' font-size='10' fill='#1e40af' text-anchor='middle'>{ ssr:false, loading:Skeleton })</text><text x='454' y='138' font-size='10' fill='#334155' text-anchor='middle'>クライアント島だけ遅延＋</text><text x='454' y='154' font-size='10' fill='#334155' text-anchor='middle'>SSRスキップ・mismatch無し</text></svg><figcaption>図1：Server Componentは'use client'ラッパを普通にimportし、ssr:falseはラッパ内に隔離する。</figcaption></figure><h4>落とし穴</h4><p><b>ssr:false を Server Component に直書きするとビルドエラー</b>（`ssr: false is not allowed with next/dynamic in Server Components`）。回避は <code>'use client'</code> のラッパを1枚挟むこと。名前付きexportは <code>import('./B').then(m =&gt; m.Named)</code> で継ぐが、ssr:false×名前付きは不安定な既知の罠なので <b>default export に寄せる</b>のが堅い。prefetchオプションは無いので、高確率の操作は <code>onMouseEnter</code>/<code>onFocus</code> で同じ <code>import()</code> を叩いてチャンクを温める。CLS対策に<b>プレースホルダは最終描画と同寸法</b>を先取りする。Turbopack（Next16でbuildも既定）では <code>webpackOptional</code> は非対応で <code>turbopackOptional:true</code> を使う。</p><h4>まとめ</h4><p>RSCファーストなら『そもそも分割不要な領域が広い』のが前提。効かせどころは重い・使用確率が低いClient島とライブラリに絞り、<code>@next/bundle-analyzer</code> で効果を確認する。分割し過ぎのウォーターフォールは逆効果。</p>",
+      "sources": [
+        {
+          "title": "Next.js: How to lazy load Client Components and libraries（v16.3.0）",
+          "url": "https://nextjs.org/docs/app/guides/lazy-loading"
+        },
+        {
+          "title": "React: lazy",
+          "url": "https://react.dev/reference/react/lazy"
+        },
+        {
+          "title": "The ssr:false Trap in Next.js App Router",
+          "url": "https://medium.com/@joshisagarm3/the-ssr-false-trap-in-next-js-app-router-and-how-i-escaped-it-74816bc7a778"
+        }
+      ]
+    },
+    {
+      "id": "2026-08-09-flutter",
+      "date": "2026-08-09",
+      "topic": "Flutter",
+      "title": "Riverpod 3.3.1×codegen を新規既定に — 自動リトライ・オフライン永続化と、Design System Modularization の始動",
+      "lede": "現行安定はFlutter 3.44/Dart 3.12、8月は次期リリース窓。新規アプリはRiverpod 3.3.1＋codegenを既定に、指数バックオフ自動リトライ(200ms→6.4s)・オフライン永続化・Mutationsを低ボイラープレートで得る。ImpellerがAndroid既定でSkia撤去、Material/Cupertinoのコア分離でapp size削減も進む。",
+      "articleHtml": "<p>現行安定版は <b>Flutter 3.44 / Dart 3.12</b>（3.44.0 は 2026-05-18・Google I/O 2026 公開）。Flutterは年4回（2/5/8/11月）リリースで、いままさに<b>8月のリリース窓</b>に入っている。今日の主役は状態管理の既定線と、コア構成の作り替えだ。</p><h4>何が新しいか — 新規はRiverpod 3.3.1＋codegen</h4><p>ほとんどの新規アプリは <b>Riverpod 3.3.1＋codegen</b> を既定にしてよい。<b>compile-time safety・context-free reads・first-class async</b> に加え、3.0系のresilience機能を、codegenによって<b>Provider並みまで下げたボイラープレート</b>で得られる。目玉の<b>自動リトライ</b>は、providerが初期化で失敗すると<b>指数バックオフ（200msから倍々で最大6.4s）</b>で自動再試行し、一時的な通信障害を恒久エラーにしない。さらに<b>unified Ref</b>でAPIを刷新、<b>experimental offline persistence</b>（再起動でキャッシュから復元）、<b>Mutations</b>で副作用の Idle/Pending/Success/Error を UI に公開する。監査証跡が要る規制業界（fintech/healthcare）は <code>on&lt;Event&gt;</code> 構文に統一された <b>Bloc 9.0</b> が適材で、選定の基本線は『新規＝Riverpod 3.3.1、監査/大規模＝Bloc 9.0』。両者は <code>ProviderScope</code> と <code>MultiBlocProvider</code> で共存できる。</p><figure class='fig'><svg viewBox='0 0 600 140' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='140' fill='#f0fbff'/><text x='16' y='24' font-size='13' font-weight='700' fill='#0e7490'>自動リトライ：指数バックオフ 200ms→最大6.4s</text><line x1='30' y1='110' x2='580' y2='110' stroke='#67e8f9' stroke-width='2'/><rect x='40' y='98' width='16' height='12' fill='#06b6d4'/><text x='48' y='128' font-size='9' fill='#155e75' text-anchor='middle'>200ms</text><rect x='120' y='90' width='20' height='20' fill='#06b6d4'/><text x='130' y='128' font-size='9' fill='#155e75' text-anchor='middle'>400ms</text><rect x='210' y='78' width='24' height='32' fill='#06b6d4'/><text x='222' y='128' font-size='9' fill='#155e75' text-anchor='middle'>800ms</text><rect x='310' y='62' width='28' height='48' fill='#0891b2'/><text x='324' y='128' font-size='9' fill='#155e75' text-anchor='middle'>1.6s</text><rect x='420' y='46' width='32' height='64' fill='#0891b2'/><text x='436' y='128' font-size='9' fill='#155e75' text-anchor='middle'>3.2s</text><rect x='530' y='30' width='36' height='80' fill='#0e7490'/><text x='548' y='128' font-size='9' fill='#155e75' text-anchor='middle'>6.4s(上限)</text><text x='300' y='46' font-size='10' fill='#155e75' text-anchor='middle'>一時的な失敗を恒久エラーにしない</text></svg><figcaption>図1：初期化失敗時の再試行間隔。倍々で伸び6.4sで頭打ち。</figcaption></figure><h4>土台の変化 — Modularization と Impeller</h4><p><b>Design System Modularization</b> が本格始動。Material と Cupertino を Flutter コアから切り出し、pub.dev の standalone・独立バージョニングのパッケージにする。M3更新が四半期SDKを待たず届き、未使用UIはbinaryに含めないので <b>app size 削減</b>につながる。描画基盤の <b>Impeller は Android で既定・Skia を撤去</b>（Vulkan／iOS=Metal）。ビルド時AOTシェーダーで <b>shader compilation jank を排除</b>する。</p><h4>実務での使いどころ・注意点</h4><p>自分が新規で始めるなら Riverpod 3.3.1＋codegen で、まず自動リトライとMutationsをフォーム送信・API初期化に入れる。offline persistenceはまだexperimentalなので<b>本番データの信頼源にはせず</b>、UX改善の付加程度に留めるのが安全。パフォーマンスは <b>const 徹底＋RepaintBoundary</b> でアニメ領域を隔離し、必ずprofileモードでDevTools（Inspector 2.0）を使い、<b>UIスレッドをフレームあたり8ms未満</b>（60fps=16ms/90fps=11ms/120fps=8.3ms）に保つ。</p><p><b>ひとことまとめ：</b>状態管理は『新規=Riverpod 3.3.1＋codegen』で確定。土台はModularization＋Impellerでサイズと初回ジャンクが同時に改善していく局面。</p>",
+      "sources": [
+        {
+          "title": "Flutter 3.44 & Dart 3.12 — Everything New at Google I/O 2026",
+          "url": "https://www.fluttersolution.com/2026/05/flutter-344-dart-312-everything-new-at.html"
+        },
+        {
+          "title": "Flutter State Management 2026: Riverpod vs Bloc vs GetX",
+          "url": "https://sharpskill.dev/en/blog/flutter/flutter-state-management-2026-riverpod-bloc-getx"
+        },
+        {
+          "title": "Improving rendering performance（Flutter docs）",
+          "url": "https://docs.flutter.dev/perf/rendering-performance"
+        }
+      ]
+    },
+    {
+      "id": "2026-08-09-github-trending",
+      "date": "2026-08-09",
+      "topic": "GitHub Trending",
+      "title": "8/9の話題リポジトリ — 起動元を辿るwitr・エージェントのコスト最適化cascadeflow・人が差し戻すhuman-review",
+      "lede": "AI一色のトレンドで毛色の違う3本。動いている実体を起動元まで辿るCLI/TUI(witr)、安価↔高性能モデルをカスケードして推論コストを削るランタイム(cascadeflow)、AI生成物をGoogle Doc風にコメントして差し戻す人間参加型レビューUI(human-review)。『観測・コスト・承認』という運用の3つの穴に効く。",
+      "articleHtml": "<p>今日の話題3本は、エージェント／スキル一色のトレンドの中で<b>運用の実務</b>に寄った顔ぶれだ。共通するのは『AIに任せる前後で人間側が困る所』——<b>何が動いているかの観測</b>、<b>推論コスト</b>、<b>生成物の承認</b>——をそれぞれ埋めにきている点。1人で多PJ×エージェントを横断する運用に素直に刺さる。</p><figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='200' fill='#f2fbf4'/><text x='16' y='24' font-size='13' font-weight='700' fill='#1a7f37'>3本の『解決したい課題 → 提供する機能』</text><line x1='16' y1='36' x2='584' y2='36' stroke='#3fb950'/><text x='20' y='54' font-size='11' font-weight='700' fill='#1a7f37'>witr（Go）</text><text x='150' y='54' font-size='10' fill='#14532d'>課題: 動いてる実体の出所が不明</text><text x='360' y='54' font-size='10' fill='#14532d'>機能: プロセス/ポート/コンテナを起動元まで追跡(CLI+TUI)</text><line x1='16' y1='66' x2='584' y2='66' stroke='#bbf7d0'/><text x='20' y='104' font-size='11' font-weight='700' fill='#1a7f37'>cascadeflow</text><text x='20' y='118' font-size='10' fill='#1a7f37'>(Python)</text><text x='150' y='96' font-size='10' fill='#14532d'>課題: エージェントの推論コスト/</text><text x='150' y='110' font-size='10' fill='#14532d'>レイテンシが膨らむ</text><text x='360' y='96' font-size='10' fill='#14532d'>機能: 安価↔高性能モデルを段階</text><text x='360' y='110' font-size='10' fill='#14532d'>カスケード＋品質ゲートで最適化</text><line x1='16' y1='128' x2='584' y2='128' stroke='#bbf7d0'/><text x='20' y='166' font-size='11' font-weight='700' fill='#1a7f37'>human-review</text><text x='20' y='180' font-size='10' fill='#1a7f37'>(JavaScript)</text><text x='150' y='158' font-size='10' fill='#14532d'>課題: AI生成物の人手レビューが</text><text x='150' y='172' font-size='10' fill='#14532d'>面倒で差し戻しにくい</text><text x='360' y='158' font-size='10' fill='#14532d'>機能: HTML/MDにGoogle Doc風</text><text x='360' y='172' font-size='10' fill='#14532d'>コメント→AIエージェントへ差し戻し</text></svg><figcaption>図1：3本の課題と提供機能の対応。観測・コスト・承認をそれぞれ埋める。</figcaption></figure><h4>pranshuparmar/witr（Go・⭐本日+290）</h4><p><b>解決したい課題：</b>『このプロセス／ポート／コンテナ、そもそも何が起動したのか？』が運用中に分からず、トラブルシュートで手が止まる。<b>提供する機能：</b>任意のプロセス・ポート・コンテナ・ファイルを、それを起動した<b>大元まで遡って追跡</b>できる CLI＋TUI。本日 Trendshift 日次で +290 と当日純増の最上位クラス。エージェント一色の中で地に足のついた<b>オブザーバビリティ枠</b>として拡散した。</p><h4>lemony-ai/cascadeflow（Python）</h4><p><b>解決したい課題：</b>エージェントのループ内で毎回高性能モデルを叩くと<b>コストとレイテンシ</b>が膨らむ。<b>提供する機能：</b>安価/軽量モデルと高性能モデルを<b>段階的にカスケード</b>させ、ループ内でコスト・レイテンシ・品質・ポリシー判断を最適化する『カスケード実行ランタイム』。Sonnet＋Haikuの振り分けを品質ゲート付きで自動化できる可能性があり、トークン節約の一点特化が支持されている。</p><h4>petergyang/human-review（JavaScript）</h4><p><b>解決したい課題：</b>AIの生成物（docs・レポート・UI文面）を人が見て直したいが、指示を言葉で戻すのが面倒で差し戻しのループが重い。<b>提供する機能：</b>HTML／Markdown を編集し <b>Google Docs のようにコメント</b>を残して、そのフィードバックを<b>AIエージェントへ送り返せる</b>ビジュアルなヒューマンレビューUI。好みのAIハーネス内で動く。人間参加型の承認フローを効率化する。</p><h4>まとめ</h4><p>自分が試すなら、まず <b>human-review</b> をレポート／提案書の承認運用に入れてみる（提案→承認の差し戻しが最も頻度が高いため）。次点は定期タスクのモデル振り分けを <b>cascadeflow</b> で比較評価。witr は障害調査時の常備ツールとして手元に置いておきたい1本。</p>",
+      "sources": [
+        {
+          "title": "pranshuparmar/witr",
+          "url": "https://github.com/pranshuparmar/witr"
+        },
+        {
+          "title": "lemony-ai/cascadeflow",
+          "url": "https://github.com/lemony-ai/cascadeflow"
+        },
+        {
+          "title": "petergyang/human-review",
+          "url": "https://github.com/petergyang/human-review"
+        }
+      ]
+    },
     {
       "id": "2026-08-08-claude-code",
       "date": "2026-08-08",
