@@ -1,0 +1,67 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>セルフホスト実行環境がベータ — Claude Codeのセッションを自社ネットワーク内で回す（Focus view / maskモードも） — デイリー技術深掘り 読み物</title><meta name="description" content="8/6発表のセルフホスト実行環境がパブリックベータに。どこから起動してもセッションは組織のネットワーク内で動き、リポジトリ・シークレット・生成物が境界内に留まる。Team/Enterprise向け・既定オフ、ランナーはFixed/On-demandの2モード。v2.1.221のFocus viewとサンドボックス資格情報maskモード、v2.1.224〜226の地固めも実運用を後押しする。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-10-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="セルフホスト実行環境がベータ — Claude Codeのセッションを自社ネットワーク内で回す（Focus view / maskモードも） — デイリー技術深掘り 読み物"><meta property="og:description" content="8/6発表のセルフホスト実行環境がパブリックベータに。どこから起動してもセッションは組織のネットワーク内で動き、リポジトリ・シークレット・生成物が境界内に留まる。Team/Enterprise向け・既定オフ、ランナーはFixed/On-demandの2モード。v2.1.221のFocus viewとサンドボックス資格情報maskモード、v2.1.224〜226の地固めも実運用を後押しする。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-10-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>セルフホスト実行環境がベータ — Claude Codeのセッションを自社ネットワーク内で回す（Focus view / maskモードも）</h1> <p class="lede">8/6発表のセルフホスト実行環境がパブリックベータに。どこから起動してもセッションは組織のネットワーク内で動き、リポジトリ・シークレット・生成物が境界内に留まる。Team/Enterprise向け・既定オフ、ランナーはFixed/On-demandの2モード。v2.1.221のFocus viewとサンドボックス資格情報maskモード、v2.1.224〜226の地固めも実運用を後押しする。</p> <div class="meta"> <span>📅 2026年8月10日</span> <span>⏱ 約3分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="0"><p>コーディングエージェントの「実行場所」そのものを顧客側へ動かす更新だ。Anthropic は 8/6、Claude Code のクラウドセッションを<b>自社ネットワーク内のサーバーで実行する「セルフホスト実行環境」</b>をパブリックベータで提供開始した。Web・モバイル・デスクトップ・ターミナル・スケジュール実行のどこから起動しても、セッションは組織の内側で社内サービスやツールチェーン、セキュリティ制御の隣で走る。規制の厳しい企業ほど効いてくる話だ。</p>
+<h4 id="sec-1">何が新しいか — データ境界の内側でエージェントを回す</h4>
+<p>従来はセッションが Anthropic 側インフラで動き、リポジトリのチェックアウトやシークレットが境界の外に出る前提だった。セルフホストでは<b>リポジトリ・ビルド成果物・シークレット・セッションが生成/変更したファイルが、組織の用意したマシン上に留まる</b>。対象は <b>Team / Enterprise</b> プランで<b>既定は無効</b>。ランナーは常時一定数を保つ <b>Fixed</b> と、キュー状況で起動/停止する <b>On-demand</b> の2モードを選べ、セッション数に応じてスケールできる。</p>
+<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='200' fill='#fff6ee'></rect><text x='16' y='24' font-size='13' font-weight='700' fill='#b45309'>実行場所を Anthropic 側 → 自社ネットワーク内へ</text><rect x='20' y='40' width='260' height='140' rx='10' fill='#fff' stroke='#fca5a5'></rect><text x='150' y='62' font-size='11' font-weight='700' fill='#b91c1c' text-anchor='middle'>従来：クラウド実行</text><rect x='44' y='78' width='212' height='34' rx='6' fill='#fef2f2' stroke='#fca5a5'></rect><text x='150' y='99' font-size='10' fill='#7f1d1d' text-anchor='middle'>Anthropic 側インフラでセッション</text><text x='150' y='134' font-size='10' fill='#7f1d1d' text-anchor='middle'>repo/秘密/生成物が境界の外へ</text><text x='150' y='156' font-size='10' fill='#9ca3af' text-anchor='middle'>コンプラ要件で導入しづらい</text><path d='M286 110 L314 110' stroke='#f59e0b' stroke-width='2' marker-end='url(#ar)'></path><defs><marker id='ar' markerWidth='8' markerHeight='8' refX='6' refY='3' orient='auto'><path d='M0 0 L6 3 L0 6 z' fill='#f59e0b'></path></marker></defs><rect x='320' y='40' width='260' height='140' rx='10' fill='#fff' stroke='#86efac'></rect><text x='450' y='62' font-size='11' font-weight='700' fill='#15803d' text-anchor='middle'>セルフホスト実行環境</text><rect x='344' y='78' width='212' height='34' rx='6' fill='#f0fdf4' stroke='#86efac'></rect><text x='450' y='99' font-size='10' fill='#166534' text-anchor='middle'>自社ネットワーク内で実行</text><text x='450' y='134' font-size='10' fill='#166534' text-anchor='middle'>repo/秘密/生成物は境界内に保持</text><text x='450' y='156' font-size='10' fill='#166534' text-anchor='middle'>Fixed / On-demand の2モード</text></svg><figcaption>図1：セッションの実行場所を顧客管理インフラへ移し、データを境界内に留める。</figcaption></figure>
+<h4 id="sec-2">UX と安全性の地固め（v2.1.221〜226）</h4>
+<p>大型機能を日常運用に乗せる改善も続く。<b>v2.1.221</b> でチャットメニューに <b>Focus view</b> が追加され、ツール実行アクティビティをターンごとの折りたたみサマリーの背後に隠して会話の流れを追いやすくした（<code>Ctrl+Alt+F</code> で切替）。同時に Linux/WSL 向けにサンドボックス資格情報の <code>mode:"mask"</code> が入り、シークレットを露出させずにサンドボックス実行へ渡せる。<b>v2.1.224〜226</b> はサブエージェントのテキストストリーミングと背景エージェントの信頼性改善を軸に、権限・アップロード・セッション・Chrome・Windows にまたがる広範なバグ修正と、端末描画性能・メモリ・プロンプトキャッシュの底上げを含む。</p>
+<h4 id="sec-3">実務での使いどころ・注意点</h4>
+<p>使いこなすチームは「良いプロンプト」より<b>良いハーネス</b>を組む、というのが実務ガイドの一貫した主張だ。締まった <code>CLAUDE.md</code>、実効的な権限ポリシー、Skills のライブラリ、絶対厳守を強制する数個の <b>Hooks</b>、委譲境界としてのサブエージェント——強制は Hooks/権限、知識は Skills、委譲はサブエージェント、と役割を分けると重複が減る。日本企業の事例では導入3〜6週で月30〜80時間の工数削減が目安とされ、freee は Max 定額と Enterprise 従量を併用しコスト最適化とガバナンスを両立させている。注意点は、セルフホストが<b>ベータ・既定オフ・Team/Enterprise 限定</b>で、日次で小刻みにパッチが出るため CI/スクリプト連携では<b>固定バージョン運用</b>が無難なこと。</p>
+<p><b>ひとことまとめ：</b>派手な新機能というより、強力なエージェントを「境界内で・安全に・長時間」回すための地固めの回。並列・自動運用ほど恩恵が大きい。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://claude.com/blog/run-claude-code-sessions-on-your-own-compute" target="_blank" rel="noopener noreferrer"> 自社インフラで動くClaude Code（公式ブログ） </a> </li><li> <a href="https://code.claude.com/docs/en/changelog" target="_blank" rel="noopener noreferrer"> Claude Code changelog（Focus view / maskモード） </a> </li><li> <a href="https://www.unite.ai/claude-code-sessions-can-now-run-on-infrastructure-your-team-controls/" target="_blank" rel="noopener noreferrer"> Unite.AI: Claude Code sessions on infrastructure your team controls </a> </li><li> <a href="https://ai.rundatarun.io/ai-development-agents/claude-code-best-practices" target="_blank" rel="noopener noreferrer"> AIXplore: Claude Code best practices（ハーネス設計） </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 何が新しいか — データ境界の内側でエージェントを回す </a> </li><li> <a href="#sec-2" data-toc="sec-2"> UX と安全性の地固め（v2.1.221〜226） </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 実務での使いどころ・注意点 </a> </li> </ul> <div class="reading-box"> <div>📅 2026-08-10</div> <div>⏱ 読了 約3分</div> <div>🏷 Claude Code</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

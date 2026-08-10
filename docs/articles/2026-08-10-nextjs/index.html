@@ -1,0 +1,74 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Lottie / dotLottie を App Router で — Rust+WASM の新ランタイムと &#39;use client&#39; 島の作法 — デイリー技術深掘り 読み物</title><meta name="description" content="デザイナー発アニメの標準 Lottie の土台が総入れ替え。@lottiefiles/dotlottie-react はコアが Rust→WASM・描画は ThorVG（WebGPU可）で、State Machine・テーマ・Web Worker を獲得。.lottie コンテナは JSON より最大80%小さい。完全クライアント専用ゆえ 'use client'＋ssr:false の島に隔離し、寸法固定と prefers-reduced-motion 対応をセットにするのが要点。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-10-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Lottie / dotLottie を App Router で — Rust+WASM の新ランタイムと 'use client' 島の作法 — デイリー技術深掘り 読み物"><meta property="og:description" content="デザイナー発アニメの標準 Lottie の土台が総入れ替え。@lottiefiles/dotlottie-react はコアが Rust→WASM・描画は ThorVG（WebGPU可）で、State Machine・テーマ・Web Worker を獲得。.lottie コンテナは JSON より最大80%小さい。完全クライアント専用ゆえ 'use client'＋ssr:false の島に隔離し、寸法固定と prefers-reduced-motion 対応をセットにするのが要点。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-10-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>Lottie / dotLottie を App Router で — Rust+WASM の新ランタイムと &#39;use client&#39; 島の作法</h1> <p class="lede">デザイナー発アニメの標準 Lottie の土台が総入れ替え。@lottiefiles/dotlottie-react はコアが Rust→WASM・描画は ThorVG（WebGPU可）で、State Machine・テーマ・Web Worker を獲得。.lottie コンテナは JSON より最大80%小さい。完全クライアント専用ゆえ &#39;use client&#39;＋ssr:false の島に隔離し、寸法固定と prefers-reduced-motion 対応をセットにするのが要点。</p> <div class="meta"> <span>📅 2026年8月10日</span> <span>⏱ 約4分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="0"><p>デザイナー発アニメの事実上の標準 <b>Lottie</b> を、Next.js App Router で今どう載せるか。土台が総入れ替えされた点が今回の肝だ。旧世代は Airbnb の <code>lottie-web</code>（純JS・SVG/Canvas）だが<b>メンテはほぼ停滞</b>し <code>prefers-reduced-motion</code> も長年未対応。新世代は LottieFiles の <b><code>@lottiefiles/dotlottie-web</code></b>で、コアが <b>Rust → WASM</b>、描画は <b>ThorVG</b> で Software/WebGL2/<b>WebGPU</b> バックエンドを持つ。React ラッパは <code>@lottiefiles/dotlottie-react</code>。</p>
+<h4 id="sec-1">何が新しいか — .lottie コンテナと新ランタイム</h4>
+<p><b>dotLottie（<code>.lottie</code>）</b>は Lottie を包むオープンなコンテナ（実体は Deflate 圧縮の ZIP）。1ファイルに<b>複数アニメ・画像/フォント・State Machine・テーマ（slot）</b>を同梱でき、<b>JSON より最大80%小さい</b>。新規は基本これを選ぶ。同一 Rust コアが Kotlin/Swift/WASM へ展開され iOS/Android/Web で挙動が揃うのも強み。旧新いずれも<b>ブラウザAPI（WASM/Canvas/window）依存＝SSR 不可</b>な点は変わらない。</p>
+<figure class='fig'><svg viewBox='0 0 600 190' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='190' fill='#f5f7ff'></rect><text x='16' y='24' font-size='13' font-weight='700' fill='#1e3a8a'>旧 lottie-web と 新 dotLottie ランタイムの違い</text><rect x='20' y='38' width='265' height='138' rx='10' fill='#fff' stroke='#cbd5e1'></rect><text x='152' y='60' font-size='11' font-weight='700' fill='#475569' text-anchor='middle'>旧：lottie-web（React ラッパ）</text><text x='152' y='84' font-size='10' fill='#475569' text-anchor='middle'>純JS・SVG/Canvas レンダラ</text><text x='152' y='104' font-size='10' fill='#475569' text-anchor='middle'>メンテ停滞・.json のみ</text><text x='152' y='124' font-size='10' fill='#b91c1c' text-anchor='middle'>reduced-motion 未対応</text><text x='152' y='148' font-size='10' fill='#475569' text-anchor='middle'>SSR 不可</text><rect x='315' y='38' width='265' height='138' rx='10' fill='#fff' stroke='#93c5fd'></rect><text x='447' y='60' font-size='11' font-weight='700' fill='#1e40af' text-anchor='middle'>新：dotlottie-react</text><text x='447' y='84' font-size='10' fill='#1e3a8a' text-anchor='middle'>Rust→WASM・ThorVG（WebGPU可）</text><text x='447' y='104' font-size='10' fill='#1e3a8a' text-anchor='middle'>.lottie＝80%小・アセット同梱</text><text x='447' y='124' font-size='10' fill='#1e3a8a' text-anchor='middle'>State Machine・テーマ slot</text><text x='447' y='148' font-size='10' fill='#1e3a8a' text-anchor='middle'>Web Worker 対応・SSR 不可</text></svg><figcaption>図1：新ランタイムはコアが Rust/WASM 化し、対話性・テーマ・軽量化・ワーカーを獲得。</figcaption></figure>
+<h4 id="sec-2">App Router での組み込み — 'use client' 島に隔離</h4>
+<p>Lottie は完全クライアント専用。Server Component に <code>next/dynamic</code> の <code>ssr:false</code> を直書きすると<b>ビルドエラー</b>（<code>ssr: false is not allowed with next/dynamic in Server Components</code>）になる。定石は <b><code>'use client'</code> ラッパを1枚挟む</b>こと。ページ本体とデータ取得は RSC のままで、この島だけがクライアントになる。</p>
+<pre><code>// components/lottie-hero.tsx（クライアント島）
+'use client';
+import dynamic from 'next/dynamic';
+const DotLottieReact = dynamic(
+  () =&gt; import('@lottiefiles/dotlottie-react').then(m =&gt; m.DotLottieReact),
+  { ssr:false, loading: () =&gt; &lt;div aria-hidden style={{width:360,height:360}} /&gt; }
+);</code></pre>
+<h4 id="sec-3">性能・落とし穴・a11y</h4>
+<p>複数同時/多レイヤ/モバイルでは <b><code>DotLottieWorkerReact</code></b>（OffscreenCanvas）でレンダリングをワーカーに逃がす。既定で<b>オフスクリーン自動フリーズ</b>、<b>DPR は実値の75%</b>（網膜級が要る時だけ上げる）、<code>IntersectionObserver</code> で可視時のみロード。落とし穴は<b>コンテナに幅・高さが必須</b>（無いと何も出ない＝CLS 対策に寸法固定）、<b>WASM の初回フェッチ</b>が初期表示コスト、<code>.json</code> より <code>.lottie</code> 優先。そして最重要の a11y——Lottie は<b>既定 autoplay</b> かつ SR に何も伝わらないので、装飾は親を <code>aria-hidden</code>、意味を持つなら <code>role="img"</code>＋<code>aria-label</code>、<code>prefers-reduced-motion: reduce</code> では autoplay せず静止フレーム表示にする。</p>
+<p><b>ひとことまとめ：</b>新規は <code>.lottie</code>＋<code>@lottiefiles/dotlottie-react</code> を <code>'use client'</code>＋<code>ssr:false</code> の島に隔離。寸法固定と reduced-motion 対応をセットで。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://www.npmjs.com/package/@lottiefiles/dotlottie-react" target="_blank" rel="noopener noreferrer"> @lottiefiles/dotlottie-react（npm） </a> </li><li> <a href="https://lottiefiles.com/dotlottie" target="_blank" rel="noopener noreferrer"> dotLottie とは（オープン形式・80%削減・アセット同梱） </a> </li><li> <a href="https://dev.to/fazalshah/using-lottie-animations-in-nextjs-app-router-pages-router-3of3" target="_blank" rel="noopener noreferrer"> Using Lottie in Next.js（App Router / ssr:false） </a> </li><li> <a href="https://dev.to/fazalshah/lottie-animations-and-accessibility-prefers-reduced-motion-aria-and-best-practices-51fo" target="_blank" rel="noopener noreferrer"> Lottie &amp; accessibility（prefers-reduced-motion / ARIA） </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 何が新しいか — .lottie コンテナと新ランタイム </a> </li><li> <a href="#sec-2" data-toc="sec-2"> App Router での組み込み — &#39;use client&#39; 島に隔離 </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 性能・落とし穴・a11y </a> </li> </ul> <div class="reading-box"> <div>📅 2026-08-10</div> <div>⏱ 読了 約4分</div> <div>🏷 Next.js</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
