@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-08-09T04:47:52.261Z",
+  "generatedAt": "2026-08-10T04:49:34.645Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,102 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-08-10-claude-code",
+      "date": "2026-08-10",
+      "topic": "Claude Code",
+      "title": "セルフホスト実行環境がベータ — Claude Codeのセッションを自社ネットワーク内で回す（Focus view / maskモードも）",
+      "lede": "8/6発表のセルフホスト実行環境がパブリックベータに。どこから起動してもセッションは組織のネットワーク内で動き、リポジトリ・シークレット・生成物が境界内に留まる。Team/Enterprise向け・既定オフ、ランナーはFixed/On-demandの2モード。v2.1.221のFocus viewとサンドボックス資格情報maskモード、v2.1.224〜226の地固めも実運用を後押しする。",
+      "articleHtml": "<p>コーディングエージェントの「実行場所」そのものを顧客側へ動かす更新だ。Anthropic は 8/6、Claude Code のクラウドセッションを<b>自社ネットワーク内のサーバーで実行する「セルフホスト実行環境」</b>をパブリックベータで提供開始した。Web・モバイル・デスクトップ・ターミナル・スケジュール実行のどこから起動しても、セッションは組織の内側で社内サービスやツールチェーン、セキュリティ制御の隣で走る。規制の厳しい企業ほど効いてくる話だ。</p>\n<h4>何が新しいか — データ境界の内側でエージェントを回す</h4>\n<p>従来はセッションが Anthropic 側インフラで動き、リポジトリのチェックアウトやシークレットが境界の外に出る前提だった。セルフホストでは<b>リポジトリ・ビルド成果物・シークレット・セッションが生成/変更したファイルが、組織の用意したマシン上に留まる</b>。対象は <b>Team / Enterprise</b> プランで<b>既定は無効</b>。ランナーは常時一定数を保つ <b>Fixed</b> と、キュー状況で起動/停止する <b>On-demand</b> の2モードを選べ、セッション数に応じてスケールできる。</p>\n<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='200' fill='#fff6ee'/><text x='16' y='24' font-size='13' font-weight='700' fill='#b45309'>実行場所を Anthropic 側 → 自社ネットワーク内へ</text><rect x='20' y='40' width='260' height='140' rx='10' fill='#fff' stroke='#fca5a5'/><text x='150' y='62' font-size='11' font-weight='700' fill='#b91c1c' text-anchor='middle'>従来：クラウド実行</text><rect x='44' y='78' width='212' height='34' rx='6' fill='#fef2f2' stroke='#fca5a5'/><text x='150' y='99' font-size='10' fill='#7f1d1d' text-anchor='middle'>Anthropic 側インフラでセッション</text><text x='150' y='134' font-size='10' fill='#7f1d1d' text-anchor='middle'>repo/秘密/生成物が境界の外へ</text><text x='150' y='156' font-size='10' fill='#9ca3af' text-anchor='middle'>コンプラ要件で導入しづらい</text><path d='M286 110 L314 110' stroke='#f59e0b' stroke-width='2' marker-end='url(#ar)'/><defs><marker id='ar' markerWidth='8' markerHeight='8' refX='6' refY='3' orient='auto'><path d='M0 0 L6 3 L0 6 z' fill='#f59e0b'/></marker></defs><rect x='320' y='40' width='260' height='140' rx='10' fill='#fff' stroke='#86efac'/><text x='450' y='62' font-size='11' font-weight='700' fill='#15803d' text-anchor='middle'>セルフホスト実行環境</text><rect x='344' y='78' width='212' height='34' rx='6' fill='#f0fdf4' stroke='#86efac'/><text x='450' y='99' font-size='10' fill='#166534' text-anchor='middle'>自社ネットワーク内で実行</text><text x='450' y='134' font-size='10' fill='#166534' text-anchor='middle'>repo/秘密/生成物は境界内に保持</text><text x='450' y='156' font-size='10' fill='#166534' text-anchor='middle'>Fixed / On-demand の2モード</text></svg><figcaption>図1：セッションの実行場所を顧客管理インフラへ移し、データを境界内に留める。</figcaption></figure>\n<h4>UX と安全性の地固め（v2.1.221〜226）</h4>\n<p>大型機能を日常運用に乗せる改善も続く。<b>v2.1.221</b> でチャットメニューに <b>Focus view</b> が追加され、ツール実行アクティビティをターンごとの折りたたみサマリーの背後に隠して会話の流れを追いやすくした（<code>Ctrl+Alt+F</code> で切替）。同時に Linux/WSL 向けにサンドボックス資格情報の <code>mode:\"mask\"</code> が入り、シークレットを露出させずにサンドボックス実行へ渡せる。<b>v2.1.224〜226</b> はサブエージェントのテキストストリーミングと背景エージェントの信頼性改善を軸に、権限・アップロード・セッション・Chrome・Windows にまたがる広範なバグ修正と、端末描画性能・メモリ・プロンプトキャッシュの底上げを含む。</p>\n<h4>実務での使いどころ・注意点</h4>\n<p>使いこなすチームは「良いプロンプト」より<b>良いハーネス</b>を組む、というのが実務ガイドの一貫した主張だ。締まった <code>CLAUDE.md</code>、実効的な権限ポリシー、Skills のライブラリ、絶対厳守を強制する数個の <b>Hooks</b>、委譲境界としてのサブエージェント——強制は Hooks/権限、知識は Skills、委譲はサブエージェント、と役割を分けると重複が減る。日本企業の事例では導入3〜6週で月30〜80時間の工数削減が目安とされ、freee は Max 定額と Enterprise 従量を併用しコスト最適化とガバナンスを両立させている。注意点は、セルフホストが<b>ベータ・既定オフ・Team/Enterprise 限定</b>で、日次で小刻みにパッチが出るため CI/スクリプト連携では<b>固定バージョン運用</b>が無難なこと。</p>\n<p><b>ひとことまとめ：</b>派手な新機能というより、強力なエージェントを「境界内で・安全に・長時間」回すための地固めの回。並列・自動運用ほど恩恵が大きい。</p>",
+      "sources": [
+        {
+          "title": "自社インフラで動くClaude Code（公式ブログ）",
+          "url": "https://claude.com/blog/run-claude-code-sessions-on-your-own-compute"
+        },
+        {
+          "title": "Claude Code changelog（Focus view / maskモード）",
+          "url": "https://code.claude.com/docs/en/changelog"
+        },
+        {
+          "title": "Unite.AI: Claude Code sessions on infrastructure your team controls",
+          "url": "https://www.unite.ai/claude-code-sessions-can-now-run-on-infrastructure-your-team-controls/"
+        },
+        {
+          "title": "AIXplore: Claude Code best practices（ハーネス設計）",
+          "url": "https://ai.rundatarun.io/ai-development-agents/claude-code-best-practices"
+        }
+      ]
+    },
+    {
+      "id": "2026-08-10-nextjs",
+      "date": "2026-08-10",
+      "topic": "Next.js",
+      "title": "Lottie / dotLottie を App Router で — Rust+WASM の新ランタイムと 'use client' 島の作法",
+      "lede": "デザイナー発アニメの標準 Lottie の土台が総入れ替え。@lottiefiles/dotlottie-react はコアが Rust→WASM・描画は ThorVG（WebGPU可）で、State Machine・テーマ・Web Worker を獲得。.lottie コンテナは JSON より最大80%小さい。完全クライアント専用ゆえ 'use client'＋ssr:false の島に隔離し、寸法固定と prefers-reduced-motion 対応をセットにするのが要点。",
+      "articleHtml": "<p>デザイナー発アニメの事実上の標準 <b>Lottie</b> を、Next.js App Router で今どう載せるか。土台が総入れ替えされた点が今回の肝だ。旧世代は Airbnb の <code>lottie-web</code>（純JS・SVG/Canvas）だが<b>メンテはほぼ停滞</b>し <code>prefers-reduced-motion</code> も長年未対応。新世代は LottieFiles の <b><code>@lottiefiles/dotlottie-web</code></b>で、コアが <b>Rust → WASM</b>、描画は <b>ThorVG</b> で Software/WebGL2/<b>WebGPU</b> バックエンドを持つ。React ラッパは <code>@lottiefiles/dotlottie-react</code>。</p>\n<h4>何が新しいか — .lottie コンテナと新ランタイム</h4>\n<p><b>dotLottie（<code>.lottie</code>）</b>は Lottie を包むオープンなコンテナ（実体は Deflate 圧縮の ZIP）。1ファイルに<b>複数アニメ・画像/フォント・State Machine・テーマ（slot）</b>を同梱でき、<b>JSON より最大80%小さい</b>。新規は基本これを選ぶ。同一 Rust コアが Kotlin/Swift/WASM へ展開され iOS/Android/Web で挙動が揃うのも強み。旧新いずれも<b>ブラウザAPI（WASM/Canvas/window）依存＝SSR 不可</b>な点は変わらない。</p>\n<figure class='fig'><svg viewBox='0 0 600 190' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='190' fill='#f5f7ff'/><text x='16' y='24' font-size='13' font-weight='700' fill='#1e3a8a'>旧 lottie-web と 新 dotLottie ランタイムの違い</text><rect x='20' y='38' width='265' height='138' rx='10' fill='#fff' stroke='#cbd5e1'/><text x='152' y='60' font-size='11' font-weight='700' fill='#475569' text-anchor='middle'>旧：lottie-web（React ラッパ）</text><text x='152' y='84' font-size='10' fill='#475569' text-anchor='middle'>純JS・SVG/Canvas レンダラ</text><text x='152' y='104' font-size='10' fill='#475569' text-anchor='middle'>メンテ停滞・.json のみ</text><text x='152' y='124' font-size='10' fill='#b91c1c' text-anchor='middle'>reduced-motion 未対応</text><text x='152' y='148' font-size='10' fill='#475569' text-anchor='middle'>SSR 不可</text><rect x='315' y='38' width='265' height='138' rx='10' fill='#fff' stroke='#93c5fd'/><text x='447' y='60' font-size='11' font-weight='700' fill='#1e40af' text-anchor='middle'>新：dotlottie-react</text><text x='447' y='84' font-size='10' fill='#1e3a8a' text-anchor='middle'>Rust→WASM・ThorVG（WebGPU可）</text><text x='447' y='104' font-size='10' fill='#1e3a8a' text-anchor='middle'>.lottie＝80%小・アセット同梱</text><text x='447' y='124' font-size='10' fill='#1e3a8a' text-anchor='middle'>State Machine・テーマ slot</text><text x='447' y='148' font-size='10' fill='#1e3a8a' text-anchor='middle'>Web Worker 対応・SSR 不可</text></svg><figcaption>図1：新ランタイムはコアが Rust/WASM 化し、対話性・テーマ・軽量化・ワーカーを獲得。</figcaption></figure>\n<h4>App Router での組み込み — 'use client' 島に隔離</h4>\n<p>Lottie は完全クライアント専用。Server Component に <code>next/dynamic</code> の <code>ssr:false</code> を直書きすると<b>ビルドエラー</b>（<code>ssr: false is not allowed with next/dynamic in Server Components</code>）になる。定石は <b><code>'use client'</code> ラッパを1枚挟む</b>こと。ページ本体とデータ取得は RSC のままで、この島だけがクライアントになる。</p>\n<pre><code>// components/lottie-hero.tsx（クライアント島）\n'use client';\nimport dynamic from 'next/dynamic';\nconst DotLottieReact = dynamic(\n  () =&gt; import('@lottiefiles/dotlottie-react').then(m =&gt; m.DotLottieReact),\n  { ssr:false, loading: () =&gt; &lt;div aria-hidden style={{width:360,height:360}} /&gt; }\n);</code></pre>\n<h4>性能・落とし穴・a11y</h4>\n<p>複数同時/多レイヤ/モバイルでは <b><code>DotLottieWorkerReact</code></b>（OffscreenCanvas）でレンダリングをワーカーに逃がす。既定で<b>オフスクリーン自動フリーズ</b>、<b>DPR は実値の75%</b>（網膜級が要る時だけ上げる）、<code>IntersectionObserver</code> で可視時のみロード。落とし穴は<b>コンテナに幅・高さが必須</b>（無いと何も出ない＝CLS 対策に寸法固定）、<b>WASM の初回フェッチ</b>が初期表示コスト、<code>.json</code> より <code>.lottie</code> 優先。そして最重要の a11y——Lottie は<b>既定 autoplay</b> かつ SR に何も伝わらないので、装飾は親を <code>aria-hidden</code>、意味を持つなら <code>role=\"img\"</code>＋<code>aria-label</code>、<code>prefers-reduced-motion: reduce</code> では autoplay せず静止フレーム表示にする。</p>\n<p><b>ひとことまとめ：</b>新規は <code>.lottie</code>＋<code>@lottiefiles/dotlottie-react</code> を <code>'use client'</code>＋<code>ssr:false</code> の島に隔離。寸法固定と reduced-motion 対応をセットで。</p>",
+      "sources": [
+        {
+          "title": "@lottiefiles/dotlottie-react（npm）",
+          "url": "https://www.npmjs.com/package/@lottiefiles/dotlottie-react"
+        },
+        {
+          "title": "dotLottie とは（オープン形式・80%削減・アセット同梱）",
+          "url": "https://lottiefiles.com/dotlottie"
+        },
+        {
+          "title": "Using Lottie in Next.js（App Router / ssr:false）",
+          "url": "https://dev.to/fazalshah/using-lottie-animations-in-nextjs-app-router-pages-router-3of3"
+        },
+        {
+          "title": "Lottie & accessibility（prefers-reduced-motion / ARIA）",
+          "url": "https://dev.to/fazalshah/lottie-animations-and-accessibility-prefers-reduced-motion-aria-and-best-practices-51fo"
+        }
+      ]
+    },
+    {
+      "id": "2026-08-10-flutter",
+      "date": "2026-08-10",
+      "topic": "Flutter",
+      "title": "アニメは implicit/explicit を用途で分け、フレーム予算（16/11/8.3ms）を超えない — Impeller 既定時代の設計",
+      "lede": "Impeller が iOS＋Android(API29+) 既定で Skia を撤去し shader jank を排除、120fps がベースライン。上物は implicit（150〜500ms/標準カーブ）を基本に、physics・gesture・割り込みだけ explicit へ。性能は不要な rebuild を const/Selector/RepaintBoundary で削り、profile モードの DevTools で UI/Raster スレッドとフレーム予算を実測するのが王道。",
+      "articleHtml": "<p>今日はアニメーションとパフォーマンスの「予算」に絞って整理する。描画基盤の <b>Impeller</b> が iOS＋Android(API 29+) で既定になり Skia を撤去、ビルド時 AOT シェーダーで <b>shader compilation jank を排除</b>して 120fps をベースラインに置いた。土台が速くなったぶん、上物のアニメ設計とリビルド削減の効き目がそのまま体感差になる局面だ。</p>\n<h4>アニメは implicit / explicit を用途で分ける</h4>\n<p>UI アニメの多くは <b>implicit</b>（<code>AnimatedContainer</code>／<code>AnimatedOpacity</code>／<code>AnimatedSwitcher</code>）で1行、割り込みも自動処理。時間は <b>150〜500ms・標準カーブ</b>（easeInOut／fastOutSlowIn）。複雑な choreography・physics・gesture 駆動だけ <b>explicit</b>（<code>AnimationController</code>＋<code>Tween</code>＋<code>CurvedAnimation</code>＋<code>AnimatedBuilder</code>）に落とし、<code>AnimationController</code> は <b>dispose 必須</b>。時間設計の目安は <b>micro 50〜200ms＝implicit／component 200〜400ms＝explicit／Hero 300〜600ms</b>。宣言的連鎖なら <code>flutter_animate</code>（<code>.animate().fadeIn().slide().scale()</code>＋<code>.then()</code> でスタッガー）、状態機械でロジックを描画から分離したいなら <b>Rive</b>（events で haptics/sound/navigation を発火）。</p>\n<h4>パフォーマンスはフレーム予算で考える</h4>\n<p>最も多い性能問題は<b>不要な widget rebuild</b>。Flutter は <b>const widget の再ビルドを完全スキップ</b>するので const を積極活用し、大きな <code>build()</code> を分割、<code>Selector</code>／<code>select</code> で局所再描画、アニメ領域は <code>RepaintBoundary</code> で隔離する。計測は必ず <b>profile モード</b>で <b>DevTools の Performance View</b>を使い、UI スレッド／Raster スレッドの処理と jank フレーム位置を見る。</p>\n<figure class='fig'><svg viewBox='0 0 600 180' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='180' fill='#f0fbff'/><text x='16' y='24' font-size='13' font-weight='700' fill='#0e7490'>フレーム予算：1フレームで許される時間</text><text x='40' y='150' font-size='10' fill='#155e75' text-anchor='middle'>60fps</text><rect x='70' y='44' width='300' height='26' rx='4' fill='#06b6d4'/><text x='378' y='62' font-size='11' fill='#155e75'>16ms</text><text x='40' y='150' font-size='10' fill='#155e75' text-anchor='middle'></text><text x='40' y='95' font-size='10' fill='#155e75' text-anchor='middle'>90fps</text><rect x='70' y='82' width='206' height='26' rx='4' fill='#0891b2'/><text x='284' y='100' font-size='11' fill='#155e75'>11ms</text><text x='40' y='133' font-size='10' fill='#155e75' text-anchor='middle'>120fps</text><rect x='70' y='120' width='156' height='26' rx='4' fill='#0e7490'/><text x='234' y='138' font-size='11' fill='#155e75'>8.3ms</text><text x='70' y='170' font-size='10' fill='#155e75'>目標：UI スレッド &lt;8ms／Raster スレッド &lt;4ms(60fps)・&lt;8.3ms(120fps)</text></svg><figcaption>図1：リフレッシュレート別のフレーム予算。超えた瞬間に jank になる。</figcaption></figure>\n<h4>実務での使いどころ・注意点</h4>\n<p>自分が新規で作るなら、まず const 徹底と <code>RepaintBoundary</code> でアニメ領域を隔離し、実測は必ず profile モードで DevTools を回す（debug モードの数値は当てにならない）。画像は width/height を明示し <code>cached_network_image</code> を使う。<b>Material 3 Expressive</b> は spring モーション物理・35 シェイプ・shape morphing を持ち、<code>useMaterial3</code> 既定で dynamic color と adaptive layout が効く。落とし穴は、explicit を使いすぎて controller の dispose 漏れやリビルド過多を招くこと——「動きの複雑さ」ではなく「割り込み・物理・ジェスチャの有無」で implicit/explicit を選ぶと事故りにくい。</p>\n<p><b>ひとことまとめ：</b>Impeller で土台は速い。あとは<b>用途で implicit/explicit を分け、フレーム予算（16/11/8.3ms）を超えない</b>ようリビルドを削るのが王道。</p>",
+      "sources": [
+        {
+          "title": "How Impeller Is Transforming Flutter UI Rendering in 2026",
+          "url": "https://dev.to/eira-wexford/how-impeller-is-transforming-flutter-ui-rendering-in-2026-3dpd"
+        },
+        {
+          "title": "Flutter Performance Optimization: A Practical Guide for 2026",
+          "url": "https://medium.com/codetodeploy/flutter-performance-optimization-a-practical-guide-for-2026-bc501e44ec6e"
+        },
+        {
+          "title": "Flutter docs: Improving rendering performance",
+          "url": "https://docs.flutter.dev/perf/rendering-performance"
+        }
+      ]
+    },
+    {
+      "id": "2026-08-10-github-trending",
+      "date": "2026-08-10",
+      "topic": "GitHub Trending",
+      "title": "8/10の話題リポジトリ — 自律エージェントの『操作・ガード・収集』を支える3層",
+      "lede": "低調な一日の中で目を引いた3本は、エージェントに実世界の操作をさせる時代の周辺インフラで一貫する。手足を与える phone-harness、暴走を止める emilia-protocol、情報を集める obscura。",
+      "articleHtml": "<p>本日は全体的に低調な一日で、Trendshift 日次・OSSInsight 当日で拾える純増リポが乏しかった。そのなかで目を引いた3本には一本の線が通っている——<b>「自律エージェントに実世界の操作をさせる」時代の周辺インフラ</b>だ。エージェントに手足（操作）を与え、暴走を止めるガードを挟み、情報を集める収集口を整える。その3層が今日の話題だった。</p>\n<figure class='fig'><svg viewBox='0 0 600 220' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='220' fill='#f2fbf4'/><text x='16' y='24' font-size='13' font-weight='700' fill='#166534'>3本の「解決したい課題 → 提供する機能」</text><line x1='250' y1='34' x2='250' y2='210' stroke='#bbf7d0'/><line x1='16' y1='34' x2='584' y2='34' stroke='#bbf7d0'/><text x='130' y='50' font-size='10' font-weight='700' fill='#15803d' text-anchor='middle'>リポジトリ</text><text x='330' y='50' font-size='10' font-weight='700' fill='#15803d'>解決したい課題</text><text x='330' y='50' font-size='10' font-weight='700' fill='#15803d'></text><text x='130' y='84' font-size='10' fill='#14532d' text-anchor='middle'>phone-harness</text><text x='260' y='78' font-size='9.5' fill='#166534'>エージェントに実機スマホを操作させたい</text><text x='260' y='94' font-size='9.5' fill='#166534'>→ 端末操作の実行ハーネスを提供</text><line x1='16' y1='110' x2='584' y2='110' stroke='#dcfce7'/><text x='130' y='140' font-size='10' fill='#14532d' text-anchor='middle'>emilia-protocol</text><text x='260' y='134' font-size='9.5' fill='#166534'>金/コード/権限/インフラ変更の暴走</text><text x='260' y='150' font-size='9.5' fill='#166534'>→ 実行前に権限検証＋監査証跡</text><line x1='16' y1='166' x2='584' y2='166' stroke='#dcfce7'/><text x='130' y='196' font-size='10' fill='#14532d' text-anchor='middle'>obscura</text><text x='260' y='190' font-size='9.5' fill='#166534'>収集/スクレイピングが重く不安定</text><text x='260' y='206' font-size='9.5' fill='#166534'>→ Rust 製の軽量ヘッドレスブラウザ</text></svg><figcaption>図1：操作（手足）・ガード（安全網）・収集（情報源）という3層。</figcaption></figure>\n<h4>ShawnPana/phone-harness（—・New 2026）</h4>\n<p><b>解決したい課題：</b>コーディングやブラウザ操作のエージェントは増えたが、「手元のスマートフォンそのもの」を触らせる標準的な実行基盤が無かった。<b>提供する機能：</b>AI エージェントに自分のスマホを操作させるための<b>ハーネス（実行基盤）</b>。着眼が直球で分かりやすく、常駐・自律エージェント志向の高まりの中で拡散し、Trendshift 日次5位まで急上昇した。上位がコーディング/スキル一色のなか、モバイル操作という毛色の違うエージェント応用として目立った。</p>\n<h4>emiliaprotocol/emilia-protocol（TypeScript）</h4>\n<p><b>解決したい課題：</b>エージェントが<b>お金・コード・権限・インフラ・規制対象の状態</b>を変える操作を、検証なしに実行してしまうリスク。<b>提供する機能：</b>機械の行動に対する<b>「結果ファイアウォール」</b>。状態を変更する前に正確な権限を検証し、その証跡を独立検証可能にするオープンプロトコルだ。DevForge 的には「変更提案は原則 Tier B（提案→承認）／Yes-man 禁止」の運用原則そのものを仕組み化でき、tool-use 実行前ゲートの比較評価に向く。</p>\n<h4>h4ckf0r0day/obscura（Rust）</h4>\n<p><b>解決したい課題：</b>エージェントやスクレイピング用途で汎用ブラウザは重く、省リソースな収集基盤が欲しい。<b>提供する機能：</b>AI エージェントと Web スクレイピングに特化した <b>Rust 製ヘッドレスブラウザ</b>。毎朝の調査自動化のような収集タスクを、軽量・安定に回す土台になりうる。OSSInsight 当日 trending で急上昇した。</p>\n<h4>まとめ</h4>\n<p>自分が今すぐ試すなら、毎日の定期調査の収集部で <b>obscura</b> を、tool-use の実行前ゲートで <b>emilia-protocol</b> を PoC したい。phone-harness は「エージェントに実機を触らせる」段になったら再訪する枠だ。低調な日ほど、こうした<b>エージェント運用の足回り</b>に話題が集まるのは示唆的だった。</p>",
+      "sources": [
+        {
+          "title": "ShawnPana/phone-harness",
+          "url": "https://github.com/ShawnPana/phone-harness"
+        },
+        {
+          "title": "emiliaprotocol/emilia-protocol",
+          "url": "https://github.com/emiliaprotocol/emilia-protocol"
+        },
+        {
+          "title": "h4ckf0r0day/obscura",
+          "url": "https://github.com/h4ckf0r0day/obscura"
+        }
+      ]
+    },
     {
       "id": "2026-08-09-claude-code",
       "date": "2026-08-09",
