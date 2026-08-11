@@ -1,0 +1,78 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>セッション制御が一段強化 — /fork がバックグラウンド化・/subtask 独立・WebSearch 200回上限、支出上限警告も — デイリー技術深掘り 読み物</title><meta name="description" content="Opus 5 が既定になった裏で、長時間・並列運用を安定させるセッション制御とコスト暴走対策が相次いで入った。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-11-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="セッション制御が一段強化 — /fork がバックグラウンド化・/subtask 独立・WebSearch 200回上限、支出上限警告も — デイリー技術深掘り 読み物"><meta property="og:description" content="Opus 5 が既定になった裏で、長時間・並列運用を安定させるセッション制御とコスト暴走対策が相次いで入った。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-11-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>セッション制御が一段強化 — /fork がバックグラウンド化・/subtask 独立・WebSearch 200回上限、支出上限警告も</h1> <p class="lede">Opus 5 が既定になった裏で、長時間・並列運用を安定させるセッション制御とコスト暴走対策が相次いで入った。</p> <div class="meta"> <span>📅 2026年8月11日</span> <span>⏱ 約2分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="0"><p>大きな話題は <b>Claude Opus 5</b> が CLI v2.1.219 で Claude Code の既定モデルになったこと（入力 $5／出力 $25・Opus 4.8 据え置き、約8割のエンジニアリング作業をカバー、MCP 2026-07-28 仕様対応）だが、日々のパッチで地味に効いているのは<strong>セッション運用まわりの整理</strong>だ。エージェントを何時間も走らせる使い方が普通になり、暴走やコスト膨張をどう抑えるかが実務課題になっている。</p>
+<p>変更の中心は3つ。第一に <code>/fork</code> が、会話を<strong>新しいバックグラウンドセッションへコピー</strong>して並行実行する挙動に変わった。元の作業を止めずに別方針を試せる。第二に、従来 <code>/fork</code> が兼ねていた「セッション内サブエージェント」は <code>/subtask</code> として<strong>独立</strong>し、役割が明確化した。第三に、検索ループの暴走を止めるため <code>WebSearch</code> にセッション全体で<strong>既定200回の上限</strong>が付き、<code>CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION</code> で調整できる。さらに v2.1.225 では使用量警告に<strong>ゲートウェイの支出上限</strong>が加わり、上限額・リセット時刻・運用者メッセージを明示。未信頼ディレクトリへのワークスペース信頼プロンプトも <code>claude</code> 側と統一された。</p>
+<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg'>
+<rect x='0' y='0' width='600' height='210' fill='#f5f2ff' rx='10'></rect>
+<rect x='24' y='30' width='250' height='150' rx='10' fill='#ffffff' stroke='#7b3fe4' stroke-width='1.5'></rect>
+<text x='149' y='54' font-size='14' font-weight='700' fill='#4a2bbf' text-anchor='middle'>/fork</text>
+<text x='149' y='80' font-size='11.5' fill='#333' text-anchor='middle'>会話を丸ごとコピー</text>
+<text x='149' y='100' font-size='11.5' fill='#333' text-anchor='middle'>→ 別のバックグラウンド</text>
+<text x='149' y='118' font-size='11.5' fill='#333' text-anchor='middle'>セッションで並行実行</text>
+<text x='149' y='150' font-size='11' fill='#777' text-anchor='middle'>用途: 方針分岐・並列作業</text>
+<rect x='326' y='30' width='250' height='150' rx='10' fill='#ffffff' stroke='#1f6feb' stroke-width='1.5'></rect>
+<text x='451' y='54' font-size='14' font-weight='700' fill='#1656c4' text-anchor='middle'>/subtask</text>
+<text x='451' y='80' font-size='11.5' fill='#333' text-anchor='middle'>独自コンテキストの</text>
+<text x='451' y='100' font-size='11.5' fill='#333' text-anchor='middle'>サブ実行を切り出す</text>
+<text x='451' y='118' font-size='11.5' fill='#333' text-anchor='middle'>（旧 /fork の内側機能）</text>
+<text x='451' y='150' font-size='11' fill='#777' text-anchor='middle'>用途: 文脈隔離・副次タスク</text>
+</svg><figcaption>図1：/fork（並行セッション）と /subtask（コンテキスト隔離）の役割分担</figcaption></figure>
+<p><strong>使いどころ</strong>。長い調査を回しながら別ブランチの検証を試したいときは <code>/fork</code> で分岐し、本筋を止めない。逆に、無関係な副次作業でメインの文脈を汚したくないときは <code>/subtask</code> に投げてコンテキストを隔離する。検索を多用するエージェントには200回上限が保険になり、支出上限警告はチームの予算管理を見通しやすくする。</p>
+<p><strong>落とし穴</strong>。<code>/fork</code> と <code>/subtask</code> は名前が近いが役割が逆方向（並行 vs 隔離）。混同すると、意図せず作業が別セッションに分裂したり、共有したい文脈が切れたりする。検索上限に達すると調査が途中で止まるので、大規模リサーチ時は環境変数を先に引き上げておくとよい。</p>
+<p><strong>まとめ</strong>：Opus 5 で「賢さ×コスト」を底上げしつつ、/fork・/subtask・検索上限・支出上限で「長時間・並列でも暴走させない」土台が整った回。まず自分のワークフローで fork と subtask の使い分けを言語化しておきたい。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://releasebot.io/updates/anthropic/claude-code" target="_blank" rel="noopener noreferrer"> Claude Code updates (releasebot) </a> </li><li> <a href="https://www.havoptic.com/tools/claude-code" target="_blank" rel="noopener noreferrer"> Claude Code changes (havoptic) </a> </li><li> <a href="https://www.anthropic.com/news/claude-opus-5" target="_blank" rel="noopener noreferrer"> Introducing Claude Opus 5 </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
