@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-08-10T04:49:34.645Z",
+  "generatedAt": "2026-08-11T04:44:48.681Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,72 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-08-11-claude-code",
+      "date": "2026-08-11",
+      "topic": "Claude Code",
+      "title": "セッション制御が一段強化 — /fork がバックグラウンド化・/subtask 独立・WebSearch 200回上限、支出上限警告も",
+      "lede": "Opus 5 が既定になった裏で、長時間・並列運用を安定させるセッション制御とコスト暴走対策が相次いで入った。",
+      "articleHtml": "<p>大きな話題は <b>Claude Opus 5</b> が CLI v2.1.219 で Claude Code の既定モデルになったこと（入力 $5／出力 $25・Opus 4.8 据え置き、約8割のエンジニアリング作業をカバー、MCP 2026-07-28 仕様対応）だが、日々のパッチで地味に効いているのは<strong>セッション運用まわりの整理</strong>だ。エージェントを何時間も走らせる使い方が普通になり、暴走やコスト膨張をどう抑えるかが実務課題になっている。</p>\n<p>変更の中心は3つ。第一に <code>/fork</code> が、会話を<strong>新しいバックグラウンドセッションへコピー</strong>して並行実行する挙動に変わった。元の作業を止めずに別方針を試せる。第二に、従来 <code>/fork</code> が兼ねていた「セッション内サブエージェント」は <code>/subtask</code> として<strong>独立</strong>し、役割が明確化した。第三に、検索ループの暴走を止めるため <code>WebSearch</code> にセッション全体で<strong>既定200回の上限</strong>が付き、<code>CLAUDE_CODE_MAX_WEB_SEARCHES_PER_SESSION</code> で調整できる。さらに v2.1.225 では使用量警告に<strong>ゲートウェイの支出上限</strong>が加わり、上限額・リセット時刻・運用者メッセージを明示。未信頼ディレクトリへのワークスペース信頼プロンプトも <code>claude</code> 側と統一された。</p>\n<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg'>\n<rect x='0' y='0' width='600' height='210' fill='#f5f2ff' rx='10'/>\n<rect x='24' y='30' width='250' height='150' rx='10' fill='#ffffff' stroke='#7b3fe4' stroke-width='1.5'/>\n<text x='149' y='54' font-size='14' font-weight='700' fill='#4a2bbf' text-anchor='middle'>/fork</text>\n<text x='149' y='80' font-size='11.5' fill='#333' text-anchor='middle'>会話を丸ごとコピー</text>\n<text x='149' y='100' font-size='11.5' fill='#333' text-anchor='middle'>→ 別のバックグラウンド</text>\n<text x='149' y='118' font-size='11.5' fill='#333' text-anchor='middle'>セッションで並行実行</text>\n<text x='149' y='150' font-size='11' fill='#777' text-anchor='middle'>用途: 方針分岐・並列作業</text>\n<rect x='326' y='30' width='250' height='150' rx='10' fill='#ffffff' stroke='#1f6feb' stroke-width='1.5'/>\n<text x='451' y='54' font-size='14' font-weight='700' fill='#1656c4' text-anchor='middle'>/subtask</text>\n<text x='451' y='80' font-size='11.5' fill='#333' text-anchor='middle'>独自コンテキストの</text>\n<text x='451' y='100' font-size='11.5' fill='#333' text-anchor='middle'>サブ実行を切り出す</text>\n<text x='451' y='118' font-size='11.5' fill='#333' text-anchor='middle'>（旧 /fork の内側機能）</text>\n<text x='451' y='150' font-size='11' fill='#777' text-anchor='middle'>用途: 文脈隔離・副次タスク</text>\n</svg><figcaption>図1：/fork（並行セッション）と /subtask（コンテキスト隔離）の役割分担</figcaption></figure>\n<p><strong>使いどころ</strong>。長い調査を回しながら別ブランチの検証を試したいときは <code>/fork</code> で分岐し、本筋を止めない。逆に、無関係な副次作業でメインの文脈を汚したくないときは <code>/subtask</code> に投げてコンテキストを隔離する。検索を多用するエージェントには200回上限が保険になり、支出上限警告はチームの予算管理を見通しやすくする。</p>\n<p><strong>落とし穴</strong>。<code>/fork</code> と <code>/subtask</code> は名前が近いが役割が逆方向（並行 vs 隔離）。混同すると、意図せず作業が別セッションに分裂したり、共有したい文脈が切れたりする。検索上限に達すると調査が途中で止まるので、大規模リサーチ時は環境変数を先に引き上げておくとよい。</p>\n<p><strong>まとめ</strong>：Opus 5 で「賢さ×コスト」を底上げしつつ、/fork・/subtask・検索上限・支出上限で「長時間・並列でも暴走させない」土台が整った回。まず自分のワークフローで fork と subtask の使い分けを言語化しておきたい。</p>",
+      "sources": [
+        {
+          "title": "Claude Code updates (releasebot)",
+          "url": "https://releasebot.io/updates/anthropic/claude-code"
+        },
+        {
+          "title": "Claude Code changes (havoptic)",
+          "url": "https://www.havoptic.com/tools/claude-code"
+        },
+        {
+          "title": "Introducing Claude Opus 5",
+          "url": "https://www.anthropic.com/news/claude-opus-5"
+        }
+      ]
+    },
+    {
+      "id": "2026-08-11-nextjs",
+      "date": "2026-08-11",
+      "topic": "Next.js",
+      "title": "await しない — Server→Client へ Promise を渡して use() で解くストリーミング",
+      "lede": "遅い取得を await するとページごとブロックする。Promise のまま Client に渡し React 19 の use() で解けば、サーバー起点で早く始まり、フォールバックから即ストリームできる。",
+      "articleHtml": "<p>RSC 時代のデータ取得は「Server Component で <code>await</code> して確定データを props で渡す」が基本だ。ところが遅い取得を <code>await</code> すると、その Server Component（ひいてはページ）全体がその場で<strong>ブロック</strong>される。これを避ける定石が、Server Component で取得関数を呼ぶが <code>await</code> せず、返ってきた <strong>Promise をそのまま Client Component に渡し、Client 側で React 19 の <code>use()</code> で解く</strong>パターン。Next.js 16.3 公式（2026-07-24 更新の Fetching Data ガイド）が「Client でデータを取る手段」の第一に挙げる、App Router の中核だ。</p>\n<p>効果は、取得がサーバー起点で早く始まり（クライアント側のリクエストウォーターフォールを回避）、レスポンスが即ストリームされること。<code>use()</code> を呼ぶコンポーネントは Promise 解決まで最寄りの <code>&lt;Suspense&gt;</code> にサスペンドされ、<strong>JS ロード完了前にプレレンダー済み HTML（フォールバック→本体）が見える</strong>。</p>\n<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg'>\n<rect x='0' y='0' width='600' height='200' fill='#eef5ff' rx='10'/>\n<rect x='20' y='70' width='150' height='60' rx='8' fill='#fff' stroke='#1f6feb' stroke-width='1.5'/>\n<text x='95' y='95' font-size='12' font-weight='700' fill='#1656c4' text-anchor='middle'>Server Component</text>\n<text x='95' y='114' font-size='10.5' fill='#333' text-anchor='middle'>getPosts() を await せず</text>\n<rect x='225' y='70' width='150' height='60' rx='8' fill='#fff' stroke='#1f6feb' stroke-width='1.5'/>\n<text x='300' y='90' font-size='12' font-weight='700' fill='#1656c4' text-anchor='middle'>&lt;Suspense&gt;</text>\n<text x='300' y='108' font-size='10.5' fill='#333' text-anchor='middle'>fallback を即ストリーム</text>\n<text x='300' y='123' font-size='10.5' fill='#777' text-anchor='middle'>Promise を props で渡す</text>\n<rect x='430' y='70' width='150' height='60' rx='8' fill='#fff' stroke='#7b3fe4' stroke-width='1.5'/>\n<text x='505' y='90' font-size='12' font-weight='700' fill='#4a2bbf' text-anchor='middle'>Client: use(promise)</text>\n<text x='505' y='108' font-size='10.5' fill='#333' text-anchor='middle'>解決までサスペンド</text>\n<text x='505' y='123' font-size='10.5' fill='#333' text-anchor='middle'>→ 本体に差し替え</text>\n<path d='M170 100 L225 100' stroke='#1f6feb' stroke-width='2' marker-end='url(#a)'/>\n<path d='M375 100 L430 100' stroke='#1f6feb' stroke-width='2' marker-end='url(#a)'/>\n<defs><marker id='a' markerWidth='8' markerHeight='8' refX='6' refY='3' orient='auto'><path d='M0 0 L6 3 L0 6 z' fill='#1f6feb'/></marker></defs>\n<text x='300' y='30' font-size='13' font-weight='700' fill='#1656c4' text-anchor='middle'>取得はサーバー起点・await しない → ストリーム</text>\n</svg><figcaption>図1：Promise を渡して use() で解く流れ（await でブロックしない）</figcaption></figure>\n<p><strong>最重要の落とし穴は「Promise は安定していなければならない」</strong>こと。<code>use()</code> を呼ぶコンポーネントのレンダー本体内で Promise を新規生成すると、毎レンダーで新 Promise が生まれ、サスペンド→再レンダー→また新 Promise…の<strong>無限サスペンドループ</strong>になる。Promise は Server Component／ルートローダー／<code>useMemo</code> など作り直されない場所で生成する。</p>\n<pre><code>'use client'\n// ❌ NG: レンダー本体で Promise を新規生成 → 無限サスペンド\nexport default function Bad({ id }) {\n  const user = use(fetchUser(id))   // ここで作ってはいけない\n  return &lt;p&gt;{user.name}&lt;/p&gt;\n}\n// ✅ OK: 親(Server Component / useMemo / cache)で作って渡す</code></pre>\n<p>ほかに、<code>use()</code> は<strong>重複排除しない</strong>ため共有データは取得関数を React <code>cache()</code> で包む。エラーは <code>try/catch</code> で捕まらず<strong>最寄りの Error Boundary（<code>error.tsx</code>）</strong>へ伝播する。ローディングは Suspense、失敗は Error Boundary と役割を分ける。</p>\n<p><strong>使い分け</strong>：サーバーで解いて確定値を渡せるなら <code>await</code>。クライアントで解く必要がある／先にフォールバックを見せてストリームしたいときだけ Promise を渡して <code>use()</code>。「まず Server Component で読めないか？」を先に検討するのが定石だ。SWR 2.3+／TanStack Query はこの原始的な仕組みの抽象で、再検証やミューテーションが要るならライブラリ、一度読むだけなら素の <code>use()</code> で十分。</p>",
+      "sources": [
+        {
+          "title": "Next.js Docs: Fetching Data",
+          "url": "https://nextjs.org/docs/app/getting-started/fetching-data"
+        },
+        {
+          "title": "Next.js Docs: How to build SPAs",
+          "url": "https://nextjs.org/docs/app/guides/single-page-applications"
+        },
+        {
+          "title": "React Docs: use API",
+          "url": "https://react.dev/reference/react/use"
+        }
+      ]
+    },
+    {
+      "id": "2026-08-11-flutter",
+      "date": "2026-08-11",
+      "topic": "Flutter",
+      "title": "AIネイティブ開発ループが本流へ — Flutter 3.44 の GenUI・Agentic Hot Reload・Widget Previewer",
+      "lede": "現行安定版 3.44 / Dart 3.12。エージェントが UI を合成し、ホットリロードの結果を自動消費し、プレビューは IDE メモリを最大50%削減する。",
+      "articleHtml": "<p>現行安定版は <b>Flutter 3.44 / Dart 3.12</b>（3.44.0 は 2026-05-18・Google I/O 2026 公開）で、次の機能リリース窓（年4回 2/5/8/11月）に入った。今回の主役は、ツールチェーンが<strong>AI ネイティブな開発ループ</strong>へ寄せてきたことだ。コード補完の域を超え、UI 生成・ホットリロード・プレビューがエージェント前提に再設計されつつある。</p>\n<p>目玉は3つ。<strong>GenUI（A2UI プロトコル）</strong>はエージェントが自然言語から実際の Flutter UI をその場で合成する仕組みで、I/O 2026 のイベント企画アプリ「Hatcha」でデモされた。<strong>Agentic Hot Reload</strong>は 3.44 の中核で、Dart MCP server 経由で <code>dart analyze</code>／<code>dart format</code> の結果をエージェントが自動で消費し、修正ループを回す。<strong>Widget Previewer</strong>は Flutter プロセスを丸ごと起動せず <strong>Dart Analysis Server</strong> に依存する設計に変わり、<strong>IDE メモリを最大50%削減</strong>、Web ターゲットは 40% の性能向上を得た。</p>\n<figure class='fig'><svg viewBox='0 0 600 190' xmlns='http://www.w3.org/2000/svg'>\n<rect x='0' y='0' width='600' height='190' fill='#e9f6fd' rx='10'/>\n<text x='300' y='28' font-size='13' font-weight='700' fill='#0277bd' text-anchor='middle'>Flutter 3.44 — AI 開発ループの3本柱</text>\n<rect x='24' y='50' width='170' height='110' rx='10' fill='#fff' stroke='#0277bd' stroke-width='1.5'/>\n<text x='109' y='74' font-size='12.5' font-weight='700' fill='#01597f' text-anchor='middle'>GenUI (A2UI)</text>\n<text x='109' y='98' font-size='10.5' fill='#333' text-anchor='middle'>自然言語 → UI 合成</text>\n<text x='109' y='116' font-size='10.5' fill='#333' text-anchor='middle'>Hatcha でデモ</text>\n<rect x='215' y='50' width='170' height='110' rx='10' fill='#fff' stroke='#0277bd' stroke-width='1.5'/>\n<text x='300' y='74' font-size='12.5' font-weight='700' fill='#01597f' text-anchor='middle'>Agentic Hot Reload</text>\n<text x='300' y='98' font-size='10.5' fill='#333' text-anchor='middle'>Dart MCP server 経由</text>\n<text x='300' y='116' font-size='10.5' fill='#333' text-anchor='middle'>analyze/format を自動消費</text>\n<rect x='406' y='50' width='170' height='110' rx='10' fill='#fff' stroke='#0277bd' stroke-width='1.5'/>\n<text x='491' y='74' font-size='12.5' font-weight='700' fill='#01597f' text-anchor='middle'>Widget Previewer</text>\n<text x='491' y='98' font-size='10.5' fill='#333' text-anchor='middle'>Analysis Server 依存</text>\n<text x='491' y='116' font-size='11' font-weight='700' fill='#0277bd' text-anchor='middle'>IDE メモリ -50%</text>\n</svg><figcaption>図1：3.44 が押し出す AI 開発ループの3本柱</figcaption></figure>\n<p>土台の言語側も進む。<strong>Dart 3.12</strong> は primary constructors（値クラスを1行に）、private named parameters（先頭 <code>_</code> で公開名を自動決定）、dot shorthands を追加し、Dart 製 Firebase Cloud Functions と合わせて Full-Stack Dart を後押しする。描画は <strong>Impeller が Android 既定・Skia 撤去</strong>（Vulkan／iOS=Metal）、iOS/macOS は <strong>Swift Package Manager が新規プロジェクトの既定</strong>（CocoaPods 段階的廃止）へ。</p>\n<p><strong>自分が試すなら</strong>、まず既存プロジェクトを 3.44 に上げて Widget Previewer のメモリ改善を体感し、Dart MCP server を有効化して Agentic Hot Reload の修正ループを小さな画面で回してみる。<strong>注意点</strong>は、GenUI/A2UI はまだデモ段階でプロダクション前提の API 安定性を期待しないこと、SPM 既定化で既存の CocoaPods 依存プラグインの移行確認が要ることだ。まとめると、3.44 は「エージェントが開発ループの内側に入る」転換点で、まずはメモリ削減と MCP 連携という実益から触るのが良い。</p>",
+      "sources": [
+        {
+          "title": "What's new in Flutter 3.44",
+          "url": "https://flutter.dev/blog/whats-new-in-flutter-3-44"
+        },
+        {
+          "title": "Latest Flutter Version 3.44 (cmarix)",
+          "url": "https://www.cmarix.com/blog/latest-flutter-version/"
+        },
+        {
+          "title": "Dart what's new",
+          "url": "https://dart.dev/resources/whats-new"
+        }
+      ]
+    },
     {
       "id": "2026-08-10-claude-code",
       "date": "2026-08-10",
