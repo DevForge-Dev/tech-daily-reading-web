@@ -1,0 +1,91 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>タブの下線が「滑って移動」する magic move — 4つの実装と、見た目とa11yの分離 — デイリー技術深掘り 読み物</title><meta name="description" content="アクティブ下線/ピルを旧位置から新位置へ滑らせる定番演出。素朴な left/width の setState はジャンクの元。Motion layoutId・FLIP+WAAPI・View Transitions・CSS-only の4型と、装飾は aria-hidden・意味は WAI-ARIA で別組みが要点。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-12-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="タブの下線が「滑って移動」する magic move — 4つの実装と、見た目とa11yの分離 — デイリー技術深掘り 読み物"><meta property="og:description" content="アクティブ下線/ピルを旧位置から新位置へ滑らせる定番演出。素朴な left/width の setState はジャンクの元。Motion layoutId・FLIP+WAAPI・View Transitions・CSS-only の4型と、装飾は aria-hidden・意味は WAI-ARIA で別組みが要点。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-12-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>タブの下線が「滑って移動」する magic move — 4つの実装と、見た目とa11yの分離</h1> <p class="lede">アクティブ下線/ピルを旧位置から新位置へ滑らせる定番演出。素朴な left/width の setState はジャンクの元。Motion layoutId・FLIP+WAAPI・View Transitions・CSS-only の4型と、装飾は aria-hidden・意味は WAI-ARIA で別組みが要点。</p> <div class="meta"> <span>📅 2026年8月12日</span> <span>⏱ 約3分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="0"><p>タブやセグメンテッドコントロールの「アクティブを示す下線・ピル」が、選択を切り替えると<strong>旧位置から新位置へ滑って移動する</strong>演出（"magic move" / shared-element indicator）。ダッシュボードのタブ、設定のセグメント、ドキュメントのサイドナビと適用範囲が広い。本質は毎回「1個の要素が別のボックスへ移る＝旧box→新boxの補間」で、違いは<strong>誰が差分を計算し何が動かすか</strong>だけ。素朴に <code>left</code>/<code>width</code> を毎フレーム <code>setState</code> でトゥイーンすると再レンダー地獄でジャンクになる典型なので、正しい型を押さえたい。</p>
+<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg'>
+<rect x='0' y='0' width='600' height='210' fill='#eef5ff' rx='10'></rect>
+<text x='300' y='24' font-size='13' font-weight='700' fill='#1656c4' text-anchor='middle'>インジケーター移動の4つの実装</text>
+<rect x='18' y='40' width='138' height='150' rx='8' fill='#fff' stroke='#1f6feb'></rect>
+<text x='87' y='62' font-size='11.5' font-weight='700' fill='#1656c4' text-anchor='middle'>Motion</text>
+<text x='87' y='80' font-size='10.5' fill='#333' text-anchor='middle'>layoutId で</text>
+<text x='87' y='96' font-size='10.5' fill='#333' text-anchor='middle'>自動 spring 補間</text>
+<text x='87' y='120' font-size='10' fill='#777' text-anchor='middle'>宣言的・最有力</text>
+<text x='87' y='150' font-size='10' fill='#0a7' text-anchor='middle'>島だけ use client</text>
+<rect x='164' y='40' width='138' height='150' rx='8' fill='#fff' stroke='#1f6feb'></rect>
+<text x='233' y='62' font-size='11.5' font-weight='700' fill='#1656c4' text-anchor='middle'>FLIP+WAAPI</text>
+<text x='233' y='80' font-size='10.5' fill='#333' text-anchor='middle'>rect計測→invert</text>
+<text x='233' y='96' font-size='10.5' fill='#333' text-anchor='middle'>transformで再生</text>
+<text x='233' y='120' font-size='10' fill='#777' text-anchor='middle'>依存ゼロ・命令的</text>
+<text x='233' y='150' font-size='10' fill='#0a7' text-anchor='middle'>合成でINP有利</text>
+<rect x='310' y='40' width='138' height='150' rx='8' fill='#fff' stroke='#1f6feb'></rect>
+<text x='379' y='62' font-size='11.5' font-weight='700' fill='#1656c4' text-anchor='middle'>View Transitions</text>
+<text x='379' y='80' font-size='10.5' fill='#333' text-anchor='middle'>name付けでモーフ</text>
+<text x='379' y='96' font-size='10.5' fill='#333' text-anchor='middle'>Baseline化(2025)</text>
+<text x='379' y='120' font-size='10' fill='#777' text-anchor='middle'>ルート遷移向き</text>
+<text x='379' y='150' font-size='10' fill='#0a7' text-anchor='middle'>React ViewTransition</text>
+<rect x='456' y='40' width='126' height='150' rx='8' fill='#fff' stroke='#1f6feb'></rect>
+<text x='519' y='62' font-size='11.5' font-weight='700' fill='#1656c4' text-anchor='middle'>CSS-only</text>
+<text x='519' y='80' font-size='10.5' fill='#333' text-anchor='middle'>:has()/:checked</text>
+<text x='519' y='96' font-size='10.5' fill='#333' text-anchor='middle'>translateXで移動</text>
+<text x='519' y='120' font-size='10' fill='#777' text-anchor='middle'>JSゼロ・等幅向き</text>
+<text x='519' y='150' font-size='10' fill='#0a7' text-anchor='middle'>RSCのまま</text>
+</svg><figcaption>図1：4型の使い分け。可変幅・対話性は Motion/FLIP、等幅表示のみなら CSS-only。</figcaption></figure>
+<p><strong>①Motion <code>layoutId</code>（宣言的・最有力）</strong>：アクティブなボタン内にだけ <code>&lt;motion.span layoutId="tab-indicator"&gt;</code> を描く。アクティブが変わると旧要素が unmount・新要素が mount され、Motion が同名 <code>layoutId</code> を「同一要素」とみなして消えた位置から現れた位置へ<strong>自動 spring 補間</strong>。位置変更は <code>animate</code> ではなく <strong>style/className（レイアウトそのもの）</strong>で行うのが肝（二重駆動回避）。React 実装コスト最小。<strong>②FLIP+WAAPI（依存ゼロ）</strong>：旧 <code>getBoundingClientRect</code>→新rect→<code>translateX</code>に位置差・<code>scaleX</code>に幅比を入れて旧位置に見せ、<code>el.animate([...])</code> で実位置へ戻す。<strong>読み取りと書き込みを分離</strong>し、補間対象は <code>transform</code> だけ＝コンポジタ合成でINP有利。<strong>③View Transitions</strong>：<code>view-transition-name</code> を付け DOM 更新を <code>startViewTransition</code> で包むと自動モーフ。2025年に <code>match-element</code>・<code>:active-view-transition</code>・要素スコープ版が入り、Firefox 144 対応で<strong>Baseline化</strong>。タブ切替がルート遷移そのものなら本命。<strong>④CSS-only</strong>：hidden radio＋<code>:has(:checked)</code> で <code>transform: translateX()</code>、<strong>RSCのまま hydration ゼロ</strong>だが可変幅は苦手。</p>
+<p><strong>App Router 組み込み</strong>：CSS-only は Server Component のまま。Motion/FLIP/VT はインジケーターの<strong>島だけ <code>'use client'</code></strong>、<strong>初期アクティブを props で渡す</strong>とサーバー描画とクライアント state が一致し hydration mismatch なし・以後の切替でだけ滑る。</p>
+<p><strong>最重要は a11y——「滑る見た目」と「意味構造」を分離</strong>すること。インジケーターは装飾なので <code>aria-hidden</code>。パネルを切り替えるなら WAI-ARIA Tabs（親 <code>role="tablist"</code>／各 <code>role="tab"</code>＋<code>aria-selected</code>＋<code>aria-controls</code>、矢印キー移動＋ローミング tabindex）。ページ内リンク集は tablist ではなく <code>&lt;nav&gt;</code>＋<code>aria-current="page"</code>。<code>prefers-reduced-motion: reduce</code> で滑走を止め位置だけ即切替（動きに敏感な人は約3人に1人）。<strong>落とし穴</strong>は毎フレーム setState・<code>key={index}</code> での誤補間・フォント読込/リサイズ時の再計測漏れ。</p>
+<p><strong>まとめ</strong>：4型の本質は同じ「旧box→新boxの補間」。可変幅・対話性は Motion か FLIP、等幅の表示切替だけなら CSS-only。どれを選んでも a11y は別建てにする。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://motion.dev/tutorials/react-smooth-tabs" target="_blank" rel="noopener noreferrer"> Motion — Smooth Tabs (layoutId) </a> </li><li> <a href="https://developer.chrome.com/blog/view-transitions-in-2025" target="_blank" rel="noopener noreferrer"> Chrome for Developers — What&#39;s new in view transitions (2025) </a> </li><li> <a href="https://www.w3.org/WAI/ARIA/apg/patterns/tabs/" target="_blank" rel="noopener noreferrer"> W3C WAI-ARIA APG — Tabs Pattern </a> </li><li> <a href="https://developer.mozilla.org/en-US/docs/Web/API/View_Transition_API/Using" target="_blank" rel="noopener noreferrer"> MDN — Using the View Transition API </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

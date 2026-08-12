@@ -1,0 +1,79 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Dart 3.12 のコンストラクタ革命と material_ui 分離 — 定型削減とUIの独立配信 — デイリー技術深掘り 読み物</title><meta name="description" content="現行は Flutter 3.44 / Dart 3.12。primary constructors・private named parameters・dot shorthands で ViewModel/値クラスが激減。Material/Cupertino はコアから切り出され、M3更新が四半期SDKを待たず届く。"><meta name="theme-color" content="#0277bd"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-12-flutter/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Dart 3.12 のコンストラクタ革命と material_ui 分離 — 定型削減とUIの独立配信 — デイリー技術深掘り 読み物"><meta property="og:description" content="現行は Flutter 3.44 / Dart 3.12。primary constructors・private named parameters・dot shorthands で ViewModel/値クラスが激減。Material/Cupertino はコアから切り出され、M3更新が四半期SDKを待たず届く。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-12-flutter/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #29b6f6, #01579b)"> <span class="glyph" aria-hidden="true">◆</span> <div class="kicker">Flutter</div> <h1>Dart 3.12 のコンストラクタ革命と material_ui 分離 — 定型削減とUIの独立配信</h1> <p class="lede">現行は Flutter 3.44 / Dart 3.12。primary constructors・private named parameters・dot shorthands で ViewModel/値クラスが激減。Material/Cupertino はコアから切り出され、M3更新が四半期SDKを待たず届く。</p> <div class="meta"> <span>📅 2026年8月12日</span> <span>⏱ 約3分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#0277bd"> <div> <article class="prose" data-has-mermaid="0"><p>現行安定版は <strong>Flutter 3.44 / Dart 3.12</strong>（3.44.0 は 2026-05-18・Google I/O 2026 公開）で、次の機能リリース窓（年4回 2/5/8/11月）に入った。今日の主役は<strong>Dart 3.12 のコンストラクタ定型削減</strong>と、<strong>Material/Cupertino のパッケージ分離</strong>という2つの構造変化だ。どちらも「毎回書いていた退屈なコードとビルド重量」を削る方向で、ViewModel やデータクラスを多用する実装ほど効く。</p>
+<p>Dart 3.12 はコンストラクタの定型を3方向から減らす。<strong>primary constructors</strong>（experimental・opt-in）はクラスヘッダで instance 変数を直接宣言でき、ViewModel/値クラスを大幅短縮。<strong>private named parameters</strong>（既定 ON）は先頭 <code>_</code> で公開名を自動決定し「<code>this._x</code> を <code>_x</code> に代入」の重複を消す。<strong>dot shorthands</strong>（3.10 導入・3.12 で成熟し既定 ON）は型が自明なら <code>.value</code> と書ける。</p>
+<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg'>
+<rect x='0' y='0' width='600' height='200' fill='#e9f6fd' rx='10'></rect>
+<text x='300' y='24' font-size='13' font-weight='700' fill='#0277bd' text-anchor='middle'>primary constructors：値クラスが1行級に</text>
+<rect x='20' y='40' width='265' height='140' rx='10' fill='#fff' stroke='#90caf9'></rect>
+<text x='152' y='62' font-size='11' font-weight='700' fill='#546e7a' text-anchor='middle'>従来</text>
+<text x='152' y='86' font-size='10' fill='#455a64' text-anchor='middle'>class Point {</text>
+<text x='152' y='104' font-size='10' fill='#455a64' text-anchor='middle'>final int x, y;</text>
+<text x='152' y='122' font-size='10' fill='#455a64' text-anchor='middle'>Point(this.x, this.y);</text>
+<text x='152' y='140' font-size='10' fill='#455a64' text-anchor='middle'>}</text>
+<text x='152' y='166' font-size='10' fill='#b91c1c' text-anchor='middle'>宣言と代入の重複</text>
+<rect x='315' y='40' width='265' height='140' rx='10' fill='#fff' stroke='#4fc3f7'></rect>
+<text x='447' y='62' font-size='11' font-weight='700' fill='#01597f' text-anchor='middle'>Dart 3.12</text>
+<text x='447' y='90' font-size='10.5' fill='#01579b' text-anchor='middle'>class Point(final int x,</text>
+<text x='447' y='108' font-size='10.5' fill='#01579b' text-anchor='middle'>final int y);</text>
+<text x='447' y='140' font-size='10' fill='#0277bd' text-anchor='middle'>ヘッダで変数を直接宣言</text>
+<text x='447' y='166' font-size='10' fill='#0277bd' text-anchor='middle'>本文ゼロで済む</text>
+</svg><figcaption>図1：primary constructors はクラスヘッダで instance 変数を宣言でき、定型本文が消える。</figcaption></figure>
+<p>もう一方の構造変化が<strong>UIパッケージの分離</strong>。Material と Cupertino はコアから <code>material_ui</code>／<code>cupertino_ui</code> へ切り出され、3.44 では <code>material.dart</code>／<code>cupertino.dart</code> は「凍結」でコアに新機能追加なし。<strong>独立バージョニングで M3 更新が四半期 SDK を待たず</strong>届き、未使用 UI は binary から外れて<strong>アプリサイズ削減</strong>につながる。描画は <strong>Impeller が Android 既定・Skia 撤去</strong>（Vulkan／iOS=Metal）、iOS/macOS は <strong>Swift Package Manager が新規プロジェクトの既定</strong>（CocoaPods 段階的廃止）へ。状態管理の基本線は変わらず<strong>新規は Riverpod 3.3.1＋codegen、監査/大規模は Bloc 9.0</strong>（<code>on&lt;Event&gt;</code> ハンドラ・event-driven audit trail）。</p>
+<p><strong>自分が試すなら</strong>、まず既存プロジェクトを 3.44 に上げ、ViewModel の多いレイヤで primary constructors（experimental フラグ）と dot shorthands を局所導入して差分を測る。<strong>注意点</strong>は、primary constructors は experimental で opt-in が要ること、UIパッケージ分離に伴う SDK 内コピーは長い deprecation 期間に入るので移行を焦らないこと、SPM 既定化で既存 CocoaPods 依存プラグインの対応確認が要ること。<strong>まとめ</strong>：3.12/3.44 は「書く量とビルド重量を減らし、UI を独立配信する」整理の回。まずは値クラス短縮と Widget Previewer のメモリ改善という実益から触るのが良い。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://ecorpit.com/dart-3-12-primary-constructors-dot-shorthands-guide-2026/" target="_blank" rel="noopener noreferrer"> Dart 3.12: primary constructors &amp; dot shorthands guide </a> </li><li> <a href="https://startdebugging.net/2026/05/flutter-3-44-material-cupertino-packages-swiftpm-default/" target="_blank" rel="noopener noreferrer"> Flutter 3.44 Splits Material and Cupertino / SwiftPM Default </a> </li><li> <a href="https://www.cmarix.com/blog/latest-flutter-version/" target="_blank" rel="noopener noreferrer"> Latest Flutter Version 3.44 (cmarix) </a> </li><li> <a href="https://dart.dev/resources/whats-new" target="_blank" rel="noopener noreferrer"> Dart what&#39;s new </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

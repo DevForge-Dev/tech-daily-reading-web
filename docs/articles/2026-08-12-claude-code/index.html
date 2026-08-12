@@ -1,0 +1,101 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>デスクトップに内蔵ブラウザ、/doctor が「診断→修正」へ — 強力なエージェントを健全に保つ地固めの回 — デイリー技術深掘り 読み物</title><meta name="description" content="Cmd+Shift+B でアプリ内ブラウザが開き、/doctor は未使用 Skills/MCP や CLAUDE.md 肥大を洗って直す。派手さより「長時間・安全に回す土台」を固める更新。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-12-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="デスクトップに内蔵ブラウザ、/doctor が「診断→修正」へ — 強力なエージェントを健全に保つ地固めの回 — デイリー技術深掘り 読み物"><meta property="og:description" content="Cmd+Shift+B でアプリ内ブラウザが開き、/doctor は未使用 Skills/MCP や CLAUDE.md 肥大を洗って直す。派手さより「長時間・安全に回す土台」を固める更新。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-12-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>デスクトップに内蔵ブラウザ、/doctor が「診断→修正」へ — 強力なエージェントを健全に保つ地固めの回</h1> <p class="lede">Cmd+Shift+B でアプリ内ブラウザが開き、/doctor は未使用 Skills/MCP や CLAUDE.md 肥大を洗って直す。派手さより「長時間・安全に回す土台」を固める更新。</p> <div class="meta"> <span>📅 2026年8月12日</span> <span>⏱ 約2分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="0"><p>今回の目玉は2つ、いずれも<strong>日々の運用を軽くする地固め</strong>だ。ひとつは Claude Code のデスクトップ版に<strong>タブ型の内蔵Webブラウザ</strong>が付いたこと（macOS は <code>Cmd+Shift+B</code>／Windows は <code>Ctrl+Shift+B</code>）。Claude がドキュメントやデザイン、任意サイトを開いて読み取り・クリック・操作でき、ローカル開発サーバーのプレビュー確認と同じ感覚で Web アプリを検証できる。ブラウザは<strong>サンドボックス化</strong>され閲覧セッションを保持するか選べ、外部サイト上の操作は<strong>安全性分類器</strong>がレビューする。Chrome を別に立ち上げずアプリ内でテスト・調査が完結するのが実利だ。</p>
+<p>もうひとつは <code>/doctor</code> の刷新。従来の「読み取り専用レポート」から、問題を<strong>診断してその場で修正</strong>する運用へ進化した。インストールの健全性を点検し、コンテキストコストに見合わない<strong>未使用の Skills・MCP サーバー・プラグイン</strong>を洗い出す。ローカル <code>CLAUDE.md</code> とリポジトリ管理版の重複を排除し、コードベースから導出できる記述の削減を提案、<strong>遅い Hooks も警告</strong>する。セットアップの肥大化を抑え、コンテキストを健全に保つメンテ機能だ。加えて 8月のまとめ記事では、auto mode が<strong>トランスクリプト改ざんをブロック</strong>、Remote Control を<strong>セッション名で開始</strong>、<strong>subagent スポーン上限の撤廃</strong>なども入った。</p>
+<figure class='fig'><svg viewBox='0 0 600 180' xmlns='http://www.w3.org/2000/svg'>
+<rect x='0' y='0' width='600' height='180' fill='#f5f2ff' rx='10'></rect>
+<text x='300' y='26' font-size='13' font-weight='700' fill='#4a2bbf' text-anchor='middle'>デスクトップ内蔵ブラウザの流れ（Cmd+Shift+B）</text>
+<rect x='24' y='50' width='150' height='96' rx='10' fill='#fff' stroke='#7b3fe4' stroke-width='1.5'></rect>
+<text x='99' y='84' font-size='12' font-weight='700' fill='#4a2bbf' text-anchor='middle'>アプリ内で起動</text>
+<text x='99' y='106' font-size='10.5' fill='#333' text-anchor='middle'>タブ型ブラウザ</text>
+<rect x='225' y='50' width='150' height='96' rx='10' fill='#fff' stroke='#7b3fe4' stroke-width='1.5'></rect>
+<text x='300' y='78' font-size='12' font-weight='700' fill='#4a2bbf' text-anchor='middle'>読み取り・操作</text>
+<text x='300' y='100' font-size='10.5' fill='#333' text-anchor='middle'>docs/design/preview</text>
+<text x='300' y='118' font-size='10.5' fill='#333' text-anchor='middle'>クリック・入力</text>
+<rect x='426' y='50' width='150' height='96' rx='10' fill='#fff' stroke='#7b3fe4' stroke-width='1.5'></rect>
+<text x='501' y='78' font-size='12' font-weight='700' fill='#4a2bbf' text-anchor='middle'>安全性ガード</text>
+<text x='501' y='100' font-size='10.5' fill='#333' text-anchor='middle'>サンドボックス</text>
+<text x='501' y='118' font-size='10.5' fill='#333' text-anchor='middle'>分類器がレビュー</text>
+<path d='M174 98 L225 98' stroke='#7b3fe4' stroke-width='2' marker-end='url(#ac)'></path>
+<path d='M375 98 L426 98' stroke='#7b3fe4' stroke-width='2' marker-end='url(#ac)'></path>
+<defs><marker id='ac' markerWidth='8' markerHeight='8' refX='6' refY='3' orient='auto'><path d='M0 0 L6 3 L0 6 z' fill='#7b3fe4'></path></marker></defs>
+</svg><figcaption>図1：内蔵ブラウザは「起動→読み取り/操作→安全性分類器のレビュー」で完結する。</figcaption></figure>
+<p><strong>使いどころ</strong>。実務ガイド各所が繰り返す原則は「良いプロンプト」より<strong>良いハーネス</strong>を組むこと。役割を分けると重複が減る——<strong>強制は Hooks／権限、知識は Skills、委譲は Subagents、常時適用の指針だけを短い CLAUDE.md</strong> に置く。<code>/doctor</code> はまさにこの規律を機械的に点検してくれる相棒になる。内蔵ブラウザは、生成した UI の目視確認やドキュメント参照をワンウィンドウで回せる。</p>
+<figure class='fig'><svg viewBox='0 0 600 170' xmlns='http://www.w3.org/2000/svg'>
+<rect x='0' y='0' width='600' height='170' fill='#faf8ff' rx='10'></rect>
+<text x='300' y='24' font-size='12.5' font-weight='700' fill='#4a2bbf' text-anchor='middle'>ハーネス設計：どこに何を置くか</text>
+<rect x='20' y='40' width='135' height='110' rx='8' fill='#fff' stroke='#b98bff'></rect>
+<text x='87' y='64' font-size='12' font-weight='700' fill='#4a2bbf' text-anchor='middle'>Hooks/権限</text>
+<text x='87' y='92' font-size='10.5' fill='#333' text-anchor='middle'>絶対厳守の</text>
+<text x='87' y='110' font-size='10.5' fill='#333' text-anchor='middle'>強制ルール</text>
+<rect x='168' y='40' width='135' height='110' rx='8' fill='#fff' stroke='#b98bff'></rect>
+<text x='235' y='64' font-size='12' font-weight='700' fill='#4a2bbf' text-anchor='middle'>Skills</text>
+<text x='235' y='92' font-size='10.5' fill='#333' text-anchor='middle'>文脈的な</text>
+<text x='235' y='110' font-size='10.5' fill='#333' text-anchor='middle'>知識パック</text>
+<rect x='316' y='40' width='135' height='110' rx='8' fill='#fff' stroke='#b98bff'></rect>
+<text x='383' y='64' font-size='12' font-weight='700' fill='#4a2bbf' text-anchor='middle'>Subagents</text>
+<text x='383' y='92' font-size='10.5' fill='#333' text-anchor='middle'>委譲の</text>
+<text x='383' y='110' font-size='10.5' fill='#333' text-anchor='middle'>境界</text>
+<rect x='464' y='40' width='116' height='110' rx='8' fill='#fff' stroke='#b98bff'></rect>
+<text x='522' y='64' font-size='12' font-weight='700' fill='#4a2bbf' text-anchor='middle'>CLAUDE.md</text>
+<text x='522' y='92' font-size='10.5' fill='#333' text-anchor='middle'>常時適用を</text>
+<text x='522' y='110' font-size='10.5' fill='#333' text-anchor='middle'>短く</text>
+</svg><figcaption>図2：/doctor が点検する観点＝役割分担の健全さ。</figcaption></figure>
+<p><strong>注意点</strong>。Claude Code は日次で小刻みにパッチが出るため、CI やスクリプト連携では<strong>固定バージョン運用</strong>が無難。内蔵ブラウザで外部サイトを操作させる際は、分類器が挟まるとはいえ<strong>未知リンクの安全性は自分でも確認</strong>する姿勢が要る。<code>/doctor</code> の削減提案は機械的なので、消す前に本当に未使用か一度確認したい。</p>
+<p><strong>ひとことまとめ</strong>：新機能というより「強力なエージェントを長時間・安全に・軽く回す」ための足回り強化。並列・自動運用ほど恩恵が大きい回だ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://mlq.ai/news/anthropic-adds-built-in-web-browser-to-claude-code-desktop-app/" target="_blank" rel="noopener noreferrer"> Anthropic adds built-in web browser to Claude Code desktop </a> </li><li> <a href="https://code.claude.com/docs/en/whats-new/2026-w28" target="_blank" rel="noopener noreferrer"> Claude Code What&#39;s New 2026-W28 (/doctor) </a> </li><li> <a href="https://blog.mean.ceo/claude-code-news-august-2026/" target="_blank" rel="noopener noreferrer"> Claude Code News August 2026 (Startup Edition) </a> </li><li> <a href="https://mcp.directory/blog/claude-code-best-practices" target="_blank" rel="noopener noreferrer"> Claude Code best practices: Vibe Coding to Agentic Engineering </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
