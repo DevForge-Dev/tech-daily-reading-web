@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-08-11T04:44:48.681Z",
+  "generatedAt": "2026-08-12T04:48:05.775Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,106 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-08-12-claude-code",
+      "date": "2026-08-12",
+      "topic": "Claude Code",
+      "title": "デスクトップに内蔵ブラウザ、/doctor が「診断→修正」へ — 強力なエージェントを健全に保つ地固めの回",
+      "lede": "Cmd+Shift+B でアプリ内ブラウザが開き、/doctor は未使用 Skills/MCP や CLAUDE.md 肥大を洗って直す。派手さより「長時間・安全に回す土台」を固める更新。",
+      "articleHtml": "<p>今回の目玉は2つ、いずれも<strong>日々の運用を軽くする地固め</strong>だ。ひとつは Claude Code のデスクトップ版に<strong>タブ型の内蔵Webブラウザ</strong>が付いたこと（macOS は <code>Cmd+Shift+B</code>／Windows は <code>Ctrl+Shift+B</code>）。Claude がドキュメントやデザイン、任意サイトを開いて読み取り・クリック・操作でき、ローカル開発サーバーのプレビュー確認と同じ感覚で Web アプリを検証できる。ブラウザは<strong>サンドボックス化</strong>され閲覧セッションを保持するか選べ、外部サイト上の操作は<strong>安全性分類器</strong>がレビューする。Chrome を別に立ち上げずアプリ内でテスト・調査が完結するのが実利だ。</p>\n<p>もうひとつは <code>/doctor</code> の刷新。従来の「読み取り専用レポート」から、問題を<strong>診断してその場で修正</strong>する運用へ進化した。インストールの健全性を点検し、コンテキストコストに見合わない<strong>未使用の Skills・MCP サーバー・プラグイン</strong>を洗い出す。ローカル <code>CLAUDE.md</code> とリポジトリ管理版の重複を排除し、コードベースから導出できる記述の削減を提案、<strong>遅い Hooks も警告</strong>する。セットアップの肥大化を抑え、コンテキストを健全に保つメンテ機能だ。加えて 8月のまとめ記事では、auto mode が<strong>トランスクリプト改ざんをブロック</strong>、Remote Control を<strong>セッション名で開始</strong>、<strong>subagent スポーン上限の撤廃</strong>なども入った。</p>\n<figure class='fig'><svg viewBox='0 0 600 180' xmlns='http://www.w3.org/2000/svg'>\n<rect x='0' y='0' width='600' height='180' fill='#f5f2ff' rx='10'/>\n<text x='300' y='26' font-size='13' font-weight='700' fill='#4a2bbf' text-anchor='middle'>デスクトップ内蔵ブラウザの流れ（Cmd+Shift+B）</text>\n<rect x='24' y='50' width='150' height='96' rx='10' fill='#fff' stroke='#7b3fe4' stroke-width='1.5'/>\n<text x='99' y='84' font-size='12' font-weight='700' fill='#4a2bbf' text-anchor='middle'>アプリ内で起動</text>\n<text x='99' y='106' font-size='10.5' fill='#333' text-anchor='middle'>タブ型ブラウザ</text>\n<rect x='225' y='50' width='150' height='96' rx='10' fill='#fff' stroke='#7b3fe4' stroke-width='1.5'/>\n<text x='300' y='78' font-size='12' font-weight='700' fill='#4a2bbf' text-anchor='middle'>読み取り・操作</text>\n<text x='300' y='100' font-size='10.5' fill='#333' text-anchor='middle'>docs/design/preview</text>\n<text x='300' y='118' font-size='10.5' fill='#333' text-anchor='middle'>クリック・入力</text>\n<rect x='426' y='50' width='150' height='96' rx='10' fill='#fff' stroke='#7b3fe4' stroke-width='1.5'/>\n<text x='501' y='78' font-size='12' font-weight='700' fill='#4a2bbf' text-anchor='middle'>安全性ガード</text>\n<text x='501' y='100' font-size='10.5' fill='#333' text-anchor='middle'>サンドボックス</text>\n<text x='501' y='118' font-size='10.5' fill='#333' text-anchor='middle'>分類器がレビュー</text>\n<path d='M174 98 L225 98' stroke='#7b3fe4' stroke-width='2' marker-end='url(#ac)'/>\n<path d='M375 98 L426 98' stroke='#7b3fe4' stroke-width='2' marker-end='url(#ac)'/>\n<defs><marker id='ac' markerWidth='8' markerHeight='8' refX='6' refY='3' orient='auto'><path d='M0 0 L6 3 L0 6 z' fill='#7b3fe4'/></marker></defs>\n</svg><figcaption>図1：内蔵ブラウザは「起動→読み取り/操作→安全性分類器のレビュー」で完結する。</figcaption></figure>\n<p><strong>使いどころ</strong>。実務ガイド各所が繰り返す原則は「良いプロンプト」より<strong>良いハーネス</strong>を組むこと。役割を分けると重複が減る——<strong>強制は Hooks／権限、知識は Skills、委譲は Subagents、常時適用の指針だけを短い CLAUDE.md</strong> に置く。<code>/doctor</code> はまさにこの規律を機械的に点検してくれる相棒になる。内蔵ブラウザは、生成した UI の目視確認やドキュメント参照をワンウィンドウで回せる。</p>\n<figure class='fig'><svg viewBox='0 0 600 170' xmlns='http://www.w3.org/2000/svg'>\n<rect x='0' y='0' width='600' height='170' fill='#faf8ff' rx='10'/>\n<text x='300' y='24' font-size='12.5' font-weight='700' fill='#4a2bbf' text-anchor='middle'>ハーネス設計：どこに何を置くか</text>\n<rect x='20' y='40' width='135' height='110' rx='8' fill='#fff' stroke='#b98bff'/>\n<text x='87' y='64' font-size='12' font-weight='700' fill='#4a2bbf' text-anchor='middle'>Hooks/権限</text>\n<text x='87' y='92' font-size='10.5' fill='#333' text-anchor='middle'>絶対厳守の</text>\n<text x='87' y='110' font-size='10.5' fill='#333' text-anchor='middle'>強制ルール</text>\n<rect x='168' y='40' width='135' height='110' rx='8' fill='#fff' stroke='#b98bff'/>\n<text x='235' y='64' font-size='12' font-weight='700' fill='#4a2bbf' text-anchor='middle'>Skills</text>\n<text x='235' y='92' font-size='10.5' fill='#333' text-anchor='middle'>文脈的な</text>\n<text x='235' y='110' font-size='10.5' fill='#333' text-anchor='middle'>知識パック</text>\n<rect x='316' y='40' width='135' height='110' rx='8' fill='#fff' stroke='#b98bff'/>\n<text x='383' y='64' font-size='12' font-weight='700' fill='#4a2bbf' text-anchor='middle'>Subagents</text>\n<text x='383' y='92' font-size='10.5' fill='#333' text-anchor='middle'>委譲の</text>\n<text x='383' y='110' font-size='10.5' fill='#333' text-anchor='middle'>境界</text>\n<rect x='464' y='40' width='116' height='110' rx='8' fill='#fff' stroke='#b98bff'/>\n<text x='522' y='64' font-size='12' font-weight='700' fill='#4a2bbf' text-anchor='middle'>CLAUDE.md</text>\n<text x='522' y='92' font-size='10.5' fill='#333' text-anchor='middle'>常時適用を</text>\n<text x='522' y='110' font-size='10.5' fill='#333' text-anchor='middle'>短く</text>\n</svg><figcaption>図2：/doctor が点検する観点＝役割分担の健全さ。</figcaption></figure>\n<p><strong>注意点</strong>。Claude Code は日次で小刻みにパッチが出るため、CI やスクリプト連携では<strong>固定バージョン運用</strong>が無難。内蔵ブラウザで外部サイトを操作させる際は、分類器が挟まるとはいえ<strong>未知リンクの安全性は自分でも確認</strong>する姿勢が要る。<code>/doctor</code> の削減提案は機械的なので、消す前に本当に未使用か一度確認したい。</p>\n<p><strong>ひとことまとめ</strong>：新機能というより「強力なエージェントを長時間・安全に・軽く回す」ための足回り強化。並列・自動運用ほど恩恵が大きい回だ。</p>",
+      "sources": [
+        {
+          "title": "Anthropic adds built-in web browser to Claude Code desktop",
+          "url": "https://mlq.ai/news/anthropic-adds-built-in-web-browser-to-claude-code-desktop-app/"
+        },
+        {
+          "title": "Claude Code What's New 2026-W28 (/doctor)",
+          "url": "https://code.claude.com/docs/en/whats-new/2026-w28"
+        },
+        {
+          "title": "Claude Code News August 2026 (Startup Edition)",
+          "url": "https://blog.mean.ceo/claude-code-news-august-2026/"
+        },
+        {
+          "title": "Claude Code best practices: Vibe Coding to Agentic Engineering",
+          "url": "https://mcp.directory/blog/claude-code-best-practices"
+        }
+      ]
+    },
+    {
+      "id": "2026-08-12-nextjs",
+      "date": "2026-08-12",
+      "topic": "Next.js",
+      "title": "タブの下線が「滑って移動」する magic move — 4つの実装と、見た目とa11yの分離",
+      "lede": "アクティブ下線/ピルを旧位置から新位置へ滑らせる定番演出。素朴な left/width の setState はジャンクの元。Motion layoutId・FLIP+WAAPI・View Transitions・CSS-only の4型と、装飾は aria-hidden・意味は WAI-ARIA で別組みが要点。",
+      "articleHtml": "<p>タブやセグメンテッドコントロールの「アクティブを示す下線・ピル」が、選択を切り替えると<strong>旧位置から新位置へ滑って移動する</strong>演出（\"magic move\" / shared-element indicator）。ダッシュボードのタブ、設定のセグメント、ドキュメントのサイドナビと適用範囲が広い。本質は毎回「1個の要素が別のボックスへ移る＝旧box→新boxの補間」で、違いは<strong>誰が差分を計算し何が動かすか</strong>だけ。素朴に <code>left</code>/<code>width</code> を毎フレーム <code>setState</code> でトゥイーンすると再レンダー地獄でジャンクになる典型なので、正しい型を押さえたい。</p>\n<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg'>\n<rect x='0' y='0' width='600' height='210' fill='#eef5ff' rx='10'/>\n<text x='300' y='24' font-size='13' font-weight='700' fill='#1656c4' text-anchor='middle'>インジケーター移動の4つの実装</text>\n<rect x='18' y='40' width='138' height='150' rx='8' fill='#fff' stroke='#1f6feb'/>\n<text x='87' y='62' font-size='11.5' font-weight='700' fill='#1656c4' text-anchor='middle'>Motion</text>\n<text x='87' y='80' font-size='10.5' fill='#333' text-anchor='middle'>layoutId で</text>\n<text x='87' y='96' font-size='10.5' fill='#333' text-anchor='middle'>自動 spring 補間</text>\n<text x='87' y='120' font-size='10' fill='#777' text-anchor='middle'>宣言的・最有力</text>\n<text x='87' y='150' font-size='10' fill='#0a7' text-anchor='middle'>島だけ use client</text>\n<rect x='164' y='40' width='138' height='150' rx='8' fill='#fff' stroke='#1f6feb'/>\n<text x='233' y='62' font-size='11.5' font-weight='700' fill='#1656c4' text-anchor='middle'>FLIP+WAAPI</text>\n<text x='233' y='80' font-size='10.5' fill='#333' text-anchor='middle'>rect計測→invert</text>\n<text x='233' y='96' font-size='10.5' fill='#333' text-anchor='middle'>transformで再生</text>\n<text x='233' y='120' font-size='10' fill='#777' text-anchor='middle'>依存ゼロ・命令的</text>\n<text x='233' y='150' font-size='10' fill='#0a7' text-anchor='middle'>合成でINP有利</text>\n<rect x='310' y='40' width='138' height='150' rx='8' fill='#fff' stroke='#1f6feb'/>\n<text x='379' y='62' font-size='11.5' font-weight='700' fill='#1656c4' text-anchor='middle'>View Transitions</text>\n<text x='379' y='80' font-size='10.5' fill='#333' text-anchor='middle'>name付けでモーフ</text>\n<text x='379' y='96' font-size='10.5' fill='#333' text-anchor='middle'>Baseline化(2025)</text>\n<text x='379' y='120' font-size='10' fill='#777' text-anchor='middle'>ルート遷移向き</text>\n<text x='379' y='150' font-size='10' fill='#0a7' text-anchor='middle'>React ViewTransition</text>\n<rect x='456' y='40' width='126' height='150' rx='8' fill='#fff' stroke='#1f6feb'/>\n<text x='519' y='62' font-size='11.5' font-weight='700' fill='#1656c4' text-anchor='middle'>CSS-only</text>\n<text x='519' y='80' font-size='10.5' fill='#333' text-anchor='middle'>:has()/:checked</text>\n<text x='519' y='96' font-size='10.5' fill='#333' text-anchor='middle'>translateXで移動</text>\n<text x='519' y='120' font-size='10' fill='#777' text-anchor='middle'>JSゼロ・等幅向き</text>\n<text x='519' y='150' font-size='10' fill='#0a7' text-anchor='middle'>RSCのまま</text>\n</svg><figcaption>図1：4型の使い分け。可変幅・対話性は Motion/FLIP、等幅表示のみなら CSS-only。</figcaption></figure>\n<p><strong>①Motion <code>layoutId</code>（宣言的・最有力）</strong>：アクティブなボタン内にだけ <code>&lt;motion.span layoutId=\"tab-indicator\"&gt;</code> を描く。アクティブが変わると旧要素が unmount・新要素が mount され、Motion が同名 <code>layoutId</code> を「同一要素」とみなして消えた位置から現れた位置へ<strong>自動 spring 補間</strong>。位置変更は <code>animate</code> ではなく <strong>style/className（レイアウトそのもの）</strong>で行うのが肝（二重駆動回避）。React 実装コスト最小。<strong>②FLIP+WAAPI（依存ゼロ）</strong>：旧 <code>getBoundingClientRect</code>→新rect→<code>translateX</code>に位置差・<code>scaleX</code>に幅比を入れて旧位置に見せ、<code>el.animate([...])</code> で実位置へ戻す。<strong>読み取りと書き込みを分離</strong>し、補間対象は <code>transform</code> だけ＝コンポジタ合成でINP有利。<strong>③View Transitions</strong>：<code>view-transition-name</code> を付け DOM 更新を <code>startViewTransition</code> で包むと自動モーフ。2025年に <code>match-element</code>・<code>:active-view-transition</code>・要素スコープ版が入り、Firefox 144 対応で<strong>Baseline化</strong>。タブ切替がルート遷移そのものなら本命。<strong>④CSS-only</strong>：hidden radio＋<code>:has(:checked)</code> で <code>transform: translateX()</code>、<strong>RSCのまま hydration ゼロ</strong>だが可変幅は苦手。</p>\n<p><strong>App Router 組み込み</strong>：CSS-only は Server Component のまま。Motion/FLIP/VT はインジケーターの<strong>島だけ <code>'use client'</code></strong>、<strong>初期アクティブを props で渡す</strong>とサーバー描画とクライアント state が一致し hydration mismatch なし・以後の切替でだけ滑る。</p>\n<p><strong>最重要は a11y——「滑る見た目」と「意味構造」を分離</strong>すること。インジケーターは装飾なので <code>aria-hidden</code>。パネルを切り替えるなら WAI-ARIA Tabs（親 <code>role=\"tablist\"</code>／各 <code>role=\"tab\"</code>＋<code>aria-selected</code>＋<code>aria-controls</code>、矢印キー移動＋ローミング tabindex）。ページ内リンク集は tablist ではなく <code>&lt;nav&gt;</code>＋<code>aria-current=\"page\"</code>。<code>prefers-reduced-motion: reduce</code> で滑走を止め位置だけ即切替（動きに敏感な人は約3人に1人）。<strong>落とし穴</strong>は毎フレーム setState・<code>key={index}</code> での誤補間・フォント読込/リサイズ時の再計測漏れ。</p>\n<p><strong>まとめ</strong>：4型の本質は同じ「旧box→新boxの補間」。可変幅・対話性は Motion か FLIP、等幅の表示切替だけなら CSS-only。どれを選んでも a11y は別建てにする。</p>",
+      "sources": [
+        {
+          "title": "Motion — Smooth Tabs (layoutId)",
+          "url": "https://motion.dev/tutorials/react-smooth-tabs"
+        },
+        {
+          "title": "Chrome for Developers — What's new in view transitions (2025)",
+          "url": "https://developer.chrome.com/blog/view-transitions-in-2025"
+        },
+        {
+          "title": "W3C WAI-ARIA APG — Tabs Pattern",
+          "url": "https://www.w3.org/WAI/ARIA/apg/patterns/tabs/"
+        },
+        {
+          "title": "MDN — Using the View Transition API",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/View_Transition_API/Using"
+        }
+      ]
+    },
+    {
+      "id": "2026-08-12-flutter",
+      "date": "2026-08-12",
+      "topic": "Flutter",
+      "title": "Dart 3.12 のコンストラクタ革命と material_ui 分離 — 定型削減とUIの独立配信",
+      "lede": "現行は Flutter 3.44 / Dart 3.12。primary constructors・private named parameters・dot shorthands で ViewModel/値クラスが激減。Material/Cupertino はコアから切り出され、M3更新が四半期SDKを待たず届く。",
+      "articleHtml": "<p>現行安定版は <strong>Flutter 3.44 / Dart 3.12</strong>（3.44.0 は 2026-05-18・Google I/O 2026 公開）で、次の機能リリース窓（年4回 2/5/8/11月）に入った。今日の主役は<strong>Dart 3.12 のコンストラクタ定型削減</strong>と、<strong>Material/Cupertino のパッケージ分離</strong>という2つの構造変化だ。どちらも「毎回書いていた退屈なコードとビルド重量」を削る方向で、ViewModel やデータクラスを多用する実装ほど効く。</p>\n<p>Dart 3.12 はコンストラクタの定型を3方向から減らす。<strong>primary constructors</strong>（experimental・opt-in）はクラスヘッダで instance 変数を直接宣言でき、ViewModel/値クラスを大幅短縮。<strong>private named parameters</strong>（既定 ON）は先頭 <code>_</code> で公開名を自動決定し「<code>this._x</code> を <code>_x</code> に代入」の重複を消す。<strong>dot shorthands</strong>（3.10 導入・3.12 で成熟し既定 ON）は型が自明なら <code>.value</code> と書ける。</p>\n<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg'>\n<rect x='0' y='0' width='600' height='200' fill='#e9f6fd' rx='10'/>\n<text x='300' y='24' font-size='13' font-weight='700' fill='#0277bd' text-anchor='middle'>primary constructors：値クラスが1行級に</text>\n<rect x='20' y='40' width='265' height='140' rx='10' fill='#fff' stroke='#90caf9'/>\n<text x='152' y='62' font-size='11' font-weight='700' fill='#546e7a' text-anchor='middle'>従来</text>\n<text x='152' y='86' font-size='10' fill='#455a64' text-anchor='middle'>class Point {</text>\n<text x='152' y='104' font-size='10' fill='#455a64' text-anchor='middle'>final int x, y;</text>\n<text x='152' y='122' font-size='10' fill='#455a64' text-anchor='middle'>Point(this.x, this.y);</text>\n<text x='152' y='140' font-size='10' fill='#455a64' text-anchor='middle'>}</text>\n<text x='152' y='166' font-size='10' fill='#b91c1c' text-anchor='middle'>宣言と代入の重複</text>\n<rect x='315' y='40' width='265' height='140' rx='10' fill='#fff' stroke='#4fc3f7'/>\n<text x='447' y='62' font-size='11' font-weight='700' fill='#01597f' text-anchor='middle'>Dart 3.12</text>\n<text x='447' y='90' font-size='10.5' fill='#01579b' text-anchor='middle'>class Point(final int x,</text>\n<text x='447' y='108' font-size='10.5' fill='#01579b' text-anchor='middle'>final int y);</text>\n<text x='447' y='140' font-size='10' fill='#0277bd' text-anchor='middle'>ヘッダで変数を直接宣言</text>\n<text x='447' y='166' font-size='10' fill='#0277bd' text-anchor='middle'>本文ゼロで済む</text>\n</svg><figcaption>図1：primary constructors はクラスヘッダで instance 変数を宣言でき、定型本文が消える。</figcaption></figure>\n<p>もう一方の構造変化が<strong>UIパッケージの分離</strong>。Material と Cupertino はコアから <code>material_ui</code>／<code>cupertino_ui</code> へ切り出され、3.44 では <code>material.dart</code>／<code>cupertino.dart</code> は「凍結」でコアに新機能追加なし。<strong>独立バージョニングで M3 更新が四半期 SDK を待たず</strong>届き、未使用 UI は binary から外れて<strong>アプリサイズ削減</strong>につながる。描画は <strong>Impeller が Android 既定・Skia 撤去</strong>（Vulkan／iOS=Metal）、iOS/macOS は <strong>Swift Package Manager が新規プロジェクトの既定</strong>（CocoaPods 段階的廃止）へ。状態管理の基本線は変わらず<strong>新規は Riverpod 3.3.1＋codegen、監査/大規模は Bloc 9.0</strong>（<code>on&lt;Event&gt;</code> ハンドラ・event-driven audit trail）。</p>\n<p><strong>自分が試すなら</strong>、まず既存プロジェクトを 3.44 に上げ、ViewModel の多いレイヤで primary constructors（experimental フラグ）と dot shorthands を局所導入して差分を測る。<strong>注意点</strong>は、primary constructors は experimental で opt-in が要ること、UIパッケージ分離に伴う SDK 内コピーは長い deprecation 期間に入るので移行を焦らないこと、SPM 既定化で既存 CocoaPods 依存プラグインの対応確認が要ること。<strong>まとめ</strong>：3.12/3.44 は「書く量とビルド重量を減らし、UI を独立配信する」整理の回。まずは値クラス短縮と Widget Previewer のメモリ改善という実益から触るのが良い。</p>",
+      "sources": [
+        {
+          "title": "Dart 3.12: primary constructors & dot shorthands guide",
+          "url": "https://ecorpit.com/dart-3-12-primary-constructors-dot-shorthands-guide-2026/"
+        },
+        {
+          "title": "Flutter 3.44 Splits Material and Cupertino / SwiftPM Default",
+          "url": "https://startdebugging.net/2026/05/flutter-3-44-material-cupertino-packages-swiftpm-default/"
+        },
+        {
+          "title": "Latest Flutter Version 3.44 (cmarix)",
+          "url": "https://www.cmarix.com/blog/latest-flutter-version/"
+        },
+        {
+          "title": "Dart what's new",
+          "url": "https://dart.dev/resources/whats-new"
+        }
+      ]
+    },
+    {
+      "id": "2026-08-12-github-trending",
+      "date": "2026-08-12",
+      "topic": "GitHub Trending",
+      "title": "8/12の話題リポジトリ — AIエージェンシー・端末で確定申告・生涯パーソナライズ個別指導",
+      "lede": "本日の急上昇3本を貫くのは「専門特化」。汎用チャットではなく、役割・ドメイン・学習者に張り付いた道具が上位を占めた。",
+      "articleHtml": "<p>本日 GitHub で急上昇した3本は、いずれも<strong>「特定の役割・ドメイン・相手」に張り付いた専門特化ツール</strong>という共通点を持つ。汎用のチャットや万能フレームワークではなく、エージェンシー運用・税務・教育という具体的な現場に降りたものが上位に来た。以下、各リポジトリについて<strong>解決したい課題</strong>と<strong>提供する機能</strong>を分けて見る。</p>\n<figure class='fig'><svg viewBox='0 0 600 220' xmlns='http://www.w3.org/2000/svg'>\n<rect x='0' y='0' width='600' height='220' fill='#eafaef' rx='10'/>\n<text x='300' y='24' font-size='13' font-weight='700' fill='#1a7f37' text-anchor='middle'>リポジトリ × (解決したい課題 / 提供する機能)</text>\n<line x1='20' y1='38' x2='580' y2='38' stroke='#a7e3b8'/>\n<text x='30' y='56' font-size='10.5' font-weight='700' fill='#1a7f37'>リポジトリ</text>\n<text x='210' y='56' font-size='10.5' font-weight='700' fill='#1a7f37'>解決したい課題</text>\n<text x='420' y='56' font-size='10.5' font-weight='700' fill='#1a7f37'>提供する機能</text>\n<line x1='20' y1='64' x2='580' y2='64' stroke='#d3f0da'/>\n<text x='30' y='90' font-size='10' fill='#14532d'>agency-agents</text>\n<text x='210' y='84' font-size='9.5' fill='#333'>専門役割を毎回</text>\n<text x='210' y='98' font-size='9.5' fill='#333'>組み直す手間</text>\n<text x='420' y='84' font-size='9.5' fill='#333'>人格・手順・成果物付き</text>\n<text x='420' y='98' font-size='9.5' fill='#333'>エージェント一式</text>\n<line x1='20' y1='112' x2='580' y2='112' stroke='#d3f0da'/>\n<text x='30' y='140' font-size='10' fill='#14532d'>itr-wala</text>\n<text x='210' y='134' font-size='9.5' fill='#333'>インド確定申告(ITR)</text>\n<text x='210' y='148' font-size='9.5' fill='#333'>の煩雑さ・不確実さ</text>\n<text x='420' y='134' font-size='9.5' fill='#333'>両税制/AY26-27の</text>\n<text x='420' y='148' font-size='9.5' fill='#333'>決定論的税エンジン</text>\n<line x1='20' y1='162' x2='580' y2='162' stroke='#d3f0da'/>\n<text x='30' y='190' font-size='10' fill='#14532d'>DeepTutor</text>\n<text x='210' y='184' font-size='9.5' fill='#333'>画一的教材が個人に</text>\n<text x='210' y='198' font-size='9.5' fill='#333'>最適化されない</text>\n<text x='420' y='184' font-size='9.5' fill='#333'>学習者ごと継続最適化の</text>\n<text x='420' y='198' font-size='9.5' fill='#333'>生涯パーソナライズ指導</text>\n</svg><figcaption>図1：3本を「課題→提供機能」で一望。いずれも汎用でなく専門特化。</figcaption></figure>\n<h4>msitarzewski/agency-agents（—・⭐—、Trendshift日次3位・言及1.2k）</h4>\n<p><strong>解決したい課題</strong>：サブエージェント／スキル運用が広がる一方で、目的ごとに「どんな人格・手順・成果物を持つエージェントを用意するか」を毎回ゼロから設計するのは重い。<strong>提供する機能</strong>：フロントエンドの魔術師から Reddit コミュニティの忍者まで、個性・プロセス・deliverables を備えた専門エージェントを丸ごと束ねた「AIエージェンシー」一式。チームとして一気に呼び出せる。本日 Trendshift 日次3位・言及1.2k とトップクラスの露出で、<strong>「エージェントをチーム編成で使う」潮流</strong>に乗って急拡散した。</p>\n<h4>karanb192/itr-wala（—・⭐—、Trendshift日次20位・New 2026・#Fintech・言及408）</h4>\n<p><strong>解決したい課題</strong>：インドの所得税申告（ITR）は税制選択や計算が煩雑で、LLM任せだと数字の正しさが担保できない。<strong>提供する機能</strong>：ターミナルから ITR を完結させ、両税制対応・AY2026-27 の<strong>決定論的な税計算エンジン</strong>を備える（Claude Code / Codex / Gemini から使える）。エージェント一色の上位で「確定申告を端末から」という<strong>生活密着のドメイン特化</strong>が刺さり、新規リポながら日次入り。信頼性を LLM に委ねない設計が話題化の芯だ。</p>\n<h4>HKUDS/DeepTutor（Python・⭐—、Trendshift日次15位・言及505＋OSSInsight当日）</h4>\n<p><strong>解決したい課題</strong>：画一的な教材は個々の学習者の理解度・履歴に最適化されない。<strong>提供する機能</strong>：<strong>生涯にわたるパーソナライズド個別指導</strong>を掲げ、学習者ごとに継続的に最適化する AI チューターシステム。教育×RAG の文脈で、研究色の強い HKUDS 発という完成度への期待もあり、Trendshift＋OSSInsight の<strong>二重シグナル</strong>で急上昇した。</p>\n<p><strong>まとめ・自分が試すなら</strong>：開発運用に効くのは agency-agents で、自分のサブエージェント編成の雛形として構成（人格/手順/成果物の3点セット）を読むだけでも学びがある。itr-wala は「LLM＋決定論エンジン」という信頼性設計のパターンとして、DeepTutor は継続最適化のRAG設計として参考になる。まず agency-agents の構成を1つ写経してみたい。</p>",
+      "sources": [
+        {
+          "title": "msitarzewski/agency-agents",
+          "url": "https://github.com/msitarzewski/agency-agents"
+        },
+        {
+          "title": "karanb192/itr-wala",
+          "url": "https://github.com/karanb192/itr-wala"
+        },
+        {
+          "title": "HKUDS/DeepTutor",
+          "url": "https://github.com/HKUDS/DeepTutor"
+        }
+      ]
+    },
     {
       "id": "2026-08-11-claude-code",
       "date": "2026-08-11",
