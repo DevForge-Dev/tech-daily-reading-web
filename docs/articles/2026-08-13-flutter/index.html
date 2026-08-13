@@ -1,0 +1,99 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Dart 3.12のprivate named parameters — コンストラクタ定型を3方向から削る、8月リリース窓の主役 — デイリー技術深掘り 読み物</title><meta name="description" content="先頭_の名前付き引数がprivateフィールドを直接初期化。primary constructors・dot shorthandsと合わせ定型を3方向から削減。土台はFlutter 3.44／Impeller Android既定、状態管理はRiverpod 3.3が既定線。"><meta name="theme-color" content="#0277bd"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-13-flutter/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Dart 3.12のprivate named parameters — コンストラクタ定型を3方向から削る、8月リリース窓の主役 — デイリー技術深掘り 読み物"><meta property="og:description" content="先頭_の名前付き引数がprivateフィールドを直接初期化。primary constructors・dot shorthandsと合わせ定型を3方向から削減。土台はFlutter 3.44／Impeller Android既定、状態管理はRiverpod 3.3が既定線。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-13-flutter/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #29b6f6, #01579b)"> <span class="glyph" aria-hidden="true">◆</span> <div class="kicker">Flutter</div> <h1>Dart 3.12のprivate named parameters — コンストラクタ定型を3方向から削る、8月リリース窓の主役</h1> <p class="lede">先頭_の名前付き引数がprivateフィールドを直接初期化。primary constructors・dot shorthandsと合わせ定型を3方向から削減。土台はFlutter 3.44／Impeller Android既定、状態管理はRiverpod 3.3が既定線。</p> <div class="meta"> <span>📅 2026年8月13日</span> <span>⏱ 約3分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#0277bd"> <div> <article class="prose" data-has-mermaid="0"><p>Flutterは年4回（2/5/8/11月）の機能リリースで、いまは<strong>8月のリリース窓</strong>に入っている。現行安定版は <strong>Flutter 3.44 / Dart 3.12</strong>（3.44.0 は Google I/O 2026 で公開）。2026ロードマップは最低4回のstableをコミットしており、今回の主役は<strong>Dart 3.12のprivate named parameters</strong>——コンストラクタの定型コードを大きく削る言語機能だ。</p>
+
+<p><strong>何が新しいか</strong>。Dart 3.12はprivate named parametersを<strong>初期化仮引数（initializing formals）とprimary constructor引数に拡張</strong>した。先頭 <code>_</code> の名前付き引数がprivateフィールドを直接初期化し、公開名は <code>_</code> を除いた名前を自動採用。カプセル化を保ったまま「フィールド宣言→コンストラクタ引数→代入」の三重定型が消える。あわせて <strong>primary constructors</strong>（experimental・クラスヘッダでinstance変数を直接宣言）と <strong>dot shorthands</strong>（型が自明なら <code>.value</code>）で、定型を3方向から削減する。</p>
+
+<pre><code>// 従来
+class User {
+  final String _name;
+  User({required String name}) : _name = name;
+}
+// Dart 3.12：private named parameter
+class User {
+  final String _name;
+  User({required this._name}); // 呼び出しは User(name: 'a')
+}</code></pre>
+
+<figure class='fig'>
+<svg viewBox='0 0 600 180' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <rect x='0' y='0' width='600' height='180' fill='#f2f8ff' rx='8'></rect>
+  <text x='300' y='26' font-size='13' font-weight='bold' text-anchor='middle' fill='#0553b1'>コンストラクタ定型を削る3方向</text>
+  <rect x='20' y='44' width='180' height='110' fill='#fff' stroke='#42a5f5' rx='6'></rect>
+  <text x='110' y='70' font-size='12' font-weight='bold' text-anchor='middle' fill='#0553b1'>private named params</text>
+  <text x='110' y='96' font-size='10' text-anchor='middle' fill='#555'>this._name で</text>
+  <text x='110' y='112' font-size='10' text-anchor='middle' fill='#555'>privateフィールド直接初期化</text>
+  <text x='110' y='134' font-size='10' text-anchor='middle' fill='#888'>Dart 3.12</text>
+  <rect x='210' y='44' width='180' height='110' fill='#fff' stroke='#42a5f5' rx='6'></rect>
+  <text x='300' y='70' font-size='12' font-weight='bold' text-anchor='middle' fill='#0553b1'>primary constructors</text>
+  <text x='300' y='96' font-size='10' text-anchor='middle' fill='#555'>クラスヘッダで</text>
+  <text x='300' y='112' font-size='10' text-anchor='middle' fill='#555'>instance変数を直接宣言</text>
+  <text x='300' y='134' font-size='10' text-anchor='middle' fill='#888'>experimental</text>
+  <rect x='400' y='44' width='180' height='110' fill='#fff' stroke='#42a5f5' rx='6'></rect>
+  <text x='490' y='70' font-size='12' font-weight='bold' text-anchor='middle' fill='#0553b1'>dot shorthands</text>
+  <text x='490' y='96' font-size='10' text-anchor='middle' fill='#555'>型が自明なら</text>
+  <text x='490' y='112' font-size='10' text-anchor='middle' fill='#555'>.value と省略</text>
+  <text x='490' y='134' font-size='10' text-anchor='middle' fill='#888'>3.10導入/3.12成熟</text>
+</svg>
+<figcaption>図1：Dart 3.12はコンストラクタ定型を3つの機能で同時に削る。</figcaption>
+</figure>
+
+<p><strong>土台の状況</strong>。Material／Cupertinoはコアから <code>material_ui</code>／<code>cupertino_ui</code> へ切り出され（3.44でコア内は凍結）、独立バージョニングでM3更新がSDKを待たず届き、未使用UIはbinaryから外れapp size削減に効く。描画は <strong>Impeller が Android 既定・Skia 撤去</strong>（Android=Vulkan／iOS=Metal）、iOS/macOSは<strong>Swift Package Managerが新規既定</strong>。状態管理の既定線は新規=<strong>Riverpod 3.3.1＋codegen</strong>（<code>@riverpod</code>・compile-time safety・最小ボイラープレート）、監査/規制業界や複雑並行は<strong>Bloc 9.x</strong>。</p>
+
+<p><strong>自分が試すなら</strong>、既存モデル層のコンストラクタをprivate named paramsで書き換え、<code>dart fix</code>／<code>flutter analyze</code> で警告を潰しながら移行する。移行前は <code>flutter upgrade</code> で3.44系最新パッチへ上げ、Impellerを実機検証（差が出たら <code>--no-enable-impeller</code> で切り分け）。<strong>注意点</strong>：primary constructorsはexperimentalなので本番投入は段階的に。Impeller既定化で描画差異が出る箇所は必ずprofileモードで確認する。<strong>ひとことまとめ</strong>：今回は言語（定型削減）と土台（Impeller/パッケージ分離）が同時に前進した回。まずコンストラクタの書き換えから恩恵を取りにいける。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://dart.dev/resources/whats-new" target="_blank" rel="noopener noreferrer"> What&#39;s new (Dart) </a> </li><li> <a href="https://www.cmarix.com/blog/latest-flutter-version/" target="_blank" rel="noopener noreferrer"> Latest Flutter Version 3.44 </a> </li><li> <a href="https://startdebugging.net/2026/05/flutter-3-44-material-cupertino-packages-swiftpm-default/" target="_blank" rel="noopener noreferrer"> Flutter 3.44 Material/Cupertino Packages / SwiftPM Default </a> </li><li> <a href="https://foresightmobile.com/blog/best-flutter-state-management" target="_blank" rel="noopener noreferrer"> Best Flutter State Management 2026 </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
