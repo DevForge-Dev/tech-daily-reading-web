@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-08-14T04:47:29.597Z",
+  "generatedAt": "2026-08-13T04:46:27.925Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,106 +8,6 @@
     "GitHub Trending"
   ],
   "articles": [
-    {
-      "id": "2026-08-14-claude-code",
-      "date": "2026-08-14",
-      "topic": "Claude Code",
-      "title": "Auto Modeが既定に — 承認待ちゼロへ舵、v2.1.231とVS Code Focus viewで統制も両立",
-      "lede": "8/14からAuto Modeがデフォルト化。分類器が「平均的ユーザーのクリックと同等かそれ以上に安全」と判断したツール実行を自動承認し、追加トークンはPro/Max/Team無課金。自律実行を前へ押し出しつつ、マーケットプレイス制御・Focus view・資格情報maskで統制も同時に厚くする回。",
-      "articleHtml": "<p>この数日のClaude Codeは<strong>「承認の摩擦を減らす」方向</strong>が一気に前進した。The Registerによると、Anthropicは<strong>8月14日からAuto Modeを既定</strong>にする。従来はツール実行のたびにユーザーがクリックして許可していたが、これからは<strong>分類器が「平均的なユーザーがプロンプトをクリックするのと同等かそれ以上に安全」</strong>と判断した操作を自動承認する。承認待ちで作業が止まる摩擦を消し、エージェントの自律実行をさらに前面に出す動きだ。</p>\n\n<p><strong>何が新しいか</strong>。Auto Mode既定化にあわせ、分類器が消費する<strong>追加トークンをPro・Max・Teamは無課金化</strong>した。加えて8月13日リリースの <code>v2.1.231</code> では<strong>マーケットプレイス制御</strong>（許可/ブロックの owner ワイルドカードでリポジトリ単位の統制）、モデル/セッション警告表示の明確化、クラウドのセッションをローカルへ移す <code>/teleport</code> ヒントが加わった。VS Code拡張には<strong>Focus view</strong>（<code>Ctrl+Alt+F</code>）が入り、ツール実行ログを1ターン単位の折りたたみ要約に隠して会話の見通しを確保できる。さらにLinux/WSL向けに<strong>資格情報のmaskモード</strong>——サンドボックス側はセンチネル値を読み、egress時に実値へ置換する仕組みが追加され、extract正規表現・JWTデコード・AWS SigV4再署名にも対応した。</p>\n\n<figure class='fig'>\n<svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='0' y='0' width='600' height='210' fill='#f6faf6' rx='8'/>\n  <text x='16' y='26' font-size='13' font-weight='bold' fill='#8a6d00'>従来（都度クリック承認）</text>\n  <rect x='16' y='38' width='260' height='150' fill='#ffffff' stroke='#d1a300' rx='6'/>\n  <rect x='34' y='58' width='224' height='34' fill='#fffbe6' stroke='#d1a300' rx='4'/>\n  <text x='146' y='80' font-size='11' text-anchor='middle' fill='#8a6d00'>ツール実行の要求</text>\n  <rect x='34' y='100' width='224' height='34' fill='#fff0f0' stroke='#d1242f' rx='4'/>\n  <text x='146' y='122' font-size='11' text-anchor='middle' fill='#d1242f'>ユーザーが毎回クリック承認</text>\n  <rect x='34' y='142' width='224' height='34' fill='#eef' stroke='#88a' rx='4'/>\n  <text x='146' y='164' font-size='11' text-anchor='middle' fill='#445'>実行（待ちで停止しがち）</text>\n  <text x='320' y='26' font-size='13' font-weight='bold' fill='#1a7f37'>Auto Mode（既定）</text>\n  <rect x='320' y='38' width='264' height='150' fill='#ffffff' stroke='#1a7f37' rx='6'/>\n  <rect x='338' y='58' width='228' height='34' fill='#fffbe6' stroke='#d1a300' rx='4'/>\n  <text x='452' y='80' font-size='11' text-anchor='middle' fill='#8a6d00'>ツール実行の要求</text>\n  <rect x='338' y='100' width='228' height='34' fill='#eaffea' stroke='#1a7f37' rx='4'/>\n  <text x='452' y='122' font-size='11' text-anchor='middle' fill='#1a7f37'>分類器が安全判定→自動承認</text>\n  <rect x='338' y='142' width='228' height='34' fill='#eaffea' stroke='#1a7f37' rx='4'/>\n  <text x='452' y='164' font-size='11' text-anchor='middle' fill='#1a7f37'>即実行（危険時のみ確認）</text>\n</svg>\n<figcaption>図1：Auto Modeは分類器を承認ゲートに挟み、安全と判断した操作だけ自動で通す。</figcaption>\n</figure>\n\n<p><strong>仕組みのポイント</strong>は、承認を人手の一律クリックから<strong>分類器による安全判定ゲート</strong>へ置き換えたこと。安全と見なせば自動実行、危険なら従来どおり確認を挟む。同時にマーケットプレイス制御と資格情報maskで「実行の自由度」と「配布・秘密情報の統制」を両輪で上げているのが今回の設計思想だ。</p>\n\n<p><strong>自分が試すなら</strong>、Auto Mode＋Focus viewで長時間のリファクタや横断調査を回し、承認待ちが消える体感とログの見通しを確かめたい。Linux環境ではmaskモードを有効化し、実鍵をegress時だけ使う運用でシークレット漏れの面を検証する。</p>\n\n<p><strong>注意点</strong>。自動承認の基準は「平均的ユーザーのクリック相当」であって無謬ではない。破壊的操作の前は権限設計やPreToolUse Hooksで二重の歯止めを掛けたい。導入面ではNECがグループ約3万人へ展開、クラスメソッドがコードレビュー80%短縮を報告し、ランレート売上は25億ドル超と成長が続く一方、Microsoftの事例どおり<strong>コスト・予算ガバナンスとセット</strong>で入れるのが安全だ。</p>\n\n<p><strong>ひとことまとめ</strong>：今回は「止まらない自律実行（Auto Mode）」と「配布・秘密の統制（マーケット制御・maskモード）」を同時に底上げする回。自由度と統制を両取りする地固めが主眼だ。</p>",
-      "sources": [
-        {
-          "title": "Claude Code puts Auto Mode in the driver’s seat (The Register)",
-          "url": "https://www.theregister.com/ai-and-ml/2026/08/10/claude-code-puts-auto-mode-in-the-drivers-seat/"
-        },
-        {
-          "title": "Claude Code v2.1.231 リリースまとめ",
-          "url": "https://www.havoptic.com/tools/claude-code"
-        },
-        {
-          "title": "VS Code拡張 Focus view / 資格情報maskモード",
-          "url": "https://www.eesel.ai/blog/claude-code-vs-code-extension"
-        },
-        {
-          "title": "Claude Code のランレート売上分析",
-          "url": "https://www.uncoveralpha.com/p/anthropics-claude-code-is-having"
-        }
-      ]
-    },
-    {
-      "id": "2026-08-14-nextjs",
-      "date": "2026-08-14",
-      "topic": "Next.js",
-      "title": "Sonnerで作る“良いトースト” — App RouterでServer Actionの結果をクライアントに橋渡しする3パターン",
-      "lede": "shadcn/ui既定のSonner（週4000万DL超）。スタックの滑らかさの本質はkeyframesではなくtransition、スワイプは速度ベース。最大の難所はServer Action（サーバー）→トースト（クライアント）の橋渡しで、useActionState／Cookieフラッシュ／searchParamsの3系統を使い分ける。",
-      "articleHtml": "<p>トーストは「作るのは簡単、\"良い\"ものを作るのは難しい」典型だ。素朴に実装すると連続発火でスタックがカクつき、スクリーンリーダーに読まれず、<code>prefers-reduced-motion</code>を無視し、Server Action→redirectをまたいで消える。<strong>Sonner</strong>（Emil Kowalski作、週4000万DL超、shadcn/uiの既定）はこれらを既定で解いており、2025〜26のReactエコシステムの事実上の標準になった。</p>\n\n<p><strong>仕組みの要点</strong>。状態管理はReact Contextではなく<strong>Observerパターン</strong>——<code>&lt;Toaster&gt;</code>がToastStateをsubscribeし、どのClient Componentから<code>toast()</code>を呼んでもフックなしで届く。スタックアニメの本質は<strong>keyframesではなくtransition</strong>：keyframesは中断・再ターゲット不可で連打時に古いトーストが新位置へジャンプするため、各トーストを<code>position:absolute</code>にし、indexに応じた<code>translateY</code>と<code>scale</code>をtransitionで掛けて滑らかに追従させる。スワイプは<strong>速度ベース</strong>で、<code>|swipe| / 経過ms</code> が約0.11を超えれば短距離のフリックでも消える。裏タブは<code>document.hidden</code>でタイマーを一時停止し、<code>toast.promise</code>は処理中→成功/失敗を1つのトーストで自動遷移する。アクセシビリティは<code>aria-live</code>内蔵、reduced-motion環境ではCSSでtransitionを無効化する。</p>\n\n<figure class='fig'>\n<svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='0' y='0' width='600' height='210' fill='#f5f7ff' rx='8'/>\n  <text x='300' y='24' font-size='13' font-weight='bold' text-anchor='middle' fill='#0969da'>Server Action の結果をトースト表示する3系統</text>\n  <rect x='16' y='36' width='188' height='150' fill='#ffffff' stroke='#0969da' rx='6'/>\n  <text x='110' y='58' font-size='12' font-weight='bold' text-anchor='middle' fill='#0969da'>useActionState</text>\n  <text x='110' y='82' font-size='10' text-anchor='middle' fill='#333'>+ useEffect（ts必須）</text>\n  <text x='110' y='104' font-size='10' text-anchor='middle' fill='#1a7f37'>同一ページ更新に最適</text>\n  <text x='110' y='126' font-size='10' text-anchor='middle' fill='#d1242f'>redirect跨ぎは不可</text>\n  <rect x='206' y='36' width='188' height='150' fill='#ffffff' stroke='#0969da' rx='6'/>\n  <text x='300' y='58' font-size='12' font-weight='bold' text-anchor='middle' fill='#0969da'>Cookieフラッシュ</text>\n  <text x='300' y='82' font-size='10' text-anchor='middle' fill='#333'>async Toaster + Suspense</text>\n  <text x='300' y='104' font-size='10' text-anchor='middle' fill='#1a7f37'>redirect/リロード跨ぎOK</text>\n  <text x='300' y='126' font-size='10' text-anchor='middle' fill='#8a6d00'>実装はやや重い</text>\n  <rect x='396' y='36' width='188' height='150' fill='#ffffff' stroke='#0969da' rx='6'/>\n  <text x='490' y='58' font-size='12' font-weight='bold' text-anchor='middle' fill='#0969da'>searchParams</text>\n  <text x='490' y='82' font-size='10' text-anchor='middle' fill='#333'>redirect('/done?toast=..')</text>\n  <text x='490' y='104' font-size='10' text-anchor='middle' fill='#1a7f37'>実装は軽い</text>\n  <text x='490' y='126' font-size='10' text-anchor='middle' fill='#d1242f'>URLが汚れる</text>\n</svg>\n<figcaption>図1：App Router固有の難所。redirect対応の有無で3系統を使い分ける。</figcaption>\n</figure>\n\n<p><strong>App Router固有の難所</strong>は、トーストは<code>'use client'</code>の世界なのに発火したいのはServer Action（サーバー）というズレだ。橋渡しは3系統。(1) <strong>useActionState + useEffect</strong>：actionが <code>{ ok, message, ts: Date.now() }</code> を返し、<code>useEffect([state.ts])</code> で発火する（同じstate値だと再発火しないため<strong>タイムスタンプ必須</strong>／ただしredirectをまたぐと直前と同じstateを返すため不向き）。(2) <strong>Cookieフラッシュ</strong>：Server Action内で <code>cookies().set('toast-...', msg)</code>、ルートに置いたasyncな <code>&lt;Toaster&gt;</code> Server Component（<code>&lt;Suspense&gt;</code>必須）がCookieを拾ってClientへ渡す——redirect・リロードをまたいでも生き残る。(3) <strong>searchParams</strong>：<code>redirect('/done?toast=saved')</code> して遷移先で読む（軽いがURLが汚れる）。</p>\n\n<p><strong>使いどころと注意点</strong>。同一ページ更新なら(1)、redirect後に確実に出すなら(2)が定番だ。トーストは副作用なので<strong>レンダリング中に呼ばない</strong>（必ずevent／<code>useEffect</code>／transition内）。Cookie方式のToasterは動的APIを使うため<code>&lt;Suspense&gt;</code>で包み、PPRでも動的化しないよう気をつける。</p>\n\n<p><strong>ひとことまとめ</strong>：Sonnerは\"良いトースト\"の細部を既定で解く。App Routerでは「redirectをまたぐか」で橋渡しを選ぶのが勘所だ。</p>",
-      "sources": [
-        {
-          "title": "Sonner 公式ドキュメント",
-          "url": "https://sonner.emilkowal.ski/"
-        },
-        {
-          "title": "Emil Kowalski — Building a toast component",
-          "url": "https://emilkowal.ski/ui/building-a-toast-component"
-        },
-        {
-          "title": "Build UI — Toast messages in React Server Components",
-          "url": "https://buildui.com/posts/toast-messages-in-react-server-components"
-        },
-        {
-          "title": "Next.js Discussion #77389 — redirect後のトースト",
-          "url": "https://github.com/vercel/next.js/discussions/77389"
-        }
-      ]
-    },
-    {
-      "id": "2026-08-14-flutter",
-      "date": "2026-08-14",
-      "topic": "Flutter",
-      "title": "Flutter 3.44.7とImpeller既定化 — SDF描画・Vulkan最適化と、新規はRiverpod 3を既定にする理由",
-      "lede": "現行安定版は3.44.7／Dart 3.12。ImpellerがAndroid既定になりshader jankを排除、複雑シーンでrasterizeを約50%短縮。状態管理の新規既定はRiverpod 3.3.1、監査/大規模はBloc 9.1という現在地を、数値とAPIで整理する。",
-      "articleHtml": "<p>Flutterの現行安定版は<strong>3.44.7／Dart 3.12</strong>（docsは2026-08-04更新）。次の機能リリースは2026年8月のリリース窓に入り、2026ロードマップは最低4回のstableをコミットしている。この回の主役は描画基盤の刷新だ。</p>\n\n<p><strong>何が新しいか</strong>。<strong>ImpellerがAndroid既定になりSkiaが撤去</strong>された（Android=Vulkan／iOS=Metal、API 29+）。最大の効果は<strong>AOT（ビルド時）シェーダー事前コンパイル</strong>によるshader compilation jankの排除で、複雑シーンでは<strong>frame rasterizationを約50%短縮</strong>、アニメ重ワークロードではSkia比<strong>約17%低いバッテリー消費</strong>を報告する。描画品質も、円のレンダリングが<strong>signed-distance function（SDF）</strong>ベースに刷新されエイリアシングが解消し、perspective matrixの補正で影と遠近投影が正確になった。あわせてMaterial／Cupertinoがコアから <code>material_ui</code>／<code>cupertino_ui</code> へ切り出され（独立バージョニングでM3更新がSDKを待たず届きapp size削減）、iOS/macOSはSwift Package Managerが新規既定になった。</p>\n\n<figure class='fig'>\n<svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='0' y='0' width='600' height='200' fill='#eef6ff' rx='8'/>\n  <text x='16' y='24' font-size='13' font-weight='bold' fill='#0553B1'>フレーム予算（1フレームに許される時間）</text>\n  <text x='16' y='58' font-size='11' fill='#333'>60fps</text>\n  <rect x='120' y='46' width='440' height='18' fill='#54c5f8' rx='3'/>\n  <text x='566' y='60' font-size='11' text-anchor='end' fill='#fff'>16ms</text>\n  <text x='16' y='90' font-size='11' fill='#333'>90fps</text>\n  <rect x='120' y='78' width='303' height='18' fill='#3aa7e0' rx='3'/>\n  <text x='417' y='92' font-size='11' text-anchor='end' fill='#fff'>11ms</text>\n  <text x='16' y='122' font-size='11' fill='#333'>120fps</text>\n  <rect x='120' y='110' width='228' height='18' fill='#2b7fc0' rx='3'/>\n  <text x='342' y='124' font-size='11' text-anchor='end' fill='#fff'>8.3ms</text>\n  <text x='16' y='158' font-size='11' fill='#1a7f37'>目標配分</text>\n  <rect x='120' y='146' width='110' height='18' fill='#1a7f37' rx='3'/>\n  <text x='175' y='160' font-size='10' text-anchor='middle' fill='#fff'>UI ~4ms</text>\n  <rect x='232' y='146' width='110' height='18' fill='#3fb950' rx='3'/>\n  <text x='287' y='160' font-size='10' text-anchor='middle' fill='#fff'>raster ~4ms</text>\n  <text x='352' y='160' font-size='10' fill='#666'>→ 60fpsは rasterを4ms未満に</text>\n</svg>\n<figcaption>図1：フレーム予算とImpellerの目標配分。rasterizationを4ms未満に抑えるのが60fpsの分岐点。</figcaption>\n</figure>\n\n<p><strong>アーキテクチャの現在地</strong>。2026の三強はRiverpod 3.0（compile-time safety）／Bloc 9.0（enterprise event tracing）／GetX（退潮）。<strong>新規プロジェクトの既定はRiverpod 3.3.1＋codegen</strong>（<code>@riverpod</code>・Notifier/AsyncNotifier・riverpod_lint）で、compile-time safety・context-free reads・first-class asyncを最小ボイラープレートで得られる。Riverpod 3はunified Ref・Mutations（experimental）・自動リトライ/backoff・experimental offline persistenceを備え、リビルド最適化は <code>ref.watch(provider.select(...))</code> で最小スライスを購読する。<strong>監査/規制業界（fintech/healthcare）や複雑並行はBloc 9.1</strong>（<code>on&lt;Event&gt;</code>統一・event-driven audit trail・<code>blocTest</code>）を選ぶ。土台はfeature-firstのClean Architecture＋go_router。</p>\n\n<p><strong>パフォーマンスと移行の注意点</strong>。計測は必ずprofileモードでDevTools Performanceからtimeline traceを取り、<strong>frame rasterizationを4ms未満</strong>に。日々の最適化は<code>const</code>徹底・大きな<code>build()</code>分割・<code>select</code>で局所再描画・アニメ領域を<code>RepaintBoundary</code>で隔離。移行前は<code>flutter upgrade</code>とImpellerの実機検証（差の切り分けは<code>--no-enable-impeller</code>）、<code>dart fix</code>/<code>format</code>＋<code>flutter analyze</code>で警告を解消しておく。</p>\n\n<p><strong>ひとことまとめ</strong>：3.44系はImpeller既定化でjank排除と描画品質を底上げした回。新規はRiverpod 3、統制が要る領域はBloc 9という選び分けが2026の基本線だ。</p>",
-      "sources": [
-        {
-          "title": "What’s new (Flutter docs)",
-          "url": "https://docs.flutter.dev/release/whats-new"
-        },
-        {
-          "title": "What’s new in Flutter 3.44",
-          "url": "https://flutter.dev/blog/whats-new-in-flutter-3-44"
-        },
-        {
-          "title": "Flutter State Management 2026 (Riverpod vs Bloc vs GetX)",
-          "url": "https://sharpskill.dev/en/blog/flutter/flutter-state-management-2026-riverpod-bloc-getx"
-        },
-        {
-          "title": "Flutter + Impeller: Native 120fps in 2026",
-          "url": "https://shindekalpesharun.medium.com/flutter-impeller-how-to-achieve-native-120fps-performance-in-2026-68ec28cc71e5"
-        }
-      ]
-    },
-    {
-      "id": "2026-08-14-github-trending",
-      "date": "2026-08-14",
-      "topic": "GitHub Trending",
-      "title": "8/14の話題リポジトリ — DeepSeek公式ハーネス・AI来歴マーク除去・完全オフライン変換",
-      "lede": "今日の3本を貫くのは「拡張性」「来歴」「オフライン実用」。全部プラグイン化する公式エージェント基盤、AIのウォーターマークを剥がすツール、ネット不要の万能ファイル変換——毛色の違う3本がTrendshift日次の上位に並んだ。",
-      "articleHtml": "<p>本日の急上昇3本は方向性がきれいに分かれた。<strong>エージェント基盤の拡張性</strong>、AI生成物の<strong>来歴（provenance）</strong>、そして<strong>完全オフラインの実用ツール</strong>。エージェント一色になりがちな上位ランキングの中で、ジャンルの多様性が出た日だ。以下、各リポジトリの「解決したい課題」と「提供する機能」を軸に見ていく。</p>\n\n<figure class='fig'>\n<svg viewBox='0 0 600 220' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='0' y='0' width='600' height='220' fill='#f2fbf4' rx='8'/>\n  <line x1='150' y1='34' x2='150' y2='210' stroke='#c7e7cf'/>\n  <line x1='372' y1='34' x2='372' y2='210' stroke='#c7e7cf'/>\n  <text x='16' y='28' font-size='11' font-weight='bold' fill='#1a7f37'>リポジトリ</text>\n  <text x='160' y='28' font-size='11' font-weight='bold' fill='#d1242f'>解決したい課題</text>\n  <text x='382' y='28' font-size='11' font-weight='bold' fill='#0553B1'>提供する機能</text>\n  <text x='16' y='66' font-size='10' font-weight='bold' fill='#111'>deepseek-harness</text>\n  <text x='16' y='80' font-size='9' fill='#666'>TS ・ ⭐21.6k</text>\n  <text x='160' y='66' font-size='9.5' fill='#333'>モデル/ツール/ループ/UIが</text>\n  <text x='160' y='79' font-size='9.5' fill='#333'>密結合で差し替えづらい</text>\n  <text x='382' y='66' font-size='9.5' fill='#333'>全構成要素をプラグイン化</text>\n  <text x='382' y='79' font-size='9.5' fill='#333'>（Cordis基盤・dsh web一式）</text>\n  <line x1='8' y1='94' x2='592' y2='94' stroke='#dceede'/>\n  <text x='16' y='126' font-size='10' font-weight='bold' fill='#111'>watermarks-remover</text>\n  <text x='16' y='140' font-size='9' fill='#666'>Python ・ ⭐~4.3k</text>\n  <text x='160' y='126' font-size='9.5' fill='#333'>AIの来歴マークが</text>\n  <text x='160' y='139' font-size='9.5' fill='#333'>文書に埋め込まれる</text>\n  <text x='382' y='126' font-size='9.5' fill='#333'>不可視Unicode/統計WM/C2PAを</text>\n  <text x='382' y='139' font-size='9.5' fill='#333'>多形式から除去</text>\n  <line x1='8' y1='154' x2='592' y2='154' stroke='#dceede'/>\n  <text x='16' y='186' font-size='10' font-weight='bold' fill='#111'>flyingmouse-format</text>\n  <text x='16' y='200' font-size='9' fill='#666'>Win ・ ⭐~1.5k</text>\n  <text x='160' y='186' font-size='9.5' fill='#333'>変換で機微データを</text>\n  <text x='160' y='199' font-size='9.5' fill='#333'>外部に出したくない</text>\n  <text x='382' y='186' font-size='9.5' fill='#333'>FFmpeg等内蔵で万能変換+OCR</text>\n  <text x='382' y='199' font-size='9.5' fill='#333'>（完全オフライン・バッチ）</text>\n</svg>\n<figcaption>図1：今日の3本を「解決したい課題 × 提供する機能」で一望する。</figcaption>\n</figure>\n\n<h4>deepseek-ai/deepseek-harness（TypeScript・⭐21.6k）</h4>\n<p><strong>解決したい課題</strong>：エージェントを組むとモデル・ツール・ループ・UIが密結合になり、部品を差し替えたり拡張したりしづらい。<strong>提供する機能</strong>：DeepSeek公式のエージェント・ハーネス「dsh」は<strong>「Everything is a Plugin」</strong>を掲げ、モデル・ツール・スキル・セッション・サンドボックス・ループ・オーケストレーション・UIまで全てをプラグインとして差し替え・拡張できる（Cordis基盤）。pnpmでweb UI（<code>dsh web</code>）まで一式そろう。<strong>なぜ今</strong>：DeepSeek公式・Trendshift日次1位・New 2026で、公開直後から当日モメンタムを独走した。</p>\n\n<h4>guillaumemeyer/watermarks-remover（Python・⭐約4.3k）</h4>\n<p><strong>解決したい課題</strong>：各社AIが埋め込む来歴マーク（不可視Unicode・統計的な文章ウォーターマーク・C2PA/EXIF/XMPメタデータ）が生成物に残る。<strong>提供する機能</strong>：PNG/JPEG/SVG/PDF/DOCX/HTML/MDから、3層（不可視Unicode＝Layer A、統計的ウォーターマークの書き換え＝Layer B、C2PA/EXIF/XMP）を除去する。Claude/Gemini（SynthID系）/OpenAI等の来歴マークに対応。<strong>なぜ今</strong>：明確な用途が受け、Trendshift日次3位・New 2026まで急上昇。エージェント一色の中で文書処理/プライバシー寄りの毛色の違いが多様性にも寄与した。</p>\n\n<h4>LaoFeng-mouse/flyingmouse-format（Windows・⭐約1.5k）</h4>\n<p><strong>解決したい課題</strong>：オンライン変換は機微データを外に出すうえ、形式ごとに別ツールを使い分ける手間がある。<strong>提供する機能</strong>：Windows向けの万能変換ツール「飛鼠格式」。FFmpeg/LibreOffice/Poppler/Tesseractを内蔵し、画像/文書/表計算/PPT/PDF/音声/動画/WPSの相互変換＋OCR＋バッチ変換を<strong>完全オフライン</strong>で行う。<strong>なぜ今</strong>：AI/エージェント系が席巻する上位に、非AIのデスクトップ実用ツールがTrendshift日次4位・New 2026で食い込んだ。</p>\n\n<p><strong>ひとことまとめ</strong>：自分が試すなら、まずdeepseek-harnessの「全部プラグイン」設計を読んで自作エージェントの分割方針の参考にしたい。watermarks-removerは、自分が生成した文書にどんな来歴マークが載っているかを確認する用途で一度回してみる価値がある。</p>",
-      "sources": [
-        {
-          "title": "deepseek-ai/deepseek-harness",
-          "url": "https://github.com/deepseek-ai/deepseek-harness"
-        },
-        {
-          "title": "guillaumemeyer/watermarks-remover",
-          "url": "https://github.com/guillaumemeyer/watermarks-remover"
-        },
-        {
-          "title": "LaoFeng-mouse/flyingmouse-format",
-          "url": "https://github.com/LaoFeng-mouse/flyingmouse-format"
-        }
-      ]
-    },
     {
       "id": "2026-08-13-claude-code",
       "date": "2026-08-13",
