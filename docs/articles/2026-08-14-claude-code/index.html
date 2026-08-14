@@ -1,0 +1,92 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Auto Modeが既定に — 承認待ちゼロへ舵、v2.1.231とVS Code Focus viewで統制も両立 — デイリー技術深掘り 読み物</title><meta name="description" content="8/14からAuto Modeがデフォルト化。分類器が「平均的ユーザーのクリックと同等かそれ以上に安全」と判断したツール実行を自動承認し、追加トークンはPro/Max/Team無課金。自律実行を前へ押し出しつつ、マーケットプレイス制御・Focus view・資格情報maskで統制も同時に厚くする回。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-14-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Auto Modeが既定に — 承認待ちゼロへ舵、v2.1.231とVS Code Focus viewで統制も両立 — デイリー技術深掘り 読み物"><meta property="og:description" content="8/14からAuto Modeがデフォルト化。分類器が「平均的ユーザーのクリックと同等かそれ以上に安全」と判断したツール実行を自動承認し、追加トークンはPro/Max/Team無課金。自律実行を前へ押し出しつつ、マーケットプレイス制御・Focus view・資格情報maskで統制も同時に厚くする回。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-14-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>Auto Modeが既定に — 承認待ちゼロへ舵、v2.1.231とVS Code Focus viewで統制も両立</h1> <p class="lede">8/14からAuto Modeがデフォルト化。分類器が「平均的ユーザーのクリックと同等かそれ以上に安全」と判断したツール実行を自動承認し、追加トークンはPro/Max/Team無課金。自律実行を前へ押し出しつつ、マーケットプレイス制御・Focus view・資格情報maskで統制も同時に厚くする回。</p> <div class="meta"> <span>📅 2026年8月14日</span> <span>⏱ 約3分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="0"><p>この数日のClaude Codeは<strong>「承認の摩擦を減らす」方向</strong>が一気に前進した。The Registerによると、Anthropicは<strong>8月14日からAuto Modeを既定</strong>にする。従来はツール実行のたびにユーザーがクリックして許可していたが、これからは<strong>分類器が「平均的なユーザーがプロンプトをクリックするのと同等かそれ以上に安全」</strong>と判断した操作を自動承認する。承認待ちで作業が止まる摩擦を消し、エージェントの自律実行をさらに前面に出す動きだ。</p>
+
+<p><strong>何が新しいか</strong>。Auto Mode既定化にあわせ、分類器が消費する<strong>追加トークンをPro・Max・Teamは無課金化</strong>した。加えて8月13日リリースの <code>v2.1.231</code> では<strong>マーケットプレイス制御</strong>（許可/ブロックの owner ワイルドカードでリポジトリ単位の統制）、モデル/セッション警告表示の明確化、クラウドのセッションをローカルへ移す <code>/teleport</code> ヒントが加わった。VS Code拡張には<strong>Focus view</strong>（<code>Ctrl+Alt+F</code>）が入り、ツール実行ログを1ターン単位の折りたたみ要約に隠して会話の見通しを確保できる。さらにLinux/WSL向けに<strong>資格情報のmaskモード</strong>——サンドボックス側はセンチネル値を読み、egress時に実値へ置換する仕組みが追加され、extract正規表現・JWTデコード・AWS SigV4再署名にも対応した。</p>
+
+<figure class='fig'>
+<svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <rect x='0' y='0' width='600' height='210' fill='#f6faf6' rx='8'></rect>
+  <text x='16' y='26' font-size='13' font-weight='bold' fill='#8a6d00'>従来（都度クリック承認）</text>
+  <rect x='16' y='38' width='260' height='150' fill='#ffffff' stroke='#d1a300' rx='6'></rect>
+  <rect x='34' y='58' width='224' height='34' fill='#fffbe6' stroke='#d1a300' rx='4'></rect>
+  <text x='146' y='80' font-size='11' text-anchor='middle' fill='#8a6d00'>ツール実行の要求</text>
+  <rect x='34' y='100' width='224' height='34' fill='#fff0f0' stroke='#d1242f' rx='4'></rect>
+  <text x='146' y='122' font-size='11' text-anchor='middle' fill='#d1242f'>ユーザーが毎回クリック承認</text>
+  <rect x='34' y='142' width='224' height='34' fill='#eef' stroke='#88a' rx='4'></rect>
+  <text x='146' y='164' font-size='11' text-anchor='middle' fill='#445'>実行（待ちで停止しがち）</text>
+  <text x='320' y='26' font-size='13' font-weight='bold' fill='#1a7f37'>Auto Mode（既定）</text>
+  <rect x='320' y='38' width='264' height='150' fill='#ffffff' stroke='#1a7f37' rx='6'></rect>
+  <rect x='338' y='58' width='228' height='34' fill='#fffbe6' stroke='#d1a300' rx='4'></rect>
+  <text x='452' y='80' font-size='11' text-anchor='middle' fill='#8a6d00'>ツール実行の要求</text>
+  <rect x='338' y='100' width='228' height='34' fill='#eaffea' stroke='#1a7f37' rx='4'></rect>
+  <text x='452' y='122' font-size='11' text-anchor='middle' fill='#1a7f37'>分類器が安全判定→自動承認</text>
+  <rect x='338' y='142' width='228' height='34' fill='#eaffea' stroke='#1a7f37' rx='4'></rect>
+  <text x='452' y='164' font-size='11' text-anchor='middle' fill='#1a7f37'>即実行（危険時のみ確認）</text>
+</svg>
+<figcaption>図1：Auto Modeは分類器を承認ゲートに挟み、安全と判断した操作だけ自動で通す。</figcaption>
+</figure>
+
+<p><strong>仕組みのポイント</strong>は、承認を人手の一律クリックから<strong>分類器による安全判定ゲート</strong>へ置き換えたこと。安全と見なせば自動実行、危険なら従来どおり確認を挟む。同時にマーケットプレイス制御と資格情報maskで「実行の自由度」と「配布・秘密情報の統制」を両輪で上げているのが今回の設計思想だ。</p>
+
+<p><strong>自分が試すなら</strong>、Auto Mode＋Focus viewで長時間のリファクタや横断調査を回し、承認待ちが消える体感とログの見通しを確かめたい。Linux環境ではmaskモードを有効化し、実鍵をegress時だけ使う運用でシークレット漏れの面を検証する。</p>
+
+<p><strong>注意点</strong>。自動承認の基準は「平均的ユーザーのクリック相当」であって無謬ではない。破壊的操作の前は権限設計やPreToolUse Hooksで二重の歯止めを掛けたい。導入面ではNECがグループ約3万人へ展開、クラスメソッドがコードレビュー80%短縮を報告し、ランレート売上は25億ドル超と成長が続く一方、Microsoftの事例どおり<strong>コスト・予算ガバナンスとセット</strong>で入れるのが安全だ。</p>
+
+<p><strong>ひとことまとめ</strong>：今回は「止まらない自律実行（Auto Mode）」と「配布・秘密の統制（マーケット制御・maskモード）」を同時に底上げする回。自由度と統制を両取りする地固めが主眼だ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://www.theregister.com/ai-and-ml/2026/08/10/claude-code-puts-auto-mode-in-the-drivers-seat/" target="_blank" rel="noopener noreferrer"> Claude Code puts Auto Mode in the driver’s seat (The Register) </a> </li><li> <a href="https://www.havoptic.com/tools/claude-code" target="_blank" rel="noopener noreferrer"> Claude Code v2.1.231 リリースまとめ </a> </li><li> <a href="https://www.eesel.ai/blog/claude-code-vs-code-extension" target="_blank" rel="noopener noreferrer"> VS Code拡張 Focus view / 資格情報maskモード </a> </li><li> <a href="https://www.uncoveralpha.com/p/anthropics-claude-code-is-having" target="_blank" rel="noopener noreferrer"> Claude Code のランレート売上分析 </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

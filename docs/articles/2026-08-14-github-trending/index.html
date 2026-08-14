@@ -1,0 +1,102 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>8/14の話題リポジトリ — DeepSeek公式ハーネス・AI来歴マーク除去・完全オフライン変換 — デイリー技術深掘り 読み物</title><meta name="description" content="今日の3本を貫くのは「拡張性」「来歴」「オフライン実用」。全部プラグイン化する公式エージェント基盤、AIのウォーターマークを剥がすツール、ネット不要の万能ファイル変換——毛色の違う3本がTrendshift日次の上位に並んだ。"><meta name="theme-color" content="#238636"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-14-github-trending/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="8/14の話題リポジトリ — DeepSeek公式ハーネス・AI来歴マーク除去・完全オフライン変換 — デイリー技術深掘り 読み物"><meta property="og:description" content="今日の3本を貫くのは「拡張性」「来歴」「オフライン実用」。全部プラグイン化する公式エージェント基盤、AIのウォーターマークを剥がすツール、ネット不要の万能ファイル変換——毛色の違う3本がTrendshift日次の上位に並んだ。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-14-github-trending/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3fb950, #1a7f37)"> <span class="glyph" aria-hidden="true">★</span> <div class="kicker">GitHub Trending</div> <h1>8/14の話題リポジトリ — DeepSeek公式ハーネス・AI来歴マーク除去・完全オフライン変換</h1> <p class="lede">今日の3本を貫くのは「拡張性」「来歴」「オフライン実用」。全部プラグイン化する公式エージェント基盤、AIのウォーターマークを剥がすツール、ネット不要の万能ファイル変換——毛色の違う3本がTrendshift日次の上位に並んだ。</p> <div class="meta"> <span>📅 2026年8月14日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#238636"> <div> <article class="prose" data-has-mermaid="0"><p>本日の急上昇3本は方向性がきれいに分かれた。<strong>エージェント基盤の拡張性</strong>、AI生成物の<strong>来歴（provenance）</strong>、そして<strong>完全オフラインの実用ツール</strong>。エージェント一色になりがちな上位ランキングの中で、ジャンルの多様性が出た日だ。以下、各リポジトリの「解決したい課題」と「提供する機能」を軸に見ていく。</p>
+
+<figure class='fig'>
+<svg viewBox='0 0 600 220' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <rect x='0' y='0' width='600' height='220' fill='#f2fbf4' rx='8'></rect>
+  <line x1='150' y1='34' x2='150' y2='210' stroke='#c7e7cf'></line>
+  <line x1='372' y1='34' x2='372' y2='210' stroke='#c7e7cf'></line>
+  <text x='16' y='28' font-size='11' font-weight='bold' fill='#1a7f37'>リポジトリ</text>
+  <text x='160' y='28' font-size='11' font-weight='bold' fill='#d1242f'>解決したい課題</text>
+  <text x='382' y='28' font-size='11' font-weight='bold' fill='#0553B1'>提供する機能</text>
+  <text x='16' y='66' font-size='10' font-weight='bold' fill='#111'>deepseek-harness</text>
+  <text x='16' y='80' font-size='9' fill='#666'>TS ・ ⭐21.6k</text>
+  <text x='160' y='66' font-size='9.5' fill='#333'>モデル/ツール/ループ/UIが</text>
+  <text x='160' y='79' font-size='9.5' fill='#333'>密結合で差し替えづらい</text>
+  <text x='382' y='66' font-size='9.5' fill='#333'>全構成要素をプラグイン化</text>
+  <text x='382' y='79' font-size='9.5' fill='#333'>（Cordis基盤・dsh web一式）</text>
+  <line x1='8' y1='94' x2='592' y2='94' stroke='#dceede'></line>
+  <text x='16' y='126' font-size='10' font-weight='bold' fill='#111'>watermarks-remover</text>
+  <text x='16' y='140' font-size='9' fill='#666'>Python ・ ⭐~4.3k</text>
+  <text x='160' y='126' font-size='9.5' fill='#333'>AIの来歴マークが</text>
+  <text x='160' y='139' font-size='9.5' fill='#333'>文書に埋め込まれる</text>
+  <text x='382' y='126' font-size='9.5' fill='#333'>不可視Unicode/統計WM/C2PAを</text>
+  <text x='382' y='139' font-size='9.5' fill='#333'>多形式から除去</text>
+  <line x1='8' y1='154' x2='592' y2='154' stroke='#dceede'></line>
+  <text x='16' y='186' font-size='10' font-weight='bold' fill='#111'>flyingmouse-format</text>
+  <text x='16' y='200' font-size='9' fill='#666'>Win ・ ⭐~1.5k</text>
+  <text x='160' y='186' font-size='9.5' fill='#333'>変換で機微データを</text>
+  <text x='160' y='199' font-size='9.5' fill='#333'>外部に出したくない</text>
+  <text x='382' y='186' font-size='9.5' fill='#333'>FFmpeg等内蔵で万能変換+OCR</text>
+  <text x='382' y='199' font-size='9.5' fill='#333'>（完全オフライン・バッチ）</text>
+</svg>
+<figcaption>図1：今日の3本を「解決したい課題 × 提供する機能」で一望する。</figcaption>
+</figure>
+
+<h4 id="sec-1">deepseek-ai/deepseek-harness（TypeScript・⭐21.6k）</h4>
+<p><strong>解決したい課題</strong>：エージェントを組むとモデル・ツール・ループ・UIが密結合になり、部品を差し替えたり拡張したりしづらい。<strong>提供する機能</strong>：DeepSeek公式のエージェント・ハーネス「dsh」は<strong>「Everything is a Plugin」</strong>を掲げ、モデル・ツール・スキル・セッション・サンドボックス・ループ・オーケストレーション・UIまで全てをプラグインとして差し替え・拡張できる（Cordis基盤）。pnpmでweb UI（<code>dsh web</code>）まで一式そろう。<strong>なぜ今</strong>：DeepSeek公式・Trendshift日次1位・New 2026で、公開直後から当日モメンタムを独走した。</p>
+
+<h4 id="sec-2">guillaumemeyer/watermarks-remover（Python・⭐約4.3k）</h4>
+<p><strong>解決したい課題</strong>：各社AIが埋め込む来歴マーク（不可視Unicode・統計的な文章ウォーターマーク・C2PA/EXIF/XMPメタデータ）が生成物に残る。<strong>提供する機能</strong>：PNG/JPEG/SVG/PDF/DOCX/HTML/MDから、3層（不可視Unicode＝Layer A、統計的ウォーターマークの書き換え＝Layer B、C2PA/EXIF/XMP）を除去する。Claude/Gemini（SynthID系）/OpenAI等の来歴マークに対応。<strong>なぜ今</strong>：明確な用途が受け、Trendshift日次3位・New 2026まで急上昇。エージェント一色の中で文書処理/プライバシー寄りの毛色の違いが多様性にも寄与した。</p>
+
+<h4 id="sec-3">LaoFeng-mouse/flyingmouse-format（Windows・⭐約1.5k）</h4>
+<p><strong>解決したい課題</strong>：オンライン変換は機微データを外に出すうえ、形式ごとに別ツールを使い分ける手間がある。<strong>提供する機能</strong>：Windows向けの万能変換ツール「飛鼠格式」。FFmpeg/LibreOffice/Poppler/Tesseractを内蔵し、画像/文書/表計算/PPT/PDF/音声/動画/WPSの相互変換＋OCR＋バッチ変換を<strong>完全オフライン</strong>で行う。<strong>なぜ今</strong>：AI/エージェント系が席巻する上位に、非AIのデスクトップ実用ツールがTrendshift日次4位・New 2026で食い込んだ。</p>
+
+<p><strong>ひとことまとめ</strong>：自分が試すなら、まずdeepseek-harnessの「全部プラグイン」設計を読んで自作エージェントの分割方針の参考にしたい。watermarks-removerは、自分が生成した文書にどんな来歴マークが載っているかを確認する用途で一度回してみる価値がある。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://github.com/deepseek-ai/deepseek-harness" target="_blank" rel="noopener noreferrer"> deepseek-ai/deepseek-harness </a> </li><li> <a href="https://github.com/guillaumemeyer/watermarks-remover" target="_blank" rel="noopener noreferrer"> guillaumemeyer/watermarks-remover </a> </li><li> <a href="https://github.com/LaoFeng-mouse/flyingmouse-format" target="_blank" rel="noopener noreferrer"> LaoFeng-mouse/flyingmouse-format </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> deepseek-ai/deepseek-harness（TypeScript・⭐21.6k） </a> </li><li> <a href="#sec-2" data-toc="sec-2"> guillaumemeyer/watermarks-remover（Python・⭐約4.3k） </a> </li><li> <a href="#sec-3" data-toc="sec-3"> LaoFeng-mouse/flyingmouse-format（Windows・⭐約1.5k） </a> </li> </ul> <div class="reading-box"> <div>📅 2026-08-14</div> <div>⏱ 読了 約3分</div> <div>🏷 GitHub Trending</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
