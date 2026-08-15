@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-08-14T04:47:29.597Z",
+  "generatedAt": "2026-08-15T04:55:27.490Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,110 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-08-15-claude-code",
+      "date": "2026-08-15",
+      "topic": "Claude Code",
+      "title": "Claude Codeがセルフホストに対応 — 自社インフラでセッションを回し、Opus 5とプラグインzip配布で足回りも刷新",
+      "lede": "v2.1.224でセルフホスト環境がパブリックベータに。Web/モバイル/定期実行から始めたセッションも自社ネットワーク内のrunnerで動き、内部DBやレジストリへ直結できる。既定OpusはOpus 5（1Mコンテキスト・Opus 4.8と同額）、プラグインはzipのHTTPS配布＋SHA-256ピン留めに対応した回。",
+      "articleHtml": "<p>この数日のClaude Codeは<strong>「どこで実行するか」を自社側に引き寄せる</strong>方向へ大きく動いた。Anthropicは <code>v2.1.224</code> で<strong>セルフホスト環境をパブリックベータ</strong>として公開。Web・モバイル・デスクトップ・定期実行のいずれから開始したセッションも、Anthropicのホスト基盤ではなく<strong>自社ネットワーク内で動作</strong>し、内部サービス・データベース・レジストリに直接アクセスできる。閉じた環境でエージェントを回したいエンタープライズにとって、これは待望の一歩だ。</p>\n\n<p><strong>何が新しいか</strong>。仕組みの中心は <strong>runner</strong> と呼ぶ常駐プロセスで、これを<strong>固定台数（Fixed）</strong>または<strong>オンデマンド（On-demand）</strong>で配置する。各セッションは<strong>個別のチェックアウトで分離</strong>され、ソースコードやビルド成果物は自社管理下に留まる。提供はTeam/Enterpriseプラン向けで<strong>既定オフ</strong>、ZDR（ゼロデータ保持）組織は現時点で非対応という統制寄りの設計だ。あわせてモデル面では <code>v2.1.219</code> で<strong>Opus 5が既定のOpusモデル</strong>になり、<strong>1Mトークンのコンテキスト</strong>に対応しつつ価格はOpus 4.8と据え置き。配布面では<strong>アーカイブ・プラグインソース</strong>が加わり、<strong>zipをHTTPSで取得するだけ</strong>でgit/npm不要でプラグインを導入でき、任意で<strong>SHA-256ピン留め</strong>により内容の同一性を担保できる。</p>\n\n<figure class='fig'>\n<pre class='mermaid'>flowchart LR\n  A[\"セッション開始\\nWeb/モバイル/定期実行\"] --> B{\"実行基盤\"}\n  B -->|\"従来: ホスト\"| C[\"Anthropic基盤\"]\n  B -->|\"セルフホスト\"| D[\"自社ネットワークのrunner\"]\n  D --> E[\"内部DB/レジストリに直結\"]\n  D --> F[\"セッション毎にチェックアウト分離\"]\n  F --> G[\"成果物は自社管理下\"]</pre>\n<figcaption>図1：セルフホストでは自社ネットワークのrunnerがセッションを実行し、内部資産へ直結する。</figcaption>\n</figure>\n\n<p><strong>仕組みのポイント</strong>は、実行の場所（runner）・分離単位（チェックアウト）・配布経路（zip＋SHA-256）という<strong>三層をすべて自社側に寄せた</strong>こと。runnerをFixedにすれば常時待機で起動が速く、On-demandにすればコストを抑えられる。プラグインは再現性のあるピン留めで「誰が入れても同じ中身」を保証できる。実務ガイド側でも「<strong>Skillがやり方を教え、Hookがルールを強制し、Subagentが作業を隔離する</strong>」という役割分担が定番化しており、セルフホストはこの構成を閉域で回すための土台になる。</p>\n\n<p><strong>自分が試すなら</strong>、まず小さな内部リポジトリでOn-demand runnerを1本立て、社内DBに触れる定型調査（ログ集計・スキーマ確認）をセッション化して、egressを閉じたまま完結するかを見たい。プラグインはzip＋SHA-256で配布し、チーム全員が同一ハッシュを取得できる運用を試す。Opus 5の1Mコンテキストは、複数ファイル横断のリファクタで効果を測るのに向く。</p>\n\n<p><strong>注意点</strong>。セルフホストは既定オフで<strong>ZDR組織は非対応</strong>、runnerの台数設計を誤ると待ち時間かコストのどちらかに跳ねる。<code>/verify</code>・<code>/code-review</code>・<code>/deep-research</code> の自律実行は段階的に廃止されており、これらに依存したワークフローは手動起動やSubagentへの委譲へ組み替えが要る。閉域でも権限・Hookによる破壊的操作の歯止めは省略しない。</p>\n\n<p><strong>ひとことまとめ</strong>：今回は「実行の場所・分離・配布」を自社側へ寄せる回。Opus 5とzipピン留めで足回りを固めつつ、エンタープライズが閉域でエージェントを安心して回すための地固めが主眼だ。</p>",
+      "sources": [
+        {
+          "title": "Run Claude Code sessions on your own compute (Anthropic)",
+          "url": "https://claude.com/blog/run-claude-code-sessions-on-your-own-compute"
+        },
+        {
+          "title": "Claude Code Changelog（アーカイブ・プラグインソース）",
+          "url": "https://www.gradually.ai/en/changelogs/claude-code/"
+        },
+        {
+          "title": "Claude Code v2.1.219 — Opus 5 既定化",
+          "url": "https://ai-gallery.jp/tools/claude-code/updates"
+        },
+        {
+          "title": "Claude Code 上級ベストプラクティス（Skill/Hook/Subagent）",
+          "url": "https://smartscope.blog/en/generative-ai/claude/claude-code-best-practices-advanced-2026/"
+        }
+      ]
+    },
+    {
+      "id": "2026-08-15-nextjs",
+      "date": "2026-08-15",
+      "topic": "Next.js",
+      "title": "スケルトン＋シマーとSuspense/loading.tsx — レイアウトを保ったままストリーミングで見せる",
+      "lede": "待ち時間の体感を決めるのは「何を見せるか」。空白やスピナーではなく、最終レイアウトを模したスケルトン＋シマーで「ここにこの形が来る」と予告する。App Routerはloading.tsxと<Suspense>でストリーミングが標準。粗いルート単位より、遅いセクションだけ個別に囲うほうが体感は最良になる。",
+      "articleHtml": "<p>データ待ちの体感を左右するのは「何を見せるか」だ。空白やスピナーは進捗も最終形も伝えないが、<strong>スケルトンスクリーン</strong>（最終レイアウトを模した灰色のプレースホルダ）＋<strong>シマー（wave）</strong>は「ここにこの形のコンテンツが来る」と予告し、体感待ち時間を縮める。Next.js App Routerは <code>loading.tsx</code> と <code>&lt;Suspense&gt;</code> による<strong>ストリーミングが標準</strong>で、サーバー側の遅い取得をブロックせず骨組みを即描画→中身を後から流し込める。CSSだけで完結するシマーはServer Componentのまま使え、クライアントJSを増やさない。この組み合わせが2026年でも実務のデファクトだ。</p>\n\n<p><strong>何が新しい/重要か</strong>。粒度の選択がポイントになる。<code>loading.tsx</code> は該当ルートを<strong>自動でSuspense境界</strong>でラップするが、これは<strong>ルート全体という粗い単位</strong>。ページ内の一部だけが遅いなら、<code>loading.tsx</code> に頼らず<strong>動的アクセス（DBやfetch）の近くに &lt;Suspense&gt; を個別に置く</strong>ほうが、速い部分を先に見せられる。スケルトンの原則は<strong>実コンテンツと同じ寸法・骨格</strong>を再現すること。ズレると差し替え時に<strong>レイアウトシフト（CLS）</strong>が起きて体感改善が台無しになる。</p>\n\n<figure class='fig'>\n<svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='0' y='0' width='600' height='210' fill='#f5f7ff' rx='8'/>\n  <text x='300' y='24' font-size='13' font-weight='bold' text-anchor='middle' fill='#0969da'>粒度の選択：ルート単位 vs セクション単位</text>\n  <rect x='16' y='38' width='270' height='150' fill='#ffffff' stroke='#0969da' rx='6'/>\n  <text x='151' y='60' font-size='12' font-weight='bold' text-anchor='middle' fill='#0969da'>loading.tsx（ルート全体）</text>\n  <rect x='34' y='72' width='234' height='96' fill='#eef3ff' stroke='#9db8ef' rx='4'/>\n  <text x='151' y='116' font-size='10' text-anchor='middle' fill='#555'>ページ全体を一度に骨組み表示</text>\n  <text x='151' y='134' font-size='10' text-anchor='middle' fill='#d1242f'>速い部分も待たされる</text>\n  <rect x='314' y='38' width='270' height='150' fill='#ffffff' stroke='#1a7f37' rx='6'/>\n  <text x='449' y='60' font-size='12' font-weight='bold' text-anchor='middle' fill='#1a7f37'>&lt;Suspense&gt;（セクション単位）</text>\n  <rect x='332' y='72' width='234' height='30' fill='#eaffea' stroke='#1a7f37' rx='4'/>\n  <text x='449' y='92' font-size='10' text-anchor='middle' fill='#1a7f37'>速いカード → 即表示</text>\n  <rect x='332' y='108' width='234' height='30' fill='#fffbe6' stroke='#d1a300' rx='4'/>\n  <text x='449' y='128' font-size='10' text-anchor='middle' fill='#8a6d00'>重い表 → スケルトン→後で流入</text>\n  <text x='449' y='160' font-size='10' text-anchor='middle' fill='#1a7f37'>体感が最良</text>\n</svg>\n<figcaption>図1：遅いセクションだけ個別に囲うと、速い部分を止めずに先へ出せる。</figcaption>\n</figure>\n\n<p><strong>仕組みを噛み砕く</strong>。シマーの王道は <code>background</code> グラデーション＋<code>background-position</code> アニメだ。要素より広いグラデ（<code>background-size:200%</code>）を敷き、位置を左→右へ流す。コンポジタスレッドで動くため60fpsを保ちやすくリフローも起きない。境界は動的アクセスにできるだけ近く置く。</p>\n\n<pre><code>// app/dashboard/page.tsx (Server Component)\nimport { Suspense } from \"react\";\nexport default function Page() {\n  return (\n    <>\n      <Suspense fallback={<StatsSkeleton />}><Stats /></Suspense>\n      <Suspense fallback={<TableSkeleton />}><DataTable /></Suspense>\n    </>\n  );\n}</code></pre>\n\n<p><strong>実務での使いどころ・注意点</strong>。スケルトンは<strong>装飾</strong>なのでコンテナに <code>aria-hidden=\"true\"</code> を付けてスクリーンリーダーから隠し、代わりに <code>role=\"status\"</code> のライブリージョンで「読み込み中」を1回だけ伝える。<code>prefers-reduced-motion</code> ではシマーを外して静的グレーにする。全部が静的に解決されるとフォールバックが一瞬も出ないため、体感確認は本番ビルド（<code>next build &amp;&amp; next start</code>）でも行う。</p>\n\n<p><strong>ひとことまとめ</strong>：スケルトン＋シマーで「形」を予告し、Suspenseの境界を遅い箇所へ寄せる。CLSを出さない寸法合わせとreduced-motion対応まで含めて、はじめて“良い待ち時間”になる。</p>",
+      "sources": [
+        {
+          "title": "Next.js Docs — Streaming（loading.tsx / Suspense）",
+          "url": "https://nextjs.org/docs/app/guides/streaming"
+        },
+        {
+          "title": "Adrian Roselli — More Accessible Skeletons",
+          "url": "https://adrianroselli.com/2020/11/more-accessible-skeletons.html"
+        },
+        {
+          "title": "MDN — prefers-reduced-motion",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion"
+        },
+        {
+          "title": "DEV — Skeleton screens, but fast（性能の落とし穴）",
+          "url": "https://dev.to/tigt/skeleton-screens-but-fast-48f1"
+        }
+      ]
+    },
+    {
+      "id": "2026-08-15-flutter",
+      "date": "2026-08-15",
+      "topic": "Flutter",
+      "title": "Flutter 3.44系のデスクトップ/Web強化 — マルチウィンドウ・Wasm既定化・Material切り出しと、90/120Hzのフレーム予算",
+      "lede": "現行安定版は3.44.7／Dart 3.12。DesktopはCanonical主導でマルチウィンドウ対応、Webはflutter build web --wasmでWasmGCへ、ロードマップはWasmを既定ターゲットに。MaterialはSDKから切り出され独立更新。90/120Hz時代の1フレーム8〜11ms予算を軸に、今の勘所を整理する。",
+      "articleHtml": "<p>現行安定版は<strong>Flutter 3.44.7／Dart 3.12</strong>（docsは2026-08-04更新）。次の機能リリースは2026年8月のリリース窓に入り、ロードマップは年4回・最低4回のstableをコミットしている。昨日はImpeller既定化と状態管理を扱ったので、今日は<strong>デスクトップ/Webの土台強化</strong>と<strong>90/120Hz時代のフレーム予算</strong>を軸に見ていく。</p>\n\n<p><strong>何が新しいか</strong>。<strong>Desktopはマルチウィンドウ</strong>対応が進み、複数ウィンドウを1つのFlutterアプリから制御できるようになった。<strong>Canonicalがデスクトップ開発を主導</strong>し、Linux／デスクトップ体験を底上げしている。<strong>Web</strong>は<strong>WebAssemblyレンダリング</strong>とアクセシビリティが改善し、<code>flutter build web --wasm</code> でWasmGCターゲットを出力できる。ロードマップは<strong>WasmをWebの既定コンパイルターゲット</strong>にする方針で、移行は <code>dart:html</code>／<code>package:js</code> を <code>dart:js_interop</code> へ置き換える。加えて<strong>Material／Cupertinoがコアから <code>material_ui</code>／<code>cupertino_ui</code> へ切り出され</strong>、独立バージョニングでM3更新がSDKを待たず届き、app sizeも削減される。iOS/macOSは<strong>Swift Package Managerが新規既定</strong>（CocoaPods段階的廃止）だ。</p>\n\n<figure class='fig'>\n<svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='0' y='0' width='600' height='200' fill='#eef6ff' rx='8'/>\n  <text x='16' y='24' font-size='13' font-weight='bold' fill='#0553B1'>フレーム予算（1フレームに許される時間）</text>\n  <text x='16' y='58' font-size='11' fill='#333'>60fps</text>\n  <rect x='120' y='46' width='440' height='18' fill='#54c5f8' rx='3'/>\n  <text x='552' y='60' font-size='11' text-anchor='end' fill='#fff'>16ms</text>\n  <text x='16' y='90' font-size='11' fill='#333'>90fps</text>\n  <rect x='120' y='78' width='303' height='18' fill='#3aa7e0' rx='3'/>\n  <text x='415' y='92' font-size='11' text-anchor='end' fill='#fff'>11ms</text>\n  <text x='16' y='122' font-size='11' fill='#333'>120fps</text>\n  <rect x='120' y='110' width='228' height='18' fill='#2b7fc0' rx='3'/>\n  <text x='340' y='124' font-size='11' text-anchor='end' fill='#fff'>8.3ms</text>\n  <text x='16' y='158' font-size='11' fill='#1a7f37'>raster目標</text>\n  <rect x='120' y='146' width='110' height='18' fill='#1a7f37' rx='3'/>\n  <text x='175' y='160' font-size='10' text-anchor='middle' fill='#fff'>60fps &lt;4ms</text>\n  <text x='240' y='160' font-size='10' fill='#666'>／ 120fps は raster &lt;8.3ms</text>\n</svg>\n<figcaption>図1：90/120Hzでは1フレーム8〜11ms。rasterを4ms未満に収めるのが60fpsの分岐点。</figcaption>\n</figure>\n\n<p><strong>仕組みとポイント</strong>。フラッグシップは90Hz/120Hzが主流で、1フレームを<strong>8〜11msで描かないとカクつきを知覚</strong>する。フレーム予算は<strong>60fps=16ms／90fps=11ms／120fps=8.3ms</strong>、rasterは60fpsで4ms未満／120fpsで8.3ms未満が目標だ。計測は必ず<strong>profileモード</strong>で行い、DevToolsのPerformance／Memory／Networkの3タブでUIスレッド・Rasterスレッドの処理状況とjankフレーム位置を可視化する。最も多い性能問題は<strong>不要なwidget rebuild</strong>で、対策は <code>const</code> 徹底・大きな <code>build()</code> の分割・<code>select</code> による局所再描画・アニメ領域を <code>RepaintBoundary</code> で隔離。</p>\n\n<p><strong>自分が試すなら</strong>、デスクトップ向けにマルチウィンドウのサブ画面（プレビュー用の別ウィンドウ等）を1つ足して制御APIの手触りを確かめ、Web側は <code>--wasm</code> ビルドで初期描画とスクロールのjankを実機比較したい。<code>dart:js_interop</code> への置換は影響範囲を先に洗っておく。</p>\n\n<p><strong>注意点</strong>。Wasm既定化やMaterial切り出しは<strong>依存とビルド構成に破壊的変更</strong>を伴う。移行前は <code>flutter upgrade</code>・Impeller実機検証（差の切り分けは <code>--no-enable-impeller</code>）・<code>dart fix</code>/<code>format</code>＋<code>flutter analyze</code> で警告を解消しておく。SPM移行はプラグインの対応状況を確認してから進める。</p>\n\n<p><strong>ひとことまとめ</strong>：3.44系はデスクトップ（マルチウィンドウ）とWeb（Wasm）を前へ、MaterialはSDKから独立させて更新を速めた回。土台が広がるほど、90/120Hzのフレーム予算を守る計測規律が効いてくる。</p>",
+      "sources": [
+        {
+          "title": "What's new (Flutter docs)",
+          "url": "https://docs.flutter.dev/release/whats-new"
+        },
+        {
+          "title": "Flutter (software) — Wikipedia",
+          "url": "https://en.wikipedia.org/wiki/Flutter_(software)"
+        },
+        {
+          "title": "Latest Flutter Version 3.44",
+          "url": "https://www.cmarix.com/blog/latest-flutter-version/"
+        },
+        {
+          "title": "Flutter Performance Optimization 2026",
+          "url": "https://dev.to/techwithsam/flutter-performance-optimization-2026-make-your-app-10x-faster-best-practices-2p07"
+        }
+      ]
+    },
+    {
+      "id": "2026-08-15-github-trending",
+      "date": "2026-08-15",
+      "topic": "GitHub Trending",
+      "title": "8/15の話題リポジトリ — Xの推薦アルゴリズム公開・Obsidianスキル集・画像→3Dのローカル生成",
+      "lede": "今日の3本を貫くのは「開いて中身が読める公式性」と「手元で完結する実用」。xAIがForYouフィードの推薦アルゴリズムを公開、Obsidian開発元がエージェント・スキル集を、そして画像→3DをGPUだけで回すデスクトップアプリ。エージェント一色の上位に毛色の違う3本が並んだ。",
+      "articleHtml": "<p>本日の急上昇3本は方向性がきれいに分かれた。<strong>大規模推薦システムの公式公開</strong>、<strong>PKM（ノート運用）×エージェント・スキル</strong>、そして<strong>オンデバイスの3D生成</strong>。エージェント／スキルが席巻しがちな上位ランキングの中で、ジャンルの多様性が際立った日だ。以下、各リポジトリの「解決したい課題」と「提供する機能」を軸に見ていく。</p>\n\n<figure class='fig'>\n<svg viewBox='0 0 600 220' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='0' y='0' width='600' height='220' fill='#f2fbf4' rx='8'/>\n  <line x1='150' y1='34' x2='150' y2='210' stroke='#c7e7cf'/>\n  <line x1='372' y1='34' x2='372' y2='210' stroke='#c7e7cf'/>\n  <text x='16' y='28' font-size='11' font-weight='bold' fill='#1a7f37'>リポジトリ</text>\n  <text x='160' y='28' font-size='11' font-weight='bold' fill='#d1242f'>解決したい課題</text>\n  <text x='382' y='28' font-size='11' font-weight='bold' fill='#0553B1'>提供する機能</text>\n  <text x='16' y='66' font-size='10' font-weight='bold' fill='#111'>x-algorithm</text>\n  <text x='16' y='80' font-size='9' fill='#666'>xAI公式 ・ 日次2位</text>\n  <text x='160' y='66' font-size='9.5' fill='#333'>ForYouの推薦ロジックが</text>\n  <text x='160' y='79' font-size='9.5' fill='#333'>ブラックボックス</text>\n  <text x='382' y='66' font-size='9.5' fill='#333'>候補生成・ランキングの</text>\n  <text x='382' y='79' font-size='9.5' fill='#333'>公式コードを公開</text>\n  <line x1='8' y1='94' x2='592' y2='94' stroke='#dceede'/>\n  <text x='16' y='126' font-size='10' font-weight='bold' fill='#111'>obsidian-skills</text>\n  <text x='16' y='140' font-size='9' fill='#666'>kepano発 ・ 日次7位</text>\n  <text x='160' y='126' font-size='9.5' fill='#333'>ノート/ナレッジ操作を</text>\n  <text x='160' y='139' font-size='9.5' fill='#333'>手作業でやっている</text>\n  <text x='382' y='126' font-size='9.5' fill='#333'>CLI＋Markdown/Bases/Canvasを</text>\n  <text x='382' y='139' font-size='9.5' fill='#333'>エージェントに扱わせる</text>\n  <line x1='8' y1='154' x2='592' y2='154' stroke='#dceede'/>\n  <text x='16' y='186' font-size='10' font-weight='bold' fill='#111'>modly</text>\n  <text x='16' y='200' font-size='9' fill='#666'>ローカルAI ・ 日次12位</text>\n  <text x='160' y='186' font-size='9.5' fill='#333'>画像→3Dで機微データを</text>\n  <text x='160' y='199' font-size='9.5' fill='#333'>クラウドに出したくない</text>\n  <text x='382' y='186' font-size='9.5' fill='#333'>自前GPUで完結する</text>\n  <text x='382' y='199' font-size='9.5' fill='#333'>画像→3D生成デスクトップアプリ</text>\n</svg>\n<figcaption>図1：今日の3本を「解決したい課題 × 提供する機能」で一望する。</figcaption>\n</figure>\n\n<h4>xai-org/x-algorithm（xAI公式・Trendshift日次2位）</h4>\n<p><strong>解決したい課題</strong>：X（旧Twitter）の「For You」フィードがどう並ぶのかは長らくブラックボックスで、なぜこの投稿が上位に来るのかを外から検証できなかった。<strong>提供する機能</strong>：xAIが公式に、ForYouフィードを動かす<strong>レコメンドアルゴリズム</strong>を公開。タイムラインの<strong>候補生成とランキングのロジック</strong>がコードとして読める。<strong>なぜ今</strong>：xAI公式・New 2026・言及24で、公開直後から当日モメンタム上位へ急浮上。エージェント一色の上位群で<strong>大規模推薦システム</strong>という毛色の違いが際立ち、ジャンル多様性にも大きく寄与した。</p>\n\n<h4>kepano/obsidian-skills（Obsidian開発元発・Trendshift日次7位）</h4>\n<p><strong>解決したい課題</strong>：ノートやナレッジの整理・変換を手作業で繰り返すのは非効率で、エージェントに任せたくても取っ掛かりがなかった。<strong>提供する機能</strong>：Obsidian向けの<strong>エージェント・スキル集</strong>。Obsidian CLIや、<strong>Markdown・Bases・JSON Canvas</strong> といったオープン形式をエージェントに扱わせ、ノート・ナレッジ操作を自動化できる。<strong>なぜ今</strong>：Obsidian開発元のkepano（Steph Ango）が公式色の強いスキル集を出したことで、PKM／ノート愛好層を巻き込み急上昇（New 2026・言及14）。「Obsidian×オープン形式」という具体性と発信者の知名度が重なった。</p>\n\n<h4>lightningpixel/modly（ローカルAI・Trendshift日次12位）</h4>\n<p><strong>解決したい課題</strong>：画像から3Dを作りたいがクラウド生成はコストとプライバシーが気になる。<strong>提供する機能</strong>：<strong>画像から3Dモデルを生成</strong>するデスクトップアプリ。ローカルAIを使い、処理は<strong>完全に自分のGPU上で完結</strong>する（クラウド不要・ネット送信ゼロ）。<strong>なぜ今</strong>：オンデバイス生成の切り口が、コスト・プライバシー志向の高まりの中で話題化（New 2026・言及10）。エージェント／スキルが席巻する上位に、3D生成という視覚・クリエイティブ寄りの非エージェント枠が食い込んだ。</p>\n\n<p><strong>ひとことまとめ</strong>：自分が試すなら、まずx-algorithmを読んで「候補生成→ランキング」の設計を推薦システムの教材として押さえたい。obsidian-skillsは自分のノート運用に直結するので、CLI＋オープン形式でどこまで自動化できるかを一度試す価値がある。modlyは手元の画像で、ローカル完結の3D生成が実用に足るかを確かめてみたい。</p>",
+      "sources": [
+        {
+          "title": "xai-org/x-algorithm",
+          "url": "https://github.com/xai-org/x-algorithm"
+        },
+        {
+          "title": "kepano/obsidian-skills",
+          "url": "https://github.com/kepano/obsidian-skills"
+        },
+        {
+          "title": "lightningpixel/modly",
+          "url": "https://github.com/lightningpixel/modly"
+        },
+        {
+          "title": "Trendshift",
+          "url": "https://trendshift.io/"
+        }
+      ]
+    },
     {
       "id": "2026-08-14-claude-code",
       "date": "2026-08-14",
