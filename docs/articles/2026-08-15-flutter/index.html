@@ -1,0 +1,90 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Flutter 3.44系のデスクトップ/Web強化 — マルチウィンドウ・Wasm既定化・Material切り出しと、90/120Hzのフレーム予算 — デイリー技術深掘り 読み物</title><meta name="description" content="現行安定版は3.44.7／Dart 3.12。DesktopはCanonical主導でマルチウィンドウ対応、Webはflutter build web --wasmでWasmGCへ、ロードマップはWasmを既定ターゲットに。MaterialはSDKから切り出され独立更新。90/120Hz時代の1フレーム8〜11ms予算を軸に、今の勘所を整理する。"><meta name="theme-color" content="#0277bd"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-15-flutter/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Flutter 3.44系のデスクトップ/Web強化 — マルチウィンドウ・Wasm既定化・Material切り出しと、90/120Hzのフレーム予算 — デイリー技術深掘り 読み物"><meta property="og:description" content="現行安定版は3.44.7／Dart 3.12。DesktopはCanonical主導でマルチウィンドウ対応、Webはflutter build web --wasmでWasmGCへ、ロードマップはWasmを既定ターゲットに。MaterialはSDKから切り出され独立更新。90/120Hz時代の1フレーム8〜11ms予算を軸に、今の勘所を整理する。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-15-flutter/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #29b6f6, #01579b)"> <span class="glyph" aria-hidden="true">◆</span> <div class="kicker">Flutter</div> <h1>Flutter 3.44系のデスクトップ/Web強化 — マルチウィンドウ・Wasm既定化・Material切り出しと、90/120Hzのフレーム予算</h1> <p class="lede">現行安定版は3.44.7／Dart 3.12。DesktopはCanonical主導でマルチウィンドウ対応、Webはflutter build web --wasmでWasmGCへ、ロードマップはWasmを既定ターゲットに。MaterialはSDKから切り出され独立更新。90/120Hz時代の1フレーム8〜11ms予算を軸に、今の勘所を整理する。</p> <div class="meta"> <span>📅 2026年8月15日</span> <span>⏱ 約3分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#0277bd"> <div> <article class="prose" data-has-mermaid="0"><p>現行安定版は<strong>Flutter 3.44.7／Dart 3.12</strong>（docsは2026-08-04更新）。次の機能リリースは2026年8月のリリース窓に入り、ロードマップは年4回・最低4回のstableをコミットしている。昨日はImpeller既定化と状態管理を扱ったので、今日は<strong>デスクトップ/Webの土台強化</strong>と<strong>90/120Hz時代のフレーム予算</strong>を軸に見ていく。</p>
+
+<p><strong>何が新しいか</strong>。<strong>Desktopはマルチウィンドウ</strong>対応が進み、複数ウィンドウを1つのFlutterアプリから制御できるようになった。<strong>Canonicalがデスクトップ開発を主導</strong>し、Linux／デスクトップ体験を底上げしている。<strong>Web</strong>は<strong>WebAssemblyレンダリング</strong>とアクセシビリティが改善し、<code>flutter build web --wasm</code> でWasmGCターゲットを出力できる。ロードマップは<strong>WasmをWebの既定コンパイルターゲット</strong>にする方針で、移行は <code>dart:html</code>／<code>package:js</code> を <code>dart:js_interop</code> へ置き換える。加えて<strong>Material／Cupertinoがコアから <code>material_ui</code>／<code>cupertino_ui</code> へ切り出され</strong>、独立バージョニングでM3更新がSDKを待たず届き、app sizeも削減される。iOS/macOSは<strong>Swift Package Managerが新規既定</strong>（CocoaPods段階的廃止）だ。</p>
+
+<figure class='fig'>
+<svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <rect x='0' y='0' width='600' height='200' fill='#eef6ff' rx='8'></rect>
+  <text x='16' y='24' font-size='13' font-weight='bold' fill='#0553B1'>フレーム予算（1フレームに許される時間）</text>
+  <text x='16' y='58' font-size='11' fill='#333'>60fps</text>
+  <rect x='120' y='46' width='440' height='18' fill='#54c5f8' rx='3'></rect>
+  <text x='552' y='60' font-size='11' text-anchor='end' fill='#fff'>16ms</text>
+  <text x='16' y='90' font-size='11' fill='#333'>90fps</text>
+  <rect x='120' y='78' width='303' height='18' fill='#3aa7e0' rx='3'></rect>
+  <text x='415' y='92' font-size='11' text-anchor='end' fill='#fff'>11ms</text>
+  <text x='16' y='122' font-size='11' fill='#333'>120fps</text>
+  <rect x='120' y='110' width='228' height='18' fill='#2b7fc0' rx='3'></rect>
+  <text x='340' y='124' font-size='11' text-anchor='end' fill='#fff'>8.3ms</text>
+  <text x='16' y='158' font-size='11' fill='#1a7f37'>raster目標</text>
+  <rect x='120' y='146' width='110' height='18' fill='#1a7f37' rx='3'></rect>
+  <text x='175' y='160' font-size='10' text-anchor='middle' fill='#fff'>60fps &lt;4ms</text>
+  <text x='240' y='160' font-size='10' fill='#666'>／ 120fps は raster &lt;8.3ms</text>
+</svg>
+<figcaption>図1：90/120Hzでは1フレーム8〜11ms。rasterを4ms未満に収めるのが60fpsの分岐点。</figcaption>
+</figure>
+
+<p><strong>仕組みとポイント</strong>。フラッグシップは90Hz/120Hzが主流で、1フレームを<strong>8〜11msで描かないとカクつきを知覚</strong>する。フレーム予算は<strong>60fps=16ms／90fps=11ms／120fps=8.3ms</strong>、rasterは60fpsで4ms未満／120fpsで8.3ms未満が目標だ。計測は必ず<strong>profileモード</strong>で行い、DevToolsのPerformance／Memory／Networkの3タブでUIスレッド・Rasterスレッドの処理状況とjankフレーム位置を可視化する。最も多い性能問題は<strong>不要なwidget rebuild</strong>で、対策は <code>const</code> 徹底・大きな <code>build()</code> の分割・<code>select</code> による局所再描画・アニメ領域を <code>RepaintBoundary</code> で隔離。</p>
+
+<p><strong>自分が試すなら</strong>、デスクトップ向けにマルチウィンドウのサブ画面（プレビュー用の別ウィンドウ等）を1つ足して制御APIの手触りを確かめ、Web側は <code>--wasm</code> ビルドで初期描画とスクロールのjankを実機比較したい。<code>dart:js_interop</code> への置換は影響範囲を先に洗っておく。</p>
+
+<p><strong>注意点</strong>。Wasm既定化やMaterial切り出しは<strong>依存とビルド構成に破壊的変更</strong>を伴う。移行前は <code>flutter upgrade</code>・Impeller実機検証（差の切り分けは <code>--no-enable-impeller</code>）・<code>dart fix</code>/<code>format</code>＋<code>flutter analyze</code> で警告を解消しておく。SPM移行はプラグインの対応状況を確認してから進める。</p>
+
+<p><strong>ひとことまとめ</strong>：3.44系はデスクトップ（マルチウィンドウ）とWeb（Wasm）を前へ、MaterialはSDKから独立させて更新を速めた回。土台が広がるほど、90/120Hzのフレーム予算を守る計測規律が効いてくる。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://docs.flutter.dev/release/whats-new" target="_blank" rel="noopener noreferrer"> What&#39;s new (Flutter docs) </a> </li><li> <a href="https://en.wikipedia.org/wiki/Flutter_(software)" target="_blank" rel="noopener noreferrer"> Flutter (software) — Wikipedia </a> </li><li> <a href="https://www.cmarix.com/blog/latest-flutter-version/" target="_blank" rel="noopener noreferrer"> Latest Flutter Version 3.44 </a> </li><li> <a href="https://dev.to/techwithsam/flutter-performance-optimization-2026-make-your-app-10x-faster-best-practices-2p07" target="_blank" rel="noopener noreferrer"> Flutter Performance Optimization 2026 </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

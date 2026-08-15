@@ -1,0 +1,98 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>スケルトン＋シマーとSuspense/loading.tsx — レイアウトを保ったままストリーミングで見せる — デイリー技術深掘り 読み物</title><meta name="description" content="待ち時間の体感を決めるのは「何を見せるか」。空白やスピナーではなく、最終レイアウトを模したスケルトン＋シマーで「ここにこの形が来る」と予告する。App Routerはloading.tsxと<Suspense>でストリーミングが標準。粗いルート単位より、遅いセクションだけ個別に囲うほうが体感は最良になる。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-15-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="スケルトン＋シマーとSuspense/loading.tsx — レイアウトを保ったままストリーミングで見せる — デイリー技術深掘り 読み物"><meta property="og:description" content="待ち時間の体感を決めるのは「何を見せるか」。空白やスピナーではなく、最終レイアウトを模したスケルトン＋シマーで「ここにこの形が来る」と予告する。App Routerはloading.tsxと<Suspense>でストリーミングが標準。粗いルート単位より、遅いセクションだけ個別に囲うほうが体感は最良になる。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-15-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>スケルトン＋シマーとSuspense/loading.tsx — レイアウトを保ったままストリーミングで見せる</h1> <p class="lede">待ち時間の体感を決めるのは「何を見せるか」。空白やスピナーではなく、最終レイアウトを模したスケルトン＋シマーで「ここにこの形が来る」と予告する。App Routerはloading.tsxと&lt;Suspense&gt;でストリーミングが標準。粗いルート単位より、遅いセクションだけ個別に囲うほうが体感は最良になる。</p> <div class="meta"> <span>📅 2026年8月15日</span> <span>⏱ 約3分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="0"><p>データ待ちの体感を左右するのは「何を見せるか」だ。空白やスピナーは進捗も最終形も伝えないが、<strong>スケルトンスクリーン</strong>（最終レイアウトを模した灰色のプレースホルダ）＋<strong>シマー（wave）</strong>は「ここにこの形のコンテンツが来る」と予告し、体感待ち時間を縮める。Next.js App Routerは <code>loading.tsx</code> と <code>&lt;Suspense&gt;</code> による<strong>ストリーミングが標準</strong>で、サーバー側の遅い取得をブロックせず骨組みを即描画→中身を後から流し込める。CSSだけで完結するシマーはServer Componentのまま使え、クライアントJSを増やさない。この組み合わせが2026年でも実務のデファクトだ。</p>
+
+<p><strong>何が新しい/重要か</strong>。粒度の選択がポイントになる。<code>loading.tsx</code> は該当ルートを<strong>自動でSuspense境界</strong>でラップするが、これは<strong>ルート全体という粗い単位</strong>。ページ内の一部だけが遅いなら、<code>loading.tsx</code> に頼らず<strong>動的アクセス（DBやfetch）の近くに &lt;Suspense&gt; を個別に置く</strong>ほうが、速い部分を先に見せられる。スケルトンの原則は<strong>実コンテンツと同じ寸法・骨格</strong>を再現すること。ズレると差し替え時に<strong>レイアウトシフト（CLS）</strong>が起きて体感改善が台無しになる。</p>
+
+<figure class='fig'>
+<svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <rect x='0' y='0' width='600' height='210' fill='#f5f7ff' rx='8'></rect>
+  <text x='300' y='24' font-size='13' font-weight='bold' text-anchor='middle' fill='#0969da'>粒度の選択：ルート単位 vs セクション単位</text>
+  <rect x='16' y='38' width='270' height='150' fill='#ffffff' stroke='#0969da' rx='6'></rect>
+  <text x='151' y='60' font-size='12' font-weight='bold' text-anchor='middle' fill='#0969da'>loading.tsx（ルート全体）</text>
+  <rect x='34' y='72' width='234' height='96' fill='#eef3ff' stroke='#9db8ef' rx='4'></rect>
+  <text x='151' y='116' font-size='10' text-anchor='middle' fill='#555'>ページ全体を一度に骨組み表示</text>
+  <text x='151' y='134' font-size='10' text-anchor='middle' fill='#d1242f'>速い部分も待たされる</text>
+  <rect x='314' y='38' width='270' height='150' fill='#ffffff' stroke='#1a7f37' rx='6'></rect>
+  <text x='449' y='60' font-size='12' font-weight='bold' text-anchor='middle' fill='#1a7f37'>&lt;Suspense&gt;（セクション単位）</text>
+  <rect x='332' y='72' width='234' height='30' fill='#eaffea' stroke='#1a7f37' rx='4'></rect>
+  <text x='449' y='92' font-size='10' text-anchor='middle' fill='#1a7f37'>速いカード → 即表示</text>
+  <rect x='332' y='108' width='234' height='30' fill='#fffbe6' stroke='#d1a300' rx='4'></rect>
+  <text x='449' y='128' font-size='10' text-anchor='middle' fill='#8a6d00'>重い表 → スケルトン→後で流入</text>
+  <text x='449' y='160' font-size='10' text-anchor='middle' fill='#1a7f37'>体感が最良</text>
+</svg>
+<figcaption>図1：遅いセクションだけ個別に囲うと、速い部分を止めずに先へ出せる。</figcaption>
+</figure>
+
+<p><strong>仕組みを噛み砕く</strong>。シマーの王道は <code>background</code> グラデーション＋<code>background-position</code> アニメだ。要素より広いグラデ（<code>background-size:200%</code>）を敷き、位置を左→右へ流す。コンポジタスレッドで動くため60fpsを保ちやすくリフローも起きない。境界は動的アクセスにできるだけ近く置く。</p>
+
+<pre><code>// app/dashboard/page.tsx (Server Component)
+import { Suspense } from "react";
+export default function Page() {
+  return (
+    <>
+      <Suspense fallback={<StatsSkeleton />}><Stats /></Suspense>
+      <Suspense fallback={<TableSkeleton />}><DataTable /></Suspense>
+    </>
+  );
+}</code></pre>
+
+<p><strong>実務での使いどころ・注意点</strong>。スケルトンは<strong>装飾</strong>なのでコンテナに <code>aria-hidden="true"</code> を付けてスクリーンリーダーから隠し、代わりに <code>role="status"</code> のライブリージョンで「読み込み中」を1回だけ伝える。<code>prefers-reduced-motion</code> ではシマーを外して静的グレーにする。全部が静的に解決されるとフォールバックが一瞬も出ないため、体感確認は本番ビルド（<code>next build &amp;&amp; next start</code>）でも行う。</p>
+
+<p><strong>ひとことまとめ</strong>：スケルトン＋シマーで「形」を予告し、Suspenseの境界を遅い箇所へ寄せる。CLSを出さない寸法合わせとreduced-motion対応まで含めて、はじめて“良い待ち時間”になる。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://nextjs.org/docs/app/guides/streaming" target="_blank" rel="noopener noreferrer"> Next.js Docs — Streaming（loading.tsx / Suspense） </a> </li><li> <a href="https://adrianroselli.com/2020/11/more-accessible-skeletons.html" target="_blank" rel="noopener noreferrer"> Adrian Roselli — More Accessible Skeletons </a> </li><li> <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion" target="_blank" rel="noopener noreferrer"> MDN — prefers-reduced-motion </a> </li><li> <a href="https://dev.to/tigt/skeleton-screens-but-fast-48f1" target="_blank" rel="noopener noreferrer"> DEV — Skeleton screens, but fast（性能の落とし穴） </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

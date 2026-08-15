@@ -1,0 +1,102 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>8/15の話題リポジトリ — Xの推薦アルゴリズム公開・Obsidianスキル集・画像→3Dのローカル生成 — デイリー技術深掘り 読み物</title><meta name="description" content="今日の3本を貫くのは「開いて中身が読める公式性」と「手元で完結する実用」。xAIがForYouフィードの推薦アルゴリズムを公開、Obsidian開発元がエージェント・スキル集を、そして画像→3DをGPUだけで回すデスクトップアプリ。エージェント一色の上位に毛色の違う3本が並んだ。"><meta name="theme-color" content="#238636"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-15-github-trending/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="8/15の話題リポジトリ — Xの推薦アルゴリズム公開・Obsidianスキル集・画像→3Dのローカル生成 — デイリー技術深掘り 読み物"><meta property="og:description" content="今日の3本を貫くのは「開いて中身が読める公式性」と「手元で完結する実用」。xAIがForYouフィードの推薦アルゴリズムを公開、Obsidian開発元がエージェント・スキル集を、そして画像→3DをGPUだけで回すデスクトップアプリ。エージェント一色の上位に毛色の違う3本が並んだ。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-15-github-trending/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3fb950, #1a7f37)"> <span class="glyph" aria-hidden="true">★</span> <div class="kicker">GitHub Trending</div> <h1>8/15の話題リポジトリ — Xの推薦アルゴリズム公開・Obsidianスキル集・画像→3Dのローカル生成</h1> <p class="lede">今日の3本を貫くのは「開いて中身が読める公式性」と「手元で完結する実用」。xAIがForYouフィードの推薦アルゴリズムを公開、Obsidian開発元がエージェント・スキル集を、そして画像→3DをGPUだけで回すデスクトップアプリ。エージェント一色の上位に毛色の違う3本が並んだ。</p> <div class="meta"> <span>📅 2026年8月15日</span> <span>⏱ 約3分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#238636"> <div> <article class="prose" data-has-mermaid="0"><p>本日の急上昇3本は方向性がきれいに分かれた。<strong>大規模推薦システムの公式公開</strong>、<strong>PKM（ノート運用）×エージェント・スキル</strong>、そして<strong>オンデバイスの3D生成</strong>。エージェント／スキルが席巻しがちな上位ランキングの中で、ジャンルの多様性が際立った日だ。以下、各リポジトリの「解決したい課題」と「提供する機能」を軸に見ていく。</p>
+
+<figure class='fig'>
+<svg viewBox='0 0 600 220' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <rect x='0' y='0' width='600' height='220' fill='#f2fbf4' rx='8'></rect>
+  <line x1='150' y1='34' x2='150' y2='210' stroke='#c7e7cf'></line>
+  <line x1='372' y1='34' x2='372' y2='210' stroke='#c7e7cf'></line>
+  <text x='16' y='28' font-size='11' font-weight='bold' fill='#1a7f37'>リポジトリ</text>
+  <text x='160' y='28' font-size='11' font-weight='bold' fill='#d1242f'>解決したい課題</text>
+  <text x='382' y='28' font-size='11' font-weight='bold' fill='#0553B1'>提供する機能</text>
+  <text x='16' y='66' font-size='10' font-weight='bold' fill='#111'>x-algorithm</text>
+  <text x='16' y='80' font-size='9' fill='#666'>xAI公式 ・ 日次2位</text>
+  <text x='160' y='66' font-size='9.5' fill='#333'>ForYouの推薦ロジックが</text>
+  <text x='160' y='79' font-size='9.5' fill='#333'>ブラックボックス</text>
+  <text x='382' y='66' font-size='9.5' fill='#333'>候補生成・ランキングの</text>
+  <text x='382' y='79' font-size='9.5' fill='#333'>公式コードを公開</text>
+  <line x1='8' y1='94' x2='592' y2='94' stroke='#dceede'></line>
+  <text x='16' y='126' font-size='10' font-weight='bold' fill='#111'>obsidian-skills</text>
+  <text x='16' y='140' font-size='9' fill='#666'>kepano発 ・ 日次7位</text>
+  <text x='160' y='126' font-size='9.5' fill='#333'>ノート/ナレッジ操作を</text>
+  <text x='160' y='139' font-size='9.5' fill='#333'>手作業でやっている</text>
+  <text x='382' y='126' font-size='9.5' fill='#333'>CLI＋Markdown/Bases/Canvasを</text>
+  <text x='382' y='139' font-size='9.5' fill='#333'>エージェントに扱わせる</text>
+  <line x1='8' y1='154' x2='592' y2='154' stroke='#dceede'></line>
+  <text x='16' y='186' font-size='10' font-weight='bold' fill='#111'>modly</text>
+  <text x='16' y='200' font-size='9' fill='#666'>ローカルAI ・ 日次12位</text>
+  <text x='160' y='186' font-size='9.5' fill='#333'>画像→3Dで機微データを</text>
+  <text x='160' y='199' font-size='9.5' fill='#333'>クラウドに出したくない</text>
+  <text x='382' y='186' font-size='9.5' fill='#333'>自前GPUで完結する</text>
+  <text x='382' y='199' font-size='9.5' fill='#333'>画像→3D生成デスクトップアプリ</text>
+</svg>
+<figcaption>図1：今日の3本を「解決したい課題 × 提供する機能」で一望する。</figcaption>
+</figure>
+
+<h4 id="sec-1">xai-org/x-algorithm（xAI公式・Trendshift日次2位）</h4>
+<p><strong>解決したい課題</strong>：X（旧Twitter）の「For You」フィードがどう並ぶのかは長らくブラックボックスで、なぜこの投稿が上位に来るのかを外から検証できなかった。<strong>提供する機能</strong>：xAIが公式に、ForYouフィードを動かす<strong>レコメンドアルゴリズム</strong>を公開。タイムラインの<strong>候補生成とランキングのロジック</strong>がコードとして読める。<strong>なぜ今</strong>：xAI公式・New 2026・言及24で、公開直後から当日モメンタム上位へ急浮上。エージェント一色の上位群で<strong>大規模推薦システム</strong>という毛色の違いが際立ち、ジャンル多様性にも大きく寄与した。</p>
+
+<h4 id="sec-2">kepano/obsidian-skills（Obsidian開発元発・Trendshift日次7位）</h4>
+<p><strong>解決したい課題</strong>：ノートやナレッジの整理・変換を手作業で繰り返すのは非効率で、エージェントに任せたくても取っ掛かりがなかった。<strong>提供する機能</strong>：Obsidian向けの<strong>エージェント・スキル集</strong>。Obsidian CLIや、<strong>Markdown・Bases・JSON Canvas</strong> といったオープン形式をエージェントに扱わせ、ノート・ナレッジ操作を自動化できる。<strong>なぜ今</strong>：Obsidian開発元のkepano（Steph Ango）が公式色の強いスキル集を出したことで、PKM／ノート愛好層を巻き込み急上昇（New 2026・言及14）。「Obsidian×オープン形式」という具体性と発信者の知名度が重なった。</p>
+
+<h4 id="sec-3">lightningpixel/modly（ローカルAI・Trendshift日次12位）</h4>
+<p><strong>解決したい課題</strong>：画像から3Dを作りたいがクラウド生成はコストとプライバシーが気になる。<strong>提供する機能</strong>：<strong>画像から3Dモデルを生成</strong>するデスクトップアプリ。ローカルAIを使い、処理は<strong>完全に自分のGPU上で完結</strong>する（クラウド不要・ネット送信ゼロ）。<strong>なぜ今</strong>：オンデバイス生成の切り口が、コスト・プライバシー志向の高まりの中で話題化（New 2026・言及10）。エージェント／スキルが席巻する上位に、3D生成という視覚・クリエイティブ寄りの非エージェント枠が食い込んだ。</p>
+
+<p><strong>ひとことまとめ</strong>：自分が試すなら、まずx-algorithmを読んで「候補生成→ランキング」の設計を推薦システムの教材として押さえたい。obsidian-skillsは自分のノート運用に直結するので、CLI＋オープン形式でどこまで自動化できるかを一度試す価値がある。modlyは手元の画像で、ローカル完結の3D生成が実用に足るかを確かめてみたい。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://github.com/xai-org/x-algorithm" target="_blank" rel="noopener noreferrer"> xai-org/x-algorithm </a> </li><li> <a href="https://github.com/kepano/obsidian-skills" target="_blank" rel="noopener noreferrer"> kepano/obsidian-skills </a> </li><li> <a href="https://github.com/lightningpixel/modly" target="_blank" rel="noopener noreferrer"> lightningpixel/modly </a> </li><li> <a href="https://trendshift.io/" target="_blank" rel="noopener noreferrer"> Trendshift </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> xai-org/x-algorithm（xAI公式・Trendshift日次2位） </a> </li><li> <a href="#sec-2" data-toc="sec-2"> kepano/obsidian-skills（Obsidian開発元発・Trendshift日次7位） </a> </li><li> <a href="#sec-3" data-toc="sec-3"> lightningpixel/modly（ローカルAI・Trendshift日次12位） </a> </li> </ul> <div class="reading-box"> <div>📅 2026-08-15</div> <div>⏱ 読了 約3分</div> <div>🏷 GitHub Trending</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
