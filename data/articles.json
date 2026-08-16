@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-08-15T04:55:27.490Z",
+  "generatedAt": "2026-08-16T04:50:15.831Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,72 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-08-16-claude-code",
+      "date": "2026-08-16",
+      "topic": "Claude Code",
+      "title": "Claude Codeがオートモードを既定化 — 承認クリックを卒業し「不可逆・破壊的・環境外」だけ止める",
+      "lede": "8/14よりPro/Max/Teamでオートモードが既定オン。分類器が有害操作の89%を検知（人間は13.6%）という実測を根拠に、権限プロンプトの大半を廃し危険操作のみ確認へ。あわせてGitLab MR対応・Ultraplan廃止・VS Code Focus view・資格情報 mode:\"mask\" など足回りも更新した回。",
+      "articleHtml": "<p>ここ数日のClaude Codeは<strong>「いちいち承認しない」方向</strong>へ大きく舵を切った。Anthropicは<strong>8月14日</strong>から Pro・Max・Team の各プランで<strong>オートモードを既定で有効化</strong>。各ステップで人間の承認を求めず、操作が<strong>「不可逆・破壊的・環境外を対象」</strong>と判定されたときだけ停止して確認を挟む設計だ。</p>\n<p><strong>なぜ今か</strong>。背景には反射的クリックの実測がある。社内テストでは<strong>分類器が有害操作の89%</strong>を検知したのに対し<strong>人間は13.6%</strong>にとどまり、しかも従来の権限プロンプトは<strong>97%が承認</strong>されていた。つまり「毎回聞く」体験はほぼ素通りされ、安全性より摩擦を生むだけになっていた——これを機械判定へ寄せる判断である。</p>\n<figure class='fig'><svg viewBox='0 0 600 180' xmlns='http://www.w3.org/2000/svg'>\n<text x='16' y='28' font-size='14' fill='#1a7f37'>有害操作の検知率（社内テスト）</text>\n<text x='16' y='70' font-size='12' fill='#333'>分類器</text>\n<rect x='90' y='58' width='445' height='18' rx='4' fill='#e6f4ea'/>\n<rect x='90' y='58' width='396' height='18' rx='4' fill='#3fb950'/>\n<text x='494' y='72' font-size='12' fill='#1a7f37'>89%</text>\n<text x='16' y='110' font-size='12' fill='#333'>人間</text>\n<rect x='90' y='98' width='445' height='18' rx='4' fill='#fdecea'/>\n<rect x='90' y='98' width='61' height='18' rx='4' fill='#d1584f'/>\n<text x='158' y='112' font-size='12' fill='#b23b32'>13.6%</text>\n<text x='16' y='150' font-size='11' fill='#777'>従来の権限プロンプト承認率 97%（＝ほぼ素通り）</text>\n</svg><figcaption>図1：危険操作の検知は機械が人間を大きく上回る。だから「既定で自動、危険時だけ確認」へ。</figcaption></figure>\n<p><strong>足回りも同時に更新</strong>。公式What's newでは <code>claude-code-action</code> が<strong>GitLabのマージリクエスト連携</strong>に対応し、GitHubに続きGitLabでも自動レビュー・変更提案が可能に。一方で研究プレビューだった<strong>Ultraplan（/ultraplan）は削除</strong>され、プランモードやWeb版Claude Codeへ誘導される。VS Code拡張には<strong>Focus view</strong>が加わりツール実行ログを折りたたんで会話を見通しよくでき、<code>v2.1.221</code>ではサンドボックス資格情報に <code>mode:\"mask\"</code> が追加され、Linux/WSLで<strong>実値を渡さず外部API</strong>を呼べる。使用量警告もゲートウェイの上限名・リセット時刻・運用者メッセージを明示するよう改善された。</p>\n<p><strong>自分が試すなら</strong>、オートモードで定型作業（テスト生成・整形・ログ集計）を回し、停止が入るのは本当に「不可逆・破壊的・環境外」だけかをHookログで観察したい。破壊的操作の歯止めは <code>PreToolUse</code> フックで二重化しておくと安心だ。GitLab派はMRレビュー連携を早めに試す価値がある。</p>\n<p><strong>注意点</strong>。既定化は当面 Pro/Max/Team のみで、Enterprise・API・Bedrock/Vertex はオプション扱い（順次拡大）。「自動＝無制限」ではなく、環境外・破壊的判定では必ず止まる設計を理解して使う。Ultraplan依存のワークフローは手動起動やSubagentへ組み替えが要る。</p>\n<p><strong>ひとことまとめ</strong>：承認クリックという形骸化した儀式を捨て、危険操作の判定を機械に寄せた回。摩擦を減らしつつ「止めるべき所で止める」を分類器で担保する。</p>",
+      "sources": [
+        {
+          "title": "Anthropic is turning Claude Code's auto mode on by default (TechCrunch)",
+          "url": "https://techcrunch.com/2026/08/09/anthropic-is-turning-claude-codes-auto-mode-on-by-default/"
+        },
+        {
+          "title": "Claude Code — What's new（公式）",
+          "url": "https://code.claude.com/docs/en/whats-new"
+        },
+        {
+          "title": "Claude Code updates (releasebot)",
+          "url": "https://releasebot.io/updates/anthropic/claude-code"
+        }
+      ]
+    },
+    {
+      "id": "2026-08-16-nextjs",
+      "date": "2026-08-16",
+      "topic": "Next.js",
+      "title": "Next.js 16のキャッシュ無効化 — updateTag / revalidateTag(tag,'max') / revalidatePath の住み分け",
+      "lede": "「デフォルト動的＋明示キャッシュ」への転換で次に効くのが無効化の設計。16では revalidateTag の単一引数が非推奨になりSWR化、Server Action専用の新API updateTag が read-your-own-writes を担う。呼ぶ場所と鮮度要件で3つを意図的に選ぶ。",
+      "articleHtml": "<p><strong>背景</strong>。Next.js 16 は「デフォルト動的＋明示キャッシュ（<code>use cache</code> / Cache Components）」へ転換した。すると必ずぶつかるのが<strong>「キャッシュした値をいつ・どう捨てるか」＝オンデマンド再検証</strong>だ。従来の <code>revalidatePath</code> / <code>revalidateTag</code> に加え、16では<strong>仕様変更が2つ</strong>入り、選択を誤ると「投稿したのに一覧に出ない」という定番バグに直結する。</p>\n<p><strong>何が新しいか</strong>。ひとつは <code>revalidateTag(tag)</code> の<strong>単一引数が非推奨</strong>になり、第2引数 <code>profile</code>（<code>'max'</code> 推奨）が要るうえ意味論が<strong>即時失効→SWR（古い値を出しつつ裏で更新）</strong>へ変わった。もうひとつが<strong>新API <code>updateTag</code></strong>（Server Action専用）で、<strong>即時失効＋次の読み取りは新データを待つ</strong>＝自分の書き込みを確実に見せる read-your-own-writes 専用だ。</p>\n<figure class='fig'><pre class='mermaid'>flowchart TD\n  A[\"キャッシュを無効化したい\"] --> B{\"呼ぶ場所は?\"}\n  B -->|\"Server Action\"| C{\"自分の書き込みを直後に見せる?\"}\n  C -->|\"はい\"| D[\"updateTag(tag)：即時失効・新データを待つ\"]\n  C -->|\"多少古くてOK\"| E[\"revalidateTag(tag,max)：SWR\"]\n  B -->|\"Route Handler / Webhook\"| F[\"revalidateTag(tag,max) 即時は expire:0\"]\n  B -->|\"特定ページだけ\"| G[\"revalidatePath(path,type)\"]</pre>\n<figcaption>図1：呼ぶ場所と「自分の変更を待ってでも見せるか」で3APIを選ぶ。</figcaption></figure>\n<p><strong>仕組みのポイント</strong>。<code>revalidateTag(tag,'max')</code> は<strong>staleの印を付けるだけ</strong>で、そのタグを使うページが<strong>次に訪問された時に初めて</strong>再取得が走る（一斉再生成はしない）。対して <code>updateTag</code> は<strong>その場で失効</strong>させ次の読み取りが新データを待つ。前提として<strong>タグ付けが必須</strong>で、<code>use cache</code> 関数内の <code>cacheTag('posts')</code> か <code>fetch(url,{next:{tags:['posts']}})</code> で付ける。<code>revalidatePath</code> は動的セグメントなら <code>type</code>（<code>'page'|'layout'</code>）必須、rewrites は宛先パスを渡す。</p>\n<pre><code>'use server'\nimport { updateTag } from 'next/cache'\nexport async function createPost(data){\n  const post = await db.post.create({ data })\n  updateTag('posts')            // 一覧を即時失効\n  updateTag('post-' + post.id)  // 詳細も\n}</code></pre>\n<p><strong>自分が試すなら</strong>、フォーム送信直後に自分の投稿が必ず見える経路は <code>updateTag</code>、ブログ/カタログなど「多少古くてOK」は <code>revalidateTag(tag,'max')</code>、外部Webhookは Route Handler で <code>revalidateTag(tag,'max')</code>（即時が要る時のみ <code>{expire:0}</code>）と割り当て、体感の待ち時間差を測りたい。</p>\n<p><strong>注意点</strong>。<code>updateTag</code> は<strong>Route Handler / Client / Proxy では呼べない</strong>（Server Action専用）。マルチインスタンスでは無効化が既定でローカルなので、共有 cache handler の <code>updateTags</code>/<code>refreshTags</code> が無いと他インスタンスは古いまま（<code>refreshTags</code> は必ず try/catch）。「呼んだのに変わらない」の多くは<strong>タグ未付与</strong>かSWRの誤解だ。</p>\n<p><strong>ひとことまとめ</strong>：16の無効化は「待ってでも自分の変更を＝updateTag」「速さ優先＝revalidateTag(tag,'max')」「ページ単位＝revalidatePath」を意図的に選ぶ設計。タグ付けが全ての土台になる。</p>",
+      "sources": [
+        {
+          "title": "How revalidation works（公式ガイド）",
+          "url": "https://nextjs.org/docs/app/guides/how-revalidation-works"
+        },
+        {
+          "title": "updateTag（公式 API リファレンス）",
+          "url": "https://nextjs.org/docs/app/api-reference/functions/updateTag"
+        },
+        {
+          "title": "revalidateTag（公式 API リファレンス）",
+          "url": "https://nextjs.org/docs/app/api-reference/functions/revalidateTag"
+        }
+      ]
+    },
+    {
+      "id": "2026-08-16-flutter",
+      "date": "2026-08-16",
+      "topic": "Flutter",
+      "title": "Dart 3.13でprimary constructors正式化 — 定型が激減、Impellerは120fps既定に",
+      "lede": "Flutter 3.44.7 / Dart 3.13。クラスヘッダでコンストラクタとフィールドをまとめて宣言できる primary constructors が正式化。no_raw_types / no_dynamic_casts lintで型チェックも一貫化。描画はImpeller既定でネイティブ120fps、状態管理の既定はRiverpod 3.0。",
+      "articleHtml": "<p><strong>背景</strong>。Flutterの現行安定版は <strong>Flutter 3.44.7 / Dart 3.13</strong>（Dartは2026-08-12リリース）。今回の主役は Dart 3.13 で<strong>正式化された primary constructors</strong>だ。ViewModelやデータクラスで繰り返し書いていた「フィールド宣言＋同名の代入コンストラクタ」の定型を、<strong>クラスヘッダ1箇所に集約</strong>できる。</p>\n<p><strong>何が新しいか</strong>。従来はフィールドと <code>this.x</code> コンストラクタを二重に書いていたが、primary constructors は<strong>クラス宣言部でコンストラクタとインスタンス変数を同時に宣言</strong>する。利用には<strong>language version 3.13以上</strong>が必要で、<code>pubspec.yaml</code> の <code>environment: sdk</code> を <code>^3.13.0</code> へ上げる。あわせて解析lintに <code>no_raw_types</code>（旧 <code>strict-raw-types</code>）と <code>no_dynamic_casts</code>（旧 <code>strict-casts</code>）が入り、型チェックの挙動が明確化した。</p>\n<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg'>\n<text x='12' y='24' font-size='13' fill='#0553B1'>従来（二重記述）</text>\n<rect x='12' y='34' width='270' height='158' rx='6' fill='#eef4fb' stroke='#0553B1'/>\n<text x='24' y='60' font-size='11' fill='#333'>class User {</text>\n<text x='24' y='82' font-size='11' fill='#333'>  final String name;</text>\n<text x='24' y='104' font-size='11' fill='#333'>  final int age;</text>\n<text x='24' y='126' font-size='11' fill='#333'>  User(this.name, this.age);</text>\n<text x='24' y='148' font-size='11' fill='#333'>}</text>\n<text x='318' y='24' font-size='13' fill='#1a7f37'>Dart 3.13（primary ctor・概念図）</text>\n<rect x='318' y='34' width='270' height='158' rx='6' fill='#e9f7ee' stroke='#1a7f37'/>\n<text x='330' y='60' font-size='11' fill='#333'>class User(</text>\n<text x='330' y='82' font-size='11' fill='#333'>  final String name,</text>\n<text x='330' y='104' font-size='11' fill='#333'>  final int age,</text>\n<text x='330' y='126' font-size='11' fill='#333'>) {}</text>\n<text x='330' y='170' font-size='11' fill='#1a7f37'>行数・重複が減る</text>\n</svg><figcaption>図1：フィールドとコンストラクタの二重記述が、ヘッダ1箇所にまとまる（記法は概念図）。</figcaption></figure>\n<p><strong>描画と状態管理</strong>。レンダリング基盤の <strong>Impeller</strong> は iOS＋Android(API 29+) で<strong>既定</strong>となり experimental を卒業。AOTでシェーダーをビルド時コンパイルし Metal/Vulkan をネイティブ利用、<strong>frame rasterizationを約50%短縮</strong>・高リフレッシュで安定<strong>120fps</strong>・アニメ重負荷で<strong>約17%省電力</strong>。フレーム予算は <strong>60fps=16ms / 90fps=11ms / 120fps=8.3ms</strong> を目安に profile モードのDevToolsで計測する。状態管理は<strong>新規はRiverpod 3.0＋codegen</strong>（自動リトライ・画面外providerのpause/resume省電力・実験的offline persistence）を既定、監査/規制業界はイベント追跡性の高い <strong>Bloc 9.0</strong> という住み分けだ。</p>\n<figure class='fig'><svg viewBox='0 0 600 120' xmlns='http://www.w3.org/2000/svg'>\n<text x='12' y='22' font-size='12' fill='#0553B1'>フレーム予算（1フレームの持ち時間）</text>\n<text x='12' y='52' font-size='11' fill='#333'>60fps</text><rect x='70' y='42' width='320' height='14' rx='3' fill='#0553B1'/><text x='398' y='53' font-size='11' fill='#333'>16ms</text>\n<text x='12' y='76' font-size='11' fill='#333'>90fps</text><rect x='70' y='66' width='220' height='14' rx='3' fill='#3b82c4'/><text x='298' y='77' font-size='11' fill='#333'>11ms</text>\n<text x='12' y='100' font-size='11' fill='#333'>120fps</text><rect x='70' y='90' width='166' height='14' rx='3' fill='#7fb2e0'/><text x='244' y='101' font-size='11' fill='#333'>8.3ms</text>\n</svg><figcaption>図2：狙うfpsが上がるほど1フレームの猶予は短い。120fpsなら8.3ms未満に収める。</figcaption></figure>\n<p><strong>自分が試すなら</strong>、まず <code>flutter upgrade</code> 後に <code>dart fix</code> / <code>flutter analyze</code> で警告を潰し、language versionを3.13へ。手元のデータクラス数個を primary constructors に書き換えて差分を測る。<code>analysis_options.yaml</code> の <code>strict-*</code> を新lintへ移行し、Impellerは実機のprofileモードでrasterizationを確認する。</p>\n<p><strong>注意点</strong>。primary constructors はSDK 3.13以上が前提でチーム全体のバージョンを揃える必要がある。lint移行は既存コードで新規警告が出ることがあるので段階的に。パフォーマンスは必ず<strong>profileモード</strong>で測る（debugは遅い）。最大の犯人は不要な再ビルドで、<code>const</code> 徹底・<code>select</code>/<code>Selector</code>・<code>RepaintBoundary</code> が効く。</p>\n<p><strong>ひとことまとめ</strong>：Dart 3.13は「書く量を減らす」primary constructors と型lintで足元を固め、Impeller既定＋Riverpod 3.0で描画と状態管理の現代化が既定路線になった回。</p>",
+      "sources": [
+        {
+          "title": "Dart changelog",
+          "url": "https://dart.dev/changelog"
+        },
+        {
+          "title": "Flutter & Dart's 2026 roadmap",
+          "url": "https://blog.flutter.dev/flutter-darts-2026-roadmap-89378f17ebbd"
+        },
+        {
+          "title": "Flutter + Impeller: Native 120fps in 2026",
+          "url": "https://shindekalpesharun.medium.com/flutter-impeller-how-to-achieve-native-120fps-performance-in-2026-68ec28cc71e5"
+        }
+      ]
+    },
     {
       "id": "2026-08-15-claude-code",
       "date": "2026-08-15",
