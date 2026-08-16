@@ -1,0 +1,79 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Next.js 16のキャッシュ無効化 — updateTag / revalidateTag(tag,&#39;max&#39;) / revalidatePath の住み分け — デイリー技術深掘り 読み物</title><meta name="description" content="「デフォルト動的＋明示キャッシュ」への転換で次に効くのが無効化の設計。16では revalidateTag の単一引数が非推奨になりSWR化、Server Action専用の新API updateTag が read-your-own-writes を担う。呼ぶ場所と鮮度要件で3つを意図的に選ぶ。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-16-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Next.js 16のキャッシュ無効化 — updateTag / revalidateTag(tag,'max') / revalidatePath の住み分け — デイリー技術深掘り 読み物"><meta property="og:description" content="「デフォルト動的＋明示キャッシュ」への転換で次に効くのが無効化の設計。16では revalidateTag の単一引数が非推奨になりSWR化、Server Action専用の新API updateTag が read-your-own-writes を担う。呼ぶ場所と鮮度要件で3つを意図的に選ぶ。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-16-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>Next.js 16のキャッシュ無効化 — updateTag / revalidateTag(tag,&#39;max&#39;) / revalidatePath の住み分け</h1> <p class="lede">「デフォルト動的＋明示キャッシュ」への転換で次に効くのが無効化の設計。16では revalidateTag の単一引数が非推奨になりSWR化、Server Action専用の新API updateTag が read-your-own-writes を担う。呼ぶ場所と鮮度要件で3つを意図的に選ぶ。</p> <div class="meta"> <span>📅 2026年8月16日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="1"><p><strong>背景</strong>。Next.js 16 は「デフォルト動的＋明示キャッシュ（<code>use cache</code> / Cache Components）」へ転換した。すると必ずぶつかるのが<strong>「キャッシュした値をいつ・どう捨てるか」＝オンデマンド再検証</strong>だ。従来の <code>revalidatePath</code> / <code>revalidateTag</code> に加え、16では<strong>仕様変更が2つ</strong>入り、選択を誤ると「投稿したのに一覧に出ない」という定番バグに直結する。</p>
+<p><strong>何が新しいか</strong>。ひとつは <code>revalidateTag(tag)</code> の<strong>単一引数が非推奨</strong>になり、第2引数 <code>profile</code>（<code>'max'</code> 推奨）が要るうえ意味論が<strong>即時失効→SWR（古い値を出しつつ裏で更新）</strong>へ変わった。もうひとつが<strong>新API <code>updateTag</code></strong>（Server Action専用）で、<strong>即時失効＋次の読み取りは新データを待つ</strong>＝自分の書き込みを確実に見せる read-your-own-writes 専用だ。</p>
+<figure class='fig'><pre class='mermaid'>flowchart TD
+  A["キャッシュを無効化したい"] --> B{"呼ぶ場所は?"}
+  B -->|"Server Action"| C{"自分の書き込みを直後に見せる?"}
+  C -->|"はい"| D["updateTag(tag)：即時失効・新データを待つ"]
+  C -->|"多少古くてOK"| E["revalidateTag(tag,max)：SWR"]
+  B -->|"Route Handler / Webhook"| F["revalidateTag(tag,max) 即時は expire:0"]
+  B -->|"特定ページだけ"| G["revalidatePath(path,type)"]</pre>
+<figcaption>図1：呼ぶ場所と「自分の変更を待ってでも見せるか」で3APIを選ぶ。</figcaption></figure>
+<p><strong>仕組みのポイント</strong>。<code>revalidateTag(tag,'max')</code> は<strong>staleの印を付けるだけ</strong>で、そのタグを使うページが<strong>次に訪問された時に初めて</strong>再取得が走る（一斉再生成はしない）。対して <code>updateTag</code> は<strong>その場で失効</strong>させ次の読み取りが新データを待つ。前提として<strong>タグ付けが必須</strong>で、<code>use cache</code> 関数内の <code>cacheTag('posts')</code> か <code>fetch(url,{next:{tags:['posts']}})</code> で付ける。<code>revalidatePath</code> は動的セグメントなら <code>type</code>（<code>'page'|'layout'</code>）必須、rewrites は宛先パスを渡す。</p>
+<pre><code>'use server'
+import { updateTag } from 'next/cache'
+export async function createPost(data){
+  const post = await db.post.create({ data })
+  updateTag('posts')            // 一覧を即時失効
+  updateTag('post-' + post.id)  // 詳細も
+}</code></pre>
+<p><strong>自分が試すなら</strong>、フォーム送信直後に自分の投稿が必ず見える経路は <code>updateTag</code>、ブログ/カタログなど「多少古くてOK」は <code>revalidateTag(tag,'max')</code>、外部Webhookは Route Handler で <code>revalidateTag(tag,'max')</code>（即時が要る時のみ <code>{expire:0}</code>）と割り当て、体感の待ち時間差を測りたい。</p>
+<p><strong>注意点</strong>。<code>updateTag</code> は<strong>Route Handler / Client / Proxy では呼べない</strong>（Server Action専用）。マルチインスタンスでは無効化が既定でローカルなので、共有 cache handler の <code>updateTags</code>/<code>refreshTags</code> が無いと他インスタンスは古いまま（<code>refreshTags</code> は必ず try/catch）。「呼んだのに変わらない」の多くは<strong>タグ未付与</strong>かSWRの誤解だ。</p>
+<p><strong>ひとことまとめ</strong>：16の無効化は「待ってでも自分の変更を＝updateTag」「速さ優先＝revalidateTag(tag,'max')」「ページ単位＝revalidatePath」を意図的に選ぶ設計。タグ付けが全ての土台になる。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://nextjs.org/docs/app/guides/how-revalidation-works" target="_blank" rel="noopener noreferrer"> How revalidation works（公式ガイド） </a> </li><li> <a href="https://nextjs.org/docs/app/api-reference/functions/updateTag" target="_blank" rel="noopener noreferrer"> updateTag（公式 API リファレンス） </a> </li><li> <a href="https://nextjs.org/docs/app/api-reference/functions/revalidateTag" target="_blank" rel="noopener noreferrer"> revalidateTag（公式 API リファレンス） </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

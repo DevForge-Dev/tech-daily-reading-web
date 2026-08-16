@@ -1,0 +1,86 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Dart 3.13でprimary constructors正式化 — 定型が激減、Impellerは120fps既定に — デイリー技術深掘り 読み物</title><meta name="description" content="Flutter 3.44.7 / Dart 3.13。クラスヘッダでコンストラクタとフィールドをまとめて宣言できる primary constructors が正式化。no_raw_types / no_dynamic_casts lintで型チェックも一貫化。描画はImpeller既定でネイティブ120fps、状態管理の既定はRiverpod 3.0。"><meta name="theme-color" content="#0277bd"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-16-flutter/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Dart 3.13でprimary constructors正式化 — 定型が激減、Impellerは120fps既定に — デイリー技術深掘り 読み物"><meta property="og:description" content="Flutter 3.44.7 / Dart 3.13。クラスヘッダでコンストラクタとフィールドをまとめて宣言できる primary constructors が正式化。no_raw_types / no_dynamic_casts lintで型チェックも一貫化。描画はImpeller既定でネイティブ120fps、状態管理の既定はRiverpod 3.0。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-16-flutter/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #29b6f6, #01579b)"> <span class="glyph" aria-hidden="true">◆</span> <div class="kicker">Flutter</div> <h1>Dart 3.13でprimary constructors正式化 — 定型が激減、Impellerは120fps既定に</h1> <p class="lede">Flutter 3.44.7 / Dart 3.13。クラスヘッダでコンストラクタとフィールドをまとめて宣言できる primary constructors が正式化。no_raw_types / no_dynamic_casts lintで型チェックも一貫化。描画はImpeller既定でネイティブ120fps、状態管理の既定はRiverpod 3.0。</p> <div class="meta"> <span>📅 2026年8月16日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#0277bd"> <div> <article class="prose" data-has-mermaid="0"><p><strong>背景</strong>。Flutterの現行安定版は <strong>Flutter 3.44.7 / Dart 3.13</strong>（Dartは2026-08-12リリース）。今回の主役は Dart 3.13 で<strong>正式化された primary constructors</strong>だ。ViewModelやデータクラスで繰り返し書いていた「フィールド宣言＋同名の代入コンストラクタ」の定型を、<strong>クラスヘッダ1箇所に集約</strong>できる。</p>
+<p><strong>何が新しいか</strong>。従来はフィールドと <code>this.x</code> コンストラクタを二重に書いていたが、primary constructors は<strong>クラス宣言部でコンストラクタとインスタンス変数を同時に宣言</strong>する。利用には<strong>language version 3.13以上</strong>が必要で、<code>pubspec.yaml</code> の <code>environment: sdk</code> を <code>^3.13.0</code> へ上げる。あわせて解析lintに <code>no_raw_types</code>（旧 <code>strict-raw-types</code>）と <code>no_dynamic_casts</code>（旧 <code>strict-casts</code>）が入り、型チェックの挙動が明確化した。</p>
+<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg'>
+<text x='12' y='24' font-size='13' fill='#0553B1'>従来（二重記述）</text>
+<rect x='12' y='34' width='270' height='158' rx='6' fill='#eef4fb' stroke='#0553B1'></rect>
+<text x='24' y='60' font-size='11' fill='#333'>class User {</text>
+<text x='24' y='82' font-size='11' fill='#333'>  final String name;</text>
+<text x='24' y='104' font-size='11' fill='#333'>  final int age;</text>
+<text x='24' y='126' font-size='11' fill='#333'>  User(this.name, this.age);</text>
+<text x='24' y='148' font-size='11' fill='#333'>}</text>
+<text x='318' y='24' font-size='13' fill='#1a7f37'>Dart 3.13（primary ctor・概念図）</text>
+<rect x='318' y='34' width='270' height='158' rx='6' fill='#e9f7ee' stroke='#1a7f37'></rect>
+<text x='330' y='60' font-size='11' fill='#333'>class User(</text>
+<text x='330' y='82' font-size='11' fill='#333'>  final String name,</text>
+<text x='330' y='104' font-size='11' fill='#333'>  final int age,</text>
+<text x='330' y='126' font-size='11' fill='#333'>) {}</text>
+<text x='330' y='170' font-size='11' fill='#1a7f37'>行数・重複が減る</text>
+</svg><figcaption>図1：フィールドとコンストラクタの二重記述が、ヘッダ1箇所にまとまる（記法は概念図）。</figcaption></figure>
+<p><strong>描画と状態管理</strong>。レンダリング基盤の <strong>Impeller</strong> は iOS＋Android(API 29+) で<strong>既定</strong>となり experimental を卒業。AOTでシェーダーをビルド時コンパイルし Metal/Vulkan をネイティブ利用、<strong>frame rasterizationを約50%短縮</strong>・高リフレッシュで安定<strong>120fps</strong>・アニメ重負荷で<strong>約17%省電力</strong>。フレーム予算は <strong>60fps=16ms / 90fps=11ms / 120fps=8.3ms</strong> を目安に profile モードのDevToolsで計測する。状態管理は<strong>新規はRiverpod 3.0＋codegen</strong>（自動リトライ・画面外providerのpause/resume省電力・実験的offline persistence）を既定、監査/規制業界はイベント追跡性の高い <strong>Bloc 9.0</strong> という住み分けだ。</p>
+<figure class='fig'><svg viewBox='0 0 600 120' xmlns='http://www.w3.org/2000/svg'>
+<text x='12' y='22' font-size='12' fill='#0553B1'>フレーム予算（1フレームの持ち時間）</text>
+<text x='12' y='52' font-size='11' fill='#333'>60fps</text><rect x='70' y='42' width='320' height='14' rx='3' fill='#0553B1'></rect><text x='398' y='53' font-size='11' fill='#333'>16ms</text>
+<text x='12' y='76' font-size='11' fill='#333'>90fps</text><rect x='70' y='66' width='220' height='14' rx='3' fill='#3b82c4'></rect><text x='298' y='77' font-size='11' fill='#333'>11ms</text>
+<text x='12' y='100' font-size='11' fill='#333'>120fps</text><rect x='70' y='90' width='166' height='14' rx='3' fill='#7fb2e0'></rect><text x='244' y='101' font-size='11' fill='#333'>8.3ms</text>
+</svg><figcaption>図2：狙うfpsが上がるほど1フレームの猶予は短い。120fpsなら8.3ms未満に収める。</figcaption></figure>
+<p><strong>自分が試すなら</strong>、まず <code>flutter upgrade</code> 後に <code>dart fix</code> / <code>flutter analyze</code> で警告を潰し、language versionを3.13へ。手元のデータクラス数個を primary constructors に書き換えて差分を測る。<code>analysis_options.yaml</code> の <code>strict-*</code> を新lintへ移行し、Impellerは実機のprofileモードでrasterizationを確認する。</p>
+<p><strong>注意点</strong>。primary constructors はSDK 3.13以上が前提でチーム全体のバージョンを揃える必要がある。lint移行は既存コードで新規警告が出ることがあるので段階的に。パフォーマンスは必ず<strong>profileモード</strong>で測る（debugは遅い）。最大の犯人は不要な再ビルドで、<code>const</code> 徹底・<code>select</code>/<code>Selector</code>・<code>RepaintBoundary</code> が効く。</p>
+<p><strong>ひとことまとめ</strong>：Dart 3.13は「書く量を減らす」primary constructors と型lintで足元を固め、Impeller既定＋Riverpod 3.0で描画と状態管理の現代化が既定路線になった回。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://dart.dev/changelog" target="_blank" rel="noopener noreferrer"> Dart changelog </a> </li><li> <a href="https://blog.flutter.dev/flutter-darts-2026-roadmap-89378f17ebbd" target="_blank" rel="noopener noreferrer"> Flutter &amp; Dart&#39;s 2026 roadmap </a> </li><li> <a href="https://shindekalpesharun.medium.com/flutter-impeller-how-to-achieve-native-120fps-performance-in-2026-68ec28cc71e5" target="_blank" rel="noopener noreferrer"> Flutter + Impeller: Native 120fps in 2026 </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

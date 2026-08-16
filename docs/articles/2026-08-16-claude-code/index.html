@@ -1,0 +1,76 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Claude Codeがオートモードを既定化 — 承認クリックを卒業し「不可逆・破壊的・環境外」だけ止める — デイリー技術深掘り 読み物</title><meta name="description" content="8/14よりPro/Max/Teamでオートモードが既定オン。分類器が有害操作の89%を検知（人間は13.6%）という実測を根拠に、権限プロンプトの大半を廃し危険操作のみ確認へ。あわせてGitLab MR対応・Ultraplan廃止・VS Code Focus view・資格情報 mode:&#34;mask&#34; など足回りも更新した回。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-16-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Claude Codeがオートモードを既定化 — 承認クリックを卒業し「不可逆・破壊的・環境外」だけ止める — デイリー技術深掘り 読み物"><meta property="og:description" content="8/14よりPro/Max/Teamでオートモードが既定オン。分類器が有害操作の89%を検知（人間は13.6%）という実測を根拠に、権限プロンプトの大半を廃し危険操作のみ確認へ。あわせてGitLab MR対応・Ultraplan廃止・VS Code Focus view・資格情報 mode:&#34;mask&#34; など足回りも更新した回。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-16-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>Claude Codeがオートモードを既定化 — 承認クリックを卒業し「不可逆・破壊的・環境外」だけ止める</h1> <p class="lede">8/14よりPro/Max/Teamでオートモードが既定オン。分類器が有害操作の89%を検知（人間は13.6%）という実測を根拠に、権限プロンプトの大半を廃し危険操作のみ確認へ。あわせてGitLab MR対応・Ultraplan廃止・VS Code Focus view・資格情報 mode:&quot;mask&quot; など足回りも更新した回。</p> <div class="meta"> <span>📅 2026年8月16日</span> <span>⏱ 約2分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="0"><p>ここ数日のClaude Codeは<strong>「いちいち承認しない」方向</strong>へ大きく舵を切った。Anthropicは<strong>8月14日</strong>から Pro・Max・Team の各プランで<strong>オートモードを既定で有効化</strong>。各ステップで人間の承認を求めず、操作が<strong>「不可逆・破壊的・環境外を対象」</strong>と判定されたときだけ停止して確認を挟む設計だ。</p>
+<p><strong>なぜ今か</strong>。背景には反射的クリックの実測がある。社内テストでは<strong>分類器が有害操作の89%</strong>を検知したのに対し<strong>人間は13.6%</strong>にとどまり、しかも従来の権限プロンプトは<strong>97%が承認</strong>されていた。つまり「毎回聞く」体験はほぼ素通りされ、安全性より摩擦を生むだけになっていた——これを機械判定へ寄せる判断である。</p>
+<figure class='fig'><svg viewBox='0 0 600 180' xmlns='http://www.w3.org/2000/svg'>
+<text x='16' y='28' font-size='14' fill='#1a7f37'>有害操作の検知率（社内テスト）</text>
+<text x='16' y='70' font-size='12' fill='#333'>分類器</text>
+<rect x='90' y='58' width='445' height='18' rx='4' fill='#e6f4ea'></rect>
+<rect x='90' y='58' width='396' height='18' rx='4' fill='#3fb950'></rect>
+<text x='494' y='72' font-size='12' fill='#1a7f37'>89%</text>
+<text x='16' y='110' font-size='12' fill='#333'>人間</text>
+<rect x='90' y='98' width='445' height='18' rx='4' fill='#fdecea'></rect>
+<rect x='90' y='98' width='61' height='18' rx='4' fill='#d1584f'></rect>
+<text x='158' y='112' font-size='12' fill='#b23b32'>13.6%</text>
+<text x='16' y='150' font-size='11' fill='#777'>従来の権限プロンプト承認率 97%（＝ほぼ素通り）</text>
+</svg><figcaption>図1：危険操作の検知は機械が人間を大きく上回る。だから「既定で自動、危険時だけ確認」へ。</figcaption></figure>
+<p><strong>足回りも同時に更新</strong>。公式What's newでは <code>claude-code-action</code> が<strong>GitLabのマージリクエスト連携</strong>に対応し、GitHubに続きGitLabでも自動レビュー・変更提案が可能に。一方で研究プレビューだった<strong>Ultraplan（/ultraplan）は削除</strong>され、プランモードやWeb版Claude Codeへ誘導される。VS Code拡張には<strong>Focus view</strong>が加わりツール実行ログを折りたたんで会話を見通しよくでき、<code>v2.1.221</code>ではサンドボックス資格情報に <code>mode:"mask"</code> が追加され、Linux/WSLで<strong>実値を渡さず外部API</strong>を呼べる。使用量警告もゲートウェイの上限名・リセット時刻・運用者メッセージを明示するよう改善された。</p>
+<p><strong>自分が試すなら</strong>、オートモードで定型作業（テスト生成・整形・ログ集計）を回し、停止が入るのは本当に「不可逆・破壊的・環境外」だけかをHookログで観察したい。破壊的操作の歯止めは <code>PreToolUse</code> フックで二重化しておくと安心だ。GitLab派はMRレビュー連携を早めに試す価値がある。</p>
+<p><strong>注意点</strong>。既定化は当面 Pro/Max/Team のみで、Enterprise・API・Bedrock/Vertex はオプション扱い（順次拡大）。「自動＝無制限」ではなく、環境外・破壊的判定では必ず止まる設計を理解して使う。Ultraplan依存のワークフローは手動起動やSubagentへ組み替えが要る。</p>
+<p><strong>ひとことまとめ</strong>：承認クリックという形骸化した儀式を捨て、危険操作の判定を機械に寄せた回。摩擦を減らしつつ「止めるべき所で止める」を分類器で担保する。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://techcrunch.com/2026/08/09/anthropic-is-turning-claude-codes-auto-mode-on-by-default/" target="_blank" rel="noopener noreferrer"> Anthropic is turning Claude Code&#39;s auto mode on by default (TechCrunch) </a> </li><li> <a href="https://code.claude.com/docs/en/whats-new" target="_blank" rel="noopener noreferrer"> Claude Code — What&#39;s new（公式） </a> </li><li> <a href="https://releasebot.io/updates/anthropic/claude-code" target="_blank" rel="noopener noreferrer"> Claude Code updates (releasebot) </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
