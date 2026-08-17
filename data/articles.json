@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-08-16T04:50:15.831Z",
+  "generatedAt": "2026-08-17T04:49:53.347Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,94 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-08-17-claude-code",
+      "date": "2026-08-17",
+      "topic": "Claude Code",
+      "title": "Claude Codeがセルフホスト環境を公開ベータ — クラウドセッションを自社網で実行、足回りはネスト/fork標準化",
+      "lede": "クラウドセッションをAnthropicではなく自社ネットワーク内のマシン/コンテナで実行できる「セルフホスト環境」が公開ベータに。コード・成果物・シークレットは自社に留まる（プロンプトとClaudeが読むコードは推論のため送信）。あわせてサブエージェントのネスト既定深さ3・fork既定オン、/skillsの絞り込み検索、Writeの未読上書き統一など足回りも更新した回。",
+      "articleHtml": "<p>今日のClaude Codeの主役は<strong>「セルフホスト環境」の公開ベータ</strong>だ。Web・モバイル・デスクトップ・ターミナル・スケジュール実行から起動するクラウドセッションを、<strong>Anthropicのインフラではなく自社ネットワーク内のマシンやコンテナ上で走らせられる</strong>。<code>claude self-hosted-runner</code> 一発で自前マシンを実行基盤に変えられ、リポジトリのチェックアウト・ビルド成果物・シークレット・生成/変更ファイルは<strong>組織のマシンに留まる</strong>（ただしプロンプトとClaudeが読むコードは推論のためAnthropicへ送られる）。Team/Enterprise向けで既定はオフだ。</p>\n<p><strong>なぜ今か</strong>。Claude Codeはエンタープライズ支出の主軸になりつつあり（ARRは25年11月の10億から26年2月に25億ドル、年100万ドル超の顧客は1,000社超）、規制業種ほど「コードとシークレットを自社網から出したくない」というデータ主権の要求が強い。手元セッションを外部から継続するRemote Controlと違い、<strong>プラットフォームチームが運用する共有基盤を組織の誰もが使える</strong>点が新しい。</p>\n<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg'>\n<rect x='16' y='30' width='268' height='150' rx='8' fill='#f3eefc' stroke='#7b3fe4'/>\n<text x='30' y='55' font-size='13' fill='#5a2ca0'>自社ネットワーク（セルフホスト）</text>\n<text x='30' y='84' font-size='12' fill='#333'>・リポジトリ / ビルド成果物</text>\n<text x='30' y='106' font-size='12' fill='#333'>・シークレット / 生成・変更ファイル</text>\n<text x='30' y='128' font-size='12' fill='#333'>claude self-hosted-runner で実行</text>\n<text x='30' y='162' font-size='11' fill='#1a7f37'>→ ここに留まる</text>\n<rect x='316' y='30' width='268' height='150' rx='8' fill='#eef4ff' stroke='#1f6feb'/>\n<text x='330' y='55' font-size='13' fill='#1a56c4'>Anthropic（推論）</text>\n<text x='330' y='84' font-size='12' fill='#333'>・プロンプト</text>\n<text x='330' y='106' font-size='12' fill='#333'>・Claudeが読むコード</text>\n<text x='330' y='162' font-size='11' fill='#b23b32'>→ 推論のため送信</text>\n<line x1='284' y1='105' x2='316' y2='105' stroke='#888' stroke-dasharray='4 3'/>\n</svg><figcaption>図1：セルフホストでも「留まるもの」と「送られるもの」の境界を押さえる。</figcaption></figure>\n<p><strong>足回りも同時に更新</strong>。サブエージェントの<strong>ネストが既定で深さ3・上限5</strong>へ拡張され（従来は1）、<code>subagent_type:\"fork\"</code> のフォークが<strong>既定オン</strong>になった（会話全文とプロンプトキャッシュを継承、対話中の非チームメイト起動は既定でバックグラウンド）。<code>/skills</code> には入力で絞り込む検索ボックスが付き、長い一覧からスクロールせず目的のスキルへ届く。Writeツールは<strong>新モデルが未読のファイルでも上書き可</strong>にEdit規則へ統一され、<code>/deep-research</code> は自発起動をやめ手動起動のみになった。</p>\n<p><strong>自分が試すなら</strong>、まず非機密の定期タスクをセルフホストrunnerで走らせ、成果物とシークレットが自社に留まることをログで確認したい。サブエージェントは深さ3を活かして「調査→要約→整形」を多段化し、fork既定オンでコンテキスト継承の挙動を掴む。</p>\n<p><strong>注意点</strong>。セルフホストでも<strong>プロンプトとClaudeが読むコードはAnthropicへ送信</strong>される点は変わらない（「一切外に出ない」ではない）。既定オフなので明示的な有効化が要る。fork既定オンでバックグラウンド実行が増えるため、走っているエージェントの把握を怠らないこと。</p>\n<p><strong>ひとことまとめ</strong>：実行基盤を自社に引き込む「セルフホスト」でコンプライアンス層のハードルを下げた回。足回りもネスト/forkで多段エージェントが標準化へ向かう。</p>",
+      "sources": [
+        {
+          "title": "Self-hosted environments (Claude Code Docs)",
+          "url": "https://code.claude.com/docs/en/self-hosted-environments"
+        },
+        {
+          "title": "What's new (Claude Code Docs)",
+          "url": "https://code.claude.com/docs/en/whats-new"
+        },
+        {
+          "title": "Claude Code updates (releasebot.io)",
+          "url": "https://releasebot.io/updates/anthropic/claude-code"
+        }
+      ]
+    },
+    {
+      "id": "2026-08-17-nextjs",
+      "date": "2026-08-17",
+      "topic": "Next.js",
+      "title": "JSゼロで作るスクロール・スタッキングカード — position:sticky ＋ scroll-driven でRSCのまま重ねる",
+      "lede": "スクロールでカードが上部に貼り付き次のカードが重なる定番演出を、JavaScript 1行なしで実装する話。土台は position: sticky だけ、縮小の加点演出も CSS Scroll-driven Animations で完結し、App Router では server component のまま use client 不要・hydrationゼロでINP/CLSに有利。",
+      "articleHtml": "<p>今日のNext.jsの主役は<strong>スクロール・スタッキングカード</strong>——スクロールにつれてカードが画面上部に貼り付き、次のカードが上に重なって下のカードが少し縮んで奥へ引っ込む、Apple/Stripe系のプロダクトサイトで定番のあの演出だ。注目点は<strong>JavaScriptを1行も書かずに実装できる</strong>こと。土台は <code>position: sticky</code> だけ、「奥のカードを縮める」加点演出も<strong>CSS Scroll-driven Animations（<code>animation-timeline</code>）</strong>で完結する。</p>\n<p><strong>なぜ嬉しいか</strong>。scrollリスナもIntersectionObserverも不要なので、<strong>App Routerではserver componentのまま <code>'use client'</code> 不要</strong>・hydrationゼロ・メインスレッドを塞がずINP/CLSに有利だ。JS必須でSSR注意が要ったGSAP ScrollTriggerのピン留めを、素のCSSで置き換えられる。</p>\n<figure class='fig'><pre class='mermaid'>flowchart TD\n  A[\"各カードを縦に並べる\"] --> B[\".card__content に sticky; top:ヘッダー分\"]\n  B --> C[\"全カードが同じ top に貼り付きスタック\"]\n  C --> D[\"対応ブラウザ: view-timeline で scale 縮小\"]\n  C --> E[\"未対応: sticky のまま自然フォールバック\"]</pre><figcaption>図1：sticky（全ブラウザ）＋scroll-driven（対応のみ）の二層設計。</figcaption></figure>\n<p><strong>最重要のコツは「内側にstickyを掛ける」</strong>。カード外枠 <code>.card</code> は通常フローのまま高さを持たせ、<strong>内側の <code>.card__content</code> にだけ <code>position: sticky; top: ヘッダー分</code></strong> を付ける。こうするとラッパの高さ＝スクロール量が変わらず、スクロール距離が安定する。縮小は各カードに <code>--index</code>/<code>--numcards</code> を渡してレンジを <code>100%/N</code> ずつ分割し、<code>scale(calc(1.1 - 0.1 * var(--reverse-index)))</code> で奥ほど小さくする。<code>animation-fill-mode: forwards</code> を忘れると区間通過後に元サイズへ戻るので注意。</p>\n<p><strong>対応状況（2026年8月）</strong>。Chrome/Edge 115+とSafari 26はscroll-driven対応済み、Firefoxは部分対応が入り始めた段階で<strong>まだBaseline未到達</strong>。未対応でもsticky部分は全モダンブラウザで動くので、縮小演出が外れるだけの自然フォールバック（プログレッシブエンハンスメント）になる。</p>\n<p><strong>落とし穴</strong>。祖先に <code>overflow: hidden/auto/scroll</code> があるとstickyが効かない（動かない時はまずこれを疑う）。<code>top</code> は固定ヘッダー高さに合わせないと隠れる。scroll連動は動きに敏感な人に強い違和感を与えるため、scale部分は必ず <code>@media (prefers-reduced-motion: no-preference)</code> で囲む（WCAG 2.3.3 に沿う）。</p>\n<p><strong>ひとことまとめ</strong>：stickyを土台に、加点だけscroll-drivenで足す二層設計。RSCのままJSゼロで重厚な演出が出せて、パフォーマンスにも優しい。</p>",
+      "sources": [
+        {
+          "title": "Scroll-driven Animations: Stacking Cards (CSS) — Bramus",
+          "url": "https://scroll-driven-animations.style/demos/stacking-cards/css/"
+        },
+        {
+          "title": "CSS scroll-driven animations — MDN",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Scroll-driven_animations"
+        },
+        {
+          "title": "animation-timeline — MDN",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/animation-timeline"
+        }
+      ]
+    },
+    {
+      "id": "2026-08-17-flutter",
+      "date": "2026-08-17",
+      "topic": "Flutter",
+      "title": "Flutter 3.47 — material_ui/cupertino_ui が1.0 standalone化、Impellerがデスクトップ既定、Widget Preview stable",
+      "lede": "8月の機能リリースとしてFlutter 3.47が到達。デザインシステムをコアから分離しmaterial_ui/cupertino_uiがpub.devからweekly配信、ImpellerがmacOS/Windows/Linuxの既定レンダラに昇格しSDF描画でテキスト/曲線がシャープに、Widget Previewがstable昇格、Dart 3.13を同梱。",
+      "articleHtml": "<p>今日のFlutterの主役は<strong>Flutter 3.47リリース</strong>だ。年4回（2/5/8/11月）の8月機能リリースとして到達し、目玉は4つ——<strong>material_ui / cupertino_ui の 1.0 standalone化</strong>、<strong>Impellerがデスクトップ既定</strong>、<strong>Widget Preview の stable昇格</strong>、そして <strong>Dart 3.13 同梱</strong>である。</p>\n<p><strong>デザインシステムをコアから分離</strong>。<code>material_ui</code>/<code>cupertino_ui</code> が1.0でpub.devから<strong>weeklyリリース</strong>になり、Material 3の更新が四半期SDKを待たず届く。移行は <code>dart fix --apply --code=migrate_design_widgets</code> がimportを自動置換（失敗時は <code>flutter pub add material_ui</code> / <code>cupertino_ui</code> 後に再実行）。旧 <code>material.dart</code>/<code>cupertino.dart</code> は<strong>2026年11月に正式deprecated</strong>予定で、未使用UIをbinaryから外せてapp size削減にも効く。</p>\n<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg'>\n<text x='16' y='24' font-size='13' fill='#0277bd'>Impeller が既定レンダラの範囲（3.47で拡大）</text>\n<text x='30' y='58' font-size='12' fill='#333'>iOS（Metal）</text>\n<rect x='300' y='46' width='24' height='16' rx='3' fill='#0277bd'/><text x='330' y='59' font-size='11' fill='#1a7f37'>既定（従来）</text>\n<text x='30' y='86' font-size='12' fill='#333'>Android API 29+（Vulkan）</text>\n<rect x='300' y='74' width='24' height='16' rx='3' fill='#0277bd'/><text x='330' y='87' font-size='11' fill='#1a7f37'>既定（従来）</text>\n<text x='30' y='114' font-size='12' fill='#333'>macOS</text>\n<rect x='300' y='102' width='24' height='16' rx='3' fill='#56c5f5'/><text x='330' y='115' font-size='11' fill='#b26a00'>3.47で既定 ★</text>\n<text x='30' y='142' font-size='12' fill='#333'>Windows</text>\n<rect x='300' y='130' width='24' height='16' rx='3' fill='#56c5f5'/><text x='330' y='143' font-size='11' fill='#b26a00'>3.47で既定 ★</text>\n<text x='30' y='170' font-size='12' fill='#333'>Linux</text>\n<rect x='300' y='158' width='24' height='16' rx='3' fill='#56c5f5'/><text x='330' y='171' font-size='11' fill='#b26a00'>3.47で既定 ★</text>\n<text x='16' y='198' font-size='11' fill='#777'>SDF描画でテキスト/曲線がシャープ・複雑シーンでraster約50%短縮・約17%省電力・安定120fps</text>\n</svg><figcaption>図1：3.47でデスクトップ3OSがImpeller既定に。全OSでSDF描画へ。</figcaption></figure>\n<p><strong>デスクトップ描画が刷新</strong>。<strong>ImpellerがmacOS/Windows/Linuxの既定レンダラ</strong>に昇格し、<strong>SDF（Signed Distance Function）</strong>ベース描画でテキストがシャープ・ベクター曲線がクリーンになる。効果は複雑シーンでrasterを約50%短縮・Skia比約17%省電力・高リフレッシュで安定120fps。計測は必ず<strong>profileモード</strong>でDevToolsから取り、フレーム予算は60fps=16ms/90fps=11ms/120fps=8.3ms。</p>\n<p><strong>Widget Previewがstableに</strong>。アプリ全体をビルド/起動せず個別UIコンポーネントを即render・inspect・反復できる。状態管理は新規は<strong>Riverpod 3.3.1＋codegen</strong>、監査/規制は<strong>Bloc 9.0</strong>が基本線のままだ。</p>\n<p><strong>注意点</strong>。プラットフォーム最低要件が上がり<strong>iOS 13→15・macOS 10.15→12</strong>、Xcode 27ビルドのUIKitは <code>UIScene</code> ライフサイクル必須、Intel Macサポートは段階終了。<code>flutter --version</code> で確認、<code>flutter upgrade</code> で更新。旧 material/cupertino import 依存は11月のdeprecatedに向け早めに移行を。</p>\n<p><strong>ひとことまとめ</strong>：UIパッケージをコアから切り出しweekly更新へ、描画はデスクトップまでImpeller。M3の鮮度と全OSの描画品質を同時に底上げした節目の回。</p>",
+      "sources": [
+        {
+          "title": "What's new in Flutter 3.47 (Flutter Blog)",
+          "url": "https://flutter.dev/blog/whats-new-in-flutter-3-47"
+        },
+        {
+          "title": "What's new in Flutter 3.47 (daily.dev)",
+          "url": "https://daily.dev/posts/what-s-new-in-flutter-3-47-h4xhkzagi"
+        },
+        {
+          "title": "Flutter 3.47 standalone UI packages & desktop Impeller (AlternativeTo)",
+          "url": "https://alternativeto.net/news/2026/8/flutter-3-47-introduces-standalone-ui-packages-and-impeller-for-desktop/"
+        }
+      ]
+    },
+    {
+      "id": "2026-08-17-github-trending",
+      "date": "2026-08-17",
+      "topic": "GitHub Trending",
+      "title": "8/17の話題リポジトリ — DeepSeekハーネス系の爆発・適応型スクレイパ・70+DBの軽量クライアント",
+      "lede": "AIエコシステムの拡張と、地に足の着いた開発ユーティリティが同居した一日。dshエコシステムの入口、壊れにくいスクレイパ、70+DB対応の軽量クライアントを課題と機能で読み解く。",
+      "articleHtml": "<p>今日の話題は<strong>「AIエコシステムの拡張」と「地に足の着いた開発ユーティリティ」</strong>が同居する構図だった。DeepSeek公式ハーネス dsh のエコシステム（desktop版・web-ui・routing-suite・market等）が日次上位を席巻する一方、スクレイパやDBクライアントといった実務ツールも根強く上位入りした。3本を「解決したい課題」と「提供する機能」で読み解く。</p>\n<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg'>\n<text x='16' y='22' font-size='13' fill='#1a7f37'>今日の3本 — 課題 → 機能</text>\n<line x1='16' y1='34' x2='584' y2='34' stroke='#3fb950'/>\n<text x='16' y='54' font-size='11' fill='#1a7f37'>リポジトリ</text>\n<text x='168' y='54' font-size='11' fill='#1a7f37'>解決したい課題</text>\n<text x='372' y='54' font-size='11' fill='#1a7f37'>提供する機能</text>\n<text x='16' y='86' font-size='11' fill='#333'>awesome-dsh-plugin</text>\n<text x='168' y='86' font-size='11' fill='#333'>dshプラグイン乱立</text>\n<text x='372' y='86' font-size='11' fill='#333'>厳選awesome list（入口）</text>\n<text x='16' y='128' font-size='11' fill='#333'>Scrapling</text>\n<text x='168' y='128' font-size='11' fill='#333'>サイト改修で壊れる</text>\n<text x='372' y='128' font-size='11' fill='#333'>適応型スクレイパ(単発〜大規模)</text>\n<text x='16' y='170' font-size='11' fill='#333'>dbx</text>\n<text x='168' y='170' font-size='11' fill='#333'>DBごとに別道具</text>\n<text x='372' y='170' font-size='11' fill='#333'>70+DB対応の軽量client(MCP内蔵)</text>\n<line x1='16' y1='96' x2='584' y2='96' stroke='#e0e0e0'/>\n<line x1='16' y1='138' x2='584' y2='138' stroke='#e0e0e0'/>\n</svg><figcaption>図1：今日の3本を「課題→機能」で一望。</figcaption></figure>\n<h4>awesome-dsh-plugin/awesome-dsh-plugin（— ・⭐1.6k）</h4>\n<p><strong>解決したい課題</strong>：DeepSeek Harness（dsh）が急拡大し、拡張プラグインが乱立して「どれを使うべきか」が分からない。<strong>提供する機能</strong>：dsh用プラグインを厳選したキュレーション型のawesome list。desktop版・web-ui・routing-suite・market等のdsh関連が日次上位を占める中で、<strong>エコシステム全体の入口</strong>として機能する。総スターの小さい新規リポがTrendshift日次3位・New 2026という増加率の突出が、今日最大の潮流「dshエコシステム爆発」を体現している。</p>\n<h4>D4Vinci/Scrapling（Python ・⭐急上昇）</h4>\n<p><strong>解決したい課題</strong>：Webスクレイピングはサイト構造が変わるとすぐ壊れ、単発取得と大規模クロールで別々の道具が要る。<strong>提供する機能</strong>：DOM変化に自動追従する<strong>適応型（adaptive）フレームワーク</strong>で、単発リクエストからフルスケールのクロールまで1つでこなす。毎朝の調査/ダイジェスト系の収集レイヤーに差し込めばサイト改修に強く取得が安定する点が、Trendshift日次24位の支持につながっている。</p>\n<h4>t8y2/dbx（Rust ・⭐急上昇）</h4>\n<p><strong>解決したい課題</strong>：MySQL/PostgreSQL/SQLite/Redis/MongoDB/DuckDBなどDBごとに別クライアントを入れるのは重く煩雑。<strong>提供する機能</strong>：<strong>70+のDBに対応する20MBの軽量クロスプラットフォームクライアント</strong>で、内蔵AI・<strong>MCPサーバー</strong>・CLI・デスクトップ/Docker対応。エージェントからのDB参照を安全に仲介できる点が、OSSInsight当日trending入りの理由だ。</p>\n<p><strong>自分が試すなら</strong>、収集の安定化にScrapling、DB運用DXにdbxのMCPサーバー内蔵を評価したい。dsh系は潮流の把握として awesome list から追う。<strong>まとめ</strong>：AIハーネスの爆発と、収集・DBという足回りの効率化が同じ日に並んだ——派手なエージェントの裏で、地味な実務ツールが確実に伸びている。</p>",
+      "sources": [
+        {
+          "title": "awesome-dsh-plugin/awesome-dsh-plugin",
+          "url": "https://github.com/awesome-dsh-plugin/awesome-dsh-plugin"
+        },
+        {
+          "title": "D4Vinci/Scrapling",
+          "url": "https://github.com/D4Vinci/Scrapling"
+        },
+        {
+          "title": "t8y2/dbx",
+          "url": "https://github.com/t8y2/dbx"
+        }
+      ]
+    },
     {
       "id": "2026-08-16-claude-code",
       "date": "2026-08-16",
