@@ -1,0 +1,78 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Claude Codeがセルフホスト環境を公開ベータ — クラウドセッションを自社網で実行、足回りはネスト/fork標準化 — デイリー技術深掘り 読み物</title><meta name="description" content="クラウドセッションをAnthropicではなく自社ネットワーク内のマシン/コンテナで実行できる「セルフホスト環境」が公開ベータに。コード・成果物・シークレットは自社に留まる（プロンプトとClaudeが読むコードは推論のため送信）。あわせてサブエージェントのネスト既定深さ3・fork既定オン、/skillsの絞り込み検索、Writeの未読上書き統一など足回りも更新した回。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-17-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Claude Codeがセルフホスト環境を公開ベータ — クラウドセッションを自社網で実行、足回りはネスト/fork標準化 — デイリー技術深掘り 読み物"><meta property="og:description" content="クラウドセッションをAnthropicではなく自社ネットワーク内のマシン/コンテナで実行できる「セルフホスト環境」が公開ベータに。コード・成果物・シークレットは自社に留まる（プロンプトとClaudeが読むコードは推論のため送信）。あわせてサブエージェントのネスト既定深さ3・fork既定オン、/skillsの絞り込み検索、Writeの未読上書き統一など足回りも更新した回。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-17-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>Claude Codeがセルフホスト環境を公開ベータ — クラウドセッションを自社網で実行、足回りはネスト/fork標準化</h1> <p class="lede">クラウドセッションをAnthropicではなく自社ネットワーク内のマシン/コンテナで実行できる「セルフホスト環境」が公開ベータに。コード・成果物・シークレットは自社に留まる（プロンプトとClaudeが読むコードは推論のため送信）。あわせてサブエージェントのネスト既定深さ3・fork既定オン、/skillsの絞り込み検索、Writeの未読上書き統一など足回りも更新した回。</p> <div class="meta"> <span>📅 2026年8月17日</span> <span>⏱ 約2分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="0"><p>今日のClaude Codeの主役は<strong>「セルフホスト環境」の公開ベータ</strong>だ。Web・モバイル・デスクトップ・ターミナル・スケジュール実行から起動するクラウドセッションを、<strong>Anthropicのインフラではなく自社ネットワーク内のマシンやコンテナ上で走らせられる</strong>。<code>claude self-hosted-runner</code> 一発で自前マシンを実行基盤に変えられ、リポジトリのチェックアウト・ビルド成果物・シークレット・生成/変更ファイルは<strong>組織のマシンに留まる</strong>（ただしプロンプトとClaudeが読むコードは推論のためAnthropicへ送られる）。Team/Enterprise向けで既定はオフだ。</p>
+<p><strong>なぜ今か</strong>。Claude Codeはエンタープライズ支出の主軸になりつつあり（ARRは25年11月の10億から26年2月に25億ドル、年100万ドル超の顧客は1,000社超）、規制業種ほど「コードとシークレットを自社網から出したくない」というデータ主権の要求が強い。手元セッションを外部から継続するRemote Controlと違い、<strong>プラットフォームチームが運用する共有基盤を組織の誰もが使える</strong>点が新しい。</p>
+<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg'>
+<rect x='16' y='30' width='268' height='150' rx='8' fill='#f3eefc' stroke='#7b3fe4'></rect>
+<text x='30' y='55' font-size='13' fill='#5a2ca0'>自社ネットワーク（セルフホスト）</text>
+<text x='30' y='84' font-size='12' fill='#333'>・リポジトリ / ビルド成果物</text>
+<text x='30' y='106' font-size='12' fill='#333'>・シークレット / 生成・変更ファイル</text>
+<text x='30' y='128' font-size='12' fill='#333'>claude self-hosted-runner で実行</text>
+<text x='30' y='162' font-size='11' fill='#1a7f37'>→ ここに留まる</text>
+<rect x='316' y='30' width='268' height='150' rx='8' fill='#eef4ff' stroke='#1f6feb'></rect>
+<text x='330' y='55' font-size='13' fill='#1a56c4'>Anthropic（推論）</text>
+<text x='330' y='84' font-size='12' fill='#333'>・プロンプト</text>
+<text x='330' y='106' font-size='12' fill='#333'>・Claudeが読むコード</text>
+<text x='330' y='162' font-size='11' fill='#b23b32'>→ 推論のため送信</text>
+<line x1='284' y1='105' x2='316' y2='105' stroke='#888' stroke-dasharray='4 3'></line>
+</svg><figcaption>図1：セルフホストでも「留まるもの」と「送られるもの」の境界を押さえる。</figcaption></figure>
+<p><strong>足回りも同時に更新</strong>。サブエージェントの<strong>ネストが既定で深さ3・上限5</strong>へ拡張され（従来は1）、<code>subagent_type:"fork"</code> のフォークが<strong>既定オン</strong>になった（会話全文とプロンプトキャッシュを継承、対話中の非チームメイト起動は既定でバックグラウンド）。<code>/skills</code> には入力で絞り込む検索ボックスが付き、長い一覧からスクロールせず目的のスキルへ届く。Writeツールは<strong>新モデルが未読のファイルでも上書き可</strong>にEdit規則へ統一され、<code>/deep-research</code> は自発起動をやめ手動起動のみになった。</p>
+<p><strong>自分が試すなら</strong>、まず非機密の定期タスクをセルフホストrunnerで走らせ、成果物とシークレットが自社に留まることをログで確認したい。サブエージェントは深さ3を活かして「調査→要約→整形」を多段化し、fork既定オンでコンテキスト継承の挙動を掴む。</p>
+<p><strong>注意点</strong>。セルフホストでも<strong>プロンプトとClaudeが読むコードはAnthropicへ送信</strong>される点は変わらない（「一切外に出ない」ではない）。既定オフなので明示的な有効化が要る。fork既定オンでバックグラウンド実行が増えるため、走っているエージェントの把握を怠らないこと。</p>
+<p><strong>ひとことまとめ</strong>：実行基盤を自社に引き込む「セルフホスト」でコンプライアンス層のハードルを下げた回。足回りもネスト/forkで多段エージェントが標準化へ向かう。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://code.claude.com/docs/en/self-hosted-environments" target="_blank" rel="noopener noreferrer"> Self-hosted environments (Claude Code Docs) </a> </li><li> <a href="https://code.claude.com/docs/en/whats-new" target="_blank" rel="noopener noreferrer"> What&#39;s new (Claude Code Docs) </a> </li><li> <a href="https://releasebot.io/updates/anthropic/claude-code" target="_blank" rel="noopener noreferrer"> Claude Code updates (releasebot.io) </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
