@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-08-17T04:49:53.347Z",
+  "generatedAt": "2026-08-18T04:49:37.473Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,110 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-08-18-claude-code",
+      "date": "2026-08-18",
+      "topic": "Claude Code",
+      "title": "Claude Code v2.1.234で上限リセット後の自動継続、Opus 5が新デフォルトOpusに — 1Mコンテキストで難タスク推論",
+      "lede": "8/17のv2.1.234は利用上限リセット後にセッションを自動継続（/configで無効化可）、GitLab MRバッジ、CLAUDE_CODE_PROJECT_DIR_NAMEを追加。プラットフォームではOpus 5が新デフォルトOpus（1Mコンテキスト・価格はOpus 4.8同等）に昇格し、Opus 4.1は8/5で廃止。GitLab Duo連携やmask mode、Microsoftの+24%実証も揃った回。",
+      "articleHtml": "<p>この日は<strong>ランタイムとモデルの両方</strong>が動いた。まずCLI側、8月17日リリースの<strong>v2.1.234</strong>で、claude.aiの利用上限がリセットされた瞬間にClaude Codeが<strong>セッションを自動的に継続</strong>するようになった（<code>/config</code>でオフ切替可）。上限に当たって作業が止まり、手動で再開していた人には地味に効く。GitLabリモートを持つリポジトリでは<strong>MR（マージリクエスト）状態バッジ</strong>がフッター/ステータスラインに出るようになり、ホスト向けの<code>CLAUDE_CODE_PROJECT_DIR_NAME</code>環境変数、<code>selection:clear</code>キーバインドも新設された。</p><p>より大きいのはモデル側だ。プラットフォームのリリースノートで<strong>Opus 5が新しいデフォルトのOpus</strong>として追加され、<strong>1Mトークンのコンテキスト</strong>に対応、価格は<strong>Opus 4.8と同額</strong>に据え置かれた。一方で<code>claude-opus-4-1-20250805</code>（Opus 4.1）は廃止予定日の<strong>2026年8月5日</strong>に到達済みで、移行先はOpus 4.8とされている。Claude CodeやManaged Agents（メモリ整理の「Dreams」など）もOpus 5対応に加わった。</p><figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='0' y='0' width='600' height='210' fill='#f6faf7'/><text x='16' y='28' font-size='14' font-weight='bold' fill='#1a7f37'>Opus 5 と Opus 4.1</text><rect x='20' y='48' width='260' height='140' rx='10' fill='#eaf7ee' stroke='#3fb950' stroke-width='2'/><text x='36' y='74' font-size='13' font-weight='bold' fill='#1a7f37'>Opus 5（新デフォルト）</text><text x='36' y='100' font-size='12' fill='#25603a'>・1Mトークン コンテキスト</text><text x='36' y='122' font-size='12' fill='#25603a'>・価格は Opus 4.8 と同額</text><text x='36' y='144' font-size='12' fill='#25603a'>・Code / Managed Agents 対応</text><text x='36' y='166' font-size='12' fill='#25603a'>・難タスク推論の新選択肢</text><rect x='320' y='48' width='260' height='140' rx='10' fill='#f3f0ee' stroke='#b0a79f' stroke-width='2'/><text x='336' y='74' font-size='13' font-weight='bold' fill='#8a7f76'>Opus 4.1（廃止済み）</text><text x='336' y='100' font-size='12' fill='#7a726b'>・2026-08-05 に廃止到達</text><text x='336' y='122' font-size='12' fill='#7a726b'>・claude-opus-4-1-20250805</text><text x='336' y='144' font-size='12' fill='#7a726b'>・移行先は Opus 4.8</text><text x='336' y='166' font-size='12' fill='#7a726b'>・以後は 4.8 / Opus 5 へ</text></svg><figcaption>図1：新デフォルトのOpus 5と、8/5に廃止済みのOpus 4.1。</figcaption></figure><p>足回りの改善も続く。VS Code拡張に<strong>Focus view</strong>が入り、ツール実行ログを折りたたんで会話の見通しを保てるようになった。<strong>v2.1.221</strong>ではサンドボックスの資格情報に<code>mode: \"mask\"</code>が加わり、Linux/WSLで<strong>実値を渡さずに外部APIを呼べる</strong>。zipから導入する<strong>archiveプラグインソース</strong>（SHA-256ピン留め任意）も追加された。</p><p>事例も強い。GitLabは<strong>Opus 5をDuo Agent Platformに統合</strong>し、テストでは実装構築→コミット→MR作成まで自動化。GitLab Creditsの利用上限で並列エージェントの支出にハードリミットをかけられる。市場面ではUncoverAlphaが<strong>ARR 25億ドル超</strong>・週次ユーザー年初比倍増・エンタープライズ契約4倍と報じ、arXiv研究はMicrosoft導入者が<strong>PRマージ量+約24%</strong>と定量化した。</p><p><strong>自分が試すなら</strong>：Opus 5の1Mコンテキストは、大きめのモノレポを丸ごと読ませる系のタスクで効く。ただしコンテキストが広い＝入力トークンが嵩むので、常用はOpus 4.8、難所だけOpus 5という使い分けが現実的。GitLab運用なら上限リセット自動継続とMRバッジで、放置気味の並列運用がやりやすくなる。<strong>落とし穴</strong>：mask modeはあくまで資格情報の秘匿で、Claudeが読むコード自体は推論のため送信される点は変わらない。</p><p><strong>まとめ</strong>：v2.1.234とOpus 5で「止まらない・大きく読める」方向に進化。1Mは万能ではなくコスト意識込みで使い分けるのが吉。</p>",
+      "sources": [
+        {
+          "title": "Claude Code changelog",
+          "url": "https://code.claude.com/docs/en/changelog"
+        },
+        {
+          "title": "Platform release notes",
+          "url": "https://platform.claude.com/docs/en/release-notes/overview"
+        },
+        {
+          "title": "GitLab — Claude Opus 5 on Duo Agent Platform",
+          "url": "https://about.gitlab.com/blog/claude-opus-5-on-gitlab-duo-agent-platform/"
+        },
+        {
+          "title": "UncoverAlpha — Claude Code is having its ChatGPT moment",
+          "url": "https://www.uncoveralpha.com/p/anthropics-claude-code-is-having"
+        },
+        {
+          "title": "arXiv 2607.01418",
+          "url": "https://arxiv.org/abs/2607.01418"
+        }
+      ]
+    },
+    {
+      "id": "2026-08-18-nextjs",
+      "date": "2026-08-18",
+      "topic": "Next.js",
+      "title": "ポインタ追従スポットライト & ボーダーグロー・カード — 座標だけJS・見た目は全部CSSで大量カードでも軽い",
+      "lede": "Vercel/Linear系で定番の「カーソルに光がついてくる」カード。JSは--x/--yのCSS変数を更新するだけ、描画はコンポジタ任せ。スポットライト塗り（radial-gradient）と、mask 2枚のexcludeで枠だけ光らせるボーダーグローの2系統。親1リスナーのグロー・グリッドやApp Routerでの薄いclient境界まで。",
+      "articleHtml": "<p>ヒーローや料金カード、ダッシュボードのタイルで定番化した<strong>「カーソルに光がついてくる」インタラクション</strong>。Aceternity UI / Magic UIの<em>Magic Card</em>やibelick / Cruipのチュートリアルで広まった。実装の本質は驚くほど単純で、<strong>JSはCSSカスタムプロパティ（<code>--x</code>/<code>--y</code>）を更新するだけ</strong>。重いグラデーション描画はブラウザのコンポジタに任せるので、カードが何十枚あっても軽い。</p><p>効果は大きく2系統。<strong>(A) スポットライト塗り</strong>はカーソル位置を中心にした淡い<code>radial-gradient</code>を面に敷いてhoverでフェードイン。<strong>(B) マスク・ボーダーグロー</strong>は明るいグラデーションを<code>mask</code>で1pxの枠だけに切り抜き、枠が発光しているように見せる。併用すると「枠=くっきり／面=ふんわり」で質感が出る。</p><figure class='fig'><svg viewBox='0 0 600 220' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='0' y='0' width='600' height='220' fill='#f5f7ff'/><text x='16' y='26' font-size='14' font-weight='bold' fill='#1f3a8a'>ボーダーグローの正体：mask 2枚を exclude</text><rect x='30' y='50' width='150' height='120' rx='12' fill='#dbe4ff' stroke='#4661d6' stroke-width='2'/><text x='105' y='185' font-size='11' fill='#3a4a8a' text-anchor='middle'>全面レイヤー</text><text x='230' y='118' font-size='24' fill='#4661d6' text-anchor='middle'>−</text><rect x='280' y='68' width='114' height='84' rx='8' fill='#eef2ff' stroke='#9db0f0' stroke-width='2' stroke-dasharray='5 4'/><text x='337' y='185' font-size='11' fill='#3a4a8a' text-anchor='middle'>content-box を隠す</text><text x='430' y='118' font-size='24' fill='#4661d6' text-anchor='middle'>=</text><rect x='470' y='50' width='110' height='120' rx='12' fill='none' stroke='#4661d6' stroke-width='8'/><text x='525' y='185' font-size='11' fill='#3a4a8a' text-anchor='middle'>枠(padding)だけ残る</text></svg><figcaption>図1：全面から中身を差し引くと padding 分の枠だけが残り、そこにグローが乗る。</figcaption></figure><p>枠だけに絞る定石（Josh Comeau / Cruip系）は2枚マスクの合成だ。</p><pre><code>mask:\n  linear-gradient(#000 0 0) content-box,  /* 中身を隠す */\n  linear-gradient(#000 0 0);              /* 全面 */\nmask-composite: exclude;                  /* 差 = 枠(padding)分だけ残る */</code></pre><p><code>padding:1px</code>の分がボーダー幅になる。Safari向けに<code>-webkit-mask-composite: xor</code>も併記すると安全。<strong>グロー・グリッド</strong>にするなら、親<code>.cards</code>に<strong>1つだけ</strong><code>pointermove</code>を張り、各カードの相対座標を計算して<code>--x/--y</code>を更新する。カード毎にリスナーを張るとイベント過多になるので親1つに集約するのがコツ。</p><p><strong>Next.js（App Router）</strong>では、ポインタ座標の取得はクライアント処理なのでハンドラを持つラッパに<code>'use client'</code>が必要。ただし中身のテキスト/画像は<strong>Server Componentのまま<code>children</code>として流し込める</strong>ので、クライアント境界を薄いラッパに閉じ込められる（RSCのままデータ取得できる）。初期<code>--x/--y</code>を<code>50%</code>で描いておけばハイドレーション前でもレイアウトが崩れない。</p><p><strong>落とし穴</strong>：タッチ端末はhoverが無く<code>pointermove</code>が電池を食うので<code>@media (hover: hover) and (pointer: fine)</code>の中だけで有効化。<code>--x/--y</code>に<code>transition</code>を掛けると追従が遅れて不自然になるので、フェードは<code>opacity</code>側だけに。多数カードは<strong>親1リスナー + rAFで1フレーム1回</strong>に間引く。ライトテーマでは加算的な光が映えにくいので色は濃いめ＆低不透明度に。</p><p><strong>まとめ</strong>：ライブラリ不要。「座標だけJS、見た目は全部CSS」を守れば、大量カードでも60fpsを保ったまま高級感のある光が出せる。</p>",
+      "sources": [
+        {
+          "title": "ibelick — Crafting a modern spotlight effect",
+          "url": "https://ibelick.com/blog/create-modern-spotlight-effect-with-react-css"
+        },
+        {
+          "title": "Cruip — Spotlight Card Hover Effect",
+          "url": "https://cruip.com/how-to-create-a-spotlight-card-hover-effect-with-tailwind-css/"
+        },
+        {
+          "title": "Magic UI — Magic Card",
+          "url": "https://magicui.design/docs/components/magic-card"
+        },
+        {
+          "title": "MDN — mask-composite",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/mask-composite"
+        }
+      ]
+    },
+    {
+      "id": "2026-08-18-flutter",
+      "date": "2026-08-18",
+      "topic": "Flutter",
+      "title": "Flutter 3.47（Dart 3.13）でWidget Previewがstable、Impellerがデスクトップ既定に — Riverpod 3のMutationsも試し頃",
+      "lede": "年4回リリースの8月枠としてFlutter 3.47が到達。Widget Previewがstable昇格し.widget_preview/キャッシュで起動高速化、検索/フィルタも。ImpellerがmacOS/Windows/Linuxで既定＋SDFで曲線がシャープ。material_ui/cupertino_uiは1.0でweekly配信。Riverpod 3のMutationsとoffline persistenceが実務入り。",
+      "articleHtml": "<p>年4回（2/5/8/11月）の8月機能リリースとして<strong>Flutter 3.47（Dart 3.13同梱）</strong>が到達した。目玉は<strong>Widget Previewのstable昇格</strong>。アプリ全体をビルド/起動せずに個別UIコンポーネントを即render・inspect・反復でき、<code>.widget_preview/</code>フォルダのローカルキャッシュで再セットアップを省いて<strong>起動を高速化</strong>、プレビューの<strong>リアルタイム検索・フィルタ</strong>も入った。デザインシステムはstandalone化が進み、<strong>material_ui / cupertino_ui</strong>が1.0でpub.devから<strong>weeklyリリース</strong>、移行は<code>dart fix --apply --code=migrate_design_widgets</code>。旧<code>material.dart</code>/<code>cupertino.dart</code>は2026年秋に正式deprecated予定だ。</p><p>描画基盤では<strong>Impellerがデスクトップ3 OS（macOS/Windows/Linux）でも既定</strong>に昇格し、<strong>SDF（Signed Distance Function）</strong>でテキストや曲線がシャープになった。最低要件はiOS 13→15・macOS 10.15→12へ引き上げ、UIKitは<code>UIScene</code>必須、Intel Macは段階終了。<strong>Dart 3.13</strong>はprimary constructorsの正式化、<code>no_raw_types</code>/<code>no_dynamic_casts</code>のlintを追加した。</p><figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='0' y='0' width='600' height='200' fill='#f4fbfd'/><text x='16' y='26' font-size='14' font-weight='bold' fill='#0b6b83'>フレーム予算（raster はこの中に収める）</text><text x='16' y='58' font-size='12' fill='#0b6b83'>60fps</text><rect x='90' y='46' width='320' height='18' rx='4' fill='#7fd4e6'/><text x='420' y='60' font-size='12' fill='#0b6b83'>16.0 ms</text><text x='16' y='94' font-size='12' fill='#0b6b83'>90fps</text><rect x='90' y='82' width='220' height='18' rx='4' fill='#4fbcd4'/><text x='320' y='96' font-size='12' fill='#0b6b83'>11.0 ms</text><text x='16' y='130' font-size='12' fill='#0b6b83'>120fps</text><rect x='90' y='118' width='166' height='18' rx='4' fill='#2aa3bf'/><text x='266' y='132' font-size='12' fill='#0b6b83'>8.3 ms</text><text x='16' y='170' font-size='11' fill='#4a6b73'>Impeller: raster 約50%短縮 / アニメ重負荷で Skia比 約17%省電力 / 安定120fps</text></svg><figcaption>図1：60/90/120fpsのフレーム予算。Impeller既定＋SDFで曲線描画のコストと電力を削る。</figcaption></figure><p>状態管理は<strong>Riverpod 3のMutations</strong>が面白い。Notifierメソッドに<code>@mutation</code>を付けて「Login」「Post Comment」等のアクションを定義すると、<strong>Idle/Pending/Success/Error</strong>のライフサイクルを自動でUIへ公開し、手書きのloading/error配線が要らなくなる（失敗時は指数バックオフで自動リトライ）。<strong>offline persistence</strong>（opt-in）はproviderをローカルにキャッシュして再起動で復元、公式SQLiteは<code>riverpod_sqflite</code>、<code>AsyncValue.isFromCache</code>でDB由来かサーバ由来かを判別できる。どちらもexperimentalなので破壊的変更に注意。</p><figure class='fig'><pre class='mermaid'>flowchart LR\n  Idle[\"Idle\"] --> Pending[\"Pending\"]\n  Pending --> Success[\"Success\"]\n  Pending --> Error[\"Error\"]\n  Error --> Pending\n  Success --> Idle</pre><figcaption>図2：@mutation が自動公開する副作用のライフサイクル。UIはこの状態を読むだけでよい。</figcaption></figure><p><strong>使いどころ</strong>：新規プロジェクトはRiverpod 3.3.x＋@riverpod codegen（Notifier/AsyncNotifier）を既定に。監査/規制業界や複雑並行はBloc 9.2.xでevent traceabilityを効かせる。両者は<code>ProviderScope</code>と<code>MultiBlocProvider</code>で共存可能。アニメーションはM3 Expressiveの<strong>spring物理モーション</strong>と<strong>約35シェイプのshape morphing</strong>が新機軸だが、黄金律は「まずimplicit」——toggleやcard liftは<code>AnimatedContainer</code>/<code>AnimatedSwitcher</code>で十分だ。</p><p><strong>落とし穴と計測</strong>：最も多い性能問題は不要なwidget rebuild。<code>const</code>徹底・大きな<code>build()</code>分割・<code>select</code>で局所再描画・アニメ領域を<code>RepaintBoundary</code>で隔離。計測は必ず<strong>profileモード</strong>でDevTools Performanceのtimeline trace（debug VMは遅く当てにならない）。<strong>まとめ</strong>：3.47は「Widget Previewで速く作り、Impellerで速く描く」。Mutationsは配線削減の当たりだが、experimental扱いを忘れずに。</p>",
+      "sources": [
+        {
+          "title": "What's new in Flutter 3.47",
+          "url": "https://flutter.dev/blog/whats-new-in-flutter-3-47"
+        },
+        {
+          "title": "Riverpod 3.0 — What is new",
+          "url": "https://riverpod.dev/docs/whats_new"
+        },
+        {
+          "title": "Riverpod — Offline persistence (experimental)",
+          "url": "https://riverpod.dev/docs/concepts2/offline"
+        },
+        {
+          "title": "Material 3 Expressive (Supercharge)",
+          "url": "https://supercharge.design/blog/material-3-expressive"
+        }
+      ]
+    },
+    {
+      "id": "2026-08-18-github-trending",
+      "date": "2026-08-18",
+      "topic": "GitHub Trending",
+      "title": "8/18の話題リポジトリ — dshエコシステム拡大・理論駆動の認知スキル・非AIのArch環境",
+      "lede": "DeepSeek公式ハーネス(dsh)関連が日次上位を席巻する中、認知科学を土台にしたAIスキルと、DHHのArch製デスクトップがジャンルの多様性を添えた3本。",
+      "articleHtml": "<p>この日のTrending（Trendshift/OSSInsight基準）は、引き続き<strong>DeepSeek公式ハーネス「dsh」を中心とするエコシステム</strong>が日次上位を席巻していた。その一角として急上昇したカスタムUI束、認知科学を明示的な土台にしたAIスキル、そしてAI一色のトレンドに抗する非AIのLinux環境という、性格の異なる3本を取り上げる。共通するのは「土台（ハーネス/エージェント/OS）を、意見を持って作り込む」姿勢だ。</p><figure class='fig'><svg viewBox='0 0 600 240' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='0' y='0' width='600' height='240' fill='#f3fbf5'/><text x='16' y='26' font-size='13' font-weight='bold' fill='#1a7f37'>リポジトリ × 解決したい課題 / 提供する機能</text><line x1='16' y1='40' x2='584' y2='40' stroke='#bfe3c8' stroke-width='1'/><text x='20' y='62' font-size='12' font-weight='bold' fill='#25603a'>dsh-web-ui</text><text x='150' y='62' font-size='11' fill='#3a3a3a'>課題: 素のWeb UIが素っ気ない</text><text x='150' y='80' font-size='11' fill='#3a3a3a'>機能: タスクボード/gitグラフ/トークン統計/スキン</text><line x1='16' y1='94' x2='584' y2='94' stroke='#e2efe5' stroke-width='1'/><text x='20' y='118' font-size='12' font-weight='bold' fill='#25603a'>J-Space-Cognition</text><text x='150' y='118' font-size='11' fill='#3a3a3a'>課題: エージェントの推論/作業記憶が場当たり</text><text x='150' y='136' font-size='11' fill='#3a3a3a'>機能: global workspace理論ベースの認知強化Skill</text><line x1='16' y1='150' x2='584' y2='150' stroke='#e2efe5' stroke-width='1'/><text x='20' y='174' font-size='12' font-weight='bold' fill='#25603a'>omarchy</text><text x='150' y='174' font-size='11' fill='#3a3a3a'>課題: Archの初期構築が重い/指針が無い</text><text x='150' y='192' font-size='11' fill='#3a3a3a'>機能: 意見の強い即戦力デスクトップ環境一式</text><line x1='16' y1='206' x2='584' y2='206' stroke='#bfe3c8' stroke-width='1'/><text x='20' y='228' font-size='10' fill='#4a6b53'>出典: Trendshift 日次 / OSSInsight 当日 trending</text></svg><figcaption>図1：3本の「解決したい課題」と「提供する機能」の対応。</figcaption></figure><h4>zhu1090093659/dsh-web-ui（言語不明・⭐約535）</h4><p><strong>解決したい課題</strong>：DeepSeek Harness（DSH）の素のWeb UIは機能が限られ、日々使うには物足りない。ダッシュボード的な作業管理やリポジトリの把握、トークン消費の可視化を後付けしたい、という不満がある。</p><p><strong>提供する機能</strong>：dshのWeb UIに<strong>タスクボード・gitグラフ・右サイドパネル・リモートモバイルUI・ペット・ライブトークン統計・スキンセンター</strong>を足すプラグイン＆スキン集。UIを丸ごとカスタマイズできる。<strong>なぜ今</strong>：Trendshift日次14位・New 2026（約535★）。日次1位のdsh本体と関連（desktop/awesome-plugin/routing-suite）が上位を占める「dshエコシステム爆発」の勢いに乗り、公開直後からトップ15入り。</p><h4>Tiger3807861189/J-Space-Cognition-Suite-V3.6（言語不明・⭐約294）</h4><p><strong>解決したい課題</strong>：エージェントの推論や作業記憶は場当たり的になりがちで、プロンプト集だけでは底上げに限界がある。<strong>提供する機能</strong>：Anthropicのglobal workspace（J-space）研究に基づく<strong>認知強化スキル集</strong>で、推論・作業記憶を「認知科学の作業台」の枠組みで補強する。<strong>なぜ今</strong>：Trendshift日次16位・New 2026。#AI skillsが上位を占める潮流の中、<strong>理論駆動</strong>という切り口の新規性で急伸した。</p><h4>basecamp/omarchy（Shell・日次4位）</h4><p><strong>解決したい課題</strong>：Archは自由な反面、初期構築が重く、洗練された既定構成の指針が乏しい。<strong>提供する機能</strong>：DHH（Basecamp）による<strong>「美しく・モダンで・意見の強い」Archベースの即戦力Linuxデスクトップ環境</strong>を、設定一式としてまとめて配布する。<strong>なぜ今</strong>：AI/dsh系が独占する日次上位に、完全に非AIのデスクトップ環境が食い込む珍しさ。DHH肝いりで本日も日次4位を維持し、ジャンルの多様性を担っている。</p><p><strong>自分が試すなら</strong>：実利で選ぶなら<strong>dsh-web-ui</strong>——ハーネスを日常運用に寄せるUI強化は効果が見えやすい。エージェント設計に興味があれば<strong>J-Space</strong>を読み物として。omarchyはサブ機のArch環境として週末に。<strong>まとめ</strong>：土台（ハーネス/エージェント/OS）を意見強く磨く動きが、この日のTrendを貫いていた。</p>",
+      "sources": [
+        {
+          "title": "zhu1090093659/dsh-web-ui",
+          "url": "https://github.com/zhu1090093659/dsh-web-ui"
+        },
+        {
+          "title": "Tiger3807861189/J-Space-Cognition-Suite-V3.6",
+          "url": "https://github.com/Tiger3807861189/J-Space-Cognition-Suite-V3.6"
+        },
+        {
+          "title": "basecamp/omarchy",
+          "url": "https://github.com/basecamp/omarchy"
+        }
+      ]
+    },
     {
       "id": "2026-08-17-claude-code",
       "date": "2026-08-17",
