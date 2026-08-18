@@ -1,0 +1,64 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Flutter 3.47（Dart 3.13）でWidget Previewがstable、Impellerがデスクトップ既定に — Riverpod 3のMutationsも試し頃 — デイリー技術深掘り 読み物</title><meta name="description" content="年4回リリースの8月枠としてFlutter 3.47が到達。Widget Previewがstable昇格し.widget_preview/キャッシュで起動高速化、検索/フィルタも。ImpellerがmacOS/Windows/Linuxで既定＋SDFで曲線がシャープ。material_ui/cupertino_uiは1.0でweekly配信。Riverpod 3のMutationsとoffline persistenceが実務入り。"><meta name="theme-color" content="#0277bd"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-18-flutter/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Flutter 3.47（Dart 3.13）でWidget Previewがstable、Impellerがデスクトップ既定に — Riverpod 3のMutationsも試し頃 — デイリー技術深掘り 読み物"><meta property="og:description" content="年4回リリースの8月枠としてFlutter 3.47が到達。Widget Previewがstable昇格し.widget_preview/キャッシュで起動高速化、検索/フィルタも。ImpellerがmacOS/Windows/Linuxで既定＋SDFで曲線がシャープ。material_ui/cupertino_uiは1.0でweekly配信。Riverpod 3のMutationsとoffline persistenceが実務入り。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-18-flutter/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #29b6f6, #01579b)"> <span class="glyph" aria-hidden="true">◆</span> <div class="kicker">Flutter</div> <h1>Flutter 3.47（Dart 3.13）でWidget Previewがstable、Impellerがデスクトップ既定に — Riverpod 3のMutationsも試し頃</h1> <p class="lede">年4回リリースの8月枠としてFlutter 3.47が到達。Widget Previewがstable昇格し.widget_preview/キャッシュで起動高速化、検索/フィルタも。ImpellerがmacOS/Windows/Linuxで既定＋SDFで曲線がシャープ。material_ui/cupertino_uiは1.0でweekly配信。Riverpod 3のMutationsとoffline persistenceが実務入り。</p> <div class="meta"> <span>📅 2026年8月18日</span> <span>⏱ 約4分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#0277bd"> <div> <article class="prose" data-has-mermaid="1"><p>年4回（2/5/8/11月）の8月機能リリースとして<strong>Flutter 3.47（Dart 3.13同梱）</strong>が到達した。目玉は<strong>Widget Previewのstable昇格</strong>。アプリ全体をビルド/起動せずに個別UIコンポーネントを即render・inspect・反復でき、<code>.widget_preview/</code>フォルダのローカルキャッシュで再セットアップを省いて<strong>起動を高速化</strong>、プレビューの<strong>リアルタイム検索・フィルタ</strong>も入った。デザインシステムはstandalone化が進み、<strong>material_ui / cupertino_ui</strong>が1.0でpub.devから<strong>weeklyリリース</strong>、移行は<code>dart fix --apply --code=migrate_design_widgets</code>。旧<code>material.dart</code>/<code>cupertino.dart</code>は2026年秋に正式deprecated予定だ。</p><p>描画基盤では<strong>Impellerがデスクトップ3 OS（macOS/Windows/Linux）でも既定</strong>に昇格し、<strong>SDF（Signed Distance Function）</strong>でテキストや曲線がシャープになった。最低要件はiOS 13→15・macOS 10.15→12へ引き上げ、UIKitは<code>UIScene</code>必須、Intel Macは段階終了。<strong>Dart 3.13</strong>はprimary constructorsの正式化、<code>no_raw_types</code>/<code>no_dynamic_casts</code>のlintを追加した。</p><figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='0' y='0' width='600' height='200' fill='#f4fbfd'></rect><text x='16' y='26' font-size='14' font-weight='bold' fill='#0b6b83'>フレーム予算（raster はこの中に収める）</text><text x='16' y='58' font-size='12' fill='#0b6b83'>60fps</text><rect x='90' y='46' width='320' height='18' rx='4' fill='#7fd4e6'></rect><text x='420' y='60' font-size='12' fill='#0b6b83'>16.0 ms</text><text x='16' y='94' font-size='12' fill='#0b6b83'>90fps</text><rect x='90' y='82' width='220' height='18' rx='4' fill='#4fbcd4'></rect><text x='320' y='96' font-size='12' fill='#0b6b83'>11.0 ms</text><text x='16' y='130' font-size='12' fill='#0b6b83'>120fps</text><rect x='90' y='118' width='166' height='18' rx='4' fill='#2aa3bf'></rect><text x='266' y='132' font-size='12' fill='#0b6b83'>8.3 ms</text><text x='16' y='170' font-size='11' fill='#4a6b73'>Impeller: raster 約50%短縮 / アニメ重負荷で Skia比 約17%省電力 / 安定120fps</text></svg><figcaption>図1：60/90/120fpsのフレーム予算。Impeller既定＋SDFで曲線描画のコストと電力を削る。</figcaption></figure><p>状態管理は<strong>Riverpod 3のMutations</strong>が面白い。Notifierメソッドに<code>@mutation</code>を付けて「Login」「Post Comment」等のアクションを定義すると、<strong>Idle/Pending/Success/Error</strong>のライフサイクルを自動でUIへ公開し、手書きのloading/error配線が要らなくなる（失敗時は指数バックオフで自動リトライ）。<strong>offline persistence</strong>（opt-in）はproviderをローカルにキャッシュして再起動で復元、公式SQLiteは<code>riverpod_sqflite</code>、<code>AsyncValue.isFromCache</code>でDB由来かサーバ由来かを判別できる。どちらもexperimentalなので破壊的変更に注意。</p><figure class='fig'><pre class='mermaid'>flowchart LR
+  Idle["Idle"] --> Pending["Pending"]
+  Pending --> Success["Success"]
+  Pending --> Error["Error"]
+  Error --> Pending
+  Success --> Idle</pre><figcaption>図2：@mutation が自動公開する副作用のライフサイクル。UIはこの状態を読むだけでよい。</figcaption></figure><p><strong>使いどころ</strong>：新規プロジェクトはRiverpod 3.3.x＋@riverpod codegen（Notifier/AsyncNotifier）を既定に。監査/規制業界や複雑並行はBloc 9.2.xでevent traceabilityを効かせる。両者は<code>ProviderScope</code>と<code>MultiBlocProvider</code>で共存可能。アニメーションはM3 Expressiveの<strong>spring物理モーション</strong>と<strong>約35シェイプのshape morphing</strong>が新機軸だが、黄金律は「まずimplicit」——toggleやcard liftは<code>AnimatedContainer</code>/<code>AnimatedSwitcher</code>で十分だ。</p><p><strong>落とし穴と計測</strong>：最も多い性能問題は不要なwidget rebuild。<code>const</code>徹底・大きな<code>build()</code>分割・<code>select</code>で局所再描画・アニメ領域を<code>RepaintBoundary</code>で隔離。計測は必ず<strong>profileモード</strong>でDevTools Performanceのtimeline trace（debug VMは遅く当てにならない）。<strong>まとめ</strong>：3.47は「Widget Previewで速く作り、Impellerで速く描く」。Mutationsは配線削減の当たりだが、experimental扱いを忘れずに。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://flutter.dev/blog/whats-new-in-flutter-3-47" target="_blank" rel="noopener noreferrer"> What&#39;s new in Flutter 3.47 </a> </li><li> <a href="https://riverpod.dev/docs/whats_new" target="_blank" rel="noopener noreferrer"> Riverpod 3.0 — What is new </a> </li><li> <a href="https://riverpod.dev/docs/concepts2/offline" target="_blank" rel="noopener noreferrer"> Riverpod — Offline persistence (experimental) </a> </li><li> <a href="https://supercharge.design/blog/material-3-expressive" target="_blank" rel="noopener noreferrer"> Material 3 Expressive (Supercharge) </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

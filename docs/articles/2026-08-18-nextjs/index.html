@@ -1,0 +1,62 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>ポインタ追従スポットライト &amp; ボーダーグロー・カード — 座標だけJS・見た目は全部CSSで大量カードでも軽い — デイリー技術深掘り 読み物</title><meta name="description" content="Vercel/Linear系で定番の「カーソルに光がついてくる」カード。JSは--x/--yのCSS変数を更新するだけ、描画はコンポジタ任せ。スポットライト塗り（radial-gradient）と、mask 2枚のexcludeで枠だけ光らせるボーダーグローの2系統。親1リスナーのグロー・グリッドやApp Routerでの薄いclient境界まで。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-18-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="ポインタ追従スポットライト &#38; ボーダーグロー・カード — 座標だけJS・見た目は全部CSSで大量カードでも軽い — デイリー技術深掘り 読み物"><meta property="og:description" content="Vercel/Linear系で定番の「カーソルに光がついてくる」カード。JSは--x/--yのCSS変数を更新するだけ、描画はコンポジタ任せ。スポットライト塗り（radial-gradient）と、mask 2枚のexcludeで枠だけ光らせるボーダーグローの2系統。親1リスナーのグロー・グリッドやApp Routerでの薄いclient境界まで。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-18-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>ポインタ追従スポットライト &amp; ボーダーグロー・カード — 座標だけJS・見た目は全部CSSで大量カードでも軽い</h1> <p class="lede">Vercel/Linear系で定番の「カーソルに光がついてくる」カード。JSは--x/--yのCSS変数を更新するだけ、描画はコンポジタ任せ。スポットライト塗り（radial-gradient）と、mask 2枚のexcludeで枠だけ光らせるボーダーグローの2系統。親1リスナーのグロー・グリッドやApp Routerでの薄いclient境界まで。</p> <div class="meta"> <span>📅 2026年8月18日</span> <span>⏱ 約3分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="0"><p>ヒーローや料金カード、ダッシュボードのタイルで定番化した<strong>「カーソルに光がついてくる」インタラクション</strong>。Aceternity UI / Magic UIの<em>Magic Card</em>やibelick / Cruipのチュートリアルで広まった。実装の本質は驚くほど単純で、<strong>JSはCSSカスタムプロパティ（<code>--x</code>/<code>--y</code>）を更新するだけ</strong>。重いグラデーション描画はブラウザのコンポジタに任せるので、カードが何十枚あっても軽い。</p><p>効果は大きく2系統。<strong>(A) スポットライト塗り</strong>はカーソル位置を中心にした淡い<code>radial-gradient</code>を面に敷いてhoverでフェードイン。<strong>(B) マスク・ボーダーグロー</strong>は明るいグラデーションを<code>mask</code>で1pxの枠だけに切り抜き、枠が発光しているように見せる。併用すると「枠=くっきり／面=ふんわり」で質感が出る。</p><figure class='fig'><svg viewBox='0 0 600 220' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='0' y='0' width='600' height='220' fill='#f5f7ff'></rect><text x='16' y='26' font-size='14' font-weight='bold' fill='#1f3a8a'>ボーダーグローの正体：mask 2枚を exclude</text><rect x='30' y='50' width='150' height='120' rx='12' fill='#dbe4ff' stroke='#4661d6' stroke-width='2'></rect><text x='105' y='185' font-size='11' fill='#3a4a8a' text-anchor='middle'>全面レイヤー</text><text x='230' y='118' font-size='24' fill='#4661d6' text-anchor='middle'>−</text><rect x='280' y='68' width='114' height='84' rx='8' fill='#eef2ff' stroke='#9db0f0' stroke-width='2' stroke-dasharray='5 4'></rect><text x='337' y='185' font-size='11' fill='#3a4a8a' text-anchor='middle'>content-box を隠す</text><text x='430' y='118' font-size='24' fill='#4661d6' text-anchor='middle'>=</text><rect x='470' y='50' width='110' height='120' rx='12' fill='none' stroke='#4661d6' stroke-width='8'></rect><text x='525' y='185' font-size='11' fill='#3a4a8a' text-anchor='middle'>枠(padding)だけ残る</text></svg><figcaption>図1：全面から中身を差し引くと padding 分の枠だけが残り、そこにグローが乗る。</figcaption></figure><p>枠だけに絞る定石（Josh Comeau / Cruip系）は2枚マスクの合成だ。</p><pre><code>mask:
+  linear-gradient(#000 0 0) content-box,  /* 中身を隠す */
+  linear-gradient(#000 0 0);              /* 全面 */
+mask-composite: exclude;                  /* 差 = 枠(padding)分だけ残る */</code></pre><p><code>padding:1px</code>の分がボーダー幅になる。Safari向けに<code>-webkit-mask-composite: xor</code>も併記すると安全。<strong>グロー・グリッド</strong>にするなら、親<code>.cards</code>に<strong>1つだけ</strong><code>pointermove</code>を張り、各カードの相対座標を計算して<code>--x/--y</code>を更新する。カード毎にリスナーを張るとイベント過多になるので親1つに集約するのがコツ。</p><p><strong>Next.js（App Router）</strong>では、ポインタ座標の取得はクライアント処理なのでハンドラを持つラッパに<code>'use client'</code>が必要。ただし中身のテキスト/画像は<strong>Server Componentのまま<code>children</code>として流し込める</strong>ので、クライアント境界を薄いラッパに閉じ込められる（RSCのままデータ取得できる）。初期<code>--x/--y</code>を<code>50%</code>で描いておけばハイドレーション前でもレイアウトが崩れない。</p><p><strong>落とし穴</strong>：タッチ端末はhoverが無く<code>pointermove</code>が電池を食うので<code>@media (hover: hover) and (pointer: fine)</code>の中だけで有効化。<code>--x/--y</code>に<code>transition</code>を掛けると追従が遅れて不自然になるので、フェードは<code>opacity</code>側だけに。多数カードは<strong>親1リスナー + rAFで1フレーム1回</strong>に間引く。ライトテーマでは加算的な光が映えにくいので色は濃いめ＆低不透明度に。</p><p><strong>まとめ</strong>：ライブラリ不要。「座標だけJS、見た目は全部CSS」を守れば、大量カードでも60fpsを保ったまま高級感のある光が出せる。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://ibelick.com/blog/create-modern-spotlight-effect-with-react-css" target="_blank" rel="noopener noreferrer"> ibelick — Crafting a modern spotlight effect </a> </li><li> <a href="https://cruip.com/how-to-create-a-spotlight-card-hover-effect-with-tailwind-css/" target="_blank" rel="noopener noreferrer"> Cruip — Spotlight Card Hover Effect </a> </li><li> <a href="https://magicui.design/docs/components/magic-card" target="_blank" rel="noopener noreferrer"> Magic UI — Magic Card </a> </li><li> <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/mask-composite" target="_blank" rel="noopener noreferrer"> MDN — mask-composite </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

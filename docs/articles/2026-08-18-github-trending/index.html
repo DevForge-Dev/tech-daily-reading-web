@@ -1,0 +1,59 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>8/18の話題リポジトリ — dshエコシステム拡大・理論駆動の認知スキル・非AIのArch環境 — デイリー技術深掘り 読み物</title><meta name="description" content="DeepSeek公式ハーネス(dsh)関連が日次上位を席巻する中、認知科学を土台にしたAIスキルと、DHHのArch製デスクトップがジャンルの多様性を添えた3本。"><meta name="theme-color" content="#238636"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-18-github-trending/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="8/18の話題リポジトリ — dshエコシステム拡大・理論駆動の認知スキル・非AIのArch環境 — デイリー技術深掘り 読み物"><meta property="og:description" content="DeepSeek公式ハーネス(dsh)関連が日次上位を席巻する中、認知科学を土台にしたAIスキルと、DHHのArch製デスクトップがジャンルの多様性を添えた3本。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-18-github-trending/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3fb950, #1a7f37)"> <span class="glyph" aria-hidden="true">★</span> <div class="kicker">GitHub Trending</div> <h1>8/18の話題リポジトリ — dshエコシステム拡大・理論駆動の認知スキル・非AIのArch環境</h1> <p class="lede">DeepSeek公式ハーネス(dsh)関連が日次上位を席巻する中、認知科学を土台にしたAIスキルと、DHHのArch製デスクトップがジャンルの多様性を添えた3本。</p> <div class="meta"> <span>📅 2026年8月18日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#238636"> <div> <article class="prose" data-has-mermaid="0"><p>この日のTrending（Trendshift/OSSInsight基準）は、引き続き<strong>DeepSeek公式ハーネス「dsh」を中心とするエコシステム</strong>が日次上位を席巻していた。その一角として急上昇したカスタムUI束、認知科学を明示的な土台にしたAIスキル、そしてAI一色のトレンドに抗する非AIのLinux環境という、性格の異なる3本を取り上げる。共通するのは「土台（ハーネス/エージェント/OS）を、意見を持って作り込む」姿勢だ。</p><figure class='fig'><svg viewBox='0 0 600 240' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='0' y='0' width='600' height='240' fill='#f3fbf5'></rect><text x='16' y='26' font-size='13' font-weight='bold' fill='#1a7f37'>リポジトリ × 解決したい課題 / 提供する機能</text><line x1='16' y1='40' x2='584' y2='40' stroke='#bfe3c8' stroke-width='1'></line><text x='20' y='62' font-size='12' font-weight='bold' fill='#25603a'>dsh-web-ui</text><text x='150' y='62' font-size='11' fill='#3a3a3a'>課題: 素のWeb UIが素っ気ない</text><text x='150' y='80' font-size='11' fill='#3a3a3a'>機能: タスクボード/gitグラフ/トークン統計/スキン</text><line x1='16' y1='94' x2='584' y2='94' stroke='#e2efe5' stroke-width='1'></line><text x='20' y='118' font-size='12' font-weight='bold' fill='#25603a'>J-Space-Cognition</text><text x='150' y='118' font-size='11' fill='#3a3a3a'>課題: エージェントの推論/作業記憶が場当たり</text><text x='150' y='136' font-size='11' fill='#3a3a3a'>機能: global workspace理論ベースの認知強化Skill</text><line x1='16' y1='150' x2='584' y2='150' stroke='#e2efe5' stroke-width='1'></line><text x='20' y='174' font-size='12' font-weight='bold' fill='#25603a'>omarchy</text><text x='150' y='174' font-size='11' fill='#3a3a3a'>課題: Archの初期構築が重い/指針が無い</text><text x='150' y='192' font-size='11' fill='#3a3a3a'>機能: 意見の強い即戦力デスクトップ環境一式</text><line x1='16' y1='206' x2='584' y2='206' stroke='#bfe3c8' stroke-width='1'></line><text x='20' y='228' font-size='10' fill='#4a6b53'>出典: Trendshift 日次 / OSSInsight 当日 trending</text></svg><figcaption>図1：3本の「解決したい課題」と「提供する機能」の対応。</figcaption></figure><h4 id="sec-1">zhu1090093659/dsh-web-ui（言語不明・⭐約535）</h4><p><strong>解決したい課題</strong>：DeepSeek Harness（DSH）の素のWeb UIは機能が限られ、日々使うには物足りない。ダッシュボード的な作業管理やリポジトリの把握、トークン消費の可視化を後付けしたい、という不満がある。</p><p><strong>提供する機能</strong>：dshのWeb UIに<strong>タスクボード・gitグラフ・右サイドパネル・リモートモバイルUI・ペット・ライブトークン統計・スキンセンター</strong>を足すプラグイン＆スキン集。UIを丸ごとカスタマイズできる。<strong>なぜ今</strong>：Trendshift日次14位・New 2026（約535★）。日次1位のdsh本体と関連（desktop/awesome-plugin/routing-suite）が上位を占める「dshエコシステム爆発」の勢いに乗り、公開直後からトップ15入り。</p><h4 id="sec-2">Tiger3807861189/J-Space-Cognition-Suite-V3.6（言語不明・⭐約294）</h4><p><strong>解決したい課題</strong>：エージェントの推論や作業記憶は場当たり的になりがちで、プロンプト集だけでは底上げに限界がある。<strong>提供する機能</strong>：Anthropicのglobal workspace（J-space）研究に基づく<strong>認知強化スキル集</strong>で、推論・作業記憶を「認知科学の作業台」の枠組みで補強する。<strong>なぜ今</strong>：Trendshift日次16位・New 2026。#AI skillsが上位を占める潮流の中、<strong>理論駆動</strong>という切り口の新規性で急伸した。</p><h4 id="sec-3">basecamp/omarchy（Shell・日次4位）</h4><p><strong>解決したい課題</strong>：Archは自由な反面、初期構築が重く、洗練された既定構成の指針が乏しい。<strong>提供する機能</strong>：DHH（Basecamp）による<strong>「美しく・モダンで・意見の強い」Archベースの即戦力Linuxデスクトップ環境</strong>を、設定一式としてまとめて配布する。<strong>なぜ今</strong>：AI/dsh系が独占する日次上位に、完全に非AIのデスクトップ環境が食い込む珍しさ。DHH肝いりで本日も日次4位を維持し、ジャンルの多様性を担っている。</p><p><strong>自分が試すなら</strong>：実利で選ぶなら<strong>dsh-web-ui</strong>——ハーネスを日常運用に寄せるUI強化は効果が見えやすい。エージェント設計に興味があれば<strong>J-Space</strong>を読み物として。omarchyはサブ機のArch環境として週末に。<strong>まとめ</strong>：土台（ハーネス/エージェント/OS）を意見強く磨く動きが、この日のTrendを貫いていた。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://github.com/zhu1090093659/dsh-web-ui" target="_blank" rel="noopener noreferrer"> zhu1090093659/dsh-web-ui </a> </li><li> <a href="https://github.com/Tiger3807861189/J-Space-Cognition-Suite-V3.6" target="_blank" rel="noopener noreferrer"> Tiger3807861189/J-Space-Cognition-Suite-V3.6 </a> </li><li> <a href="https://github.com/basecamp/omarchy" target="_blank" rel="noopener noreferrer"> basecamp/omarchy </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> zhu1090093659/dsh-web-ui（言語不明・⭐約535） </a> </li><li> <a href="#sec-2" data-toc="sec-2"> Tiger3807861189/J-Space-Cognition-Suite-V3.6（言語不明・⭐約294） </a> </li><li> <a href="#sec-3" data-toc="sec-3"> basecamp/omarchy（Shell・日次4位） </a> </li> </ul> <div class="reading-box"> <div>📅 2026-08-18</div> <div>⏱ 読了 約3分</div> <div>🏷 GitHub Trending</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
