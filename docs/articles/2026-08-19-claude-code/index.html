@@ -1,0 +1,59 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>セルフホスト実行環境がパブリックベータ公開 — claude self-hosted-runnerで自社インフラ上にセッション実行、v2.1.233は@マルチセッション連携も — デイリー技術深掘り 読み物</title><meta name="description" content="8/19はTeam/Enterprise向けセルフホスト実行環境のパブリックベータが目玉。claude self-hosted-runner一つで自社マシン/コンテナを実行基盤化し、Fixed/On-demandの2モードで金融・医療・防衛など規制業種の導入障壁を解消する。v2.1.233はGitLab MR URL対応、@で他セッションをメンションするマルチセッション、Bashのメモリcgroup上限を追加。サブエージェントは既定3階層・並列20という最新仕様も押さえておきたい回。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-19-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="セルフホスト実行環境がパブリックベータ公開 — claude self-hosted-runnerで自社インフラ上にセッション実行、v2.1.233は@マルチセッション連携も — デイリー技術深掘り 読み物"><meta property="og:description" content="8/19はTeam/Enterprise向けセルフホスト実行環境のパブリックベータが目玉。claude self-hosted-runner一つで自社マシン/コンテナを実行基盤化し、Fixed/On-demandの2モードで金融・医療・防衛など規制業種の導入障壁を解消する。v2.1.233はGitLab MR URL対応、@で他セッションをメンションするマルチセッション、Bashのメモリcgroup上限を追加。サブエージェントは既定3階層・並列20という最新仕様も押さえておきたい回。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-19-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>セルフホスト実行環境がパブリックベータ公開 — claude self-hosted-runnerで自社インフラ上にセッション実行、v2.1.233は@マルチセッション連携も</h1> <p class="lede">8/19はTeam/Enterprise向けセルフホスト実行環境のパブリックベータが目玉。claude self-hosted-runner一つで自社マシン/コンテナを実行基盤化し、Fixed/On-demandの2モードで金融・医療・防衛など規制業種の導入障壁を解消する。v2.1.233はGitLab MR URL対応、@で他セッションをメンションするマルチセッション、Bashのメモリcgroup上限を追加。サブエージェントは既定3階層・並列20という最新仕様も押さえておきたい回。</p> <div class="meta"> <span>📅 2026年8月19日</span> <span>⏱ 約3分</span> <span>🔗 出典 5 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="0"><p>今日の目玉は<strong>セルフホスト実行環境</strong>のパブリックベータ公開だ。これまでClaude CodeのWeb・モバイル・デスクトップ・スケジュール実行のセッションは<strong>Anthropic管理のクラウド</strong>で走っており、データ所在地やネットワーク分離の要件がある金融・医療・防衛系のチームは採用に踏み切りづらかった。ここに正面から応えるアップデートだ。</p><p>新しいのは、<code>claude self-hosted-runner</code>コマンド一つで<strong>自社のマシンやコンテナを実行レイヤーに変えられる</strong>点。Team/Enterpriseプラン向けで、エージェント実行を自社の内部ネットワーク内、既存のセキュリティ統制のすぐそばで動かせる。既定は<strong>オフ</strong>、ZDR（ゼロデータ保持）組織は対象外。実行方式は用途で選べる2モードを用意する。</p><figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='0' y='0' width='600' height='210' fill='#f6faf7'></rect><text x='16' y='28' font-size='14' font-weight='bold' fill='#1a7f37'>セルフホスト実行の2モード</text><rect x='20' y='48' width='260' height='140' rx='10' fill='#eaf7ee' stroke='#3fb950' stroke-width='2'></rect><text x='36' y='74' font-size='13' font-weight='bold' fill='#1a7f37'>Fixed（固定台数）</text><text x='36' y='100' font-size='12' fill='#25603a'>・ランナーを常時維持</text><text x='36' y='122' font-size='12' fill='#25603a'>・待ち時間を最小化</text><text x='36' y='144' font-size='12' fill='#25603a'>・定常運用向け</text><text x='36' y='166' font-size='12' fill='#25603a'>・コストは常時発生</text><rect x='320' y='48' width='260' height='140' rx='10' fill='#eef4fb' stroke='#1f6feb' stroke-width='2'></rect><text x='336' y='74' font-size='13' font-weight='bold' fill='#1a56c4'>On-demand（必要時起動）</text><text x='336' y='100' font-size='12' fill='#2a4d80'>・キューを監視し起動</text><text x='336' y='122' font-size='12' fill='#2a4d80'>・終了後に停止</text><text x='336' y='144' font-size='12' fill='#2a4d80'>・間欠運用向け</text><text x='336' y='166' font-size='12' fill='#2a4d80'>・コストを抑制</text></svg><figcaption>図1：セルフホスト実行環境のFixed/On-demand。</figcaption></figure><p><strong>Fixedモード</strong>は固定台数のランナーを常時維持し、待ち時間を最小化したい定常運用向け。<strong>On-demandモード</strong>はキューを監視して必要なときだけランナーを起動し、終了後に停止する——コストを抑えたい間欠運用向けだ。</p><p>CLI側も8月14日の<strong>v2.1.233</strong>で前進した。GitHub/BitbucketのPR URLと同様に<strong>GitLabのMR（マージリクエスト）URL</strong>を<code>--worktree</code>フラグとagentsビューで扱えるようになり、MRは<code>!N</code>形式で表示される。加えて<strong>@で他のClaudeセッションを名前でメンション</strong>して連携するマルチセッション、LinuxでBashツール実行にメモリcgroup上限をかける<code>CLAUDE_CODE_TOOL_MEMORY_LIMIT</code>、WebFetchのキャッシュTTLを決める<code>CLAUDE_CODE_WEBFETCH_CACHE_TTL_MS</code>（既定15分）も追加された。</p><figure class='fig'><svg viewBox='0 0 600 170' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='0' y='0' width='600' height='170' fill='#f7f6fb'></rect><text x='16' y='28' font-size='14' font-weight='bold' fill='#5840d6'>サブエージェントの最新仕様</text><rect x='20' y='46' width='175' height='104' rx='10' fill='#efeafc' stroke='#7b3fe4' stroke-width='2'></rect><text x='107' y='86' font-size='30' font-weight='bold' fill='#5a2bbf' text-anchor='middle'>3</text><text x='107' y='114' font-size='12' fill='#4a3aa0' text-anchor='middle'>階層までネスト</text><rect x='212' y='46' width='175' height='104' rx='10' fill='#efeafc' stroke='#7b3fe4' stroke-width='2'></rect><text x='299' y='86' font-size='30' font-weight='bold' fill='#5a2bbf' text-anchor='middle'>20</text><text x='299' y='114' font-size='12' fill='#4a3aa0' text-anchor='middle'>並列実行の上限</text><rect x='404' y='46' width='176' height='104' rx='10' fill='#efeafc' stroke='#7b3fe4' stroke-width='2'></rect><text x='492' y='86' font-size='28' font-weight='bold' fill='#5a2bbf' text-anchor='middle'>45%</text><text x='492' y='114' font-size='12' fill='#4a3aa0' text-anchor='middle'>委譲判断の目安</text></svg><figcaption>図2：Sub-Agentsは既定3階層・並列20。委譲要否は「45%ルール」で。</figcaption></figure><p>設計の指針も更新された。サブエージェントは<strong>既定で3階層までネスト可能・並列実行上限20</strong>が最新仕様。委譲すべきかはGoogle論文の<strong>「45%ルール」</strong>（隔離コンテキストに切り出すオーバーヘッドが見合うかの目安）で線引きすると整理しやすい。単一エージェントで全部やるか、別コンテキストへ委譲するかの判断軸になる。</p><p><strong>自分が試すなら</strong>：手元の常時起動マシンをOn-demandランナーにして、毎朝のスケジュールタスクを自宅インフラで回す構成が面白い。GitLab運用なら@マルチセッションで「調査担当」と「実装担当」のセッションを分けて連携させたい。<strong>落とし穴</strong>：セルフホストは<strong>実行環境</strong>を自社に置くだけで、モデル推論自体はAnthropic API経由という点は変わらない。パブリックベータ・既定オフ・ZDR組織は対象外という前提も忘れずに。</p><p><strong>まとめ</strong>：実行基盤を自社へ寄せられるセルフホストで規制業種に道が開け、v2.1.233の@マルチセッションとGitLab対応で並列運用が一段回しやすくなった回だ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://claude.com/blog/run-claude-code-sessions-on-your-own-compute" target="_blank" rel="noopener noreferrer"> Anthropic — Run Claude Code sessions on your own compute </a> </li><li> <a href="https://github.com/anthropics/claude-code/releases/tag/v2.1.233" target="_blank" rel="noopener noreferrer"> Claude Code v2.1.233 リリース </a> </li><li> <a href="https://code.claude.com/docs/en/changelog" target="_blank" rel="noopener noreferrer"> Claude Code changelog </a> </li><li> <a href="https://www.unite.ai/claude-code-sessions-can-now-run-on-infrastructure-your-team-controls/" target="_blank" rel="noopener noreferrer"> Unite.AI — sessions can now run on infrastructure your team controls </a> </li><li> <a href="https://genai-ai.co.jp/ai-kanri/blog/cc-yt-subagent-guide-101/" target="_blank" rel="noopener noreferrer"> GENAI — サブエージェント活用ガイド（45%ルール） </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
