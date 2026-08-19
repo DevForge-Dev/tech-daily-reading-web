@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-08-19T04:58:34.580Z",
+  "generatedAt": "2026-08-18T04:49:37.473Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,62 +8,6 @@
     "GitHub Trending"
   ],
   "articles": [
-    {
-      "id": "2026-08-19-claude-code",
-      "date": "2026-08-19",
-      "topic": "Claude Code",
-      "title": "セルフホスト実行環境がパブリックベータ公開 — claude self-hosted-runnerで自社インフラ上にセッション実行、v2.1.233は@マルチセッション連携も",
-      "lede": "8/19はTeam/Enterprise向けセルフホスト実行環境のパブリックベータが目玉。claude self-hosted-runner一つで自社マシン/コンテナを実行基盤化し、Fixed/On-demandの2モードで金融・医療・防衛など規制業種の導入障壁を解消する。v2.1.233はGitLab MR URL対応、@で他セッションをメンションするマルチセッション、Bashのメモリcgroup上限を追加。サブエージェントは既定3階層・並列20という最新仕様も押さえておきたい回。",
-      "articleHtml": "<p>今日の目玉は<strong>セルフホスト実行環境</strong>のパブリックベータ公開だ。これまでClaude CodeのWeb・モバイル・デスクトップ・スケジュール実行のセッションは<strong>Anthropic管理のクラウド</strong>で走っており、データ所在地やネットワーク分離の要件がある金融・医療・防衛系のチームは採用に踏み切りづらかった。ここに正面から応えるアップデートだ。</p><p>新しいのは、<code>claude self-hosted-runner</code>コマンド一つで<strong>自社のマシンやコンテナを実行レイヤーに変えられる</strong>点。Team/Enterpriseプラン向けで、エージェント実行を自社の内部ネットワーク内、既存のセキュリティ統制のすぐそばで動かせる。既定は<strong>オフ</strong>、ZDR（ゼロデータ保持）組織は対象外。実行方式は用途で選べる2モードを用意する。</p><figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='0' y='0' width='600' height='210' fill='#f6faf7'/><text x='16' y='28' font-size='14' font-weight='bold' fill='#1a7f37'>セルフホスト実行の2モード</text><rect x='20' y='48' width='260' height='140' rx='10' fill='#eaf7ee' stroke='#3fb950' stroke-width='2'/><text x='36' y='74' font-size='13' font-weight='bold' fill='#1a7f37'>Fixed（固定台数）</text><text x='36' y='100' font-size='12' fill='#25603a'>・ランナーを常時維持</text><text x='36' y='122' font-size='12' fill='#25603a'>・待ち時間を最小化</text><text x='36' y='144' font-size='12' fill='#25603a'>・定常運用向け</text><text x='36' y='166' font-size='12' fill='#25603a'>・コストは常時発生</text><rect x='320' y='48' width='260' height='140' rx='10' fill='#eef4fb' stroke='#1f6feb' stroke-width='2'/><text x='336' y='74' font-size='13' font-weight='bold' fill='#1a56c4'>On-demand（必要時起動）</text><text x='336' y='100' font-size='12' fill='#2a4d80'>・キューを監視し起動</text><text x='336' y='122' font-size='12' fill='#2a4d80'>・終了後に停止</text><text x='336' y='144' font-size='12' fill='#2a4d80'>・間欠運用向け</text><text x='336' y='166' font-size='12' fill='#2a4d80'>・コストを抑制</text></svg><figcaption>図1：セルフホスト実行環境のFixed/On-demand。</figcaption></figure><p><strong>Fixedモード</strong>は固定台数のランナーを常時維持し、待ち時間を最小化したい定常運用向け。<strong>On-demandモード</strong>はキューを監視して必要なときだけランナーを起動し、終了後に停止する——コストを抑えたい間欠運用向けだ。</p><p>CLI側も8月14日の<strong>v2.1.233</strong>で前進した。GitHub/BitbucketのPR URLと同様に<strong>GitLabのMR（マージリクエスト）URL</strong>を<code>--worktree</code>フラグとagentsビューで扱えるようになり、MRは<code>!N</code>形式で表示される。加えて<strong>@で他のClaudeセッションを名前でメンション</strong>して連携するマルチセッション、LinuxでBashツール実行にメモリcgroup上限をかける<code>CLAUDE_CODE_TOOL_MEMORY_LIMIT</code>、WebFetchのキャッシュTTLを決める<code>CLAUDE_CODE_WEBFETCH_CACHE_TTL_MS</code>（既定15分）も追加された。</p><figure class='fig'><svg viewBox='0 0 600 170' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='0' y='0' width='600' height='170' fill='#f7f6fb'/><text x='16' y='28' font-size='14' font-weight='bold' fill='#5840d6'>サブエージェントの最新仕様</text><rect x='20' y='46' width='175' height='104' rx='10' fill='#efeafc' stroke='#7b3fe4' stroke-width='2'/><text x='107' y='86' font-size='30' font-weight='bold' fill='#5a2bbf' text-anchor='middle'>3</text><text x='107' y='114' font-size='12' fill='#4a3aa0' text-anchor='middle'>階層までネスト</text><rect x='212' y='46' width='175' height='104' rx='10' fill='#efeafc' stroke='#7b3fe4' stroke-width='2'/><text x='299' y='86' font-size='30' font-weight='bold' fill='#5a2bbf' text-anchor='middle'>20</text><text x='299' y='114' font-size='12' fill='#4a3aa0' text-anchor='middle'>並列実行の上限</text><rect x='404' y='46' width='176' height='104' rx='10' fill='#efeafc' stroke='#7b3fe4' stroke-width='2'/><text x='492' y='86' font-size='28' font-weight='bold' fill='#5a2bbf' text-anchor='middle'>45%</text><text x='492' y='114' font-size='12' fill='#4a3aa0' text-anchor='middle'>委譲判断の目安</text></svg><figcaption>図2：Sub-Agentsは既定3階層・並列20。委譲要否は「45%ルール」で。</figcaption></figure><p>設計の指針も更新された。サブエージェントは<strong>既定で3階層までネスト可能・並列実行上限20</strong>が最新仕様。委譲すべきかはGoogle論文の<strong>「45%ルール」</strong>（隔離コンテキストに切り出すオーバーヘッドが見合うかの目安）で線引きすると整理しやすい。単一エージェントで全部やるか、別コンテキストへ委譲するかの判断軸になる。</p><p><strong>自分が試すなら</strong>：手元の常時起動マシンをOn-demandランナーにして、毎朝のスケジュールタスクを自宅インフラで回す構成が面白い。GitLab運用なら@マルチセッションで「調査担当」と「実装担当」のセッションを分けて連携させたい。<strong>落とし穴</strong>：セルフホストは<strong>実行環境</strong>を自社に置くだけで、モデル推論自体はAnthropic API経由という点は変わらない。パブリックベータ・既定オフ・ZDR組織は対象外という前提も忘れずに。</p><p><strong>まとめ</strong>：実行基盤を自社へ寄せられるセルフホストで規制業種に道が開け、v2.1.233の@マルチセッションとGitLab対応で並列運用が一段回しやすくなった回だ。</p>",
-      "sources": [
-        {
-          "title": "Anthropic — Run Claude Code sessions on your own compute",
-          "url": "https://claude.com/blog/run-claude-code-sessions-on-your-own-compute"
-        },
-        {
-          "title": "Claude Code v2.1.233 リリース",
-          "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.233"
-        },
-        {
-          "title": "Claude Code changelog",
-          "url": "https://code.claude.com/docs/en/changelog"
-        },
-        {
-          "title": "Unite.AI — sessions can now run on infrastructure your team controls",
-          "url": "https://www.unite.ai/claude-code-sessions-can-now-run-on-infrastructure-your-team-controls/"
-        },
-        {
-          "title": "GENAI — サブエージェント活用ガイド（45%ルール）",
-          "url": "https://genai-ai.co.jp/ai-kanri/blog/cc-yt-subagent-guide-101/"
-        }
-      ]
-    },
-    {
-      "id": "2026-08-19-nextjs",
-      "date": "2026-08-19",
-      "topic": "Next.js",
-      "title": "next/formの<Form>で検索・フィルタを1コンポーネントに — プリフェッチ＋ソフト遷移＋PEを標準装備、actionの型で2分岐",
-      "lede": "検索/フィルタUIの定型（'use client'＋useRouter().push＋useSearchParams＋form onSubmit）を、next/formの<Form>が1コンポーネントに畳み込む。actionの型で挙動が2分岐し、文字列ならGET検索ナビゲーション（プリフェッチ＋クライアント遷移＋JS無効でも動く）、関数ならServer Actionミューテーション。Next.js 16ではsearchParamsがPromiseでawait必須になった点も要注意。",
-      "articleHtml": "<p>検索ボックスやフィルタUIは<strong>入力をURLのクエリパラメータに載せて結果ページへ遷移する</strong>のが定石だ。URLが共有可能で、戻る/進むで復元でき、SEOにも強く、サーバー側で<code>searchParams</code>を読んで取得できるからだ。だが素朴に書くと<code>'use client'</code>＋<code>useRouter().push()</code>＋<code>useSearchParams()</code>＋<code>&lt;form onSubmit&gt;</code>の<strong>定型コードが毎回膨らみ</strong>、遷移先のプリフェッチやJS無効時のフォールバックまで自前で面倒を見ることになる。</p><p>これを1コンポーネントに畳み込むのが<code>next/form</code>の<strong>&lt;Form&gt;</strong>だ（Next.js 15でGA導入、現行は16.3）。HTMLの<code>&lt;form&gt;</code>を拡張し、(1)ビューポート進入時に遷移先の共有UI（<code>layout.js</code>・<code>loading.js</code>）を<strong>プリフェッチ</strong>、(2)送信時はフルリロードでなく<strong>ソフトナビゲーション</strong>で共有UIとクライアント状態を保持、(3)中身は素のGETフォームなので<strong>JS未ロード/無効でも動く</strong>プログレッシブエンハンスメント——の3つを標準装備する。</p><p>そして<strong>最重要はactionの型で挙動が2分岐する</strong>ことだ。</p><figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='0' y='0' width='600' height='210' fill='#f5f8fd'/><text x='16' y='28' font-size='14' font-weight='bold' fill='#1a56c4'>&lt;Form&gt; は action の型で2分岐</text><rect x='225' y='42' width='150' height='34' rx='8' fill='#dbe8fb' stroke='#1f6feb' stroke-width='2'/><text x='300' y='64' font-size='13' font-weight='bold' fill='#1a56c4' text-anchor='middle'>action=?</text><line x1='300' y1='76' x2='140' y2='104' stroke='#9cb7e6' stroke-width='2'/><line x1='300' y1='76' x2='460' y2='104' stroke='#9cb7e6' stroke-width='2'/><rect x='20' y='104' width='250' height='86' rx='10' fill='#eef4fb' stroke='#1f6feb' stroke-width='2'/><text x='36' y='128' font-size='12.5' font-weight='bold' fill='#1a56c4'>文字列 → GET検索ナビ</text><text x='36' y='150' font-size='11.5' fill='#2a4d80'>/search?query=abc へ遷移</text><text x='36' y='170' font-size='11.5' fill='#2a4d80'>プリフェッチ＋ソフト遷移＋PE</text><rect x='330' y='104' width='250' height='86' rx='10' fill='#f3f0ee' stroke='#b0a79f' stroke-width='2'/><text x='346' y='128' font-size='12.5' font-weight='bold' fill='#8a6d3b'>関数 → Server Action</text><text x='346' y='150' font-size='11.5' fill='#7a726b'>ミューテーション（書き込み）</text><text x='346' y='170' font-size='11.5' fill='#7a726b'>自動プリフェッチ無し/replace無視</text></svg><figcaption>図1：action が文字列ならGET検索、関数ならミューテーション。</figcaption></figure><p><strong>action が文字列</strong>（URL/相対パス）なら<strong>GET検索ナビゲーション</strong>。フォームデータがURLの検索paramにエンコードされ、そのURLへ遷移する。<code>&lt;input name=\"query\"&gt;</code>に<code>abc</code>を入れて送信すれば<code>/search?query=abc</code>だ。空文字<code>action=\"\"</code>は<strong>同じルートにparamだけ更新</strong>して遷移する（フィルタUIの定番）。一方<strong>action が関数</strong>ならServer Action（ミューテーション）で、<strong>遷移先が実行時まで不明なので自動プリフェッチは効かず</strong>、<code>replace</code>/<code>scroll</code> propも無視される。</p><pre><code>// 検索: 別ページへGETナビゲーション（'use client'不要）\nimport Form from 'next/form'\n&lt;Form action=\"/search\"&gt;\n  &lt;input name=\"query\" /&gt;\n  &lt;button&gt;Search&lt;/button&gt;\n&lt;/Form&gt;</code></pre><figure class='fig'><svg viewBox='0 0 600 182' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='0' y='0' width='600' height='182' fill='#f5f8fd'/><text x='16' y='26' font-size='14' font-weight='bold' fill='#1a56c4'>使い分け早見</text><rect x='20' y='40' width='560' height='40' rx='8' fill='#eef4fb' stroke='#1f6feb' stroke-width='1.5'/><text x='34' y='58' font-size='12' font-weight='bold' fill='#1a56c4'>検索（別ページ）</text><text x='34' y='74' font-size='11.5' fill='#2a4d80'>action=\"/search\" … プリフェッチ＋ソフト遷移</text><rect x='20' y='88' width='560' height='40' rx='8' fill='#eef4fb' stroke='#1f6feb' stroke-width='1.5'/><text x='34' y='106' font-size='12' font-weight='bold' fill='#1a56c4'>フィルタ（同ルート）</text><text x='34' y='122' font-size='11.5' fill='#2a4d80'>action=\"\" scroll={false} replace … 位置維持・履歴汚さない</text><rect x='20' y='136' width='560' height='40' rx='8' fill='#f3f0ee' stroke='#b0a79f' stroke-width='1.5'/><text x='34' y='154' font-size='12' font-weight='bold' fill='#8a6d3b'>ミューテーション</text><text x='34' y='170' font-size='11.5' fill='#7a726b'>action={fn} … Server Action・replace/scroll無視</text></svg><figcaption>図2：3つの使い分けとpropの勘所。</figcaption></figure><p>文字列actionモードのpropsは実務で効く。<code>replace</code>（既定false）で履歴をpushでなくreplaceにしフィルタ操作で履歴を汚さない、<code>scroll</code>（既定true）は<strong>フィルタでは<code>scroll={false}</code></strong>にして現在位置を維持、<code>prefetch</code>（既定true）で可視時にプリフェッチ。だから同ルートのフィルタは<code>&lt;Form action=\"\" scroll={false} replace&gt;</code>が定番形になる。サーバーで現在の<code>searchParams</code>を読み<code>defaultValue</code>へ流せば<strong>選択状態が復元</strong>する。</p><p><strong>落とし穴</strong>：<code>onSubmit</code>で<code>event.preventDefault()</code>を呼ぶと&lt;Form&gt;の遷移が止まる。<code>method</code>/<code>encType</code>/<code>target</code>は非対応（必要なら素の<code>&lt;form&gt;</code>を使う）。<code>&lt;input type=\"file\"&gt;</code>は文字列actionだと<strong>ファイル名だけ送信</strong>されるのでアップロードは関数action（Server Action）で。<code>key</code> propは文字列actionに渡せない。そしてNext.js 16では<code>searchParams</code>が<strong>Promiseでawait必須</strong>、読むページは動的レンダリングになる点にも注意。</p><p><strong>使い分け</strong>：別ページ検索は<code>action=\"/search\"</code>、同ルートフィルタは<code>action=\"\" scroll={false} replace</code>。入力ごとに即URL反映する<strong>ライブ検索/デバウンス</strong>は&lt;Form&gt;の担当外で、<code>useRouter()</code>＋<code>useSearchParams()</code>＋<code>useDebouncedCallback</code>の'use client'島でやる。型安全なparam状態が欲しければ<strong>nuqs</strong>の<code>useQueryState</code>と併用する（&lt;Form&gt;で確定・nuqsで読み書き）。</p><p><strong>まとめ</strong>：検索は&lt;Form action=\"/search\"&gt;、フィルタはaction=\"\"＋scroll={false}＋replace。プリフェッチとプログレッシブエンハンスメント込みの「送信で確定」型ナビゲーションを、RSCのまま最小コードで置けるのが&lt;Form&gt;の価値だ。</p>",
-      "sources": [
-        {
-          "title": "Next.js — Form Component (API Reference)",
-          "url": "https://nextjs.org/docs/app/api-reference/components/form"
-        },
-        {
-          "title": "Next.js — useSearchParams",
-          "url": "https://nextjs.org/docs/app/api-reference/functions/use-search-params"
-        },
-        {
-          "title": "Next.js — Linking and Navigating",
-          "url": "https://nextjs.org/docs/app/getting-started/linking-and-navigating"
-        },
-        {
-          "title": "Next.js 15 リリースノート（<Form>導入）",
-          "url": "https://nextjs.org/blog/next-15"
-        }
-      ]
-    },
     {
       "id": "2026-08-18-claude-code",
       "date": "2026-08-18",
