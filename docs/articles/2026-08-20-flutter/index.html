@@ -1,0 +1,65 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Flutter 3.47 / Dart 3.13の現在地 — AIネイティブ開発の定着とImpellerで120fps、状態管理は『新規Riverpod3・監査Bloc9』 — デイリー技術深掘り 読み物</title><meta name="description" content="現行安定版はFlutter 3.47 / Dart 3.13。年4回サイクルの積み上げに加え、Flutter MCP Server・Agent Skills・Agentic Hot Reload・GenUIといったAIネイティブ開発ツールが定着した。状態管理は新規=Riverpod 3、監査/規制=Bloc 9、細粒度=Signals 6、GetXは回避が2026の選定図。描画はImpellerで全シェーダーをAOTし、複雑シーンでraster約50%短縮・安定120fps。"><meta name="theme-color" content="#0277bd"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-20-flutter/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Flutter 3.47 / Dart 3.13の現在地 — AIネイティブ開発の定着とImpellerで120fps、状態管理は『新規Riverpod3・監査Bloc9』 — デイリー技術深掘り 読み物"><meta property="og:description" content="現行安定版はFlutter 3.47 / Dart 3.13。年4回サイクルの積み上げに加え、Flutter MCP Server・Agent Skills・Agentic Hot Reload・GenUIといったAIネイティブ開発ツールが定着した。状態管理は新規=Riverpod 3、監査/規制=Bloc 9、細粒度=Signals 6、GetXは回避が2026の選定図。描画はImpellerで全シェーダーをAOTし、複雑シーンでraster約50%短縮・安定120fps。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-20-flutter/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #29b6f6, #01579b)"> <span class="glyph" aria-hidden="true">◆</span> <div class="kicker">Flutter</div> <h1>Flutter 3.47 / Dart 3.13の現在地 — AIネイティブ開発の定着とImpellerで120fps、状態管理は『新規Riverpod3・監査Bloc9』</h1> <p class="lede">現行安定版はFlutter 3.47 / Dart 3.13。年4回サイクルの積み上げに加え、Flutter MCP Server・Agent Skills・Agentic Hot Reload・GenUIといったAIネイティブ開発ツールが定着した。状態管理は新規=Riverpod 3、監査/規制=Bloc 9、細粒度=Signals 6、GetXは回避が2026の選定図。描画はImpellerで全シェーダーをAOTし、複雑シーンでraster約50%短縮・安定120fps。</p> <div class="meta"> <span>📅 2026年8月20日</span> <span>⏱ 約3分</span> <span>🔗 出典 5 件</span> </div> </section> <div class="article-layout" style="--topic:#0277bd"> <div> <article class="prose" data-has-mermaid="0"><p>今日の主役は<strong>AIネイティブ開発ツールの定着</strong>だ。現行安定版は<strong>Flutter 3.47 / Dart 3.13</strong>。Google I/O 2026の3.44/Dart 3.12公開後、<strong>2/5/8/11月の年4回サイクル</strong>で3.47に到達し、2026ロードマップは最低4回のstableをコミットしている。バージョンを上げるだけでなく、開発の「回し方」そのものが変わりつつある回だ。</p>
+<p>何が新しいか。<strong>Flutter MCP Server</strong>と<strong>Flutter Agent Skills</strong>で、エディタやAIエージェントがFlutterプロジェクトを直接操作できる。<strong>Agentic Hot Reload</strong>はAIのコード変更を自動hot reloadで即反映して反復を高速化。<strong>GenUI</strong>はAIがwidgetレイアウトをその場で合成し、<strong>Genkit for Dart</strong>が生成AIアプリ構築をDartで標準化する。言語側の<strong>Dart 3.13</strong>はprimary constructorsの正式化、private named parameters、<code>.value</code>を省略できる<strong>dot shorthands</strong>、<code>no_raw_types</code>/<code>no_dynamic_casts</code> lintを備える（利用はlanguage versionを<code>^3.13.0</code>に）。</p>
+<figure class='fig'><svg viewBox='0 0 600 180' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='0' y='0' width='600' height='180' fill='#eaf6fd'></rect><text x='16' y='26' font-size='14' font-weight='bold' fill='#0277bd'>2026 状態管理の選定図</text><rect x='20' y='42' width='135' height='120' rx='10' fill='#e3f2fd' stroke='#1f6feb' stroke-width='2'></rect><text x='87' y='66' font-size='13' font-weight='bold' fill='#1a56c4' text-anchor='middle'>新規</text><text x='87' y='96' font-size='15' font-weight='bold' fill='#1a56c4' text-anchor='middle'>Riverpod 3</text><text x='87' y='122' font-size='11' fill='#2a4d80' text-anchor='middle'>compile-time安全</text><text x='87' y='140' font-size='11' fill='#2a4d80' text-anchor='middle'>Mutations/persist</text><rect x='165' y='42' width='135' height='120' rx='10' fill='#ede7f6' stroke='#5840d6' stroke-width='2'></rect><text x='232' y='66' font-size='13' font-weight='bold' fill='#4a3aa0' text-anchor='middle'>監査/規制</text><text x='232' y='96' font-size='15' font-weight='bold' fill='#4a3aa0' text-anchor='middle'>Bloc 9</text><text x='232' y='122' font-size='11' fill='#5a4aa0' text-anchor='middle'>event traceability</text><text x='232' y='140' font-size='11' fill='#5a4aa0' text-anchor='middle'>blocTest</text><rect x='310' y='42' width='135' height='120' rx='10' fill='#e0f2f1' stroke='#00897b' stroke-width='2'></rect><text x='377' y='66' font-size='13' font-weight='bold' fill='#00695c' text-anchor='middle'>細粒度</text><text x='377' y='96' font-size='15' font-weight='bold' fill='#00695c' text-anchor='middle'>Signals 6</text><text x='377' y='122' font-size='11' fill='#00695c' text-anchor='middle'>surgicalな更新</text><text x='377' y='140' font-size='11' fill='#00695c' text-anchor='middle'>再ビルド最小</text><rect x='455' y='42' width='125' height='120' rx='10' fill='#fdeaea' stroke='#dc2626' stroke-width='2'></rect><text x='517' y='66' font-size='13' font-weight='bold' fill='#b91c1c' text-anchor='middle'>回避</text><text x='517' y='96' font-size='15' font-weight='bold' fill='#b91c1c' text-anchor='middle'>GetX</text><text x='517' y='122' font-size='11' fill='#7a2222' text-anchor='middle'>12か月超の</text><text x='517' y='140' font-size='11' fill='#7a2222' text-anchor='middle'>PJでは非推奨</text></svg><figcaption>図1：新規=Riverpod3、監査=Bloc9、細粒度=Signals6、GetXは回避。</figcaption></figure>
+<p><strong>Riverpod 3.0/3.3.x</strong>はcompile-time safety・unified Ref・失敗providerの自動リトライ（指数バックオフ）・<code>@mutation</code>による副作用のIdle/Pending/Success/Error反映・experimentalなoffline persistence（<code>riverpod_sqflite</code>）を備え、新規の既定。性能重視の細粒度反応性は<strong>Signals 6.0</strong>、監査/規制業界や複雑並行は<strong>Bloc 9.0/9.2.x</strong>が向く。<code>ref.watch(provider.select(...))</code>で最小スライス購読するのが再ビルド削減の基本だ。</p>
+<p>描画は<strong>Impeller</strong>で一段安定した。iOS＋Android(API 29+)＋3.47でデスクトップ3OSの既定になり、全シェーダーを<strong>ビルド時にAOT</strong>で事前コンパイルしてshader compilation jankを解消。複雑シーンでraster<strong>約50%短縮</strong>、アニメ重負荷でSkia比<strong>約17%省電力</strong>、高リフレッシュで安定<strong>120fps</strong>を出す。</p>
+<figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='0' y='0' width='600' height='150' fill='#eaf6fd'></rect><text x='16' y='26' font-size='14' font-weight='bold' fill='#0277bd'>フレーム予算（1フレームの持ち時間）</text><g font-size='12' fill='#0b3d54'><text x='20' y='58'>60fps</text><rect x='90' y='46' width='320' height='16' rx='4' fill='#56c5f5'></rect><text x='420' y='59'>16ms</text><text x='20' y='90'>90fps</text><rect x='90' y='78' width='220' height='16' rx='4' fill='#29a3e0'></rect><text x='320' y='91'>11ms</text><text x='20' y='122'>120fps</text><rect x='90' y='110' width='166' height='16' rx='4' fill='#0277bd'></rect><text x='266' y='123'>8.3ms</text></g></svg><figcaption>図2：フレーム予算。120fps狙いはrasterを8.3ms未満に収める。</figcaption></figure>
+<p><strong>自分が試すなら</strong>：新規appはRiverpod 3＋<code>@riverpod</code> codegenで組み、計測は必ず<strong>profileモード</strong>でDevTools Performanceからtimeline traceを取る（debug VMは大幅に遅い）。最頻出の性能問題は<strong>不要なwidget rebuild</strong>——<code>const</code>を付けたwidgetは再ビルドを完全スキップし、大きな<code>build()</code>は分割、アニメ領域は<code>RepaintBoundary</code>で隔離する。<strong>落とし穴</strong>：AIネイティブ系（MCP Server/GenUI/Agentic Hot Reload）は強力だが発展途上で、GenUIの生成レイアウトはそのまま本番投入せずレビュー前提で。<strong>まとめ</strong>：3.47/Dart 3.13でAI開発が回しやすくなり、状態管理は用途別に割り切り、Impellerでフレーム予算を守れば120fpsが現実的な一日だ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://blog.flutter.dev/flutter-darts-2026-roadmap-89378f17ebbd" target="_blank" rel="noopener noreferrer"> Flutter &amp; Dart 2026 roadmap </a> </li><li> <a href="https://dart.dev/blog/announcing-dart-3-12" target="_blank" rel="noopener noreferrer"> Announcing Dart 3.12 </a> </li><li> <a href="https://sharpskill.dev/en/blog/flutter/flutter-state-management-2026-riverpod-bloc-getx" target="_blank" rel="noopener noreferrer"> Flutter State Management 2026 (SharpSkill) </a> </li><li> <a href="https://shindekalpesharun.medium.com/flutter-impeller-how-to-achieve-native-120fps-performance-in-2026-68ec28cc71e5" target="_blank" rel="noopener noreferrer"> Flutter + Impeller: Native 120fps in 2026 </a> </li><li> <a href="https://docs.flutter.dev/release/whats-new" target="_blank" rel="noopener noreferrer"> What&#39;s new (Flutter docs) </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

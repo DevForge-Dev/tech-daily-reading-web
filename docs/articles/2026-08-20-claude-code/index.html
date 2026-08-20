@@ -1,0 +1,65 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>8月のClaude Codeを総ざらい — v2.1.235スペルチェック、利用上限リセット後の自動継続、そしてMicrosoft調査『マージPR+24%』 — デイリー技術深掘り 読み物</title><meta name="description" content="8月はv2.1.229〜235がほぼ日次でリリースされ、細かな安定性・セキュリティ・エディタ体験の改善が積み上がった。235はプロンプト入力のスペルチェック、234は利用上限リセット後のセッション自動継続と資格情報漏洩対策。裏づけとしてMicrosoft社内の数万人規模調査が『Claude Code採用でマージPRが約24%増、効果は4か月持続』を示し、法人30万社超・ラン率売上25億ドル超という市場規模と、公式101プラグインのエコシステムが並ぶ回。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-20-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="8月のClaude Codeを総ざらい — v2.1.235スペルチェック、利用上限リセット後の自動継続、そしてMicrosoft調査『マージPR+24%』 — デイリー技術深掘り 読み物"><meta property="og:description" content="8月はv2.1.229〜235がほぼ日次でリリースされ、細かな安定性・セキュリティ・エディタ体験の改善が積み上がった。235はプロンプト入力のスペルチェック、234は利用上限リセット後のセッション自動継続と資格情報漏洩対策。裏づけとしてMicrosoft社内の数万人規模調査が『Claude Code採用でマージPRが約24%増、効果は4か月持続』を示し、法人30万社超・ラン率売上25億ドル超という市場規模と、公式101プラグインのエコシステムが並ぶ回。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-20-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>8月のClaude Codeを総ざらい — v2.1.235スペルチェック、利用上限リセット後の自動継続、そしてMicrosoft調査『マージPR+24%』</h1> <p class="lede">8月はv2.1.229〜235がほぼ日次でリリースされ、細かな安定性・セキュリティ・エディタ体験の改善が積み上がった。235はプロンプト入力のスペルチェック、234は利用上限リセット後のセッション自動継続と資格情報漏洩対策。裏づけとしてMicrosoft社内の数万人規模調査が『Claude Code採用でマージPRが約24%増、効果は4か月持続』を示し、法人30万社超・ラン率売上25億ドル超という市場規模と、公式101プラグインのエコシステムが並ぶ回。</p> <div class="meta"> <span>📅 2026年8月20日</span> <span>⏱ 約2分</span> <span>🔗 出典 5 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="0"><p>今日は特定の新機能というより、<strong>8月に積み上がった日次改善の総ざらい</strong>が主題だ。Claude Codeはこの月、<strong>v2.1.229〜235</strong>をほぼ毎日刻むペースでリリースし、派手さはないが安定性・セキュリティ・エディタ体験を着実に底上げしてきた。点を線にすると流れが見えてくる。</p>
+<figure class='fig'><svg viewBox='0 0 600 180' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='0' y='0' width='600' height='180' fill='#f6faf7'></rect><text x='16' y='26' font-size='14' font-weight='bold' fill='#1a7f37'>8月のリリース連打（v2.1.229→235）</text><line x1='30' y1='120' x2='570' y2='120' stroke='#3fb950' stroke-width='2'></line><g font-size='11' fill='#25603a' text-anchor='middle'><circle cx='60' cy='120' r='5' fill='#3fb950'></circle><text x='60' y='108'>229</text><text x='60' y='142'>接続維持</text><circle cx='160' cy='120' r='5' fill='#3fb950'></circle><text x='160' y='108'>231</text><text x='160' y='142'>OAuth修正</text><circle cx='260' cy='120' r='5' fill='#3fb950'></circle><text x='260' y='108'>232</text><text x='260' y='142'>@連携</text><circle cx='360' cy='120' r='5' fill='#3fb950'></circle><text x='360' y='108'>233</text><text x='360' y='142'>GitLab MR</text><circle cx='460' cy='120' r='5' fill='#3fb950'></circle><text x='460' y='108'>234</text><text x='460' y='142'>自動継続</text><circle cx='540' cy='120' r='6' fill='#1a7f37'></circle><text x='540' y='106'>235</text><text x='540' y='142'>スペル</text></g></svg><figcaption>図1：8月はほぼ日次でリリース。安定性→セキュリティ→UXの順に厚みが増した。</figcaption></figure>
+<p>直近の目玉を2つ。<strong>v2.1.234</strong>（8/17）は、利用上限に達したセッションが<strong>上限リセット後に自動で継続</strong>するようになり、長時間の作業が途中で止まらなくなった。あわせて<strong>資格情報の漏洩に対するセキュリティ保護</strong>を強化。<strong>v2.1.235</strong>（8/18）はプロンプト入力欄に<strong>スペルチェック</strong>（任意）を追加し、インストール済みのaspell/hunspell/ispellでミス単語に下線を引く。加えて言語サーバ再接続時のキャッシュ失効、ネストMarkdownリストのズレ、Shift+Tab誤承認などUIの細かな不具合を多数修正した。</p>
+<p>こうした改善が<strong>実務でどれだけ効くか</strong>を裏づけるのが、Microsoft Researchの査読付き調査だ。数万人規模のエンジニアを対象に、<strong>Claude Code採用者は未採用時よりマージされたPRが約24%多く、効果は4か月の観測期間を通じて持続</strong>したという。ただし生産性の裏でトークン支出が数百万規模に達する点も指摘され、<strong>予算ガバナンス</strong>の必要性が説かれている。</p>
+<figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='0' y='0' width='600' height='150' fill='#f7f6fb'></rect><text x='16' y='26' font-size='14' font-weight='bold' fill='#5840d6'>導入効果と市場規模</text><rect x='20' y='44' width='180' height='90' rx='10' fill='#eaf7ee' stroke='#3fb950' stroke-width='2'></rect><text x='110' y='84' font-size='26' font-weight='bold' fill='#1a7f37' text-anchor='middle'>+24%</text><text x='110' y='110' font-size='12' fill='#25603a' text-anchor='middle'>マージPR（4か月持続）</text><rect x='212' y='44' width='180' height='90' rx='10' fill='#efeafc' stroke='#7b3fe4' stroke-width='2'></rect><text x='302' y='84' font-size='26' font-weight='bold' fill='#5a2bbf' text-anchor='middle'>30万社</text><text x='302' y='110' font-size='12' fill='#4a3aa0' text-anchor='middle'>法人顧客</text><rect x='404' y='44' width='176' height='90' rx='10' fill='#eef4fb' stroke='#1f6feb' stroke-width='2'></rect><text x='492' y='84' font-size='24' font-weight='bold' fill='#1a56c4' text-anchor='middle'>25億$</text><text x='492' y='110' font-size='12' fill='#2a4d80' text-anchor='middle'>ラン率売上</text></svg><figcaption>図2：Microsoft調査の+24%と、法人30万社・ラン率25億ドルの市場規模。</figcaption></figure>
+<p><strong>足回りの知見</strong>も更新された。設定ファイル<code>CLAUDE.md</code>は公式鉄則「<strong>200行以内・削れる行は全部削る</strong>」が軸で、長いほどトークンが増え指示が競合して精度が落ちる——<strong>短いほど守られる</strong>。<code>.claude/rules/</code>の正式機能化やauto memoryも押さえたい。エコシステム面では公式マーケットに<strong>Anthropic製33＋パートナー製68の計101プラグイン</strong>が並び、Skills・Subagents・Hooks・MCPを束ねて<code>/plugin</code>で導入できる。</p>
+<p><strong>自分が試すなら</strong>：手元のCLAUDE.mdを200行に圧縮し、削った規約を<code>.claude/rules/</code>へ分離してトークンを軽くする。CIにはヘッドレスモードで自動レビューを噛ませたい。<strong>落とし穴</strong>：日次リリースは便利だが、スペルチェックはaspell等の外部辞書が前提で、入っていなければ動かない。<strong>まとめ</strong>：小さな改善の連打が「マージPR+24%」という実効に結実し、101プラグインの土台が広がった——数字で振り返るのに良い一日だった。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://github.com/anthropics/claude-code/releases/tag/v2.1.235" target="_blank" rel="noopener noreferrer"> Claude Code v2.1.235 リリース </a> </li><li> <a href="https://therouter.ai/news/claude-code-microsoft-enterprise-study-token-budget-governance/" target="_blank" rel="noopener noreferrer"> TheRouter — Microsoft社内調査（マージPR+24%） </a> </li><li> <a href="https://uravation.com/media/claude-md-best-practices-2026/" target="_blank" rel="noopener noreferrer"> Uravation — CLAUDE.mdベストプラクティス20選 </a> </li><li> <a href="https://www.agensi.io/learn/claude-code-plugin-marketplace-guide" target="_blank" rel="noopener noreferrer"> agensi — プラグインマーケットプレイス（公式101本） </a> </li><li> <a href="https://zenn.dev/seeda_yuto/articles/claude-code-tips-2026" target="_blank" rel="noopener noreferrer"> Zenn — Claude Codeを使いこなす10のTips </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
