@@ -1,0 +1,64 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>出力を短く、既定を賢く — Conciseスタイルとv2.1.236のANTHROPIC_DEFAULT_MODEL、そしてサブエージェント/Skillの使い分け — デイリー技術深掘り 読み物</title><meta name="description" content="v2.1.236→237が連日リリース。237は前置きを省いて結果先出しする組み込み出力スタイル『Concise』とLLMゲートウェイのキャッシュ不具合修正、236は新規セッションの既定モデルを固定するANTHROPIC_DEFAULT_MODELとセッション間notify_when_idle。VS Code拡張のFocus viewとOpus 5(1Mコンテキスト・価格据え置き)も追加。運用面はサブエージェント(独自コンテキスト・最終要約のみ)とSkillの線引きが軸で、裏づけとして30人チーム+35%、ラン率25億ドルの数字が並ぶ回。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-21-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="出力を短く、既定を賢く — Conciseスタイルとv2.1.236のANTHROPIC_DEFAULT_MODEL、そしてサブエージェント/Skillの使い分け — デイリー技術深掘り 読み物"><meta property="og:description" content="v2.1.236→237が連日リリース。237は前置きを省いて結果先出しする組み込み出力スタイル『Concise』とLLMゲートウェイのキャッシュ不具合修正、236は新規セッションの既定モデルを固定するANTHROPIC_DEFAULT_MODELとセッション間notify_when_idle。VS Code拡張のFocus viewとOpus 5(1Mコンテキスト・価格据え置き)も追加。運用面はサブエージェント(独自コンテキスト・最終要約のみ)とSkillの線引きが軸で、裏づけとして30人チーム+35%、ラン率25億ドルの数字が並ぶ回。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-21-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>出力を短く、既定を賢く — Conciseスタイルとv2.1.236のANTHROPIC_DEFAULT_MODEL、そしてサブエージェント/Skillの使い分け</h1> <p class="lede">v2.1.236→237が連日リリース。237は前置きを省いて結果先出しする組み込み出力スタイル『Concise』とLLMゲートウェイのキャッシュ不具合修正、236は新規セッションの既定モデルを固定するANTHROPIC_DEFAULT_MODELとセッション間notify_when_idle。VS Code拡張のFocus viewとOpus 5(1Mコンテキスト・価格据え置き)も追加。運用面はサブエージェント(独自コンテキスト・最終要約のみ)とSkillの線引きが軸で、裏づけとして30人チーム+35%、ラン率25億ドルの数字が並ぶ回。</p> <div class="meta"> <span>📅 2026年8月21日</span> <span>⏱ 約3分</span> <span>🔗 出典 5 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="0"><p>今日は特定の一機能というより、<strong>『出力を短く・既定を賢く』</strong>の両輪が主題だ。Claude Codeは<strong>v2.1.236→237</strong>を連日で刻み、応答の冗長さとモデル選択という日々の摩擦を削りにきた。</p>
+<p><strong>何が新しいか</strong>。<strong>v2.1.237</strong>は組み込み出力スタイル<strong>「Concise（簡潔）」</strong>を追加。<code>/config</code>の「Output style」から選ぶと、前置きやナレーションを省いて<strong>結果から先に</strong>返す。作業自体の丁寧さは保ったまま読み時間とトークンだけを削るのがミソで、詳細が要るなら追加で尋ねればよい。あわせて<strong>LLMゲートウェイ/カスタムbase URL</strong>経由でプロンプトキャッシュが効かない不具合も修正された。<strong>v2.1.236</strong>は環境変数<strong><code>ANTHROPIC_DEFAULT_MODEL</code></strong>で新規セッションの既定モデルを指定でき、<code>/model</code>選択が優先され<strong>再起動後も保持</strong>される（都度上書きの<code>ANTHROPIC_MODEL</code>との違い）。さらにセッション間SendMessageに<code>notify_when_idle</code>（別セッションが次にアイドルになったら一度だけ通知）が加わった。エディタ側ではVS Code拡張に<strong>Focus view</strong>（ツール実行ログを畳んで会話の見通しを確保）、そして<strong>Opus 5</strong>が既定Opusに——<strong>1Mトークン</strong>コンテキスト対応で価格はOpus 4.8据え置きだ。</p>
+<figure class='fig'><svg viewBox='0 0 600 180' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='0' y='0' width='600' height='180' fill='#f6faf7'></rect><text x='16' y='26' font-size='14' font-weight='bold' fill='#1a7f37'>サブエージェント と Skill の使い分け</text><rect x='20' y='44' width='270' height='118' rx='10' fill='#eaf7ee' stroke='#3fb950' stroke-width='2'></rect><text x='36' y='70' font-size='13' font-weight='bold' fill='#15803d'>サブエージェント</text><text x='36' y='94' font-size='12' fill='#1e5b31'>独自コンテキスト/ツール/モデル</text><text x='36' y='114' font-size='12' fill='#1e5b31'>親には最終要約だけ返る</text><text x='36' y='138' font-size='12' fill='#1e5b31'>→ 重い調査・監査を隔離</text><rect x='310' y='44' width='270' height='118' rx='10' fill='#efeafc' stroke='#7b3fe4' stroke-width='2'></rect><text x='326' y='70' font-size='13' font-weight='bold' fill='#5a2bbf'>Skill</text><text x='326' y='94' font-size='12' fill='#4a3aa0'>手順を逐次に実行</text><text x='326' y='114' font-size='12' fill='#4a3aa0'>中間結果を目で追いたい時</text><text x='326' y='138' font-size='12' fill='#4a3aa0'>→ 対話的な作業に向く</text></svg><figcaption>図1：中間結果を後で見ないならサブエージェント、逐次操作ならSkill。</figcaption></figure>
+<p><strong>仕組みと勘所</strong>。運用面の中心は<strong>サブエージェント</strong>だ。独自のコンテキスト・ツール・モデルを持つ別インスタンスで、親には<strong>最終要約だけ</strong>が返る。だから深い検索・ログ解析・依存監査のような『中間結果を後で見ない副次タスク』を切り出せば、メイン会話を汚さずコンテキストを節約できる。逆に手順を目で追って逐次操作したいなら<strong>Skill</strong>を使う、という線引きが明快だ。加えて<strong>Hooks</strong>でライフサイクルイベントに決定的（deterministic）な制御を差し込み、<code>memory / hooks / skills / subagents / plugins / MCP</code>を<strong>別レイヤー</strong>として設計するのが上級者の型になってきた。</p>
+<figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='0' y='0' width='600' height='150' fill='#f7f6fb'></rect><text x='16' y='26' font-size='14' font-weight='bold' fill='#5840d6'>導入効果と市場の勢い</text><rect x='20' y='44' width='180' height='90' rx='10' fill='#eaf7ee' stroke='#3fb950' stroke-width='2'></rect><text x='110' y='84' font-size='26' font-weight='bold' fill='#1a7f37' text-anchor='middle'>+35%</text><text x='110' y='110' font-size='12' fill='#25603a' text-anchor='middle'>30人チーム(4か月持続)</text><rect x='212' y='44' width='180' height='90' rx='10' fill='#eef4fb' stroke='#1f6feb' stroke-width='2'></rect><text x='302' y='84' font-size='24' font-weight='bold' fill='#1a56c4' text-anchor='middle'>25億$</text><text x='302' y='110' font-size='12' fill='#2a4d80' text-anchor='middle'>ラン率売上</text><rect x='404' y='44' width='176' height='90' rx='10' fill='#efeafc' stroke='#7b3fe4' stroke-width='2'></rect><text x='492' y='84' font-size='26' font-weight='bold' fill='#5a2bbf' text-anchor='middle'>10x</text><text x='492' y='110' font-size='12' fill='#4a3aa0' text-anchor='middle'>3か月で成長</text></svg><figcaption>図2：+35%の生産性、ラン率25億ドル、3か月で10倍の勢い。</figcaption></figure>
+<p><strong>自分が試すなら</strong>：定常作業とCIログはConciseを既定にし、チームの<code>ANTHROPIC_DEFAULT_MODEL</code>を揃えて『どのモデルで走ったか』の揺れを消す。重い調査は迷わずサブエージェントへ回す。<strong>裏づけ</strong>も厚い——30人開発チームは共有スキル22本・Hooks11本を整備して<strong>四半期で+35%</strong>の生産性、効果は4か月持続。市場でもラン率売上<strong>25億ドル</strong>超、ローンチ3か月で10倍、法人サブスクは年初から4倍と、まさに『ChatGPTモーメント』の様相だ。<strong>注意点</strong>：Conciseは端的すぎると感じたら都度詳細を要求する前提で、<code>ANTHROPIC_DEFAULT_MODEL</code>も<code>/model</code>選択に上書きされる。<strong>まとめ</strong>：小さなUX/設定改善（Concise・既定モデル・Focus view）と、サブエージェント/Skillの使い分けが噛み合って、日常運用の摩擦がまた一段下がった。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://dev.classmethod.jp/en/articles/20260820-cc-updates-v2-1-237/" target="_blank" rel="noopener noreferrer"> classmethod — Claude Code v2.1.237（Concise出力スタイル） </a> </li><li> <a href="https://code.claude.com/docs/en/changelog" target="_blank" rel="noopener noreferrer"> Claude Code 公式Changelog（v2.1.236） </a> </li><li> <a href="https://www.totalum.app/blog/claude-code-subagents-totalum" target="_blank" rel="noopener noreferrer"> Totalum — Claude Code subagents本番運用プレイブック2026 </a> </li><li> <a href="https://www.digitalapplied.com/blog/case-study-claude-code-team-adoption-30-dev-shop-2026" target="_blank" rel="noopener noreferrer"> DigitalApplied — 30人開発チーム導入事例（+35%） </a> </li><li> <a href="https://www.uncoveralpha.com/p/anthropics-claude-code-is-having" target="_blank" rel="noopener noreferrer"> UncoverAlpha — Claude CodeのChatGPTモーメント </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

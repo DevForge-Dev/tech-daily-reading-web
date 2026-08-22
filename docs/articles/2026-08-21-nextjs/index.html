@@ -1,0 +1,65 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>依存ゼロのCanvas 2Dで作る星座パーティクル背景 — 空間グリッドでO(n²)を回避し、&#39;use client&#39;島に隔離する — デイリー技術深掘り 読み物</title><meta name="description" content="粒子が浮遊し近い者同士が線で結ばれ、カーソルで反発/引き寄せられるconstellation背景。GPUシェーダーやr3fの手前で、数百〜千粒子なら2D canvas(数KB・依存ゼロ)で60fpsに収まる。核は接続線の空間グリッド最適化(O(n²)→O(n))、面積比例の粒子数、DPR≤2、画面外停止。Next.jsではcanvas島だけ'use client'にしRSC本体の下に敷き、cleanupでrAF/listenerを必ず後始末。tsParticles v3も選べるが単純背景は自前で十分。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-21-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="依存ゼロのCanvas 2Dで作る星座パーティクル背景 — 空間グリッドでO(n²)を回避し、'use client'島に隔離する — デイリー技術深掘り 読み物"><meta property="og:description" content="粒子が浮遊し近い者同士が線で結ばれ、カーソルで反発/引き寄せられるconstellation背景。GPUシェーダーやr3fの手前で、数百〜千粒子なら2D canvas(数KB・依存ゼロ)で60fpsに収まる。核は接続線の空間グリッド最適化(O(n²)→O(n))、面積比例の粒子数、DPR≤2、画面外停止。Next.jsではcanvas島だけ'use client'にしRSC本体の下に敷き、cleanupでrAF/listenerを必ず後始末。tsParticles v3も選べるが単純背景は自前で十分。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-21-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>依存ゼロのCanvas 2Dで作る星座パーティクル背景 — 空間グリッドでO(n²)を回避し、&#39;use client&#39;島に隔離する</h1> <p class="lede">粒子が浮遊し近い者同士が線で結ばれ、カーソルで反発/引き寄せられるconstellation背景。GPUシェーダーやr3fの手前で、数百〜千粒子なら2D canvas(数KB・依存ゼロ)で60fpsに収まる。核は接続線の空間グリッド最適化(O(n²)→O(n))、面積比例の粒子数、DPR≤2、画面外停止。Next.jsではcanvas島だけ&#39;use client&#39;にしRSC本体の下に敷き、cleanupでrAF/listenerを必ず後始末。tsParticles v3も選べるが単純背景は自前で十分。</p> <div class="meta"> <span>📅 2026年8月21日</span> <span>⏱ 約4分</span> <span>🔗 出典 5 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="0"><p><strong>背景</strong>。ヒーローやフッターに敷く『粒子が浮遊し、近い粒子同士が線で結ばれ、カーソルの周りで反発/引き寄せられる』ネットワーク型背景——いわゆる<strong>particles.js / constellation</strong>効果は、ランディングやSaaSで今も定番だ。このテーマの勘所は<strong>『GPUシェーダーやreact-three-fiberを持ち出す手前で、Canvas 2Dだけで足りる演出が多い』</strong>という判断軸にある。</p>
+<p><strong>何が重要か</strong>。粒子数が数百〜千で、線を結びカーソルに反応する程度なら、<strong>2D canvas（数KB・依存ゼロ）</strong>で60fpsに収まる。WebGLコンテキストの枯渇（Safari/iOSの上限）もWASMロードコストも無い。実装は<strong>1つの<code>&lt;canvas&gt;</code>＋<code>requestAnimationFrame</code></strong>で『更新(step)→描画(render)』を回すだけ。粒子は<code>{x,y,vx,vy,r}</code>で端で反射し、カーソルは影響半径内だけ<strong>距離フォールオフ</strong>（<code>force = 1 - d/R</code>）で押し引きする。DOM要素は増やさない（粒子をdivにするとレイアウト/合成が破綻する）。</p>
+<figure class='fig'><svg viewBox='0 0 600 160' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='0' y='0' width='600' height='160' fill='#eef4fb'></rect><text x='16' y='26' font-size='14' font-weight='bold' fill='#1a56c4'>接続線の計算量：総当たり vs 空間グリッド</text><rect x='20' y='44' width='270' height='96' rx='10' fill='#fdeaea' stroke='#dc2626' stroke-width='2'></rect><text x='36' y='70' font-size='13' font-weight='bold' fill='#b91c1c'>総当たり O(n²)</text><text x='36' y='94' font-size='12' fill='#7a2222'>全粒子ペアを比較</text><text x='36' y='114' font-size='12' fill='#7a2222'>粒子が増えると即カクつく</text><rect x='310' y='44' width='270' height='96' rx='10' fill='#eaf7ee' stroke='#16a34a' stroke-width='2'></rect><text x='326' y='70' font-size='13' font-weight='bold' fill='#15803d'>空間グリッド O(n)</text><text x='326' y='94' font-size='12' fill='#1e5b31'>自セル＋隣接だけ比較</text><text x='326' y='114' font-size='12' fill='#1e5b31'>平方比較でsqrtも省略</text></svg><figcaption>図1：1辺＝接続距離のグリッドで近傍だけ判定し、線描画を軽くする。</figcaption></figure>
+<p><strong>仕組みの核</strong>は近傍接続の最適化だ。線判定を総当たりにすると<strong>O(n²)</strong>で即カクつくため、キャンバスを『1辺＝接続距離』の<strong>空間グリッド</strong>に分割し、自セル＋隣接セルだけ比較して<strong>O(n)</strong>に落とす。距離は<code>Math.sqrt</code>を省いて<strong>平方のまま比較</strong>し、線の濃さは<code>alpha = 1 - dSq/maxSq</code>で近いほど濃く。粒子数は固定でなく<strong>画面面積×密度</strong>で算出し上限でクランプ（モバイルで密集、ワイドでスカスカになるのを防ぐ）。Retinaは<code>canvas.width = W*dpr</code>＋<code>setTransform</code>で対応しつつ<strong>DPRは2で頭打ち</strong>（3xで全画面を毎フレーム塗るとフィルレートで焼ける）。省電力として<code>IntersectionObserver</code>で画面外は<code>if(!inView) return</code>、<code>visibilitychange</code>も併用する。</p>
+<figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='0' y='0' width='600' height='150' fill='#f7f6fb'></rect><text x='16' y='26' font-size='14' font-weight='bold' fill='#5840d6'>2D canvas の快適域と切替の閾値</text><rect x='20' y='46' width='360' height='42' rx='8' fill='#eaf7ee' stroke='#16a34a' stroke-width='2'></rect><text x='200' y='72' font-size='12.5' fill='#15803d' text-anchor='middle'>数百〜千粒子＋単純な線 → 2D canvas(数KB)</text><rect x='388' y='46' width='192' height='42' rx='8' fill='#efeafc' stroke='#7b3fe4' stroke-width='2'></rect><text x='484' y='72' font-size='12.5' fill='#5a2bbf' text-anchor='middle'>数千粒子/発光 → WebGL</text><text x='20' y='118' font-size='12' fill='#5a5a60'>目安：依存ゼロで足りるうちは自前実装、超えたらthree.js/OGLへ。</text></svg><figcaption>図2：粒子数と表現の重さで2D canvasとWebGLを切り替える。</figcaption></figure>
+<p><strong>Next.js（App Router）への組み込み</strong>。canvas/window/rAF/matchMediaは全てブラウザAPIなので、背景コンポーネントだけ<strong><code>'use client'</code></strong>にし、<strong>ページ本体・データ取得はRSCのまま</strong>下層（<code>z-index</code>）に敷く。canvasは初期HTMLで空タグ、<code>useEffect</code>で初めて描くので<strong>hydration mismatchが出ない</strong>プログレッシブエンハンスメントになる。<code>useEffect</code>の戻り値で<strong><code>cancelAnimationFrame</code>とlistener/observerの後始末を必ず</strong>行い、Strict Modeの二重マウントや離脱でのループ多重化を防ぐ。canvasは<code>pointer-events:none</code>で下のボタンを触れるように。重いライブラリ（tsParticles v3やthree）を使う島は<strong><code>next/dynamic</code>の<code>ssr:false</code></strong>で初期JSから外す。ライブラリを使うなら現行は<strong>tsParticles v3</strong>（<code>@tsparticles/react</code>＋<code>@tsparticles/slim</code>、起動時に一度<code>initParticlesEngine/loadSlim</code>）で、旧<code>react-tsparticles</code>は非推奨。ただしslimでも数十KB級なので、単純な背景は自前の数KB実装で十分なことも多い。</p>
+<p><strong>a11yと落とし穴</strong>。背景は純粋な装飾なので<code>aria-hidden</code>、そして<strong><code>prefers-reduced-motion</code></strong>では<code>step()</code>を止め<strong>静止1フレーム</strong>だけ描く（WCAG 2.2.2 Pause/Stop/Hideに沿い手動停止も添えると堅い）。Reactで作るなら<strong>毎フレーム<code>setState</code>は厳禁</strong>——座標は<code>useRef</code>に持ちcanvasへ直接描く。<code>clearRect</code>忘れは残像の元。数千粒子や発光/加算合成を狙う段になったら<strong>2D canvasの快適域を超えるサイン</strong>で、WebGLやthree.js/OGLへ切り替える。<strong>まとめ</strong>：面積比例の粒子数・空間グリッド・DPR≤2・画面外停止の4点を押さえれば、依存ゼロ数KBで事故らない星座背景が作れる。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API/Tutorial/Optimizing_canvas" target="_blank" rel="noopener noreferrer"> MDN — Optimizing canvas </a> </li><li> <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/At-rules/@media/prefers-reduced-motion" target="_blank" rel="noopener noreferrer"> MDN — prefers-reduced-motion </a> </li><li> <a href="https://particles.js.org/guides/react" target="_blank" rel="noopener noreferrer"> tsParticles React 公式ガイド（v3・loadSlim） </a> </li><li> <a href="https://github.com/tsparticles/react" target="_blank" rel="noopener noreferrer"> tsParticles/react リポジトリ </a> </li><li> <a href="https://cruip.com/how-to-create-a-beautiful-particle-animation-with-html-canvas/" target="_blank" rel="noopener noreferrer"> Cruip — Beautiful Particle Animation with HTML Canvas </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
