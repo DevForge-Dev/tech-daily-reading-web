@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-08-22T04:47:24.061Z",
+  "generatedAt": "2026-08-23T04:47:09.372Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,92 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-08-23-claude-code",
+      "date": "2026-08-23",
+      "topic": "Claude Code",
+      "title": "v2.1.239でコスト表示が正確に — データ所在地1.1倍プレミアムとself-hosted runner",
+      "lede": "派手な新機能より運用の地盤づくり。/cost や --max-budget-usd がデータ所在地の1.1倍課金を反映し、自社インフラで動かす self-hosted runner が企業運用の要になってきた。",
+      "articleHtml": "<p>今日のClaude Codeは「精度」と「企業運用」の日だった。8/21の <code>v2.1.239</code> はコスト表示の正確化が中心で、週次の公式What's New（Week32）では自社インフラで動かす <code>self-hosted runner</code> が主役。あわせて、企業導入の数字が一段跳ねたニュースも出そろった。</p>\n\n<h4>何が新しいか</h4>\n<p><code>v2.1.239</code> では、<code>/cost</code>・ステータスライン・<code>--max-budget-usd</code> のコスト見積もりに、<strong>データ所在地（US限定推論）ワークスペースの1.1倍プレミアム</strong>が反映されるようになった。これまで見積もりと請求がズレていた構成で、事前予算と実額が噛み合う。加えてPythonプロジェクトを <code>anthropic 0.x→1.x</code> へ移す <code>/claude-api</code> アップグレードコマンド、<strong>Alpine/musl</strong> ビルドでの画像貼り付け・クリップボード・音声キャプチャのネイティブ対応、<code>name@synced</code> によるクラウドセッションのプラグイン管理改善が入った。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='11.5'>\n  <rect x='0' y='0' width='600' height='200' fill='#faf9ff'/>\n  <text x='16' y='24' font-size='13' font-weight='700' fill='#4a2fb8'>1.1倍プレミアムが反映される「コストの見える所」</text>\n  <g>\n    <rect x='16' y='40' width='270' height='30' rx='6' fill='#efeaff'/>\n    <text x='28' y='59' font-weight='700' fill='#3a2bbf'>/cost</text>\n    <text x='120' y='59' fill='#333'>セッション累計コスト</text>\n    <rect x='16' y='76' width='270' height='30' rx='6' fill='#efeaff'/>\n    <text x='28' y='95' font-weight='700' fill='#3a2bbf'>ステータスライン</text>\n    <text x='150' y='95' fill='#333'>常時表示の残高感</text>\n    <rect x='16' y='112' width='270' height='30' rx='6' fill='#efeaff'/>\n    <text x='28' y='131' font-weight='700' fill='#3a2bbf'>--max-budget-usd</text>\n    <text x='190' y='131' fill='#333'>上限見積もり</text>\n    <rect x='316' y='40' width='268' height='102' rx='8' fill='#ede7ff' stroke='#7a5cff'/>\n    <text x='450' y='78' text-anchor='middle' font-size='26' font-weight='800' fill='#5a34d6'>× 1.1</text>\n    <text x='450' y='104' text-anchor='middle' fill='#4a2fb8'>データ所在地(US限定推論)</text>\n    <text x='450' y='122' text-anchor='middle' fill='#4a2fb8'>ワークスペースのみ</text>\n  </g>\n  <text x='16' y='170' fill='#666'>Bedrock / Vertex / Foundry 構成には一度きりの案内レンダラーを追加</text>\n</svg><figcaption>図1：見積もりと請求のズレを解消。データ所在地WSでは1.1倍が3つの表示に一斉反映される。</figcaption></figure>\n\n<h4>self-hosted runner という転換</h4>\n<p>Week32の目玉は Team/Enterprise 向けの自己ホスト実行環境 <code>claude self-hosted-runner</code>。自社のマシンやコンテナを、Web/モバイル/デスクトップの各セッションの<strong>実行基盤</strong>に差し替えられる。コードや機密情報をAnthropic側に置かずに回せるため、規制業界や社外持ち出し不可のリポジトリでも本番導入しやすい。あわせて、セッション同士が <code>@メンション</code>で直接やり取りする<strong>クロスセッションメッセージング</strong>（同一Mac内はローカル完結）、<code>ZIP over HTTPS</code> でのプラグイン導入、サンドボックス権限の強化が入った。</p>\n\n<h4>実務での使いどころ</h4>\n<p>自分が試すなら、まず <code>/cost</code> の新表示で普段のワークフローの実コストを測り直す。常駐エージェントのトークン予算はガバナンス込みで設計したい——市場側の数字がそれを裏づける。企業AI採用で<strong>Claudeが法人顧客30万社超・年100万ドル超の大口1,000社超</strong>に達しOpenAIを逆転、Claude Code単体の年換算売上は<strong>25億ドル</strong>でWAUは年初から倍増。国内でも<strong>みずほFGが約3万人</strong>で業務活用、楽天は新機能導入を80%短縮と報じられた。伸びる一方でトークン支出は効くので、self-hosted runner＋予算上限で「性能とコストの両取り」を狙うのが今の定石だ。</p>\n\n<h4>注意点</h4>\n<p>1.1倍が乗るのはデータ所在地WSのみで、通常WSは対象外——自分の構成がどちらかを取り違えないこと。self-hosted runner は運用責任（更新・監視・セキュリティ）が自社に移る。<code>/claude-api</code> 移行は破壊的変更を含むので、まずブランチを切って回す。</p>\n\n<h4>ひとこと</h4>\n<p>「使えるか」から「安く・安全に・大規模に回せるか」へ。コスト精度と自社ホストは、まさにその段階に入った合図だ。</p>",
+      "sources": [
+        {
+          "title": "claude-code v2.1.239 リリース",
+          "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.239"
+        },
+        {
+          "title": "公式 What’s New (Week32)",
+          "url": "https://code.claude.com/docs/en/whats-new/2026-w32"
+        },
+        {
+          "title": "AnthropicがOpenAIを逆転（eWeek）",
+          "url": "https://www.eweek.com/artificial-intelligence/anthropic-overtakes-openai-enterprise-ai-adoption-neuron/"
+        },
+        {
+          "title": "Claude Code 年換算25億ドル（MindStudio）",
+          "url": "https://www.mindstudio.ai/blog/claude-code-2-5-billion-annualized-revenue-saas-comparison"
+        },
+        {
+          "title": "日本企業導入事例2026夏（CodeKnights）",
+          "url": "https://www.codeknights.co.jp/contents/claude-japan-cases-2026summer"
+        }
+      ]
+    },
+    {
+      "id": "2026-08-23-nextjs",
+      "date": "2026-08-23",
+      "topic": "Next.js",
+      "title": "アニメーションSVGアイコンは「dモーフ」より「transform-first」— Safari非対応の罠を避ける",
+      "lede": "ハンバーガー↔×、再生↔一時停止、＋↔−。定番トグルは生パス(d)補間より「固定図形＋transform/opacity/dashoffset」が本命。純CSSならRSCのまま動く。",
+      "articleHtml": "<p>ナビ・メディア・アコーディオン・フォーム——「1つのアイコンが状態に応じて別の形へ変わる」演出は最頻出のマイクロインタラクションだ。見た目は派手でも、作り方を誤ると (1) スクリーンリーダーが壊れる、(2) ブラウザ間で形が「スナップ」する、(3) reduced-motionで動きが止まらない、の3つの罠にはまる。今日はその選び方と、Next.js App Routerでの島の切り方を整理する。</p>\n\n<h4>手法は3系統。まず transform-first を検討する</h4>\n<p><strong>本命は「固定図形＋transform / opacity / stroke-dashoffset」</strong>。同じ数本の <code>&lt;line&gt;</code>/<code>&lt;path&gt;</code> をSVGに固定で置き、形そのものは変えず<strong>回転・平行移動・拡縮・不透明度・dashoffset</strong>で状態を表す。例：ハンバーガー→×は上下2本を中央へ寄せて±45°回転、中央線は <code>opacity:0</code>。<code>transform</code>/<code>opacity</code>はコンポジタでGPU処理＝60fpsでINP有利、形の破綻が原理的に起きない。hover/checkbox駆動なら<strong>純CSSでServer Componentのまま</strong>（<code>'use client'</code>不要）。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='11.5'>\n  <rect x='0' y='0' width='600' height='210' fill='#f5f9ff'/>\n  <text x='16' y='22' font-size='13' font-weight='700' fill='#1f6feb'>アイコンモーフ 3手法の比較</text>\n  <g>\n    <rect x='16' y='34' width='568' height='34' rx='6' fill='#e3efff' stroke='#1f6feb'/>\n    <text x='26' y='49' font-weight='700' fill='#154a9e'>1. transform / opacity / dashoffset</text>\n    <text x='26' y='63' fill='#155724'>◎ 全ブラウザ安定・GPU合成・純CSSでRSC可 — 定番トグルはこれ</text>\n    <rect x='16' y='72' width='568' height='34' rx='6' fill='#fff6e6' stroke='#c96a1b'/>\n    <text x='26' y='87' font-weight='700' fill='#a85610'>2. 生パス(d)補間 / SMIL</text>\n    <text x='26' y='101' fill='#8a4b00'>△ dのCSSアニメはSafari非対応=Baseline未達／SMILはreduced-motion無視</text>\n    <rect x='16' y='110' width='568' height='34' rx='6' fill='#eafbef' stroke='#1a7f37'/>\n    <text x='26' y='125' font-weight='700' fill='#12692c'>3. ライブラリ（GSAP MorphSVG / Flubber / morphicons）</text>\n    <text x='26' y='139' fill='#12692c'>○ 頂点数の違う本格モーフ向け・要 'use client'（GSAPは2025無償化, morphicons〜6KB）</text>\n  </g>\n  <text x='16' y='166' fill='#333'>選択の目安：</text>\n  <text x='36' y='184' fill='#555'>ハンバーガー↔× / ＋↔− / 矢印回転 → 手法1（純CSS可）</text>\n  <text x='36' y='200' fill='#555'>星↔ハート等 形が大きく違う → 手法3。生dの単独本番採用は避ける</text>\n</svg><figcaption>図1：定番は手法1。手法2の生dはSafari非対応、手法3は本格モーフ専用。</figcaption></figure>\n\n<h4>a11y（このテーマ最重要）</h4>\n<p>アイコンモーフは<strong>見た目の問題</strong>。意味は別レイヤで保証する。本物の <code>&lt;button&gt;</code> で包み（ヒット領域44×44px）、開閉トグルは <code>aria-expanded</code>、押し込み状態は <code>aria-pressed</code> かアクセシブルな名前の切替（「再生する」↔「一時停止する」）。SVG自体は <code>aria-hidden=\"true\"</code> で隠す。<code>prefers-reduced-motion: reduce</code> では動きを止めて<strong>2状態を即切替</strong>——<strong>SMILはreduced-motionを尊重しない</strong>ので、動きはCSS（メディアクエリで囲う）かJSの <code>matchMedia</code> に寄せる。</p>\n\n<h4>Next.js（App Router）での組み込み</h4>\n<p>方針A（最優先）：transform系の開閉アイコンは <code>:has(:checked)</code> や <code>data-state</code> のCSSだけで動く＝<strong>RSCのまま・hydrationゼロ・INP/CLS有利</strong>。方針B：メニュー開閉をアプリ状態と同期するなら<strong>そのトグルの島だけ</strong> <code>'use client'</code>（初期 <code>open=false</code> をSSRと一致させればmismatch無し、フォーカス管理も島側）。方針C：GSAP/Motion/morphicons等の本格モーフは <code>'use client'</code> 島に隔離し、初期HTMLは確定状態のアイコンを描く（Progressive Enhancement）。アイコンのコンポーネント化はSVGR、色は <code>currentColor</code> でテーマ追従、外部JSは nonce/SRI 方針（8/22メモ）に従う。</p>\n\n<h4>ひとこと</h4>\n<p>「派手に見えるほど生dモーフに手を出したくなる」——でも9割はtransformで足りる。軽く・壊れず・RSCのまま、が最短ルートだ。</p>",
+      "sources": [
+        {
+          "title": "MDN: d CSS property（Safari未対応）",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/d"
+        },
+        {
+          "title": "CSS-Tricks: Line-Animated Hamburger Menu",
+          "url": "https://css-tricks.com/line-animated-hamburger-menu/"
+        },
+        {
+          "title": "Motion for React: SVG Animation",
+          "url": "https://motion.dev/docs/react-svg-animation"
+        },
+        {
+          "title": "GSAP MorphSVGPlugin Docs",
+          "url": "https://gsap.com/docs/v3/Plugins/MorphSVGPlugin/"
+        },
+        {
+          "title": "morphicons（〜6KB・依存ゼロ）",
+          "url": "https://www.morphicons.com/"
+        }
+      ]
+    },
+    {
+      "id": "2026-08-23-flutter",
+      "date": "2026-08-23",
+      "topic": "Flutter",
+      "title": "material_ui / cupertino_ui が1.0スタンドアロンに — 四半期SDKを待たずM3更新",
+      "lede": "Flutter 3.47 / Dart 3.13。material.dart は3.44で凍結、独立パッケージへ。M3更新がpub.dev経由でweekly到達し、未使用UIを外してアプリサイズも削れる。",
+      "articleHtml": "<p>今日の主役は<strong>Material / Cupertino デザインシステムの分離が実務フェーズへ</strong>入ったこと。3.44から進んでいた <code>material_ui</code> / <code>cupertino_ui</code> への切り出しが、3.47で <strong>1.0 standalone</strong> に到達し、pub.dev から weekly でリリースされるようになった。現行安定版は <strong>Flutter 3.47 / Dart 3.13</strong>。</p>\n\n<h4>何が変わったか</h4>\n<p>旧 <code>material.dart</code> / <code>cupertino.dart</code> は3.44で<strong>凍結</strong>（新機能追加なし）。UIが独立バージョニングになったことで、<strong>Material 3 の更新が四半期ごとのSDKを待たずに届く</strong>。さらに、使っていないUIパッケージをバイナリから外せるので<strong>アプリサイズの削減</strong>にもなる。あわせて Impeller がデスクトップ3OS（macOS/Windows/Linux）で既定に、Widget Previews が stable、最低要件は iOS 15 / macOS 12、Xcode 27 では UIScene ライフサイクルが必須になった。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 180' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='11.5'>\n  <rect x='0' y='0' width='600' height='180' fill='#f3fbf6'/>\n  <text x='16' y='22' font-size='13' font-weight='700' fill='#12692c'>切り出しのタイムライン</text>\n  <line x1='40' y1='120' x2='560' y2='120' stroke='#8fd3ab' stroke-width='3'/>\n  <g text-anchor='middle'>\n    <circle cx='110' cy='120' r='7' fill='#1a7f37'/>\n    <text x='110' y='150' fill='#155724' font-weight='700'>3.44</text>\n    <text x='110' y='100' fill='#333'>旧importを凍結</text>\n    <text x='110' y='86' fill='#333'>切り出し開始</text>\n    <circle cx='320' cy='120' r='9' fill='#12692c'/>\n    <text x='320' y='150' fill='#155724' font-weight='700'>3.47（現在）</text>\n    <text x='320' y='100' fill='#333'>material_ui/cupertino_ui</text>\n    <text x='320' y='86' fill='#333'>1.0 standalone・weekly</text>\n    <circle cx='520' cy='120' r='7' fill='#8a4b00'/>\n    <text x='520' y='150' fill='#8a4b00' font-weight='700'>2026秋(11月)</text>\n    <text x='520' y='100' fill='#333'>旧importを</text>\n    <text x='520' y='86' fill='#333'>正式deprecated予定</text>\n  </g>\n</svg><figcaption>図1：3.44で凍結→3.47で独立1.0→秋に旧import非推奨。移行の窓は今。</figcaption></figure>\n\n<h4>移行のやり方</h4>\n<p>importの置換は自動化されている：<code>dart fix --apply --code=migrate_design_widgets</code> でOK。失敗する場合は <code>flutter pub add material_ui cupertino_ui</code> してから再実行する。旧importは<strong>2026年秋（11月 stable）に正式 deprecated 予定</strong>なので、まだ猶予はあるが、weekly更新のメリット（M3を早く受け取れる・サイズ削減）を取りに行くなら早めに移すのが得だ。</p>\n<pre><code># import自動置換\ndart fix --apply --code=migrate_design_widgets\n# 失敗したら依存を追加してから再実行\nflutter pub add material_ui cupertino_ui\nflutter --version   # 3.47 / Dart 3.13 を確認</code></pre>\n\n<h4>実務での使いどころ・注意点</h4>\n<p>自分が試すなら、検証ブランチで <code>dart fix</code> を回し、CIのアプリサイズ計測で削減幅を見てから本線に入れる。Xcode 27 では <strong>UIScene ライフサイクル必須</strong>なので、iOS/macOSビルドはここで詰まりやすい——移行と同時に <code>AppDelegate</code>/Scene 対応を確認する。デスクトップは Impeller 既定化で初回jankが消える一方、旧レンダラー前提の描画ワークアラウンドは不要になる場合がある。周辺の定番（新規は Riverpod 3.3.1、監査/規制は Bloc 9、フレーム予算は90/120Hzで8–11ms）は据え置き。</p>\n\n<h4>ひとこと</h4>\n<p>「フレームワークのコアからUIが外れる」大きな構造変化。移行コスト自体は <code>dart fix</code> 一発で小さいので、秋の非推奨を待たず今動くのが賢い。</p>",
+      "sources": [
+        {
+          "title": "Material and Cupertino Decoupling Handbook",
+          "url": "https://www.freecodecamp.org/news/how-to-work-with-material-and-cupertino-decoupling-in-flutter-full-handbook"
+        },
+        {
+          "title": "What’s new in Flutter 3.47",
+          "url": "https://flutter.dev/blog/whats-new-in-flutter-3-47"
+        },
+        {
+          "title": "What’s new (Flutter docs)",
+          "url": "https://docs.flutter.dev/release/whats-new"
+        },
+        {
+          "title": "State Management 2026 (Riverpod vs Bloc)",
+          "url": "https://sharpskill.dev/en/blog/flutter/flutter-state-management-2026-riverpod-bloc-getx"
+        }
+      ]
+    },
     {
       "id": "2026-08-22-claude-code",
       "date": "2026-08-22",
