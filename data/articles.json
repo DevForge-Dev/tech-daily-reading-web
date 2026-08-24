@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-08-23T04:47:09.372Z",
+  "generatedAt": "2026-08-24T04:47:33.461Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,106 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-08-24-claude-code",
+      "date": "2026-08-24",
+      "topic": "Claude Code",
+      "title": "Opus 5がClaude Codeの既定Opusに — 1Mコンテキストで価格据え置き、スキャンと自動継続で運用も堅牢化",
+      "lede": "既定モデルが黙って切り替わる日。Opus 5が1Mコンテキストを携えてClaude Codeの既定Opusになり、料金はOpus 4.8と同一。スキル/プラグインのマルウェアスキャンや上限リセット後の自動継続も揃い、運用の地盤が固まってきた。",
+      "articleHtml": "<p>今日のClaude Codeは「最上位モデルの世代交代」と「運用の安全網」がテーマだった。7/24に登場した <code>Claude Opus 5</code> が既定のOpusモデルとして据えられ、あわせてスキル/プラグインのマルウェアスキャンや、利用上限リセット後の自動継続といった、派手さより実運用に効く更新が並んだ。</p><h4>何が新しいか</h4><p>Opus 5は <strong>1Mトークンのコンテキストウィンドウ</strong> を備え、Frontier-BenchやGDPval-AAといったコーディング/知識労働のベンチで最高水準を更新しつつ、料金は <strong>Opus 4.8と同一の $5 / $25 per MTok</strong> に据え置かれた。設定を変えていなくても既定Opusが切り替わるのがポイントで、Maxプランでは既に既定選択、Proでは到達できる最強モデルという位置づけ。一方 <strong>Pro / Team Standard の全体既定は引き続き Sonnet 5</strong> のままなので、用途とコストで Opus 5 / Sonnet 5 を意識的に使い分けたい。</p><figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='11.5'><rect x='0' y='0' width='600' height='210' fill='#faf9ff'/><text x='16' y='24' font-size='13' font-weight='700' fill='#4a2fb8'>プラン別の既定モデル（8/24時点）</text><rect x='16' y='38' width='180' height='150' rx='8' fill='#efeaff'/><text x='106' y='60' text-anchor='middle' font-weight='700' fill='#3a2bbf'>Max</text><text x='106' y='88' text-anchor='middle' font-size='15' font-weight='800' fill='#5a34d6'>Opus 5</text><text x='106' y='108' text-anchor='middle' fill='#555'>既定 / 最上位</text><text x='106' y='150' text-anchor='middle' fill='#555'>1M context</text><text x='106' y='168' text-anchor='middle' fill='#555'>$5 / $25 MTok</text><rect x='210' y='38' width='180' height='150' rx='8' fill='#eef4ff'/><text x='300' y='60' text-anchor='middle' font-weight='700' fill='#1f6feb'>Pro</text><text x='300' y='88' text-anchor='middle' font-size='15' font-weight='800' fill='#1f6feb'>Sonnet 5</text><text x='300' y='108' text-anchor='middle' fill='#555'>既定</text><text x='300' y='150' text-anchor='middle' fill='#555'>Opus 5 は</text><text x='300' y='168' text-anchor='middle' fill='#555'>到達可能な最強</text><rect x='404' y='38' width='180' height='150' rx='8' fill='#eef4ff'/><text x='494' y='60' text-anchor='middle' font-weight='700' fill='#1f6feb'>Team Standard</text><text x='494' y='88' text-anchor='middle' font-size='15' font-weight='800' fill='#1f6feb'>Sonnet 5</text><text x='494' y='108' text-anchor='middle' fill='#555'>既定</text><text x='494' y='150' text-anchor='middle' fill='#555'>コスト配分を</text><text x='494' y='168' text-anchor='middle' fill='#555'>見直す好機</text></svg><figcaption>図1：既定Opusは Opus 5 へ。全体既定が Sonnet 5 のプランでは、重い設計にだけ Opus 5 を指名するのが基本線。</figcaption></figure><h4>運用の安全網</h4><p>サプライチェーン対策として、サードパーティ製スキル/プラグインをマーケットプレイスへ<strong>アップロード・編集した時点で自動スキャン</strong>が走り、結果を <code>pass</code> / <code>warn</code> / <code>fail</code> の3段階で返すセキュリティ機能がベータ提供された（まずEnterprise、Cowork等にも展開）。プラグイン共有が一般化するなかの最低限のガードレールだ。さらに <code>v2.1.234</code> では<strong>利用上限（レート制限）リセット後にセッションを自動継続</strong>し、長時間作業を止めずに再開できる。資格情報の漏えい対策強化、GitLab MRのworktree/agentsビュー対応、暴走ビルドを抑えるメモリ上限、@メンションのセッション間コラボ改善も同週に入った。</p><h4>実務での使いどころ・注意点</h4><p>自分が試すなら、まず重いリファクタや大規模設計レビューだけ Opus 5 を指名し、日常は Sonnet 5 に寄せてコストを最適化する。プラグインは導入前にスキャン結果を確認する癖をつけたい。注意点として、既定が黙って変わるぶん <code>/cost</code> で実額を測り直すこと、スキャンは現状Enterprise中心のベータで万能ではないこと。市場面では Anthropic の年換算売上が7月末に約 <strong>650億ドル</strong>（1年で約7倍）、Claude Code単体でも約 <strong>150億ドル</strong> に迫り、収益の過半がエンタープライズ利用という追い風もある。</p><h4>ひとこと</h4><p>「最強を既定に、安全に、安く回す」——モデル世代交代とガードレール整備が同じ日に来たのは象徴的だ。</p>",
+      "sources": [
+        {
+          "title": "Claude Opus 5（Anthropic）",
+          "url": "https://www.anthropic.com/news/claude-opus-5"
+        },
+        {
+          "title": "スキル/プラグインのスキャン開始（Support）",
+          "url": "https://support.claude.com/en/articles/15927065-get-started-with-skill-and-plugin-scanning"
+        },
+        {
+          "title": "Claude Code changelog（v2.1.234）",
+          "url": "https://www.gradually.ai/en/changelogs/claude-code/"
+        },
+        {
+          "title": "Anthropic ARR 650億ドル/IPO（Benzinga）",
+          "url": "https://www.benzinga.com/markets/tech/26/08/61265293/anthropic-65-billion-annualized-revenue-claude-ipo"
+        }
+      ]
+    },
+    {
+      "id": "2026-08-24-nextjs",
+      "date": "2026-08-24",
+      "topic": "Next.js",
+      "title": "App Routerのファイルアップロード三択 — Server Action / Route Handler / 署名付きURLの使い分け",
+      "lede": "「input type=file を Server Action に渡すだけ」で始めると、1MBのボディ制限・一時FS・進捗バーが出せない壁に順に当たる。Next.js 16 前提で、経路の三択と進捗・検証の勘所を整理する。",
+      "articleHtml": "<p>ファイルアップロードはほぼ全アプリで必要になるのに、App Routerでは<strong>どの経路で受けるか</strong>という設計判断がまず難所になる。素朴に Server Action へ <code>&lt;input type=\"file\"&gt;</code> を渡して始めると、<strong>1MBのボディ制限</strong>、<strong>サーバーレスの一時FS</strong>、<strong>進捗バーが出せない</strong>（fetchはupload progress非対応）という壁に順番にぶつかる。Next.js 16 前提で三択を切り分ける。</p><h4>経路の三択（最初の設計判断）</h4><p><strong>(1) Server Action + formData</strong>：<code>formData.get(\"file\")</code> を <code>File</code> として受ける最も簡単な経路。プログレッシブエンハンスメントが効き、書込後の <code>revalidatePath/Tag</code> まで一直線。ただしバイト列がサーバーのメモリに乗るので<strong>大きい/多数同時には不向き</strong>。<strong>(2) Route Handler</strong>（<code>app/api/upload/route.ts</code>）：Web標準の <code>Request</code> を直接扱い、巨大ファイルは <code>request.body</code>（ReadableStream）を busboy 等でストリーム処理。CORSやカスタムヘッダなどHTTP面が要る時に。<strong>(3) 署名付きURL（presigned URL）</strong>：サーバーが「1ファイル・短時間だけ有効」のPUT URLを発行し、<strong>ブラウザが直接S3へアップロード</strong>する。サーバーはバイトに一切触れないのでボディ制限やメモリを回避でき、数MB超のユーザー投稿はこれが本命。</p><figure class='fig'><pre class='mermaid'>flowchart TD\n  A[\"アップロードしたい\"] --> B{\"サイズは?\"}\n  B -->|\"~数MB以下\"| C{\"HTTP制御が要る?\"}\n  B -->|\"数MB超\"| E[\"署名付きURL direct-to-S3\"]\n  C -->|\"No\"| D[\"Server Action formData\"]\n  C -->|\"Yes CORS/stream\"| F[\"Route Handler\"]\n  E --> G[\"XHRで進捗バー\"]\n  F --> G</pre><figcaption>図1：サイズとHTTP要件で経路を選ぶ。進捗が要るなら送信部はXHR。</figcaption></figure><h4>三大落とし穴</h4><p><strong>ボディ1MB制限</strong>：Server Actionのボディは既定最大1MB。<code>next.config</code> の <code>experimental.serverActions.bodySizeLimit</code> で変更するが、これは生HTTPボディ全体（境界やメタ込み）なので上限ギリギリは10〜20KBの余白を見込む。数MB超は(2)(3)へ逃がすのが公式も推す定石。<strong>進捗バー</strong>：Fetch APIは upload progress を持たない。リアルタイム％を出せるのは実質 <code>XMLHttpRequest</code> の <code>xhr.upload.onprogress</code> だけで、<code>loaded/total</code> から％を算出する。<strong>一時FS</strong>：多くのホスティングで実行環境のFSは一時的（書けるのは <code>/tmp</code> のみ）。<code>fs.writeFile(\"public/uploads/...\")</code> は本番で壊れるので、永続化はS3/R2/Blobへ。</p><h4>検証とセキュリティ</h4><p>アップロードは全部「信頼できない入力」。サイズはサーバーで再チェック、種別は <code>file.type</code>（詐称可能）でなく<strong>マジックバイト</strong>で判定、保存キーは<strong>UUID/ランダム</strong>にしてユーザー名をパスにしない（パストラバーサル/上書き回避）、画像は <code>sharp</code> で再エンコード、許可種別はホワイトリスト化。<code>\"use server\"</code> は認可を付けないので <code>verifySession()</code> とレート制限は各自で。</p><h4>自分が試すなら・ひとこと</h4><p>プロフィール画像や書類なら(3)署名付きURL＋XHR進捗で組み、ドロップゾーンは必ず本物の <code>&lt;input type=\"file\"&gt;</code> を併設して <code>role=\"status\"</code> で状態を言語化する。丸ごと面倒を見たいなら UploadThing、DnDは react-dropzone、Vercelなら @vercel/blob の <code>put()</code> が同思想のマネージド版。「小さいは(1)、制御は(2)、大きいは(3)」——サイズで経路を割り切るのが結局いちばん速い。</p>",
+      "sources": [
+        {
+          "title": "serverActions 設定（bodySizeLimit）",
+          "url": "https://nextjs.org/docs/app/api-reference/config/next-config-js/serverActions"
+        },
+        {
+          "title": "Next.js File Uploads: S3 + Actions 2026",
+          "url": "https://nextjslaunchpad.com/article/nextjs-file-uploads-server-actions-route-handlers-s3-presigned-urls-drag-and-drop"
+        },
+        {
+          "title": "XHRでupload progressを監視する（fetchは非対応）",
+          "url": "https://openjavascript.info/2022/07/01/upload-progress-bar-using-xhr-fetch-alternative/"
+        },
+        {
+          "title": "File uploads | next-safe-action",
+          "url": "https://next-safe-action.dev/docs/advanced/file-uploads"
+        }
+      ]
+    },
+    {
+      "id": "2026-08-24-flutter",
+      "date": "2026-08-24",
+      "topic": "Flutter",
+      "title": "Dart 3.13 primary constructors 正式化とImpellerデスクトップ既定 — 状態管理は4択時代へ",
+      "lede": "クラスヘッダで field と constructor を1行宣言。Dart 3.13 で primary constructors が stable になり定型が激減。Impeller はデスクトップ3 OSで既定になりraster約50%短縮、状態管理は Riverpod/Signals/Bloc の使い分けが軸に。",
+      "articleHtml": "<p>今日のFlutterは「言語の定型削減」「描画の底上げ」「状態管理の選択肢拡張」が同時に動いた日。現行安定版は <strong>Flutter 3.47 / Dart 3.13</strong>（3.47.0 stable が Dart 3.13.0 を同梱）だ。</p><h4>何が新しいか</h4><p><strong>primary constructors</strong> が 3.12 の experimental preview を経て <strong>Dart 3.13 で正式化</strong>。クラスヘッダで field と constructor を1行宣言でき、定型コードを大きく削減する。<code>new</code> / <code>factory</code> で簡潔な constructor 構文が書け、空の宣言本体は <code>;</code> で終了可能。利用には language version を <code>^3.13.0</code> に上げる。あわせて <strong>Flutter 3.47</strong> では Wasmアプリを小さな lazy-load モジュールへ分割する <strong>Wasm deferred loading</strong>（main channel の flag下・experimental）で初期ロードを最適化、multi-window改善・desktop flavors も実験導入された。</p><figure class='fig'><svg viewBox='0 0 600 170' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='11.5'><rect x='0' y='0' width='600' height='170' fill='#f2fbff'/><text x='16' y='24' font-size='13' font-weight='700' fill='#0277bd'>primary constructors：定型がヘッダに畳まれる</text><text x='16' y='48' font-weight='700' fill='#c62828'>Before</text><rect x='16' y='56' width='270' height='96' rx='6' fill='#fff' stroke='#e0c0c0'/><text x='26' y='76' font-family='monospace' fill='#333'>class Point {</text><text x='26' y='94' font-family='monospace' fill='#333'>  final int x, y;</text><text x='26' y='112' font-family='monospace' fill='#333'>  Point(this.x, this.y);</text><text x='26' y='130' font-family='monospace' fill='#333'>}</text><text x='314' y='48' font-weight='700' fill='#2e7d32'>After (3.13)</text><rect x='314' y='56' width='270' height='96' rx='6' fill='#fff' stroke='#b6d8bb'/><text x='324' y='84' font-family='monospace' fill='#333'>class Point(</text><text x='324' y='102' font-family='monospace' fill='#333'>  final int x, y);</text><text x='324' y='134' font-family='monospace' font-size='10.5' fill='#2e7d32'>本体が空なら ; で終了</text></svg><figcaption>図1：field と constructor をヘッダで1行に。ボイラープレートが目に見えて減る。</figcaption></figure><h4>描画とアニメーション</h4><p><strong>Impeller が macOS / Windows / Linux の3 OSで既定レンダラ</strong>に。<strong>SDF（Signed Distance Function）</strong>でデスクトップのテキストとベクター曲線がシャープになり、複雑シーンで <strong>raster時間を約50%短縮</strong>、ページ遷移や複雑なHeroも安定フレームで動く。軽い演出は <code>flutter_animate</code> の <code>.animate().fadeIn().slide().scale()</code> 連鎖、単なるfadeは <code>AnimatedOpacity</code> 等のimplicitで <code>AnimationController</code> を省く。時間設計の目安は micro 50〜200 / component 200〜400 / Hero 300〜600ms。</p><h4>状態管理は4択時代へ</h4><p>エコシステムは Riverpod 3.0 / Bloc 9.0 / GetX（退潮）の3強に <strong>Signals 6.0</strong> が加わった。基本線は<strong>新規は Riverpod 3.0 を既定</strong>（unified Ref・automatic retry・experimental offline persistence、<code>ref.watch(provider.select(...))</code> で最小スライス購読）、<strong>性能特化は Signals 6.0</strong>（surgicalなUI更新でリビルド範囲を最小化）、<strong>監査/規制業界は Bloc 9.0</strong>（<code>on&lt;Event&gt;</code> に統一、完全な event traceability と <code>blocTest</code>）。「どれが最良か」でなく<strong>チームの規模・リスク・性能要件でパラダイムを選ぶ</strong>のが要点だ。</p><h4>パフォーマンスとひとこと</h4><p>最も多い性能問題は<strong>不要なwidget rebuild</strong>。プロパティ不変なら <code>const</code> で再ビルドを完全スキップ、アニメ領域は <code>RepaintBoundary</code> で隔離、大きな <code>build()</code> は分割、<code>select</code> で局所再描画。フレーム予算は <strong>60fps=16 / 90fps=11 / 120fps=8.3ms</strong>、計測は必ずprofileモードで。言語・描画・状態管理が同時に底上げされた今は、まず primary constructors で定型を削り、Impeller前提でアニメを攻める好機だ。</p>",
+      "sources": [
+        {
+          "title": "Announcing Dart 3.13",
+          "url": "https://dart.dev/blog/announcing-dart-3-13"
+        },
+        {
+          "title": "Bringing Primary Constructors to Dart",
+          "url": "https://dart.dev/blog/bringing-primary-constructors-to-dart"
+        },
+        {
+          "title": "What's new in Flutter 3.47",
+          "url": "https://flutter.dev/blog/whats-new-in-flutter-3-47"
+        },
+        {
+          "title": "Flutter State Management 2026 (Riverpod vs Bloc vs GetX)",
+          "url": "https://sharpskill.dev/en/blog/flutter/flutter-state-management-2026-riverpod-bloc-getx"
+        }
+      ]
+    },
+    {
+      "id": "2026-08-24-github-trending",
+      "date": "2026-08-24",
+      "topic": "GitHub Trending",
+      "title": "8/24の話題リポジトリ — AI一色の中で光る非AI実用ツール3本（menubar・A株API・自前検索）",
+      "lede": "エージェント/スキルが上位を占めるトレンドの中、今日 日次上位を取ったのは毛色の違う実用ツールだった。ローカル完結・無料・自分でホストという「AIでない実用」で急上昇した3本を読む。",
+      "articleHtml": "<p>今日の日次トレンド上位を貫く共通点は、<strong>「AIエージェントでない、ローカル完結の実用ツール」</strong>が上位に食い込んだこと。menubarユーティリティ、A株の公式データAPI、自前で立てる検索エンジン——言語もジャンルもバラバラの3本が、それぞれ「不便を自分の手元で解く」という一点で支持を集めている。</p><figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='11'><rect x='0' y='0' width='600' height='210' fill='#f3fbf4'/><text x='16' y='22' font-size='13' font-weight='700' fill='#1a7f37'>リポジトリ × 解決したい課題 / 提供する機能</text><line x1='16' y1='34' x2='584' y2='34' stroke='#bfe3c6'/><text x='20' y='52' font-weight='700' fill='#222'>vorssaint-utils</text><text x='20' y='68' fill='#666'>Swift ⭐6.7k</text><text x='170' y='52' fill='#c62828'>課題: 純正/有料ツール依存</text><text x='170' y='68' fill='#2e7d32'>機能: menubar常駐の便利機能集</text><line x1='16' y1='80' x2='584' y2='80' stroke='#e0efe2'/><text x='20' y='104' font-weight='700' fill='#222'>Financial-API</text><text x='20' y='120' fill='#666'>TypeScript ⭐1.3k</text><text x='170' y='104' fill='#c62828'>課題: A株データが私設APIに散在</text><text x='170' y='120' fill='#2e7d32'>機能: 公式データをAPI/MCP/CLI/Py</text><line x1='16' y1='132' x2='584' y2='132' stroke='#e0efe2'/><text x='20' y='156' font-weight='700' fill='#222'>hister</text><text x='20' y='172' fill='#666'>Go ⭐2.4k</text><text x='170' y='156' fill='#c62828'>課題: 大手検索の広告/追跡/汚染</text><text x='170' y='172' fill='#2e7d32'>機能: 自分でホストする検索エンジン</text><line x1='16' y1='184' x2='584' y2='184' stroke='#bfe3c6'/><text x='16' y='202' fill='#1a7f37'>共通項：ローカル完結・OSS・大手/純正への“自前”の代替</text></svg><figcaption>図1：3本を「解決したい課題→提供する機能」で一望。ジャンルは違えど発想は同じ。</figcaption></figure><h4>vorssaint/vorssaint-utils（Swift・⭐6.7k）</h4><p><strong>解決したい課題</strong>：macOSの細かな不便を、純正機能や有料アプリを寄せ集めて埋める煩わしさ。<strong>提供する機能</strong>：メニューバー常駐で各種の便利機能をまとめて提供する無料・OSSのユーティリティ・ツールキット（GPLv3・ローカル完結）。<strong>なぜ今</strong>：本日 Trendshift 日次1位に返り咲き（GitHub Trending でも 8/21 に #2）。エージェント/スキルが上位を席巻する中で、非AIのネイティブデスクトップ・アプリが日次首位という毛色の違いが新規性で、トレンド全体の多様性に効いている。</p><h4>HiThink-Tech/Financial-API（TypeScript・⭐1.3k）</h4><p><strong>解決したい課題</strong>：A株の実時間/過去データや財報を、個人投資家が私設APIを継ぎ接ぎして集める非効率。<strong>提供する機能</strong>：同花順（HiThink）公式のA株金融データを、株価・財務諸表・指数・板块・涨停などまで <strong>API + MCP + CLI + Python</strong> から取得できる（MIT）。<strong>なぜ今</strong>：Trendshift 日次8位・New 2026 で急上昇し、Xで「APIキー1つでMCP接続でき AI Agent・量化研究に使える」と複数言及。フィンテック×公式データという新鮮なジャンルが上位に入った。</p><h4>asciimoo/hister（Go・⭐2.4k）</h4><p><strong>解決したい課題</strong>：大手検索の広告・追跡・LLM生成汚染への不満と、検索結果を自分で制御できないこと。<strong>提供する機能</strong>：自分専用の検索エンジンを立てられるセルフホスト型OSS（Go・AGPLv3、#Search / #Self-hosted）。<strong>なぜ今</strong>：本日 Trendshift 日次14位で継続的なモメンタム（Trending でも 7/5 に #13、39コントリビュータの実体あり）。プライバシー志向×セルフホストという実用枠が根強く支持されている。</p><h4>まとめ — 自分が試すなら</h4><p>3本に共通するのは「大手や有料の代替を、自分の手元（ローカル/セルフホスト）で持つ」発想。自分が触るなら、まず日常改善の即効性で <strong>vorssaint-utils</strong> を試し、次に <strong>hister</strong> をローカルに立てて自前検索の使い心地を確かめたい。Financial-API は日本のA株用途は限定的だが、公式データをMCPでエージェントに繋ぐ設計そのものが参考になる。AI一色のトレンドの中でも、地に足のついた実用ツールがちゃんと上位に来るのは健全なサインだ。</p>",
+      "sources": [
+        {
+          "title": "vorssaint/vorssaint-utils",
+          "url": "https://github.com/vorssaint/vorssaint-utils"
+        },
+        {
+          "title": "HiThink-Tech/Financial-API",
+          "url": "https://github.com/HiThink-Tech/Financial-API"
+        },
+        {
+          "title": "asciimoo/hister",
+          "url": "https://github.com/asciimoo/hister"
+        }
+      ]
+    },
     {
       "id": "2026-08-23-claude-code",
       "date": "2026-08-23",
