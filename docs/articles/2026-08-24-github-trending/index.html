@@ -1,0 +1,59 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>8/24の話題リポジトリ — AI一色の中で光る非AI実用ツール3本（menubar・A株API・自前検索） — デイリー技術深掘り 読み物</title><meta name="description" content="エージェント/スキルが上位を占めるトレンドの中、今日 日次上位を取ったのは毛色の違う実用ツールだった。ローカル完結・無料・自分でホストという「AIでない実用」で急上昇した3本を読む。"><meta name="theme-color" content="#238636"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-24-github-trending/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="8/24の話題リポジトリ — AI一色の中で光る非AI実用ツール3本（menubar・A株API・自前検索） — デイリー技術深掘り 読み物"><meta property="og:description" content="エージェント/スキルが上位を占めるトレンドの中、今日 日次上位を取ったのは毛色の違う実用ツールだった。ローカル完結・無料・自分でホストという「AIでない実用」で急上昇した3本を読む。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-24-github-trending/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3fb950, #1a7f37)"> <span class="glyph" aria-hidden="true">★</span> <div class="kicker">GitHub Trending</div> <h1>8/24の話題リポジトリ — AI一色の中で光る非AI実用ツール3本（menubar・A株API・自前検索）</h1> <p class="lede">エージェント/スキルが上位を占めるトレンドの中、今日 日次上位を取ったのは毛色の違う実用ツールだった。ローカル完結・無料・自分でホストという「AIでない実用」で急上昇した3本を読む。</p> <div class="meta"> <span>📅 2026年8月24日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#238636"> <div> <article class="prose" data-has-mermaid="0"><p>今日の日次トレンド上位を貫く共通点は、<strong>「AIエージェントでない、ローカル完結の実用ツール」</strong>が上位に食い込んだこと。menubarユーティリティ、A株の公式データAPI、自前で立てる検索エンジン——言語もジャンルもバラバラの3本が、それぞれ「不便を自分の手元で解く」という一点で支持を集めている。</p><figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='11'><rect x='0' y='0' width='600' height='210' fill='#f3fbf4'></rect><text x='16' y='22' font-size='13' font-weight='700' fill='#1a7f37'>リポジトリ × 解決したい課題 / 提供する機能</text><line x1='16' y1='34' x2='584' y2='34' stroke='#bfe3c6'></line><text x='20' y='52' font-weight='700' fill='#222'>vorssaint-utils</text><text x='20' y='68' fill='#666'>Swift ⭐6.7k</text><text x='170' y='52' fill='#c62828'>課題: 純正/有料ツール依存</text><text x='170' y='68' fill='#2e7d32'>機能: menubar常駐の便利機能集</text><line x1='16' y1='80' x2='584' y2='80' stroke='#e0efe2'></line><text x='20' y='104' font-weight='700' fill='#222'>Financial-API</text><text x='20' y='120' fill='#666'>TypeScript ⭐1.3k</text><text x='170' y='104' fill='#c62828'>課題: A株データが私設APIに散在</text><text x='170' y='120' fill='#2e7d32'>機能: 公式データをAPI/MCP/CLI/Py</text><line x1='16' y1='132' x2='584' y2='132' stroke='#e0efe2'></line><text x='20' y='156' font-weight='700' fill='#222'>hister</text><text x='20' y='172' fill='#666'>Go ⭐2.4k</text><text x='170' y='156' fill='#c62828'>課題: 大手検索の広告/追跡/汚染</text><text x='170' y='172' fill='#2e7d32'>機能: 自分でホストする検索エンジン</text><line x1='16' y1='184' x2='584' y2='184' stroke='#bfe3c6'></line><text x='16' y='202' fill='#1a7f37'>共通項：ローカル完結・OSS・大手/純正への“自前”の代替</text></svg><figcaption>図1：3本を「解決したい課題→提供する機能」で一望。ジャンルは違えど発想は同じ。</figcaption></figure><h4 id="sec-1">vorssaint/vorssaint-utils（Swift・⭐6.7k）</h4><p><strong>解決したい課題</strong>：macOSの細かな不便を、純正機能や有料アプリを寄せ集めて埋める煩わしさ。<strong>提供する機能</strong>：メニューバー常駐で各種の便利機能をまとめて提供する無料・OSSのユーティリティ・ツールキット（GPLv3・ローカル完結）。<strong>なぜ今</strong>：本日 Trendshift 日次1位に返り咲き（GitHub Trending でも 8/21 に #2）。エージェント/スキルが上位を席巻する中で、非AIのネイティブデスクトップ・アプリが日次首位という毛色の違いが新規性で、トレンド全体の多様性に効いている。</p><h4 id="sec-2">HiThink-Tech/Financial-API（TypeScript・⭐1.3k）</h4><p><strong>解決したい課題</strong>：A株の実時間/過去データや財報を、個人投資家が私設APIを継ぎ接ぎして集める非効率。<strong>提供する機能</strong>：同花順（HiThink）公式のA株金融データを、株価・財務諸表・指数・板块・涨停などまで <strong>API + MCP + CLI + Python</strong> から取得できる（MIT）。<strong>なぜ今</strong>：Trendshift 日次8位・New 2026 で急上昇し、Xで「APIキー1つでMCP接続でき AI Agent・量化研究に使える」と複数言及。フィンテック×公式データという新鮮なジャンルが上位に入った。</p><h4 id="sec-3">asciimoo/hister（Go・⭐2.4k）</h4><p><strong>解決したい課題</strong>：大手検索の広告・追跡・LLM生成汚染への不満と、検索結果を自分で制御できないこと。<strong>提供する機能</strong>：自分専用の検索エンジンを立てられるセルフホスト型OSS（Go・AGPLv3、#Search / #Self-hosted）。<strong>なぜ今</strong>：本日 Trendshift 日次14位で継続的なモメンタム（Trending でも 7/5 に #13、39コントリビュータの実体あり）。プライバシー志向×セルフホストという実用枠が根強く支持されている。</p><h4 id="sec-4">まとめ — 自分が試すなら</h4><p>3本に共通するのは「大手や有料の代替を、自分の手元（ローカル/セルフホスト）で持つ」発想。自分が触るなら、まず日常改善の即効性で <strong>vorssaint-utils</strong> を試し、次に <strong>hister</strong> をローカルに立てて自前検索の使い心地を確かめたい。Financial-API は日本のA株用途は限定的だが、公式データをMCPでエージェントに繋ぐ設計そのものが参考になる。AI一色のトレンドの中でも、地に足のついた実用ツールがちゃんと上位に来るのは健全なサインだ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://github.com/vorssaint/vorssaint-utils" target="_blank" rel="noopener noreferrer"> vorssaint/vorssaint-utils </a> </li><li> <a href="https://github.com/HiThink-Tech/Financial-API" target="_blank" rel="noopener noreferrer"> HiThink-Tech/Financial-API </a> </li><li> <a href="https://github.com/asciimoo/hister" target="_blank" rel="noopener noreferrer"> asciimoo/hister </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> vorssaint/vorssaint-utils（Swift・⭐6.7k） </a> </li><li> <a href="#sec-2" data-toc="sec-2"> HiThink-Tech/Financial-API（TypeScript・⭐1.3k） </a> </li><li> <a href="#sec-3" data-toc="sec-3"> asciimoo/hister（Go・⭐2.4k） </a> </li><li> <a href="#sec-4" data-toc="sec-4"> まとめ — 自分が試すなら </a> </li> </ul> <div class="reading-box"> <div>📅 2026-08-24</div> <div>⏱ 読了 約3分</div> <div>🏷 GitHub Trending</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

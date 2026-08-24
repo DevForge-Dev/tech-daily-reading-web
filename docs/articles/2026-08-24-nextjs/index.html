@@ -1,0 +1,66 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>App Routerのファイルアップロード三択 — Server Action / Route Handler / 署名付きURLの使い分け — デイリー技術深掘り 読み物</title><meta name="description" content="「input type=file を Server Action に渡すだけ」で始めると、1MBのボディ制限・一時FS・進捗バーが出せない壁に順に当たる。Next.js 16 前提で、経路の三択と進捗・検証の勘所を整理する。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-24-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="App Routerのファイルアップロード三択 — Server Action / Route Handler / 署名付きURLの使い分け — デイリー技術深掘り 読み物"><meta property="og:description" content="「input type=file を Server Action に渡すだけ」で始めると、1MBのボディ制限・一時FS・進捗バーが出せない壁に順に当たる。Next.js 16 前提で、経路の三択と進捗・検証の勘所を整理する。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-24-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>App Routerのファイルアップロード三択 — Server Action / Route Handler / 署名付きURLの使い分け</h1> <p class="lede">「input type=file を Server Action に渡すだけ」で始めると、1MBのボディ制限・一時FS・進捗バーが出せない壁に順に当たる。Next.js 16 前提で、経路の三択と進捗・検証の勘所を整理する。</p> <div class="meta"> <span>📅 2026年8月24日</span> <span>⏱ 約3分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="1"><p>ファイルアップロードはほぼ全アプリで必要になるのに、App Routerでは<strong>どの経路で受けるか</strong>という設計判断がまず難所になる。素朴に Server Action へ <code>&lt;input type="file"&gt;</code> を渡して始めると、<strong>1MBのボディ制限</strong>、<strong>サーバーレスの一時FS</strong>、<strong>進捗バーが出せない</strong>（fetchはupload progress非対応）という壁に順番にぶつかる。Next.js 16 前提で三択を切り分ける。</p><h4 id="sec-1">経路の三択（最初の設計判断）</h4><p><strong>(1) Server Action + formData</strong>：<code>formData.get("file")</code> を <code>File</code> として受ける最も簡単な経路。プログレッシブエンハンスメントが効き、書込後の <code>revalidatePath/Tag</code> まで一直線。ただしバイト列がサーバーのメモリに乗るので<strong>大きい/多数同時には不向き</strong>。<strong>(2) Route Handler</strong>（<code>app/api/upload/route.ts</code>）：Web標準の <code>Request</code> を直接扱い、巨大ファイルは <code>request.body</code>（ReadableStream）を busboy 等でストリーム処理。CORSやカスタムヘッダなどHTTP面が要る時に。<strong>(3) 署名付きURL（presigned URL）</strong>：サーバーが「1ファイル・短時間だけ有効」のPUT URLを発行し、<strong>ブラウザが直接S3へアップロード</strong>する。サーバーはバイトに一切触れないのでボディ制限やメモリを回避でき、数MB超のユーザー投稿はこれが本命。</p><figure class='fig'><pre class='mermaid'>flowchart TD
+  A["アップロードしたい"] --> B{"サイズは?"}
+  B -->|"~数MB以下"| C{"HTTP制御が要る?"}
+  B -->|"数MB超"| E["署名付きURL direct-to-S3"]
+  C -->|"No"| D["Server Action formData"]
+  C -->|"Yes CORS/stream"| F["Route Handler"]
+  E --> G["XHRで進捗バー"]
+  F --> G</pre><figcaption>図1：サイズとHTTP要件で経路を選ぶ。進捗が要るなら送信部はXHR。</figcaption></figure><h4 id="sec-2">三大落とし穴</h4><p><strong>ボディ1MB制限</strong>：Server Actionのボディは既定最大1MB。<code>next.config</code> の <code>experimental.serverActions.bodySizeLimit</code> で変更するが、これは生HTTPボディ全体（境界やメタ込み）なので上限ギリギリは10〜20KBの余白を見込む。数MB超は(2)(3)へ逃がすのが公式も推す定石。<strong>進捗バー</strong>：Fetch APIは upload progress を持たない。リアルタイム％を出せるのは実質 <code>XMLHttpRequest</code> の <code>xhr.upload.onprogress</code> だけで、<code>loaded/total</code> から％を算出する。<strong>一時FS</strong>：多くのホスティングで実行環境のFSは一時的（書けるのは <code>/tmp</code> のみ）。<code>fs.writeFile("public/uploads/...")</code> は本番で壊れるので、永続化はS3/R2/Blobへ。</p><h4 id="sec-3">検証とセキュリティ</h4><p>アップロードは全部「信頼できない入力」。サイズはサーバーで再チェック、種別は <code>file.type</code>（詐称可能）でなく<strong>マジックバイト</strong>で判定、保存キーは<strong>UUID/ランダム</strong>にしてユーザー名をパスにしない（パストラバーサル/上書き回避）、画像は <code>sharp</code> で再エンコード、許可種別はホワイトリスト化。<code>"use server"</code> は認可を付けないので <code>verifySession()</code> とレート制限は各自で。</p><h4 id="sec-4">自分が試すなら・ひとこと</h4><p>プロフィール画像や書類なら(3)署名付きURL＋XHR進捗で組み、ドロップゾーンは必ず本物の <code>&lt;input type="file"&gt;</code> を併設して <code>role="status"</code> で状態を言語化する。丸ごと面倒を見たいなら UploadThing、DnDは react-dropzone、Vercelなら @vercel/blob の <code>put()</code> が同思想のマネージド版。「小さいは(1)、制御は(2)、大きいは(3)」——サイズで経路を割り切るのが結局いちばん速い。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://nextjs.org/docs/app/api-reference/config/next-config-js/serverActions" target="_blank" rel="noopener noreferrer"> serverActions 設定（bodySizeLimit） </a> </li><li> <a href="https://nextjslaunchpad.com/article/nextjs-file-uploads-server-actions-route-handlers-s3-presigned-urls-drag-and-drop" target="_blank" rel="noopener noreferrer"> Next.js File Uploads: S3 + Actions 2026 </a> </li><li> <a href="https://openjavascript.info/2022/07/01/upload-progress-bar-using-xhr-fetch-alternative/" target="_blank" rel="noopener noreferrer"> XHRでupload progressを監視する（fetchは非対応） </a> </li><li> <a href="https://next-safe-action.dev/docs/advanced/file-uploads" target="_blank" rel="noopener noreferrer"> File uploads | next-safe-action </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 経路の三択（最初の設計判断） </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 三大落とし穴 </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 検証とセキュリティ </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 自分が試すなら・ひとこと </a> </li> </ul> <div class="reading-box"> <div>📅 2026-08-24</div> <div>⏱ 読了 約3分</div> <div>🏷 Next.js</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

@@ -1,0 +1,59 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Dart 3.13 primary constructors 正式化とImpellerデスクトップ既定 — 状態管理は4択時代へ — デイリー技術深掘り 読み物</title><meta name="description" content="クラスヘッダで field と constructor を1行宣言。Dart 3.13 で primary constructors が stable になり定型が激減。Impeller はデスクトップ3 OSで既定になりraster約50%短縮、状態管理は Riverpod/Signals/Bloc の使い分けが軸に。"><meta name="theme-color" content="#0277bd"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-24-flutter/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Dart 3.13 primary constructors 正式化とImpellerデスクトップ既定 — 状態管理は4択時代へ — デイリー技術深掘り 読み物"><meta property="og:description" content="クラスヘッダで field と constructor を1行宣言。Dart 3.13 で primary constructors が stable になり定型が激減。Impeller はデスクトップ3 OSで既定になりraster約50%短縮、状態管理は Riverpod/Signals/Bloc の使い分けが軸に。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-24-flutter/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #29b6f6, #01579b)"> <span class="glyph" aria-hidden="true">◆</span> <div class="kicker">Flutter</div> <h1>Dart 3.13 primary constructors 正式化とImpellerデスクトップ既定 — 状態管理は4択時代へ</h1> <p class="lede">クラスヘッダで field と constructor を1行宣言。Dart 3.13 で primary constructors が stable になり定型が激減。Impeller はデスクトップ3 OSで既定になりraster約50%短縮、状態管理は Riverpod/Signals/Bloc の使い分けが軸に。</p> <div class="meta"> <span>📅 2026年8月24日</span> <span>⏱ 約3分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#0277bd"> <div> <article class="prose" data-has-mermaid="0"><p>今日のFlutterは「言語の定型削減」「描画の底上げ」「状態管理の選択肢拡張」が同時に動いた日。現行安定版は <strong>Flutter 3.47 / Dart 3.13</strong>（3.47.0 stable が Dart 3.13.0 を同梱）だ。</p><h4 id="sec-1">何が新しいか</h4><p><strong>primary constructors</strong> が 3.12 の experimental preview を経て <strong>Dart 3.13 で正式化</strong>。クラスヘッダで field と constructor を1行宣言でき、定型コードを大きく削減する。<code>new</code> / <code>factory</code> で簡潔な constructor 構文が書け、空の宣言本体は <code>;</code> で終了可能。利用には language version を <code>^3.13.0</code> に上げる。あわせて <strong>Flutter 3.47</strong> では Wasmアプリを小さな lazy-load モジュールへ分割する <strong>Wasm deferred loading</strong>（main channel の flag下・experimental）で初期ロードを最適化、multi-window改善・desktop flavors も実験導入された。</p><figure class='fig'><svg viewBox='0 0 600 170' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='11.5'><rect x='0' y='0' width='600' height='170' fill='#f2fbff'></rect><text x='16' y='24' font-size='13' font-weight='700' fill='#0277bd'>primary constructors：定型がヘッダに畳まれる</text><text x='16' y='48' font-weight='700' fill='#c62828'>Before</text><rect x='16' y='56' width='270' height='96' rx='6' fill='#fff' stroke='#e0c0c0'></rect><text x='26' y='76' font-family='monospace' fill='#333'>class Point {</text><text x='26' y='94' font-family='monospace' fill='#333'>  final int x, y;</text><text x='26' y='112' font-family='monospace' fill='#333'>  Point(this.x, this.y);</text><text x='26' y='130' font-family='monospace' fill='#333'>}</text><text x='314' y='48' font-weight='700' fill='#2e7d32'>After (3.13)</text><rect x='314' y='56' width='270' height='96' rx='6' fill='#fff' stroke='#b6d8bb'></rect><text x='324' y='84' font-family='monospace' fill='#333'>class Point(</text><text x='324' y='102' font-family='monospace' fill='#333'>  final int x, y);</text><text x='324' y='134' font-family='monospace' font-size='10.5' fill='#2e7d32'>本体が空なら ; で終了</text></svg><figcaption>図1：field と constructor をヘッダで1行に。ボイラープレートが目に見えて減る。</figcaption></figure><h4 id="sec-2">描画とアニメーション</h4><p><strong>Impeller が macOS / Windows / Linux の3 OSで既定レンダラ</strong>に。<strong>SDF（Signed Distance Function）</strong>でデスクトップのテキストとベクター曲線がシャープになり、複雑シーンで <strong>raster時間を約50%短縮</strong>、ページ遷移や複雑なHeroも安定フレームで動く。軽い演出は <code>flutter_animate</code> の <code>.animate().fadeIn().slide().scale()</code> 連鎖、単なるfadeは <code>AnimatedOpacity</code> 等のimplicitで <code>AnimationController</code> を省く。時間設計の目安は micro 50〜200 / component 200〜400 / Hero 300〜600ms。</p><h4 id="sec-3">状態管理は4択時代へ</h4><p>エコシステムは Riverpod 3.0 / Bloc 9.0 / GetX（退潮）の3強に <strong>Signals 6.0</strong> が加わった。基本線は<strong>新規は Riverpod 3.0 を既定</strong>（unified Ref・automatic retry・experimental offline persistence、<code>ref.watch(provider.select(...))</code> で最小スライス購読）、<strong>性能特化は Signals 6.0</strong>（surgicalなUI更新でリビルド範囲を最小化）、<strong>監査/規制業界は Bloc 9.0</strong>（<code>on&lt;Event&gt;</code> に統一、完全な event traceability と <code>blocTest</code>）。「どれが最良か」でなく<strong>チームの規模・リスク・性能要件でパラダイムを選ぶ</strong>のが要点だ。</p><h4 id="sec-4">パフォーマンスとひとこと</h4><p>最も多い性能問題は<strong>不要なwidget rebuild</strong>。プロパティ不変なら <code>const</code> で再ビルドを完全スキップ、アニメ領域は <code>RepaintBoundary</code> で隔離、大きな <code>build()</code> は分割、<code>select</code> で局所再描画。フレーム予算は <strong>60fps=16 / 90fps=11 / 120fps=8.3ms</strong>、計測は必ずprofileモードで。言語・描画・状態管理が同時に底上げされた今は、まず primary constructors で定型を削り、Impeller前提でアニメを攻める好機だ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://dart.dev/blog/announcing-dart-3-13" target="_blank" rel="noopener noreferrer"> Announcing Dart 3.13 </a> </li><li> <a href="https://dart.dev/blog/bringing-primary-constructors-to-dart" target="_blank" rel="noopener noreferrer"> Bringing Primary Constructors to Dart </a> </li><li> <a href="https://flutter.dev/blog/whats-new-in-flutter-3-47" target="_blank" rel="noopener noreferrer"> What&#39;s new in Flutter 3.47 </a> </li><li> <a href="https://sharpskill.dev/en/blog/flutter/flutter-state-management-2026-riverpod-bloc-getx" target="_blank" rel="noopener noreferrer"> Flutter State Management 2026 (Riverpod vs Bloc vs GetX) </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 何が新しいか </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 描画とアニメーション </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 状態管理は4択時代へ </a> </li><li> <a href="#sec-4" data-toc="sec-4"> パフォーマンスとひとこと </a> </li> </ul> <div class="reading-box"> <div>📅 2026-08-24</div> <div>⏱ 読了 約3分</div> <div>🏷 Flutter</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
