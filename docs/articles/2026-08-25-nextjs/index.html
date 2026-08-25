@@ -1,0 +1,59 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Embla CarouselをApp Routerで — 依存ゼロ約6KBの「掴めるカルーセル」、RSCとClient島を綺麗に分ける — デイリー技術深掘り 読み物</title><meta name="description" content="shadcn/uiの<Carousel>の中身でもあるEmblaは、viewport→container→slideの素のHTML構造でhydration mismatchが起きにくい。データ取得はRSCのまま、掴む部分だけClient島に。tweenは自前計算、v9で改名という落とし穴も。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-25-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Embla CarouselをApp Routerで — 依存ゼロ約6KBの「掴めるカルーセル」、RSCとClient島を綺麗に分ける — デイリー技術深掘り 読み物"><meta property="og:description" content="shadcn/uiの<Carousel>の中身でもあるEmblaは、viewport→container→slideの素のHTML構造でhydration mismatchが起きにくい。データ取得はRSCのまま、掴む部分だけClient島に。tweenは自前計算、v9で改名という落とし穴も。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-25-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>Embla CarouselをApp Routerで — 依存ゼロ約6KBの「掴めるカルーセル」、RSCとClient島を綺麗に分ける</h1> <p class="lede">shadcn/uiの&lt;Carousel&gt;の中身でもあるEmblaは、viewport→container→slideの素のHTML構造でhydration mismatchが起きにくい。データ取得はRSCのまま、掴む部分だけClient島に。tweenは自前計算、v9で改名という落とし穴も。</p> <div class="meta"> <span>📅 2026年8月25日</span> <span>⏱ 約3分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="0"><p>ヒーローや商品ギャラリー、証言カード、ロゴレール——「掴んで動かせるスライダー」を作るときのデファクトが <code>embla-carousel-react</code> だ。<strong>依存ゼロ・ライブラリ非依存・コア約6KB(min+gzip)</strong> のカルーセルエンジンで、shadcn/ui の <code>&lt;Carousel&gt;</code> の中身でもある。旧世代の重い/スワイプが渋いカルーセルに対し、ネイティブに近い慣性スワイプ精度と素のHTML構造が売りだ。</p><h4 id="sec-1">なぜApp Routerと相性がいいか</h4><p>Emblaは3層構造が基本で、<strong>viewportがoverflow:hiddenの窓、containerがflexの可動レール、slideがflex-basisで幅を決める</strong>。初期HTMLは素のflexレイアウト（全スライドが横並び）で描画されるため、JS到達前でも中身が見えるプログレッシブエンハンスメントになり、SSRと一致して<strong>hydration mismatchが起きにくい</strong>。App Router文脈では「データ取得はRSCのまま／掴む部分だけ Client島」に綺麗に分離でき、<code>useEmblaCarousel</code> を使うカルーセルだけ <code>'use client'</code> にし、slidesの中身はServer Componentで組んでchildren/propsとして渡すのが定石だ。</p><figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='12'><rect x='0' y='0' width='600' height='210' fill='#f6f8ff'></rect><text x='16' y='24' font-size='13' font-weight='700' fill='#1f4fd6'>Emblaの3層構造（必須CSS）</text><rect x='24' y='40' width='552' height='150' rx='8' fill='#e9efff' stroke='#1f4fd6'></rect><text x='36' y='60' fill='#1f4fd6' font-weight='700'>viewport　overflow:hidden（窓）</text><rect x='40' y='70' width='520' height='108' rx='6' fill='#f6f8ff' stroke='#5a7ff0' stroke-dasharray='4 3'></rect><text x='52' y='90' fill='#3a5fd0' font-weight='700'>container　display:flex / touch-action:pan-y（可動レール）</text><rect x='56' y='104' width='150' height='62' rx='6' fill='#dbe6ff'></rect><rect x='216' y='104' width='150' height='62' rx='6' fill='#cdd9ff'></rect><rect x='376' y='104' width='150' height='62' rx='6' fill='#dbe6ff'></rect><text x='131' y='140' text-anchor='middle' fill='#2a45b0'>slide flex:0 0 100%</text><text x='291' y='140' text-anchor='middle' fill='#2a45b0'>slide</text><text x='451' y='140' text-anchor='middle' fill='#2a45b0'>slide</text></svg><figcaption>図1：viewport→container→slideの3層。containerに touch-action:pan-y を付けないとモバイルで縦スクロールと競合する。</figcaption></figure><h4 id="sec-2">tweenは自前計算、プラグインは小さく足す</h4><p>拡大・透明度・パララックスといったtweenは、プラグインではなく <code>scroll</code>/<code>slidesInView</code> イベント＋APIで自前計算する設計だ。<code>scrollSnapList()</code> と <code>scrollProgress()</code> から各スライドの目標との差(diff)を出し、<code>scale</code>・<code>opacity</code>・子要素の <code>translateX</code> に写す。見えているスライドだけ処理すればINPを守れる。書き込みは <code>transform</code>/<code>opacity</code> に限定してコンポジタ合成に乗せ、<code>getBoundingClientRect</code> を毎フレーム叩くレイアウトスラッシングは避ける。自動再生は <code>embla-carousel-autoplay</code> を配列で渡し、<strong>明示的に <code>play()</code> を呼ぶ</strong>（既定でユーザー操作時に自動停止）。フェードやマーキー的Auto Scrollも別パッケージで足せる。</p><h4 id="sec-3">落とし穴とv9改名</h4><p>最大の罠は <strong><code>duration</code> はミリ秒ではない</strong>点（引力シミュレーションの強さ＝推奨20〜60、大きいほど遅い。4000はAutoplayの <code>delay</code>）。ループ時はtweenの差分が±1を跨ぐので巻き戻し補正が要る。さらにバージョン注記が重要で、<strong>v8がstable、v9はRC</strong>。v9でナビゲーションが改名され <code>scrollNext/scrollPrev/scrollTo</code> が <code>goToNext/goToPrev/goTo</code> になった。本番は当面v8のAPI名で書くのが無難だ。アクセシビリティはautoplayをホバー/フォーカスで一時停止し手動の再生/停止ボタンを用意（WCAG 2.2.2）、reduced-motionは <code>breakpoints</code> に <code>duration:0</code> を渡し自前tweenは <code>matchMedia</code> でスキップする。</p><h4 id="sec-4">ひとこと</h4><p>「掴む島だけClient、データはRSC、tweenは自前」——1ユースケースに特化した薄いAPIだからこそ、App Routerの分割思想に素直に乗る。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://www.embla-carousel.com/docs/get-started/react" target="_blank" rel="noopener noreferrer"> Embla Carousel — React（get-started） </a> </li><li> <a href="https://www.embla-carousel.com/docs/api/options" target="_blank" rel="noopener noreferrer"> Embla Carousel — Options </a> </li><li> <a href="https://www.embla-carousel.com/docs/plugins/autoplay" target="_blank" rel="noopener noreferrer"> Embla Carousel — Autoplayプラグイン </a> </li><li> <a href="https://www.embla-carousel.com/docs/guides/server-side-rendering" target="_blank" rel="noopener noreferrer"> Embla Carousel — SSRガイド </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> なぜApp Routerと相性がいいか </a> </li><li> <a href="#sec-2" data-toc="sec-2"> tweenは自前計算、プラグインは小さく足す </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 落とし穴とv9改名 </a> </li><li> <a href="#sec-4" data-toc="sec-4"> ひとこと </a> </li> </ul> <div class="reading-box"> <div>📅 2026-08-25</div> <div>⏱ 読了 約3分</div> <div>🏷 Next.js</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

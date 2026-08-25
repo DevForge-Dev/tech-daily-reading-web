@@ -1,0 +1,59 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Concise出力・/design・セルフホスト — Claude Codeが「CLIの外」へ広がる、Microsoftは実測PR+24%を裏づけ — デイリー技術深掘り 読み物</title><meta name="description" content="派手な新機能より働き方の周辺を固めた一週間。結論先出しのConcise出力、アイデアからUIを起こす/design、自社インフラで走らせるセルフホスト、そして分類器で危険を審査するauto modeの既定化。Microsoftの査読研究はマージ済PRが約24%増えると実測した。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-25-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Concise出力・/design・セルフホスト — Claude Codeが「CLIの外」へ広がる、Microsoftは実測PR+24%を裏づけ — デイリー技術深掘り 読み物"><meta property="og:description" content="派手な新機能より働き方の周辺を固めた一週間。結論先出しのConcise出力、アイデアからUIを起こす/design、自社インフラで走らせるセルフホスト、そして分類器で危険を審査するauto modeの既定化。Microsoftの査読研究はマージ済PRが約24%増えると実測した。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-25-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>Concise出力・/design・セルフホスト — Claude Codeが「CLIの外」へ広がる、Microsoftは実測PR+24%を裏づけ</h1> <p class="lede">派手な新機能より働き方の周辺を固めた一週間。結論先出しのConcise出力、アイデアからUIを起こす/design、自社インフラで走らせるセルフホスト、そして分類器で危険を審査するauto modeの既定化。Microsoftの査読研究はマージ済PRが約24%増えると実測した。</p> <div class="meta"> <span>📅 2026年8月25日</span> <span>⏱ 約3分</span> <span>🔗 出典 5 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="0"><p>今日のClaude Codeは「最上位モデルの追加」ではなく、<strong>使い方・運用・組織導入</strong>の三方向を同時に固めた一日だった。CLIの内側だけでなく、その外側の作業までカバーする方向に広がっているのが8月の一貫した流れだ。</p><h4 id="sec-1">何が新しいか</h4><p>まず出力面で、結論から述べて前置きや作業実況を省く新スタイル <code>Concise</code> が加わった（<code>v2.1.237</code> 以降、<code>/clear</code>後または新セッションで有効）。応答は短くなるがエンジニアリングの丁寧さはDefault同等を保つ。設計面では8月17日に <code>/design</code> スキルがリサーチプレビュー公開され、アイデア・スクリーンショット・既存デザインを編集可能なUIアートボードに変換できる。運用面では8月6日、クラウドセッションを自社サーバーで動かす<strong>セルフホスト環境がパブリックベータ</strong>（Team/Enterprise、既定オフ、Ownerが有効化）。リポジトリやシークレット、生成物を社内に留められる一方、モデル推論はAnthropic側のままでゼロデータ保持との併用は不可。そして8月14日から Pro/Max/Team の新規セッションで <strong>auto mode が既定</strong>になった。</p><h4 id="sec-2">数字で見る効果と安全網</h4><p>auto modeは繰り返しの承認を、各ツール呼び出しが不可逆・破壊的・範囲外でないかを別の分類器で審査する方式に置き換える。Anthropicの有料テスター調査では危険コマンド検出率が<strong>分類器89%に対し人手は約13.6%</strong>（50プロンプト後は約5%へ低下）。導入効果ではMicrosoft Researchの査読論文が、数万人規模のエンジニアで<strong>マージ済PRが約24%増え、4か月間持続</strong>したと実測した（一方でトークン支出は数百万ドル規模＝予算ガバナンスが課題）。</p><figure class='fig'><svg viewBox='0 0 600 220' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='11.5'><rect x='0' y='0' width='600' height='220' fill='#f5fbf6'></rect><text x='16' y='24' font-size='13' font-weight='700' fill='#1a7f37'>auto modeの危険コマンド検出率（テスター調査）</text><text x='16' y='70' fill='#333'>分類器　</text><rect x='90' y='58' width='445' height='18' rx='4' fill='#3fb950'></rect><text x='545' y='72' font-weight='800' fill='#1a7f37'>89%</text><text x='16' y='112' fill='#333'>人手　　</text><rect x='90' y='100' width='68' height='18' rx='4' fill='#b9c2bb'></rect><text x='166' y='114' font-weight='800' fill='#6b7a6d'>13.6%</text><line x1='90' y1='44' x2='90' y2='150' stroke='#cfe3d3'></line><text x='16' y='182' font-size='12' font-weight='700' fill='#1a7f37'>Microsoft実測：導入者はマージ済PR 約+24%（4か月持続）</text><text x='16' y='204' font-size='11' fill='#777'>※トークン支出は数百万ドル規模＝予算管理が前提</text></svg><figcaption>図1：安全審査は分類器が人手を大きく上回り、生産性はPR数で実測された。数字はテスター調査／Microsoft研究に基づく。</figcaption></figure><h4 id="sec-3">実務での使いどころ・注意点</h4><p>自分が試すなら、長時間・ログが膨らむ作業では <code>Concise</code> を既定にしてトークンと視認性を稼ぎ、UIの初期案は <code>/design</code> でコードと同じ画面から起こす。委譲はサブエージェント（専用プロンプト・限定ツール・独立コンテキスト）で境界を明確にしてから並列化するのが定石だ。注意点は二つ。ひとつは8月16日にClaude.ai/Code/Coworkが同時障害を起こした件で、開発フローを深く組み込むほど単一障害点リスクが顕在化する——ローカル完結の代替経路を用意しておきたい。もうひとつはauto modeは万能ではなくブロックが続けば手動承認へフォールバックする点（分類器用の追加トークンは非課金）。</p><h4 id="sec-4">ひとこと</h4><p>「短く返し、UIを起こし、自社で走らせ、安全に自動化する」——モデルの世代交代が一段落し、周辺の運用体験を固める局面に入った。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://code.claude.com/docs/en/output-styles" target="_blank" rel="noopener noreferrer"> 出力スタイル Concise（Claude Docs） </a> </li><li> <a href="https://origami.sa/en/blog/claude-code-august-2026/" target="_blank" rel="noopener noreferrer"> Claude Code 2026年8月アップデート（Origami） </a> </li><li> <a href="https://claude.com/blog/run-claude-code-sessions-on-your-own-compute" target="_blank" rel="noopener noreferrer"> セルフホスト環境パブリックベータ（Anthropic） </a> </li><li> <a href="https://therouter.ai/news/claude-code-microsoft-enterprise-study-token-budget-governance/" target="_blank" rel="noopener noreferrer"> Microsoft企業導入研究：PR+24%（The Router） </a> </li><li> <a href="https://9to5mac.com/2026/08/07/psa-claude-code-enabling-auto-mode-as-default-next-week-anthropic-says/" target="_blank" rel="noopener noreferrer"> auto mode 既定化（9to5Mac） </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 何が新しいか </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 数字で見る効果と安全網 </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 実務での使いどころ・注意点 </a> </li><li> <a href="#sec-4" data-toc="sec-4"> ひとこと </a> </li> </ul> <div class="reading-box"> <div>📅 2026-08-25</div> <div>⏱ 読了 約3分</div> <div>🏷 Claude Code</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
