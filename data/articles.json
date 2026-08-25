@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-08-24T04:47:33.461Z",
+  "generatedAt": "2026-08-25T04:46:04.069Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,110 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-08-25-claude-code",
+      "date": "2026-08-25",
+      "topic": "Claude Code",
+      "title": "Concise出力・/design・セルフホスト — Claude Codeが「CLIの外」へ広がる、Microsoftは実測PR+24%を裏づけ",
+      "lede": "派手な新機能より働き方の周辺を固めた一週間。結論先出しのConcise出力、アイデアからUIを起こす/design、自社インフラで走らせるセルフホスト、そして分類器で危険を審査するauto modeの既定化。Microsoftの査読研究はマージ済PRが約24%増えると実測した。",
+      "articleHtml": "<p>今日のClaude Codeは「最上位モデルの追加」ではなく、<strong>使い方・運用・組織導入</strong>の三方向を同時に固めた一日だった。CLIの内側だけでなく、その外側の作業までカバーする方向に広がっているのが8月の一貫した流れだ。</p><h4>何が新しいか</h4><p>まず出力面で、結論から述べて前置きや作業実況を省く新スタイル <code>Concise</code> が加わった（<code>v2.1.237</code> 以降、<code>/clear</code>後または新セッションで有効）。応答は短くなるがエンジニアリングの丁寧さはDefault同等を保つ。設計面では8月17日に <code>/design</code> スキルがリサーチプレビュー公開され、アイデア・スクリーンショット・既存デザインを編集可能なUIアートボードに変換できる。運用面では8月6日、クラウドセッションを自社サーバーで動かす<strong>セルフホスト環境がパブリックベータ</strong>（Team/Enterprise、既定オフ、Ownerが有効化）。リポジトリやシークレット、生成物を社内に留められる一方、モデル推論はAnthropic側のままでゼロデータ保持との併用は不可。そして8月14日から Pro/Max/Team の新規セッションで <strong>auto mode が既定</strong>になった。</p><h4>数字で見る効果と安全網</h4><p>auto modeは繰り返しの承認を、各ツール呼び出しが不可逆・破壊的・範囲外でないかを別の分類器で審査する方式に置き換える。Anthropicの有料テスター調査では危険コマンド検出率が<strong>分類器89%に対し人手は約13.6%</strong>（50プロンプト後は約5%へ低下）。導入効果ではMicrosoft Researchの査読論文が、数万人規模のエンジニアで<strong>マージ済PRが約24%増え、4か月間持続</strong>したと実測した（一方でトークン支出は数百万ドル規模＝予算ガバナンスが課題）。</p><figure class='fig'><svg viewBox='0 0 600 220' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='11.5'><rect x='0' y='0' width='600' height='220' fill='#f5fbf6'/><text x='16' y='24' font-size='13' font-weight='700' fill='#1a7f37'>auto modeの危険コマンド検出率（テスター調査）</text><text x='16' y='70' fill='#333'>分類器　</text><rect x='90' y='58' width='445' height='18' rx='4' fill='#3fb950'/><text x='545' y='72' font-weight='800' fill='#1a7f37'>89%</text><text x='16' y='112' fill='#333'>人手　　</text><rect x='90' y='100' width='68' height='18' rx='4' fill='#b9c2bb'/><text x='166' y='114' font-weight='800' fill='#6b7a6d'>13.6%</text><line x1='90' y1='44' x2='90' y2='150' stroke='#cfe3d3'/><text x='16' y='182' font-size='12' font-weight='700' fill='#1a7f37'>Microsoft実測：導入者はマージ済PR 約+24%（4か月持続）</text><text x='16' y='204' font-size='11' fill='#777'>※トークン支出は数百万ドル規模＝予算管理が前提</text></svg><figcaption>図1：安全審査は分類器が人手を大きく上回り、生産性はPR数で実測された。数字はテスター調査／Microsoft研究に基づく。</figcaption></figure><h4>実務での使いどころ・注意点</h4><p>自分が試すなら、長時間・ログが膨らむ作業では <code>Concise</code> を既定にしてトークンと視認性を稼ぎ、UIの初期案は <code>/design</code> でコードと同じ画面から起こす。委譲はサブエージェント（専用プロンプト・限定ツール・独立コンテキスト）で境界を明確にしてから並列化するのが定石だ。注意点は二つ。ひとつは8月16日にClaude.ai/Code/Coworkが同時障害を起こした件で、開発フローを深く組み込むほど単一障害点リスクが顕在化する——ローカル完結の代替経路を用意しておきたい。もうひとつはauto modeは万能ではなくブロックが続けば手動承認へフォールバックする点（分類器用の追加トークンは非課金）。</p><h4>ひとこと</h4><p>「短く返し、UIを起こし、自社で走らせ、安全に自動化する」——モデルの世代交代が一段落し、周辺の運用体験を固める局面に入った。</p>",
+      "sources": [
+        {
+          "title": "出力スタイル Concise（Claude Docs）",
+          "url": "https://code.claude.com/docs/en/output-styles"
+        },
+        {
+          "title": "Claude Code 2026年8月アップデート（Origami）",
+          "url": "https://origami.sa/en/blog/claude-code-august-2026/"
+        },
+        {
+          "title": "セルフホスト環境パブリックベータ（Anthropic）",
+          "url": "https://claude.com/blog/run-claude-code-sessions-on-your-own-compute"
+        },
+        {
+          "title": "Microsoft企業導入研究：PR+24%（The Router）",
+          "url": "https://therouter.ai/news/claude-code-microsoft-enterprise-study-token-budget-governance/"
+        },
+        {
+          "title": "auto mode 既定化（9to5Mac）",
+          "url": "https://9to5mac.com/2026/08/07/psa-claude-code-enabling-auto-mode-as-default-next-week-anthropic-says/"
+        }
+      ]
+    },
+    {
+      "id": "2026-08-25-nextjs",
+      "date": "2026-08-25",
+      "topic": "Next.js",
+      "title": "Embla CarouselをApp Routerで — 依存ゼロ約6KBの「掴めるカルーセル」、RSCとClient島を綺麗に分ける",
+      "lede": "shadcn/uiの<Carousel>の中身でもあるEmblaは、viewport→container→slideの素のHTML構造でhydration mismatchが起きにくい。データ取得はRSCのまま、掴む部分だけClient島に。tweenは自前計算、v9で改名という落とし穴も。",
+      "articleHtml": "<p>ヒーローや商品ギャラリー、証言カード、ロゴレール——「掴んで動かせるスライダー」を作るときのデファクトが <code>embla-carousel-react</code> だ。<strong>依存ゼロ・ライブラリ非依存・コア約6KB(min+gzip)</strong> のカルーセルエンジンで、shadcn/ui の <code>&lt;Carousel&gt;</code> の中身でもある。旧世代の重い/スワイプが渋いカルーセルに対し、ネイティブに近い慣性スワイプ精度と素のHTML構造が売りだ。</p><h4>なぜApp Routerと相性がいいか</h4><p>Emblaは3層構造が基本で、<strong>viewportがoverflow:hiddenの窓、containerがflexの可動レール、slideがflex-basisで幅を決める</strong>。初期HTMLは素のflexレイアウト（全スライドが横並び）で描画されるため、JS到達前でも中身が見えるプログレッシブエンハンスメントになり、SSRと一致して<strong>hydration mismatchが起きにくい</strong>。App Router文脈では「データ取得はRSCのまま／掴む部分だけ Client島」に綺麗に分離でき、<code>useEmblaCarousel</code> を使うカルーセルだけ <code>'use client'</code> にし、slidesの中身はServer Componentで組んでchildren/propsとして渡すのが定石だ。</p><figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='12'><rect x='0' y='0' width='600' height='210' fill='#f6f8ff'/><text x='16' y='24' font-size='13' font-weight='700' fill='#1f4fd6'>Emblaの3層構造（必須CSS）</text><rect x='24' y='40' width='552' height='150' rx='8' fill='#e9efff' stroke='#1f4fd6'/><text x='36' y='60' fill='#1f4fd6' font-weight='700'>viewport　overflow:hidden（窓）</text><rect x='40' y='70' width='520' height='108' rx='6' fill='#f6f8ff' stroke='#5a7ff0' stroke-dasharray='4 3'/><text x='52' y='90' fill='#3a5fd0' font-weight='700'>container　display:flex / touch-action:pan-y（可動レール）</text><rect x='56' y='104' width='150' height='62' rx='6' fill='#dbe6ff'/><rect x='216' y='104' width='150' height='62' rx='6' fill='#cdd9ff'/><rect x='376' y='104' width='150' height='62' rx='6' fill='#dbe6ff'/><text x='131' y='140' text-anchor='middle' fill='#2a45b0'>slide flex:0 0 100%</text><text x='291' y='140' text-anchor='middle' fill='#2a45b0'>slide</text><text x='451' y='140' text-anchor='middle' fill='#2a45b0'>slide</text></svg><figcaption>図1：viewport→container→slideの3層。containerに touch-action:pan-y を付けないとモバイルで縦スクロールと競合する。</figcaption></figure><h4>tweenは自前計算、プラグインは小さく足す</h4><p>拡大・透明度・パララックスといったtweenは、プラグインではなく <code>scroll</code>/<code>slidesInView</code> イベント＋APIで自前計算する設計だ。<code>scrollSnapList()</code> と <code>scrollProgress()</code> から各スライドの目標との差(diff)を出し、<code>scale</code>・<code>opacity</code>・子要素の <code>translateX</code> に写す。見えているスライドだけ処理すればINPを守れる。書き込みは <code>transform</code>/<code>opacity</code> に限定してコンポジタ合成に乗せ、<code>getBoundingClientRect</code> を毎フレーム叩くレイアウトスラッシングは避ける。自動再生は <code>embla-carousel-autoplay</code> を配列で渡し、<strong>明示的に <code>play()</code> を呼ぶ</strong>（既定でユーザー操作時に自動停止）。フェードやマーキー的Auto Scrollも別パッケージで足せる。</p><h4>落とし穴とv9改名</h4><p>最大の罠は <strong><code>duration</code> はミリ秒ではない</strong>点（引力シミュレーションの強さ＝推奨20〜60、大きいほど遅い。4000はAutoplayの <code>delay</code>）。ループ時はtweenの差分が±1を跨ぐので巻き戻し補正が要る。さらにバージョン注記が重要で、<strong>v8がstable、v9はRC</strong>。v9でナビゲーションが改名され <code>scrollNext/scrollPrev/scrollTo</code> が <code>goToNext/goToPrev/goTo</code> になった。本番は当面v8のAPI名で書くのが無難だ。アクセシビリティはautoplayをホバー/フォーカスで一時停止し手動の再生/停止ボタンを用意（WCAG 2.2.2）、reduced-motionは <code>breakpoints</code> に <code>duration:0</code> を渡し自前tweenは <code>matchMedia</code> でスキップする。</p><h4>ひとこと</h4><p>「掴む島だけClient、データはRSC、tweenは自前」——1ユースケースに特化した薄いAPIだからこそ、App Routerの分割思想に素直に乗る。</p>",
+      "sources": [
+        {
+          "title": "Embla Carousel — React（get-started）",
+          "url": "https://www.embla-carousel.com/docs/get-started/react"
+        },
+        {
+          "title": "Embla Carousel — Options",
+          "url": "https://www.embla-carousel.com/docs/api/options"
+        },
+        {
+          "title": "Embla Carousel — Autoplayプラグイン",
+          "url": "https://www.embla-carousel.com/docs/plugins/autoplay"
+        },
+        {
+          "title": "Embla Carousel — SSRガイド",
+          "url": "https://www.embla-carousel.com/docs/guides/server-side-rendering"
+        }
+      ]
+    },
+    {
+      "id": "2026-08-25-flutter",
+      "date": "2026-08-25",
+      "topic": "Flutter",
+      "title": "Flutter 3.47 stable — Material/Cupertinoがコアから分離、Impellerがデスクトップ既定に、状態管理は3強＋Signals",
+      "lede": "Dart 3.13同梱の3.47が現行。material_ui/cupertino_ui 1.0がSDKから切り離され週次更新に、ImpellerがmacOS/Windows/Linuxの既定レンダラへ昇格。状態管理は新規Riverpod 3.0・性能Signals 6.0・監査Bloc 9.0で選び分ける。",
+      "articleHtml": "<p>今日のFlutterは <strong>3.47.0 stable が現行</strong>（2026-08-12リリース・<strong>Dart 3.13.0</strong> 同梱）で、地味だが構造的に大きい変更が並んだ。デザインシステムの分離、Impellerのデスクトップ既定化、そして状態管理の「選定図」の更新だ。</p><h4>何が新しいか</h4><p>目玉は <strong>material_ui / cupertino_ui 1.0</strong> がMaterial/CupertinoをコアSDKから切り離し、pub.devから週次で更新されるようになったこと。移行は <code>dart fix</code> ベースの自動マイグレーションツールで、M3の更新が四半期SDKを待たず届き、未使用UIをバイナリから外して<strong>app size削減</strong>にもつながる。レンダラは <strong>Impellerがデスクトップ3 OS(macOS/Windows/Linux)で既定</strong>に昇格し、Metal/Vulkanをネイティブ利用。AOTシェーダーで<strong>shader compilation jankをゼロ</strong>にし、アニメ多用ワークロードで<strong>Skia比 約17%省電力</strong>、高リフレッシュで安定120fps。Widget Previewsもstable昇格（ローカルビルドキャッシュで起動高速化＋リアルタイム検索/フィルタ）、Dart 3.13では <strong>primary constructors</strong> が正式化しクラスヘッダでfieldとconstructorを宣言して定型を削減できる（最低要件はiOS 15に引き上げ）。</p><figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='11.5'><rect x='0' y='0' width='600' height='210' fill='#f2f9fb'/><text x='16' y='24' font-size='13' font-weight='700' fill='#0b6b83'>2026 状態管理の選定図</text><rect x='16' y='38' width='184' height='150' rx='8' fill='#e3f4f8' stroke='#0b9ec4'/><text x='108' y='62' text-anchor='middle' font-weight='800' fill='#0b6b83'>新規プロジェクト</text><text x='108' y='90' text-anchor='middle' font-size='15' font-weight='800' fill='#0b9ec4'>Riverpod 3.0</text><text x='108' y='118' text-anchor='middle' fill='#555'>compile-time safety</text><text x='108' y='136' text-anchor='middle' fill='#555'>最小boilerplate</text><text x='108' y='162' text-anchor='middle' fill='#777' font-size='10.5'>現行3.3.x / 既定</text><rect x='208' y='38' width='184' height='150' rx='8' fill='#eef7ef' stroke='#3aa657'/><text x='300' y='62' text-anchor='middle' font-weight='800' fill='#2f7d45'>性能特化</text><text x='300' y='90' text-anchor='middle' font-size='15' font-weight='800' fill='#3aa657'>Signals 6.0</text><text x='300' y='118' text-anchor='middle' fill='#555'>細粒度反応性</text><text x='300' y='136' text-anchor='middle' fill='#555'>再描画を最小化</text><text x='300' y='162' text-anchor='middle' fill='#777' font-size='10.5'>surgicalなUI更新</text><rect x='400' y='38' width='184' height='150' rx='8' fill='#f4eefb' stroke='#8a4fd6'/><text x='492' y='62' text-anchor='middle' font-weight='800' fill='#6a34b8'>監査/規制業界</text><text x='492' y='90' text-anchor='middle' font-size='15' font-weight='800' fill='#8a4fd6'>Bloc 9.0</text><text x='492' y='118' text-anchor='middle' fill='#555'>event traceability</text><text x='492' y='136' text-anchor='middle' fill='#555'>on&lt;Event&gt;に統一</text><text x='492' y='162' text-anchor='middle' fill='#777' font-size='10.5'>fintech/healthcare</text></svg><figcaption>図1：「どれが最良か」でなくチームの規模・リスク・性能要件でパラダイムを選ぶ。GetXは退潮。</figcaption></figure><h4>アニメとパフォーマンスの勘所</h4><p>アニメーションの黄金律は<strong>まずimplicit</strong>：toggle・focus変化・card liftは <code>AnimatedContainer</code>/<code>AnimatedOpacity</code>/<code>AnimatedSwitcher</code> で <code>AnimationController</code> 不要（150〜500ms・easeInOut/fastOutSlowIn）。loop/physics/gestureや複雑なchoreographyだけexplicitに落とし <code>dispose</code> を忘れない。重い演出はRiveのstate machineで描画から分離する。パフォーマンスは<strong>フレーム予算</strong>が軸で、raster を<strong>60fps=16ms/90fps=11ms/120fps=8.3ms</strong>（rasterization自体は4ms未満/8.3ms未満）に収める。計測は必ずprofileモードでDevToolsのPerformanceタブからtimeline traceを取り、2026の <strong>Impeller Inspector</strong> で出荷前にoverdrawを可視化する。最多の問題は不要なwidget rebuildで、<code>const</code> で再ビルドをスキップ、アニメ領域を <code>RepaintBoundary</code> で隔離、<code>select</code>/<code>Selector</code> で局所再描画にするのが定石だ。</p><h4>ひとこと</h4><p>「UIはSDKから外へ、描画はImpellerで既定に、状態管理は要件で選ぶ」——四半期リリースを待たない週次更新が、Flutterの進化速度を一段引き上げた。</p>",
+      "sources": [
+        {
+          "title": "What's new in Flutter 3.47",
+          "url": "https://flutter.dev/blog/whats-new-in-flutter-3-47"
+        },
+        {
+          "title": "Flutter 3.47.0 リリースノート",
+          "url": "https://docs.flutter.dev/release/release-notes/release-notes-3.47.0"
+        },
+        {
+          "title": "Announcing Dart 3.13",
+          "url": "https://dart.dev/blog/announcing-dart-3-13"
+        },
+        {
+          "title": "Flutter State Management 2026",
+          "url": "https://sharpskill.dev/en/blog/flutter/flutter-state-management-2026-riverpod-bloc-getx"
+        }
+      ]
+    },
+    {
+      "id": "2026-08-25-github-trending",
+      "date": "2026-08-25",
+      "topic": "GitHub Trending",
+      "title": "8/25の話題リポジトリ — 自分のインフラにAIを宿す3本（パーソナルAI・自己ホスト運用・ツールのMCP化）",
+      "lede": "この日の急上昇を貫くのは「データもツールも手元に置いたままAIを組み込む」という自己ホスト志向。人生の記憶を持つパーソナルAI、ワークフロー自動化＋監視の統合基盤、デバッガをMCP化する設計パターンの3本。",
+      "articleHtml": "<p>8月25日にGitHub/Trendshift日次で急上昇した中から、共通する傾向が濃い3本を取り上げる。貫くテーマは<strong>「自分のインフラ・データを手元に置いたままAIを組み込む」</strong>——SaaSに預けず自己ホストする、あるいは既存ツールをAIから操作可能にする、という自律志向だ。各リポジトリについて「解決したい課題」と「提供する機能」を分けて見る。</p><figure class='fig'><svg viewBox='0 0 600 240' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='11'><rect x='0' y='0' width='600' height='240' fill='#f4fbf6'/><text x='16' y='22' font-size='13' font-weight='700' fill='#1a7f37'>3本の「解決したい課題 → 提供する機能」</text><line x1='16' y1='34' x2='584' y2='34' stroke='#bfe3c8'/><text x='20' y='52' font-weight='700' fill='#166534'>リポジトリ</text><text x='190' y='52' font-weight='700' fill='#166534'>解決したい課題</text><text x='410' y='52' font-weight='700' fill='#166534'>提供する機能</text><line x1='16' y1='60' x2='584' y2='60' stroke='#e0f0e4'/><text x='20' y='82' font-weight='700' fill='#0f5132'>openhuman</text><text x='190' y='82' fill='#333'>単発チャットは文脈が残らない</text><text x='410' y='82' fill='#333'>人生をローカル記憶＋艦隊司令塔</text><line x1='16' y1='96' x2='584' y2='96' stroke='#eef6f0'/><text x='20' y='126' font-weight='700' fill='#0f5132'>xyops</text><text x='190' y='118' fill='#333'>ジョブ自動化と監視が別々</text><text x='190' y='134' fill='#333'>SaaSに依存したくない</text><text x='410' y='126' fill='#333'>自動化＋監視を1つに自己ホスト</text><line x1='16' y1='148' x2='584' y2='148' stroke='#eef6f0'/><text x='20' y='178' font-weight='700' fill='#0f5132'>x64dbg-mcp-server</text><text x='190' y='170' fill='#333'>既存ツールをAIから操作できない</text><text x='190' y='186' fill='#333'>重い依存を持ち込みたくない</text><text x='410' y='170' fill='#333'>全機能をHTTP MCPで公開</text><text x='410' y='186' fill='#333'>Zig・依存ゼロ・単一バイナリ</text><line x1='16' y1='200' x2='584' y2='200' stroke='#bfe3c8'/><text x='20' y='222' font-size='10.5' fill='#557'>共通項：自己ホスト／手元のデータ・ツールにAIを宿す設計</text></svg><figcaption>図1：3本を「課題→機能」で一望。単発SaaS依存を避け、記憶・運用・ツール操作を自分の側に取り戻す流れ。</figcaption></figure><h4>tinyhumansai/openhuman（— ・ ⭐— / Trendshift日次13位・New 2026）</h4><p><strong>解決したい課題</strong>：普通のAIチャットは会話ごとに文脈がリセットされ、自分の人生の積み重ねを持てない。しかもその記憶をクラウドに預けるのはプライバシー面で不安が残る。<strong>提供する機能</strong>：人生のコンテキストを<strong>ローカルファーストに蓄積し続ける記憶</strong>を土台に、エージェント群とワークフローをオーケストレーションし、ディープリサーチまで1基盤で束ねる自己ホスト型の「パーソナルAI超知能」。#AI agent/#AI memory/#Digital human の三タグで、単発チャットではなく「自分専用の頭脳」を持つという統合ビジョンが刺さり急上昇した。</p><h4>pixlcore/xyops（— ・ ⭐— / Trendshift日次9位）</h4><p><strong>解決したい課題</strong>：定期ジョブのスケジューラと本番監視・アラートが別々のツールに分かれ、しかも外部SaaSに預けると運用が見えにくい。<strong>提供する機能</strong>：<strong>ワークフロー自動化とサーバー監視を1つに統合</strong>した自己ホスト型システムで、ジョブのスケジュール実行と稼働監視・アラートを自前サーバーで完結できる。#Workflow automation/#Self-hosted/#Monitoring のタグで支持を集めた。多数の定期タスクを回す運用の観測性を、自己ホストという切り口で補える一本だ。</p><h4>duty1g/x64dbg-mcp-server（Zig ・ ⭐— / Trendshift日次25位・New 2026）</h4><p><strong>解決したい課題</strong>：デバッガのような既存ツールをAIから直接操作する手段がなく、連携を組もうとすると重い依存や複雑なセットアップが伴う。<strong>提供する機能</strong>：デバッガ x64dbg の全機能を<strong>HTTP経由のネイティブMCPプラグインとして公開</strong>し、MCP対応AIからブレークポイント設定・ステップ実行・メモリ/レジスタ読取を制御できる。<strong>Zig製・依存ゼロ・単一バイナリ</strong>という軽さが要点で、「既存ツールを軽量MCPサーバー化する」設計パターンの参照実装として#MCPタグで話題になった。</p><h4>まとめ — 自分が試すなら</h4><p>まず試すなら xyops だ。多くのClaude定期タスクを回す身としては、ジョブ実行と監視を自己ホストで一望できる価値が直に効く。設計の学びとしては x64dbg-mcp-server の「ツール機能をZigの単一バイナリでMCP化する」型が、自作MCPを切り出すときの参照になる。openhumanは思想が先行するが、ローカルファースト記憶＋エージェント艦隊という方向性は今後の個人AI基盤の試金石として観察したい。</p>",
+      "sources": [
+        {
+          "title": "tinyhumansai/openhuman",
+          "url": "https://github.com/tinyhumansai/openhuman"
+        },
+        {
+          "title": "pixlcore/xyops",
+          "url": "https://github.com/pixlcore/xyops"
+        },
+        {
+          "title": "duty1g/x64dbg-mcp-server",
+          "url": "https://github.com/duty1g/x64dbg-mcp-server"
+        }
+      ]
+    },
     {
       "id": "2026-08-24-claude-code",
       "date": "2026-08-24",
