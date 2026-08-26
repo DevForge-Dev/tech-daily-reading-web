@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-08-25T04:46:04.069Z",
+  "generatedAt": "2026-08-26T04:47:52.514Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,110 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-08-26-claude-code",
+      "date": "2026-08-26",
+      "topic": "Claude Code",
+      "title": "Opus 5が既定Opusへ・v2.1.245でLinux起動修正 — 週次で締まる運用体験、売上25億ドル規模の定着",
+      "lede": "派手な新モデルより「毎日の使い勝手」を固める更新が続く。既定Opusが1MコンテキストのOpus 5へ、v2.1.245はLinux起動クラッシュを修正、/usageに暴走ループを見つける「Loops」内訳。裏では年換算売上25億ドル規模、エンジニアの73%が日常利用という定着が進む。",
+      "articleHtml": "<p>今日のClaude Codeは、最上位モデルの追加ではなく<strong>運用の細部を締める</strong>一日だった。既定Opusモデルが7月24日提供の <code>Opus 5</code> に切り替わり、既定・最大とも<strong>100万トークン</strong>のコンテキストを扱える。価格は入力100万トークン $5 ／ 出力 $25 と Opus 4.8 から据え置きで、大規模リポジトリの横断調査や長時間セッションを一度に読み込める点が常用モデルとして推される理由だ。選択は <code>/model</code> か <code>--model claude-opus-5</code>。</p><h4>何が新しいか</h4><p>クライアント面では最新版 <code>v2.1.245</code>（8月25日）が一部Linuxディストリの起動時クラッシュを修正。直近では <code>/usage</code> に「Loops」内訳（ループごとの実行回数・総トークン・実行あたりトークン・最終実行）が加わり、暴走しがちな <code>/loop</code> タスクを特定しやすくなった。さらに <code>modelPicker</code> 設定で <code>/model</code> の候補を順序・ラベル付きで自由に整理でき、Vertex/Bedrock 表記のidも一覧に追加・置換できる。VS Code拡張もセッションのグループ化（作成/改名/削除・複数移動）と、ツール実行ログを畳む <strong>Focus view</strong>（<code>Ctrl+Alt+F</code>）を得て、多数セッションを並行運用する使い方に最適化された。</p><figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='11.5'><rect x='0' y='0' width='600' height='210' fill='#f5fbf6'/><text x='16' y='24' font-size='13' font-weight='700' fill='#1a7f37'>カスタマイズ3層 ＋ CLAUDE.md の使い分け</text><rect x='16' y='40' width='135' height='70' rx='8' fill='#e8f6ec' stroke='#1a7f37'/><text x='30' y='62' font-weight='700' fill='#1a7f37'>Skills</text><text x='24' y='82' font-size='10.5' fill='#333'>必要時に読む</text><text x='24' y='98' font-size='10.5' fill='#333'>長期の専門知識</text><rect x='161' y='40' width='135' height='70' rx='8' fill='#e8f6ec' stroke='#1a7f37'/><text x='175' y='62' font-weight='700' fill='#1a7f37'>Hooks</text><text x='169' y='82' font-size='10.5' fill='#333'>ライフサイクルで</text><text x='169' y='98' font-size='10.5' fill='#333'>決定論的に実行</text><rect x='306' y='40' width='135' height='70' rx='8' fill='#e8f6ec' stroke='#1a7f37'/><text x='320' y='62' font-weight='700' fill='#1a7f37'>Subagents</text><text x='314' y='82' font-size='10.5' fill='#333'>独立コンテキスト</text><text x='314' y='98' font-size='10.5' fill='#333'>で委譲・分岐</text><rect x='451' y='40' width='133' height='70' rx='8' fill='#eef0ee' stroke='#5a5a66'/><text x='465' y='62' font-weight='700' fill='#5a5a66'>CLAUDE.md</text><text x='459' y='82' font-size='10.5' fill='#333'>常時のプロジェクト</text><text x='459' y='98' font-size='10.5' fill='#333'>指針を短く</text><text x='16' y='140' font-size='11.5' fill='#333'>強制したい→Hooks/権限　文脈知識→Skills　委譲境界→Subagents　常時指針→CLAUDE.md</text><text x='16' y='170' font-size='12' font-weight='700' fill='#1a7f37'>まずSkillsから着手すると作りやすく即効性が高い</text><text x='16' y='192' font-size='10.5' fill='#777'>※ description を具体化するほど自動委任の精度が上がる</text></svg><figcaption>図1：Skills/Hooks/Subagents/CLAUDE.md の役割分担。「強制はHooks、知識はSkills、委譲はSubagents」が指針。</figcaption></figure><h4>エコシステムの温度感</h4><p>技術記事側では、Skills（オンデマンドに読む指示パック＝<code>SKILL.md</code>＋補助資産）、Hooks（<code>PreToolUse</code>/<code>PostToolUse</code>/<code>Stop</code> で発火する決定論シェル）、Subagents（独自コンテキストの分岐）を一気通貫で解説するガイドが2026年版として出そろった。事業面では年換算売上が<strong>25億ドル規模</strong>を突破、法人サブスクは年初比4倍・ビジネス顧客30万社超。利用統計でもエンジニアチームの<strong>73%が日常利用</strong>（前年41%）、生産性は26〜55%向上とされ、全Team/Enterpriseシートに標準付帯＋集中管理も揃った。</p><h4>自分が試すなら・注意点</h4><p>常用モデルを Opus 5 に寄せつつ、長時間タスクは <code>/usage</code> の Loops で消費を監視して暴走ループを早期に止める運用にしたい。<code>modelPicker</code> で候補を業務用に整理し、VS Code は Focus view で会話を見やすく保つ。注意点は更新頻度の速さで、破壊的変更の有無を確認しつつこまめに追従すること。企業導入は「ツール導入」ではなく変更管理として、1チーム起点で <code>CLAUDE.md</code> を磨き品質を測ってから横展開するのが定石だ。</p><h4>ひとこと</h4><p>モデルの世代交代が一段落し、可視化・整理・組織導入という「使い続けるための足回り」を固める局面。派手さはないが、毎日触る道具としての完成度が上がっている。</p>",
+      "sources": [
+        {
+          "title": "Claude Code 最新版（v2.1.245 ほか）",
+          "url": "https://www.havoptic.com/tools/claude-code"
+        },
+        {
+          "title": "What's new in Opus 5（Claude Docs）",
+          "url": "https://platform.claude.com/docs/en/about-claude/models/whats-new-opus-5"
+        },
+        {
+          "title": "VS Code拡張 強化（note）",
+          "url": "https://note.com/kawaidesign/n/ne7bbae7d0b1a"
+        },
+        {
+          "title": "Hooks・Subagents・パワー機能 完全ガイド2026（DEV）",
+          "url": "https://dev.to/vibehackers/claude-code-hooks-subagents-power-features-the-complete-guide-2026-c71"
+        },
+        {
+          "title": "Claude Codeが年換算売上25億ドル規模へ（UncoverAlpha）",
+          "url": "https://www.uncoveralpha.com/p/anthropics-claude-code-is-having"
+        }
+      ]
+    },
+    {
+      "id": "2026-08-26-nextjs",
+      "date": "2026-08-26",
+      "topic": "Next.js",
+      "title": "Before/After画像比較スライダー — 「自前実装しない」native range × clip-path が推奨解に",
+      "lede": "加工前↔後を仕切りドラッグで見比べる定番UI。既製ライブラリは重い/依存過多/キーボード・SR非対応になりがち。核心は pointer/touch/keyboard を自作しないこと——標準の input type=range に操作を任せ、その値を CSS clip-path に流すだけで全入力手段がタダで揃う。",
+      "articleHtml": "<p>「Before↔After」を仕切りのドラッグで見比べるインタラクションは、ランディング・エディタ・写真/不動産/医療系で定番だ。だが既製ライブラリは「重い」「React・jQuery依存」「キーボードやスクリーンリーダーで操作不能」のどれかを抱えがち。2025〜26の記事群が推す解は明快で、<strong>自前でpointer/touch/keyboardを実装しない</strong>——ブラウザ標準の <code>&lt;input type=\"range\"&gt;</code> に操作を全部任せ、その値を CSS <code>clip-path</code> に流すだけで、マウス・タッチ・矢印/Home/End・スクリーンリーダー・フォーカスが<strong>タダで揃う</strong>（Cloud Fourの実装で1.5KB・依存ゼロ）。</p><h4>仕組みのポイント</h4><p>同寸の画像を2枚重ね、下層をAFTER（全面）、上層のBEFOREを <code>position:absolute; inset:0</code> で重ねて<strong>右からクリップ</strong>する：<code>clip-path: inset(0 calc(100% - var(--pos)) 0 0)</code>。操作は range を画像上に全面オーバーレイし、value を CSS変数 <code>--pos</code> に流し込むだけ。<code>width</code>/<code>left</code> を毎フレーム変えるとレイアウト/ペイントが走るが、<code>clip-path</code> はコンポジタ処理で軽く、ドラッグ中のカクつきを避けられる。仕切り線は上層wrapperに <code>filter: drop-shadow(2px 0 0 #fff)</code> を掛けるだけで要素を増やさず出せる。</p><figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='11.5'><rect x='0' y='0' width='600' height='210' fill='#eef5ff'/><text x='16' y='24' font-size='13' font-weight='700' fill='#1f6feb'>レイヤ構成：下層AFTER＋上層BEFOREを右からクリップ</text><rect x='40' y='45' width='300' height='120' rx='8' fill='#cfe0ff' stroke='#1f6feb'/><text x='120' y='110' font-size='13' font-weight='700' fill='#1f6feb'>AFTER（下層・全面）</text><rect x='40' y='45' width='160' height='120' rx='8' fill='#9ec2ff' stroke='#1f6feb' stroke-dasharray='4 3'/><text x='60' y='110' font-size='13' font-weight='700' fill='#0b3d91'>BEFORE</text><text x='60' y='128' font-size='10' fill='#0b3d91'>clip-path: inset(...)</text><line x1='200' y1='40' x2='200' y2='170' stroke='#fff' stroke-width='3'/><circle cx='200' cy='105' r='11' fill='#fff' stroke='#1f6feb' stroke-width='2'/><text x='360' y='70' font-size='11.5' fill='#333'>--pos ← input[type=range].value</text><text x='360' y='92' font-size='11.5' fill='#333'>range が drag/touch/keyboard</text><text x='360' y='110' font-size='11.5' fill='#333'>/ARIA slider を標準提供</text><text x='360' y='140' font-size='11.5' font-weight='700' fill='#1f6feb'>自前イベント地獄を回避</text></svg><figcaption>図1：2枚重ねの上層をclip-pathで削り、range値を --pos に流す。操作系はブラウザ標準に委譲。</figcaption></figure><h4>Next.js（App Router）での組み込み</h4><p>値→CSS変数の反映に <code>input</code> リスナと <code>style.setProperty</code> を使うため、スライダー本体は <code>'use client'</code> の薄い島に隔離し、<strong>画像URLの取得（DB/CMS/fetch）はRSCのまま</strong>行って <code>src</code>/<code>alt</code> を props で渡す。画像は <code>next/image</code> を2枚とも <code>fill</code>＋親 <code>aspect-ratio</code> で最適化し、LCP候補のAFTER側に <code>priority</code>。初期 <code>value=50</code> ならサーバーHTMLも中央分割でhydration mismatchなし＝JS到達前も「50%で静止」した比較が見えるプログレッシブエンハンスメント。</p><pre><code>const onInput = (e) =&gt; {\n  const v = e.target.value;\n  cancelAnimationFrame(raf.current);\n  raf.current = requestAnimationFrame(() =&gt;\n    box.current.style.setProperty('--pos', v + '%'));\n};</code></pre><h4>落とし穴</h4><p>2枚は完全同寸・同トリミング（<code>object-fit:cover</code>＋同 <code>aspect-ratio</code>）でないとズレる。コンテナに寸法を与え<strong>CLS=0</strong>を確保。毎入力で React state を回すと再レンダー多発でINPが悪化するので <strong>ref＋CSS変数直書き＋rAF</strong> で間引く。純CSS(JSゼロ)版はキーボード/タッチ/SRが弱いので本番はnative range併用が無難。</p><h4>ひとこと</h4><p>「操作系はブラウザに、見た目はCSSに」任せるほど、軽く・アクセシブルで・壊れにくい。自作の誘惑を捨てるのが最短ルートだ。</p>",
+      "sources": [
+        {
+          "title": "Cloud Four「accessible image comparison web component」",
+          "url": "https://cloudfour.com/thinks/building-an-accessible-image-comparison-web-component/"
+        },
+        {
+          "title": "MDN input type=range",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input/range"
+        },
+        {
+          "title": "MDN clip-path",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/clip-path"
+        },
+        {
+          "title": "Open UI — Slider standardization research",
+          "url": "https://open-ui.org/components/slider.research.parts/"
+        }
+      ]
+    },
+    {
+      "id": "2026-08-26-flutter",
+      "date": "2026-08-26",
+      "topic": "Flutter",
+      "title": "Flutter 3.47 — Impellerがデスクトップ3OSで既定、Riverpod 3.0のMutations、フレーム予算8–11ms時代",
+      "lede": "現行はFlutter 3.47.0（Dart 3.13同梱）。ImpellerがmacOS/Windows/Linuxで既定レンダラに昇格し、material_ui/cupertino_ui 1.0がコアから分離。状態管理はRiverpod 3.0のMutationsが非同期アクションのlifecycleをUIに自動公開。90/120Hz時代のフレーム予算は8–11ms。",
+      "articleHtml": "<p>今日の主役は現行の <strong>Flutter 3.47.0 stable</strong>（2026-08-12、<code>Dart 3.13</code> 同梱）。最大の変化は <strong>Impeller がデスクトップ3OS（macOS/Windows/Linux）で既定レンダラに昇格</strong>したこと。Impeller は shader を <strong>AOT（ビルド時）でコンパイル</strong>し Metal(iOS)/Vulkan(Android/デスクトップ) をネイティブ利用するため、従来の shader compilation jank を実質ゼロにし、<strong>複雑シーンで平均 raster 時間を約50%短縮</strong>する。あわせて Widget Previews が stable 昇格（ローカルビルドキャッシュで高速起動・リアルタイム検索）。次は2026年11月の機能リリースへ向け Impeller 2.0・WasmGC 既定化が進む。</p><h4>ライブラリ分離とアニメの黄金律</h4><p><code>material_ui</code> / <code>cupertino_ui</code> 1.0 が Material/Cupertino をコアSDKから分離し pub.dev から週次更新に。移行は <code>dart fix --apply --code=migrate_design_widgets</code> でimportを自動置換でき、未使用UIをバイナリから外して<strong>app size削減</strong>につながる（旧importは2026年秋にdeprecated予定）。アニメの黄金律は「まず implicit」——toggle・focus変化・card liftは <code>AnimatedContainer</code>/<code>AnimatedOpacity</code>/<code>AnimatedSwitcher</code> で <code>AnimationController</code> 不要・自動補間（150–500ms・easeInOut/fastOutSlowIn）。loop/physics/gestureや複雑choreographyだけ explicit にし <code>dispose</code> 必須、重い演出は Rive の state machine に逃がす。</p><figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='11.5'><rect x='0' y='0' width='600' height='210' fill='#e9f6fd'/><text x='16' y='24' font-size='13' font-weight='700' fill='#0277bd'>フレーム予算：リフレッシュレート別の1フレーム時間</text><text x='16' y='66' fill='#333'>60fps</text><rect x='80' y='54' width='320' height='18' rx='4' fill='#0277bd'/><text x='408' y='68' font-weight='800' fill='#0277bd'>16ms</text><text x='16' y='104' fill='#333'>90fps</text><rect x='80' y='92' width='220' height='18' rx='4' fill='#3aa0d8'/><text x='308' y='106' font-weight='800' fill='#0277bd'>11ms</text><text x='16' y='142' fill='#333'>120fps</text><rect x='80' y='130' width='166' height='18' rx='4' fill='#56c5f5'/><text x='254' y='144' font-weight='800' fill='#0277bd'>8.3ms</text><text x='16' y='178' font-size='11.5' fill='#333'>超過は性能問題のサイン。計測は必ず profile モードで DevTools Performance タブから</text><text x='16' y='198' font-size='10.5' fill='#777'>※ Impeller で raster 約50%短縮／raster目標 60fps&lt;4ms・120fps&lt;8.3ms</text></svg><figcaption>図1：90/120Hz時代のフレーム予算。const/RepaintBoundary で不要rebuildを断ち予算を守る。</figcaption></figure><h4>状態管理は Riverpod 3.0 の Mutations</h4><p>2026の選定図は、新規は <strong>Riverpod 3.0</strong>（compile-time safety＋最小boilerplate、テストはBloc比30–40%行数減）、性能特化は Signals 6.0、監査/規制は Bloc 9.0。目玉の <strong>Mutations</strong> は「Login」「Post Comment」のような非同期アクションを定義すると、その lifecycle（<code>Idle/Pending/Success/Error</code>）を UI へ自動公開し、ボタンのloading/success/error表示の手書き配線が要らなくなる。さらに provider は network 失敗時に<strong>指数バックオフの automatic retry</strong> で一時的なグリッチを吸収し、永続エラー画面を回避する。<code>ref.watch(provider.select(...))</code> で最小スライス購読するのも定石だ。</p><h4>自分が試すなら・注意点</h4><p>まずデスクトップ実機で Impeller 既定下の raster を DevTools で計測し、<code>const</code>/<code>RepaintBoundary</code>/<code>build()</code>分割で不要rebuildを潰す。新規は Riverpod 3.0＋Mutationsでフォーム系の配線を減らす。注意は計測を必ず profile モードで行うこと（debug VMは遅い）と、UI分離の移行は <code>dart fix</code> 後にビルドサイズと import 欠落を確認すること。</p><h4>ひとこと</h4><p>「レンダラはImpeller、状態はRiverpod、動きはまずimplicit、予算は8–11ms」——2026のFlutterはこの4点を押さえれば大きく外さない。</p>",
+      "sources": [
+        {
+          "title": "What's new in Flutter 3.47",
+          "url": "https://flutter.dev/blog/whats-new-in-flutter-3-47"
+        },
+        {
+          "title": "Flutter 3.47.0 release notes",
+          "url": "https://docs.flutter.dev/release/release-notes/release-notes-3.47.0"
+        },
+        {
+          "title": "How Impeller Is Transforming Flutter UI Rendering in 2026（DEV）",
+          "url": "https://dev.to/eira-wexford/how-impeller-is-transforming-flutter-ui-rendering-in-2026-3dpd"
+        },
+        {
+          "title": "Provider vs Riverpod vs Bloc 2026（startdebugging）",
+          "url": "https://startdebugging.net/2026/06/provider-vs-riverpod-vs-bloc-for-flutter-state-management-in-2026/"
+        }
+      ]
+    },
+    {
+      "id": "2026-08-26-github-trending",
+      "date": "2026-08-26",
+      "topic": "GitHub Trending",
+      "title": "8/26の話題リポジトリ — 全公開信号のスパイ衛星ビュー・単一バイナリGitホスト・Claude製の第二の脳",
+      "lede": "エージェント/スキル一色のトレンドの中で、地理空間3D・自己ホストGitインフラ・PKMという毛色の違う3本が急上昇。いずれも「重い前提を捨てて、オープンな素材と透明な設計で作る」という共通思想を持つ。",
+      "articleHtml": "<p>本日のTrendshift日次で急上昇した中から、ジャンルの多様性を意識して3本を取り上げる。共通するのは「巨大なフレームワークや秘匿データに頼らず、<strong>公開信号・単一バイナリ・プレーンMarkdown</strong>といった透明でオープンな素材で作る」という思想だ。以下、各リポジトリが<strong>解決したい課題</strong>と<strong>提供する機能</strong>を整理する。</p><figure class='fig'><svg viewBox='0 0 600 220' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='11'><rect x='0' y='0' width='600' height='220' fill='#f2fbf4'/><text x='12' y='22' font-size='13' font-weight='700' fill='#1a7f37'>リポジトリ × （解決したい課題／提供する機能）</text><line x1='12' y1='34' x2='588' y2='34' stroke='#bfe3c8'/><text x='16' y='58' font-weight='700' fill='#1a7f37'>gods-eye-view</text><text x='210' y='58' fill='#333'>課題:機密っぽい空間情報が非公開/高価</text><text x='210' y='74' fill='#555'>機能:3D地球儀に航空機/船/衛星等ライブ重畳＋音声操作</text><line x1='12' y1='86' x2='588' y2='86' stroke='#e0f0e4'/><text x='16' y='110' font-weight='700' fill='#1a7f37'>tobi/walgit</text><text x='210' y='110' fill='#333'>課題:GitホストがDB/状態を持ち運用が重い</text><text x='210' y='126' fill='#555'>機能:S3/GCSを唯一の正本にする単一バイナリGit</text><line x1='12' y1='138' x2='588' y2='138' stroke='#e0f0e4'/><text x='16' y='162' font-weight='700' fill='#1a7f37'>claude-obsidian</text><text x='210' y='162' fill='#333'>課題:メモが散在し文脈がつながらない</text><text x='210' y='178' fill='#555'>機能:Claudeがソースを読みMd知識グラフへ自動リンク</text><line x1='12' y1='190' x2='588' y2='190' stroke='#bfe3c8'/><text x='16' y='210' font-size='10.5' fill='#777'>出典:各GitHub／Trendshift日次（2026-08-26）</text></svg><figcaption>図1：3本の「課題→機能」対応。いずれもオープン素材・自己所有・透明設計が軸。</figcaption></figure><h4>bilawalsidhu/gods-eye-view（—・⭐約1.4k、本日+158／日次1位）</h4><p><strong>解決したい課題：</strong>“作戦司令室”のような空間インテリジェンスは従来、機密扱いや高価な専用ツールに閉じていた。これを誰でも触れる形にしたい、という動機だ。<strong>提供する機能：</strong>ブラウザだけで動く実データ版スパイ衛星シミュレータで、フォトリアルな3D地球儀に航空機・船舶・衛星・地震・交通・公開カメラのライブ信号を重畳し、リアルタイムAIエージェントによるハンズフリー音声操作まで備える（MIT）。急上昇の理由は、「機密っぽい見た目を全部オープン信号＋検証可能なコードだけで作る」思想と、個人追跡・顔認識を明確に排除しローカルファーストで秘密を持たない透明性が支持されたこと。</p><h4>tobi/walgit（Rust・⭐約288、本日+17／日次12位）</h4><p><strong>解決したい課題：</strong>一般的なGitホストはDB・リーダー・重要なローカル状態を抱え、運用とスケールが重い。<strong>提供する機能：</strong>S3/GCSバケットの前に“単一バイナリ1個”を置くだけのシェアードナッシングなGitホストで、バケットだけが唯一の正本、各マシンは使い捨てキャッシュになる。smart HTTP(v0/v2) fetch/push・bundle-uriクローン・Git LFS・閲覧用Web UI・JSON API/SDK・per-repoプッシュポリシー・webhookを内蔵。“動かすマシンより大きいリポジトリにもスケールする”設計と、Shopify CEOのTobi Lütke本人のリポジトリという話題性で急上昇した。</p><h4>AgriciDaniel/claude-obsidian（—・⭐約415、本日+16／日次6位）</h4><p><strong>解決したい課題：</strong>メモやソースが散在して文脈がつながらず、知識が資産にならない。<strong>提供する機能：</strong>Obsidian＋Claude Codeで動く自己組織化する“第二の脳”。任意のソースを放り込むとClaudeが読み・リンクし、自分が所有するプレーンMarkdownの連結ナレッジグラフへ整理する（Karpathyの LLM Wiki パターン準拠のPKM／Notion代替）。単なるメモではなく「Claudeが読解して知識グラフへ自動で綴じ込む」設計が注目され、データを全部自分所有のMarkdownで持てる点が支持されている。</p><h4>まとめ</h4><p>自分が試すなら、まず <strong>claude-obsidian</strong>——10PJ横断のリサーチや意思決定メモを、CLAUDE.md肥大に頼らず所有可能なMarkdownグラフとして蓄積できる効き所が大きい。gods-eye-viewは“公開信号だけでここまで作れる”実例として、walgitは自己ホストGitの軽量化参照として押さえておきたい。</p>",
+      "sources": [
+        {
+          "title": "bilawalsidhu/gods-eye-view",
+          "url": "https://github.com/bilawalsidhu/gods-eye-view"
+        },
+        {
+          "title": "tobi/walgit",
+          "url": "https://github.com/tobi/walgit"
+        },
+        {
+          "title": "AgriciDaniel/claude-obsidian",
+          "url": "https://github.com/AgriciDaniel/claude-obsidian"
+        }
+      ]
+    },
     {
       "id": "2026-08-25-claude-code",
       "date": "2026-08-25",
