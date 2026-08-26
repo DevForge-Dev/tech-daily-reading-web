@@ -1,0 +1,59 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Flutter 3.47 — Impellerがデスクトップ3OSで既定、Riverpod 3.0のMutations、フレーム予算8–11ms時代 — デイリー技術深掘り 読み物</title><meta name="description" content="現行はFlutter 3.47.0（Dart 3.13同梱）。ImpellerがmacOS/Windows/Linuxで既定レンダラに昇格し、material_ui/cupertino_ui 1.0がコアから分離。状態管理はRiverpod 3.0のMutationsが非同期アクションのlifecycleをUIに自動公開。90/120Hz時代のフレーム予算は8–11ms。"><meta name="theme-color" content="#0277bd"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-26-flutter/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Flutter 3.47 — Impellerがデスクトップ3OSで既定、Riverpod 3.0のMutations、フレーム予算8–11ms時代 — デイリー技術深掘り 読み物"><meta property="og:description" content="現行はFlutter 3.47.0（Dart 3.13同梱）。ImpellerがmacOS/Windows/Linuxで既定レンダラに昇格し、material_ui/cupertino_ui 1.0がコアから分離。状態管理はRiverpod 3.0のMutationsが非同期アクションのlifecycleをUIに自動公開。90/120Hz時代のフレーム予算は8–11ms。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-26-flutter/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #29b6f6, #01579b)"> <span class="glyph" aria-hidden="true">◆</span> <div class="kicker">Flutter</div> <h1>Flutter 3.47 — Impellerがデスクトップ3OSで既定、Riverpod 3.0のMutations、フレーム予算8–11ms時代</h1> <p class="lede">現行はFlutter 3.47.0（Dart 3.13同梱）。ImpellerがmacOS/Windows/Linuxで既定レンダラに昇格し、material_ui/cupertino_ui 1.0がコアから分離。状態管理はRiverpod 3.0のMutationsが非同期アクションのlifecycleをUIに自動公開。90/120Hz時代のフレーム予算は8–11ms。</p> <div class="meta"> <span>📅 2026年8月26日</span> <span>⏱ 約3分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#0277bd"> <div> <article class="prose" data-has-mermaid="0"><p>今日の主役は現行の <strong>Flutter 3.47.0 stable</strong>（2026-08-12、<code>Dart 3.13</code> 同梱）。最大の変化は <strong>Impeller がデスクトップ3OS（macOS/Windows/Linux）で既定レンダラに昇格</strong>したこと。Impeller は shader を <strong>AOT（ビルド時）でコンパイル</strong>し Metal(iOS)/Vulkan(Android/デスクトップ) をネイティブ利用するため、従来の shader compilation jank を実質ゼロにし、<strong>複雑シーンで平均 raster 時間を約50%短縮</strong>する。あわせて Widget Previews が stable 昇格（ローカルビルドキャッシュで高速起動・リアルタイム検索）。次は2026年11月の機能リリースへ向け Impeller 2.0・WasmGC 既定化が進む。</p><h4 id="sec-1">ライブラリ分離とアニメの黄金律</h4><p><code>material_ui</code> / <code>cupertino_ui</code> 1.0 が Material/Cupertino をコアSDKから分離し pub.dev から週次更新に。移行は <code>dart fix --apply --code=migrate_design_widgets</code> でimportを自動置換でき、未使用UIをバイナリから外して<strong>app size削減</strong>につながる（旧importは2026年秋にdeprecated予定）。アニメの黄金律は「まず implicit」——toggle・focus変化・card liftは <code>AnimatedContainer</code>/<code>AnimatedOpacity</code>/<code>AnimatedSwitcher</code> で <code>AnimationController</code> 不要・自動補間（150–500ms・easeInOut/fastOutSlowIn）。loop/physics/gestureや複雑choreographyだけ explicit にし <code>dispose</code> 必須、重い演出は Rive の state machine に逃がす。</p><figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='11.5'><rect x='0' y='0' width='600' height='210' fill='#e9f6fd'></rect><text x='16' y='24' font-size='13' font-weight='700' fill='#0277bd'>フレーム予算：リフレッシュレート別の1フレーム時間</text><text x='16' y='66' fill='#333'>60fps</text><rect x='80' y='54' width='320' height='18' rx='4' fill='#0277bd'></rect><text x='408' y='68' font-weight='800' fill='#0277bd'>16ms</text><text x='16' y='104' fill='#333'>90fps</text><rect x='80' y='92' width='220' height='18' rx='4' fill='#3aa0d8'></rect><text x='308' y='106' font-weight='800' fill='#0277bd'>11ms</text><text x='16' y='142' fill='#333'>120fps</text><rect x='80' y='130' width='166' height='18' rx='4' fill='#56c5f5'></rect><text x='254' y='144' font-weight='800' fill='#0277bd'>8.3ms</text><text x='16' y='178' font-size='11.5' fill='#333'>超過は性能問題のサイン。計測は必ず profile モードで DevTools Performance タブから</text><text x='16' y='198' font-size='10.5' fill='#777'>※ Impeller で raster 約50%短縮／raster目標 60fps&lt;4ms・120fps&lt;8.3ms</text></svg><figcaption>図1：90/120Hz時代のフレーム予算。const/RepaintBoundary で不要rebuildを断ち予算を守る。</figcaption></figure><h4 id="sec-2">状態管理は Riverpod 3.0 の Mutations</h4><p>2026の選定図は、新規は <strong>Riverpod 3.0</strong>（compile-time safety＋最小boilerplate、テストはBloc比30–40%行数減）、性能特化は Signals 6.0、監査/規制は Bloc 9.0。目玉の <strong>Mutations</strong> は「Login」「Post Comment」のような非同期アクションを定義すると、その lifecycle（<code>Idle/Pending/Success/Error</code>）を UI へ自動公開し、ボタンのloading/success/error表示の手書き配線が要らなくなる。さらに provider は network 失敗時に<strong>指数バックオフの automatic retry</strong> で一時的なグリッチを吸収し、永続エラー画面を回避する。<code>ref.watch(provider.select(...))</code> で最小スライス購読するのも定石だ。</p><h4 id="sec-3">自分が試すなら・注意点</h4><p>まずデスクトップ実機で Impeller 既定下の raster を DevTools で計測し、<code>const</code>/<code>RepaintBoundary</code>/<code>build()</code>分割で不要rebuildを潰す。新規は Riverpod 3.0＋Mutationsでフォーム系の配線を減らす。注意は計測を必ず profile モードで行うこと（debug VMは遅い）と、UI分離の移行は <code>dart fix</code> 後にビルドサイズと import 欠落を確認すること。</p><h4 id="sec-4">ひとこと</h4><p>「レンダラはImpeller、状態はRiverpod、動きはまずimplicit、予算は8–11ms」——2026のFlutterはこの4点を押さえれば大きく外さない。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://flutter.dev/blog/whats-new-in-flutter-3-47" target="_blank" rel="noopener noreferrer"> What&#39;s new in Flutter 3.47 </a> </li><li> <a href="https://docs.flutter.dev/release/release-notes/release-notes-3.47.0" target="_blank" rel="noopener noreferrer"> Flutter 3.47.0 release notes </a> </li><li> <a href="https://dev.to/eira-wexford/how-impeller-is-transforming-flutter-ui-rendering-in-2026-3dpd" target="_blank" rel="noopener noreferrer"> How Impeller Is Transforming Flutter UI Rendering in 2026（DEV） </a> </li><li> <a href="https://startdebugging.net/2026/06/provider-vs-riverpod-vs-bloc-for-flutter-state-management-in-2026/" target="_blank" rel="noopener noreferrer"> Provider vs Riverpod vs Bloc 2026（startdebugging） </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> ライブラリ分離とアニメの黄金律 </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 状態管理は Riverpod 3.0 の Mutations </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 自分が試すなら・注意点 </a> </li><li> <a href="#sec-4" data-toc="sec-4"> ひとこと </a> </li> </ul> <div class="reading-box"> <div>📅 2026-08-26</div> <div>⏱ 読了 約3分</div> <div>🏷 Flutter</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

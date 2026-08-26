@@ -1,0 +1,64 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Before/After画像比較スライダー — 「自前実装しない」native range × clip-path が推奨解に — デイリー技術深掘り 読み物</title><meta name="description" content="加工前↔後を仕切りドラッグで見比べる定番UI。既製ライブラリは重い/依存過多/キーボード・SR非対応になりがち。核心は pointer/touch/keyboard を自作しないこと——標準の input type=range に操作を任せ、その値を CSS clip-path に流すだけで全入力手段がタダで揃う。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-26-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Before/After画像比較スライダー — 「自前実装しない」native range × clip-path が推奨解に — デイリー技術深掘り 読み物"><meta property="og:description" content="加工前↔後を仕切りドラッグで見比べる定番UI。既製ライブラリは重い/依存過多/キーボード・SR非対応になりがち。核心は pointer/touch/keyboard を自作しないこと——標準の input type=range に操作を任せ、その値を CSS clip-path に流すだけで全入力手段がタダで揃う。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-26-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>Before/After画像比較スライダー — 「自前実装しない」native range × clip-path が推奨解に</h1> <p class="lede">加工前↔後を仕切りドラッグで見比べる定番UI。既製ライブラリは重い/依存過多/キーボード・SR非対応になりがち。核心は pointer/touch/keyboard を自作しないこと——標準の input type=range に操作を任せ、その値を CSS clip-path に流すだけで全入力手段がタダで揃う。</p> <div class="meta"> <span>📅 2026年8月26日</span> <span>⏱ 約3分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="0"><p>「Before↔After」を仕切りのドラッグで見比べるインタラクションは、ランディング・エディタ・写真/不動産/医療系で定番だ。だが既製ライブラリは「重い」「React・jQuery依存」「キーボードやスクリーンリーダーで操作不能」のどれかを抱えがち。2025〜26の記事群が推す解は明快で、<strong>自前でpointer/touch/keyboardを実装しない</strong>——ブラウザ標準の <code>&lt;input type="range"&gt;</code> に操作を全部任せ、その値を CSS <code>clip-path</code> に流すだけで、マウス・タッチ・矢印/Home/End・スクリーンリーダー・フォーカスが<strong>タダで揃う</strong>（Cloud Fourの実装で1.5KB・依存ゼロ）。</p><h4 id="sec-1">仕組みのポイント</h4><p>同寸の画像を2枚重ね、下層をAFTER（全面）、上層のBEFOREを <code>position:absolute; inset:0</code> で重ねて<strong>右からクリップ</strong>する：<code>clip-path: inset(0 calc(100% - var(--pos)) 0 0)</code>。操作は range を画像上に全面オーバーレイし、value を CSS変数 <code>--pos</code> に流し込むだけ。<code>width</code>/<code>left</code> を毎フレーム変えるとレイアウト/ペイントが走るが、<code>clip-path</code> はコンポジタ処理で軽く、ドラッグ中のカクつきを避けられる。仕切り線は上層wrapperに <code>filter: drop-shadow(2px 0 0 #fff)</code> を掛けるだけで要素を増やさず出せる。</p><figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='11.5'><rect x='0' y='0' width='600' height='210' fill='#eef5ff'></rect><text x='16' y='24' font-size='13' font-weight='700' fill='#1f6feb'>レイヤ構成：下層AFTER＋上層BEFOREを右からクリップ</text><rect x='40' y='45' width='300' height='120' rx='8' fill='#cfe0ff' stroke='#1f6feb'></rect><text x='120' y='110' font-size='13' font-weight='700' fill='#1f6feb'>AFTER（下層・全面）</text><rect x='40' y='45' width='160' height='120' rx='8' fill='#9ec2ff' stroke='#1f6feb' stroke-dasharray='4 3'></rect><text x='60' y='110' font-size='13' font-weight='700' fill='#0b3d91'>BEFORE</text><text x='60' y='128' font-size='10' fill='#0b3d91'>clip-path: inset(...)</text><line x1='200' y1='40' x2='200' y2='170' stroke='#fff' stroke-width='3'></line><circle cx='200' cy='105' r='11' fill='#fff' stroke='#1f6feb' stroke-width='2'></circle><text x='360' y='70' font-size='11.5' fill='#333'>--pos ← input[type=range].value</text><text x='360' y='92' font-size='11.5' fill='#333'>range が drag/touch/keyboard</text><text x='360' y='110' font-size='11.5' fill='#333'>/ARIA slider を標準提供</text><text x='360' y='140' font-size='11.5' font-weight='700' fill='#1f6feb'>自前イベント地獄を回避</text></svg><figcaption>図1：2枚重ねの上層をclip-pathで削り、range値を --pos に流す。操作系はブラウザ標準に委譲。</figcaption></figure><h4 id="sec-2">Next.js（App Router）での組み込み</h4><p>値→CSS変数の反映に <code>input</code> リスナと <code>style.setProperty</code> を使うため、スライダー本体は <code>'use client'</code> の薄い島に隔離し、<strong>画像URLの取得（DB/CMS/fetch）はRSCのまま</strong>行って <code>src</code>/<code>alt</code> を props で渡す。画像は <code>next/image</code> を2枚とも <code>fill</code>＋親 <code>aspect-ratio</code> で最適化し、LCP候補のAFTER側に <code>priority</code>。初期 <code>value=50</code> ならサーバーHTMLも中央分割でhydration mismatchなし＝JS到達前も「50%で静止」した比較が見えるプログレッシブエンハンスメント。</p><pre><code>const onInput = (e) =&gt; {
+  const v = e.target.value;
+  cancelAnimationFrame(raf.current);
+  raf.current = requestAnimationFrame(() =&gt;
+    box.current.style.setProperty('--pos', v + '%'));
+};</code></pre><h4 id="sec-3">落とし穴</h4><p>2枚は完全同寸・同トリミング（<code>object-fit:cover</code>＋同 <code>aspect-ratio</code>）でないとズレる。コンテナに寸法を与え<strong>CLS=0</strong>を確保。毎入力で React state を回すと再レンダー多発でINPが悪化するので <strong>ref＋CSS変数直書き＋rAF</strong> で間引く。純CSS(JSゼロ)版はキーボード/タッチ/SRが弱いので本番はnative range併用が無難。</p><h4 id="sec-4">ひとこと</h4><p>「操作系はブラウザに、見た目はCSSに」任せるほど、軽く・アクセシブルで・壊れにくい。自作の誘惑を捨てるのが最短ルートだ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://cloudfour.com/thinks/building-an-accessible-image-comparison-web-component/" target="_blank" rel="noopener noreferrer"> Cloud Four「accessible image comparison web component」 </a> </li><li> <a href="https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input/range" target="_blank" rel="noopener noreferrer"> MDN input type=range </a> </li><li> <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/clip-path" target="_blank" rel="noopener noreferrer"> MDN clip-path </a> </li><li> <a href="https://open-ui.org/components/slider.research.parts/" target="_blank" rel="noopener noreferrer"> Open UI — Slider standardization research </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 仕組みのポイント </a> </li><li> <a href="#sec-2" data-toc="sec-2"> Next.js（App Router）での組み込み </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 落とし穴 </a> </li><li> <a href="#sec-4" data-toc="sec-4"> ひとこと </a> </li> </ul> <div class="reading-box"> <div>📅 2026-08-26</div> <div>⏱ 読了 約3分</div> <div>🏷 Next.js</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
