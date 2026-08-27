@@ -1,0 +1,59 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Better Auth を App Router で正しく噛ませる — toNextJsHandler / nextCookies / RSCはcookieを書けない問題 — デイリー技術深掘り 読み物</title><meta name="description" content="Auth.jsがメンテナンスモードへ入り、公式が新規はBetter Auth推奨とした「本命側」の実装ナレッジ。焦点はNext.js 16のRSC/Server Actions/proxyという実行モデルに認証のcookie副作用をどう噛ませるか。RSCはcookieを書けない、nextCookiesは必ず最後、getSessionCookieは&#34;NOT SECURE&#34;——ハマりどころが集中する。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-27-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Better Auth を App Router で正しく噛ませる — toNextJsHandler / nextCookies / RSCはcookieを書けない問題 — デイリー技術深掘り 読み物"><meta property="og:description" content="Auth.jsがメンテナンスモードへ入り、公式が新規はBetter Auth推奨とした「本命側」の実装ナレッジ。焦点はNext.js 16のRSC/Server Actions/proxyという実行モデルに認証のcookie副作用をどう噛ませるか。RSCはcookieを書けない、nextCookiesは必ず最後、getSessionCookieは&#34;NOT SECURE&#34;——ハマりどころが集中する。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-27-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>Better Auth を App Router で正しく噛ませる — toNextJsHandler / nextCookies / RSCはcookieを書けない問題</h1> <p class="lede">Auth.jsがメンテナンスモードへ入り、公式が新規はBetter Auth推奨とした「本命側」の実装ナレッジ。焦点はNext.js 16のRSC/Server Actions/proxyという実行モデルに認証のcookie副作用をどう噛ませるか。RSCはcookieを書けない、nextCookiesは必ず最後、getSessionCookieは&quot;NOT SECURE&quot;——ハマりどころが集中する。</p> <div class="meta"> <span>📅 2026年8月27日</span> <span>⏱ 約4分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="0"><p>Auth.js(旧NextAuth)が2025-09-22にメンテナンスモード入りし、公式も新規は <strong>Better Auth 推奨</strong>とした地殻変動の「本命側」の実装ナレッジ。Better Auth（GitHub 29.5k★・現行1.x）は<strong>フレームワーク非依存・完全セルフホスト</strong>のOSSで、NextAuthに無い2FA/パスキー/RBAC/組織(マルチテナント)/impersonationを<strong>プラグイン</strong>として公式提供する。2026年初頭にはBetter AuthチームがAuth.js本体の保守も引き継ぎ、新機能はすべてBetter Auth側という体制になった。</p><h4 id="sec-1">何が新しい/重要か</h4><p>実務の核心は「Next.js 16のRSC/Server Actions/proxyという実行モデルに、認証のcookie副作用をどう噛ませるか」。骨格はサーバー側の <code>betterAuth({...})</code> が返す <code>auth</code> インスタンス（<code>auth.handler</code> と、各エンドポイントを関数として直接呼べる <code>auth.api</code>）と、クライアントの <code>createAuthClient()</code>（内部はnanostores＋better-fetch、<code>useSession</code>等）。APIルートは <code>app/api/auth/[...all]/route.ts</code> に <code>export const { GET, POST } = toNextJsHandler(auth)</code> の1行。RSC/Server Actionでのセッション取得は <code>auth.api.getSession({ headers: await headers() })</code> で、Next.js 16では <code>headers()</code> がPromiseなので<strong>await必須</strong>だ。</p><figure class='fig'><svg viewBox='0 0 600 250' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='11.5'><rect x='0' y='0' width='600' height='250' fill='#eef4fe'></rect><text x='16' y='24' font-size='13' font-weight='700' fill='#1f6feb'>なぜ nextCookies が要るのか（cookie副作用の経路）</text><rect x='16' y='42' width='168' height='58' rx='8' fill='#fff' stroke='#1f6feb'></rect><text x='28' y='66' font-weight='700' fill='#1f6feb'>RSC</text><text x='24' y='86' font-size='10' fill='#c0392b'>cookieを書けない×</text><rect x='216' y='42' width='168' height='58' rx='8' fill='#fff' stroke='#1f6feb'></rect><text x='228' y='66' font-weight='700' fill='#1f6feb'>Server Action</text><text x='224' y='86' font-size='10' fill='#333'>cookiesヘルパ経由のみ</text><rect x='416' y='42' width='168' height='58' rx='8' fill='#e8f6ec' stroke='#1a7f37'></rect><text x='428' y='66' font-weight='700' fill='#1a7f37'>nextCookies()</text><text x='424' y='86' font-size='10' fill='#333'>Set-Cookieを自動移送○</text><path d='M300 100 L300 128' stroke='#1f6feb' stroke-width='2' marker-end='url(#a)'></path><defs><marker id='a' markerWidth='8' markerHeight='8' refX='4' refY='4' orient='auto'><path d='M0 0 L8 4 L0 8 z' fill='#1f6feb'></path></marker></defs><text x='150' y='150' font-size='11' fill='#333'>signInEmail/signUpEmail が返すSet-Cookieを</text><text x='150' y='168' font-size='11' fill='#333'>Next.jsのcookieへ移し替え → だから plugins配列の"最後"に置く</text><rect x='16' y='188' width='568' height='46' rx='8' fill='#fdeeee' stroke='#c0392b'></rect><text x='28' y='210' font-weight='700' fill='#c0392b'>getSessionCookie は存在チェックのみ＝"THIS IS NOT SECURE!"</text><text x='28' y='228' font-size='10.5' fill='#333'>proxy/middlewareは楽観リダイレクト止まり。実際の認可は各ページ/Actionでauth.api.getSessionで再検証</text></svg><figcaption>図1：cookie副作用はServer Action経由でしか書けない。nextCookies()が自動移送し、境界防御はページ側の再検証で担保する。</figcaption></figure><h4 id="sec-2">仕組みの勘所（落とし穴）</h4><p>最重要の落とし穴は<strong>RSCはcookieをセットできない</strong>こと。cookie cacheの更新はRSCでは走らず、クライアントからServer Action / Route Handler経由で操作したときに初めて更新される。そして <code>nextCookies()</code> プラグインが無いと、Server Action内で <code>signInEmail</code> のようなcookieを書く関数を呼んでもSet-Cookieが付かず「ログインできたのにセッションが継続しない」典型バグになる。<code>nextCookies()</code> は<strong>必ずplugins配列の最後</strong>に置く。認可の階層も要注意で、<code>getSessionCookie(request)</code> はcookieの存在確認のみ・検証しないため、コメントで明示的に「<strong>THIS IS NOT SECURE!</strong>」——誰でも偽造して素通りできる。フル検証をしたいなら Next.js 16の <code>proxy.ts</code> でNodeランタイムの <code>auth.api.getSession</code> を使うか、各ページ/Server Actionで必ず再検証する（CVE-2025-29927のヘッダ偽装バイパスと同じ教訓＝middleware/proxyは境界ではない）。</p><h4 id="sec-3">実務での使いどころ・注意点</h4><p>SaaSで2FA/組織/RBAC/パスキーが要る、または将来Next.js以外にも展開しうるなら<strong>Better Authが本命</strong>。逆に「DB無しの完全ステートレスJWTセッションで十分」なら従来のAuth.jsも依然選択肢、手離れ優先ならClerk。実装は <code>lib/auth.ts</code>（Server専用）にDrizzle等のアダプタと <code>plugins:[nextCookies()]</code>、<code>BETTER_AUTH_SECRET</code>（32文字以上）を置き、保護は各RSCで <code>getSession</code>→無ければ <code>redirect('/sign-in')</code>。<code>useSession</code>やサインインフォームなどクライアントアクションを使う島だけ <code>'use client'</code> に隔離し、初期セッションはRSCから props で渡してhydration mismatchを避ける。middleware→proxy移行は <code>npx @next/codemod middleware-to-proxy .</code> で自動化できる。</p><h4 id="sec-4">ひとこと</h4><p>Better Authは「速い認証」ではなく「正しく境界を引ける認証」。RSCの制約を理解し、cookieはServer Action経由・認可はデータに近い所で再検証、という多層防御を最初から設計に織り込むのが要だ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://better-auth.com/docs/integrations/next" target="_blank" rel="noopener noreferrer"> Better Auth 公式 Next.js integration </a> </li><li> <a href="https://github.com/better-auth/better-auth/blob/main/docs/content/docs/integrations/next.mdx" target="_blank" rel="noopener noreferrer"> Better Auth Next.js integration（GitHub docs原本） </a> </li><li> <a href="https://github.com/better-auth/better-auth/issues/2054" target="_blank" rel="noopener noreferrer"> getSessionCookie の非検証性（issue #2054） </a> </li><li> <a href="https://supastarter.dev/blog/better-auth-vs-nextauth-vs-clerk" target="_blank" rel="noopener noreferrer"> better-auth vs NextAuth vs Clerk 比較(2026) </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 何が新しい/重要か </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 仕組みの勘所（落とし穴） </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 実務での使いどころ・注意点 </a> </li><li> <a href="#sec-4" data-toc="sec-4"> ひとこと </a> </li> </ul> <div class="reading-box"> <div>📅 2026-08-27</div> <div>⏱ 読了 約4分</div> <div>🏷 Next.js</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

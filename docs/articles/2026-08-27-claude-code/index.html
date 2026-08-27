@@ -1,0 +1,59 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>v2.1.246で/permissionsに「Auto mode」タブ・広すぎるBash許可に起動警告 — /designと&quot;Concise&quot;、そして市場54%へ — デイリー技術深掘り 読み物</title><meta name="description" content="派手な新モデルではなく「権限と出力の見通し」を締める更新。/permissionsにAuto modeタブが付き自動許可ルールをGUIで編集、ワイルドカード先行のBash許可には起動時警告。/designはCLI/デスクトップでアートボードから実装まで、Conciseは結論を先頭に。裏では年換算売上80億ドル・AIコーディング市場の約54%という定着が進む。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-27-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="v2.1.246で/permissionsに「Auto mode」タブ・広すぎるBash許可に起動警告 — /designと&#34;Concise&#34;、そして市場54%へ — デイリー技術深掘り 読み物"><meta property="og:description" content="派手な新モデルではなく「権限と出力の見通し」を締める更新。/permissionsにAuto modeタブが付き自動許可ルールをGUIで編集、ワイルドカード先行のBash許可には起動時警告。/designはCLI/デスクトップでアートボードから実装まで、Conciseは結論を先頭に。裏では年換算売上80億ドル・AIコーディング市場の約54%という定着が進む。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-27-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>v2.1.246で/permissionsに「Auto mode」タブ・広すぎるBash許可に起動警告 — /designと&quot;Concise&quot;、そして市場54%へ</h1> <p class="lede">派手な新モデルではなく「権限と出力の見通し」を締める更新。/permissionsにAuto modeタブが付き自動許可ルールをGUIで編集、ワイルドカード先行のBash許可には起動時警告。/designはCLI/デスクトップでアートボードから実装まで、Conciseは結論を先頭に。裏では年換算売上80億ドル・AIコーディング市場の約54%という定着が進む。</p> <div class="meta"> <span>📅 2026年8月27日</span> <span>⏱ 約3分</span> <span>🔗 出典 5 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="0"><p>今日のClaude Codeは、モデルの世代交代ではなく<strong>権限設計と出力体験の細部を締める</strong>一日だった。最新版 <code>v2.1.246</code>（8月25日）で <code>/permissions</code> に「<strong>Auto mode</strong>」タブが加わり、どのツール実行を自動で通すかの分類ルールを画面上で確認・編集できる。あわせて、サブコマンドの前に<strong>ワイルドカードを置いたBash許可ルール</strong>には起動時に警告が出るようになり、<code>Bash(* install)</code> のような意図せず広すぎる許可を握らせる事故を未然に防ぐ。ターン終了時の所要時間表示には完了時刻も併記され、長時間セッションの振り返りがしやすい。</p><h4 id="sec-1">何が新しいか</h4><p>UI面では2つの新スキル/スタイルが目を引く。<code>/design</code>（8月17日にリサーチプレビュー）はブリーフやスクリーンショット、既存デザインを渡すと編集可能な<strong>アートボード</strong>を公開し、1枚選んで微調整→そのまま実装まで一気通貫でつなぐ。<code>artifacts</code>基盤の上で動き、ターミナルから離れずUIの叩き台づくりと実装を往復できる。出力スタイル「<strong>Concise</strong>」（v2.1.237・8月20日）は作業自体は丁寧にこなしつつ、返答は結果を先頭に置き前置きや逐次実況を省く。選択は <code>/output-style</code> から行い、<code>.claude/settings.local.json</code> にプロジェクト単位で保存されるので他PJに波及しない。</p><figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='11.5'><rect x='0' y='0' width='600' height='210' fill='#f5fbf6'></rect><text x='16' y='24' font-size='13' font-weight='700' fill='#1a7f37'>権限の見通しを上げる3つの更新（v2.1.246 ほか）</text><rect x='16' y='40' width='182' height='66' rx='8' fill='#e8f6ec' stroke='#1a7f37'></rect><text x='28' y='62' font-weight='700' fill='#1a7f37'>Auto modeタブ</text><text x='28' y='82' font-size='10.5' fill='#333'>自動許可の分類ルールを</text><text x='28' y='97' font-size='10.5' fill='#333'>GUIで確認・編集</text><rect x='209' y='40' width='182' height='66' rx='8' fill='#fdeeee' stroke='#c0392b'></rect><text x='221' y='62' font-weight='700' fill='#c0392b'>ワイルドカード警告</text><text x='221' y='82' font-size='10.5' fill='#333'>* を前置したBash許可に</text><text x='221' y='97' font-size='10.5' fill='#333'>起動時アラート</text><rect x='402' y='40' width='182' height='66' rx='8' fill='#eef2fb' stroke='#1f6feb'></rect><text x='414' y='62' font-weight='700' fill='#1f6feb'>完了時刻の併記</text><text x='414' y='82' font-size='10.5' fill='#333'>ターン所要時間に</text><text x='414' y='97' font-size='10.5' fill='#333'>終了時刻を添える</text><text x='16' y='140' font-size='12' font-weight='700' fill='#1a7f37'>狙いは「誰が何を自動で通すか」を目視できる状態にすること</text><text x='16' y='166' font-size='10.5' fill='#333'>広すぎる許可＝事故のもと。GUI可視化＋起動警告で"暗黙の全許可"を潰す</text><text x='16' y='190' font-size='10.5' fill='#777'>※ Auto modeの許可・拒否ルールは平易な文章で書ける方向へ</text></svg><figcaption>図1：v2.1.246まわりの権限まわり3更新。可視化と起動警告で広すぎる自動許可を抑止する。</figcaption></figure><h4 id="sec-2">エコシステムと事業の温度感</h4><p>技術記事側では、決定論的に走る<strong>Hooks</strong>（<code>PreToolUse</code>での書込遮断・<code>PostToolUse</code>でのprettier・<code>Stop</code>でのテスト）、独自コンテキストで並列委譲する<strong>Subagents</strong>、必要時だけ本文を読む<strong>Skills</strong>という3層の使い分けを整理したガイドが2026年版として出そろった。指針は明快で「強制はHooks/権限、文脈知識はSkills、委譲はSubagents、常時指針はCLAUDE.mdへ短く」。事業面では、Claude Codeが2026年5月時点で年換算売上<strong>80億ドル</strong>規模・AIコーディング市場の<strong>約54%</strong>を占め、年100万ドル超の大口顧客は倍増して1000社超、法人サブスクは年初比4倍とされる。</p><h4 id="sec-3">自分が試すなら・注意点</h4><p>まず <code>/permissions</code> のAuto modeタブで現状の自動許可を棚卸しし、<code>Bash(*...)</code> のような先行ワイルドカードを具体的なサブコマンド許可へ絞り直したい。UIの叩き台は <code>/design</code> でアートボードから起こし、結論から素早く確認したい定型作業は Concise に切り替える。注意点は更新頻度の速さで、GUIで一度整えても新タブ・新ルールが増えるため、破壊的変更の有無を確認しつつこまめに追従すること。企業導入は「ツール導入」ではなく変更管理として、1チーム起点で <code>CLAUDE.md</code> を磨いてから横展開するのが定石だ。</p><h4 id="sec-4">ひとこと</h4><p>モデルが一段落し、権限・出力・デザイン連携という「毎日安全に使い倒すための足回り」を固める局面。地味だが、道具としての完成度と安心感が着実に上がっている。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://code.claude.com/docs/en/changelog" target="_blank" rel="noopener noreferrer"> Claude Code changelog（v2.1.246 ほか） </a> </li><li> <a href="https://origami.sa/en/blog/claude-code-august-2026/" target="_blank" rel="noopener noreferrer"> /design スキル（Claude Code August 2026） </a> </li><li> <a href="https://www.getclaudeskills.com/blog/claude-code-output-styles-explained" target="_blank" rel="noopener noreferrer"> Output Styles — Concise の解説 </a> </li><li> <a href="https://ofox.ai/blog/claude-code-hooks-subagents-skills-complete-guide-2026/" target="_blank" rel="noopener noreferrer"> Hooks・Subagents・Skills 完全ガイド(2026) </a> </li><li> <a href="https://aibusinessweekly.net/p/claude-ai-statistics" target="_blank" rel="noopener noreferrer"> Claude Code 年換算売上80億ドル・市場54% </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 何が新しいか </a> </li><li> <a href="#sec-2" data-toc="sec-2"> エコシステムと事業の温度感 </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 自分が試すなら・注意点 </a> </li><li> <a href="#sec-4" data-toc="sec-4"> ひとこと </a> </li> </ul> <div class="reading-box"> <div>📅 2026-08-27</div> <div>⏱ 読了 約3分</div> <div>🏷 Claude Code</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
