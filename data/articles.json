@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-08-27T04:48:38.280Z",
+  "generatedAt": "2026-08-31T04:44:24.776Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,96 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-08-31-claude-code",
+      "date": "2026-08-31",
+      "topic": "Claude Code",
+      "title": "v2.1.251でモデル切替フック＋前景サブエージェントのライブ配信、v2.1.248でrestricted mode — /usageに支出上限バー・/costにprompt-cache行",
+      "lede": "新モデルではなく「切替・実行・支出」を見張る足回りを固める更新。Pre/PostModelSwitchフックで切替を遮断・確認・注記、前景サブエージェントの実行はRemote Controlへライブ配信。restricted modeが破壊的操作を一括ブロックし、/usageの支出上限バーと/costのprompt-cache行で使いすぎに気づける。査読論文はマージPR約24%増、30人組織で35%向上が4か月持続と報告。",
+      "articleHtml": "<p>今日のClaude Codeは新モデルの発表ではなく、<strong>「切替・実行・支出」を見張って制御する足回り</strong>を固める一日だった。最新の <code>v2.1.251</code>（8月28日）では、モデルを切り替える前後で発火する <code>PreModelSwitch</code> / <code>PostModelSwitch</code> フックが加わり、切替を<strong>遮断・確認・注記</strong>できるようになった。前景で走るサブエージェントのツール呼び出しと結果を Remote Control クライアントへ<strong>ライブ配信</strong>できるようにもなり、遠隔からの進捗把握がしやすい。<code>SessionStart</code> の resume フックはセッションの陳腐化度と再キャッシュ推定コストを受け取れるようになり、再開時の判断材料が増えた。</p>\n<h4>何が新しいか</h4>\n<p>直前の <code>v2.1.248</code>（8月27日）で<strong>restricted mode（制限モード）</strong>が導入され、破壊的コマンドやリポジトリ外への書き込みといった高リスク操作をまとめて遮断できるようになった。あわせてエージェント型ワークフロー向けの新しいキャッシュ設定が入り、繰り返し実行の効率が上がる。さらに <code>v2.1.247</code> では問題発生時にClaude自身がフィードバック報告を自動下書きする機能も追加された。可観測性の面では、支出上限のあるゲートウェイ利用者向けに <code>/usage</code> へ「Spend limit バー」が付き、ステータスライン用の <code>rate_limits.spend_limit</code> フィールドも用意された。<code>/cost</code> にはセッション単位の <strong>prompt-cache 行</strong>が加わり、ヒット率・ミス・再キャッシュ量・warm/cold を確認できる。新設の環境変数 <code>ANTHROPIC_DEFAULT_MODEL</code> で新規セッションの開始モデルを固定でき、<code>SendMessage</code> の <code>notify_when_idle</code> で別セッションのアイドル通知も頼める。</p>\n<figure class='fig'><svg viewBox='0 0 600 220' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='11.5'><rect x='0' y='0' width='600' height='220' fill='#f5fbf6'/><text x='16' y='24' font-size='13' font-weight='700' fill='#1a7f37'>制御と可観測性を締める3系統の更新（v2.1.247〜251）</text><rect x='16' y='40' width='182' height='72' rx='8' fill='#e8f6ec' stroke='#1a7f37'/><text x='28' y='62' font-weight='700' fill='#1a7f37'>Pre/PostModelSwitch</text><text x='28' y='82' font-size='10.5' fill='#333'>モデル切替を遮断・</text><text x='28' y='97' font-size='10.5' fill='#333'>確認・注記できる</text><rect x='209' y='40' width='182' height='72' rx='8' fill='#fdeeee' stroke='#c0392b'/><text x='221' y='62' font-weight='700' fill='#c0392b'>restricted mode</text><text x='221' y='82' font-size='10.5' fill='#333'>破壊的操作・repo外</text><text x='221' y='97' font-size='10.5' fill='#333'>書込を一括ブロック</text><rect x='402' y='40' width='182' height='72' rx='8' fill='#eef2fb' stroke='#1f6feb'/><text x='414' y='62' font-weight='700' fill='#1f6feb'>/usage・/cost 強化</text><text x='414' y='82' font-size='10.5' fill='#333'>支出上限バー＋</text><text x='414' y='97' font-size='10.5' fill='#333'>prompt-cache行</text><text x='16' y='150' font-size='12' font-weight='700' fill='#1a7f37'>狙い＝「切替・実行・支出」を見える化し、安全側に倒して運用する</text><text x='16' y='176' font-size='10.5' fill='#333'>前景サブエージェントのツール実行はRemote Controlへライブ配信され遠隔監視が可能に</text><text x='16' y='200' font-size='10.5' fill='#777'>※ ANTHROPIC_DEFAULT_MODELで開始モデル固定、notify_when_idleでアイドル通知</text></svg><figcaption>図1：v2.1.247〜251の要点。フック・制限モード・使用量可視化で\"暗黙の全許可/垂れ流し\"を潰す。</figcaption></figure>\n<h4>仕組みのポイント</h4>\n<p>モデル切替フックは <code>UserPromptSubmit</code> や <code>PreToolUse</code> と同じイベント駆動の系譜で、<code>PreModelSwitch</code> が発火した時点で切替をブロック（非ゼロ終了）したり、切替理由をログへ注記したりできる。restricted mode は「許可の網羅列挙」ではなく「危険カテゴリを既定で閉じる」発想で、ホワイトリスト運用の初期コストを下げる。<code>/cost</code> の prompt-cache 行は、長いセッションでどれだけキャッシュが効いた（warm）か・再キャッシュ（cold）でトークンを食ったかを可視化し、支出の内訳を掴ませる。これは <code>/usage</code> の Spend limit バーと対になって「使いすぎる前に気づく」導線になっている。</p>\n<h4>実務での使いどころ・自分が試すなら</h4>\n<p>まず CI や共有環境では restricted mode を既定にして、破壊的コマンドとリポジトリ外書き込みを塞いでおきたい。<code>PreModelSwitch</code> で「高コストモデルへの切替時に確認を挟む」フックを書けば、無自覚なモデル格上げによる支出増を抑えられる。長時間タスクは <code>/cost</code> の prompt-cache 行を見て、cold が多い箇所（コンテキストの積み過ぎ）をCLAUDE.mdの短文化やスキルのオンデマンド読込で削るのが効く。事例面では、Microsoft Researchの査読付き実地調査が導入チームで<strong>マージPR約24%増</strong>を報告し、30人規模の組織では共有スキル22本・フック11本を整えて<strong>35%の生産性向上が4か月持続</strong>したとされる。効くのは「配布」ではなく<strong>運用の型づくり</strong>で、まず1チームでCLAUDE.mdとフックを磨いてから横展開するのが定石だ。</p>\n<h4>注意点・落とし穴</h4>\n<p>更新頻度が非常に速く、フック名・タブ・環境変数が短期間で増える。破壊的変更の有無を確認しつつこまめに追従する前提で運用したい。restricted mode は安全側に倒す反面、正当な操作まで塞ぐことがあるので、遮断が起きたら「なぜ塞がれたか」を確認してから緩める。査読論文が示す通り、生産性向上の裏で<strong>トークン支出が膨らむ</strong>ため、Spend limit バーと予算ガバナンスの整備は導入とセットで考える。</p>\n<h4>ひとこと</h4>\n<p>モデルが一段落し、Claude Codeは「毎日安全に、支出を見ながら使い倒す」ための制御レイヤを着実に厚くしている。派手さはないが、道具としての信頼性が上がる更新だ。</p>",
+      "sources": [
+        {
+          "title": "Claude Code changelog（v2.1.251 ほか）",
+          "url": "https://code.claude.com/docs/en/changelog"
+        },
+        {
+          "title": "restricted mode / エージェント向けキャッシュ設定",
+          "url": "https://www.havoptic.com/tools/claude-code"
+        },
+        {
+          "title": "/usage 支出上限バー・/cost prompt-cache行・ANTHROPIC_DEFAULT_MODEL",
+          "url": "https://www.gradually.ai/en/changelogs/claude-code/"
+        },
+        {
+          "title": "Microsoft Research 実地調査（マージPR約24%増）",
+          "url": "https://therouter.ai/news/claude-code-microsoft-enterprise-study-token-budget-governance/"
+        },
+        {
+          "title": "30人規模組織の導入事例（35%向上が4か月持続）",
+          "url": "https://www.digitalapplied.com/blog/case-study-claude-code-team-adoption-30-dev-shop-2026"
+        }
+      ]
+    },
+    {
+      "id": "2026-08-31-nextjs",
+      "date": "2026-08-31",
+      "topic": "Next.js",
+      "title": "<Activity>（React 19.2）で「状態を保ったまま隠す」— タブ/ルートのkeep-alive・先読み・選択的ハイドレーション、Next.js 16の自動bfcacheの土台に",
+      "lede": "条件付きレンダーは非表示でアンマウントしstateを破棄するが、<Activity mode=\"hidden\">はdisplay:noneで隠しつつstate/DOMを保持し、visible復帰で前状態を復元する。App Routerではデータ取得をRSCに残し表示制御だけを薄いClient島に置くのが定石で、hydration mismatchも起きない。Next.js 16のcacheComponentsが内部でこれを使い、戻る/進むを状態付きで高速復元する。",
+      "articleHtml": "<p>React 19.2（2025-10-01リリース）で <code>&lt;Activity&gt;</code> が安定APIになった。従来の条件付きレンダー <code>{cond &amp;&amp; &lt;Page/&gt;}</code> は、非表示にした瞬間にコンポーネントを<strong>アンマウント</strong>し、内部stateもDOM state（入力途中のテキスト、スクロール位置、<code>&lt;video&gt;</code>の再生位置など）も破棄してしまう。<code>&lt;Activity&gt;</code> はこれを置き換え、<code>mode=\"hidden\"</code> の間は <strong><code>display:none</code> で視覚的に隠しつつ state と DOM を保持</strong>し、<code>mode=\"visible\"</code> に戻すと前の状態のまま復元する。なぜ今かというと、これが <strong>Next.js 16 の Cache Components（<code>cacheComponents:true</code>）</strong>がクライアント遷移の「戻る/進む」を高速化する土台になっているからだ。</p>\n<h4>何が新しいか</h4>\n<p>19.2時点のmodeは2つ。<code>hidden</code> は子を <code>display:none</code> で隠し、<strong>Effectをクリーンアップ（概念的にアンマウント）</strong>、更新は「他にやることが無くなるまで後回し（低優先度）」——ただし state / DOM は保持する。<code>visible</code> は表示＋Effect再マウント＋通常優先度で、省略時のデフォルト。主な使いどころは3つで、(1) タブ/サイドバーを閉じても入力が残る<strong>状態保持（keep-alive）</strong>、(2) 初回から <code>hidden</code> で置き低優先度で裏レンダーする<strong>先読み（pre-render）</strong>、(3) 境界でツリーを分割する<strong>選択的ハイドレーションの高速化</strong>だ。関連機能に <code>useEffectEvent</code>、RSC専用の <code>cacheSignal</code>、react-dom の Partial Pre-rendering（<code>prerender</code>+<code>resume</code>）がある。</p>\n<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='11.5'><rect x='0' y='0' width='600' height='210' fill='#eef2fb'/><text x='16' y='24' font-size='13' font-weight='700' fill='#1f3a8a'>条件付きレンダー vs &lt;Activity mode=\"hidden\"&gt;</text><rect x='16' y='42' width='270' height='140' rx='8' fill='#fdeeee' stroke='#c0392b'/><text x='30' y='64' font-weight='700' fill='#c0392b'>{cond &amp;&amp; &lt;Page/&gt;}</text><text x='30' y='88' font-size='10.5' fill='#333'>非表示＝アンマウント</text><text x='30' y='108' font-size='10.5' fill='#333'>state 破棄</text><text x='30' y='128' font-size='10.5' fill='#333'>入力/スクロール位置が消える</text><text x='30' y='148' font-size='10.5' fill='#333'>再表示で最初から作り直し</text><rect x='314' y='42' width='270' height='140' rx='8' fill='#e8f0fe' stroke='#1f6feb'/><text x='328' y='64' font-weight='700' fill='#1f6feb'>&lt;Activity mode=\"hidden\"&gt;</text><text x='328' y='88' font-size='10.5' fill='#333'>display:none で隠す</text><text x='328' y='108' font-size='10.5' fill='#333'>state / DOM を保持</text><text x='328' y='128' font-size='10.5' fill='#333'>Effectはクリーンアップ</text><text x='328' y='148' font-size='10.5' fill='#333'>visible復帰で前状態を復元</text></svg><figcaption>図1：同じ「隠す」でも、アンマウント破棄か state保持かで再表示体験が決定的に変わる。</figcaption></figure>\n<h4>仕組みのポイント</h4>\n<p>App Routerでは<strong>データ取得はRSCのまま</strong>にし、表示制御を持つ薄いClient島だけ <code>'use client'</code> にするのが定石だ。<code>home</code>/<code>posts</code> を Server Component として <code>page.tsx</code> から props で流し込み、島側で <code>&lt;Activity mode={tab==='home'?'visible':'hidden'}&gt;</code> を切り替える。初回SSRのHTMLは条件付きレンダー版と同じ見た目なので <strong>hydration mismatch は起きない</strong>。先読みは、子が <code>use(fetchPosts())</code> のように<strong>Suspenseを発火する取得</strong>を持つときだけ効く（<code>useEffect</code>内fetchは対象外）。</p>\n<figure class='fig'><pre class='mermaid'>flowchart TD\n  A[\"ルート遷移 / タブ切替\"] --> B{\"cacheComponents:true?\"}\n  B -->|\"Yes\"| C[\"前ルートを hidden へ退避\"]\n  B -->|\"No\"| D[\"従来どおりアンマウント\"]\n  C --> E[\"state と DOM を保持\"]\n  E --> F[\"戻る/進むで前状態を復元\"]\n  C --> G[\"router.bfcacheId で新規/復元を判別\"]</pre><figcaption>図2：Next.js 16 のbfcacheは内部で &lt;Activity&gt; を使い、前ルートを状態付きで復元する。</figcaption></figure>\n<h4>実務での使いどころ・自分が試すなら</h4>\n<p>まず既存のタブUIで <code>{cond &amp;&amp; &lt;X/&gt;}</code> を <code>&lt;Activity mode={cond?'visible':'hidden'}&gt;</code> に置換し、入力途中フォームやスクロール位置が消えないか確認したい。次に開きそうな重いタブは初回から <code>hidden</code> で置いて先読みし、実タップ時にフォールバックを出さない。Next.js 16 では <code>cacheComponents:true</code> を有効化すれば <code>&lt;Activity&gt;</code> を直書きせずとも自動bfcacheが効き、必要なら <code>router.bfcacheId</code> で「新規遷移か復元か」を分岐（復元時はアナリティクスの重複計測を避ける等）できる。</p>\n<h4>注意点・落とし穴</h4>\n<p><code>&lt;video&gt;</code>/<code>&lt;audio&gt;</code>/<code>&lt;iframe&gt;</code> は隠してもDOMが残るため<strong>再生が鳴り続ける</strong>。<code>useLayoutEffect</code> のクリーンアップで <code>videoRef.pause()</code> する（視覚的に隠れるタイミングに同期させるため <code>useEffect</code> ではなく <code>useLayoutEffect</code>）。hiddenの間はEffectが動かないので、購読やタイマーは<strong>cleanup側で止める</strong>設計に直す。<code>&lt;StrictMode&gt;</code> を使うと未クリーンアップのEffectを炙り出せる。テキストだけを返す子はhiddenでも何も描かない（適用先のDOM要素が無いため）。hidden中もツリーは生きてメモリを使うので無制限に積まない（Nextのbfcacheは直近N件に制限）。<code>&lt;ViewTransition&gt;</code> と組むと visible/hidden で enter/exit アニメが発火するが、<code>@media (prefers-reduced-motion: reduce)</code> で動きだけ止め、状態切替は残す。</p>\n<h4>ひとこと</h4>\n<p>「隠す＝壊す」だった条件付きレンダーを、「隠す＝取っておく」へ変える地味だが効く一手。App Routerの島設計と噛み合い、Next.js 16では書かずとも恩恵を受けられる。</p>",
+      "sources": [
+        {
+          "title": "React公式リファレンス <Activity>",
+          "url": "https://react.dev/reference/react/Activity"
+        },
+        {
+          "title": "React 19.2 リリースノート",
+          "url": "https://react.dev/blog/2025/10/01/react-19-2"
+        },
+        {
+          "title": "Next.js cacheComponents（Activityでルート状態を保持）",
+          "url": "https://nextjs.org/docs/app/api-reference/config/next-config-js/cacheComponents"
+        },
+        {
+          "title": "vercel/next.js PR #77992（Experimental bfcache）",
+          "url": "https://github.com/vercel/next.js/pull/77992"
+        },
+        {
+          "title": "This Week In React #252",
+          "url": "https://thisweekinreact.com/newsletter/252"
+        }
+      ]
+    },
+    {
+      "id": "2026-08-31-flutter",
+      "date": "2026-08-31",
+      "topic": "Flutter",
+      "title": "Flutter 3.47.1が現行、Widget Previewsがstableに・Impellerのprecompiled shadersで初回jank解消 — Riverpod 3のoffline persistenceとDart 3.13 primary constructorsも",
+      "lede": "派手な新ウィジェットより開発ループと描画の底上げが主役。Widget Previewsがstable昇格で全体ビルド不要の個別UI検証、Impellerのprecompiled shadersが初回jankを消し90–120fpsで安定・重いシーンのrasterをSkia比約50%短縮。状態管理はRiverpod 3のoffline persistence＋Mutations、言語はDart 3.13のprimary constructorsが正式化。",
+      "articleHtml": "<p>Flutter は 2026-08-19 リリースの <strong>3.47.1 パッチ</strong>（Dart 3.13.1 同梱）が現行で、機能セットは 3.47（2026-08-12）を継承しつつ安定性・バグ修正を積み増した堅実な更新だ。派手な新ウィジェットより、<strong>日々の開発ループとレンダリングの底上げ</strong>が今日の主役になっている。とくに開発体験（Widget Previews の stable 昇格）と描画（Impeller の precompiled shaders）の二本柱は、そのまま「書く速さ」と「動く滑らかさ」に直結する。</p><h4>何が新しいか</h4><p><strong>Widget Previews が stable に昇格</strong>した。アプリ全体をビルド／起動せずに個別 UI を即 render・inspect でき、ローカルビルドキャッシュで起動が速く、プレビューのリアルタイム検索／フィルタも付いた。コンポーネント単位で見た目を詰める作業のフィードバックループが一段短くなる。描画側では <strong>Impeller の precompiled shaders</strong> がファーストラン jank（初回のシェーダーコンパイル由来のカクつき）を排除し、複雑 UI を <strong>90–120fps</strong> に安定、重いシーンでは平均 raster を <strong>Skia 比で約50%短縮</strong>する。Impeller は 2025 に iOS/Android 双方で既定化済みで、3.29–3.35 の一連の最適化（テキスト描画高速化・効率的 blur・GPU 対応拡大）と合わせ、複雑アニメの jank frame を 30–50% 削減している。</p><figure class='fig'><svg viewBox='0 0 600 250' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='11.5'><rect x='0' y='0' width='600' height='250' fill='#f0f9ff'/><text x='16' y='24' font-size='13' font-weight='700' fill='#0277bd'>今日の主役を4カテゴリで一望（Flutter 3.47.1 現行）</text><rect x='16' y='38' width='566' height='44' rx='8' fill='#e1f3fb' stroke='#0277bd'/><text x='26' y='58' font-weight='700' fill='#0277bd'>開発体験</text><text x='150' y='58' fill='#222'>Widget Previews が stable へ</text><text x='150' y='74' font-size='10.5' fill='#555'>全体ビルド不要で個別UIを即render・検索/フィルタ・起動高速化</text><rect x='16' y='88' width='566' height='44' rx='8' fill='#e8f7ee' stroke='#1a7f37'/><text x='26' y='108' font-weight='700' fill='#1a7f37'>描画</text><text x='150' y='108' fill='#222'>Impeller precompiled shaders</text><text x='150' y='124' font-size='10.5' fill='#555'>初回jank解消・90–120fps安定・重いシーンでraster約50%短縮(Skia比)</text><rect x='16' y='138' width='566' height='44' rx='8' fill='#f3eefc' stroke='#7b3fe4'/><text x='26' y='158' font-weight='700' fill='#7b3fe4'>状態管理</text><text x='150' y='158' fill='#222'>Riverpod 3 offline persistence + Mutations</text><text x='150' y='174' font-size='10.5' fill='#555'>stale-while-revalidate・自動retry/backoff・テストはBloc比30–40%減</text><rect x='16' y='188' width='566' height='44' rx='8' fill='#fef6e7' stroke='#c98a00'/><text x='26' y='208' font-weight='700' fill='#c98a00'>言語</text><text x='150' y='208' fill='#222'>Dart 3.13 primary constructors 正式化</text><text x='150' y='224' font-size='10.5' fill='#555'>クラスヘッダでconstructor+instance変数を宣言・language versionは^3.13.0</text></svg><figcaption>図1：開発体験・描画・状態管理・言語の4面で足回りを底上げした一日。</figcaption></figure><h4>仕組みと使いどころ</h4><p>状態管理は新規なら <strong>Riverpod 3.3.1＋codegen</strong> が既定で、compile-time safety・unified Ref・最小 boilerplate に加え、experimental の <strong>built-in offline persistence</strong>（opt-in）がキャッシュを復元し stale-while-revalidate でオフライン対応する。<strong>Mutations</strong>（experimental）は Login や Post Comment のような副作用の lifecycle（Idle/Pending/Success/Error）を UI へ自動公開し、失敗時は automatic retry/backoff で transient エラーを吸収する。テストは provider override でツリーを起動せずに書けるため、Bloc 比で 30–40% 行数が減るという。ただし監査証跡が要る規制業界（fintech/healthcare）や複雑並行は引き続き <strong>Bloc 9.0</strong> が向き、<code>on&lt;Event&gt;</code> で全 state 変化を event に対応づけ <code>blocTest</code> で検証できる。購読は <code>ref.watch(provider.select(...))</code> で最小スライスに絞るのが定石だ。言語面では <strong>Dart 3.13 の primary constructors</strong> が正式化され、クラスヘッダで constructor と instance 変数をまとめて宣言できる。使うには language version を <code>^3.13.0</code> に上げる。</p><h4>自分が試すなら・注意点</h4><p>まず <code>flutter upgrade</code> で 3.47.1／Dart 3.13.1 に合わせ、<code>flutter --version</code> で確認する。UI 調整は Widget Previews を常用してコンポーネント単位で回し、パフォーマンス計測は必ず <strong>profile モード</strong>で行う（debug の VM は遅く数値が当てにならない）。最も多いボトルネックは不要な widget rebuild なので、<code>const</code> で再ビルドを完全スキップし、大きな <code>build()</code> を分割し、<code>Selector</code>/<code>select</code> で局所再描画に寄せる。フレーム予算は <strong>60fps=16ms / 90fps=11ms / 120fps=8.3ms</strong> を基準に、90/120Hz 端末では 1 フレーム 8–11ms を死守する。注意点は offline persistence と Mutations がまだ experimental であること、そして precompiled shaders の恩恵は Impeller 前提なので旧 Skia 経路を残している場合は移行を確認しておくことだ。</p><h4>ひとこと</h4><p>新機能の華やかさより、書く・見る・動かすの各段が一段ずつ速く・滑らかになった日。地味だが、複雑 UI を 120fps で回すための土台と、コンポーネント単位で詰める開発ループが噛み合ってきている。</p>",
+      "sources": [
+        {
+          "title": "What's new in the docs（Flutter）",
+          "url": "https://docs.flutter.dev/release/whats-new"
+        },
+        {
+          "title": "Flutter release notes",
+          "url": "https://docs.flutter.dev/release/release-notes"
+        },
+        {
+          "title": "How Impeller Is Transforming Flutter UI Rendering in 2026",
+          "url": "https://dev.to/eira-wexford/how-impeller-is-transforming-flutter-ui-rendering-in-2026-3dpd"
+        },
+        {
+          "title": "Impeller vs. Native: Flutter's New Rendering Standard",
+          "url": "https://www.remoteresource.com/blog/impeller-vs-native-why-your-2026-app-needs-flutters-new-rendering-standard"
+        },
+        {
+          "title": "Best Flutter State Management 2026",
+          "url": "https://foresightmobile.com/blog/best-flutter-state-management"
+        }
+      ]
+    },
     {
       "id": "2026-08-27-claude-code",
       "date": "2026-08-27",
