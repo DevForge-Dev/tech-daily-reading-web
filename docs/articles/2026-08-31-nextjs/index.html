@@ -1,0 +1,77 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>&lt;Activity&gt;（React 19.2）で「状態を保ったまま隠す」— タブ/ルートのkeep-alive・先読み・選択的ハイドレーション、Next.js 16の自動bfcacheの土台に — デイリー技術深掘り 読み物</title><meta name="description" content="条件付きレンダーは非表示でアンマウントしstateを破棄するが、<Activity mode=&#34;hidden&#34;>はdisplay:noneで隠しつつstate/DOMを保持し、visible復帰で前状態を復元する。App Routerではデータ取得をRSCに残し表示制御だけを薄いClient島に置くのが定石で、hydration mismatchも起きない。Next.js 16のcacheComponentsが内部でこれを使い、戻る/進むを状態付きで高速復元する。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-31-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="<Activity>（React 19.2）で「状態を保ったまま隠す」— タブ/ルートのkeep-alive・先読み・選択的ハイドレーション、Next.js 16の自動bfcacheの土台に — デイリー技術深掘り 読み物"><meta property="og:description" content="条件付きレンダーは非表示でアンマウントしstateを破棄するが、<Activity mode=&#34;hidden&#34;>はdisplay:noneで隠しつつstate/DOMを保持し、visible復帰で前状態を復元する。App Routerではデータ取得をRSCに残し表示制御だけを薄いClient島に置くのが定石で、hydration mismatchも起きない。Next.js 16のcacheComponentsが内部でこれを使い、戻る/進むを状態付きで高速復元する。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-08-31-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>&lt;Activity&gt;（React 19.2）で「状態を保ったまま隠す」— タブ/ルートのkeep-alive・先読み・選択的ハイドレーション、Next.js 16の自動bfcacheの土台に</h1> <p class="lede">条件付きレンダーは非表示でアンマウントしstateを破棄するが、&lt;Activity mode=&quot;hidden&quot;&gt;はdisplay:noneで隠しつつstate/DOMを保持し、visible復帰で前状態を復元する。App Routerではデータ取得をRSCに残し表示制御だけを薄いClient島に置くのが定石で、hydration mismatchも起きない。Next.js 16のcacheComponentsが内部でこれを使い、戻る/進むを状態付きで高速復元する。</p> <div class="meta"> <span>📅 2026年8月31日</span> <span>⏱ 約5分</span> <span>🔗 出典 5 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="1"><p>React 19.2（2025-10-01リリース）で <code>&lt;Activity&gt;</code> が安定APIになった。従来の条件付きレンダー <code>{cond &amp;&amp; &lt;Page/&gt;}</code> は、非表示にした瞬間にコンポーネントを<strong>アンマウント</strong>し、内部stateもDOM state（入力途中のテキスト、スクロール位置、<code>&lt;video&gt;</code>の再生位置など）も破棄してしまう。<code>&lt;Activity&gt;</code> はこれを置き換え、<code>mode="hidden"</code> の間は <strong><code>display:none</code> で視覚的に隠しつつ state と DOM を保持</strong>し、<code>mode="visible"</code> に戻すと前の状態のまま復元する。なぜ今かというと、これが <strong>Next.js 16 の Cache Components（<code>cacheComponents:true</code>）</strong>がクライアント遷移の「戻る/進む」を高速化する土台になっているからだ。</p>
+<h4 id="sec-1">何が新しいか</h4>
+<p>19.2時点のmodeは2つ。<code>hidden</code> は子を <code>display:none</code> で隠し、<strong>Effectをクリーンアップ（概念的にアンマウント）</strong>、更新は「他にやることが無くなるまで後回し（低優先度）」——ただし state / DOM は保持する。<code>visible</code> は表示＋Effect再マウント＋通常優先度で、省略時のデフォルト。主な使いどころは3つで、(1) タブ/サイドバーを閉じても入力が残る<strong>状態保持（keep-alive）</strong>、(2) 初回から <code>hidden</code> で置き低優先度で裏レンダーする<strong>先読み（pre-render）</strong>、(3) 境界でツリーを分割する<strong>選択的ハイドレーションの高速化</strong>だ。関連機能に <code>useEffectEvent</code>、RSC専用の <code>cacheSignal</code>、react-dom の Partial Pre-rendering（<code>prerender</code>+<code>resume</code>）がある。</p>
+<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='11.5'><rect x='0' y='0' width='600' height='210' fill='#eef2fb'></rect><text x='16' y='24' font-size='13' font-weight='700' fill='#1f3a8a'>条件付きレンダー vs &lt;Activity mode="hidden"&gt;</text><rect x='16' y='42' width='270' height='140' rx='8' fill='#fdeeee' stroke='#c0392b'></rect><text x='30' y='64' font-weight='700' fill='#c0392b'>{cond &amp;&amp; &lt;Page/&gt;}</text><text x='30' y='88' font-size='10.5' fill='#333'>非表示＝アンマウント</text><text x='30' y='108' font-size='10.5' fill='#333'>state 破棄</text><text x='30' y='128' font-size='10.5' fill='#333'>入力/スクロール位置が消える</text><text x='30' y='148' font-size='10.5' fill='#333'>再表示で最初から作り直し</text><rect x='314' y='42' width='270' height='140' rx='8' fill='#e8f0fe' stroke='#1f6feb'></rect><text x='328' y='64' font-weight='700' fill='#1f6feb'>&lt;Activity mode="hidden"&gt;</text><text x='328' y='88' font-size='10.5' fill='#333'>display:none で隠す</text><text x='328' y='108' font-size='10.5' fill='#333'>state / DOM を保持</text><text x='328' y='128' font-size='10.5' fill='#333'>Effectはクリーンアップ</text><text x='328' y='148' font-size='10.5' fill='#333'>visible復帰で前状態を復元</text></svg><figcaption>図1：同じ「隠す」でも、アンマウント破棄か state保持かで再表示体験が決定的に変わる。</figcaption></figure>
+<h4 id="sec-2">仕組みのポイント</h4>
+<p>App Routerでは<strong>データ取得はRSCのまま</strong>にし、表示制御を持つ薄いClient島だけ <code>'use client'</code> にするのが定石だ。<code>home</code>/<code>posts</code> を Server Component として <code>page.tsx</code> から props で流し込み、島側で <code>&lt;Activity mode={tab==='home'?'visible':'hidden'}&gt;</code> を切り替える。初回SSRのHTMLは条件付きレンダー版と同じ見た目なので <strong>hydration mismatch は起きない</strong>。先読みは、子が <code>use(fetchPosts())</code> のように<strong>Suspenseを発火する取得</strong>を持つときだけ効く（<code>useEffect</code>内fetchは対象外）。</p>
+<figure class='fig'><pre class='mermaid'>flowchart TD
+  A["ルート遷移 / タブ切替"] --> B{"cacheComponents:true?"}
+  B -->|"Yes"| C["前ルートを hidden へ退避"]
+  B -->|"No"| D["従来どおりアンマウント"]
+  C --> E["state と DOM を保持"]
+  E --> F["戻る/進むで前状態を復元"]
+  C --> G["router.bfcacheId で新規/復元を判別"]</pre><figcaption>図2：Next.js 16 のbfcacheは内部で &lt;Activity&gt; を使い、前ルートを状態付きで復元する。</figcaption></figure>
+<h4 id="sec-3">実務での使いどころ・自分が試すなら</h4>
+<p>まず既存のタブUIで <code>{cond &amp;&amp; &lt;X/&gt;}</code> を <code>&lt;Activity mode={cond?'visible':'hidden'}&gt;</code> に置換し、入力途中フォームやスクロール位置が消えないか確認したい。次に開きそうな重いタブは初回から <code>hidden</code> で置いて先読みし、実タップ時にフォールバックを出さない。Next.js 16 では <code>cacheComponents:true</code> を有効化すれば <code>&lt;Activity&gt;</code> を直書きせずとも自動bfcacheが効き、必要なら <code>router.bfcacheId</code> で「新規遷移か復元か」を分岐（復元時はアナリティクスの重複計測を避ける等）できる。</p>
+<h4 id="sec-4">注意点・落とし穴</h4>
+<p><code>&lt;video&gt;</code>/<code>&lt;audio&gt;</code>/<code>&lt;iframe&gt;</code> は隠してもDOMが残るため<strong>再生が鳴り続ける</strong>。<code>useLayoutEffect</code> のクリーンアップで <code>videoRef.pause()</code> する（視覚的に隠れるタイミングに同期させるため <code>useEffect</code> ではなく <code>useLayoutEffect</code>）。hiddenの間はEffectが動かないので、購読やタイマーは<strong>cleanup側で止める</strong>設計に直す。<code>&lt;StrictMode&gt;</code> を使うと未クリーンアップのEffectを炙り出せる。テキストだけを返す子はhiddenでも何も描かない（適用先のDOM要素が無いため）。hidden中もツリーは生きてメモリを使うので無制限に積まない（Nextのbfcacheは直近N件に制限）。<code>&lt;ViewTransition&gt;</code> と組むと visible/hidden で enter/exit アニメが発火するが、<code>@media (prefers-reduced-motion: reduce)</code> で動きだけ止め、状態切替は残す。</p>
+<h4 id="sec-5">ひとこと</h4>
+<p>「隠す＝壊す」だった条件付きレンダーを、「隠す＝取っておく」へ変える地味だが効く一手。App Routerの島設計と噛み合い、Next.js 16では書かずとも恩恵を受けられる。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://react.dev/reference/react/Activity" target="_blank" rel="noopener noreferrer"> React公式リファレンス &lt;Activity&gt; </a> </li><li> <a href="https://react.dev/blog/2025/10/01/react-19-2" target="_blank" rel="noopener noreferrer"> React 19.2 リリースノート </a> </li><li> <a href="https://nextjs.org/docs/app/api-reference/config/next-config-js/cacheComponents" target="_blank" rel="noopener noreferrer"> Next.js cacheComponents（Activityでルート状態を保持） </a> </li><li> <a href="https://github.com/vercel/next.js/pull/77992" target="_blank" rel="noopener noreferrer"> vercel/next.js PR #77992（Experimental bfcache） </a> </li><li> <a href="https://thisweekinreact.com/newsletter/252" target="_blank" rel="noopener noreferrer"> This Week In React #252 </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 何が新しいか </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 仕組みのポイント </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 実務での使いどころ・自分が試すなら </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 注意点・落とし穴 </a> </li><li> <a href="#sec-5" data-toc="sec-5"> ひとこと </a> </li> </ul> <div class="reading-box"> <div>📅 2026-08-31</div> <div>⏱ 読了 約5分</div> <div>🏷 Next.js</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
