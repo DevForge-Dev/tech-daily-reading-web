@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-08-31T04:44:24.776Z",
+  "generatedAt": "2026-09-01T04:48:25.142Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,114 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-09-01-claude-code",
+      "date": "2026-09-01",
+      "topic": "Claude Code",
+      "title": "クロスセッションメッセージングがWindows対応で全OS横断——ListAgents/SendMessageで別セッション連携、/claude-apiでSDK移行、受信ソケットは30秒で切断",
+      "lede": "新モデルではなく「セッション間連携」と「移行・信頼性」を固める一日。ListAgentsで到達可能な別セッションを発見しSendMessageで届ける仕組みがWindowsでも揃い、受信側は作業を止めずツール呼び出しの合間で読む。受信ソケットは30秒無入力で切断、名前空間での無効化バグも修正。/claude-apiはanthropic 0.x→1.xのPython移行を自動化し、フルスクリーンレンダラーはBedrock/Vertex/Foundryへ拡張。",
+      "articleHtml": "<p>今日のClaude Codeは新モデルではなく<strong>「セッション間連携」と「移行・信頼性」</strong>を固める一日だった。目玉は<strong>クロスセッションメッセージングのWindows対応</strong>で、これまでmacOS/Linux先行だった機能が全OSで揃った。到達可能な別セッションを探す<code>ListAgents</code>と、名前を指定してメッセージを届ける<code>SendMessage</code>の2ツールが噛み合い、複数マシンで走るClaude Code同士が作業を止めずに連携できる。</p>\n<h4>何が新しいか</h4>\n<p>受信側は実行中のタスクを止めず、<strong>ツール呼び出しの合間でメッセージを読む</strong>ため、並列作業や役割分担を遠隔ウィンドウ間でも自然につなげられる。あわせて信頼性の調整も入り、受信インボックス用ソケットは<strong>30秒以内に完全な1行が来ない接続を切断</strong>するようになった（投稿スクリプトはデータが揃ってから接続する運用が推奨）。<code>v2.1.232</code>のソケットディレクトリ強化以降、ユーザー名前空間やrootlessコンテナでメッセージングが黙って無効化されていたバグも修正された。移行支援では、Pythonプロジェクトを<code>anthropic</code> 0.x系から1.x系へ移す<strong><code>/claude-api</code>アップグレードコマンド</strong>が新設され、フルスクリーンレンダラーの利用提案が<strong>Bedrock/Vertex/Foundry</strong>構成にも拡張された。</p>\n<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='11.5'><rect x='0' y='0' width='600' height='210' fill='#f5fbf6'/><text x='16' y='24' font-size='13' font-weight='700' fill='#1a7f37'>クロスセッションメッセージング（Windows対応で全OS横断）</text><rect x='24' y='58' width='170' height='94' rx='10' fill='#e8f6ec' stroke='#1a7f37'/><text x='40' y='90' font-weight='700' fill='#1a7f37'>Session A</text><text x='40' y='112' font-size='10.5' fill='#333'>探索/計画担当</text><text x='40' y='130' font-size='10.5' fill='#333'>（別マシンでも可）</text><rect x='406' y='58' width='170' height='94' rx='10' fill='#eef2fb' stroke='#1f6feb'/><text x='422' y='90' font-weight='700' fill='#1f6feb'>Session B</text><text x='422' y='112' font-size='10.5' fill='#333'>実装/実行担当</text><text x='422' y='130' font-size='10.5' fill='#333'>作業を止めず受信</text><defs><marker id='ahg' markerWidth='9' markerHeight='9' refX='6' refY='3' orient='auto'><path d='M0,0 L6,3 L0,6 Z' fill='#1a7f37'/></marker><marker id='ahb' markerWidth='9' markerHeight='9' refX='6' refY='3' orient='auto'><path d='M0,0 L6,3 L0,6 Z' fill='#1f6feb'/></marker></defs><line x1='196' y1='86' x2='402' y2='86' stroke='#1a7f37' stroke-width='1.5' marker-end='url(#ahg)'/><text x='300' y='80' text-anchor='middle' font-size='10.5' fill='#1a7f37'>ListAgents で発見</text><line x1='402' y1='126' x2='196' y2='126' stroke='#1f6feb' stroke-width='1.5' marker-end='url(#ahb)'/><text x='300' y='144' text-anchor='middle' font-size='10.5' fill='#1f6feb'>SendMessage で送信</text><text x='16' y='188' font-size='10.5' fill='#777'>※ 受信ソケットは30秒以内に1行が来ない接続を切断。相手はツール呼び出しの合間で読む。</text></svg><figcaption>図1：ListAgentsで到達可能なセッションを見つけ、SendMessageで橋渡し。受信側は作業を止めない。</figcaption></figure>\n<h4>仕組みのポイント</h4>\n<p>連携の勘所は「受信は非同期・非ブロッキング」という設計だ。SendMessageは相手の実行を割り込まず、相手がツール呼び出しの区切りに達したときに読ませる。だからA→B→Aのピンポンで役割分担しても、双方の長い処理を止めずに済む。<code>/claude-api</code>は破壊的変更への追従を自動化し、旧SDK（0.x）のクライアント初期化やメソッド名の差分を1.x系へ機械的に書き換える。<code>SendFeedback</code>ツールや組織向けTips表示のローテーションなど、運用の使い勝手を高める小改善も続いている。</p>\n<h4>実務での使いどころ・自分が試すなら</h4>\n<p>1人×Claude Code×多PJの横断運用では、「探索担当セッション」と「実装担当セッション」を分け、ListAgents/SendMessageで橋渡しするとメインの文脈を膨らませずに済む。関連して今日は<strong>サブエージェント実践ガイド2026</strong>（独自コンテキスト・専用プロンプト・絞ったツールと権限で並列探索や重コンテキスト作業を委譲）と、<strong>Skills vs Hooks</strong>の使い分け（スキル＝判断を委ねる知識追加／フック＝判断に関わらず100%発火して確実に実行）も話題だった。まずスキルから始め、確実に効かせたい処理だけフックへ、が公式推奨だ。</p>\n<h4>注意点・落とし穴</h4>\n<p>クロスセッション連携は便利だが、受信ソケットの30秒タイムアウトを踏むと取りこぼす。投稿側は「1行を揃えてから接続」を守る。事例面では、Microsoftの企業規模実地調査が導入者の<strong>マージPR約24%増</strong>（4か月持続）を報告し、NRIはテスト工程で最大85%・開発工程40%の効率化を挙げる一方、<strong>トークン支出の管理</strong>が現実的な論点になる。5万スターのTips集も本質は<strong>「文脈を絞る」「処理を強制する」の2つ</strong>——CLAUDE.mdは消せる行を消し200行以下に保つ。</p>\n<h4>ひとこと</h4>\n<p>派手な新機能ではないが、複数セッションを束ねて「安全に・止めずに・移行しながら」使い倒すための足回りが着実に厚くなった一日だった。</p>",
+      "sources": [
+        {
+          "title": "Windows版クロスセッションメッセージング（ListAgents/SendMessage）",
+          "url": "https://www.getclaudeskills.com/blog/claude-code-cross-session-messaging"
+        },
+        {
+          "title": "/claude-apiアップグレード・フルスクリーンレンダラー拡張",
+          "url": "https://releasebot.io/updates/anthropic/claude-code"
+        },
+        {
+          "title": "受信ソケット30秒切断・名前空間の無効化バグ修正",
+          "url": "https://clockedcode.com/blog/claude-code-changelog"
+        },
+        {
+          "title": "サブエージェント実践ガイド2026（Tembo）",
+          "url": "https://www.tembo.io/blog/claude-code-subagents"
+        },
+        {
+          "title": "Skills vs Hooks 使い分けガイド（AI革命）",
+          "url": "https://ai-revolution.co.jp/media/claude-code-skills-vs-hooks/"
+        },
+        {
+          "title": "Microsoft 実地調査（マージPR約24%増）",
+          "url": "https://arxiv.org/abs/2607.01418"
+        }
+      ]
+    },
+    {
+      "id": "2026-09-01-nextjs",
+      "date": "2026-09-01",
+      "topic": "Next.js",
+      "title": "CSS field-sizing: content ─ 入力欄・textarea・selectをJS計測なしで内容に合わせて伸縮（Baseline 2026入り）",
+      "lede": "「入力するほどtextareaが伸びる」定番マイクロインタラクションは従来JSでscrollHeightを測るしかなく、Reactではreact-textarea-autosizeを挟むのが常識だった。field-sizing: contentはこれをCSS1行に畳む新プロパティで、2026-06-16にBaseline newly available入り。App Routerでは計測フックとクライアント島を丸ごと消し、textareaをServer Componentのまま置ける。",
+      "articleHtml": "<p>従来、「入力するほど<code>textarea</code>が縦に伸びる」「文字数に合わせて<code>input</code>の幅が縮む」といった定番マイクロインタラクションは、<strong>JSで<code>scrollHeight</code>を測って高さを毎回セットする</strong>しかなく、Reactでは<code>react-textarea-autosize</code>（週数百万DL）を挟むのが常識だった。CSSの新プロパティ<strong><code>field-sizing: content</code></strong>はこれを<strong>1行</strong>に畳む。<strong>2026-06-16にBaseline \"newly available\"入り</strong>（Firefox 152が揃えた）した、いままさに実務投入解禁のタイミングだ。</p>\n<h4>何が新しいか</h4>\n<p>値は2つだけ。<code>fixed</code>（既定＝従来どおり<code>rows</code>/<code>size</code>で固定）と<code>content</code>（中身に合わせて縮む・伸びる）。対象は<code>textarea</code>・テキスト系<code>input</code>・<code>select</code>。伸びる軸が要素で違い、<strong><code>textarea</code>は高さ（ブロック方向）</strong>、<strong><code>input</code>/<code>select</code>は幅（インライン方向）</strong>に伸縮する。最重要の実務ノウハウは<strong>上限/下限をmin/maxで縛る</strong>こと——単体だと空で極小・入力で青天井に育つ。textareaは<code>min-height</code>＋<code>max-height</code>（上限で内部スクロールに切替）、input/selectは<code>min-inline-size</code>/<code>max-inline-size</code>で暴れを抑える。</p>\n<figure class='fig'><svg viewBox='0 0 600 190' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='11.5'><rect x='0' y='0' width='600' height='190' fill='#eef2fb'/><text x='16' y='24' font-size='13' font-weight='700' fill='#1f3a8a'>従来のJS計測 vs field-sizing: content</text><rect x='16' y='40' width='270' height='132' rx='8' fill='#fdeeee' stroke='#c0392b'/><text x='30' y='62' font-weight='700' fill='#c0392b'>従来（JSで計測）</text><text x='30' y='86' font-size='10.5' fill='#333'>useRef+useEffectでscrollHeight計測</text><text x='30' y='106' font-size='10.5' fill='#333'>react-textarea-autosizeを挟む</text><text x='30' y='126' font-size='10.5' fill='#333'>'use client' 必須</text><text x='30' y='146' font-size='10.5' fill='#333'>SSRで初期高さがズレ CLS/hydration</text><rect x='314' y='40' width='270' height='132' rx='8' fill='#e8f0fe' stroke='#1f6feb'/><text x='328' y='62' font-weight='700' fill='#1f6feb'>field-sizing: content</text><text x='328' y='86' font-size='10.5' fill='#333'>CSS 1行で内容に追従</text><text x='328' y='106' font-size='10.5' fill='#333'>計測フック不要</text><text x='328' y='126' font-size='10.5' fill='#333'>Server Component のまま置ける</text><text x='328' y='146' font-size='10.5' fill='#333'>キー入力でJSが走らずINP有利</text></svg><figcaption>図1：計測フック＋クライアント島を、CSSプロパティ1行に畳む。</figcaption></figure>\n<h4>仕組みのポイント</h4>\n<p>フォーム要素が「固定の既定寸法」ではなく「中身の寸法（intrinsic size）」に自らフィットするようになる。<code>box-sizing: border-box</code>前提でpaddingを見込んで計算し、<code>rows</code>は「空のときの初期高さ（最小行数）」として活きる。プレースホルダは中身扱いされないので、空でも高さが欲しければ<code>min-*</code>か<code>rows</code>で確保する。未対応の旧ブラウザは<code>field-sizing</code>を単に無視して従来の固定サイズになる＝<strong>安全に縮退して壊れない</strong>ため、プログレッシブエンハンスメントとして足せる。</p>\n<figure class='fig'><svg viewBox='0 0 600 180' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='11.5'><rect x='0' y='0' width='600' height='180' fill='#f4f7ff'/><text x='16' y='24' font-size='13' font-weight='700' fill='#1f3a8a'>要素で伸びる軸が違う（min/maxで縛る）</text><rect x='40' y='46' width='150' height='104' rx='8' fill='#fff' stroke='#1f6feb'/><text x='115' y='40' text-anchor='middle' font-size='11' font-weight='700' fill='#1f6feb'>textarea</text><text x='115' y='104' text-anchor='middle' font-size='10.5' fill='#333'>高さ（ブロック方向）</text><defs><marker id='av' markerWidth='9' markerHeight='9' refX='3' refY='6' orient='auto'><path d='M0,6 L3,0 L6,6 Z' fill='#1f6feb'/></marker><marker id='av2' markerWidth='9' markerHeight='9' refX='3' refY='0' orient='auto'><path d='M0,0 L3,6 L6,0 Z' fill='#1f6feb'/></marker></defs><line x1='60' y1='62' x2='60' y2='134' stroke='#1f6feb' stroke-width='1.5' marker-start='url(#av)' marker-end='url(#av2)'/><rect x='320' y='72' width='240' height='52' rx='8' fill='#fff' stroke='#0a7d33'/><text x='440' y='40' text-anchor='middle' font-size='11' font-weight='700' fill='#0a7d33'>input / select</text><text x='440' y='102' text-anchor='middle' font-size='10.5' fill='#333'>幅（インライン方向）</text><defs><marker id='ahl' markerWidth='9' markerHeight='9' refX='0' refY='3' orient='auto'><path d='M6,0 L0,3 L6,6 Z' fill='#0a7d33'/></marker><marker id='ahr' markerWidth='9' markerHeight='9' refX='6' refY='3' orient='auto'><path d='M0,0 L6,3 L0,6 Z' fill='#0a7d33'/></marker></defs><line x1='330' y1='138' x2='550' y2='138' stroke='#0a7d33' stroke-width='1.5' marker-start='url(#ahl)' marker-end='url(#ahr)'/><text x='16' y='168' font-size='10.5' fill='#777'>※ textareaはmin/max-height、input/selectはmin/max-inline-sizeで暴れを抑える。</text></svg><figcaption>図2：textareaは縦、input/selectは横に伸縮する。</figcaption></figure>\n<h4>実務での使いどころ・自分が試すなら</h4>\n<p>Next.js（App Router）での最大の利点は<strong>クライアント島の消滅</strong>だ。高さ計測が不要になるので、<code>'use client'</code>必須・<code>useLayoutEffect</code>で計測しSSRで初期高さがズレる<code>react-textarea-autosize</code>を丸ごと撤去でき、素の<code>&lt;textarea&gt;</code>を<strong>Server Componentのまま</strong>置ける。キー入力ごとにJSが走らないのでINPにも有利。<code>&lt;form action={serverAction}&gt;</code>にそのまま噛み、Tailwind v4なら<code>field-sizing-content</code>ユーティリティ（<code>min-h-*</code>/<code>max-h-*</code>と併用）が使える。用途はチャット/コメントのcomposer、インライン編集セル、伸びるタグ/検索<code>input</code>だ。</p>\n<h4>注意点・落とし穴</h4>\n<p>最大の罠は<strong>明示<code>height</code>（Tailwindの<code>h-32</code>や<code>style</code>直書き）が最優先で打ち消す</strong>こと——高さ指定は<code>min/max</code>へ置き換える。旧来のJSオートサイズと二重掛けすると高速タイプ時に高さがガタつくので、CSSへ寄せるなら旧フックは撤去する。<code>&lt;select&gt;</code>は選択のたびに幅が変わり<strong>レイアウトシフト（CLS）</strong>の源になるため<code>min-width</code>である程度固定する。伸縮はアニメーションではなく即時リフローで、滑らかに見せたいときだけ<code>transition: block-size .12s</code>を控えめに足し、<code>prefers-reduced-motion</code>ではその補間だけ止める（伸縮自体は操作追従なので残す）。</p>\n<h4>ひとこと</h4>\n<p>「計測フック＋クライアント島」を丸ごとCSS1行に置き換える、App Router時代に効く地味な特大アップデートだ。</p>",
+      "sources": [
+        {
+          "title": "MDN field-sizing",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/field-sizing"
+        },
+        {
+          "title": "Chrome for Developers「CSS field-sizing」",
+          "url": "https://developer.chrome.com/docs/css-ui/css-field-sizing"
+        },
+        {
+          "title": "Polypane「Field-sizing just works!」",
+          "url": "https://polypane.app/blog/field-sizing-just-works/"
+        },
+        {
+          "title": "Tailwind CSS field-sizing ユーティリティ",
+          "url": "https://tailwindcss.com/docs/field-sizing"
+        }
+      ]
+    },
+    {
+      "id": "2026-09-01-flutter",
+      "date": "2026-09-01",
+      "topic": "Flutter",
+      "title": "Flutter 3.47.1 / Dart 3.13.1 ─ primary constructorsが正式化、material_ui/cupertino_ui分離、Impeller既定、Riverpod 3のRef.mountedで非同期を安全化",
+      "lede": "現行安定版は3.47系（次の機能リリースは2026年11月）。Dart 3.13でprimary constructorsが正式化し定型を削減、Material/Cupertinoのコア分離でM3更新が四半期SDKを待たず届く。ImpellerがiOS/modern Androidで既定。状態管理は新規Riverpod 3.3.1＋codegen（Ref.mounted/Mutations/automatic retry）、規制業界はBloc 9.0。フレーム予算は90/120Hzで8–11ms。",
+      "articleHtml": "<p>今日のFlutterは<strong>現行安定版 Flutter 3.47.1 / Dart 3.13.1</strong>を軸に、言語・レンダラ・状態管理・計測の各所で「定型削減と安定性」が進んだ。年4回（2/5/8/11月）のstableサイクルで次の機能リリースは<strong>2026年11月</strong>。<code>flutter --version</code>で確認、<code>flutter upgrade</code>で更新できる。</p>\n<h4>何が新しいか</h4>\n<p>言語面では<strong>Dart 3.13でprimary constructorsが正式化</strong>——クラスヘッダでコンストラクタとインスタンス変数をまとめて宣言でき定型を削減する（language versionを<code>^3.13.0</code>に）。次は<strong>Augmentations</strong>（コード生成の簡素化・クラス定義の複数ファイル分割）が控える。SDK面では<strong>Material/Cupertinoのコア分離</strong>が継続し、<code>material_ui</code>/<code>cupertino_ui</code>のstandaloneパッケージ化でM3更新が四半期SDKを待たず届き、未使用UIをバイナリから外してアプリサイズを削れる（移行は<code>dart fix</code>、旧importは2026年秋にdeprecated予定）。レンダラは<strong>ImpellerがiOS/modern Android（API 29+）で既定</strong>となり、precompiled shadersでshader compilation jankを排除して複雑UIを90–120fpsに安定させる。</p>\n<figure class='fig'><svg viewBox='0 0 600 190' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='11.5'><rect x='0' y='0' width='600' height='190' fill='#e8f6fd'/><text x='16' y='24' font-size='13' font-weight='700' fill='#01579b'>1フレームの時間予算（リフレッシュレート別）</text><text x='16' y='58' font-size='11' fill='#333'>60fps</text><rect x='120' y='46' width='430' height='18' rx='4' fill='#0277bd'/><text x='558' y='60' text-anchor='end' font-size='10.5' fill='#fff'>16ms</text><text x='16' y='96' font-size='11' fill='#333'>90fps</text><rect x='120' y='84' width='296' height='18' rx='4' fill='#0288d1'/><text x='410' y='98' text-anchor='end' font-size='10.5' fill='#fff'>11ms</text><text x='16' y='134' font-size='11' fill='#333'>120fps</text><rect x='120' y='122' width='223' height='18' rx='4' fill='#039be5'/><text x='337' y='136' text-anchor='end' font-size='10.5' fill='#fff'>8.3ms</text><text x='16' y='172' font-size='10.5' fill='#777'>※ 高リフレッシュほど予算は短い。計測はprofileモードでDevTools/PerformanceOverlayを使う。</text></svg><figcaption>図1：90/120Hzが主流の今、1フレームは8–11ms。const・build分割・局所再描画で守る。</figcaption></figure>\n<h4>仕組みのポイント（状態管理）</h4>\n<p>状態管理は<strong>新規はRiverpod 3.3.1＋codegenが既定</strong>。目玉の<code>Ref.mounted</code>は、非同期providerロジックがside-effect実行前に自身の生存を検証し、ツリー外ロジックの安全ギャップを解消する（widgetの<code>mounted</code>と同発想）。<strong>Mutations</strong>はLogin/Post Comment等のアクションのlifecycle（Idle/Pending/Success/Error）をUIへ自動公開し、providerはfailure時に<strong>automatic retry</strong>で一過性のネットワーク障害を吸収する（永続エラー画面を回避）。監査証跡が要る規制業界（fintech/healthcare）や複雑並行は<strong>Bloc 9.0</strong>——<code>on&lt;Event&gt;</code>で全state変化をeventに対応づけ<code>blocTest</code>で検証する。</p>\n<figure class='fig'><pre class='mermaid'>flowchart TD\n  A[\"新規プロジェクト?\"] -->|\"Yes\"| B[\"Riverpod 3.3.1 + codegen\"]\n  A -->|\"規制業界 / 複雑並行\"| C[\"Bloc 9.0 + blocTest\"]\n  B --> D[\"Ref.mounted で side-effect を安全化\"]\n  C --> E[\"on Event で全 state 変化を検証\"]</pre><figcaption>図2：新規は Riverpod 3、監査証跡が要る規制業界や複雑並行は Bloc 9 が基本線。</figcaption></figure>\n<h4>実務での使いどころ・自分が試すなら</h4>\n<p>パフォーマンスは<strong>DevToolsの3タブ（Performance/Memory/Network）＋PerformanceOverlay</strong>で監視する。90/120Hzが主流の今、1フレーム予算は<strong>8–11ms</strong>（60fps=16ms）。計測は必ず<strong>profileモード</strong>で行い（debug VMは遅い）、最も多い問題＝不要なwidget rebuildは<code>const</code>で再ビルドを完全スキップ、大きな<code>build()</code>の分割、<code>Selector</code>/<code>select</code>による局所再描画で削る。アニメは<code>flutter_animate</code>の<code>.animate().fadeIn().slide()</code>連鎖や、Rive 0.12+のnamed eventでhaptics/sound/navigationを描画から分離するのが効く。</p>\n<h4>注意点・落とし穴</h4>\n<p><strong>Rive×Impeller</strong>は描画・性能の差異に注意（Impeller環境でrendering discrepancyの可能性）。<code>.riv</code>は事前ロード＋controller再利用、<code>RepaintBoundary</code>でrepaintを隔離する。<code>material_ui</code>分離の移行は<code>dart fix</code>で追従しつつ、旧importのdeprecated（2026年秋）に備える。計測をdebugモードで行うと遅く出るため、必ずprofileモードで数値を取る。</p>\n<h4>ひとこと</h4>\n<p>「定型を削り、既定を速く安全に」——3.47系は派手さより、日々の実装の地力を底上げする堅実な更新だ。</p>",
+      "sources": [
+        {
+          "title": "Dart — What's new",
+          "url": "https://dart.dev/resources/whats-new"
+        },
+        {
+          "title": "Flutter & Dart's 2026 roadmap",
+          "url": "https://blog.flutter.dev/flutter-darts-2026-roadmap-89378f17ebbd"
+        },
+        {
+          "title": "Flutter State Management 2026: Riverpod vs Bloc vs GetX",
+          "url": "https://sharpskill.dev/en/blog/flutter/flutter-state-management-2026-riverpod-bloc-getx"
+        },
+        {
+          "title": "Improving rendering performance",
+          "url": "https://docs.flutter.dev/perf/rendering-performance"
+        }
+      ]
+    },
+    {
+      "id": "2026-09-01-github-trending",
+      "date": "2026-09-01",
+      "topic": "GitHub Trending",
+      "title": "9/1の話題リポジトリ — 教育マルチエージェント・エージェント動画編集・\"書かないコード\"の規律",
+      "lede": "GitHubのstarイベント配信停止でOSSInsightが止まる中、Trendshift日次で急上昇した3本。共通するのは「AIエージェントに新しい手足と規律を与える」流れだ。",
+      "articleHtml": "<p>本日はGitHubのstarイベント配信（firehose）不調で<code>github.com/trending</code>が古いキャッシュしか返さず、Trendshift日次を主ソースに3本を選んだ。共通するのは<strong>AIエージェントに新しい「手足」と「規律」を与える</strong>流れだ。教育、動画クリエイティブ、開発規律という異なる領域で、エージェントの適用先が広がっている。</p>\n<figure class='fig'><svg viewBox='0 0 600 220' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='11'><rect x='0' y='0' width='600' height='220' fill='#f2fbf4'/><text x='16' y='22' font-size='13' font-weight='700' fill='#1a7f37'>本日の3本：解決したい課題 → 提供する機能</text><line x1='16' y1='34' x2='584' y2='34' stroke='#c9e6cf'/><text x='24' y='52' font-weight='700' fill='#1a7f37'>リポジトリ</text><text x='210' y='52' font-weight='700' fill='#c0392b'>解決したい課題</text><text x='410' y='52' font-weight='700' fill='#1f6feb'>提供する機能</text><line x1='16' y1='60' x2='584' y2='60' stroke='#c9e6cf'/><text x='24' y='84' font-weight='700' fill='#333'>OpenMAIC</text><text x='24' y='100' font-size='10' fill='#777'>⭐2.7k</text><text x='210' y='84' font-size='10' fill='#333'>一方向の一斉授業</text><text x='210' y='98' font-size='10' fill='#333'>教育×多エージェントが薄い</text><text x='410' y='84' font-size='10' fill='#333'>教師/TA/級友の対話型教室を</text><text x='410' y='98' font-size='10' fill='#333'>ワンクリック起動</text><line x1='16' y1='112' x2='584' y2='112' stroke='#eef4ef'/><text x='24' y='136' font-weight='700' fill='#333'>video-use</text><text x='24' y='152' font-size='10' fill='#777'>⭐570</text><text x='210' y='136' font-size='10' fill='#333'>動画編集はGUI前提で</text><text x='210' y='150' font-size='10' fill='#333'>エージェント自動化が困難</text><text x='410' y='136' font-size='10' fill='#333'>コーディングエージェントに</text><text x='410' y='150' font-size='10' fill='#333'>動画編集の手足を付与</text><line x1='16' y1='164' x2='584' y2='164' stroke='#eef4ef'/><text x='24' y='188' font-weight='700' fill='#333'>ponytail</text><text x='24' y='204' font-size='10' fill='#777'>⭐977</text><text x='210' y='188' font-size='10' fill='#333'>エージェントの過剰実装で</text><text x='210' y='202' font-size='10' fill='#333'>レビュー負荷/トークン増</text><text x='410' y='188' font-size='10' fill='#333'>\"書かないコード\"の規律で</text><text x='410' y='202' font-size='10' fill='#333'>余計な実装を抑制</text></svg><figcaption>図1：教育・動画・開発規律——エージェントの適用先が広がる本日の3本。</figcaption></figure>\n<h4>THU-MAIC/OpenMAIC（—・⭐2.7k）</h4>\n<p><strong>解決したい課題</strong>：一斉授業やチュートリアルは一方向で、学習者ごとの理解度に合わせた対話が乏しい。教育×マルチエージェントは歴史的に薄いジャンルで、没入型の学びを手軽に立ち上げる手段が不足していた。<strong>提供する機能</strong>：複数のAIエージェントが<strong>教師・TA・級友</strong>として振る舞う「オープン多エージェント対話型教室（Open Multi-Agent Interactive Classroom）」を、ワンクリックで起動する（清華大MAIC発）。本日Trendshift日次<strong>1位</strong>・New 2026で、star配信停止下でもモメンタム指標で突出した本日いちばんの新星だ。</p>\n<h4>browser-use/video-use（—・⭐570）</h4>\n<p><strong>解決したい課題</strong>：動画編集はGUIツール前提で手作業が多く、エージェントが自動化しづらい領域だった。<strong>提供する機能</strong>：コーディングエージェントに<strong>動画編集という手足</strong>を与え、コード駆動でクリップの切り出し・結合などを行わせる。著名な<code>browser-use</code>チーム発という信頼と、「エージェント×動画」という新機軸で本日Trendshift日次8位・New 2026に急上昇した。動画クリエイティブという言語・ジャンルの多様性にも寄与する一本だ。</p>\n<h4>DietrichGebert/ponytail（—・⭐977）</h4>\n<p><strong>解決したい課題</strong>：AIエージェントは往々にして<strong>過剰実装</strong>し、要らないコードや差分を書きがちで、レビュー負荷とトークン消費が膨らむ。<strong>提供する機能</strong>：エージェントを「その場で最も怠惰なシニア開発者」のように振る舞わせ、<strong>\"最良のコードは書かないコード\"</strong>という規律で余計な実装を抑える。本日Trendshift日次23位ながら、いいね9・ブックマーク7と<strong>本日リスト最多級のエンゲージメント</strong>で実需の強さが際立った。</p>\n<h4>まとめ — 自分が試すなら</h4>\n<p>1人×Claude Code×多PJの横断運用に最も効きそうなのは<strong>ponytail</strong>だ。reviewer/品質ゲートの補助として試験導入すれば、余計な差分を書かせない＝トークン削減にも直結する。OpenMAICは学習コンテンツ設計の着想源、video-useはエージェントの適用範囲拡大の観測対象として押さえておきたい。</p>",
+      "sources": [
+        {
+          "title": "THU-MAIC/OpenMAIC",
+          "url": "https://github.com/THU-MAIC/OpenMAIC"
+        },
+        {
+          "title": "browser-use/video-use",
+          "url": "https://github.com/browser-use/video-use"
+        },
+        {
+          "title": "DietrichGebert/ponytail",
+          "url": "https://github.com/DietrichGebert/ponytail"
+        }
+      ]
+    },
     {
       "id": "2026-08-31-claude-code",
       "date": "2026-08-31",
