@@ -1,0 +1,68 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>9/1の話題リポジトリ — 教育マルチエージェント・エージェント動画編集・&quot;書かないコード&quot;の規律 — デイリー技術深掘り 読み物</title><meta name="description" content="GitHubのstarイベント配信停止でOSSInsightが止まる中、Trendshift日次で急上昇した3本。共通するのは「AIエージェントに新しい手足と規律を与える」流れだ。"><meta name="theme-color" content="#238636"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-01-github-trending/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="9/1の話題リポジトリ — 教育マルチエージェント・エージェント動画編集・&#34;書かないコード&#34;の規律 — デイリー技術深掘り 読み物"><meta property="og:description" content="GitHubのstarイベント配信停止でOSSInsightが止まる中、Trendshift日次で急上昇した3本。共通するのは「AIエージェントに新しい手足と規律を与える」流れだ。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-01-github-trending/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3fb950, #1a7f37)"> <span class="glyph" aria-hidden="true">★</span> <div class="kicker">GitHub Trending</div> <h1>9/1の話題リポジトリ — 教育マルチエージェント・エージェント動画編集・&quot;書かないコード&quot;の規律</h1> <p class="lede">GitHubのstarイベント配信停止でOSSInsightが止まる中、Trendshift日次で急上昇した3本。共通するのは「AIエージェントに新しい手足と規律を与える」流れだ。</p> <div class="meta"> <span>📅 2026年9月1日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#238636"> <div> <article class="prose" data-has-mermaid="0"><p>本日はGitHubのstarイベント配信（firehose）不調で<code>github.com/trending</code>が古いキャッシュしか返さず、Trendshift日次を主ソースに3本を選んだ。共通するのは<strong>AIエージェントに新しい「手足」と「規律」を与える</strong>流れだ。教育、動画クリエイティブ、開発規律という異なる領域で、エージェントの適用先が広がっている。</p>
+<figure class='fig'><svg viewBox='0 0 600 220' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='11'><rect x='0' y='0' width='600' height='220' fill='#f2fbf4'></rect><text x='16' y='22' font-size='13' font-weight='700' fill='#1a7f37'>本日の3本：解決したい課題 → 提供する機能</text><line x1='16' y1='34' x2='584' y2='34' stroke='#c9e6cf'></line><text x='24' y='52' font-weight='700' fill='#1a7f37'>リポジトリ</text><text x='210' y='52' font-weight='700' fill='#c0392b'>解決したい課題</text><text x='410' y='52' font-weight='700' fill='#1f6feb'>提供する機能</text><line x1='16' y1='60' x2='584' y2='60' stroke='#c9e6cf'></line><text x='24' y='84' font-weight='700' fill='#333'>OpenMAIC</text><text x='24' y='100' font-size='10' fill='#777'>⭐2.7k</text><text x='210' y='84' font-size='10' fill='#333'>一方向の一斉授業</text><text x='210' y='98' font-size='10' fill='#333'>教育×多エージェントが薄い</text><text x='410' y='84' font-size='10' fill='#333'>教師/TA/級友の対話型教室を</text><text x='410' y='98' font-size='10' fill='#333'>ワンクリック起動</text><line x1='16' y1='112' x2='584' y2='112' stroke='#eef4ef'></line><text x='24' y='136' font-weight='700' fill='#333'>video-use</text><text x='24' y='152' font-size='10' fill='#777'>⭐570</text><text x='210' y='136' font-size='10' fill='#333'>動画編集はGUI前提で</text><text x='210' y='150' font-size='10' fill='#333'>エージェント自動化が困難</text><text x='410' y='136' font-size='10' fill='#333'>コーディングエージェントに</text><text x='410' y='150' font-size='10' fill='#333'>動画編集の手足を付与</text><line x1='16' y1='164' x2='584' y2='164' stroke='#eef4ef'></line><text x='24' y='188' font-weight='700' fill='#333'>ponytail</text><text x='24' y='204' font-size='10' fill='#777'>⭐977</text><text x='210' y='188' font-size='10' fill='#333'>エージェントの過剰実装で</text><text x='210' y='202' font-size='10' fill='#333'>レビュー負荷/トークン増</text><text x='410' y='188' font-size='10' fill='#333'>"書かないコード"の規律で</text><text x='410' y='202' font-size='10' fill='#333'>余計な実装を抑制</text></svg><figcaption>図1：教育・動画・開発規律——エージェントの適用先が広がる本日の3本。</figcaption></figure>
+<h4 id="sec-1">THU-MAIC/OpenMAIC（—・⭐2.7k）</h4>
+<p><strong>解決したい課題</strong>：一斉授業やチュートリアルは一方向で、学習者ごとの理解度に合わせた対話が乏しい。教育×マルチエージェントは歴史的に薄いジャンルで、没入型の学びを手軽に立ち上げる手段が不足していた。<strong>提供する機能</strong>：複数のAIエージェントが<strong>教師・TA・級友</strong>として振る舞う「オープン多エージェント対話型教室（Open Multi-Agent Interactive Classroom）」を、ワンクリックで起動する（清華大MAIC発）。本日Trendshift日次<strong>1位</strong>・New 2026で、star配信停止下でもモメンタム指標で突出した本日いちばんの新星だ。</p>
+<h4 id="sec-2">browser-use/video-use（—・⭐570）</h4>
+<p><strong>解決したい課題</strong>：動画編集はGUIツール前提で手作業が多く、エージェントが自動化しづらい領域だった。<strong>提供する機能</strong>：コーディングエージェントに<strong>動画編集という手足</strong>を与え、コード駆動でクリップの切り出し・結合などを行わせる。著名な<code>browser-use</code>チーム発という信頼と、「エージェント×動画」という新機軸で本日Trendshift日次8位・New 2026に急上昇した。動画クリエイティブという言語・ジャンルの多様性にも寄与する一本だ。</p>
+<h4 id="sec-3">DietrichGebert/ponytail（—・⭐977）</h4>
+<p><strong>解決したい課題</strong>：AIエージェントは往々にして<strong>過剰実装</strong>し、要らないコードや差分を書きがちで、レビュー負荷とトークン消費が膨らむ。<strong>提供する機能</strong>：エージェントを「その場で最も怠惰なシニア開発者」のように振る舞わせ、<strong>"最良のコードは書かないコード"</strong>という規律で余計な実装を抑える。本日Trendshift日次23位ながら、いいね9・ブックマーク7と<strong>本日リスト最多級のエンゲージメント</strong>で実需の強さが際立った。</p>
+<h4 id="sec-4">まとめ — 自分が試すなら</h4>
+<p>1人×Claude Code×多PJの横断運用に最も効きそうなのは<strong>ponytail</strong>だ。reviewer/品質ゲートの補助として試験導入すれば、余計な差分を書かせない＝トークン削減にも直結する。OpenMAICは学習コンテンツ設計の着想源、video-useはエージェントの適用範囲拡大の観測対象として押さえておきたい。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://github.com/THU-MAIC/OpenMAIC" target="_blank" rel="noopener noreferrer"> THU-MAIC/OpenMAIC </a> </li><li> <a href="https://github.com/browser-use/video-use" target="_blank" rel="noopener noreferrer"> browser-use/video-use </a> </li><li> <a href="https://github.com/DietrichGebert/ponytail" target="_blank" rel="noopener noreferrer"> DietrichGebert/ponytail </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> THU-MAIC/OpenMAIC（—・⭐2.7k） </a> </li><li> <a href="#sec-2" data-toc="sec-2"> browser-use/video-use（—・⭐570） </a> </li><li> <a href="#sec-3" data-toc="sec-3"> DietrichGebert/ponytail（—・⭐977） </a> </li><li> <a href="#sec-4" data-toc="sec-4"> まとめ — 自分が試すなら </a> </li> </ul> <div class="reading-box"> <div>📅 2026-09-01</div> <div>⏱ 読了 約3分</div> <div>🏷 GitHub Trending</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
