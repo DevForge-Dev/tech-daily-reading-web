@@ -1,0 +1,75 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>成功時のコンフェッティ／セレブレーション・バースト——canvas・依存ゼロ・reduced-motion対応でServer Actionの成功を祝う — デイリー技術深掘り 読み物</title><meta name="description" content="購入完了やオンボーディング達成など「一度きりの達成」を祝う紙吹雪バーストを、外部依存ゼロのvanilla canvasで実装する。全画面固定オーバーレイ＋pointer-events:none、粒子物理（velocity→gravity→drag）、prefers-reduced-motionでの全面ゲート、useActionStateの成功結果をuseEffectで監視して発火——App Routerでの組み込みまで。多用は禁物、本当に嬉しい節目に限定する。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-02-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="成功時のコンフェッティ／セレブレーション・バースト——canvas・依存ゼロ・reduced-motion対応でServer Actionの成功を祝う — デイリー技術深掘り 読み物"><meta property="og:description" content="購入完了やオンボーディング達成など「一度きりの達成」を祝う紙吹雪バーストを、外部依存ゼロのvanilla canvasで実装する。全画面固定オーバーレイ＋pointer-events:none、粒子物理（velocity→gravity→drag）、prefers-reduced-motionでの全面ゲート、useActionStateの成功結果をuseEffectで監視して発火——App Routerでの組み込みまで。多用は禁物、本当に嬉しい節目に限定する。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-02-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>成功時のコンフェッティ／セレブレーション・バースト——canvas・依存ゼロ・reduced-motion対応でServer Actionの成功を祝う</h1> <p class="lede">購入完了やオンボーディング達成など「一度きりの達成」を祝う紙吹雪バーストを、外部依存ゼロのvanilla canvasで実装する。全画面固定オーバーレイ＋pointer-events:none、粒子物理（velocity→gravity→drag）、prefers-reduced-motionでの全面ゲート、useActionStateの成功結果をuseEffectで監視して発火——App Routerでの組み込みまで。多用は禁物、本当に嬉しい節目に限定する。</p> <div class="meta"> <span>📅 2026年9月2日</span> <span>⏱ 約4分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="0"><p>コンフェッティ（紙吹雪）バーストは、GitHub・Linear・Stripeなどが要所で使う定番の“喜びのマイクロインタラクション”だ。トーストや送信ボタンの成功モーフが<strong>状態を伝える</strong>フィードバックなのに対し、コンフェッティは<strong>情報量ゼロの純粋な情緒的報酬</strong>——「やった！」の一瞬を演出する。だからこそ決済成功・実績解除・オンボーディング完走のような<strong>稀で本当に嬉しい節目</strong>に限定し、フォーム保存のたびに撒かない。実装はデファクトの<code>canvas-confetti</code>（約6KB）を入れるか、<strong>40〜60行のvanilla canvas自前</strong>か。ここでは依存ゼロの自前を軸にする。</p>
+<h4 id="sec-1">なぜ DOM でなく canvas か</h4>
+<p>数十〜数百個の紙片を同時に動かすと、各粒子を<code>&lt;div&gt;</code>にした場合は毎フレーム数百要素の<code>transform</code>書き換え・レイヤ合成でカクつく。canvasなら<strong>1要素</strong>に全粒子を<code>fillRect</code>で描くだけで、リフローもDOMミューテーションも起きず60fpsを保ちやすい。最重要の実務ポイントは置き方で、祝いは画面全体に降らせたいので<strong>全画面固定オーバーレイ</strong>にし、必ず<code>pointer-events:none</code>を付ける（忘れるとページ全体がクリック不能になる最頻出事故）。canvas内部解像度は<code>devicePixelRatio</code>を掛けないとRetinaでぼやける。祝い終わったら要素をDOMから外してGPUメモリを解放する。</p>
+<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='11.5'><rect x='0' y='0' width='600' height='210' fill='#f3f8ff'></rect><text x='16' y='24' font-size='13' font-weight='700' fill='#1f6feb'>粒子の物理：velocity → gravity → drag → life</text><circle cx='90' cy='120' r='6' fill='#1f6feb'></circle><text x='90' y='150' text-anchor='middle' font-size='10.5' fill='#333'>生成（原点）</text><text x='90' y='166' text-anchor='middle' font-size='9.5' fill='#777'>angle,speed→vx,vy</text><path d='M96 116 Q210 40 320 110' stroke='#1f6feb' stroke-width='2' fill='none' marker-end='url(#ah)'></path><defs><marker id='ah' markerWidth='9' markerHeight='9' refX='6' refY='3' orient='auto'><path d='M0,0 L6,3 L0,6 Z' fill='#1f6feb'></path></marker></defs><text x='210' y='60' text-anchor='middle' font-size='10.5' fill='#1f6feb'>vx*=drag(0.94) / vy+=gravity(0.35)</text><path d='M320 110 Q420 150 520 190' stroke='#74a8ff' stroke-width='2' fill='none'></path><text x='470' y='150' font-size='10.5' fill='#5a5a60'>life 1→0 で alpha 減衰</text><rect x='300' y='96' width='16' height='22' rx='2' fill='#ff5d5d' transform='rotate(20 308 107)'></rect><rect x='360' y='120' width='16' height='22' rx='2' fill='#ffd93d' transform='rotate(-15 368 131)'></rect><rect x='440' y='150' width='16' height='22' rx='2' fill='#6bcB77' transform='rotate(35 448 161)'></rect><text x='16' y='198' font-size='10.5' fill='#777'>※ 紙片らしさ＝縦長長方形＋rotation＋wobble＋scaleXの伸縮。粒子数は150〜250で十分華やか。</text></svg><figcaption>図1：初速で飛び散り、重力で落ち、drag で減速、life で自然消滅。全粒子の life が尽きたらループを止める。</figcaption></figure>
+<h4 id="sec-2">App Routerでの組み込み（本題の肝）</h4>
+<p>canvas/<code>window</code>/<code>matchMedia</code>/<code>requestAnimationFrame</code>はブラウザAPIなので、撃つコンポーネントは<code>'use client'</code>。ただし<strong>島を最小化</strong>し、ページ本体・データ取得はRSCのまま。決済/登録はServer Actionで行い、<strong>サーバーの成功をクライアントのcanvasへ橋渡し</strong>する。定番は<code>useActionState</code>の戻り値を<code>useEffect</code>で監視して発火する構図だ。</p>
+<pre><code>useEffect(() =&gt; {
+  if (state.ok &amp;&amp; state.ts !== fired.current) {
+    fired.current = state.ts;
+    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) fireConfetti();
+  }
+}, [state]);</code></pre>
+<p>Server Action側は<code>{ ok:true, ts:Date.now() }</code>のように<strong>tsを必ず返す</strong>。同じ<code>ok:true</code>の連続でもuseEffectを再発火させるためだ。<code>redirect()</code>を挟むと同一stateで発火しないので、祝ってから遷移するなら遷移前に撃つか、遷移先でcookieフラッシュして1回だけ撃つ。SSRでcanvasを触らなければhydration mismatchも起きず、JS未ロードでも<code>&lt;form action&gt;</code>の素のPOSTで購入自体は成立する（プログレッシブエンハンスメント）。</p>
+<h4 id="sec-3">アクセシビリティ（必須）</h4>
+<p>コンフェッティは動きが激しく、前庭障害等で動きに敏感なユーザーに有害になりうる。<code>canvas-confetti</code>でも「reduced-motionで止まらない」ことが長く課題だったので、<strong>自前なら発火直前に必ず<code>matchMedia('(prefers-reduced-motion: reduce)').matches</code>で全面ゲート</strong>し、trueなら一切出さない。成功の事実は必ず<strong>静的テキスト＋<code>role="status" aria-live="polite"</code></strong>で伝え、canvasは<code>aria-hidden="true"</code>の純装飾に留める。明滅・ストロボは避ける。</p>
+<h4 id="sec-4">ひとこと</h4>
+<p>紙吹雪は“撒きすぎると陳腐化する”のが最大の落とし穴。頻度の高いフィードバックはトーストやボタンモーフに任せ、コンフェッティは本当の節目にだけ。自前実装なら挙動を完全制御でき、バンドルも増やさずに済む。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://github.com/catdad/canvas-confetti" target="_blank" rel="noopener noreferrer"> catdad/canvas-confetti（デファクト・依存ゼロ・6KB） </a> </li><li> <a href="https://github.com/catdad/canvas-confetti/issues/114" target="_blank" rel="noopener noreferrer"> canvas-confetti reduced-motion 課題（issue #114） </a> </li><li> <a href="https://www.joshwcomeau.com/react/prefers-reduced-motion/" target="_blank" rel="noopener noreferrer"> Accessible Animations in React with prefers-reduced-motion（Josh W. Comeau） </a> </li><li> <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion" target="_blank" rel="noopener noreferrer"> MDN: prefers-reduced-motion </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> なぜ DOM でなく canvas か </a> </li><li> <a href="#sec-2" data-toc="sec-2"> App Routerでの組み込み（本題の肝） </a> </li><li> <a href="#sec-3" data-toc="sec-3"> アクセシビリティ（必須） </a> </li><li> <a href="#sec-4" data-toc="sec-4"> ひとこと </a> </li> </ul> <div class="reading-box"> <div>📅 2026-09-02</div> <div>⏱ 読了 約4分</div> <div>🏷 Next.js</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

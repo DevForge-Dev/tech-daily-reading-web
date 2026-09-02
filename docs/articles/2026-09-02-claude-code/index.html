@@ -1,0 +1,74 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>起動高速化＋バイナリ340MB→75MB圧縮、モデル切替フックPreModelSwitch/PostModelSwitch新設（v2.1.251）——足回りと事業の両輪が加速 — デイリー技術深掘り 読み物</title><meta name="description" content="新モデルではなく「速さ・軽さ・制御性」を固める一日。サンドボックス/MCPの起動が初回描画をブロックしなくなり、Linux x64バイナリは約340MB→約75MBへ圧縮。v2.1.251でモデル切替の前後に発火するPreModelSwitch/PostModelSwitchが追加され、SessionStart resumeは陳腐化と再キャッシュ推定コストを受け取れる。事業面ではAnthropicがQ2 2026に初の営業黒字（売上109億ドル・営業利益5.59億ドル）。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-02-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="起動高速化＋バイナリ340MB→75MB圧縮、モデル切替フックPreModelSwitch/PostModelSwitch新設（v2.1.251）——足回りと事業の両輪が加速 — デイリー技術深掘り 読み物"><meta property="og:description" content="新モデルではなく「速さ・軽さ・制御性」を固める一日。サンドボックス/MCPの起動が初回描画をブロックしなくなり、Linux x64バイナリは約340MB→約75MBへ圧縮。v2.1.251でモデル切替の前後に発火するPreModelSwitch/PostModelSwitchが追加され、SessionStart resumeは陳腐化と再キャッシュ推定コストを受け取れる。事業面ではAnthropicがQ2 2026に初の営業黒字（売上109億ドル・営業利益5.59億ドル）。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-02-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>起動高速化＋バイナリ340MB→75MB圧縮、モデル切替フックPreModelSwitch/PostModelSwitch新設（v2.1.251）——足回りと事業の両輪が加速</h1> <p class="lede">新モデルではなく「速さ・軽さ・制御性」を固める一日。サンドボックス/MCPの起動が初回描画をブロックしなくなり、Linux x64バイナリは約340MB→約75MBへ圧縮。v2.1.251でモデル切替の前後に発火するPreModelSwitch/PostModelSwitchが追加され、SessionStart resumeは陳腐化と再キャッシュ推定コストを受け取れる。事業面ではAnthropicがQ2 2026に初の営業黒字（売上109億ドル・営業利益5.59億ドル）。</p> <div class="meta"> <span>📅 2026年9月2日</span> <span>⏱ 約3分</span> <span>🔗 出典 7 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="1"><p>今日のClaude Codeは新モデル投入ではなく、<strong>日常の立ち上げ体験と運用制御性</strong>を底上げする更新が中心だった。まず体感速度：<strong>サンドボックスとMCPの起動が最初のフレーム描画をブロックしなくなり</strong>、コマンド直後から画面が出る。あわせて配布サイズも改善し、<strong>Linux x64のネイティブバイナリが約340MB→約75MB</strong>へ圧縮された。ダウンロードや自動更新の負荷が軽くなる地味だが効く変更だ。</p>
+<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='11.5'><rect x='0' y='0' width='600' height='200' fill='#f5fbf6'></rect><text x='16' y='26' font-size='13' font-weight='700' fill='#1a7f37'>Linux x64 ネイティブバイナリの圧縮</text><rect x='120' y='52' width='420' height='34' rx='6' fill='#c9e7d1' stroke='#1a7f37'></rect><text x='110' y='74' text-anchor='end' fill='#333'>Before</text><text x='534' y='74' text-anchor='end' font-weight='700' fill='#1a7f37'>約340MB</text><rect x='120' y='108' width='93' height='34' rx='6' fill='#3fb950' stroke='#1a7f37'></rect><text x='110' y='130' text-anchor='end' fill='#333'>After</text><text x='223' y='130' font-weight='700' fill='#1a7f37'>約75MB（約78%減）</text><text x='16' y='178' font-size='10.5' fill='#777'>※ 起動時はサンドボックス/MCPの立ち上げが初回フレーム描画をブロックしなくなり体感が軽い。</text></svg><figcaption>図1：バイナリは約340MB→約75MBへ圧縮。更新・配布コストが下がる。</figcaption></figure>
+<h4 id="sec-1">何が新しいか</h4>
+<p>制御面の目玉は<strong>v2.1.251で追加されたモデル切替フック</strong>だ。切替の前後で発火する<code>PreModelSwitch</code>/<code>PostModelSwitch</code>により、モデル変更を<strong>ブロック・確認・注記</strong>できる。さらに<code>SessionStart</code>のresumeフックが、再開しようとするセッションの<strong>陳腐化状況</strong>と<strong>再キャッシュに要する推定コスト</strong>を受け取れるようになった。長時間・複数セッション運用で「無駄な再開」を避ける判断材料になる。信頼性修正もまとまり、自動更新後のChrome接続断・VSCodeの権限モード不起動・壊れたPRステータスキャッシュによる起動クラッシュなどが解消された。</p>
+<h4 id="sec-2">使い分けの判断軸</h4>
+<p>今日は運用ノウハウも整理された。要点は一言で<strong>「Skillはhow（手順）を教え、Hookはルールを強制し、Subagentは作業を隔離する」</strong>。必ず守らせたい規則はHookや権限で、文脈的な知識はSkillで、委譲の境界はSubagentで、常時のプロジェクト指針はCLAUDE.mdに短く——という対応づけだ。サブエージェントは仕様が更新され、<strong>ネスト最大3階層・同時実行はデフォルト20体</strong>だが、実務では<strong>3〜5体にまとめる</strong>のが目安（多数起動は調整オーバーヘッドとトークン増を招く）。副次タスクはクリーンな文脈で走らせ要約だけ返させるのが本番運用の型。</p>
+<figure class='fig'><pre class='mermaid'>flowchart TD
+  Q["やらせたいこと"] --> A{"種類は？"}
+  A -->|"手順・知識を教える"| S["Skill（how を追加）"]
+  A -->|"必ず守らせる規則"| H["Hook / 権限（強制）"]
+  A -->|"重い/散らかる作業"| G["Subagent（隔離して委譲）"]
+  A -->|"常時の方針"| C["CLAUDE.md（短く）"]</pre><figcaption>図2：Skill=how／Hook=強制／Subagent=隔離／CLAUDE.md=方針、の判断軸。</figcaption></figure>
+<h4 id="sec-3">事業サイド・自分が試すなら</h4>
+<p>事業面ではAnthropicが<strong>Q2 2026に四半期売上109億ドル（前四半期比127%増）・営業利益5.59億ドル</strong>で初の営業黒字。Claude Codeの年換算売上は5億ドル（25/9）→25億ドル（26/2）→約80億ドル（26/5）と拡大し、売上の過半をエンタープライズが占める。日本でも楽天が新機能導入を80%短縮、みずほFGは約3万人が業務活用という事例が出ている。自分の多PJ運用なら、まず<code>PreModelSwitch</code>で高コストモデルへの切替時に確認を挟み、resumeの再キャッシュ推定コストを見て「本当に再開すべきセッション」だけ復帰させる運用を試したい。</p>
+<h4 id="sec-4">注意点・ひとこと</h4>
+<p>フックは強力だが増やしすぎると発火の見通しが悪くなる。公式推奨どおり<strong>まずCLAUDE.mdを整え、譲れない部分だけHookを足す</strong>のが安全。派手さはないが、速さ・軽さ・制御性がまとめて前進した実用的な一日だった。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://code.claude.com/docs/en/changelog" target="_blank" rel="noopener noreferrer"> Claude Code changelog（起動高速化・バイナリ圧縮） </a> </li><li> <a href="https://releasebot.io/updates/anthropic/claude-code" target="_blank" rel="noopener noreferrer"> PreModelSwitch/PostModelSwitch・SessionStart resume（v2.1.251） </a> </li><li> <a href="https://www.gradually.ai/en/changelogs/claude-code/" target="_blank" rel="noopener noreferrer"> 信頼性修正まとめ（Chrome接続断・VSCode権限モード他） </a> </li><li> <a href="https://dev.to/vibehackers/claude-code-hooks-subagents-power-features-the-complete-guide-2026-c71" target="_blank" rel="noopener noreferrer"> Skill/Hook/Subagent 使い分けガイド2026 </a> </li><li> <a href="https://ai-revolution.co.jp/media/claude-code-subagents-guide/" target="_blank" rel="noopener noreferrer"> サブエージェント使い方ガイド（AI革命） </a> </li><li> <a href="https://zenaicorp.com/en/news/anthropic-q2-2026-revenue-10-billion-first-profit" target="_blank" rel="noopener noreferrer"> Anthropic Q2 2026 初の営業黒字 </a> </li><li> <a href="https://claudecode.digirise.ai/blog/claude-code-case-studies-2026" target="_blank" rel="noopener noreferrer"> 日本企業のClaude Code導入事例集2026 </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 何が新しいか </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 使い分けの判断軸 </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 事業サイド・自分が試すなら </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 注意点・ひとこと </a> </li> </ul> <div class="reading-box"> <div>📅 2026-09-02</div> <div>⏱ 読了 約3分</div> <div>🏷 Claude Code</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
