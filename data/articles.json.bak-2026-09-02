@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-09-02T04:48:10.832Z",
+  "generatedAt": "2026-09-01T04:48:25.142Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,134 +8,6 @@
     "GitHub Trending"
   ],
   "articles": [
-    {
-      "id": "2026-09-02-claude-code",
-      "date": "2026-09-02",
-      "topic": "Claude Code",
-      "title": "起動高速化＋バイナリ340MB→75MB圧縮、モデル切替フックPreModelSwitch/PostModelSwitch新設（v2.1.251）——足回りと事業の両輪が加速",
-      "lede": "新モデルではなく「速さ・軽さ・制御性」を固める一日。サンドボックス/MCPの起動が初回描画をブロックしなくなり、Linux x64バイナリは約340MB→約75MBへ圧縮。v2.1.251でモデル切替の前後に発火するPreModelSwitch/PostModelSwitchが追加され、SessionStart resumeは陳腐化と再キャッシュ推定コストを受け取れる。事業面ではAnthropicがQ2 2026に初の営業黒字（売上109億ドル・営業利益5.59億ドル）。",
-      "articleHtml": "<p>今日のClaude Codeは新モデル投入ではなく、<strong>日常の立ち上げ体験と運用制御性</strong>を底上げする更新が中心だった。まず体感速度：<strong>サンドボックスとMCPの起動が最初のフレーム描画をブロックしなくなり</strong>、コマンド直後から画面が出る。あわせて配布サイズも改善し、<strong>Linux x64のネイティブバイナリが約340MB→約75MB</strong>へ圧縮された。ダウンロードや自動更新の負荷が軽くなる地味だが効く変更だ。</p>\n<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='11.5'><rect x='0' y='0' width='600' height='200' fill='#f5fbf6'/><text x='16' y='26' font-size='13' font-weight='700' fill='#1a7f37'>Linux x64 ネイティブバイナリの圧縮</text><rect x='120' y='52' width='420' height='34' rx='6' fill='#c9e7d1' stroke='#1a7f37'/><text x='110' y='74' text-anchor='end' fill='#333'>Before</text><text x='534' y='74' text-anchor='end' font-weight='700' fill='#1a7f37'>約340MB</text><rect x='120' y='108' width='93' height='34' rx='6' fill='#3fb950' stroke='#1a7f37'/><text x='110' y='130' text-anchor='end' fill='#333'>After</text><text x='223' y='130' font-weight='700' fill='#1a7f37'>約75MB（約78%減）</text><text x='16' y='178' font-size='10.5' fill='#777'>※ 起動時はサンドボックス/MCPの立ち上げが初回フレーム描画をブロックしなくなり体感が軽い。</text></svg><figcaption>図1：バイナリは約340MB→約75MBへ圧縮。更新・配布コストが下がる。</figcaption></figure>\n<h4>何が新しいか</h4>\n<p>制御面の目玉は<strong>v2.1.251で追加されたモデル切替フック</strong>だ。切替の前後で発火する<code>PreModelSwitch</code>/<code>PostModelSwitch</code>により、モデル変更を<strong>ブロック・確認・注記</strong>できる。さらに<code>SessionStart</code>のresumeフックが、再開しようとするセッションの<strong>陳腐化状況</strong>と<strong>再キャッシュに要する推定コスト</strong>を受け取れるようになった。長時間・複数セッション運用で「無駄な再開」を避ける判断材料になる。信頼性修正もまとまり、自動更新後のChrome接続断・VSCodeの権限モード不起動・壊れたPRステータスキャッシュによる起動クラッシュなどが解消された。</p>\n<h4>使い分けの判断軸</h4>\n<p>今日は運用ノウハウも整理された。要点は一言で<strong>「Skillはhow（手順）を教え、Hookはルールを強制し、Subagentは作業を隔離する」</strong>。必ず守らせたい規則はHookや権限で、文脈的な知識はSkillで、委譲の境界はSubagentで、常時のプロジェクト指針はCLAUDE.mdに短く——という対応づけだ。サブエージェントは仕様が更新され、<strong>ネスト最大3階層・同時実行はデフォルト20体</strong>だが、実務では<strong>3〜5体にまとめる</strong>のが目安（多数起動は調整オーバーヘッドとトークン増を招く）。副次タスクはクリーンな文脈で走らせ要約だけ返させるのが本番運用の型。</p>\n<figure class='fig'><pre class='mermaid'>flowchart TD\n  Q[\"やらせたいこと\"] --> A{\"種類は？\"}\n  A -->|\"手順・知識を教える\"| S[\"Skill（how を追加）\"]\n  A -->|\"必ず守らせる規則\"| H[\"Hook / 権限（強制）\"]\n  A -->|\"重い/散らかる作業\"| G[\"Subagent（隔離して委譲）\"]\n  A -->|\"常時の方針\"| C[\"CLAUDE.md（短く）\"]</pre><figcaption>図2：Skill=how／Hook=強制／Subagent=隔離／CLAUDE.md=方針、の判断軸。</figcaption></figure>\n<h4>事業サイド・自分が試すなら</h4>\n<p>事業面ではAnthropicが<strong>Q2 2026に四半期売上109億ドル（前四半期比127%増）・営業利益5.59億ドル</strong>で初の営業黒字。Claude Codeの年換算売上は5億ドル（25/9）→25億ドル（26/2）→約80億ドル（26/5）と拡大し、売上の過半をエンタープライズが占める。日本でも楽天が新機能導入を80%短縮、みずほFGは約3万人が業務活用という事例が出ている。自分の多PJ運用なら、まず<code>PreModelSwitch</code>で高コストモデルへの切替時に確認を挟み、resumeの再キャッシュ推定コストを見て「本当に再開すべきセッション」だけ復帰させる運用を試したい。</p>\n<h4>注意点・ひとこと</h4>\n<p>フックは強力だが増やしすぎると発火の見通しが悪くなる。公式推奨どおり<strong>まずCLAUDE.mdを整え、譲れない部分だけHookを足す</strong>のが安全。派手さはないが、速さ・軽さ・制御性がまとめて前進した実用的な一日だった。</p>",
-      "sources": [
-        {
-          "title": "Claude Code changelog（起動高速化・バイナリ圧縮）",
-          "url": "https://code.claude.com/docs/en/changelog"
-        },
-        {
-          "title": "PreModelSwitch/PostModelSwitch・SessionStart resume（v2.1.251）",
-          "url": "https://releasebot.io/updates/anthropic/claude-code"
-        },
-        {
-          "title": "信頼性修正まとめ（Chrome接続断・VSCode権限モード他）",
-          "url": "https://www.gradually.ai/en/changelogs/claude-code/"
-        },
-        {
-          "title": "Skill/Hook/Subagent 使い分けガイド2026",
-          "url": "https://dev.to/vibehackers/claude-code-hooks-subagents-power-features-the-complete-guide-2026-c71"
-        },
-        {
-          "title": "サブエージェント使い方ガイド（AI革命）",
-          "url": "https://ai-revolution.co.jp/media/claude-code-subagents-guide/"
-        },
-        {
-          "title": "Anthropic Q2 2026 初の営業黒字",
-          "url": "https://zenaicorp.com/en/news/anthropic-q2-2026-revenue-10-billion-first-profit"
-        },
-        {
-          "title": "日本企業のClaude Code導入事例集2026",
-          "url": "https://claudecode.digirise.ai/blog/claude-code-case-studies-2026"
-        }
-      ]
-    },
-    {
-      "id": "2026-09-02-nextjs",
-      "date": "2026-09-02",
-      "topic": "Next.js",
-      "title": "成功時のコンフェッティ／セレブレーション・バースト——canvas・依存ゼロ・reduced-motion対応でServer Actionの成功を祝う",
-      "lede": "購入完了やオンボーディング達成など「一度きりの達成」を祝う紙吹雪バーストを、外部依存ゼロのvanilla canvasで実装する。全画面固定オーバーレイ＋pointer-events:none、粒子物理（velocity→gravity→drag）、prefers-reduced-motionでの全面ゲート、useActionStateの成功結果をuseEffectで監視して発火——App Routerでの組み込みまで。多用は禁物、本当に嬉しい節目に限定する。",
-      "articleHtml": "<p>コンフェッティ（紙吹雪）バーストは、GitHub・Linear・Stripeなどが要所で使う定番の“喜びのマイクロインタラクション”だ。トーストや送信ボタンの成功モーフが<strong>状態を伝える</strong>フィードバックなのに対し、コンフェッティは<strong>情報量ゼロの純粋な情緒的報酬</strong>——「やった！」の一瞬を演出する。だからこそ決済成功・実績解除・オンボーディング完走のような<strong>稀で本当に嬉しい節目</strong>に限定し、フォーム保存のたびに撒かない。実装はデファクトの<code>canvas-confetti</code>（約6KB）を入れるか、<strong>40〜60行のvanilla canvas自前</strong>か。ここでは依存ゼロの自前を軸にする。</p>\n<h4>なぜ DOM でなく canvas か</h4>\n<p>数十〜数百個の紙片を同時に動かすと、各粒子を<code>&lt;div&gt;</code>にした場合は毎フレーム数百要素の<code>transform</code>書き換え・レイヤ合成でカクつく。canvasなら<strong>1要素</strong>に全粒子を<code>fillRect</code>で描くだけで、リフローもDOMミューテーションも起きず60fpsを保ちやすい。最重要の実務ポイントは置き方で、祝いは画面全体に降らせたいので<strong>全画面固定オーバーレイ</strong>にし、必ず<code>pointer-events:none</code>を付ける（忘れるとページ全体がクリック不能になる最頻出事故）。canvas内部解像度は<code>devicePixelRatio</code>を掛けないとRetinaでぼやける。祝い終わったら要素をDOMから外してGPUメモリを解放する。</p>\n<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='11.5'><rect x='0' y='0' width='600' height='210' fill='#f3f8ff'/><text x='16' y='24' font-size='13' font-weight='700' fill='#1f6feb'>粒子の物理：velocity → gravity → drag → life</text><circle cx='90' cy='120' r='6' fill='#1f6feb'/><text x='90' y='150' text-anchor='middle' font-size='10.5' fill='#333'>生成（原点）</text><text x='90' y='166' text-anchor='middle' font-size='9.5' fill='#777'>angle,speed→vx,vy</text><path d='M96 116 Q210 40 320 110' stroke='#1f6feb' stroke-width='2' fill='none' marker-end='url(#ah)'/><defs><marker id='ah' markerWidth='9' markerHeight='9' refX='6' refY='3' orient='auto'><path d='M0,0 L6,3 L0,6 Z' fill='#1f6feb'/></marker></defs><text x='210' y='60' text-anchor='middle' font-size='10.5' fill='#1f6feb'>vx*=drag(0.94) / vy+=gravity(0.35)</text><path d='M320 110 Q420 150 520 190' stroke='#74a8ff' stroke-width='2' fill='none'/><text x='470' y='150' font-size='10.5' fill='#5a5a60'>life 1→0 で alpha 減衰</text><rect x='300' y='96' width='16' height='22' rx='2' fill='#ff5d5d' transform='rotate(20 308 107)'/><rect x='360' y='120' width='16' height='22' rx='2' fill='#ffd93d' transform='rotate(-15 368 131)'/><rect x='440' y='150' width='16' height='22' rx='2' fill='#6bcB77' transform='rotate(35 448 161)'/><text x='16' y='198' font-size='10.5' fill='#777'>※ 紙片らしさ＝縦長長方形＋rotation＋wobble＋scaleXの伸縮。粒子数は150〜250で十分華やか。</text></svg><figcaption>図1：初速で飛び散り、重力で落ち、drag で減速、life で自然消滅。全粒子の life が尽きたらループを止める。</figcaption></figure>\n<h4>App Routerでの組み込み（本題の肝）</h4>\n<p>canvas/<code>window</code>/<code>matchMedia</code>/<code>requestAnimationFrame</code>はブラウザAPIなので、撃つコンポーネントは<code>'use client'</code>。ただし<strong>島を最小化</strong>し、ページ本体・データ取得はRSCのまま。決済/登録はServer Actionで行い、<strong>サーバーの成功をクライアントのcanvasへ橋渡し</strong>する。定番は<code>useActionState</code>の戻り値を<code>useEffect</code>で監視して発火する構図だ。</p>\n<pre><code>useEffect(() =&gt; {\n  if (state.ok &amp;&amp; state.ts !== fired.current) {\n    fired.current = state.ts;\n    if (!matchMedia('(prefers-reduced-motion: reduce)').matches) fireConfetti();\n  }\n}, [state]);</code></pre>\n<p>Server Action側は<code>{ ok:true, ts:Date.now() }</code>のように<strong>tsを必ず返す</strong>。同じ<code>ok:true</code>の連続でもuseEffectを再発火させるためだ。<code>redirect()</code>を挟むと同一stateで発火しないので、祝ってから遷移するなら遷移前に撃つか、遷移先でcookieフラッシュして1回だけ撃つ。SSRでcanvasを触らなければhydration mismatchも起きず、JS未ロードでも<code>&lt;form action&gt;</code>の素のPOSTで購入自体は成立する（プログレッシブエンハンスメント）。</p>\n<h4>アクセシビリティ（必須）</h4>\n<p>コンフェッティは動きが激しく、前庭障害等で動きに敏感なユーザーに有害になりうる。<code>canvas-confetti</code>でも「reduced-motionで止まらない」ことが長く課題だったので、<strong>自前なら発火直前に必ず<code>matchMedia('(prefers-reduced-motion: reduce)').matches</code>で全面ゲート</strong>し、trueなら一切出さない。成功の事実は必ず<strong>静的テキスト＋<code>role=\"status\" aria-live=\"polite\"</code></strong>で伝え、canvasは<code>aria-hidden=\"true\"</code>の純装飾に留める。明滅・ストロボは避ける。</p>\n<h4>ひとこと</h4>\n<p>紙吹雪は“撒きすぎると陳腐化する”のが最大の落とし穴。頻度の高いフィードバックはトーストやボタンモーフに任せ、コンフェッティは本当の節目にだけ。自前実装なら挙動を完全制御でき、バンドルも増やさずに済む。</p>",
-      "sources": [
-        {
-          "title": "catdad/canvas-confetti（デファクト・依存ゼロ・6KB）",
-          "url": "https://github.com/catdad/canvas-confetti"
-        },
-        {
-          "title": "canvas-confetti reduced-motion 課題（issue #114）",
-          "url": "https://github.com/catdad/canvas-confetti/issues/114"
-        },
-        {
-          "title": "Accessible Animations in React with prefers-reduced-motion（Josh W. Comeau）",
-          "url": "https://www.joshwcomeau.com/react/prefers-reduced-motion/"
-        },
-        {
-          "title": "MDN: prefers-reduced-motion",
-          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion"
-        }
-      ]
-    },
-    {
-      "id": "2026-09-02-flutter",
-      "date": "2026-09-02",
-      "topic": "Flutter",
-      "title": "AIネイティブ開発がframeworkの中核へ（Agentic Hot Reload・GenUI・Genkit）——3.47.1時代の状態管理・Hero・パフォーマンスを一望",
-      "lede": "現行安定版はFlutter 3.47.1 / Dart 3.13.1、次の機能リリースは2026年11月。今日の主役はAIネイティブ開発のframework統合（Agentic Hot Reload／GenUI／Genkit for Dart）と、2026ロードマップ「Finishing the Job」（Impeller一本化・WasmGC既定化）。状態管理は50画面未満Riverpod 3.0／監査・大規模Bloc 9.0、HeroはflightShuttleBuilder、パフォーマンスはPerformanceOverlayの赤バー＝rendering complexity。",
-      "articleHtml": "<p>今日のFlutterは<strong>AIネイティブ開発がframeworkの中核へ</strong>据えられた点が大きい。<strong>Agentic Hot Reload</strong>（AIのコード変更をhot reloadで即検証）、<strong>GenUI</strong>（生成UI）とA2UI protocol、<strong>Genkit for Dart</strong>——AIは“コード上のレイヤー”ではなく開発ループそのものの中核に位置づけられた。現行安定版は<strong>Flutter 3.47.1 / Dart 3.13.1（3.47系）</strong>で、stableは年4回（2/5/8/11月）、次の機能リリースは<strong>2026年11月</strong>。確認は<code>flutter --version</code>、更新は<code>flutter upgrade</code>。2026ロードマップ「Finishing the Job」では、Android 10（API 29）以上でlegacy Skiaを撤去し<strong>Impeller(Vulkan)へ一本化</strong>、Webは<strong>WasmGCを既定コンパイルターゲット</strong>へ（<code>flutter build web --wasm</code>）。Material/Cupertinoのコア分離（<code>material_ui</code>/<code>cupertino_ui</code>のstandalone化）も継続で、M3更新が四半期SDKを待たず届き、app sizeも削減される（移行は<code>dart fix</code>）。</p>\n<h4>状態管理：2026の選定図</h4>\n<p>選定の基本線は<strong>50画面未満はRiverpod 3.0、複雑エンタープライズ＋監査要件はBloc 9.0</strong>。Riverpod 3.0はcompile-time safety・built-in offline persistence・最小boilerplateで多くの新規に最適（現行3.3.x＋codegen、unified Ref・automatic retry）。規制業界（fintech/healthcare）で完全なevent traceabilityや複雑並行が要るならBloc 9.0——<code>flutter_bloc 9.x</code>は<code>mapEventToState</code>を廃し<code>on&lt;Event&gt;</code>に統一、<code>blocTest</code>で検証する。設計指針はderived/computed provider（Riverpod）やderived getters/selectors（Bloc）で冗長な再計算を避け、<code>ref.watch(provider.select(...))</code>で最小スライスを購読すること。</p>\n<figure class='fig'><svg viewBox='0 0 600 190' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='11.5'><rect x='0' y='0' width='600' height='190' fill='#eef7fc'/><text x='16' y='24' font-size='13' font-weight='700' fill='#0277bd'>状態管理の選定（2026）</text><rect x='30' y='50' width='250' height='110' rx='10' fill='#d7eefa' stroke='#0277bd'/><text x='48' y='78' font-weight='700' fill='#0277bd'>Riverpod 3.0（3.3.x）</text><text x='48' y='100' font-size='10.5' fill='#333'>・50画面未満の新規の既定</text><text x='48' y='120' font-size='10.5' fill='#333'>・compile-time safety / 最小boilerplate</text><text x='48' y='140' font-size='10.5' fill='#333'>・offline persistence / auto retry</text><rect x='320' y='50' width='250' height='110' rx='10' fill='#e5eefb' stroke='#1f6feb'/><text x='338' y='78' font-weight='700' fill='#1f6feb'>Bloc 9.0（flutter_bloc 9.x）</text><text x='338' y='100' font-size='10.5' fill='#333'>・監査/規制・大規模の既定</text><text x='338' y='120' font-size='10.5' fill='#333'>・完全な event traceability</text><text x='338' y='140' font-size='10.5' fill='#333'>・on&lt;Event&gt; 統一 / blocTest</text></svg><figcaption>図1：新規×小〜中規模はRiverpod、監査要件×大規模はBloc。derived/selectで再計算を抑える。</figcaption></figure>\n<h4>アニメーション：Heroの実践</h4>\n<p>今日の主役は<strong>Hero</strong>。同一<code>tag</code>をsource/destinationに付与すると画面遷移で共有要素を滑らかに補間する。飛行中の歪みを防ぐコツは<strong>両画面でaspect ratioとcontent alignmentを一致させる</strong>こと。<code>flightShuttleBuilder</code>で飛行中の見た目をカスタム、<code>HeroMode</code>でグループの有効/無効、<code>HeroController</code>でtiming/durationを微調整できる（Hero/ページ振付は300–600ms）。時間帯別の使い分けは、micro（50–200ms）はimplicit（<code>AnimatedOpacity</code>等・controller不要）、component（200–400ms）はexplicit（<code>AnimationController</code>＋<code>AnimatedBuilder</code>・dispose必須）、複雑シーケンスはRive/Lottieへオフロード。</p>\n<h4>パフォーマンス：赤バーの読み方</h4>\n<p>PerformanceOverlayは16.7ms（60fps）予算を超えたフレームを可視化し、下段グラフの<strong>赤バーはrendering complexity（GPU/raster）</strong>を示す。典型原因は<strong>saveLayerをトリガするnested Opacity・複雑なclipping path・重なる複数shadow・offscreenバッファへの反復描画</strong>。特定はDevToolsのtimelineで予算超過フレームを展開しbuild passを確認、計測は必ず<strong>profileモード</strong>で行う（debug VMは遅い）。フラッグシップは90/120Hzで1フレーム8–11ms。最も多い問題は不要なwidget rebuildで、<code>const</code>で完全スキップ・大きな<code>build()</code>を分割・<code>Selector</code>/<code>select</code>で局所再描画が効く。</p>\n<figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='11.5'><rect x='0' y='0' width='600' height='150' fill='#eef7fc'/><text x='16' y='24' font-size='13' font-weight='700' fill='#0277bd'>フレーム予算（1フレームあたり）</text><text x='16' y='58' fill='#333'>60fps</text><rect x='90' y='46' width='420' height='18' rx='4' fill='#56c5f5'/><text x='520' y='60' fill='#0277bd' font-weight='700'>16.7ms</text><text x='16' y='90' fill='#333'>90fps</text><rect x='90' y='78' width='277' height='18' rx='4' fill='#3aa7de'/><text x='377' y='92' fill='#0277bd' font-weight='700'>11ms</text><text x='16' y='122' fill='#333'>120fps</text><rect x='90' y='110' width='209' height='18' rx='4' fill='#0277bd'/><text x='309' y='124' fill='#0277bd' font-weight='700'>8.3ms</text></svg><figcaption>図2：予算は60=16.7／90=11／120=8.3ms。超過フレームの赤バーはraster側の複雑さを疑う。</figcaption></figure>\n<h4>ひとこと</h4>\n<p>AIが開発ループの中核に入り、描画はImpeller一本化・WebはWasmGCへ。土台が更新される時期こそ、状態管理は選定図どおり素直に、パフォーマンスは予算とrebuild削減という原則で足場を固めたい。</p>",
-      "sources": [
-        {
-          "title": "Dart — What's new",
-          "url": "https://dart.dev/resources/whats-new"
-        },
-        {
-          "title": "Flutter & Dart's 2026 roadmap",
-          "url": "https://blog.flutter.dev/flutter-darts-2026-roadmap-89378f17ebbd"
-        },
-        {
-          "title": "Hero animations（Flutter docs）",
-          "url": "https://docs.flutter.dev/ui/animations/hero-animations"
-        },
-        {
-          "title": "Best Flutter State Management Libraries 2026",
-          "url": "https://foresightmobile.com/blog/best-flutter-state-management"
-        },
-        {
-          "title": "Improving rendering performance（Flutter docs）",
-          "url": "https://docs.flutter.dev/perf/rendering-performance"
-        }
-      ]
-    },
-    {
-      "id": "2026-09-02-github-trending",
-      "date": "2026-09-02",
-      "topic": "GitHub Trending",
-      "title": "9/2の話題リポジトリ — エージェント運用の“周辺装備”とコスト可視化、非AIの多様性枠",
-      "lede": "本日はエージェント運用を支える周辺ツール（作業のバージョン管理・トークンコスト算出・可視化スキル）と、Rust製Spotifyクライアントやtailcatなど非AIの多様性枠が同居。星firehose停止のためTrendshift日次順位で勢いを代替評価した6本を、「解決したい課題」と「提供する機能」で読む。",
-      "articleHtml": "<p>本日のトレンドは<strong>「常駐・並列するAIエージェントの周辺装備」</strong>と、それに対する<strong>非AIの多様性枠</strong>が同居する構図だった（GitHubの星firehose停止でOSSInsightのスター系ランキングは停止中、<code>github.com/trending</code>も古いキャッシュを返すため、Trendshift日次順位で勢いを代替評価）。エージェントに“ソース管理”や“コスト算出”を足す新規リポが日次上位に食い込む一方、Rust製デスクトップアプリやネットワークユーティリティが上位に彩りを添えている。各リポを「解決したい課題」「提供する機能」で読む。</p>\n<figure class='fig'><svg viewBox='0 0 600 300' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='10.5'><rect x='0' y='0' width='600' height='300' fill='#f2fbf4'/><text x='16' y='22' font-size='12.5' font-weight='700' fill='#1a7f37'>本日の6本：課題 → 提供機能</text><line x1='250' y1='34' x2='250' y2='292' stroke='#c9e7d1'/><text x='20' y='48' font-weight='700' fill='#1a7f37'>リポジトリ</text><text x='260' y='48' font-weight='700' fill='#1a7f37'>解決したい課題 → 機能</text><text x='20' y='76' fill='#333'>atlas</text><text x='260' y='76' fill='#333'>エージェントの作業が追えない → 変更を追跡/分岐/巻き戻し</text><text x='20' y='106' fill='#333'>tokentab</text><text x='260' y='106' fill='#333'>定期タスクのコスト不明 → モデル/PJ/日別に算出</text><text x='20' y='136' fill='#333'>utopia</text><text x='260' y='136' fill='#333'>散在文書の構造化 → ローカルで文書→オントロジー</text><text x='20' y='166' fill='#333'>lieflat-charts</text><text x='260' y='166' fill='#333'>レポート可視化 → データ→対話的HTMLチャート</text><text x='20' y='196' fill='#333'>fastpotify</text><text x='260' y='196' fill='#333'>重いSpotify体験 → 軽量ネイティブ(Rust)クライアント</text><text x='20' y='226' fill='#333'>tailcat</text><text x='260' y='226' fill='#333'>安全な素の通信 → Tailscaleデータプレーン越しnetcat</text><text x='16' y='266' fill='#777'>※ スター増加率は算出不可のためTrendshift日次順位で代替評価（多くがNew 2026）。</text></svg><figcaption>図1：6本の「課題→提供機能」対応。上4本はエージェント運用の周辺装備、下2本は非AIの多様性枠。</figcaption></figure>\n<h4>pacifio/atlas（言語— ・ ⭐約646）</h4>\n<p><strong>解決したい課題：</strong>常駐・並列するAIコーディングエージェントの作業は、いつ何を変えたか追いにくく、失敗時の巻き戻しも難しい。<strong>提供する機能：</strong>“エージェント版ソース管理（git for agents）”として、エージェントの変更を<strong>追跡・分岐・巻き戻し</strong>できるようにする。並列エージェント運用の広がりの中で切り口が刺さり、Trendshift日次8位・New 2026で急上昇。</p>\n<h4>damejan80/tokentab（言語— ・ ⭐約367）</h4>\n<p><strong>解決したい課題：</strong>複数マシン・多PJでClaude Code/Codex/Gemini CLIを回すと、どの作業がトークン/コストを食っているか見えない。<strong>提供する機能：</strong>各CLIの<strong>セッションログを読み取り、モデル別・プロジェクト別・日別にコストを算出</strong>するCLI。日次16位・New 2026。定期タスクを多数走らせる運用では、コスト削減の判断材料に直結する。</p>\n<h4>deeplethe/utopia（言語— ・ ⭐約544）</h4>\n<p><strong>解決したい課題：</strong>散在する文書から構造化された知識体系を組むのは手間で、機微データを外に出したくない。<strong>提供する機能：</strong><strong>ローカルファースト＆エージェント支援で文書→オントロジー化</strong>するワークベンチ。MCP対応・Self-hosted。#AI agent/#MCP/#Document processingで話題化し日次11位・New 2026。RAG最適化や知識構造化の比較参照に効く。</p>\n<h4>larashero3-dotcom/lieflat-charts（言語— ・ ⭐約306）</h4>\n<p><strong>解決したい課題：</strong>エージェント運用でレポートを可視化したいが、外部課金や重い依存は避けたい。<strong>提供する機能：</strong>データを渡すと<strong>洗練された対話的HTMLチャートを素早く生成</strong>する単色データ可視化スキル。自己完結HTML出力で、まさにこの種の日刊ダイジェストやダッシュボードにそのまま再利用できる。日次20位・New 2026。</p>\n<h4>crmne/fastpotify（Rust ・ ⭐約628）</h4>\n<p><strong>解決したい課題：</strong>重厚なSpotifyクライアントを避け、軽快にライブラリ・ローカル再生・Spotify Connectを扱いたい。<strong>提供する機能：</strong>全機能を<strong>1つの軽量Rustアプリ</strong>に集約したネイティブクライアント（Linux/macOS/Windows対応）。AI一色の上位に非AIデスクトップの多様性を足す一本で、日次9位・New 2026。</p>\n<h4>tailscale/tailcat（言語— ・ ⭐約616）</h4>\n<p><strong>解決したい課題：</strong>netcat的な手軽さで、しかし安全な経路で通信したい。<strong>提供する機能：</strong>netcat風の操作感で<strong>Tailscaleのデータプレーン越しに通信</strong>する（コントロールプレーンは介さない）軽量ユーティリティ。Tailscale公式という信頼できる出所で日次23位。</p>\n<h4>自分が試すなら</h4>\n<p>多PJ×定期タスク運用の当事者としては、まず<strong>tokentab</strong>を全PJのセッションログに当ててコストの内訳を掴み、可視化は<strong>lieflat-charts</strong>で自己完結HTMLに寄せるのが低コストで効く。エージェントの変更管理が課題化してきたら<strong>atlas</strong>を試す価値がある。</p>",
-      "sources": [
-        {
-          "title": "pacifio/atlas",
-          "url": "https://github.com/pacifio/atlas"
-        },
-        {
-          "title": "damejan80/tokentab",
-          "url": "https://github.com/damejan80/tokentab"
-        },
-        {
-          "title": "deeplethe/utopia",
-          "url": "https://github.com/deeplethe/utopia"
-        },
-        {
-          "title": "larashero3-dotcom/lieflat-charts",
-          "url": "https://github.com/larashero3-dotcom/lieflat-charts"
-        },
-        {
-          "title": "crmne/fastpotify",
-          "url": "https://github.com/crmne/fastpotify"
-        },
-        {
-          "title": "tailscale/tailcat",
-          "url": "https://github.com/tailscale/tailcat"
-        }
-      ]
-    },
     {
       "id": "2026-09-01-claude-code",
       "date": "2026-09-01",
@@ -2233,7 +2105,6 @@
       ]
     },
     {
-      "id": "2026-08-06-claude-code",
       "date": "2026-08-06",
       "topic": "Claude Code",
       "title": "Opus 5 が新デフォルト・自律起動廃止・サブエージェント可視化 — 8/6の制御性強化",
@@ -2256,10 +2127,10 @@
           "title": "OpenHands — Claude Code ベストプラクティス10選",
           "url": "https://www.openhands.dev/blog/claude-code-best-practices-agentic-coding"
         }
-      ]
+      ],
+      "id": "2026-08-06-claude-code"
     },
     {
-      "id": "2026-08-06-nextjs",
       "date": "2026-08-06",
       "topic": "Next.js",
       "title": "instrumentation.ts で始める分散トレース — @vercel/otel・onRequestError・client計測の三点セット",
@@ -2282,10 +2153,10 @@
           "title": "@vercel/otel — npm",
           "url": "https://www.npmjs.com/package/@vercel/otel"
         }
-      ]
+      ],
+      "id": "2026-08-06-nextjs"
     },
     {
-      "id": "2026-08-06-flutter",
       "date": "2026-08-06",
       "topic": "Flutter",
       "title": "material_ui 分離と Impeller 既定化 — Flutter 3.44 が進める「モジュール化と高速化」",
@@ -2308,10 +2179,10 @@
           "title": "BLoC vs Riverpod (3.x) 2026",
           "url": "https://asoasis.tech/articles/2026-04-17-2054-flutter-bloc-vs-riverpod-comparison-2026/"
         }
-      ]
+      ],
+      "id": "2026-08-06-flutter"
     },
     {
-      "id": "2026-08-06-github-trending",
       "date": "2026-08-06",
       "topic": "GitHub Trending",
       "title": "8/6の話題リポジトリ — 文書のMarkdown化・ローカル推論・エージェント監査",
@@ -2330,7 +2201,8 @@
           "title": "ifixai-ai/iFixAi",
           "url": "https://github.com/ifixai-ai/iFixAi"
         }
-      ]
+      ],
+      "id": "2026-08-06-github-trending"
     },
     {
       "id": "2026-08-05-claude-code",
