@@ -1,0 +1,59 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Fable 5.1が既定に（1Mコンテキスト）＋自動モードにContainment Escape、旧macOS起動不能も修正（v2.1.257/258） — デイリー技術深掘り 読み物</title><meta name="description" content="派手な新機能よりも「賢さ・安全・安定」を一段ずつ底上げした数日。Fable 5.1が既定Fableモデルになり1Mトークン文脈へ拡張、自動モードはクラウド資格情報の取得やテナント越境を既定で自動承認しなくなった。macOS 12の起動不能リグレッションとスケジュール実行の権限再送エラーも解消。折しもMicrosoft Researchの査読論文はClaude Code採用でマージPRが約24%増と報告している。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-03-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Fable 5.1が既定に（1Mコンテキスト）＋自動モードにContainment Escape、旧macOS起動不能も修正（v2.1.257/258） — デイリー技術深掘り 読み物"><meta property="og:description" content="派手な新機能よりも「賢さ・安全・安定」を一段ずつ底上げした数日。Fable 5.1が既定Fableモデルになり1Mトークン文脈へ拡張、自動モードはクラウド資格情報の取得やテナント越境を既定で自動承認しなくなった。macOS 12の起動不能リグレッションとスケジュール実行の権限再送エラーも解消。折しもMicrosoft Researchの査読論文はClaude Code採用でマージPRが約24%増と報告している。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-03-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>Fable 5.1が既定に（1Mコンテキスト）＋自動モードにContainment Escape、旧macOS起動不能も修正（v2.1.257/258）</h1> <p class="lede">派手な新機能よりも「賢さ・安全・安定」を一段ずつ底上げした数日。Fable 5.1が既定Fableモデルになり1Mトークン文脈へ拡張、自動モードはクラウド資格情報の取得やテナント越境を既定で自動承認しなくなった。macOS 12の起動不能リグレッションとスケジュール実行の権限再送エラーも解消。折しもMicrosoft Researchの査読論文はClaude Code採用でマージPRが約24%増と報告している。</p> <div class="meta"> <span>📅 2026年9月3日</span> <span>⏱ 約2分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="0"><p>この数日のClaude Codeは、モデルの賢さ・エージェント運用の安全境界・地味だが効く安定化が同時に進んだ。単発の目玉ではなく、日々の運用が静かに軽く・堅くなるタイプの更新だ。</p><h4 id="sec-1">何が新しいか</h4><p>v2.1.257で <b>Claude Fable 5.1（claude-fable-5-1）が既定のFableモデル</b>に昇格した。1Mトークンの文脈に対応し、価格は入出力$10/$50 per Mtok、<b>キャッシュ読み出しは$0.25/Mtok</b>と安い。大きなリポジトリを丸ごと文脈に載せる運用でも、キャッシュを効かせればコストを抑えやすい。あわせて <code>timeFormat</code>/<code>timeZone</code> 設定が追加され、ターン終了時の時計やトランスクリプトのタイムスタンプを12/24時間制・UTC・任意のstrftimeパターンで表示できる。</p><figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='210' fill='#f6f8fa' rx='8'></rect><text x='16' y='28' font-size='14' font-weight='700' fill='#1a7f37'>v2.1.257 / v2.1.258 の要点</text><rect x='16' y='44' width='270' height='150' rx='6' fill='#ffffff' stroke='#3fb950'></rect><text x='30' y='66' font-size='12' font-weight='700' fill='#1a7f37'>v2.1.257</text><text x='30' y='90' font-size='11' fill='#24292f'>Fable 5.1 が既定（1Mコンテキスト）</text><text x='30' y='110' font-size='11' fill='#24292f'>キャッシュ読み $0.25/Mtok</text><text x='30' y='130' font-size='11' fill='#24292f'>timeFormat / timeZone 追加</text><text x='30' y='150' font-size='11' fill='#24292f'>Containment Escape ルール</text><text x='30' y='170' font-size='11' fill='#24292f'>SUBAGENT_MODEL_FORCE</text><rect x='314' y='44' width='270' height='150' rx='6' fill='#ffffff' stroke='#1a7f37'></rect><text x='328' y='66' font-size='12' font-weight='700' fill='#1a7f37'>v2.1.258（安定化）</text><text x='328' y='90' font-size='11' fill='#24292f'>macOS 12 起動不能を修正</text><text x='328' y='110' font-size='11' fill='#24292f'>（2.1.255 由来のリグレッション）</text><text x='328' y='134' font-size='11' fill='#24292f'>権限再送→リモート/スケジュール</text><text x='328' y='152' font-size='11' fill='#24292f'>実行失敗を解消</text></svg><figcaption>図1：直近リリースの要点（機能追加と安定化の二段構え）</figcaption></figure><h4 id="sec-2">安全境界が既定で厳しくなった</h4><p>自動モードに <b>Containment Escape（封じ込め回避）ルール</b>が新設された。クラウドのメタデータ資格情報の取得、egress回避、クロステナントへの到達といった操作は、<b>環境側が『想定内』と明示しない限り自動承認されない</b>。CI/クラウド上でエージェントを回すときの事故を構造的に防ぐ変更だ。加えて <code>CLAUDE_CODE_SUBAGENT_MODEL_FORCE</code> で、全サブエージェントに主モデル（または指定モデル）を強制適用できるようになり、コスト・挙動のばらつきを抑えられる。</p><h4 id="sec-3">実務での使いどころ・注意点</h4><p>自動化パイプラインを組んでいるなら、まず v2.1.258 まで上げて権限再送のスケジュール実行バグを回避したい。クラウド実行では『想定内』の明示（許可すべき操作の宣言）を先に設計しておかないと、Containment Escapeで意図した処理まで止まる可能性がある。Microsoft Researchの査読論文（4か月観測でマージPR約24%増）や『最も愛される46%』調査は導入の後押しになるが、記事群が口を揃えて指摘するのは<b>トークン支出の予算ガバナンス</b>だ。1M文脈は強力な反面、キャッシュ設計を怠るとコストが膨らむ。</p><p><b>まとめ：</b>賢さ（Fable 5.1・1M文脈）と堅さ（安全境界・安定化）が同時に前進。上げるなら258まで、回すなら予算とキャッシュ設計をセットで。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://code.claude.com/docs/en/changelog" target="_blank" rel="noopener noreferrer"> Claude Code Changelog </a> </li><li> <a href="https://releasebot.io/updates/anthropic/claude-code" target="_blank" rel="noopener noreferrer"> Anthropic Claude Code updates (releasebot) </a> </li><li> <a href="https://claudelog.com/faqs/claude-code-release-notes/" target="_blank" rel="noopener noreferrer"> Claude Code release notes (claudelog) </a> </li><li> <a href="https://therouter.ai/news/claude-code-microsoft-enterprise-study-token-budget-governance/" target="_blank" rel="noopener noreferrer"> Microsoft enterprise study — token budget governance </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 何が新しいか </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 安全境界が既定で厳しくなった </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 実務での使いどころ・注意点 </a> </li> </ul> <div class="reading-box"> <div>📅 2026-09-03</div> <div>⏱ 読了 約2分</div> <div>🏷 Claude Code</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
