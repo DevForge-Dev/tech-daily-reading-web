@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-09-02T04:48:10.832Z",
+  "generatedAt": "2026-09-03T04:43:40.721Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,84 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-09-03-claude-code",
+      "date": "2026-09-03",
+      "topic": "Claude Code",
+      "title": "Fable 5.1が既定に（1Mコンテキスト）＋自動モードにContainment Escape、旧macOS起動不能も修正（v2.1.257/258）",
+      "lede": "派手な新機能よりも「賢さ・安全・安定」を一段ずつ底上げした数日。Fable 5.1が既定Fableモデルになり1Mトークン文脈へ拡張、自動モードはクラウド資格情報の取得やテナント越境を既定で自動承認しなくなった。macOS 12の起動不能リグレッションとスケジュール実行の権限再送エラーも解消。折しもMicrosoft Researchの査読論文はClaude Code採用でマージPRが約24%増と報告している。",
+      "articleHtml": "<p>この数日のClaude Codeは、モデルの賢さ・エージェント運用の安全境界・地味だが効く安定化が同時に進んだ。単発の目玉ではなく、日々の運用が静かに軽く・堅くなるタイプの更新だ。</p><h4>何が新しいか</h4><p>v2.1.257で <b>Claude Fable 5.1（claude-fable-5-1）が既定のFableモデル</b>に昇格した。1Mトークンの文脈に対応し、価格は入出力$10/$50 per Mtok、<b>キャッシュ読み出しは$0.25/Mtok</b>と安い。大きなリポジトリを丸ごと文脈に載せる運用でも、キャッシュを効かせればコストを抑えやすい。あわせて <code>timeFormat</code>/<code>timeZone</code> 設定が追加され、ターン終了時の時計やトランスクリプトのタイムスタンプを12/24時間制・UTC・任意のstrftimeパターンで表示できる。</p><figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='210' fill='#f6f8fa' rx='8'/><text x='16' y='28' font-size='14' font-weight='700' fill='#1a7f37'>v2.1.257 / v2.1.258 の要点</text><rect x='16' y='44' width='270' height='150' rx='6' fill='#ffffff' stroke='#3fb950'/><text x='30' y='66' font-size='12' font-weight='700' fill='#1a7f37'>v2.1.257</text><text x='30' y='90' font-size='11' fill='#24292f'>Fable 5.1 が既定（1Mコンテキスト）</text><text x='30' y='110' font-size='11' fill='#24292f'>キャッシュ読み $0.25/Mtok</text><text x='30' y='130' font-size='11' fill='#24292f'>timeFormat / timeZone 追加</text><text x='30' y='150' font-size='11' fill='#24292f'>Containment Escape ルール</text><text x='30' y='170' font-size='11' fill='#24292f'>SUBAGENT_MODEL_FORCE</text><rect x='314' y='44' width='270' height='150' rx='6' fill='#ffffff' stroke='#1a7f37'/><text x='328' y='66' font-size='12' font-weight='700' fill='#1a7f37'>v2.1.258（安定化）</text><text x='328' y='90' font-size='11' fill='#24292f'>macOS 12 起動不能を修正</text><text x='328' y='110' font-size='11' fill='#24292f'>（2.1.255 由来のリグレッション）</text><text x='328' y='134' font-size='11' fill='#24292f'>権限再送→リモート/スケジュール</text><text x='328' y='152' font-size='11' fill='#24292f'>実行失敗を解消</text></svg><figcaption>図1：直近リリースの要点（機能追加と安定化の二段構え）</figcaption></figure><h4>安全境界が既定で厳しくなった</h4><p>自動モードに <b>Containment Escape（封じ込め回避）ルール</b>が新設された。クラウドのメタデータ資格情報の取得、egress回避、クロステナントへの到達といった操作は、<b>環境側が『想定内』と明示しない限り自動承認されない</b>。CI/クラウド上でエージェントを回すときの事故を構造的に防ぐ変更だ。加えて <code>CLAUDE_CODE_SUBAGENT_MODEL_FORCE</code> で、全サブエージェントに主モデル（または指定モデル）を強制適用できるようになり、コスト・挙動のばらつきを抑えられる。</p><h4>実務での使いどころ・注意点</h4><p>自動化パイプラインを組んでいるなら、まず v2.1.258 まで上げて権限再送のスケジュール実行バグを回避したい。クラウド実行では『想定内』の明示（許可すべき操作の宣言）を先に設計しておかないと、Containment Escapeで意図した処理まで止まる可能性がある。Microsoft Researchの査読論文（4か月観測でマージPR約24%増）や『最も愛される46%』調査は導入の後押しになるが、記事群が口を揃えて指摘するのは<b>トークン支出の予算ガバナンス</b>だ。1M文脈は強力な反面、キャッシュ設計を怠るとコストが膨らむ。</p><p><b>まとめ：</b>賢さ（Fable 5.1・1M文脈）と堅さ（安全境界・安定化）が同時に前進。上げるなら258まで、回すなら予算とキャッシュ設計をセットで。</p>",
+      "sources": [
+        {
+          "title": "Claude Code Changelog",
+          "url": "https://code.claude.com/docs/en/changelog"
+        },
+        {
+          "title": "Anthropic Claude Code updates (releasebot)",
+          "url": "https://releasebot.io/updates/anthropic/claude-code"
+        },
+        {
+          "title": "Claude Code release notes (claudelog)",
+          "url": "https://claudelog.com/faqs/claude-code-release-notes/"
+        },
+        {
+          "title": "Microsoft enterprise study — token budget governance",
+          "url": "https://therouter.ai/news/claude-code-microsoft-enterprise-study-token-budget-governance/"
+        }
+      ]
+    },
+    {
+      "id": "2026-09-03-nextjs",
+      "date": "2026-09-03",
+      "topic": "Next.js",
+      "title": "Drizzle ORM を App Router で使う — db.tsシングルトン × RSC直クエリ × サーバーレス/エッジのドライバ選択",
+      "lede": "「App RouterでDBにどう触るか」の土台をDrizzleで固める回。Drizzle Clientは約60KB（Prismaの約1/10）で純TS・エンジンレス、サーバーレス/エッジのコールドスタートに効く。RSCから await で直接クエリでき、書込はServer Actions＋キャッシュ失効。最大の設計判断はドライバ選択で、ここを外すとコネクション枯渇やエッジで動かない事故になる。",
+      "articleHtml": "<p>認証やデータ取得は扱ってきたのに、ORM本体は空白だった。2026年、<b>Drizzle ORM がNext.js新規の事実上デフォルト</b>になった理由は明快で、TypeScript最速・薄い（Client約60KB＝Prismaの約1/10、Rustエンジンを持たない純TS）、schema-as-codeでSQLをほぼそのまま型付きで書ける、そして<b>serverless/edge第一級</b>だからだ。RSCから <code>await db.select()...</code> でHTTPを挟まず直接DBを読める。</p><h4>最重要はドライバ選択</h4><p>サーバーレスは関数ごとに接続が捨てられる。だから <b>HTTPドライバ(<code>neon()</code>)かプーラ経由</b>にし、Pooled接続URL（<code>-pooler</code>ホスト）を使い、<code>pg.Pool</code>を関数内で新規生成しないのが鉄則。常駐サーバーなら <code>postgres-js</code> の内蔵プールが素直だ。</p><figure class='fig'><svg viewBox='0 0 600 250' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='250' fill='#f6f8fa' rx='8'/><text x='16' y='26' font-size='14' font-weight='700' fill='#111'>ドライバ選択（デプロイ先 → 推奨）</text><rect x='16' y='40' width='275' height='95' rx='6' fill='#ffffff' stroke='#8957e5'/><text x='28' y='62' font-size='12' font-weight='700' fill='#6e40c9'>サーバーレス / エッジ</text><text x='28' y='84' font-size='11' fill='#24292f'>neon() = HTTP（単発クエリ）</text><text x='28' y='104' font-size='11' fill='#24292f'>複数クエリ/Txは Pool/Client(WS)</text><text x='28' y='124' font-size='11' fill='#24292f'>必ず pooled URL を使う</text><rect x='309' y='40' width='275' height='95' rx='6' fill='#ffffff' stroke='#1f6feb'/><text x='321' y='62' font-size='12' font-weight='700' fill='#1f6feb'>常駐サーバー / セルフホスト</text><text x='321' y='84' font-size='11' fill='#24292f'>postgres-js（TCP・内蔵プール）</text><text x='321' y='104' font-size='11' fill='#24292f'>Node専用・Edge非対応</text><text x='321' y='124' font-size='11' fill='#24292f'>max / idle_timeout を設定</text><rect x='16' y='150' width='568' height='84' rx='6' fill='#fff5f5' stroke='#d1242f'/><text x='28' y='172' font-size='12' font-weight='700' fill='#d1242f'>落とし穴</text><text x='28' y='194' font-size='11' fill='#24292f'>・neon() のHTTPは複数クエリ1接続/トランザクション不可</text><text x='28' y='213' font-size='11' fill='#24292f'>・サーバーレスで pg.Pool を関数内生成 → コネクション枯渇</text><text x='28' y='229' font-size='11' fill='#24292f'>・直結URL（非pooler）は max connections を即超過</text></svg><figcaption>図1：デプロイ先で決まるドライバと典型的な事故</figcaption></figure><h4>読み取りと書込・キャッシュ</h4><p>読み取りは <b>RSCで直クエリ</b>（<code>'use client'</code>不要）、認可はDAL（<code>verifySession()</code>を<code>cache()</code>でメモ化・<code>server-only</code>）に集約しDTOで列を絞る。書込は <code>'use server'</code> 内で <code>db.insert/update/delete</code> し、直後に <code>updateTag</code>（read-your-own-writes）や <code>revalidateTag/revalidatePath</code> で失効。<b>DrizzleのクエリはfetchではないのでNext.jsの自動キャッシュ対象外</b>＝デフォルト動的。キャッシュは <code>use cache</code>＋<code>cacheTag</code> で包むか、Drizzle組み込みキャッシュ（v0.44+、<code>.$withCache()</code>/Upstash Redis、常にopt-in）を使う。</p><figure class='fig'><pre class='mermaid'>flowchart LR\n  RSC[\"Server Component\"] -->|await 直クエリ| DB[(\"Postgres\")]\n  Action[\"Server Action ('use server')\"] -->|insert/update| DB\n  Action -->|updateTag / revalidateTag| Cache[\"Next.js Cache\"]\n  RSC -->|use cache + cacheTag| Cache</pre><figcaption>図2：RSCで読む／Server Actionsで書いて失効させる流れ</figcaption></figure><h4>移行と注意点</h4><p>drizzle-kitは <code>generate</code>（生SQL移行を出力→必ず目視レビュー）→ <code>migrate</code>（本番適用）が基本線。<code>push</code>は移行ファイルを作らず直接反映でプロトタイプ専用、<b>本番で使うとデータ損失リスク</b>。DB URLは <code>NEXT_PUBLIC_*</code> に絶対に置かない。</p><p><b>まとめ：</b>選定軸はパフォーマンス/バンドル/SQL制御=Drizzle、手厚いDXと成熟した移行=Prisma。まずデプロイ先からドライバを決め、pooled URLとキャッシュ戦略をセットで設計する。</p>",
+      "sources": [
+        {
+          "title": "Drizzle ORM: Next.js + Neon tutorial",
+          "url": "https://orm.drizzle.team/docs/tutorials/drizzle-nextjs-neon"
+        },
+        {
+          "title": "Drizzle ORM: Migrations / drizzle-kit",
+          "url": "https://orm.drizzle.team/docs/kit-overview"
+        },
+        {
+          "title": "Drizzle ORM: Cache",
+          "url": "https://orm.drizzle.team/docs/cache"
+        },
+        {
+          "title": "Neon: choose connection (HTTP vs WebSocket / pooled)",
+          "url": "https://neon.com/docs/connect/choose-connection"
+        }
+      ]
+    },
+    {
+      "id": "2026-09-03-flutter",
+      "date": "2026-09-03",
+      "topic": "Flutter",
+      "title": "Flutter 3.47 — Impellerが全デスクトップで既定＆dropped frames約90%削減、実験的multi-window、Riverpod 3.3.1が新規既定",
+      "lede": "描画エンジンの世代交代が完了に近づく回。ImpellerがmacOS/Windows/Linuxでも既定レンダラに昇格し、shader compilation jankをほぼ解消してdropped framesを約90%削減。3.47は実験的なmulti-windowデスクトップAPIとWindows/Linuxのflavorsを前進させた。状態管理の新規既定はRiverpod 3.3.1＋codegen、大規模監査はBloc 9.0という基本線も明確だ。",
+      "articleHtml": "<p>2026年秋のFlutterは、長く続いたレンダラ移行がひと区切りついた。現行安定版は <b>Flutter 3.47.1 / Dart 3.13.1</b>（確認は <code>flutter --version</code>、更新は <code>flutter upgrade</code>）。年4回（2/5/8/11月）サイクルで、次の機能リリースは2026年11月だ。</p><h4>Impellerが全デスクトップで既定に</h4><p>目玉は <b>ImpellerがmacOS/Windows/Linuxでも既定レンダラ</b>に昇格したこと。Impellerは<b>shaderを事前コンパイル</b>して予測可能な性能を出すため、初回操作で固まる shader compilation jank がほぼ消える。テレメトリでは新エンジンで <b>dropped framesが約90%削減</b>され、複雑UIでも90–120fpsを安定維持する。iOSは3.16・Androidは3.22以降で既定、3.47でデスクトップ3OSも既定になった。あわせてWidget Previewsがstable化し、アプリ全体をビルドせず個別widgetを即renderできる。</p><figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='210' fill='#f3f9ff' rx='8'/><text x='16' y='26' font-size='14' font-weight='700' fill='#0553b1'>フレーム予算とImpellerの効果</text><text x='16' y='52' font-size='11' fill='#24292f'>60fps = 16ms</text><rect x='150' y='42' width='320' height='14' rx='3' fill='#54aeff'/><text x='16' y='84' font-size='11' fill='#24292f'>90fps = 11ms</text><rect x='150' y='74' width='220' height='14' rx='3' fill='#1f6feb'/><text x='16' y='116' font-size='11' fill='#24292f'>120fps = 8.3ms</text><rect x='150' y='106' width='166' height='14' rx='3' fill='#0553b1'/><line x1='150' y1='34' x2='150' y2='128' stroke='#9aa' stroke-dasharray='3 3'/><text x='150' y='146' font-size='9' fill='#57606a'>0ms</text><rect x='16' y='158' width='568' height='40' rx='6' fill='#ffffff' stroke='#1f6feb'/><text x='28' y='183' font-size='12' fill='#0553b1' font-weight='700'>Impeller: shader事前コンパイル → dropped frames 約90%削減（jankをほぼ解消）</text></svg><figcaption>図1：fps別のフレーム予算と、Impellerによるjank低減</figcaption></figure><h4>状態管理と設計の基本線</h4><p>新規の多くは <b>Riverpod 3.3.1＋code generation</b> が既定：compile-time safety・context-free reads・first-class async・3.0のresilience（automatic retry等）をProvider並みのboilerplateで得られる。20人超の大規模・監査重視は <b>Bloc 9.0</b> でevents/states/business logicを厳格分離。生の性能差は小さく決定要因にすべきでなく、<b>副作用をstate graphの縁（edges）に寄せて</b>UI rebuildを予測可能にするのが要。購読は <code>ref.watch(provider.select(...))</code> で最小スライスに。</p><h4>実務での使いどころ・注意点</h4><p>デスクトップ配布を狙うなら3.47のImpeller既定化とWindows/Linux flavorsは追い風。ただしRiveなど外部ランタイムとImpellerの組み合わせは描画・性能の差異が出るので<b>実機検証</b>し、<code>.riv</code>は事前ロード＋<code>RepaintBoundary</code>でrepaintを隔離する。パフォーマンスの最大の敵は依然として<b>不要なwidget rebuild</b>で、<code>const</code>で完全スキップ・大きな<code>build()</code>を分割・<code>Selector</code>/<code>select</code>で局所再描画。計測は必ずprofileモードでDevToolsを使う（debug VMは遅い）。</p><p><b>まとめ：</b>Impeller全面既定でデスクトップの描画が一段安定。新規はRiverpod 3.3.1、大規模はBloc 9.0、性能はrebuild削減とフレーム予算（16/11/8.3ms）を軸に。</p>",
+      "sources": [
+        {
+          "title": "What's new in the docs (Flutter)",
+          "url": "https://docs.flutter.dev/release/whats-new"
+        },
+        {
+          "title": "Flutter 3.47 Is Here (BiDev)",
+          "url": "https://www.bidev.dev/blog/flutter-3-47-whats-new"
+        },
+        {
+          "title": "How Impeller is Transforming Flutter UI Rendering in 2026",
+          "url": "https://dev.to/eira-wexford/how-impeller-is-transforming-flutter-ui-rendering-in-2026-3dpd"
+        },
+        {
+          "title": "Best Flutter State Management Libraries 2026",
+          "url": "https://foresightmobile.com/blog/best-flutter-state-management"
+        }
+      ]
+    },
     {
       "id": "2026-09-02-claude-code",
       "date": "2026-09-02",
