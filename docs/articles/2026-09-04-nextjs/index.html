@@ -1,0 +1,59 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Vaul（ドロワー/ボトムシート）を App Router で — iOS級のドラッグ体験と『Vaul実質メンテ停止→shadcnはBase UIへ』の現況 — デイリー技術深掘り 読み物</title><meta name="description" content="モバイルの“掴んで動かすシート”を自前で作ると地雷だらけ（60fps維持・スクロール競合・キーボード追従・a11y）。VaulはRadix Dialog上にiOS由来のイージングで組み、ドラッグで閉じる・スナップ・背景スケールを最初から備える。2026年の要点は現況——Vaulは1.1.2で実質メンテ停止、shadcn/uiはDrawerの依存をBase UIへ移行した。新規はどちらを選ぶかの判断が要る。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-04-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Vaul（ドロワー/ボトムシート）を App Router で — iOS級のドラッグ体験と『Vaul実質メンテ停止→shadcnはBase UIへ』の現況 — デイリー技術深掘り 読み物"><meta property="og:description" content="モバイルの“掴んで動かすシート”を自前で作ると地雷だらけ（60fps維持・スクロール競合・キーボード追従・a11y）。VaulはRadix Dialog上にiOS由来のイージングで組み、ドラッグで閉じる・スナップ・背景スケールを最初から備える。2026年の要点は現況——Vaulは1.1.2で実質メンテ停止、shadcn/uiはDrawerの依存をBase UIへ移行した。新規はどちらを選ぶかの判断が要る。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-04-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>Vaul（ドロワー/ボトムシート）を App Router で — iOS級のドラッグ体験と『Vaul実質メンテ停止→shadcnはBase UIへ』の現況</h1> <p class="lede">モバイルの“掴んで動かすシート”を自前で作ると地雷だらけ（60fps維持・スクロール競合・キーボード追従・a11y）。VaulはRadix Dialog上にiOS由来のイージングで組み、ドラッグで閉じる・スナップ・背景スケールを最初から備える。2026年の要点は現況——Vaulは1.1.2で実質メンテ停止、shadcn/uiはDrawerの依存をBase UIへ移行した。新規はどちらを選ぶかの判断が要る。</p> <div class="meta"> <span>📅 2026年9月4日</span> <span>⏱ 約3分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="0"><p>Apple Maps のボトムシートのような“掴んで動かせるシート”をWebで再現する定番が <b>Vaul</b>（Sonner作者 Emil Kowalski 製）。<code>shadcn/ui</code> の <code>Drawer</code> の実装母体としても広く使われ、週数百万DL規模だ。自前実装は<b>スクロールとドラッグの競合・慣性・マルチタッチ・仮想キーボード追従・a11y</b>と地雷だらけで、そこをiOS由来の作法でまとめてあるのが価値。</p><h4 id="sec-1">仕組み（要点）</h4><p>土台は <b>Radix Dialog</b>で、フォーカストラップ・Escで閉じる・ARIA・bodyスクロールロックといったa11y配線を継承する。ドラッグは再レンダーを避けるため <b>対象要素の <code>style.transform</code> を命令的に直接更新</b>（当初のCSS変数方式は子要素が増えると全子孫のstyle再計算で重くなった）。速度が閾値を超えたら閉じる“慣性”、上端での“ダンピング”、中身が最上部の時だけ引ける <code>shouldDrag</code>、そして仮想キーボードは <b>Visual Viewport API</b> でドロワー高さを追従させる。iOS由来のカーブ <code>cubic-bezier(0.32,0.72,0,1)</code> と 500ms で“あの感触”を模す。</p><figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='210' rx='8' fill='#f5f8ff'></rect><text x='16' y='26' font-size='14' font-weight='700' fill='#1f6feb'>2026の現況: Vaul → Base UI</text><rect x='16' y='40' width='275' height='150' rx='6' fill='#ffffff' stroke='#1f6feb'></rect><text x='28' y='62' font-size='12' font-weight='700' fill='#1f6feb'>Vaul（1.1.2 / 実質メンテ停止）</text><text x='28' y='86' font-size='11' fill='#24292f'>Radix Dialog 継承・機能は一通り揃う</text><text x='28' y='106' font-size='11' fill='#24292f'>direction="bottom" / "top"</text><text x='28' y='126' font-size='11' fill='#24292f'>npm install vaul</text><text x='28' y='150' font-size='11' fill='#24292f'>既存で安定なら急ぎ剥がさなくてよい</text><text x='28' y='172' font-size='11' fill='#24292f'>ポート vaul-base(1.0.0) も存在</text><rect x='309' y='40' width='275' height='150' rx='6' fill='#ffffff' stroke='#8957e5'></rect><text x='321' y='62' font-size='12' font-weight='700' fill='#6e40c9'>shadcn Drawer（Base UI版）</text><text x='321' y='86' font-size='11' fill='#24292f'>@base-ui-components/react の Dialog</text><text x='321' y='106' font-size='11' fill='#24292f'>swipeDirection="down" / "up"</text><text x='321' y='126' font-size='11' fill='#24292f'>left/right はそのまま</text><text x='321' y='150' font-size='11' fill='#24292f'>長期メンテ重視の新規はこちら推奨</text><text x='321' y='172' font-size='11' fill='#24292f'>体験（スナップ/背景スケール）は同等</text></svg><figcaption>図1：API差分と選び方（direction→swipeDirection、依存の置換）。</figcaption></figure><h4 id="sec-2">App Router での組み込み</h4><p><code>'use client'</code> 必須の完全クライアント部品なので、<b>ドロワーの島だけClient Componentに隔離</b>し、ページ本体・データ取得はRSCのまま。中身はRSCで生成してpropsで渡す。閉じた初期状態はサーバー/クライアントで一致するので <b>hydration mismatchは起きない</b>。フォームは <code>&lt;form action={serverAction}&gt;</code> をドロワー内に置けてServer Actionsと素直に噛む。背景スケールを使うならルート直下ラッパに <code>vaul-drawer-wrapper</code> 属性を付ける。<b>a11yでは <code>Drawer.Title</code> が事実上必須</b>（無いと警告＝SRにダイアログ名が伝わらない。見せたくなければ <code>sr-only</code>）。</p><h4 id="sec-3">注意点・自分が試すなら</h4><p>最大の判断は <b>VaulのままかBase UI版か</b>。既存プロジェクトでVaulが安定動作なら1.1.2で機能は揃っており急いで剥がす必要はない。<b>新規で長期メンテ重視ならBase UI版Drawer</b>が今の推奨線で、移行は <code>direction</code>→<code>swipeDirection</code> と依存パッケージの置換が中心。落とし穴は中身スクロールとの競合（<code>handleOnly</code> でハンドル限定にすると誤操作減）、iOS PWA standalone でのポインタ分離不具合報告、背景スケールの <code>vaul-drawer-wrapper</code> 付け忘れ。</p><p><b>まとめ：</b>“iOS級のシート”は自作せずVaul/Base UIに任せる。新規は<b>Base UI版Drawer</b>を基本線に、a11yの <code>Title</code> だけは必ず入れる。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://vaul.emilkowal.ski/" target="_blank" rel="noopener noreferrer"> Vaul 公式（Emil Kowalski） </a> </li><li> <a href="https://emilkowal.ski/ui/building-a-drawer-component" target="_blank" rel="noopener noreferrer"> Building a drawer component（仕組み一次資料） </a> </li><li> <a href="https://ui.shadcn.com/docs/components/base/drawer" target="_blank" rel="noopener noreferrer"> shadcn/ui Drawer（Base UI版） </a> </li><li> <a href="https://github.com/shadcn-ui/ui/discussions/8982" target="_blank" rel="noopener noreferrer"> 『Vaul is unmaintained』discussion </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 仕組み（要点） </a> </li><li> <a href="#sec-2" data-toc="sec-2"> App Router での組み込み </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 注意点・自分が試すなら </a> </li> </ul> <div class="reading-box"> <div>📅 2026-09-04</div> <div>⏱ 読了 約3分</div> <div>🏷 Next.js</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
