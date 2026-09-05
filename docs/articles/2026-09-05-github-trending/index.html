@@ -1,0 +1,59 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>9/5の話題リポジトリ — デザイン×vibe codingの m3e-canvas、科学エージェントの scientific-agent-skills、推論評価の arc-task-gen — デイリー技術深掘り 読み物</title><meta name="description" content="エージェント/スキル一色の上位に、デザイン・科学・推論評価という別レイヤーの新規リポが割り込んだ日。UIスケッチをプロンプト化する m3e-canvas が日次1位、科学ワークフローを束ねた scientific-agent-skills が8日+7.2k、ARC-AGI評価タスクを量産する arc-task-gen が増加率約27%。"><meta name="theme-color" content="#238636"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-05-github-trending/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="9/5の話題リポジトリ — デザイン×vibe codingの m3e-canvas、科学エージェントの scientific-agent-skills、推論評価の arc-task-gen — デイリー技術深掘り 読み物"><meta property="og:description" content="エージェント/スキル一色の上位に、デザイン・科学・推論評価という別レイヤーの新規リポが割り込んだ日。UIスケッチをプロンプト化する m3e-canvas が日次1位、科学ワークフローを束ねた scientific-agent-skills が8日+7.2k、ARC-AGI評価タスクを量産する arc-task-gen が増加率約27%。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-05-github-trending/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3fb950, #1a7f37)"> <span class="glyph" aria-hidden="true">★</span> <div class="kicker">GitHub Trending</div> <h1>9/5の話題リポジトリ — デザイン×vibe codingの m3e-canvas、科学エージェントの scientific-agent-skills、推論評価の arc-task-gen</h1> <p class="lede">エージェント/スキル一色の上位に、デザイン・科学・推論評価という別レイヤーの新規リポが割り込んだ日。UIスケッチをプロンプト化する m3e-canvas が日次1位、科学ワークフローを束ねた scientific-agent-skills が8日+7.2k、ARC-AGI評価タスクを量産する arc-task-gen が増加率約27%。</p> <div class="meta"> <span>📅 2026年9月5日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#238636"> <div> <article class="prose" data-has-mermaid="0"><p>今日の3本を貫くのは「アプリ層のエージェント/スキルが席巻する上位に、<b>別レイヤーの新規リポ</b>が割り込んだ」こと。デザイン、科学、AI推論評価という毛色の違う3本が、それぞれ具体的な課題設定の鋭さで急伸した。</p><figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='200' rx='8' fill='#f3fbf4'></rect><text x='16' y='26' font-size='13' font-weight='700' fill='#1a7f37'>リポジトリ × 解決したい課題 / 提供機能</text><line x1='16' y1='38' x2='584' y2='38' stroke='#3fb950'></line><text x='24' y='58' font-size='11' font-weight='700' fill='#1a7f37'>m3e-canvas</text><text x='170' y='58' font-size='10.5' fill='#24292f'>課題: デザインとコード生成の断絶</text><text x='170' y='74' font-size='10.5' fill='#24292f'>機能: M3E画面をスケッチ→vibe用プロンプト化</text><line x1='16' y1='86' x2='584' y2='86' stroke='#cde9d3'></line><text x='24' y='108' font-size='11' font-weight='700' fill='#1a7f37'>scientific-agent-skills</text><text x='170' y='108' font-size='10.5' fill='#24292f'>課題: エージェントに科学的手順が欠ける</text><text x='170' y='124' font-size='10.5' fill='#24292f'>機能: 調査/実験計画/解析のスキル大全</text><line x1='16' y1='136' x2='584' y2='136' stroke='#cde9d3'></line><text x='24' y='158' font-size='11' font-weight='700' fill='#1a7f37'>arc-task-gen</text><text x='170' y='158' font-size='10.5' fill='#24292f'>課題: 推論ベンチの評価タスク不足</text><text x='170' y='174' font-size='10.5' fill='#24292f'>機能: ARC-AGI形式タスクを分布整合で量産</text></svg><figcaption>図1：3本の「解決したい課題」と「提供する機能」対応表。</figcaption></figure><h4 id="sec-1">lnkiai/m3e-canvas（TypeScript・⭐約900・New 2026）</h4><p><b>解決したい課題：</b>デザインとコード生成の断絶。頭の中の画面イメージを、コーディングエージェントに正確に伝える標準的な手段がなかった。<b>提供する機能：</b>ブラウザ上で <b>Material 3 Expressive（M3E）</b> の UI 画面をスケッチし、それをそのまま「vibe-coding」用のプロンプトに変換する。『M3E準拠でスケッチ→エージェント向けプロンプト化』という具体性がデザイン×vibe coding の流れに刺さり、本日 Trendshift 日次1位に急伸した。エージェント一色の上位にUI/デザインの多様性を足す純モメンタム枠。</p><h4 id="sec-2">K-Dense-AI/scientific-agent-skills（Python・⭐約43k・+7.2k/8d≈17%）</h4><p><b>解決したい課題：</b>汎用エージェントには文献調査・実験計画・解析といった<b>科学的ワークフローの型</b>が欠けている。<b>提供する機能：</b>任意の AI エージェントを「AIサイエンティスト」化するスキルの大型ライブラリで、科学ワークフローを段階実行させるスキル束を提供する（自称「科学用途で#1」）。スキル運用ブームの中で研究者層に強く刺さり、8日で+7.2k（総約43k）と本日候補で最大級の実測モメンタム。「科学」という一段深いドメインで多様性に効く。</p><h4 id="sec-3">pathwaycom/arc-task-gen（Python・⭐約10k・+2.7k/8d≈27%）</h4><p><b>解決したい課題：</b>一般化推論ベンチ ARC-AGI に対し、評価に使える<b>新規タスクが不足</b>している。<b>提供する機能：</b>公開評価セットに<b>分布を合わせた</b>ARC-AGI-1 形式の独自タスクを量産する（Pathway 発）。推論モデル評価への関心の高まりの中で、増加率約27%と本日最高クラスの伸び。アプリ層が席巻する中で「AI推論研究」という骨太レイヤーが上位入りする新規性も効いた。</p><h4 id="sec-4">まとめ</h4><p>自分が試すなら、まず <b>m3e-canvas</b> で普段のUI着想をプロンプト化する体験を試したい。研究寄りの探索をエージェントに任せたいなら scientific-agent-skills、推論モデルの評価データを自作したいなら arc-task-gen が刺さる。共通するのは「曖昧な作業を、型のある入力へ変換する」着眼だ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://github.com/lnkiai/m3e-canvas" target="_blank" rel="noopener noreferrer"> lnkiai/m3e-canvas </a> </li><li> <a href="https://github.com/K-Dense-AI/scientific-agent-skills" target="_blank" rel="noopener noreferrer"> K-Dense-AI/scientific-agent-skills </a> </li><li> <a href="https://github.com/pathwaycom/arc-task-gen" target="_blank" rel="noopener noreferrer"> pathwaycom/arc-task-gen </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> lnkiai/m3e-canvas（TypeScript・⭐約900・New 2026） </a> </li><li> <a href="#sec-2" data-toc="sec-2"> K-Dense-AI/scientific-agent-skills（Python・⭐約43k・+7.2k/8d≈17%） </a> </li><li> <a href="#sec-3" data-toc="sec-3"> pathwaycom/arc-task-gen（Python・⭐約10k・+2.7k/8d≈27%） </a> </li><li> <a href="#sec-4" data-toc="sec-4"> まとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-09-05</div> <div>⏱ 読了 約3分</div> <div>🏷 GitHub Trending</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
