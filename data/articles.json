@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-09-04T04:54:20.348Z",
+  "generatedAt": "2026-09-05T04:47:47.139Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,94 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-09-05-claude-code",
+      "date": "2026-09-05",
+      "topic": "Claude Code",
+      "title": "v2.1.260 — /diff で会話横にフルスクリーンDiffパネル、prompt_cache にキャッシュミスの推定原因、ヘッドレスへ /reload-plugins。Bash巻き添えブロックは撤回",
+      "lede": "編集中の未コミット変更を会話の横でリアルタイムに眺められる Diff パネルが目玉。/cost と prompt_cache にはキャッシュミスの推定原因が出てコスト最適化の手がかりに。ヘッドレスにも /reload-plugins が入り、無人環境でプラグインを再読込できる。前版で入った“Read denyルールをBash引数にも適用”は build/grep を巻き添えにする回帰だったため撤回された。",
+      "articleHtml": "<p>9月3日リリースの <b>v2.1.260</b> は、単発の派手さより「見えづらかったものを見えるようにする」更新が並ぶ。Claude が触っている未コミットの変更をその場で確認でき、コストのブラックボックスにも光が入る回だ。</p><h4>何が新しいか</h4><p>最大の追加は <b>フルスクリーンDiffパネル</b>。フルスクリーン時に会話の横へ開き、Claude が編集中の未コミット変更を<b>リアルタイム表示</b>する。<code>/diff</code> で開閉できる。あわせて <code>/cost</code> とステータスラインの <code>prompt_cache</code> に<b>キャッシュミスの推定原因</b>（ツール定義やシステムプロンプトの変更、TTL超過のアイドルなど）が出るようになり、「なぜキャッシュが効かなかったか」を後追いできる。ヘッドレスセッションには <code>/reload-plugins</code> が加わり、無人環境でもプラグインを再読込できる。</p><figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='210' rx='8' fill='#f6f8fa'/><text x='16' y='28' font-size='14' font-weight='700' fill='#1a7f37'>v2.1.260 の要点</text><rect x='16' y='42' width='280' height='150' rx='6' fill='#ffffff' stroke='#3fb950'/><text x='30' y='64' font-size='12' font-weight='700' fill='#1a7f37'>可視性の追加</text><text x='30' y='88' font-size='11' fill='#24292f'>/diff: 会話横にフルスクリーンDiff</text><text x='30' y='108' font-size='11' fill='#24292f'>未コミット変更をリアルタイム表示</text><text x='30' y='130' font-size='11' fill='#24292f'>prompt_cache にミスの推定原因</text><text x='30' y='150' font-size='11' fill='#24292f'>/reload-plugins をヘッドレスへ</text><text x='30' y='172' font-size='11' fill='#24292f'>/advisor のテキスト版も用意</text><rect x='306' y='42' width='278' height='150' rx='6' fill='#ffffff' stroke='#1a7f37'/><text x='320' y='64' font-size='12' font-weight='700' fill='#1a7f37'>安定化 / 撤回</text><text x='320' y='88' font-size='11' fill='#24292f'>権限ルールのセキュリティ修正</text><text x='320' y='108' font-size='11' fill='#24292f'>Read denyのBash引数適用を撤回</text><text x='320' y='130' font-size='11' fill='#24292f'>build/grep 誤ブロックを解消</text><text x='320' y='150' font-size='11' fill='#24292f'>MCP v2接続 / format-on-save 競合</text><text x='320' y='172' font-size='11' fill='#24292f'>PowerShell堅牢化 / hook JSON終了</text></svg><figcaption>図1：可視性の追加（左）と安定化・回帰撤回（右）。</figcaption></figure><h4>撤回された変更に注目</h4><p>もう一つの読みどころは<b>回帰の撤回</b>だ。前版 v2.1.259 で入った「Read系の deny ルールを Bash の引数にも適用する」変更は、auto モードでも一般的な <code>build</code> や <code>grep</code> の複合コマンドを巻き添えでブロックしてしまっていた。実運用の使い勝手を優先して元に戻された。セキュリティ強化と日常の使い勝手のバランスを、リリースをまたいで調整している様子が見える。</p><figure class='fig'><pre class='mermaid'>flowchart LR\n  A[\"Claudeが編集\"] --> B[\"未コミット変更\"]\n  B --> C[\"/diff: 会話横パネル\"]\n  C --> D[\"承認/修正の判断\"]</pre><figcaption>図2：編集→未コミット差分→/diffで確認→判断、の流れ。</figcaption></figure><h4>使いどころ・自分が試すなら</h4><p>大きめのリファクタを任せるときこそ <code>/diff</code> を開いておくと、生成の途中経過を目で追いながら軌道修正できる。コストが読めないプロジェクトでは <code>prompt_cache</code> の推定原因を見て、システムプロンプトやツール定義の変更頻度を抑えるチューニングに繋げたい。スケジュール実行でプラグインを更新する運用なら、ヘッドレスの <code>/reload-plugins</code> で再起動なしに反映できる。</p><p><b>まとめ：</b>可視化（/diff・prompt_cache 原因）と足回りの安定化（Bash巻き添え撤回・各種Fix）の両輪。派手さはないが“毎日の信頼性”を底上げする堅実な回だ。</p>",
+      "sources": [
+        {
+          "title": "Claude Code v2.1.260 (ccleaks)",
+          "url": "https://ccleaks.com/news/claude-code-2-1-260-sep-2026"
+        },
+        {
+          "title": "CC updates v2.1.260 (classmethod)",
+          "url": "https://dev.classmethod.jp/en/articles/20260904-cc-updates-v2-1-260/"
+        },
+        {
+          "title": "Claude Code changelog",
+          "url": "https://code.claude.com/docs/en/changelog"
+        }
+      ]
+    },
+    {
+      "id": "2026-09-05-nextjs",
+      "date": "2026-09-05",
+      "topic": "Next.js",
+      "title": "アコーディオン/折りたたみを“高さ計測なし”で滑らかに — grid-template-rows 0fr→1fr と ネイティブ <details> + ::details-content + interpolate-size",
+      "lede": "「height:0→auto はアニメできない」壁のせいで長年 JS で scrollHeight を測っていたアコーディオンを、2026 は CSS だけで滑らかに開閉できる。全ブラウザで動く grid 0fr→1fr トリックが実務の第一候補、マークアップとa11yがタダで付く <details> + ::details-content + interpolate-size が新標準。App Router では純CSSなら Server Component のまま置ける。",
+      "articleHtml": "<p>クリックで開く FAQ・設定パネル・サイドバーのグループ＝<b>アコーディオン/折りたたみ</b>は最頻出のUIだが、「<code>height:0→auto</code> はアニメーションできない」という古典的な壁があった。そのため長年、JS で <code>scrollHeight</code> を測って <code>height</code> を px で毎回セットする実装（Radix の <code>--radix-accordion-content-height</code> もこれ）が定番だった。2026 時点では、<b>中身の高さを一切測らず CSS だけで滑らかに開閉できる</b>方法が2系統そろい、多くのケースで計測フックを畳める。</p><h4>手法1: grid-template-rows 0fr→1fr（実務の第一候補）</h4><p>外側を <code>display:grid</code> にし、<code>grid-template-rows</code> を 閉=<code>0fr</code> / 開=<code>1fr</code> でトランジションする。<code>fr</code> は数値なので <b>0fr↔1fr を補間できる</b>（auto は不可だがこれは可能）。<code>1fr</code>＝利用可能高さ＝中身の自然高なので<b>測らず実寸へ開く</b>。内側の <code>overflow:hidden</code> が必須で、これを忘れると 0fr でも中身がはみ出す（最頻出ミス）。Firefox 対策に内側へ <code>min-height:0</code> も入れる。Chrome/Safari/Firefox 全対応・ResizeObserver 不要。</p><pre><code>.collapse{display:grid;grid-template-rows:0fr;transition:grid-template-rows .3s ease}\n.collapse[data-open=\"true\"]{grid-template-rows:1fr}\n.collapse__inner{overflow:hidden;min-height:0}</code></pre><figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='200' rx='8' fill='#f5f8ff'/><text x='16' y='26' font-size='13' font-weight='700' fill='#1f6feb'>閉 0fr → 開 1fr（高さ計測なし）</text><rect x='30' y='44' width='150' height='26' rx='5' fill='#fff' stroke='#1f6feb'/><text x='40' y='61' font-size='11' fill='#24292f'>summary / ボタン</text><rect x='30' y='72' width='150' height='6' rx='3' fill='#cddffb'/><text x='30' y='96' font-size='10' fill='#6b6b70'>閉: rows=0fr, inner overflow:hidden</text><rect x='330' y='44' width='150' height='26' rx='5' fill='#fff' stroke='#1f6feb'/><text x='340' y='61' font-size='11' fill='#24292f'>summary / ボタン</text><rect x='330' y='72' width='150' height='96' rx='5' fill='#eaf2ff' stroke='#74a8ff'/><text x='344' y='96' font-size='10' fill='#24292f'>中身が自然高へ展開</text><text x='330' y='188' font-size='10' fill='#6b6b70'>開: rows=1fr（=利用可能高）</text><path d='M188 84 L322 84' stroke='#1f6feb' stroke-width='2' marker-end='url(#a)'/><defs><marker id='a' markerWidth='8' markerHeight='8' refX='6' refY='4' orient='auto'><path d='M0 0 L8 4 L0 8 z' fill='#1f6feb'/></marker></defs></svg><figcaption>図1：0fr→1fr で「利用可能高＝中身の自然高」へ補間。計測フック不要。</figcaption></figure><h4>手法2: ネイティブ <details> + ::details-content + interpolate-size</h4><p><code>&lt;details&gt;&lt;summary&gt;</code> だけで開閉・キーボード操作・状態のSRアナウンスがタダで付く。2025年に <b>::details-content</b>（summary を除いた中身の匿名ボックス）が Baseline newly available に到達し中身をアニメできるように。高さ開閉は <code>interpolate-size:allow-keywords</code>（height:0↔auto の補間許可）と <code>transition-behavior:allow-discrete</code>（閉じる側も見せる）を組み合わせる。<b>同じ name 属性</b>を各 details に付ければ JS ゼロで<b>排他アコーディオン</b>になる。ただし interpolate-size は現状 Chromium 系のみで、Firefox/Safari は瞬時開閉（＝プログレッシブエンハンスメント）。手法1を details の中身側に併用すると全ブラウザで高さアニメが効き、堅い。</p><h4>App Router での判断・注意点</h4><p>静的な FAQ・ドキュメントの折りたたみは<b>ネイティブ details + CSS</b>＝<code>'use client'</code> 不要・hydration ゼロで INP/CLS に有利、排他は name 属性。state/URL 連動やfetch連動なら<b>トグルの島だけ</b> <code>'use client'</code> にして手法1を <code>data-open</code> で切替、初期 open を props で渡せば mismatch なし。複雑操作やDS統一は Radix/shadcn Accordion。a11y はまずネイティブを試し、カスタム時は本物の <code>&lt;button&gt;</code>＋<code>aria-expanded</code>＋<code>aria-controls</code>。<code>prefers-reduced-motion:reduce</code> では transition を切り、開閉自体は残す。</p><p><b>まとめ：</b>測らず・依存ゼロ・全ブラウザなら grid 0fr→1fr（内側 overflow:hidden 必須）。a11y/排他をタダで欲しければ details+name、高さアニメは grid 併用で堅く。迷ったらネイティブ details を第一候補に。</p>",
+      "sources": [
+        {
+          "title": "MDN: ::details-content",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/::details-content"
+        },
+        {
+          "title": "modern-css: Animate <details> without JS height",
+          "url": "https://modern-css.com/animating-details-without-javascript-height/"
+        },
+        {
+          "title": "Tailwind Discussion #11186: grid 0fr/1fr",
+          "url": "https://github.com/tailwindlabs/tailwindcss/discussions/11186"
+        }
+      ]
+    },
+    {
+      "id": "2026-09-05-flutter",
+      "date": "2026-09-05",
+      "topic": "Flutter",
+      "title": "Flutter 3.47 の“デザインシステム分離” — material_ui / cupertino_ui が SDK から独立、M3更新が四半期を待たず届く（SDK同梱は2026/11に非推奨予定）",
+      "lede": "今日の主役は Flutter 3.47 のデザインシステム分離。material_ui / cupertino_ui が SDK から切り出され独自リリースサイクルを持つことで、Material 3 の更新が年4回の SDK リリースを待たず届く。当面 opt-in、SDK同梱版は 2026年11月に deprecation 予定。安定版は 3.47.1 / Dart 3.13.1、Impeller はデスクトップでも既定に。",
+      "articleHtml": "<p>今日の主役は <b>Flutter 3.47 のデザインシステム分離</b>だ。これまで SDK に同梱されていた <b>material_ui / cupertino_ui</b> が standalone パッケージとして独立し、<b>独自のリリースサイクル</b>を持つ。狙いは明確で、Material 3（M3）の更新が<b>年4回の SDK リリースを待たずに届く</b>ようにすること。デザイン仕様の変化に UI ライブラリだけ先行して追随できる。</p><h4>何が新しい/重要か</h4><p>移行は当面 <b>opt-in</b>で、いきなり壊れることはない。ただし <b>SDK-bundled 版は 2026年11月に deprecation 予定</b>なので、新規プロジェクトは早めに standalone パッケージ側へ寄せておくのが安全だ。現行安定版は <b>Flutter 3.47.1 / Dart 3.13.1</b>（3.47.0 は 2026-08-12 リリース）、機能リリースは 2/5/8/11月の年4回サイクルで、次は 2026年11月。レンダラの <b>Impeller はデスクトップでも既定</b>に昇格し、Web は experimental で <b>Wasm の deferred loading</b> を追加（<code>dart:html → package:web</code> への移行が必要）。<b>Widget Previews が stable</b> になり、<b>Dart 3.13</b> は <b>primary constructors を stable 化</b>、pub workspace や tree-shaking も改善された。</p><figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='210' rx='8' fill='#f2fbff'/><text x='16' y='26' font-size='13' font-weight='700' fill='#0277bd'>従来（SDK同梱） → 3.47（分離）</text><rect x='24' y='44' width='250' height='150' rx='6' fill='#ffffff' stroke='#0277bd'/><text x='38' y='66' font-size='12' font-weight='700' fill='#0277bd'>従来</text><text x='38' y='90' font-size='11' fill='#24292f'>material/cupertino は SDK 内蔵</text><text x='38' y='112' font-size='11' fill='#24292f'>M3更新は年4回SDKを待つ</text><text x='38' y='134' font-size='11' fill='#24292f'>UIだけ先行更新はしづらい</text><text x='38' y='168' font-size='11' fill='#6b6b70'>更新テンポ = SDKリリース</text><rect x='326' y='44' width='250' height='150' rx='6' fill='#ffffff' stroke='#56c5f5'/><text x='340' y='66' font-size='12' font-weight='700' fill='#0277bd'>3.47（分離）</text><text x='340' y='90' font-size='11' fill='#24292f'>material_ui / cupertino_ui 独立</text><text x='340' y='112' font-size='11' fill='#24292f'>独自サイクルでM3更新が先行</text><text x='340' y='134' font-size='11' fill='#24292f'>当面opt-in / 同梱版は26年11月非推奨</text><text x='340' y='168' font-size='11' fill='#6b6b70'>更新テンポ = パッケージ側</text><path d='M280 119 L320 119' stroke='#0277bd' stroke-width='2' marker-end='url(#f)'/><defs><marker id='f' markerWidth='8' markerHeight='8' refX='6' refY='4' orient='auto'><path d='M0 0 L8 4 L0 8 z' fill='#0277bd'/></marker></defs></svg><figcaption>図1：UIライブラリを SDK から切り離し、更新テンポを独立させる狙い。</figcaption></figure><h4>実務での使いどころ・注意点</h4><p>自分が試すなら、まず既存の中規模アプリで standalone パッケージへ opt-in し、テーマ・コンポーネントの差分と回帰を CI で確認したい。2026年11月の非推奨に向け、<code>pubspec.yaml</code> の依存を段階的に切り替える計画を今から引いておくと移行が滑らかだ。落とし穴として、分離により<b>パッケージのバージョン整合</b>を自分で管理する必要が出る（SDK が面倒を見てくれない）。Web を触るなら <code>dart:html → package:web</code> の移行が前提になる点、Impeller 既定化で古い描画前提のワークアラウンドが不要になる点も合わせて確認しておきたい。</p><p><b>まとめ：</b>UI ライブラリの独立で M3 追随が速くなる一方、バージョン整合は自己管理に。opt-in の今のうちに移行検証を進め、11月の非推奨に備えるのが得策だ。</p>",
+      "sources": [
+        {
+          "title": "Flutter 3.47.0 release notes",
+          "url": "https://docs.flutter.dev/release/release-notes/release-notes-3.47.0"
+        },
+        {
+          "title": "August 2026 newsletter (Code with Andrea)",
+          "url": "https://codewithandrea.com/newsletter/august-2026/"
+        },
+        {
+          "title": "Flutter release notes",
+          "url": "https://docs.flutter.dev/release/release-notes"
+        }
+      ]
+    },
+    {
+      "id": "2026-09-05-github-trending",
+      "date": "2026-09-05",
+      "topic": "GitHub Trending",
+      "title": "9/5の話題リポジトリ — デザイン×vibe codingの m3e-canvas、科学エージェントの scientific-agent-skills、推論評価の arc-task-gen",
+      "lede": "エージェント/スキル一色の上位に、デザイン・科学・推論評価という別レイヤーの新規リポが割り込んだ日。UIスケッチをプロンプト化する m3e-canvas が日次1位、科学ワークフローを束ねた scientific-agent-skills が8日+7.2k、ARC-AGI評価タスクを量産する arc-task-gen が増加率約27%。",
+      "articleHtml": "<p>今日の3本を貫くのは「アプリ層のエージェント/スキルが席巻する上位に、<b>別レイヤーの新規リポ</b>が割り込んだ」こと。デザイン、科学、AI推論評価という毛色の違う3本が、それぞれ具体的な課題設定の鋭さで急伸した。</p><figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='200' rx='8' fill='#f3fbf4'/><text x='16' y='26' font-size='13' font-weight='700' fill='#1a7f37'>リポジトリ × 解決したい課題 / 提供機能</text><line x1='16' y1='38' x2='584' y2='38' stroke='#3fb950'/><text x='24' y='58' font-size='11' font-weight='700' fill='#1a7f37'>m3e-canvas</text><text x='170' y='58' font-size='10.5' fill='#24292f'>課題: デザインとコード生成の断絶</text><text x='170' y='74' font-size='10.5' fill='#24292f'>機能: M3E画面をスケッチ→vibe用プロンプト化</text><line x1='16' y1='86' x2='584' y2='86' stroke='#cde9d3'/><text x='24' y='108' font-size='11' font-weight='700' fill='#1a7f37'>scientific-agent-skills</text><text x='170' y='108' font-size='10.5' fill='#24292f'>課題: エージェントに科学的手順が欠ける</text><text x='170' y='124' font-size='10.5' fill='#24292f'>機能: 調査/実験計画/解析のスキル大全</text><line x1='16' y1='136' x2='584' y2='136' stroke='#cde9d3'/><text x='24' y='158' font-size='11' font-weight='700' fill='#1a7f37'>arc-task-gen</text><text x='170' y='158' font-size='10.5' fill='#24292f'>課題: 推論ベンチの評価タスク不足</text><text x='170' y='174' font-size='10.5' fill='#24292f'>機能: ARC-AGI形式タスクを分布整合で量産</text></svg><figcaption>図1：3本の「解決したい課題」と「提供する機能」対応表。</figcaption></figure><h4>lnkiai/m3e-canvas（TypeScript・⭐約900・New 2026）</h4><p><b>解決したい課題：</b>デザインとコード生成の断絶。頭の中の画面イメージを、コーディングエージェントに正確に伝える標準的な手段がなかった。<b>提供する機能：</b>ブラウザ上で <b>Material 3 Expressive（M3E）</b> の UI 画面をスケッチし、それをそのまま「vibe-coding」用のプロンプトに変換する。『M3E準拠でスケッチ→エージェント向けプロンプト化』という具体性がデザイン×vibe coding の流れに刺さり、本日 Trendshift 日次1位に急伸した。エージェント一色の上位にUI/デザインの多様性を足す純モメンタム枠。</p><h4>K-Dense-AI/scientific-agent-skills（Python・⭐約43k・+7.2k/8d≈17%）</h4><p><b>解決したい課題：</b>汎用エージェントには文献調査・実験計画・解析といった<b>科学的ワークフローの型</b>が欠けている。<b>提供する機能：</b>任意の AI エージェントを「AIサイエンティスト」化するスキルの大型ライブラリで、科学ワークフローを段階実行させるスキル束を提供する（自称「科学用途で#1」）。スキル運用ブームの中で研究者層に強く刺さり、8日で+7.2k（総約43k）と本日候補で最大級の実測モメンタム。「科学」という一段深いドメインで多様性に効く。</p><h4>pathwaycom/arc-task-gen（Python・⭐約10k・+2.7k/8d≈27%）</h4><p><b>解決したい課題：</b>一般化推論ベンチ ARC-AGI に対し、評価に使える<b>新規タスクが不足</b>している。<b>提供する機能：</b>公開評価セットに<b>分布を合わせた</b>ARC-AGI-1 形式の独自タスクを量産する（Pathway 発）。推論モデル評価への関心の高まりの中で、増加率約27%と本日最高クラスの伸び。アプリ層が席巻する中で「AI推論研究」という骨太レイヤーが上位入りする新規性も効いた。</p><h4>まとめ</h4><p>自分が試すなら、まず <b>m3e-canvas</b> で普段のUI着想をプロンプト化する体験を試したい。研究寄りの探索をエージェントに任せたいなら scientific-agent-skills、推論モデルの評価データを自作したいなら arc-task-gen が刺さる。共通するのは「曖昧な作業を、型のある入力へ変換する」着眼だ。</p>",
+      "sources": [
+        {
+          "title": "lnkiai/m3e-canvas",
+          "url": "https://github.com/lnkiai/m3e-canvas"
+        },
+        {
+          "title": "K-Dense-AI/scientific-agent-skills",
+          "url": "https://github.com/K-Dense-AI/scientific-agent-skills"
+        },
+        {
+          "title": "pathwaycom/arc-task-gen",
+          "url": "https://github.com/pathwaycom/arc-task-gen"
+        }
+      ]
+    },
     {
       "id": "2026-09-04-claude-code",
       "date": "2026-09-04",
