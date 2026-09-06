@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-09-06T04:57:01.015Z",
+  "generatedAt": "2026-09-05T04:47:47.139Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,94 +8,6 @@
     "GitHub Trending"
   ],
   "articles": [
-    {
-      "id": "2026-09-06-claude-code",
-      "date": "2026-09-06",
-      "topic": "Claude Code",
-      "title": "Claude Code v2.1.261 — インライン出力上限を128Kへ、/skill-doctor で未使用Skillのコンテキスト費用を可視化、/status に組織ポリシー行",
-      "lede": "9/4のv2.1.261は67件のCLI変更を含む更新。bashOutputMaxChars/taskOutputMaxCharsでコマンドやバックグラウンドタスクのインライン出力を最大128K文字まで受け取れるようになり、長いビルドログのファイル退避が減る。/skill-doctorはロード済みなのに未使用のSkillとそのコンテキスト費用を一覧化し、トークン効率の棚卸しに効く。/statusには組織ポリシー未読込の理由行も追加。",
-      "articleHtml": "<p>9月4日リリースの <b>v2.1.261</b> は67件のCLI変更を含む更新で、テーマは「長い出力の扱い」と「肥大化したコンテキスト」という日々のつまずきを片付けることにある。派手な新機能というより、毎日の効率を底上げする回だ。</p><h4>何が新しいか</h4><p>最大の追加は <code>bashOutputMaxChars</code> と <code>taskOutputMaxChars</code> の2設定で、コマンドやバックグラウンドタスクの出力をClaudeが<b>インラインで受け取れる量を最大128K文字まで</b>引き上げられる。これまで長いビルドログはファイルへ退避され、読み直す手間が発生していたが、その往復が減る。あわせて未使用Skillを棚卸しする <code>/skill-doctor</code> が追加され、<b>ロード済みなのに使われていないSkillと、それが消費しているコンテキスト費用</b>を一覧表示する。<code>/status</code> と <code>claude doctor</code> には<b>組織ポリシー(Organization policy)</b>行が加わり、プロキシがエンドポイントを通していないなど、ポリシーが読み込めなかった理由が分かる。少し前の <b>v2.1.257</b> では既定Fableモデルが <b>Claude Fable 5.1</b>(1Mコンテキスト・入力$10/出力$50 per M)へ更新されている。</p><figure class='fig'><svg viewBox='0 0 600 170' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='170' rx='8' fill='#f7f4ff'/><text x='16' y='26' font-size='13' font-weight='700' fill='#5840d6'>v2.1.261 の3つの要点</text><rect x='16' y='40' width='183' height='110' rx='6' fill='#ffffff' stroke='#7b3fe4'/><text x='30' y='64' font-size='12' font-weight='700' fill='#5840d6'>128K 出力</text><text x='30' y='88' font-size='10.5' fill='#24292f'>bashOutputMaxChars /</text><text x='30' y='104' font-size='10.5' fill='#24292f'>taskOutputMaxChars</text><text x='30' y='126' font-size='10.5' fill='#24292f'>長いログを会話内で確認</text><rect x='209' y='40' width='183' height='110' rx='6' fill='#ffffff' stroke='#7b3fe4'/><text x='223' y='64' font-size='12' font-weight='700' fill='#5840d6'>/skill-doctor</text><text x='223' y='88' font-size='10.5' fill='#24292f'>未使用Skillを一覧</text><text x='223' y='104' font-size='10.5' fill='#24292f'>コンテキスト費用を可視化</text><text x='223' y='126' font-size='10.5' fill='#24292f'>剪定でトークン節約</text><rect x='402' y='40' width='182' height='110' rx='6' fill='#ffffff' stroke='#7b3fe4'/><text x='416' y='64' font-size='12' font-weight='700' fill='#5840d6'>組織ポリシー行</text><text x='416' y='88' font-size='10.5' fill='#24292f'>/status ・ claude doctor</text><text x='416' y='104' font-size='10.5' fill='#24292f'>未読込の理由を表示</text><text x='416' y='126' font-size='10.5' fill='#24292f'>プロキシ設定の診断に</text></svg><figcaption>図1：v2.1.261の3本柱——128K出力・skill棚卸し・組織ポリシー可視化。</figcaption></figure><h4>仕組みのポイント</h4><p>Skillは <code>description</code> が現在のタスクに一致すると自動ロードされる長期知識だが、<b>ロードされた瞬間からトークンを消費する</b>。使わないSkillが常駐するとコンテキストが圧迫され、応答のコストと質に響く。<code>/skill-doctor</code> はこの「見えない出費」を可視化し、剪定の判断材料をくれる。</p><figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='150' rx='8' fill='#faf9ff'/><text x='16' y='26' font-size='12.5' font-weight='700' fill='#5840d6'>Skillの「見えない出費」を /skill-doctor で断つ</text><rect x='20' y='50' width='120' height='54' rx='6' fill='#ede9fe' stroke='#7b3fe4'/><text x='80' y='73' font-size='10.5' fill='#4c1d95' text-anchor='middle'>description一致で</text><text x='80' y='89' font-size='10.5' fill='#4c1d95' text-anchor='middle'>自動ロード</text><rect x='170' y='50' width='120' height='54' rx='6' fill='#fff' stroke='#c4b5fd'/><text x='230' y='73' font-size='10.5' fill='#24292f' text-anchor='middle'>使われず常駐</text><text x='230' y='89' font-size='10.5' fill='#b91c1c' text-anchor='middle'>トークン消費</text><rect x='320' y='50' width='120' height='54' rx='6' fill='#fff' stroke='#c4b5fd'/><text x='380' y='73' font-size='10.5' fill='#24292f' text-anchor='middle'>/skill-doctorで</text><text x='380' y='89' font-size='10.5' fill='#24292f' text-anchor='middle'>費用を可視化</text><rect x='470' y='50' width='115' height='54' rx='6' fill='#dcfce7' stroke='#1a7f37'/><text x='527' y='73' font-size='10.5' fill='#14532d' text-anchor='middle'>不要を剪定</text><text x='527' y='89' font-size='10.5' fill='#14532d' text-anchor='middle'>効率改善</text><path d='M140 77 L168 77' stroke='#7b3fe4' stroke-width='2' marker-end='url(#cc1)'/><path d='M290 77 L318 77' stroke='#7b3fe4' stroke-width='2' marker-end='url(#cc1)'/><path d='M440 77 L468 77' stroke='#7b3fe4' stroke-width='2' marker-end='url(#cc1)'/><defs><marker id='cc1' markerWidth='8' markerHeight='8' refX='6' refY='4' orient='auto'><path d='M0 0 L8 4 L0 8 z' fill='#7b3fe4'/></marker></defs></svg><figcaption>図2：ロード→常駐→可視化→剪定。未使用Skillのコンテキスト費用を回収する。</figcaption></figure><h4>使いどころ・自分が試すなら</h4><p>10PJを1人で横断する運用では、まず <code>/skill-doctor</code> で常駐Skillを棚卸しし、定期タスクごとに本当に要るSkillだけ残す。CI的な長時間ビルドを回すプロジェクトでは <code>taskOutputMaxChars</code> を引き上げ、失敗ログを会話内でそのまま追えるようにしたい。</p><h4>注意点</h4><p>出力上限を上げるほど1リクエストの<b>トークンとコストは増える</b>ので、128Kは常用ではなく「ログが長い時だけ」に留めるのが賢い。Skill棚卸しも一度きりでなく、構成を変えたら再実行する運用にすると効く。</p><p><b>ひとことまとめ：</b>可視化(skill費用・組織ポリシー)と容量調整(128K出力)で、毎日のトークン効率と再現性を底上げする堅実な回。</p>",
-      "sources": [
-        {
-          "title": "Claude Code v2.1.261（havoptic）",
-          "url": "https://www.havoptic.com/tools/claude-code"
-        },
-        {
-          "title": "CC updates v2.1.261（classmethod）",
-          "url": "https://dev.classmethod.jp/en/articles/20260905-cc-updates-v2-1-261/"
-        },
-        {
-          "title": "Claude Code changelog（gradually）",
-          "url": "https://www.gradually.ai/en/changelogs/claude-code/"
-        }
-      ]
-    },
-    {
-      "id": "2026-09-06-nextjs",
-      "date": "2026-09-06",
-      "topic": "Next.js",
-      "title": "SWRをNext.js App Routerで — RSCのfallbackで初期化→Client useSWR→mutate楽観更新×updateTagで2層キャッシュ整合",
-      "lede": "SWRはVercel製で、Next.js公式ドキュメントに専用の統合ガイドがある唯一のデータ取得ライブラリ(依存ゼロ・約4KB)。SWR 2.3.0＋React 19でServer Componentが未awaitのPromiseをfallbackに渡し、境界を越えてSSR中に解決。Next.js 16のCache Components(use cache/cacheTag/updateTag)と組み、サーバーキャッシュとブラウザキャッシュを共有コントラクト(同一key/tag)で整合させる。",
-      "articleHtml": "<p>状態管理カテゴリはこれまで Zustand(クライアント状態)・nuqs(URL状態)・TanStack Query(サーバー状態)を扱ってきたが、もう一つのサーバー状態ライブラリ <b>SWR</b>(Vercel製・stale-while-revalidate)が抜けていた。SWRは <b>Next.js公式ドキュメントに専用の統合ガイドがある唯一のデータ取得ライブラリ</b>で、TanStack Queryより軽量(依存ゼロ・約4KB)。2026の注目点は、<b>RSC(Server Component)からClient Componentへの初期データ受け渡しが公式に整理された</b>ことだ。</p><h4>何が新しいか</h4><p><b>SWR 2.3.0 ＋ React 19</b> で、Server Componentが <code>SWRConfig</code> の <code>fallback</code> に<b>未awaitのPromiseを渡し</b>、それが use client 境界を越えてクライアントに流れ、SSR中にSWRが自動解決する。実験的な <b>SWR 2.5.0-beta</b> では <code>preload()</code> ＋ <code>cacheData</code> という別のプリフェッチ経路も追加された。そして <b>Next.js 16 の Cache Components</b>(<code>use cache</code> / <code>cacheTag</code> / <code>updateTag</code>)と組み合わせ、サーバーキャッシュ(Next.js)とブラウザキャッシュ(SWR)の<b>2層を共有コントラクト(同一のkeyとtag)で整合</b>させるパターンが確立した。</p><figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='200' rx='8' fill='#f5f8ff'/><text x='16' y='24' font-size='13' font-weight='700' fill='#1f6feb'>2層キャッシュを共有コントラクト(key/tag)で整合</text><rect x='24' y='42' width='250' height='130' rx='8' fill='#ffffff' stroke='#1f6feb'/><text x='149' y='64' font-size='11.5' font-weight='700' fill='#1f6feb' text-anchor='middle'>サーバー(Next.js 16)</text><text x='149' y='90' font-size='10.5' fill='#24292f' text-anchor='middle'>use cache / cacheTag</text><text x='149' y='110' font-size='10.5' fill='#24292f' text-anchor='middle'>updateTagで即時失効</text><text x='149' y='140' font-size='10.5' fill='#24292f' text-anchor='middle'>fallbackへ未awaitのPromise</text><rect x='326' y='42' width='250' height='130' rx='8' fill='#ffffff' stroke='#74a8ff'/><text x='451' y='64' font-size='11.5' font-weight='700' fill='#1f6feb' text-anchor='middle'>ブラウザ(SWR)</text><text x='451' y='90' font-size='10.5' fill='#24292f' text-anchor='middle'>useSWRで購読</text><text x='451' y='110' font-size='10.5' fill='#24292f' text-anchor='middle'>mutateで楽観更新</text><text x='451' y='140' font-size='10.5' fill='#24292f' text-anchor='middle'>同一keyでfallback受取</text><path d='M274 100 L324 100' stroke='#1f6feb' stroke-width='2' marker-end='url(#nx1)'/><text x='299' y='92' font-size='9' fill='#1f6feb' text-anchor='middle'>Promise</text><defs><marker id='nx1' markerWidth='8' markerHeight='8' refX='6' refY='4' orient='auto'><path d='M0 0 L8 4 L0 8 z' fill='#1f6feb'/></marker></defs></svg><figcaption>図1：サーバーの cacheTag/updateTag とブラウザの key/mutate を同一コントラクトで揃える。</figcaption></figure><h4>仕組みのポイント</h4><p>RSCで import できるのは <code>SWRConfig</code> / <code>preload</code> / <code>unstable_serialize</code> まで。<b>フック(useSWR/useSWRInfinite/useSWRMutation)はクライアント専用</b>で、使うコンポーネントには use client が要る。最重要は <b>fallbackのkeyと useSWR のkeyを完全一致</b>させること——ズレるとfallbackが無視され二重取得になる。だから key と tag は共有コントラクトとして1ファイルに定義して使い回すのが定石だ。書き込みは楽観更新でUIを即反映し(<code>mutate</code> の <code>optimisticData</code> / <code>rollbackOnError</code>)、サーバー側はServer Actionで <code>updateTag</code> を呼び、<code>cacheTag</code> と同じタグを失効させて次の読取を新鮮化する。</p><figure class='fig'><svg viewBox='0 0 600 120' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='120' rx='8' fill='#eef4ff'/><text x='16' y='24' font-size='12.5' font-weight='700' fill='#1f6feb'>初期化→購読→更新の流れ</text><rect x='16' y='44' width='130' height='50' rx='6' fill='#fff' stroke='#1f6feb'/><text x='81' y='66' font-size='10' fill='#24292f' text-anchor='middle'>RSCがfallbackに</text><text x='81' y='82' font-size='10' fill='#24292f' text-anchor='middle'>Promiseを供給</text><rect x='176' y='44' width='130' height='50' rx='6' fill='#fff' stroke='#1f6feb'/><text x='241' y='66' font-size='10' fill='#24292f' text-anchor='middle'>Clientが境界越えで</text><text x='241' y='82' font-size='10' fill='#24292f' text-anchor='middle'>useSWRで読む</text><rect x='336' y='44' width='130' height='50' rx='6' fill='#fff' stroke='#1f6feb'/><text x='401' y='66' font-size='10' fill='#24292f' text-anchor='middle'>mutateで楽観更新</text><text x='401' y='82' font-size='10' fill='#24292f' text-anchor='middle'>rollbackOnError</text><rect x='496' y='44' width='90' height='50' rx='6' fill='#dbeafe' stroke='#1f6feb'/><text x='541' y='66' font-size='10' fill='#1e40af' text-anchor='middle'>Server Action</text><text x='541' y='82' font-size='10' fill='#1e40af' text-anchor='middle'>updateTag</text><path d='M146 69 L174 69' stroke='#1f6feb' stroke-width='2' marker-end='url(#nx2)'/><path d='M306 69 L334 69' stroke='#1f6feb' stroke-width='2' marker-end='url(#nx2)'/><path d='M466 69 L494 69' stroke='#1f6feb' stroke-width='2' marker-end='url(#nx2)'/><defs><marker id='nx2' markerWidth='8' markerHeight='8' refX='6' refY='4' orient='auto'><path d='M0 0 L8 4 L0 8 z' fill='#1f6feb'/></marker></defs></svg><figcaption>図2：fallbackで初期化→useSWRで購読→mutate＋updateTagで2層を同期。</figcaption></figure><h4>使いどころ・注意点</h4><p>Vercel/Next.js中心で軽さ重視ならSWR、<code>staleTime</code>/<code>gcTime</code>や高度なキャッシュ制御が要る大規模はTanStack Query、という住み分け。<b>SWRには時間ベースの鮮度窓(staleTime相当)が無い</b>点は要注意で、定期更新は <code>refreshInterval</code>、マウント毎の再取得抑制は <code>revalidateIfStale:false</code> で制御する。取得を <b>Server Actionに直結すると直列化で固着</b>しやすいので、取得はRoute Handler(GET)、書込はServer Action＋mutate/updateTagに分けるのが安全。<code>params</code> と Route Handler の <code>ctx.params</code> はNext.js 16でPromise化されawait必須になった点も忘れずに。</p><p><b>ひとことまとめ：</b>keyを1箇所に定義し、fallbackで初期化・mutateで楽観更新・updateTagでサーバー整合、の三点セットでSPAの体感とSSRの初速を両立できる。</p>",
-      "sources": [
-        {
-          "title": "Next.js: How to fetch client-side data with SWR",
-          "url": "https://nextjs.org/docs/app/guides/client-side-data-fetching/swr"
-        },
-        {
-          "title": "SWR: Usage with Next.js",
-          "url": "https://swr.vercel.app/docs/with-nextjs"
-        },
-        {
-          "title": "Next.js: updateTag",
-          "url": "https://nextjs.org/docs/app/api-reference/functions/updateTag"
-        }
-      ]
-    },
-    {
-      "id": "2026-09-06-flutter",
-      "date": "2026-09-06",
-      "topic": "Flutter",
-      "title": "Flutter 3.47 現行安定 — Impellerがデスクトップ3OSで既定レンダラに、Dart 3.13でprimary constructors安定化。状態管理は新規Riverpod 3.3.1/監査Bloc 9.1.1",
-      "lede": "現行安定はFlutter 3.47.1/Dart 3.13.1。ImpellerがmacOS/Windows/Linuxのデスクトップ3 OSで既定レンダラに昇格し、build時AOTシェーダーでshader compilation jankを排除。Widget Previewsはstable、Dart 3.13はprimary constructorsを安定化。状態管理の基本線は新規＝Riverpod 3.3.1＋codegen、監査/規制＝flutter_bloc 9.1.1(bloc 9.2.x)＋hydrated_bloc。",
-      "articleHtml": "<p>今日の主役は現行安定 <b>Flutter 3.47.1 / Dart 3.13.1</b> の描画とパフォーマンスまわりだ。昨日はUIライブラリのstandalone分離を扱ったので、今日は<b>レンダラとフレーム予算、状態管理の基本線</b>に絞って整理する。</p><h4>何が新しい/重要か</h4><p>最大の変化は <b>Impeller が macOS/Windows/Linux のデスクトップ3 OSで既定レンダラに昇格</b>したこと(iOS=Metal / Android=Vulkan は従来どおり)。Impellerは <b>全shaderをbuild時にAOTでコンパイル</b>するため、アニメーションのトリガ時にシェーダーを組み立てる必要がなく、長年の悩みだった <b>shader compilation jank を排除</b>できる。<b>Widget Previews が stable</b> になり、<b>Dart 3.13 は primary constructors を安定化</b>、pub workspace や tree-shaking も改善された。Web は experimental で <b>Wasm の deferred loading</b> が追加され、<code>dart:html → package:web</code> への移行が前提になる。</p><figure class='fig'><svg viewBox='0 0 600 180' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='180' rx='8' fill='#f2fbff'/><text x='16' y='26' font-size='13' font-weight='700' fill='#0277bd'>フレーム予算：リフレッシュレート別の持ち時間</text><rect x='60' y='60' width='320' height='26' rx='4' fill='#0277bd'/><text x='70' y='78' font-size='11' fill='#fff'>60fps ＝ 16ms / フレーム</text><rect x='60' y='98' width='220' height='26' rx='4' fill='#0399cf'/><text x='70' y='116' font-size='11' fill='#fff'>90fps ＝ 11ms / フレーム</text><rect x='60' y='136' width='166' height='26' rx='4' fill='#56c5f5'/><text x='70' y='154' font-size='11' fill='#083b4a'>120fps ＝ 8.3ms / フレーム</text><text x='400' y='78' font-size='10.5' fill='#155e75'>この時間内に</text><text x='400' y='116' font-size='10.5' fill='#155e75'>build+layout+paintを</text><text x='400' y='154' font-size='10.5' fill='#155e75'>収める（const徹底）</text></svg><figcaption>図1：高リフレッシュ化で1フレームの猶予が短縮。120Hzでは8.3msが上限。</figcaption></figure><h4>パフォーマンスの軸 — フレーム予算</h4><p>2026のフラッグシップは90/120Hzが主流で、1フレームの持ち時間は <b>60fps=16ms / 90fps=11ms / 120fps=8.3ms</b>。最も多い性能問題は<b>不要なwidget rebuild</b>で、プロパティが変わらないなら <code>const</code> を付けて再ビルドを完全スキップし、大きな <code>build()</code> は小さなwidgetに分割する。重い演出は <code>RepaintBoundary</code> で再描画を隔離。計測は必ず <b>profileモード</b>のDevTools(Performance/Memory/Network)で行う——debugはJIT/assertで数値が歪む。</p><figure class='fig'><svg viewBox='0 0 600 170' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='170' rx='8' fill='#f0fbff'/><text x='16' y='26' font-size='13' font-weight='700' fill='#0277bd'>状態管理の選定線</text><rect x='20' y='42' width='270' height='118' rx='8' fill='#ffffff' stroke='#0277bd'/><text x='155' y='64' font-size='12' font-weight='700' fill='#0277bd' text-anchor='middle'>新規 → Riverpod 3.3.1 + codegen</text><text x='36' y='88' font-size='10.5' fill='#24292f'>compile-time safety</text><text x='36' y='106' font-size='10.5' fill='#24292f'>context-free reads / async</text><text x='36' y='124' font-size='10.5' fill='#24292f'>自動リトライ・Mutations</text><text x='36' y='146' font-size='10.5' fill='#6b6b70'>ツリー外read・自動回復向き</text><rect x='310' y='42' width='270' height='118' rx='8' fill='#ffffff' stroke='#56c5f5'/><text x='445' y='64' font-size='12' font-weight='700' fill='#0277bd' text-anchor='middle'>監査/規制 → Bloc 9.1.1</text><text x='326' y='88' font-size='10.5' fill='#24292f'>events/states厳格分離</text><text x='326' y='106' font-size='10.5' fill='#24292f'>event-driven audit trail</text><text x='326' y='124' font-size='10.5' fill='#24292f'>hydrated_blocで永続化</text><text x='326' y='146' font-size='10.5' fill='#6b6b70'>大規模・複雑並行ワークフロー</text></svg><figcaption>図2：新規はRiverpod 3.3.1、監査証跡が要るならBloc 9.1.1。</figcaption></figure><h4>状態管理の基本線</h4><p>新規プロジェクトは <b>Riverpod 3.3.1 ＋ codegen</b> を既定に(compile-time safety・context-free reads・first-class async・自動リトライ)。監査証跡が要る規制業界(fintech/healthcare)は <b>flutter_bloc 9.1.1(bloc 9.2.x)＋ hydrated_bloc</b> で、events/states/business logicを厳格分離しevent-driven audit trailを残す。選定の要は「ツリー外でstateを読むか・チーム規模・asyncの量」。</p><p><b>ひとことまとめ：</b>Impellerのデスクトップ既定化で初回ジャンクが減り、フレーム予算(8–16ms)を軸にconst徹底とprofile計測を回すのが2026の定石。状態管理は新規=Riverpod 3.3.1・監査=Bloc 9.1.1で確定。</p>",
-      "sources": [
-        {
-          "title": "What's new in Flutter 3.47（Flutter Blog）",
-          "url": "https://flutter.dev/blog/whats-new-in-flutter-3-47"
-        },
-        {
-          "title": "August 2026 newsletter（Code with Andrea）",
-          "url": "https://codewithandrea.com/newsletter/august-2026/"
-        },
-        {
-          "title": "Improving rendering performance（Flutter docs）",
-          "url": "https://docs.flutter.dev/perf/rendering-performance"
-        }
-      ]
-    },
-    {
-      "id": "2026-09-06-github-trending",
-      "date": "2026-09-06",
-      "topic": "GitHub Trending",
-      "title": "9/6の話題リポジトリ — 家庭内LLM分散のPersonal-AI-Router、チャット常駐エージェントjiuwenswarm、省リソース版ヘッドレスobscura",
-      "lede": "収集はgithub.com/trendingが古いキャッシュを返すためTrendshiftのToday日次を主ソースに、当日増加÷総スターの増加率を主軸に評価(星firehose不調で当日増加は過少寄り)。今日の3本はインフラ/UX/ツールの別レイヤーだが、いずれも『LLMを手元と実務に引き寄せる』着眼が共通する。",
-      "articleHtml": "<p>今日の3本を貫くのは「<b>LLMを手元と実務に引き寄せる</b>」という方向性だ。推論を家庭内デバイスに分散するインフラ、日常のチャットからエージェントを常駐させるUX、AIエージェントのWeb操作を省リソースに支える基盤——レイヤーは違うが、いずれもローカル/オンプレ志向の高まりを映している。収集は github.com/trending が古いキャッシュしか返さないため <b>Trendshift の Today 日次</b>を主ソースにし、当日増加÷総スターの<b>増加率</b>を主軸に評価した。</p><figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='210' rx='8' fill='#f3fbf4'/><text x='16' y='24' font-size='13' font-weight='700' fill='#1a7f37'>3本の「解決したい課題 → 提供する機能」</text><line x1='16' y1='36' x2='584' y2='36' stroke='#3fb950'/><text x='20' y='60' font-size='11' font-weight='700' fill='#1a7f37'>Personal-AI-Router</text><text x='210' y='54' font-size='10' fill='#14532d'>課題: 1台では推論が頭打ち</text><text x='210' y='70' font-size='10' fill='#14532d'>機能: 家庭内デバイスに推論を分散</text><line x1='16' y1='84' x2='584' y2='84' stroke='#cde9d3'/><text x='20' y='112' font-size='11' font-weight='700' fill='#1a7f37'>jiuwenswarm</text><text x='210' y='106' font-size='10' fill='#14532d'>課題: 専用アプリを開かないと使えない</text><text x='210' y='122' font-size='10' fill='#14532d'>機能: チャットアプリ経由でエージェント常駐</text><line x1='16' y1='136' x2='584' y2='136' stroke='#cde9d3'/><text x='20' y='164' font-size='11' font-weight='700' fill='#1a7f37'>obscura</text><text x='210' y='158' font-size='10' fill='#14532d'>課題: headless Chromeが重い(2GB超)</text><text x='210' y='174' font-size='10' fill='#14532d'>機能: Rust製・約300MBの省リソース代替</text><line x1='16' y1='188' x2='584' y2='188' stroke='#cde9d3'/><text x='20' y='204' font-size='10' fill='#6b6b70'>収集: Trendshift Today / 増加率＝当日増加÷総スター</text></svg><figcaption>図1：3本の課題と提供機能。推論分散・常駐UX・省リソース基盤。</figcaption></figure><h4>NVIDIA/Personal-AI-Router（—・⭐約168）</h4><p><b>解決したい課題：</b>手元に複数のマシンやデバイスがあっても、LLM推論を1台で抱え込むとメモリとスループットが頭打ちになる。<b>提供する機能：</b>家庭内の複数デバイスをまたいでLLM推論を<b>仮想的に分散</b>させるルーター(NVIDIA公式)。総約168に対し当日+26＝<b>増加率約15%</b>と本日トップ級で、Trendshift日次24位。エージェント一色の上位にシステム/インフラの多様性を足す純モメンタム枠だ。</p><h4>openJiuwen-ai/jiuwenswarm（—・⭐約627）</h4><p><b>解決したい課題：</b>強力なLLMがあっても、専用アプリを開かないと使えないと日常の作業導線から外れてしまう。<b>提供する機能：</b>日常使う各種コミュニケーション/チャットアプリ経由で <b>LLMエージェントを手元に届ける</b>(openJiuwen基盤)。当日+55(総約627＝増加率約9%)・Trendshift日次8位と本日最大級の実増加で、「指先までLLM」という体験設計が刺さった。</p><h4>h4ckf0r0day/obscura（Rust・⭐約417）</h4><p><b>解決したい課題：</b>AIエージェントや大規模スクレイピングでheadless Chromeを並列起動するとメモリを食いすぎる(10並列で2GB超)。<b>提供する機能：</b>Rust製の<b>省リソースなヘッドレスブラウザ</b>(V8でJS実行・CDP対応・約300MB)。Puppeteer/Playwrightのドロップイン代替でMCPサーバも同梱、Apache-2.0で製品組み込み可。Trendshift日次19位。</p><h4>まとめ</h4><p>自分が試すなら、まず <b>obscura</b> をWeb取得系(リード発掘・RAG取り込みの前段)の軽量代替として評価したい。推論を手元に寄せたいなら Personal-AI-Router、エージェントの常駐UXを試すなら jiuwenswarm。共通するのは「クラウド一辺倒からローカル/手元へ」という2026の重心移動だ。</p>",
-      "sources": [
-        {
-          "title": "NVIDIA/Personal-AI-Router",
-          "url": "https://github.com/NVIDIA/Personal-AI-Router"
-        },
-        {
-          "title": "openJiuwen-ai/jiuwenswarm",
-          "url": "https://github.com/openJiuwen-ai/jiuwenswarm"
-        },
-        {
-          "title": "h4ckf0r0day/obscura",
-          "url": "https://github.com/h4ckf0r0day/obscura"
-        }
-      ]
-    },
     {
       "id": "2026-09-05-claude-code",
       "date": "2026-09-05",
