@@ -1,0 +1,91 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>middleware.ts は proxy.ts へ — Next.js 16「リクエスト前処理の表玄関」を正しく使う — デイリー技術深掘り 読み物</title><meta name="description" content="単なる改名ではない。runtime 既定が Edge→Node.js に変わり runtime 指定は throw、公式は Proxy を「最後の手段」と明文化した。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-07-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="middleware.ts は proxy.ts へ — Next.js 16「リクエスト前処理の表玄関」を正しく使う — デイリー技術深掘り 読み物"><meta property="og:description" content="単なる改名ではない。runtime 既定が Edge→Node.js に変わり runtime 指定は throw、公式は Proxy を「最後の手段」と明文化した。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-07-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>middleware.ts は proxy.ts へ — Next.js 16「リクエスト前処理の表玄関」を正しく使う</h1> <p class="lede">単なる改名ではない。runtime 既定が Edge→Node.js に変わり runtime 指定は throw、公式は Proxy を「最後の手段」と明文化した。</p> <div class="meta"> <span>📅 2026年9月7日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="0">
+<p>Next.js 16 の目玉のひとつが、長年おなじみの <strong><code>middleware.ts</code> → <code>proxy.ts</code></strong> というファイル規約のリネーム。だが本質は名前ではない。<code>middleware.ts</code> は deprecated（削除ではなく非推奨）となり、公式は Proxy を<strong>「最後の手段（last resort）」</strong>と設計スタンスを明文化した。Express の middleware と混同され濫用されてきた歴史への軌道修正だ。</p>
+
+<h4 id="sec-1">何が変わったか（最重要は runtime）</h4>
+<p>v16.0.0 で Proxy は <strong>Node.js runtime が既定</strong>（旧 Middleware は Edge 既定）。しかも <code>export const runtime = 'edge'</code> のような <strong>runtime 指定を書くと throw</strong> する＝実行環境は固定で選べない。「Edge だから Node API が使えない」を前提に組んでいたロジックは Node.js 前提へ置き換え可能になる一方、Edge の地理分散を当て込んだレイテンシ設計は前提が崩れる。</p>
+
+<figure class='fig'><svg viewBox='0 0 600 190' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='12'>
+  <text x='150' y='24' text-anchor='middle' font-size='13' fill='#555'>middleware.ts（〜v15）</text>
+  <text x='450' y='24' text-anchor='middle' font-size='13' fill='#1f4fa8' font-weight='bold'>proxy.ts（v16〜）</text>
+  <line x1='300' y1='34' x2='300' y2='180' stroke='#ddd'></line>
+  <g fill='#333'>
+    <text x='40' y='60'>runtime 既定</text><text x='150' y='60' fill='#a75c17'>Edge</text>
+    <text x='360' y='60'>runtime 既定</text><text x='450' y='60' fill='#1a7f37'>Node.js</text>
+    <text x='40' y='90'>runtime 指定</text><text x='150' y='90' fill='#a75c17'>可</text>
+    <text x='360' y='90'>runtime 指定</text><text x='450' y='90' fill='#c0392b'>throw</text>
+    <text x='40' y='120'>位置づけ</text><text x='150' y='120'>汎用前処理</text>
+    <text x='360' y='120'>位置づけ</text><text x='450' y='120' fill='#1a7f37'>最後の手段</text>
+    <text x='40' y='150'>正規化フラグ</text><text x='150' y='150' font-size='11'>skipMiddleware…</text>
+    <text x='360' y='150'>正規化フラグ</text><text x='450' y='150' font-size='11' fill='#1f4fa8'>skipProxy…</text>
+  </g>
+</svg><figcaption>図1：middleware.ts と proxy.ts の主な違い。runtime の既定と可否が最重要。</figcaption></figure>
+
+<h4 id="sec-2">matcher とセキュリティの落とし穴</h4>
+<p><code>config.matcher</code> が無いと <code>_next/static</code> や <code>public/</code> 資産まで<strong>全リクエストで発火</strong>する。否定ルックアヘッドで除外が定石だ。</p>
+<pre><code>export const config = {
+  matcher: ['/((?!api|_next/static|_next/image|favicon.ico).*)'],
+}</code></pre>
+<p>ただし <code>_next/data/*</code> は除外指定しても走り続ける（データルート保護漏れを防ぐ意図的仕様）。さらに <strong>Server Function は使用先ルートへの POST 扱い</strong>なので、matcher 除外で Proxy を素通りしうる。公式は「<strong>認証・認可は各 Server Function 内と DAL（Data Access Layer）で必ず検証し、Proxy だけに頼るな</strong>」と明言する。Proxy は粗いゲート、認可の真実の源は DAL。</p>
+
+<h4 id="sec-3">移行手順</h4>
+<p><code>npx @next/codemod@canary middleware-to-proxy .</code> でファイル名・関数名を自動置換。<code>skipMiddlewareUrlNormalize</code>→<code>skipProxyUrlNormalize</code> にリネーム、<code>runtime</code> 指定は削除する。認可を Proxy 依存にしていたら DAL / Server Function 内検証へ移す。</p>
+
+<p><strong>ひとこと：</strong>「アプリ前段のネットワーク境界」という名前どおりの役割に絞れば健全。早期リダイレクト・CORS プリフライト・ロケール振り分けだけを Proxy に残そう。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://nextjs.org/docs/messages/middleware-to-proxy" target="_blank" rel="noopener noreferrer"> Renaming Middleware to Proxy — Next.js docs </a> </li><li> <a href="https://nextjs.org/docs/app/api-reference/file-conventions/proxy" target="_blank" rel="noopener noreferrer"> proxy.js — File-system conventions（Next.js） </a> </li><li> <a href="https://nextjs.org/docs/app/guides/upgrading/version-16" target="_blank" rel="noopener noreferrer"> Upgrading: Version 16 — Next.js </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 何が変わったか（最重要は runtime） </a> </li><li> <a href="#sec-2" data-toc="sec-2"> matcher とセキュリティの落とし穴 </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 移行手順 </a> </li> </ul> <div class="reading-box"> <div>📅 2026-09-07</div> <div>⏱ 読了 約3分</div> <div>🏷 Next.js</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

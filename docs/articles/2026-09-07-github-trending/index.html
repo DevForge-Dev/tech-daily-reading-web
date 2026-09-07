@@ -1,0 +1,92 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>9/7の話題リポジトリ — モデルゲートウェイ・3D人体解剖・薄いグラフィックスAPI — デイリー技術深掘り 読み物</title><meta name="description" content="本日 Trendshift 日次上位はいずれも New 2026 の新星。エージェント一色のトレンドに毛色の違うジャンルが食い込んだ3本。"><meta name="theme-color" content="#238636"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-07-github-trending/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="9/7の話題リポジトリ — モデルゲートウェイ・3D人体解剖・薄いグラフィックスAPI — デイリー技術深掘り 読み物"><meta property="og:description" content="本日 Trendshift 日次上位はいずれも New 2026 の新星。エージェント一色のトレンドに毛色の違うジャンルが食い込んだ3本。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-07-github-trending/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3fb950, #1a7f37)"> <span class="glyph" aria-hidden="true">★</span> <div class="kicker">GitHub Trending</div> <h1>9/7の話題リポジトリ — モデルゲートウェイ・3D人体解剖・薄いグラフィックスAPI</h1> <p class="lede">本日 Trendshift 日次上位はいずれも New 2026 の新星。エージェント一色のトレンドに毛色の違うジャンルが食い込んだ3本。</p> <div class="meta"> <span>📅 2026年9月7日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#238636"> <div> <article class="prose" data-has-mermaid="0">
+<p>本日 Trendshift 日次ランキングの上位を占めたのは、いずれも <strong>公開直後の新星（New 2026）</strong>。AI エージェント/スキル一色の流れに、モデル基盤・科学教育・低レイヤー描画とジャンルの異なる3本が食い込んだのが今日の共通点だ。各リポジトリを「解決したい課題」と「提供する機能」で読み解く。</p>
+
+<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='11.5'>
+  <rect x='8' y='8' width='584' height='194' rx='10' fill='#f7fbf8' stroke='#3fb950'></rect>
+  <line x1='200' y1='8' x2='200' y2='202' stroke='#cfe8d5'></line>
+  <line x1='396' y1='8' x2='396' y2='202' stroke='#cfe8d5'></line>
+  <line x1='8' y1='44' x2='592' y2='44' stroke='#cfe8d5'></line>
+  <text x='16' y='30' font-weight='bold' fill='#1a7f37'>リポジトリ</text>
+  <text x='210' y='30' font-weight='bold' fill='#c0392b'>解決したい課題</text>
+  <text x='406' y='30' font-weight='bold' fill='#1f6feb'>提供する機能</text>
+  <text x='16' y='72'>experiential</text><text x='16' y='88' fill='#777' font-size='10'>YC S2026</text>
+  <text x='210' y='72'>モデルが乱立し切替/</text><text x='210' y='87'>継続改善が分断</text>
+  <text x='406' y='72'>全モデルを束ねる</text><text x='406' y='87'>OSSゲートウェイ+継続学習</text>
+  <line x1='8' y1='104' x2='592' y2='104' stroke='#e3f1e7'></line>
+  <text x='16' y='130'>human-atlas</text><text x='16' y='146' fill='#777' font-size='10'>MIT/JS</text>
+  <text x='210' y='130'>3D解剖学習が高価・</text><text x='210' y='145'>APIキー必須になりがち</text>
+  <text x='406' y='130'>2,234メッシュを</text><text x='406' y='145'>ブラウザ完結で検索/分解</text>
+  <line x1='8' y1='162' x2='592' y2='162' stroke='#e3f1e7'></line>
+  <text x='16' y='188'>NoGraphicsAPI</text><text x='16' y='200' fill='#777' font-size='10'>C++/Vulkan</text>
+  <text x='210' y='188'>グラフィックスAPIの抽象が厚い</text>
+  <text x='406' y='188'>最新Vulkan拡張で最小API実装例</text>
+</svg><figcaption>図1：本日の3本を「課題 → 提供機能」で対応づけ。</figcaption></figure>
+
+<h4 id="sec-1">experientiallabs/experiential（—・⭐—、Trendshift 日次2位）</h4>
+<p><strong>解決したい課題：</strong>クローズド/OSS/ローカル/自作モデルが乱立し、切り替え・ルーティング・自前モデルの継続改善が分断されている。<strong>提供する機能：</strong>それらを単一のコントロールプレーンで束ねる OSS モデルゲートウェイ。トラフィックを学習に回して自前モデルを継続改善する CLaaS を掲げ「OSS 版 OpenRouter」を自称する。<strong>なぜ今：</strong>Waabi/AutoGPT 出身者が立ち上げた YC S2026 採択スタートアップの公開直後リポで、切り口の新規性から初日で急浮上した。</p>
+
+<h4 id="sec-2">ashemag/human-atlas（JavaScript・⭐—、Trendshift 日次4位）</h4>
+<p><strong>解決したい課題：</strong>3D 人体解剖の学習・可視化は高価な商用ツールや API キーが要りがち。<strong>提供する機能：</strong>BodyParts3D を 2,234 個の選択可能メッシュに分解し、15 の解剖系統・3,432 概念を検索/分解表示するブラウザ完結の 3D 解剖エクスプローラ（API キー不要、コード MIT／データ CC BY 4.0）。<strong>なぜ今：</strong>エージェント一色の上位に食い込んだ希少な「科学×教育」枠で、ローカルデモ即体験の手軽さが効いた。</p>
+
+<h4 id="sec-3">sebbbi/NoGraphicsAPI（C++・⭐—、Trendshift 日次7位）</h4>
+<p><strong>解決したい課題：</strong>グラフィックス API は抽象化が厚く、より薄く速い層を求める声がある。<strong>提供する機能：</strong>最新の Vulkan 拡張の上に構築した最小構成グラフィックス API 実装例。著者のブログ「No Graphics API」と SIGGRAPH 講演の内容を、可能な限りそのまま動く形で示す。<strong>なぜ今：</strong>著名グラフィックスエンジニア sebbbi（Sebastian Aaltonen）が持論を実コードで示したことで、ゲーム/レンダリング界隈から急浮上した。</p>
+
+<p><strong>まとめ：</strong>自分が試すなら業務直結の experiential をまずローカルで動かし、モデルルーティングの手触りを確認したい。human-atlas と NoGraphicsAPI は、トレンドが AI 一辺倒でないことを思い出させてくれる箸休めだ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://github.com/experientiallabs/experiential" target="_blank" rel="noopener noreferrer"> experientiallabs/experiential </a> </li><li> <a href="https://github.com/ashemag/human-atlas" target="_blank" rel="noopener noreferrer"> ashemag/human-atlas </a> </li><li> <a href="https://github.com/sebbbi/NoGraphicsAPI" target="_blank" rel="noopener noreferrer"> sebbbi/NoGraphicsAPI </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> experientiallabs/experiential（—・⭐—、Trendshift 日次2位） </a> </li><li> <a href="#sec-2" data-toc="sec-2"> ashemag/human-atlas（JavaScript・⭐—、Trendshift 日次4位） </a> </li><li> <a href="#sec-3" data-toc="sec-3"> sebbbi/NoGraphicsAPI（C++・⭐—、Trendshift 日次7位） </a> </li> </ul> <div class="reading-box"> <div>📅 2026-09-07</div> <div>⏱ 読了 約3分</div> <div>🏷 GitHub Trending</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

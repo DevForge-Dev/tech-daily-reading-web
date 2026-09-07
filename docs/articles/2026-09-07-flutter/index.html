@@ -1,0 +1,89 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Flutter 3.47 / Dart 3.13 の実務移行 — primary constructors・Impeller デスクトップ既定 — デイリー技術深掘り 読み物</title><meta name="description" content="2026-08-12 リリース。primary constructors が stable、Impeller が macOS/Windows/Linux でも既定、Widget Previews stable の3点が効く。"><meta name="theme-color" content="#0277bd"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-07-flutter/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Flutter 3.47 / Dart 3.13 の実務移行 — primary constructors・Impeller デスクトップ既定 — デイリー技術深掘り 読み物"><meta property="og:description" content="2026-08-12 リリース。primary constructors が stable、Impeller が macOS/Windows/Linux でも既定、Widget Previews stable の3点が効く。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-07-flutter/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #29b6f6, #01579b)"> <span class="glyph" aria-hidden="true">◆</span> <div class="kicker">Flutter</div> <h1>Flutter 3.47 / Dart 3.13 の実務移行 — primary constructors・Impeller デスクトップ既定</h1> <p class="lede">2026-08-12 リリース。primary constructors が stable、Impeller が macOS/Windows/Linux でも既定、Widget Previews stable の3点が効く。</p> <div class="meta"> <span>📅 2026年9月7日</span> <span>⏱ 約2分</span> <span>🔗 出典 2 件</span> </div> </section> <div class="article-layout" style="--topic:#0277bd"> <div> <article class="prose" data-has-mermaid="0">
+<p>今日の主役は <strong>Flutter 3.47 / Dart 3.13</strong>（2026-08-12 リリース、現行安定版 3.47.1 / 3.13.1）の実務移行。年4回（2/5/8/11月）サイクルの一環で、実務インパクトが大きいのは <strong>primary constructors の stable 化</strong>・<strong>Impeller のデスクトップ既定</strong>・<strong>material/cupertino の standalone パッケージ化＋Widget Previews stable</strong> の3点だ。</p>
+
+<h4 id="sec-1">何が新しいか</h4>
+<p>Dart 3.13 の <strong>primary constructors</strong> は、クラスヘッダで constructor と instance 変数を <strong>1行で宣言</strong>でき boilerplate を大幅に削減する。レンダラは <strong>Impeller が macOS/Windows/Linux でも既定</strong>に（iOS=Metal／Android=Vulkan は従来どおり）。Impeller は全 shader を build 時に AOT precompile するため <strong>shader compilation jank を排除</strong>し、複雑アニメでも 120fps を狙える。Web は experimental で <strong>WasmGC 移行</strong>を継続（<code>dart:html → package:web</code>）。</p>
+
+<pre><code>// 従来
+class Point {
+  final int x; final int y;
+  Point(this.x, this.y);
+}
+// primary constructors（Dart 3.13）
+class Point(final int x, final int y) {}</code></pre>
+
+<figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='12'>
+  <text x='300' y='22' text-anchor='middle' font-size='13' fill='#0277bd' font-weight='bold'>Impeller 既定レンダラ（3.47）</text>
+  <g>
+    <rect x='20' y='45' width='130' height='70' rx='10' fill='#e6f5fc' stroke='#0277bd'></rect>
+    <text x='85' y='72' text-anchor='middle'>iOS</text><text x='85' y='94' text-anchor='middle' fill='#0277bd'>Metal</text>
+    <rect x='170' y='45' width='130' height='70' rx='10' fill='#e6f5fc' stroke='#0277bd'></rect>
+    <text x='235' y='72' text-anchor='middle'>Android</text><text x='235' y='94' text-anchor='middle' fill='#0277bd'>Vulkan</text>
+    <rect x='320' y='45' width='260' height='70' rx='10' fill='#eafaf0' stroke='#1a7f37'></rect>
+    <text x='450' y='72' text-anchor='middle'>macOS / Windows / Linux</text>
+    <text x='450' y='94' text-anchor='middle' fill='#1a7f37' font-weight='bold'>Impeller が新たに既定に</text>
+  </g>
+</svg><figcaption>図1：3.47 でデスクトップ3 OS にも Impeller が既定化。shader jank を build 時に排除。</figcaption></figure>
+
+<h4 id="sec-2">実務での使いどころと注意</h4>
+<p>新規は language version を <code>^3.13.0</code> に上げ、モデル/DTO の定型を primary constructors で圧縮する。デスクトップ配布は Impeller 既定でカクつきが減る。ただし <strong>Web の Wasm はまだ experimental</strong> で、<code>dart:html</code> 依存は <code>package:web</code> へ移行が必要。experimental な multi-window API も本番投入は慎重に。次の機能リリースは 2026 年 11 月。</p>
+
+<p><strong>ひとこと：</strong>まず primary constructors でモデル層を書き換え、生成される差分の小ささを体感するのが移行の入口として手頃。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://flutter.dev/blog/whats-new-in-flutter-3-47" target="_blank" rel="noopener noreferrer"> What&#39;s new in Flutter 3.47（Flutter Blog） </a> </li><li> <a href="https://docs.flutter.dev/release/release-notes/release-notes-3.47.0" target="_blank" rel="noopener noreferrer"> Flutter 3.47.0 release notes </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 何が新しいか </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 実務での使いどころと注意 </a> </li> </ul> <div class="reading-box"> <div>📅 2026-09-07</div> <div>⏱ 読了 約2分</div> <div>🏷 Flutter</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
