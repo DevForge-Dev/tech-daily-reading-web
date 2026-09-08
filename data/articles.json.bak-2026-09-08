@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-09-08T04:52:45.800Z",
+  "generatedAt": "2026-09-07T04:45:48.590Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,110 +8,6 @@
     "GitHub Trending"
   ],
   "articles": [
-    {
-      "id": "2026-09-08-claude-code",
-      "date": "2026-09-08",
-      "topic": "Claude Code",
-      "title": "更新の空白日に描く Claude Code 拡張の地図 — Hooks / Skills / Subagents / worktree の棲み分け",
-      "lede": "9/7以降の新規リリースは無く最新は v2.1.263（9/6）のまま。空白日は拡張3本柱（Hooks=強制・Skills=知識・Subagents=委譲）と worktree 並列の整理が効く。普及は ARR $2.5B・日次29Mインストールへ。",
-      "articleHtml": "\n<p>9月8日時点で公式 changelog の最新は <strong>v2.1.263（9/6）</strong>のままで、9/7 以降の新規リリースは確認できなかった。機能追加の無い「空白日」は、増えすぎた拡張機構を頭の中で整理し直す好機だ。今日は複数の解説記事が口を揃える<strong>拡張3本柱の棲み分け</strong>と、並列運用の要である <code>git worktree</code> を地図にまとめる。</p>\n\n<h4>何が新しい/重要か</h4>\n<p>直近で見落とされがちな実務更新も振り返る価値がある。<strong>v2.1.260（9/3）</strong>はフルスクリーン時に会話の横で未コミット差分を表示し <code>/diff</code> で開閉できる差分パネル、headless（<code>-p</code>/Agent SDK）セッションでも使える <code>/reload-plugins</code> と <code>/advisor</code> のテキスト版を追加。<strong>v2.1.257（9/1）</strong>は <code>claude-fable-5-1</code> を既定 Fable モデルに（1M コンテキスト・$10/$50 per Mtok、キャッシュ読取 $0.25/Mtok）し、auto mode に「Containment Escape」ルール（クラウドのメタデータ認証取得・egress 回避・テナント越えを既定で自動承認しない）を導入した。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <text x='300' y='18' font-size='13' text-anchor='middle' fill='#333'>拡張3本柱＋常時指針の棲み分け</text>\n  <g>\n    <rect x='20' y='34' width='560' height='38' rx='8' fill='#f3ecff' stroke='#7b3fe4'/>\n    <text x='34' y='52' font-size='13' fill='#5a2bbf' font-weight='bold'>Hooks</text>\n    <text x='34' y='67' font-size='11' fill='#555'>イベント駆動で決定論的に実行＝ガードレール（強制）。PreToolUse / PostToolUse / on-Stop</text>\n  </g>\n  <g>\n    <rect x='20' y='80' width='560' height='38' rx='8' fill='#eef8f0' stroke='#3fb950'/>\n    <text x='34' y='98' font-size='13' fill='#1a7f37' font-weight='bold'>Skills</text>\n    <text x='34' y='113' font-size='11' fill='#555'>必要時のみ読み込むフォルダ型の指示パック＝文脈知識（SKILL.md＋任意スクリプト）</text>\n  </g>\n  <g>\n    <rect x='20' y='126' width='560' height='38' rx='8' fill='#f3f6ff' stroke='#1f6feb'/>\n    <text x='34' y='144' font-size='13' fill='#1f4fa8' font-weight='bold'>Subagents</text>\n    <text x='34' y='159' font-size='11' fill='#555'>独立コンテキストで調査/検証を委譲＝境界。リサーチと実装検証を分けて幻覚を抑制</text>\n  </g>\n  <g>\n    <rect x='20' y='172' width='560' height='30' rx='8' fill='#f4f4f6' stroke='#888'/>\n    <text x='34' y='191' font-size='11' fill='#444'><tspan font-weight='bold'>CLAUDE.md</tspan> ＝ 常時のプロジェクト指針を短く。肥大化させず固有パターンは Skills へ逃がす</text>\n  </g>\n</svg><figcaption>図1：ルール強制=Hooks／知識=Skills／委譲=Subagents／常時指針=CLAUDE.md。</figcaption></figure>\n\n<h4>実務での使いどころ</h4>\n<p>ノイズの多いリサーチは Subagent に隔離し、実装は別エージェントで検証する「二重化」が幻覚対策の要。並列は <code>git worktree</code> で各エージェントに独立ディレクトリを与え（Git 履歴は共有）、<em>計画→共有コントラクト定義→所有境界で分割→worktree に隔離→ワーカー単位でテスト→統合後に最終検証</em>という型が定石。開発者あたり 4〜8 個の同時 worktree を安定運用する事例も紹介されている。自分なら、まず PostToolUse フックで <code>prettier</code>、on-Stop でテストを回す最小構成から始める。</p>\n\n<h4>注意点</h4>\n<p>3本柱は役割が重なって見えるが、混ぜると破綻する。「守らせたい規則」をプロンプト（Skills/CLAUDE.md）に書いても確実には効かない——強制は必ず Hooks／権限で。逆に決定論不要の知識を Hooks に埋めると硬直する。並列 worktree は共有コントラクトを先に固めないと統合で衝突する。</p>\n\n<h4>ひとことまとめ</h4>\n<p>普及は日次インストール 29M・ARR $2.5B（8か月で Copilot/Cursor を抜き最多）と規模を増すが、効かせ方の本質は「強制・知識・委譲」を混同しないこと。空白日はその地図を引き直すのに向く。</p>",
-      "sources": [
-        {
-          "title": "Claude Code Changelog（gradually.ai）",
-          "url": "https://www.gradually.ai/en/changelogs/claude-code/"
-        },
-        {
-          "title": "Agent Teams・Subagents・MCP 2026（Developers Digest）",
-          "url": "https://www.developersdigest.tech/blog/claude-code-agent-teams-subagents-2026"
-        },
-        {
-          "title": "Git Worktrees × Claude Code 2026（Developers Digest）",
-          "url": "https://www.developersdigest.tech/blog/git-worktrees-claude-code-parallel-agents-guide"
-        },
-        {
-          "title": "Hooks・Subagents・Skills 完全ガイド（ofox.ai）",
-          "url": "https://ofox.ai/blog/claude-code-hooks-subagents-skills-complete-guide-2026/"
-        },
-        {
-          "title": "Claude Code 統計 2026（gradually.ai）",
-          "url": "https://www.gradually.ai/en/claude-code-statistics/"
-        }
-      ]
-    },
-    {
-      "id": "2026-09-08-nextjs",
-      "date": "2026-09-08",
-      "topic": "Next.js",
-      "title": "テーマ切替の円形リビール — 同一ドキュメント View Transitions が Baseline 入り、数十行で全画面クロスフェード超え",
-      "lede": "同一ドキュメント View Transitions が 2025-10-14 に Baseline Newly available へ。document.startViewTransition＋clip-path: circle() で、クリック点から新テーマが円状に広がる演出を依存ゼロ・数十行で。",
-      "articleHtml": "\n<p>クリックしたトグルを中心に、新テーマ（暗↔明）が円形にじわっと広がって全画面を塗り替える——2025〜26 に定番化した「シネマティックなテーマ切替」。ライブラリ無し・数十行で作れるうえ、未対応環境でも即フリップに落ちて壊れない、費用対効果の高い演出だ。</p>\n\n<h4>何が新しいか</h4>\n<p><strong>同一ドキュメント View Transitions が 2025-10-14 に Baseline \"Newly available\" に到達</strong>（Firefox 144 対応で主要3エンジン揃い）。<code>document.startViewTransition()</code> レベルはもう実験ではなく通常運用してよい段階だ。単なる <code>background-color</code> の transition では、テキスト色・画像・SVG・影まで一括で滑らかに変える術がない。View Transitions は<strong>旧ページ全体と新ページのスナップショットを撮り、その2枚をコンポジタで合成</strong>することでこれを一撃で解決する。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 220' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <text x='300' y='18' font-size='13' text-anchor='middle' fill='#333'>円形リビールの流れ（同一ドキュメント VT）</text>\n  <rect x='20' y='36' width='150' height='44' rx='8' fill='#f3f6ff' stroke='#1f6feb'/>\n  <text x='95' y='55' font-size='11' text-anchor='middle' fill='#1f4fa8'>クリック座標</text>\n  <text x='95' y='70' font-size='11' text-anchor='middle' fill='#1f4fa8'>x,y を取得</text>\n  <rect x='225' y='36' width='150' height='44' rx='8' fill='#f3f6ff' stroke='#1f6feb'/>\n  <text x='300' y='55' font-size='11' text-anchor='middle' fill='#1f4fa8'>startViewTransition</text>\n  <text x='300' y='70' font-size='11' text-anchor='middle' fill='#1f4fa8'>callback で setTheme</text>\n  <rect x='430' y='36' width='150' height='44' rx='8' fill='#f3f6ff' stroke='#1f6feb'/>\n  <text x='505' y='55' font-size='11' text-anchor='middle' fill='#1f4fa8'>旧/新を</text>\n  <text x='505' y='70' font-size='11' text-anchor='middle' fill='#1f4fa8'>スナップショット</text>\n  <rect x='120' y='120' width='170' height='48' rx='8' fill='#eef8f0' stroke='#3fb950'/>\n  <text x='205' y='140' font-size='11' text-anchor='middle' fill='#1a7f37'>await transition.ready</text>\n  <text x='205' y='156' font-size='11' text-anchor='middle' fill='#1a7f37'>疑似要素ツリー構築</text>\n  <rect x='330' y='120' width='210' height='48' rx='8' fill='#fff5ec' stroke='#e08a3c'/>\n  <text x='435' y='138' font-size='11' text-anchor='middle' fill='#a75c17'>new(root) を clip-path</text>\n  <text x='435' y='154' font-size='11' text-anchor='middle' fill='#a75c17'>circle 0 → 最大半径 に animate</text>\n  <path d='M170 58 L223 58' stroke='#888' stroke-width='2' marker-end='url(#a)'/>\n  <path d='M375 58 L428 58' stroke='#888' stroke-width='2' marker-end='url(#a)'/>\n  <path d='M505 80 L505 100 L205 100 L205 118' stroke='#888' stroke-width='2' fill='none' marker-end='url(#a)'/>\n  <path d='M290 144 L328 144' stroke='#888' stroke-width='2' marker-end='url(#a)'/>\n  <text x='300' y='200' font-size='11' text-anchor='middle' fill='#666'>旧テーマは据え置き、新テーマの丸が広がって覆う（450ms・ease-in-out）</text>\n  <defs><marker id='a' markerWidth='9' markerHeight='9' refX='7' refY='4' orient='auto'><path d='M0 0 L8 4 L0 8 z' fill='#888'/></marker></defs>\n</svg><figcaption>図1：クリック座標取得→startViewTransition→ready→clip-path circle を new(root) に適用。</figcaption></figure>\n\n<h4>仕組みのポイント</h4>\n<p>デフォルトのクロスフェードを止め、新テーマのスナップショット <code>::view-transition-new(root)</code> をクリック点中心の円 clip-path で 0→全画面に広げるだけ。半径は四隅までの最大距離 <code>Math.hypot(Math.max(x, innerWidth-x), Math.max(y, innerHeight-y))</code>。CSS で <code>::view-transition-old/new(root) { animation:none; }</code> により既定フェードを無効化するのが肝だ。</p>\n<pre><code>const t = document.startViewTransition(() =&gt; flushSync(() =&gt; setTheme(next)));\nawait t.ready;\ndocument.documentElement.animate(\n  { clipPath: [`circle(0px at ${x}px ${y}px)`, `circle(${r}px at ${x}px ${y}px)`] },\n  { duration: 450, easing: 'ease-in-out', pseudoElement: '::view-transition-new(root)' }\n);</code></pre>\n\n<h4>実務での使いどころ・落とし穴</h4>\n<p>App Router では <code>window</code>/<code>flushSync</code> に触るトグルの島だけ <code>'use client'</code>、テーマは <code>next-themes</code> に任せ <code>&lt;html suppressHydrationWarning&gt;</code> を付ける。React state 経由なら <strong>callback 内の <code>flushSync</code> が必須</strong>（同期コミットしないとスナップショットが旧DOMのまま撮られる）。素の <code>classList.toggle</code> なら不要。<code>animation:none</code> 忘れで既定フェードと二重に走り濁るのが最頻出ミス。全画面モーションは <code>prefers-reduced-motion</code> を JS で gate し即フリップに落とす。</p>\n\n<h4>ひとことまとめ</h4>\n<p>ほぼ全サイトが持つテーマ切替 UI に、依存ゼロで「作品感」を足せる。Next.js の experimental <code>ViewTransition</code>（ルート遷移用）とは別物で、ここは生 API を直接叩くのが正解。</p>",
-      "sources": [
-        {
-          "title": "Same-document view transitions are Baseline（web.dev, 2025-10-14）",
-          "url": "https://web.dev/blog/same-document-view-transitions-are-now-baseline-newly-available"
-        },
-        {
-          "title": "What's new in view transitions（Chrome for Developers）",
-          "url": "https://developer.chrome.com/blog/view-transitions-in-2025"
-        },
-        {
-          "title": "Next.js 公式ガイド View transitions",
-          "url": "https://nextjs.org/docs/app/guides/view-transitions"
-        },
-        {
-          "title": "Full-page theme toggle with View Transitions（Akash Hamirwasia）",
-          "url": "https://akashhamirwasia.com/blog/full-page-theme-toggle-animation-with-view-transitions-api/"
-        }
-      ]
-    },
-    {
-      "id": "2026-09-08-flutter",
-      "date": "2026-09-08",
-      "topic": "Flutter",
-      "title": "Dart 3.13 で型安全 lint を標準化、Widget Previews 安定版 — 60→120fps はラスタ予算で詰める",
-      "lede": "現行安定版は Flutter 3.47.1 / Dart 3.13.1。no_raw_types・no_dynamic_casts で型を締め、Widget Previews が stable に。性能は raster スレッドを 60fps=16／90=11／120=8.3ms に収めるのが軸。",
-      "articleHtml": "\n<p>2026-08-12 の <strong>Flutter 3.47 / Dart 3.13</strong> を軸に、型安全・プレビュー・性能の3点を整理する。年4回（2/5/8/11月）サイクルなので次の機能リリースは 2026 年11月。今の安定版は <code>flutter --version</code> で <strong>Flutter 3.47.1 / Dart 3.13.1</strong>。</p>\n\n<h4>何が新しいか</h4>\n<p>Dart 3.13 は新 lint <code>no_raw_types</code>（raw 型の使用を禁止）と <code>no_dynamic_casts</code>（暗黙の dynamic キャストを禁止）で型チェックを一貫化。<strong>primary constructors</strong> が stable 化し、クラスヘッダで constructor と instance 変数を1行宣言でき boilerplate を大幅削減（<code>language: ^3.13.0</code>）。3.47 では <strong>Widget Previews が stable</strong> に昇格し、ローカルビルドキャッシュで起動が高速化、プレビューのリアルタイム検索/フィルタに対応。editor 連携用の LSP メソッド（<code>getFlutterWidgetPreviews</code> ほか）も追加された。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 180' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <text x='300' y='18' font-size='13' text-anchor='middle' fill='#333'>フレーム予算：リフレッシュレート別のラスタ上限</text>\n  <text x='20' y='52' font-size='12' fill='#444'>60fps</text>\n  <rect x='90' y='40' width='480' height='20' rx='4' fill='#e6f3fb' stroke='#0277bd'/>\n  <rect x='90' y='40' width='480' height='20' rx='4' fill='#0277bd' opacity='0.85'/>\n  <text x='560' y='55' font-size='11' text-anchor='end' fill='#fff'>16 ms</text>\n  <text x='20' y='92' font-size='12' fill='#444'>90fps</text>\n  <rect x='90' y='80' width='480' height='20' rx='4' fill='#e6f3fb' stroke='#0277bd'/>\n  <rect x='90' y='80' width='330' height='20' rx='4' fill='#0277bd' opacity='0.85'/>\n  <text x='410' y='95' font-size='11' text-anchor='end' fill='#fff'>11 ms</text>\n  <text x='20' y='132' font-size='12' fill='#444'>120fps</text>\n  <rect x='90' y='120' width='480' height='20' rx='4' fill='#e6f3fb' stroke='#0277bd'/>\n  <rect x='90' y='120' width='249' height='20' rx='4' fill='#0277bd' opacity='0.85'/>\n  <text x='330' y='135' font-size='11' text-anchor='end' fill='#fff'>8.3 ms</text>\n  <text x='300' y='165' font-size='11' text-anchor='middle' fill='#666'>DevTools の raster スレッドを監視、spike は shader 実行/texture upload を疑う</text>\n</svg><figcaption>図1：60/90/120fps のフレーム予算。数値内にラスタ処理を収める。</figcaption></figure>\n\n<h4>設計と性能の勘所</h4>\n<p>状態管理の既定線は「新規は <strong>Riverpod 3.0（3.3.x）</strong>、監査証跡が要る規制業界・複雑並行は <strong>Bloc（9.2.x）</strong>」。Riverpod 3 は stale-while-revalidate のオフライン永続化、失敗 provider の指数バックオフ自動リトライ、書き込み中間状態を扱う Mutations API、unified Ref が要点。土台に Clean Architecture × Feature-First × <code>go_router</code> を据え、移行は repository を先に切り出して feature 単位で。性能の最頻出問題は<strong>不要な widget rebuild</strong>——不変なら <code>const</code>、<code>build()</code> を分割、<code>select</code>/<code>Selector</code> で局所購読、アニメ領域を <code>RepaintBoundary</code> で隔離、重い計算は <code>Isolate.run()</code> へ。</p>\n\n<h4>アニメーションと落とし穴</h4>\n<p>階層は implicit（micro 50–200ms）→ explicit（AnimationController＋AnimatedBuilder、200–400ms）→ Hero（300–600ms）。jank の典型は「純粋な描画変換のつもりが layout pass を誘発」——動きは <code>Transform</code>、フェードは <code>Opacity</code> に閉じてレイアウトを触らない。explicit は controller の <strong>dispose 必須</strong>。計測は必ず <strong>profile モード</strong>（debug は JIT/assert で歪む）。Impeller は全 shader を build 時に AOT precompile し compilation jank を排除する。</p>\n\n<h4>ひとことまとめ</h4>\n<p>3.13/3.47 は「型で締め、プレビューで速く回し、ラスタ予算で詰める」DX＋性能の底上げ。まずは <code>no_dynamic_casts</code> を有効化して既存コードの暗黙キャストを洗い出すのが着手点。</p>",
-      "sources": [
-        {
-          "title": "Dart changelog（dart.dev）",
-          "url": "https://dart.dev/changelog"
-        },
-        {
-          "title": "What's new（docs.flutter.dev）",
-          "url": "https://docs.flutter.dev/release/whats-new"
-        },
-        {
-          "title": "Flutter State Management 2026: BLoC vs Riverpod（ASOasis）",
-          "url": "https://asoasis.tech/articles/2026-04-17-2054-flutter-bloc-vs-riverpod-comparison-2026/"
-        },
-        {
-          "title": "Improving rendering performance（docs.flutter.dev）",
-          "url": "https://docs.flutter.dev/perf/rendering-performance"
-        }
-      ]
-    },
-    {
-      "id": "2026-09-08-github-trending",
-      "date": "2026-09-08",
-      "topic": "GitHub Trending",
-      "title": "9/8の話題リポジトリ — AIショート動画量産・AI臭消し・多言語ゼロショット音声クローン",
-      "lede": "本日のモメンタム枠3本はいずれも AI メディア生成。動画・テキスト・音声という別ジャンルで急上昇し、有料 SaaS のセルフホスト OSS 代替という共通項を持つ。",
-      "articleHtml": "\n<p>本日 Trendshift 日次上位で急伸したのは、偶然にも<strong>「AI で何かを生成する」</strong>3本——動画・テキスト・音声とジャンルは違えど、いずれも既存の有料 SaaS を自前で回すためのオープンソース代替という共通項を持つ。以下、各リポジトリの「解決したい課題」と「提供する機能」を軸に見る。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <text x='300' y='18' font-size='13' text-anchor='middle' fill='#333'>3本の「解決したい課題 → 提供する機能」</text>\n  <line x1='20' y1='30' x2='580' y2='30' stroke='#3fb950' stroke-width='1.5'/>\n  <text x='30' y='55' font-size='11.5' fill='#1a7f37' font-weight='bold'>short-video-generator-AI</text>\n  <text x='30' y='72' font-size='10.5' fill='#555'>課題：ショート量産の外注/有料SaaS依存</text>\n  <text x='330' y='72' font-size='10.5' fill='#555'>機能：ハイライト検出＋字幕/翻訳/吹替を1本化</text>\n  <line x1='20' y1='84' x2='580' y2='84' stroke='#d7ead9'/>\n  <text x='30' y='106' font-size='11.5' fill='#1a7f37' font-weight='bold'>humanizer</text>\n  <text x='30' y='123' font-size='10.5' fill='#555'>課題：AI 生成文の「らしさ」で品質/検出が問題</text>\n  <text x='330' y='123' font-size='10.5' fill='#555'>機能：参照文の文体を写して AI 臭を除去</text>\n  <line x1='20' y1='135' x2='580' y2='135' stroke='#d7ead9'/>\n  <text x='30' y='157' font-size='11.5' fill='#1a7f37' font-weight='bold'>OmniVoice</text>\n  <text x='30' y='174' font-size='10.5' fill='#555'>課題：多言語/高速な音声合成の敷居</text>\n  <text x='330' y='174' font-size='10.5' fill='#555'>機能：600+言語のゼロショット音声クローン</text>\n  <line x1='20' y1='186' x2='580' y2='186' stroke='#3fb950' stroke-width='1.5'/>\n</svg><figcaption>図1：3リポジトリの課題と提供機能の対応。</figcaption></figure>\n\n<h4>pierrenade/short-video-generator-AI（Python・⭐~1.1k）</h4>\n<p><strong>解決したい課題：</strong>バイラルなショート動画を作るには従来ハイライト選定・字幕・翻訳・吹替を手作業か Opus Clip/Klap 等の有料 SaaS に頼るしかなかった。<strong>提供する機能：</strong>YouTube 動画をハイライト自動検出し、字幕・翻訳・ボイスオーバーまで一気通貫で 9:16 縦型ショートへ変換する。総スター約 1.1k と小さいが本日 Trendshift 日次3位・New 2026 で、増加率の高いモメンタム筆頭として急上昇している。</p>\n\n<h4>blader/humanizer（Python/NLP・⭐~44k・MIT）</h4>\n<p><strong>解決したい課題：</strong>LLM の生成文は語選び・句読点・リズムに「AI 臭」が残り、品質面でも検出面でも扱いにくい。<strong>提供する機能：</strong>サンプル文の癖を写し取って文体を模倣し、Claude/Codex 等のスキルとして組み込める。星数は大きく増加\"率\"は控えめだが、いいね/ブックマークのエンゲージメントが未既出リポ中で最上位クラスと、話題性の強さで本日日次10位に。</p>\n\n<h4>k2-fsa/OmniVoice（Python・⭐~8.8k・Apache-2.0）</h4>\n<p><strong>解決したい課題：</strong>多言語・高速・制御可能な音声合成は依然として敷居が高い。<strong>提供する機能：</strong>600 言語以上のゼロショット音声クローンで、性別/年齢/音高/方言など話者属性を制御でき、ささやきにも対応。RTF 約 0.025（リアルタイム比 40 倍）の高速性が売り。Kaldi/k2 陣営（Daniel Povey）発で、3月公開後 8.8k まで伸び本日日次12位で再急上昇した。</p>\n\n<h4>まとめ — 自分が試すなら</h4>\n<p>3本を貫くのは「有料 SaaS の機能を手元の OSS で置き換える」流れ。まず試すなら音声の <strong>OmniVoice</strong>——ローカル音声入力/読み上げ系（operator 系）の比較対象として RTF と多言語対応が具体的に効く。動画の short-video-generator は素材が小規模でも成果が可視化しやすく、パイプライン学習に向く。</p>",
-      "sources": [
-        {
-          "title": "pierrenade/short-video-generator-AI",
-          "url": "https://github.com/pierrenade/short-video-generator-AI"
-        },
-        {
-          "title": "blader/humanizer",
-          "url": "https://github.com/blader/humanizer"
-        },
-        {
-          "title": "k2-fsa/OmniVoice",
-          "url": "https://github.com/k2-fsa/OmniVoice"
-        }
-      ]
-    },
     {
       "id": "2026-09-07-claude-code",
       "date": "2026-09-07",
