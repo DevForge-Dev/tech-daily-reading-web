@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-09-08T04:52:45.800Z",
+  "generatedAt": "2026-09-09T04:46:05.660Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,106 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-09-09-claude-code",
+      "date": "2026-09-09",
+      "topic": "Claude Code",
+      "title": "Claude Code の“運用に効く”実務更新 — Organization policy 行・128K 出力上限・1M コンテキスト標準・自動セッション再開",
+      "lede": "9/6 の v2.1.263 が最新で 9/7 以降の新規公式リリースは未確認。空白日は派手な新機能でなく、v2.1.261 前後で積み上がった運用向けの地味な改善（組織ポリシー可視化・出力上限拡大・Concise 出力・利用枠倍増）を棚卸しするのに向く。",
+      "articleHtml": "\n<p>9月9日時点でも公式 changelog の最新は <strong>v2.1.263（9/6）</strong>のままで、9/7 以降の新規リリースは確認できなかった。派手な機能追加が無い日こそ、直近で積み上がった<strong>運用向けの地味な改善</strong>を振り返る価値がある。モデル/プランの土台も動いているので、あわせて整理する。</p>\n\n<h4>何が新しい/重要か</h4>\n<p><strong>v2.1.261（9/4）</strong>は運用色の濃い更新だった。<code>/status</code> と <code>claude doctor</code> に <strong>「Organization policy」行</strong>が加わり、組織ポリシーの適用状況を一目で確認できる。<code>bashOutputMaxChars</code> と <code>taskOutputMaxChars</code> で、コマンド出力とバックグラウンドタスク出力の上限を<strong>最大 128K 文字</strong>まで引き上げられるようになり、長いログやテスト結果の途中切れを防げる。さらに <code>--append-subagent-system-prompt-file</code> で<strong>サブエージェントのシステムプロンプトをファイル指定</strong>できる。周辺の対話改善として、冗長さを抑える <strong>Concise 出力スタイル</strong>、<strong>利用上限リセット後の自動セッション再開</strong>、作業中に <code>/permissions</code>・<code>/add-dir</code> を開ける点、MCP 設定でのフォルダ信頼（folder trust）必須化が入っている。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <text x='300' y='18' font-size='13' text-anchor='middle' fill='#333'>v2.1.261 前後の“運用に効く”実務改善</text>\n  <g>\n    <rect x='20' y='32' width='270' height='38' rx='8' fill='#f3ecff' stroke='#7b3fe4'/>\n    <text x='34' y='50' font-size='12' fill='#5a2bbf' font-weight='bold'>Organization policy 行</text>\n    <text x='34' y='65' font-size='10.5' fill='#555'>/status・claude doctor で適用状況を可視化</text>\n  </g>\n  <g>\n    <rect x='310' y='32' width='270' height='38' rx='8' fill='#eef8f0' stroke='#3fb950'/>\n    <text x='324' y='50' font-size='12' fill='#1a7f37' font-weight='bold'>出力上限 最大 128K 文字</text>\n    <text x='324' y='65' font-size='10.5' fill='#555'>bashOutputMaxChars / taskOutputMaxChars</text>\n  </g>\n  <g>\n    <rect x='20' y='78' width='270' height='38' rx='8' fill='#f3f6ff' stroke='#1f6feb'/>\n    <text x='34' y='96' font-size='12' fill='#1f4fa8' font-weight='bold'>subagent プロンプトをファイル指定</text>\n    <text x='34' y='111' font-size='10.5' fill='#555'>--append-subagent-system-prompt-file</text>\n  </g>\n  <g>\n    <rect x='310' y='78' width='270' height='38' rx='8' fill='#fff4e8' stroke='#e08a1e'/>\n    <text x='324' y='96' font-size='12' fill='#b56a11' font-weight='bold'>Concise 出力スタイル</text>\n    <text x='324' y='111' font-size='10.5' fill='#555'>冗長さを抑えた応答を選べる</text>\n  </g>\n  <g>\n    <rect x='20' y='124' width='270' height='38' rx='8' fill='#f4f4f6' stroke='#888'/>\n    <text x='34' y='142' font-size='12' fill='#444' font-weight='bold'>利用枠リセット後に自動再開</text>\n    <text x='34' y='157' font-size='10.5' fill='#555'>長時間の作業が途切れにくい</text>\n  </g>\n  <g>\n    <rect x='310' y='124' width='270' height='38' rx='8' fill='#f4f4f6' stroke='#888'/>\n    <text x='324' y='142' font-size='12' fill='#444' font-weight='bold'>作業中に /permissions・/add-dir</text>\n    <text x='324' y='157' font-size='10.5' fill='#555'>MCP 設定はフォルダ信頼が必須化</text>\n  </g>\n  <text x='300' y='192' font-size='10.5' text-anchor='middle' fill='#777'>機能追加より“流れを止めない”運用改善が中心の空白日</text>\n</svg><figcaption>図1：v2.1.261 前後で積み上がった運用向け実務改善の一覧。</figcaption></figure>\n\n<h4>モデルとプランの土台</h4>\n<p>v2.1.261 は <strong>Opus 5・Fable 5.1・Sonnet 5</strong> に対応し、いずれも <strong>1M コンテキストが標準</strong>になった。複数エージェントを束ねる <strong>Agent Teams</strong> は実験的機能として利用でき、Pro/Max/Team/Enterprise の <strong>5 時間の利用ウィンドウ上限が倍増</strong>して連続作業のスループットが上がった。リリースペースは週 1〜2 本、累計 380 版超という開発速度も相変わらず。</p>\n\n<h4>実務での使いどころ・自分が試すなら</h4>\n<p>まず <code>bashOutputMaxChars</code> を引き上げて、テスト/ビルドの長いログが途中で切れて原因を見失う事故を潰す。次に <code>--append-subagent-system-prompt-file</code> で「調査用」「検証用」サブエージェントの役割定義を Git 管理のファイルに切り出し、複数プロジェクトで再利用する。事例では<strong>楽天が新機能導入時間を 80% 削減</strong>し、7 時間の自律リファクタも報告される一方、地に足の付いた数字は <strong>PR 自動レビュー＋テスト自動生成でレビュー工数 50〜70% 削減</strong>あたり。ここから小さく始めるのが現実的だ。</p>\n\n<h4>注意点</h4>\n<p>1M コンテキストは「詰め込めば賢くなる」わけではない。Subagents の独立コンテキストで調査・実装・検証を分離してノイズを減らす設計は依然として有効で、コンテキスト長の増加はその代替にならない。Concise スタイルは短くなる反面、判断根拠が省かれるので、重要判断のログは別途残す運用にする。</p>\n\n<h4>ひとことまとめ</h4>\n<p>空白日の Claude Code は「新機能」より「運用の摩擦を減らす更新」で進んでいる。組織ポリシー可視化・128K 出力・自動再開といった地味な改善こそ、毎日回す定期タスクの安定性に直結する。</p>",
+      "sources": [
+        {
+          "title": "Claude Code Changelog（gradually.ai）",
+          "url": "https://www.gradually.ai/en/changelogs/claude-code/"
+        },
+        {
+          "title": "claude-code-log（直近リリースまとめ）",
+          "url": "https://claude-code-log.com/"
+        },
+        {
+          "title": "Claude Code 運用ガイド 2026（uravation）",
+          "url": "https://uravation.com/media/claude-code-update-operation-guide-2026/"
+        },
+        {
+          "title": "導入成功事例集 2026（Digirise）",
+          "url": "https://claudecode.digirise.ai/blog/claude-code-case-studies-2026"
+        }
+      ]
+    },
+    {
+      "id": "2026-09-09-nextjs",
+      "date": "2026-09-09",
+      "topic": "Next.js",
+      "title": "同一ドキュメント View Transitions でリスト変化を自動アニメ — FLIP 不要で追加/削除/並び替え/フィルタを補間",
+      "lede": "カード一覧・テーブル行・カンバン列の追加/削除/並び替え/フィルタを、DOM を更新するだけでネイティブに補間。FLIP の手測りも Motion 等のライブラリも要らない。鍵は view-transition-name の一意性と、React 側の flushSync。",
+      "articleHtml": "\n<p>リスト（カード一覧・テーブル行・タグ・カンバン列）の<strong>追加/削除/並び替え/フィルタ</strong>を滑らかに見せる仕事は、これまで FLIP（<code>getBoundingClientRect()</code> で前後位置を測って <code>transform</code> で差分を打ち消す）や Motion / AutoAnimate といったライブラリの担当だった。ブラウザ標準の <strong>View Transitions API</strong> は、DOM を更新するだけで<strong>要素が旧位置から新位置へネイティブに補間</strong>され、消える要素はフェードアウト、現れる要素はフェードインする。手測りも transform 計算もライブラリも要らない。</p>\n\n<h4>仕組み: startViewTransition の 4 段階</h4>\n<p><code>document.startViewTransition(callback)</code> は、(1) 呼ばれた瞬間に <code>view-transition-name</code> を持つ全要素の<strong>旧スナップショット</strong>を撮り、(2) <code>callback</code> 内で DOM を新状態へ更新し、(3) <strong>新スナップショット</strong>を撮り、(4) 名前ごとに <code>::view-transition-group</code> が旧→新の位置/サイズを補間し、その中で <code>-old</code>（フェードアウト）と <code>-new</code>（フェードイン）がクロスフェードする。旧新<strong>両方</strong>にある名前＝移動/モーフ、旧のみ＝退場、新のみ＝入場、という対応だ。</p>\n\n<figure class='fig'><pre class='mermaid'>flowchart LR\n  A[\"startViewTransition 呼び出し\"] --> B[\"旧スナップショット撮影\"]\n  B --> C[\"callback 内で DOM 更新\"]\n  C --> D[\"新スナップショット撮影\"]\n  D --> E[\"group が位置/サイズを補間\"]\n  E --> F[\"old=退場 / new=入場 をクロスフェード\"]</pre><figcaption>図1：startViewTransition の 4 段階。DOM を書き換えるだけで移動・入退場が補間される。</figcaption></figure>\n\n<h4>絶対条件: view-transition-name はスナップショット内で一意</h4>\n<p>旧または新のスナップショット内で<strong>同じ名前が 2 つ以上</strong>あると、ブラウザはどれを補間すべきか決められず、<strong>トランジション全体を黙ってスキップ</strong>して warning を出す（部分失敗ではなく全無効）。リスト項目には必ずアイテム ID を含む一意名を付ける——<code>style={{ viewTransitionName: 'row-' + item.id }}</code> のように名前空間プレフィックス＋一意 ID が定石で、使い回しは最頻出の破損原因だ。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <text x='300' y='16' font-size='12.5' text-anchor='middle' fill='#333'>対応状況（2026）とフォールバック</text>\n  <rect x='20' y='30' width='175' height='60' rx='8' fill='#eef8f0' stroke='#3fb950'/>\n  <text x='107' y='54' font-size='12' text-anchor='middle' fill='#1a7f37' font-weight='bold'>Chrome/Edge 111+</text>\n  <text x='107' y='74' font-size='11' text-anchor='middle' fill='#555'>同一ドキュメント対応</text>\n  <rect x='212' y='30' width='175' height='60' rx='8' fill='#eef8f0' stroke='#3fb950'/>\n  <text x='299' y='54' font-size='12' text-anchor='middle' fill='#1a7f37' font-weight='bold'>Safari 18+</text>\n  <text x='299' y='74' font-size='11' text-anchor='middle' fill='#555'>同一ドキュメント対応</text>\n  <rect x='404' y='30' width='175' height='60' rx='8' fill='#fdeeee' stroke='#d9534f'/>\n  <text x='491' y='54' font-size='12' text-anchor='middle' fill='#b23b37' font-weight='bold'>Firefox</text>\n  <text x='491' y='74' font-size='11' text-anchor='middle' fill='#555'>未実装</text>\n  <rect x='20' y='104' width='559' height='32' rx='8' fill='#f4f4f6' stroke='#888'/>\n  <text x='300' y='124' font-size='11' text-anchor='middle' fill='#444'>if (!document.startViewTransition) return update();  ← 未対応は即 DOM 更新でフォールバック（機能は動く）</text>\n</svg><figcaption>図2：プログレッシブエンハンスメント必須。存在チェックで分岐する。</figcaption></figure>\n\n<h4>Next.js（App Router）での組み込み</h4>\n<p>トリガーはクライアント state 変化なので、リスト UI は <code>'use client'</code> の島に隔離し、データ取得は RSC のまま props で流し込む。View Transitions は<strong>ブラウザ上の更新時のみ</strong>発火するため <strong>SSR に無影響で hydration mismatch も起きない</strong>。React は DOM 更新が非同期なので、<code>callback</code> 内で <code>flushSync(() =&gt; setState(next))</code> を使い、同期的に新状態を反映してから新スナップショットを撮らせる（これを怠ると「更新前の DOM」が撮られアニメが壊れる）。</p>\n\n<pre><code>function withViewTransition(update) {\n  if (!document.startViewTransition) return update();   // Firefox 等はフォールバック\n  document.startViewTransition(() =&gt; flushSync(update));\n}</code></pre>\n\n<h4>注意点・落とし穴</h4>\n<p>名前は<strong>動くものだけに絞る</strong>——名前付き要素が多いほど合成コストが増え、100 行同時アニメは jank になる（仮想化リストは画面内のみ名前付け）。アニメ中の旧/新画像は置換画像なのでホバー等が一瞬効かない。<code>prefers-reduced-motion</code> はワイルドカード <code>::view-transition-group(*)</code> 等で <code>animation:none</code> にし、<strong>状態変化自体は残す</strong>。Level 2 の <code>types</code> と <code>view-transition-class</code> を使えば「並び替えの時だけ」の演出や一群への共通アニメも書ける。</p>\n\n<h4>ひとことまとめ</h4>\n<p>リストの動きは、もうライブラリの独占領域ではない。一意名と flushSync さえ押さえれば、依存ゼロで「並び替えて滑る／フィルタで詰めて動く」が既定の挙動として無料で手に入る。</p>",
+      "sources": [
+        {
+          "title": "MDN: View Transition API",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/View_Transition_API"
+        },
+        {
+          "title": "Chrome for Developers: Same-document view transitions",
+          "url": "https://developer.chrome.com/docs/web-platform/view-transitions/same-document"
+        },
+        {
+          "title": "CSS View Transitions Module Level 2",
+          "url": "https://drafts.csswg.org/css-view-transitions-2/"
+        },
+        {
+          "title": "React: <ViewTransition>",
+          "url": "https://react.dev/reference/react/ViewTransition"
+        }
+      ]
+    },
+    {
+      "id": "2026-09-09-flutter",
+      "date": "2026-09-09",
+      "topic": "Flutter",
+      "title": "Flutter 3.48 / Dart 3.14 が beta 入り — 安定版 3.47 の到達点と、状態管理は“benchmark でなく team expertise で選ぶ”",
+      "lede": "3.48.0-0.3.pre（Dart 3.14 同梱）が 8/26 に pre-release。安定版は 3.47.2。土台は Impeller デスクトップ既定・Widget Previews stable・WasmGC。状態管理は新規=Riverpod 3.3、規制業界=Bloc 9 を基本線に、最後はチームの流暢さで決める。",
+      "articleHtml": "\n<p>今日の主役は <strong>Flutter 3.48 / Dart 3.14 の beta 入り</strong>だ。<strong>3.48.0-0.3.pre（Dart 3.14.0 同梱）が 2026-08-26 に pre-release</strong> となり、安定版に降りてくるのは年 4 回（2/5/8/11 月）サイクルで <strong>2026 年 11 月</strong>の見込み。現行の安定版は <strong>3.47.2 / Dart 3.13.x</strong> で、beta を試すなら <code>flutter channel beta &amp;&amp; flutter upgrade</code>、戻すなら <code>flutter channel stable</code>。</p>\n\n<h4>土台は 3.47 系の到達点</h4>\n<p><strong>Impeller が macOS/Windows/Linux のデスクトップでも既定</strong>になり、<strong>Widget Previews が stable</strong>、Dart 3.13 の <strong>primary constructors</strong> が正式化された。3.48 系はこの延長で <strong>WebAssembly（WasmGC）を Flutter Web の既定に近づける</strong>取り組みとビルド時間最適化を継続する。Web は <code>--wasm</code> で opt-in（<code>dart:html → package:web</code> 移行が前提）、macOS では Wide Gamut Color が既定だ。Impeller は iOS＋モダン Android（API 29+）で全 shader を build 時に AOT precompile し、<strong>shader compilation jank を排除</strong>して複雑アニメでも 120fps を維持する。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 170' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <text x='300' y='16' font-size='12.5' text-anchor='middle' fill='#333'>アニメーションの使い分け階層（用途 → 手段 → 目安）</text>\n  <rect x='20' y='28' width='560' height='28' rx='7' fill='#e8f5fb' stroke='#0277bd'/>\n  <text x='30' y='46' font-size='11.5' fill='#01597a'>micro（単純な fade/size）→ <tspan font-weight='bold'>implicit</tspan>（AnimatedOpacity / AnimatedContainer）… 50–200ms</text>\n  <rect x='20' y='60' width='560' height='28' rx='7' fill='#eef8f0' stroke='#3fb950'/>\n  <text x='30' y='78' font-size='11.5' fill='#1a7f37'>多段演出 → <tspan font-weight='bold'>flutter_animate</tspan>（.fadeIn().slideY() を宣言的に連結・controller 不要）</text>\n  <rect x='20' y='92' width='560' height='28' rx='7' fill='#f3f6ff' stroke='#1f6feb'/>\n  <text x='30' y='110' font-size='11.5' fill='#1f4fa8'>component → <tspan font-weight='bold'>explicit</tspan>（AnimationController + AnimatedBuilder・dispose 必須）… 200–400ms</text>\n  <rect x='20' y='124' width='560' height='28' rx='7' fill='#f3ecff' stroke='#7b3fe4'/>\n  <text x='30' y='142' font-size='11.5' fill='#5a2bbf'>共有要素 → <tspan font-weight='bold'>Hero</tspan>（300–600ms）／ 重い authored art は Rive/Lottie にオフロード</text>\n</svg><figcaption>図1：単純な fade を controller で組むのは過剰。用途で手段を選ぶ。</figcaption></figure>\n\n<h4>状態管理は benchmark でなく team expertise で選ぶ</h4>\n<p>今日の指針で刺さるのは<strong>「ライブラリの優劣より、チームの流暢さ・データフローの形・欲しい保証で決める」</strong>という考え方だ。BLoC に習熟したチームは、理論上クリーンでも Riverpod へ途中移行するより <strong>BLoC を継続した方が速く出荷できる</strong>。その上で基本線は——新規は <strong>Riverpod 3.0（3.3.x）</strong>を既定（compile-time safety・BuildContext 非依存の読み取り・最小 boilerplate・unified Ref・automatic retry）、監査証跡が要る<strong>規制業界（fintech/healthcare）や複雑並行は Bloc 9.0</strong>（<code>on&lt;Event&gt;</code> で typed event を処理し event-driven な audit trail を生成）。<strong>GetX は 12 ヶ月超で回避</strong>、<strong>Provider は既存アプリの保守</strong>が 2026 の共通見解だ。</p>\n\n<h4>パフォーマンス: フレーム予算と再ビルド削減</h4>\n<p>最も多い性能問題は<strong>不要な widget rebuild</strong>。プロパティ不変なら <code>const</code> で再ビルドを完全スキップ、大きな <code>build()</code> は分割、<code>ref.watch(provider.select(...))</code> や <code>BlocSelector</code> で局所購読する。アニメする領域は <strong>RepaintBoundary</strong> で囲んで partial repaint に閉じ、重い計算は <code>Isolate.run()</code>/<code>compute()</code> で背景へ逃がす。計測は必ず <strong>profile モード</strong>（debug は JIT/assert で歪む）で DevTools を使う。フレーム予算は <strong>60fps=16 / 90fps=11 / 120fps=8.3ms</strong>。</p>\n\n<h4>ひとことまとめ</h4>\n<p>beta の 3.48 は「大転換」より「Web の Wasm 化とビルド最適化を着実に進める」リリース。今すぐ動くべきは安定版 3.47 の土台活用で、状態管理はチームの現在地から選ぶのが最短だ。</p>",
+      "sources": [
+        {
+          "title": "Flutter release notes",
+          "url": "https://docs.flutter.dev/release/release-notes"
+        },
+        {
+          "title": "What's new in Flutter 3.47",
+          "url": "https://flutter.dev/blog/whats-new-in-flutter-3-47"
+        },
+        {
+          "title": "Best Flutter State Management Libraries 2026（Foresight Mobile）",
+          "url": "https://foresightmobile.com/blog/best-flutter-state-management"
+        },
+        {
+          "title": "Improving rendering performance（docs.flutter.dev）",
+          "url": "https://docs.flutter.dev/perf/rendering-performance"
+        }
+      ]
+    },
+    {
+      "id": "2026-09-09-github-trending",
+      "date": "2026-09-09",
+      "topic": "GitHub Trending",
+      "title": "9/9 の話題リポジトリ — HTML を動画にする hyperframes・LLM 前でトークンを削る headroom・巨大リポを高速検索する tgrep",
+      "lede": "今日の急上昇は「AI に渡す前後のコストと表現力」を攻める 3 本。生成（動画）・節約（トークン）・検索（コード）と毛色は違うが、いずれも AI エージェント時代の“入出力の効率化”という共通項でつながる。",
+      "articleHtml": "\n<p>今日 Trendshift 日次で急上昇していた中から、毛色の異なる 3 本を選んだ。動画生成の <strong>hyperframes</strong>、トークン圧縮の <strong>headroom</strong>、高速コード検索の <strong>tgrep</strong>。ジャンルはバラバラだが、いずれも<strong>「AI に渡す前後の入出力を、いかに安く・速く・表現力豊かにするか」</strong>という一点でつながっている。各リポジトリについて「解決したい課題」と「提供する機能」を分けて見ていく。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <text x='300' y='16' font-size='12.5' text-anchor='middle' fill='#333'>3 本の「解決したい課題 → 提供する機能」対応表</text>\n  <line x1='20' y1='28' x2='580' y2='28' stroke='#3fb950' stroke-width='1.5'/>\n  <text x='30' y='24' font-size='10.5' fill='#1a7f37' font-weight='bold'>repo</text>\n  <text x='185' y='24' font-size='10.5' fill='#1a7f37' font-weight='bold'>解決したい課題</text>\n  <text x='400' y='24' font-size='10.5' fill='#1a7f37' font-weight='bold'>提供する機能</text>\n  <g font-size='10.5' fill='#444'>\n    <text x='30' y='58' font-weight='bold' fill='#222'>hyperframes</text>\n    <text x='30' y='72' fill='#777'>⭐~39.5k</text>\n    <text x='185' y='52'>動画制作は API/クラウド/</text>\n    <text x='185' y='66'>専用ツール依存で重い</text>\n    <text x='400' y='52'>HTML/CSS/JS を書くだけで</text>\n    <text x='400' y='66'>MP4 に（GSAP/Three.js 対応）</text>\n    <line x1='20' y1='84' x2='580' y2='84' stroke='#e0e0e0'/>\n    <text x='30' y='114' font-weight='bold' fill='#222'>headroom</text>\n    <text x='30' y='128' fill='#777'>⭐~24.9k</text>\n    <text x='185' y='108'>ログ/RAG/JSON が長く</text>\n    <text x='185' y='122'>トークン費が膨らむ</text>\n    <text x='400' y='108'>LLM 前にローカル圧縮</text>\n    <text x='400' y='122'>（JSON 60〜95% 削減）</text>\n    <line x1='20' y1='140' x2='580' y2='140' stroke='#e0e0e0'/>\n    <text x='30' y='170' font-weight='bold' fill='#222'>tgrep</text>\n    <text x='30' y='184' fill='#777'>⭐~1.8k</text>\n    <text x='185' y='164'>巨大リポの grep は</text>\n    <text x='185' y='178'>毎回全走査で遅い</text>\n    <text x='400' y='164'>トライグラム索引で検索</text>\n    <text x='400' y='178'>（ripgrep 比最大 52 倍）</text>\n  </g>\n</svg><figcaption>図1：生成・節約・検索。3 本を「課題 → 機能」で一望する。</figcaption></figure>\n\n<h4>heygen-com/hyperframes（HTML／⭐~39.5k）</h4>\n<p><strong>解決したい課題:</strong> 動画制作は従来、専用ツールやクラウド API、レンダリング基盤に依存し、AI エージェントから「コードで動画を作る」のが難しかった。<strong>提供する機能:</strong> HeyGen 発の「video as code」フレームワークで、<strong>HTML/CSS/JS を書くだけで MP4 を書き出す</strong>。GSAP・Lottie・CSS トランジション・Three.js/WebGL シェーダに対応し、<strong>API キーもクラウドも不要</strong>。エージェントに動画生成を任せられる点が新しく、New 2026 で一気に約 39.5k まで伸び本日日次 3 位の最大級モメンタム。</p>\n\n<h4>headroomlabs-ai/headroom（⭐~24.9k）</h4>\n<p><strong>解決したい課題:</strong> コーディングエージェントや RAG では、ツール出力・ログ・ファイル・チャンクが長大になり、そのまま LLM に渡すとトークン費が膨らむ。<strong>提供する機能:</strong> LLM に渡す<strong>前に</strong>それらを<strong>ローカルで圧縮</strong>するライブラリ/プロキシ/MCP サーバ。回答品質を保ったまま coding で約 20%、<strong>JSON で 60〜95% のトークンを削減</strong>し、圧縮は端末内で完結（内容を外部送信しない）。多数の定期タスクを回す運用のコストに直撃するのが刺さりどころ。</p>\n\n<h4>microsoft/tgrep（Rust／⭐~1.8k）</h4>\n<p><strong>解決したい課題:</strong> 大規模コードベースでは、毎回全ファイルを走査する grep は遅く、AI に文脈を渡す前段の検索がボトルネックになる。<strong>提供する機能:</strong> Microsoft 発の Rust 製 grep で、<strong>トライグラム索引＋client/server 構成</strong>により全走査を避け、大規模リポで <strong>ripgrep 比最大 52 倍</strong>。ファイル監視でインクリメンタル更新も行う。AI 一色の上位で非 AI の開発者ツールとして毛色の違う多様性を担い、公開直後に急伸した。</p>\n\n<h4>まとめ — 自分が試すなら</h4>\n<p>定期タスクの<strong>コスト削減</strong>という観点では、真っ先に試すのは <strong>headroom</strong> だ。プロキシ/MCP として差し込めるので、既存の tool-use/RAG 前段に低リスクで挟める。<strong>tgrep</strong> はエージェントにリポ文脈を渡す検索の高速化に、<strong>hyperframes</strong> は「読み物の図解を動画化する」といった実験に向く。3 本とも「AI の入出力効率」を別々の角度から攻めており、組み合わせる余地がある。</p>",
+      "sources": [
+        {
+          "title": "heygen-com/hyperframes",
+          "url": "https://github.com/heygen-com/hyperframes"
+        },
+        {
+          "title": "headroomlabs-ai/headroom",
+          "url": "https://github.com/headroomlabs-ai/headroom"
+        },
+        {
+          "title": "microsoft/tgrep",
+          "url": "https://github.com/microsoft/tgrep"
+        }
+      ]
+    },
     {
       "id": "2026-09-08-claude-code",
       "date": "2026-09-08",
