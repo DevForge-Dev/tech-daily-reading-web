@@ -1,0 +1,89 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Claude Code v2.1.266 — ゲートウェイ回帰バグの緊急修正と、v2.1.263 の広範改善＋Fable 5.1 既定化 — デイリー技術深掘り 読み物</title><meta name="description" content="9/8 の v2.1.266 が最新。直前 v2.1.265 で混入した CLAUDE_CODE_USE_GATEWAY の回帰を潰す修正が中心で、あわせて 9/6 v2.1.263 の広範改善と Fable 5.1 の既定化を棚卸しする。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-10-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Claude Code v2.1.266 — ゲートウェイ回帰バグの緊急修正と、v2.1.263 の広範改善＋Fable 5.1 既定化 — デイリー技術深掘り 読み物"><meta property="og:description" content="9/8 の v2.1.266 が最新。直前 v2.1.265 で混入した CLAUDE_CODE_USE_GATEWAY の回帰を潰す修正が中心で、あわせて 9/6 v2.1.263 の広範改善と Fable 5.1 の既定化を棚卸しする。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-10-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>Claude Code v2.1.266 — ゲートウェイ回帰バグの緊急修正と、v2.1.263 の広範改善＋Fable 5.1 既定化</h1> <p class="lede">9/8 の v2.1.266 が最新。直前 v2.1.265 で混入した CLAUDE_CODE_USE_GATEWAY の回帰を潰す修正が中心で、あわせて 9/6 v2.1.263 の広範改善と Fable 5.1 の既定化を棚卸しする。</p> <div class="meta"> <span>📅 2026年9月10日</span> <span>⏱ 約2分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="0">
+<p>9月8日公開の <strong>v2.1.266</strong> が現時点の最新で、内容は直前 <strong>v2.1.265</strong> で混入した回帰の緊急修正が中心だ。派手な新機能ではないが、LLM ゲートウェイ／プロキシ経由で Claude Code を使う企業構成を直撃していたため、影響範囲は広い。あわせて 9/6 の広範改善 v2.1.263 と、既定モデルの Fable 5.1 化まで棚卸しする。</p>
+
+<h4 id="sec-1">何が新しい/重要か</h4>
+<p>問題は未文書の環境変数 <code>CLAUDE_CODE_USE_GATEWAY</code> にあった。v2.1.265 ではこの変数が<strong>単独で Cloud ゲートウェイへのサインインを強制</strong>するようになり、API キーや <code>apiKeyHelper</code>、独自認証ヘッダと併用する構成が『Not signed in to the Cloud gateway』で<strong>全リクエスト失敗</strong>。v2.1.266 でこの変数は<strong>単独では再び無視される</strong>元の挙動に戻り、ゲートウェイ／プロキシ利用者は<strong>設定変更なしで復旧</strong>する。</p>
+
+<figure class='fig'><svg viewBox='0 0 600 170' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <text x='300' y='18' font-size='13' text-anchor='middle' fill='#333'>CLAUDE_CODE_USE_GATEWAY の挙動変化</text>
+  <rect x='20' y='34' width='270' height='104' rx='8' fill='#fdecec' stroke='#d9534f'></rect>
+  <text x='34' y='54' font-size='12' fill='#b02a26' font-weight='bold'>v2.1.265（回帰）</text>
+  <text x='34' y='74' font-size='10.5' fill='#555'>変数単独でゲートウェイ強制サインイン</text>
+  <text x='34' y='92' font-size='10.5' fill='#555'>APIキー/apiKeyHelper併用が</text>
+  <text x='34' y='108' font-size='10.5' fill='#555'>全リクエスト失敗（Not signed in）</text>
+  <rect x='310' y='34' width='270' height='104' rx='8' fill='#eef8f0' stroke='#3fb950'></rect>
+  <text x='324' y='54' font-size='12' fill='#1a7f37' font-weight='bold'>v2.1.266（修正）</text>
+  <text x='324' y='74' font-size='10.5' fill='#555'>変数単独では無視（元の挙動へ）</text>
+  <text x='324' y='92' font-size='10.5' fill='#555'>ゲートウェイ/プロキシ構成が</text>
+  <text x='324' y='108' font-size='10.5' fill='#555'>設定変更なしで復旧</text>
+</svg><figcaption>図1：回帰を起こした v2.1.265 と、それを戻した v2.1.266 の対比。</figcaption></figure>
+
+<h4 id="sec-2">9/6 v2.1.263 の広範改善</h4>
+<p>9/6 の <strong>v2.1.263</strong> は多数の改善をまとめた回。<strong>ポリシー／スキル診断</strong>の追加、コマンド・タスクの<strong>インライン出力上限の拡大</strong>、VS Code ワークフロー・モデル選択・Remote Control・起動信頼性の改善を含む。性能面では<strong>描画済みブロックを更新のたびにレイアウト再チェックしない</strong>ストリーミング最適化、安全面では <code>rm -rf</code> の位置パラメータやダブルクオート内 <code>sh -c</code> を捕捉する<strong>危険 rm 安全プロンプトの強化</strong>が入った。</p>
+
+<h4 id="sec-3">既定モデル Fable 5.1</h4>
+<p>9 月の大型更新で <strong>Fable 5.1 が新しい既定 Fable モデル</strong>になり、コンテキスト拡大と価格改善を伴う。時間・モデルの制御が拡張され、サンドボックスと権限まわりの安全策も強化。v2.1.257 で Fable 5.1 既定化＋カスタム時刻フォーマット、v2.1.260 で<strong>未コミット変更の左右差分パネル表示</strong>が加わっている。</p>
+
+<h4 id="sec-4">実務での使いどころ・注意点</h4>
+<p>ゲートウェイ／プロキシ構成のチームは<strong>即アップデート</strong>が正解。危険 rm 強化は自動化・CI での事故防止に効くので、権限設計とあわせて有効化したい。教訓としては<strong>未文書の環境変数に依存しない</strong>こと。コミット前レビューは左右差分パネルに寄せると、エージェントの変更を機械的に確認しやすい。</p>
+
+<h4 id="sec-5">ひとことまとめ</h4>
+<p>「新機能」より「壊れた運用を戻す」修正が主役の週。ゲートウェイ復旧・128K 級の出力・危険 rm 強化・差分パネルと、毎日回す作業の安定性に直結する更新が積み上がっている。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://www.gradually.ai/en/changelogs/claude-code/" target="_blank" rel="noopener noreferrer"> Claude Code Changelog（gradually.ai） </a> </li><li> <a href="https://releasebot.io/updates/anthropic/claude-code" target="_blank" rel="noopener noreferrer"> Claude Code updates（releasebot.io） </a> </li><li> <a href="https://code.claude.com/docs/en/changelog" target="_blank" rel="noopener noreferrer"> Claude Code changelog（公式） </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 何が新しい/重要か </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 9/6 v2.1.263 の広範改善 </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 既定モデル Fable 5.1 </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 実務での使いどころ・注意点 </a> </li><li> <a href="#sec-5" data-toc="sec-5"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-09-10</div> <div>⏱ 読了 約2分</div> <div>🏷 Claude Code</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

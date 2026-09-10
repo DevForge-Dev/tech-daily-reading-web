@@ -1,0 +1,90 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Dart 3.13 の dot shorthands と Riverpod 3 のオフライン永続化 — Flutter 3.47 時代の書き味と堅牢性 — デイリー技術深掘り 読み物</title><meta name="description" content="型が推論できる文脈で先頭ドット省略が可能に。Riverpod 3 は自動リトライ＋オフライン永続化で async を堅牢化。Flutter 3.47 安定版と Impeller 既定を土台に整理する。"><meta name="theme-color" content="#0277bd"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-10-flutter/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Dart 3.13 の dot shorthands と Riverpod 3 のオフライン永続化 — Flutter 3.47 時代の書き味と堅牢性 — デイリー技術深掘り 読み物"><meta property="og:description" content="型が推論できる文脈で先頭ドット省略が可能に。Riverpod 3 は自動リトライ＋オフライン永続化で async を堅牢化。Flutter 3.47 安定版と Impeller 既定を土台に整理する。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-10-flutter/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #29b6f6, #01579b)"> <span class="glyph" aria-hidden="true">◆</span> <div class="kicker">Flutter</div> <h1>Dart 3.13 の dot shorthands と Riverpod 3 のオフライン永続化 — Flutter 3.47 時代の書き味と堅牢性</h1> <p class="lede">型が推論できる文脈で先頭ドット省略が可能に。Riverpod 3 は自動リトライ＋オフライン永続化で async を堅牢化。Flutter 3.47 安定版と Impeller 既定を土台に整理する。</p> <div class="meta"> <span>📅 2026年9月10日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#0277bd"> <div> <article class="prose" data-has-mermaid="0">
+<p>今日の Flutter は「<strong>書き味</strong>」と「<strong>堅牢性</strong>」の両輪が動いた。言語側は Dart 3.13 の dot shorthands と primary constructors が正式化し、状態管理側は Riverpod 3 が自動リトライとオフライン永続化で async を強くする。土台は安定版 Flutter 3.47.x／Dart 3.13.x（3.47.0 は 2026-08-12）だ。</p>
+
+<h4 id="sec-1">Dart 3.13：dot shorthands と primary constructors</h4>
+<p><strong>dot shorthands</strong>は、型が推論できる文脈（switch・変数代入・引数）で enum 値・static メンバ・constructor を<strong>先頭ドットで省略</strong>できる機能。冗長な型名の反復が消える。<strong>primary constructors</strong>もクラスヘッダで constructor と instance 変数を 1 行宣言でき boilerplate を大幅削減。利用は language version を <code>^3.13.0</code> に。</p>
+<pre><code>// before
+onPressed: () => setAlign(Alignment.center);
+// after（型が推論できる文脈で先頭ドット）
+onPressed: () => setAlign(.center);</code></pre>
+
+<h4 id="sec-2">状態管理：Riverpod 3 の堅牢化</h4>
+<p>新規の既定は <strong>Riverpod 3.0（現行 3.3.x）</strong>。<strong>unified Ref</strong>、失敗 provider の<strong>自動リトライ（指数バックオフ）</strong>、実験的な<strong>オフライン永続化（stale-while-revalidate）</strong>、書き込みの中間状態を扱う <strong>Mutations API</strong> で async データを堅牢にする。再描画は <code>ref.watch(provider.select(...))</code> で最小スライスに絞る。監査証跡が要る規制業界や複雑並行は <strong>Bloc 9.0</strong> の event-driven audit trail が向く。</p>
+
+<figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <text x='300' y='18' font-size='13' text-anchor='middle' fill='#333'>状態管理の使い分け（2026）</text>
+  <rect x='20' y='34' width='270' height='96' rx='8' fill='#eef8ff' stroke='#0aa0d8'></rect>
+  <text x='34' y='54' font-size='12' fill='#0a6f96' font-weight='bold'>Riverpod 3.3.x（新規既定）</text>
+  <text x='34' y='74' font-size='10.5' fill='#555'>自動リトライ／オフライン永続化</text>
+  <text x='34' y='92' font-size='10.5' fill='#555'>Mutations API・select で最小再描画</text>
+  <text x='34' y='112' font-size='10.5' fill='#555'>ゼロから／自動エラー回復が欲しい</text>
+  <rect x='310' y='34' width='270' height='96' rx='8' fill='#f3ecff' stroke='#7b3fe4'></rect>
+  <text x='324' y='54' font-size='12' fill='#5a2bbf' font-weight='bold'>Bloc 9.0（監査/大規模）</text>
+  <text x='324' y='74' font-size='10.5' fill='#555'>on&lt;Event&gt; で typed event 処理</text>
+  <text x='324' y='92' font-size='10.5' fill='#555'>event-driven audit trail</text>
+  <text x='324' y='112' font-size='10.5' fill='#555'>fintech/healthcare・20+人チーム</text>
+</svg><figcaption>図1：新規は Riverpod、監査・大規模は Bloc という基本線。</figcaption></figure>
+
+<h4 id="sec-3">アニメーションとパフォーマンス</h4>
+<p>アニメは <strong>Material 3 Expressive</strong> の spring-driven motion が前進（<code>material_3_expressive</code> で opt-in）。性能では <strong>FFI の UI thread merging</strong>（Flutter 3.41〜）で native Swift/Kotlin を<strong>同期呼び出し</strong>でき低レベル統合が高速化。ただしバグのある native 呼び出しは UI スレッドを直接ブロックしうるので、重い処理は <code>Isolate.run()</code>/<code>compute()</code> で背景 isolate へ逃がす。フレーム予算は <strong>60fps=16ms／90fps=11ms／120fps=8.3ms</strong>。<code>const</code> と <code>Selector</code>/<code>select</code> で不要な rebuild を削り、Impeller が全 shader を AOT precompile して first-run jank をゼロにする。</p>
+
+<h4 id="sec-4">実務・注意・まとめ</h4>
+<p>まず language version を上げて dot shorthands を試し、次に Riverpod の <code>select</code> と自動リトライで壊れにくい非同期にする。注意点は、dot shorthands は<strong>型が推論できる文脈限定</strong>である点と、FFI 同期呼び出しの<strong>UI ブロックリスク</strong>。書き味の改善と堅牢化は別レイヤーの話なので、両方を同じ PR に混ぜず段階的に入れるのが安全だ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://docs.flutter.dev/release/release-notes/release-notes-3.47.0" target="_blank" rel="noopener noreferrer"> Flutter 3.47 release notes </a> </li><li> <a href="https://dart.dev/blog/announcing-dart-3-12" target="_blank" rel="noopener noreferrer"> Announcing Dart 3.12（Dart blog） </a> </li><li> <a href="https://foresightmobile.com/blog/best-flutter-state-management" target="_blank" rel="noopener noreferrer"> Best Flutter State Management 2026 </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> Dart 3.13：dot shorthands と primary constructors </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 状態管理：Riverpod 3 の堅牢化 </a> </li><li> <a href="#sec-3" data-toc="sec-3"> アニメーションとパフォーマンス </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 実務・注意・まとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-09-10</div> <div>⏱ 読了 約3分</div> <div>🏷 Flutter</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

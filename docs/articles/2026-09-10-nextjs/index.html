@@ -1,0 +1,102 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Prisma ORM v7 を App Router で使う — Rust-free・driver adapter 必須・生成コードのプロジェクト内出力 — デイリー技術深掘り 読み物</title><meta name="description" content="2025-11-19 の Prisma 7.0.0 で土台が総入れ替え。Rust エンジン廃止で TS 実装化、driver adapter が全 DB で必須に。App Router で RSC 直クエリを安全に回す作法を掴み直す。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-10-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Prisma ORM v7 を App Router で使う — Rust-free・driver adapter 必須・生成コードのプロジェクト内出力 — デイリー技術深掘り 読み物"><meta property="og:description" content="2025-11-19 の Prisma 7.0.0 で土台が総入れ替え。Rust エンジン廃止で TS 実装化、driver adapter が全 DB で必須に。App Router で RSC 直クエリを安全に回す作法を掴み直す。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-10-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>Prisma ORM v7 を App Router で使う — Rust-free・driver adapter 必須・生成コードのプロジェクト内出力</h1> <p class="lede">2025-11-19 の Prisma 7.0.0 で土台が総入れ替え。Rust エンジン廃止で TS 実装化、driver adapter が全 DB で必須に。App Router で RSC 直クエリを安全に回す作法を掴み直す。</p> <div class="meta"> <span>📅 2026年9月10日</span> <span>⏱ 約4分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="0">
+<p>09-03 の Drizzle に対する「もう一方の巨頭」＝ Prisma を App Router 前提で押さえ直す回。ただし <strong>2025-11-19 の Prisma 7.0.0</strong> で土台が総入れ替えされ、旧来の「<code>schema.prisma</code> に <code>provider = "prisma-client-js"</code> と書いて <code>@prisma/client</code> を import」という 6.x の記憶は<strong>そのままだと通用しない</strong>。まずは何が変わったかを掴む。</p>
+
+<h4 id="sec-1">v7 の 3 大変更</h4>
+<p><strong>①Rust クエリエンジンを廃止</strong>し TypeScript 実装へ（Rust-free がデフォルト）。<strong>②driver adapter が全 DB で必須</strong>。<strong>③生成コードが node_modules を出てプロジェクト内へ＋設定は <code>prisma.config.ts</code> に集約</strong>。効果は<strong>バンドル約90%減（例 ~14MB→~1.6MB）・クエリ最大3倍速・Edge/Workers デプロイが容易</strong>。TS 製 query compiler が SQL にコンパイルし、DB 接続は素の JS ドライバ（driver adapter）へ委譲する構図になった。</p>
+
+<figure class='fig'><svg viewBox='0 0 600 180' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <text x='300' y='18' font-size='13' text-anchor='middle' fill='#333'>Prisma v6 → v7 の実行経路の変化</text>
+  <rect x='20' y='36' width='270' height='120' rx='8' fill='#f4f4f6' stroke='#888'></rect>
+  <text x='34' y='56' font-size='12' fill='#444' font-weight='bold'>v6（Rust エンジン内蔵）</text>
+  <text x='34' y='78' font-size='10.5' fill='#555'>Client → JS↔Rust 通信層</text>
+  <text x='34' y='96' font-size='10.5' fill='#555'>→ Rust query engine（バイナリ）</text>
+  <text x='34' y='114' font-size='10.5' fill='#555'>→ DB。~14MB・ランタイム依存</text>
+  <text x='34' y='138' font-size='10.5' fill='#b02a26'>Edge/Workers に載せにくい</text>
+  <rect x='310' y='36' width='270' height='120' rx='8' fill='#f3f6ff' stroke='#1f6feb'></rect>
+  <text x='324' y='56' font-size='12' fill='#1f4fa8' font-weight='bold'>v7（Rust-free）</text>
+  <text x='324' y='78' font-size='10.5' fill='#555'>Client → TS query compiler → SQL</text>
+  <text x='324' y='96' font-size='10.5' fill='#555'>→ driver adapter（素のJSドライバ）</text>
+  <text x='324' y='114' font-size='10.5' fill='#555'>→ DB。~1.6MB・最大3倍速</text>
+  <text x='324' y='138' font-size='10.5' fill='#1a7f37'>Edge/Workers デプロイが容易</text>
+</svg><figcaption>図1：Rust エンジンを外し TS コンパイラ＋driver adapter に委譲した v7。</figcaption></figure>
+
+<h4 id="sec-2">App Router での作法</h4>
+<p>土台は Drizzle 09-03 と同じ<strong>singleton</strong>。RSC はリクエスト毎に走り dev では HMR で <code>PrismaClient</code> が量産され『Too many connections』になるため <code>globalThis</code> にキャッシュする。v7 は<strong>インスタンス化時に adapter を渡す</strong>点が 6.x と違う。</p>
+<pre><code>// schema.prisma
+generator client {
+  provider     = "prisma-client"   // prisma-client-js から変更
+  output       = "../src/generated/prisma" // 必須
+  moduleFormat = "esm"
+}
+
+// lib/prisma.ts
+import 'server-only'
+import { PrismaClient } from '@/generated/prisma/client'
+import { PrismaPg } from '@prisma/adapter-pg'
+const adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL })
+export const prisma = globalForPrisma.prisma ?? new PrismaClient({ adapter })</code></pre>
+<p>RSC / Route Handler / Server Action からは <code>await prisma.x</code> で HTTP を介さず DB 直行できる。edge では生 TCP Pool が使えないので <strong>HTTP ベースの adapter（Neon serverless / Prisma Accelerate）</strong>を選ぶのが定石。書込は Server Actions で行い <code>revalidateTag</code> と連動させる。</p>
+
+<h4 id="sec-3">落とし穴</h4>
+<p><code>new PrismaClient()</code> には <strong>adapter か accelerateUrl のどちらか必須</strong>（URL だけ渡す旧形は不可）。<code>$use()</code> の client middleware は<strong>削除 → $extends() へ移行</strong>。<strong>MongoDB は v7 未対応</strong>（使うなら v6 に留まる）。node-pg 採用で<strong>SSL 証明書の扱いが変化</strong>し、従来黙って無視していた無効証明書が通らなくなる。<code>queryCompiler</code>/<code>driverAdapters</code>/<code>metrics</code> の preview フラグは<strong>不要（外す）</strong>。</p>
+
+<h4 id="sec-4">選定メモ・まとめ</h4>
+<p><strong>Prisma 向き</strong>＝スキーマ駆動 DX・自動生成の型/クエリビルダ・Migrate/Studio/Accelerate の一体感・チーム標準化。v7 でバンドル/性能の弱みが大きく縮小。<strong>Drizzle 向き</strong>＝最小バンドル・SQL に近い制御・edge 第一級。どちらも「RSC 直クエリ・singleton・書込は Server Actions＋revalidateTag・認可は DAL」という App Router の型は共通だ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://www.prisma.io/blog/announcing-prisma-orm-7-0-0" target="_blank" rel="noopener noreferrer"> Announcing Prisma ORM 7.0.0 </a> </li><li> <a href="https://www.prisma.io/changelog/2025-11-19" target="_blank" rel="noopener noreferrer"> Prisma v7 changelog（Rust-free default） </a> </li><li> <a href="https://www.prisma.io/docs/guides/upgrade-prisma-orm/v7" target="_blank" rel="noopener noreferrer"> Prisma 7 upgrade guide </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> v7 の 3 大変更 </a> </li><li> <a href="#sec-2" data-toc="sec-2"> App Router での作法 </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 落とし穴 </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 選定メモ・まとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-09-10</div> <div>⏱ 読了 約4分</div> <div>🏷 Next.js</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
