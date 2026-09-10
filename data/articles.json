@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-09-09T04:46:05.660Z",
+  "generatedAt": "2026-09-10T04:50:19.202Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,94 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-09-10-claude-code",
+      "date": "2026-09-10",
+      "topic": "Claude Code",
+      "title": "Claude Code v2.1.266 — ゲートウェイ回帰バグの緊急修正と、v2.1.263 の広範改善＋Fable 5.1 既定化",
+      "lede": "9/8 の v2.1.266 が最新。直前 v2.1.265 で混入した CLAUDE_CODE_USE_GATEWAY の回帰を潰す修正が中心で、あわせて 9/6 v2.1.263 の広範改善と Fable 5.1 の既定化を棚卸しする。",
+      "articleHtml": "\n<p>9月8日公開の <strong>v2.1.266</strong> が現時点の最新で、内容は直前 <strong>v2.1.265</strong> で混入した回帰の緊急修正が中心だ。派手な新機能ではないが、LLM ゲートウェイ／プロキシ経由で Claude Code を使う企業構成を直撃していたため、影響範囲は広い。あわせて 9/6 の広範改善 v2.1.263 と、既定モデルの Fable 5.1 化まで棚卸しする。</p>\n\n<h4>何が新しい/重要か</h4>\n<p>問題は未文書の環境変数 <code>CLAUDE_CODE_USE_GATEWAY</code> にあった。v2.1.265 ではこの変数が<strong>単独で Cloud ゲートウェイへのサインインを強制</strong>するようになり、API キーや <code>apiKeyHelper</code>、独自認証ヘッダと併用する構成が『Not signed in to the Cloud gateway』で<strong>全リクエスト失敗</strong>。v2.1.266 でこの変数は<strong>単独では再び無視される</strong>元の挙動に戻り、ゲートウェイ／プロキシ利用者は<strong>設定変更なしで復旧</strong>する。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 170' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <text x='300' y='18' font-size='13' text-anchor='middle' fill='#333'>CLAUDE_CODE_USE_GATEWAY の挙動変化</text>\n  <rect x='20' y='34' width='270' height='104' rx='8' fill='#fdecec' stroke='#d9534f'/>\n  <text x='34' y='54' font-size='12' fill='#b02a26' font-weight='bold'>v2.1.265（回帰）</text>\n  <text x='34' y='74' font-size='10.5' fill='#555'>変数単独でゲートウェイ強制サインイン</text>\n  <text x='34' y='92' font-size='10.5' fill='#555'>APIキー/apiKeyHelper併用が</text>\n  <text x='34' y='108' font-size='10.5' fill='#555'>全リクエスト失敗（Not signed in）</text>\n  <rect x='310' y='34' width='270' height='104' rx='8' fill='#eef8f0' stroke='#3fb950'/>\n  <text x='324' y='54' font-size='12' fill='#1a7f37' font-weight='bold'>v2.1.266（修正）</text>\n  <text x='324' y='74' font-size='10.5' fill='#555'>変数単独では無視（元の挙動へ）</text>\n  <text x='324' y='92' font-size='10.5' fill='#555'>ゲートウェイ/プロキシ構成が</text>\n  <text x='324' y='108' font-size='10.5' fill='#555'>設定変更なしで復旧</text>\n</svg><figcaption>図1：回帰を起こした v2.1.265 と、それを戻した v2.1.266 の対比。</figcaption></figure>\n\n<h4>9/6 v2.1.263 の広範改善</h4>\n<p>9/6 の <strong>v2.1.263</strong> は多数の改善をまとめた回。<strong>ポリシー／スキル診断</strong>の追加、コマンド・タスクの<strong>インライン出力上限の拡大</strong>、VS Code ワークフロー・モデル選択・Remote Control・起動信頼性の改善を含む。性能面では<strong>描画済みブロックを更新のたびにレイアウト再チェックしない</strong>ストリーミング最適化、安全面では <code>rm -rf</code> の位置パラメータやダブルクオート内 <code>sh -c</code> を捕捉する<strong>危険 rm 安全プロンプトの強化</strong>が入った。</p>\n\n<h4>既定モデル Fable 5.1</h4>\n<p>9 月の大型更新で <strong>Fable 5.1 が新しい既定 Fable モデル</strong>になり、コンテキスト拡大と価格改善を伴う。時間・モデルの制御が拡張され、サンドボックスと権限まわりの安全策も強化。v2.1.257 で Fable 5.1 既定化＋カスタム時刻フォーマット、v2.1.260 で<strong>未コミット変更の左右差分パネル表示</strong>が加わっている。</p>\n\n<h4>実務での使いどころ・注意点</h4>\n<p>ゲートウェイ／プロキシ構成のチームは<strong>即アップデート</strong>が正解。危険 rm 強化は自動化・CI での事故防止に効くので、権限設計とあわせて有効化したい。教訓としては<strong>未文書の環境変数に依存しない</strong>こと。コミット前レビューは左右差分パネルに寄せると、エージェントの変更を機械的に確認しやすい。</p>\n\n<h4>ひとことまとめ</h4>\n<p>「新機能」より「壊れた運用を戻す」修正が主役の週。ゲートウェイ復旧・128K 級の出力・危険 rm 強化・差分パネルと、毎日回す作業の安定性に直結する更新が積み上がっている。</p>",
+      "sources": [
+        {
+          "title": "Claude Code Changelog（gradually.ai）",
+          "url": "https://www.gradually.ai/en/changelogs/claude-code/"
+        },
+        {
+          "title": "Claude Code updates（releasebot.io）",
+          "url": "https://releasebot.io/updates/anthropic/claude-code"
+        },
+        {
+          "title": "Claude Code changelog（公式）",
+          "url": "https://code.claude.com/docs/en/changelog"
+        }
+      ]
+    },
+    {
+      "id": "2026-09-10-nextjs",
+      "date": "2026-09-10",
+      "topic": "Next.js",
+      "title": "Prisma ORM v7 を App Router で使う — Rust-free・driver adapter 必須・生成コードのプロジェクト内出力",
+      "lede": "2025-11-19 の Prisma 7.0.0 で土台が総入れ替え。Rust エンジン廃止で TS 実装化、driver adapter が全 DB で必須に。App Router で RSC 直クエリを安全に回す作法を掴み直す。",
+      "articleHtml": "\n<p>09-03 の Drizzle に対する「もう一方の巨頭」＝ Prisma を App Router 前提で押さえ直す回。ただし <strong>2025-11-19 の Prisma 7.0.0</strong> で土台が総入れ替えされ、旧来の「<code>schema.prisma</code> に <code>provider = \"prisma-client-js\"</code> と書いて <code>@prisma/client</code> を import」という 6.x の記憶は<strong>そのままだと通用しない</strong>。まずは何が変わったかを掴む。</p>\n\n<h4>v7 の 3 大変更</h4>\n<p><strong>①Rust クエリエンジンを廃止</strong>し TypeScript 実装へ（Rust-free がデフォルト）。<strong>②driver adapter が全 DB で必須</strong>。<strong>③生成コードが node_modules を出てプロジェクト内へ＋設定は <code>prisma.config.ts</code> に集約</strong>。効果は<strong>バンドル約90%減（例 ~14MB→~1.6MB）・クエリ最大3倍速・Edge/Workers デプロイが容易</strong>。TS 製 query compiler が SQL にコンパイルし、DB 接続は素の JS ドライバ（driver adapter）へ委譲する構図になった。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 180' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <text x='300' y='18' font-size='13' text-anchor='middle' fill='#333'>Prisma v6 → v7 の実行経路の変化</text>\n  <rect x='20' y='36' width='270' height='120' rx='8' fill='#f4f4f6' stroke='#888'/>\n  <text x='34' y='56' font-size='12' fill='#444' font-weight='bold'>v6（Rust エンジン内蔵）</text>\n  <text x='34' y='78' font-size='10.5' fill='#555'>Client → JS↔Rust 通信層</text>\n  <text x='34' y='96' font-size='10.5' fill='#555'>→ Rust query engine（バイナリ）</text>\n  <text x='34' y='114' font-size='10.5' fill='#555'>→ DB。~14MB・ランタイム依存</text>\n  <text x='34' y='138' font-size='10.5' fill='#b02a26'>Edge/Workers に載せにくい</text>\n  <rect x='310' y='36' width='270' height='120' rx='8' fill='#f3f6ff' stroke='#1f6feb'/>\n  <text x='324' y='56' font-size='12' fill='#1f4fa8' font-weight='bold'>v7（Rust-free）</text>\n  <text x='324' y='78' font-size='10.5' fill='#555'>Client → TS query compiler → SQL</text>\n  <text x='324' y='96' font-size='10.5' fill='#555'>→ driver adapter（素のJSドライバ）</text>\n  <text x='324' y='114' font-size='10.5' fill='#555'>→ DB。~1.6MB・最大3倍速</text>\n  <text x='324' y='138' font-size='10.5' fill='#1a7f37'>Edge/Workers デプロイが容易</text>\n</svg><figcaption>図1：Rust エンジンを外し TS コンパイラ＋driver adapter に委譲した v7。</figcaption></figure>\n\n<h4>App Router での作法</h4>\n<p>土台は Drizzle 09-03 と同じ<strong>singleton</strong>。RSC はリクエスト毎に走り dev では HMR で <code>PrismaClient</code> が量産され『Too many connections』になるため <code>globalThis</code> にキャッシュする。v7 は<strong>インスタンス化時に adapter を渡す</strong>点が 6.x と違う。</p>\n<pre><code>// schema.prisma\ngenerator client {\n  provider     = \"prisma-client\"   // prisma-client-js から変更\n  output       = \"../src/generated/prisma\" // 必須\n  moduleFormat = \"esm\"\n}\n\n// lib/prisma.ts\nimport 'server-only'\nimport { PrismaClient } from '@/generated/prisma/client'\nimport { PrismaPg } from '@prisma/adapter-pg'\nconst adapter = new PrismaPg({ connectionString: process.env.DATABASE_URL })\nexport const prisma = globalForPrisma.prisma ?? new PrismaClient({ adapter })</code></pre>\n<p>RSC / Route Handler / Server Action からは <code>await prisma.x</code> で HTTP を介さず DB 直行できる。edge では生 TCP Pool が使えないので <strong>HTTP ベースの adapter（Neon serverless / Prisma Accelerate）</strong>を選ぶのが定石。書込は Server Actions で行い <code>revalidateTag</code> と連動させる。</p>\n\n<h4>落とし穴</h4>\n<p><code>new PrismaClient()</code> には <strong>adapter か accelerateUrl のどちらか必須</strong>（URL だけ渡す旧形は不可）。<code>$use()</code> の client middleware は<strong>削除 → $extends() へ移行</strong>。<strong>MongoDB は v7 未対応</strong>（使うなら v6 に留まる）。node-pg 採用で<strong>SSL 証明書の扱いが変化</strong>し、従来黙って無視していた無効証明書が通らなくなる。<code>queryCompiler</code>/<code>driverAdapters</code>/<code>metrics</code> の preview フラグは<strong>不要（外す）</strong>。</p>\n\n<h4>選定メモ・まとめ</h4>\n<p><strong>Prisma 向き</strong>＝スキーマ駆動 DX・自動生成の型/クエリビルダ・Migrate/Studio/Accelerate の一体感・チーム標準化。v7 でバンドル/性能の弱みが大きく縮小。<strong>Drizzle 向き</strong>＝最小バンドル・SQL に近い制御・edge 第一級。どちらも「RSC 直クエリ・singleton・書込は Server Actions＋revalidateTag・認可は DAL」という App Router の型は共通だ。</p>",
+      "sources": [
+        {
+          "title": "Announcing Prisma ORM 7.0.0",
+          "url": "https://www.prisma.io/blog/announcing-prisma-orm-7-0-0"
+        },
+        {
+          "title": "Prisma v7 changelog（Rust-free default）",
+          "url": "https://www.prisma.io/changelog/2025-11-19"
+        },
+        {
+          "title": "Prisma 7 upgrade guide",
+          "url": "https://www.prisma.io/docs/guides/upgrade-prisma-orm/v7"
+        }
+      ]
+    },
+    {
+      "id": "2026-09-10-flutter",
+      "date": "2026-09-10",
+      "topic": "Flutter",
+      "title": "Dart 3.13 の dot shorthands と Riverpod 3 のオフライン永続化 — Flutter 3.47 時代の書き味と堅牢性",
+      "lede": "型が推論できる文脈で先頭ドット省略が可能に。Riverpod 3 は自動リトライ＋オフライン永続化で async を堅牢化。Flutter 3.47 安定版と Impeller 既定を土台に整理する。",
+      "articleHtml": "\n<p>今日の Flutter は「<strong>書き味</strong>」と「<strong>堅牢性</strong>」の両輪が動いた。言語側は Dart 3.13 の dot shorthands と primary constructors が正式化し、状態管理側は Riverpod 3 が自動リトライとオフライン永続化で async を強くする。土台は安定版 Flutter 3.47.x／Dart 3.13.x（3.47.0 は 2026-08-12）だ。</p>\n\n<h4>Dart 3.13：dot shorthands と primary constructors</h4>\n<p><strong>dot shorthands</strong>は、型が推論できる文脈（switch・変数代入・引数）で enum 値・static メンバ・constructor を<strong>先頭ドットで省略</strong>できる機能。冗長な型名の反復が消える。<strong>primary constructors</strong>もクラスヘッダで constructor と instance 変数を 1 行宣言でき boilerplate を大幅削減。利用は language version を <code>^3.13.0</code> に。</p>\n<pre><code>// before\nonPressed: () => setAlign(Alignment.center);\n// after（型が推論できる文脈で先頭ドット）\nonPressed: () => setAlign(.center);</code></pre>\n\n<h4>状態管理：Riverpod 3 の堅牢化</h4>\n<p>新規の既定は <strong>Riverpod 3.0（現行 3.3.x）</strong>。<strong>unified Ref</strong>、失敗 provider の<strong>自動リトライ（指数バックオフ）</strong>、実験的な<strong>オフライン永続化（stale-while-revalidate）</strong>、書き込みの中間状態を扱う <strong>Mutations API</strong> で async データを堅牢にする。再描画は <code>ref.watch(provider.select(...))</code> で最小スライスに絞る。監査証跡が要る規制業界や複雑並行は <strong>Bloc 9.0</strong> の event-driven audit trail が向く。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <text x='300' y='18' font-size='13' text-anchor='middle' fill='#333'>状態管理の使い分け（2026）</text>\n  <rect x='20' y='34' width='270' height='96' rx='8' fill='#eef8ff' stroke='#0aa0d8'/>\n  <text x='34' y='54' font-size='12' fill='#0a6f96' font-weight='bold'>Riverpod 3.3.x（新規既定）</text>\n  <text x='34' y='74' font-size='10.5' fill='#555'>自動リトライ／オフライン永続化</text>\n  <text x='34' y='92' font-size='10.5' fill='#555'>Mutations API・select で最小再描画</text>\n  <text x='34' y='112' font-size='10.5' fill='#555'>ゼロから／自動エラー回復が欲しい</text>\n  <rect x='310' y='34' width='270' height='96' rx='8' fill='#f3ecff' stroke='#7b3fe4'/>\n  <text x='324' y='54' font-size='12' fill='#5a2bbf' font-weight='bold'>Bloc 9.0（監査/大規模）</text>\n  <text x='324' y='74' font-size='10.5' fill='#555'>on&lt;Event&gt; で typed event 処理</text>\n  <text x='324' y='92' font-size='10.5' fill='#555'>event-driven audit trail</text>\n  <text x='324' y='112' font-size='10.5' fill='#555'>fintech/healthcare・20+人チーム</text>\n</svg><figcaption>図1：新規は Riverpod、監査・大規模は Bloc という基本線。</figcaption></figure>\n\n<h4>アニメーションとパフォーマンス</h4>\n<p>アニメは <strong>Material 3 Expressive</strong> の spring-driven motion が前進（<code>material_3_expressive</code> で opt-in）。性能では <strong>FFI の UI thread merging</strong>（Flutter 3.41〜）で native Swift/Kotlin を<strong>同期呼び出し</strong>でき低レベル統合が高速化。ただしバグのある native 呼び出しは UI スレッドを直接ブロックしうるので、重い処理は <code>Isolate.run()</code>/<code>compute()</code> で背景 isolate へ逃がす。フレーム予算は <strong>60fps=16ms／90fps=11ms／120fps=8.3ms</strong>。<code>const</code> と <code>Selector</code>/<code>select</code> で不要な rebuild を削り、Impeller が全 shader を AOT precompile して first-run jank をゼロにする。</p>\n\n<h4>実務・注意・まとめ</h4>\n<p>まず language version を上げて dot shorthands を試し、次に Riverpod の <code>select</code> と自動リトライで壊れにくい非同期にする。注意点は、dot shorthands は<strong>型が推論できる文脈限定</strong>である点と、FFI 同期呼び出しの<strong>UI ブロックリスク</strong>。書き味の改善と堅牢化は別レイヤーの話なので、両方を同じ PR に混ぜず段階的に入れるのが安全だ。</p>",
+      "sources": [
+        {
+          "title": "Flutter 3.47 release notes",
+          "url": "https://docs.flutter.dev/release/release-notes/release-notes-3.47.0"
+        },
+        {
+          "title": "Announcing Dart 3.12（Dart blog）",
+          "url": "https://dart.dev/blog/announcing-dart-3-12"
+        },
+        {
+          "title": "Best Flutter State Management 2026",
+          "url": "https://foresightmobile.com/blog/best-flutter-state-management"
+        }
+      ]
+    },
+    {
+      "id": "2026-09-10-github-trending",
+      "date": "2026-09-10",
+      "topic": "GitHub Trending",
+      "title": "9/10 の話題リポジトリ — 結論ファーストの ADHD スキル・システム設計ノート・Lean で挑む Navier–Stokes",
+      "lede": "AI エージェント一色のトレンドに、出力整形スキル・CS 学習・形式数学という毛色の違う 3 本が上位へ食い込んだ日。",
+      "articleHtml": "\n<p>本日のトレンドは AI エージェント／スキルが席巻するなか、<strong>出力整形スキル・CS 学習リソース・形式数学</strong>という毛色の違う 3 本が上位へ食い込んだ。共通点は「純粋な新規 AI プロダクト」ではなく、既存の不便や普遍的な学習需要に応える骨太ジャンルだという点だ。各リポジトリを「解決したい課題」と「提供する機能」で読み解く。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <text x='300' y='18' font-size='13' text-anchor='middle' fill='#333'>今日の3本：課題 → 提供機能</text>\n  <line x1='20' y1='30' x2='580' y2='30' stroke='#ccc'/>\n  <text x='30' y='46' font-size='11' fill='#1a7f37' font-weight='bold'>リポジトリ</text>\n  <text x='210' y='46' font-size='11' fill='#b56a11' font-weight='bold'>解決したい課題</text>\n  <text x='410' y='46' font-size='11' fill='#1f4fa8' font-weight='bold'>提供する機能</text>\n  <line x1='20' y1='54' x2='580' y2='54' stroke='#eee'/>\n  <text x='30' y='78' font-size='10.5' fill='#333'>i-have-adhd</text>\n  <text x='210' y='78' font-size='10' fill='#555'>冗長出力で結論が埋もれる</text>\n  <text x='410' y='78' font-size='10' fill='#555'>結論ファースト整形スキル</text>\n  <line x1='20' y1='96' x2='580' y2='96' stroke='#eee'/>\n  <text x='30' y='120' font-size='10.5' fill='#333'>system-design-notes</text>\n  <text x='210' y='120' font-size='10' fill='#555'>設計/面接の体系的教材不足</text>\n  <text x='410' y='120' font-size='10' fill='#555'>名著を章立て整理した学習ノート</text>\n  <line x1='20' y1='138' x2='580' y2='138' stroke='#eee'/>\n  <text x='30' y='162' font-size='10.5' fill='#333'>NavierStokesAndEuler</text>\n  <text x='210' y='162' font-size='10' fill='#555'>爆発結果を人手でなく機械検証</text>\n  <text x='410' y='162' font-size='10' fill='#555'>Lean 4 による形式検証済み証明</text>\n  <line x1='20' y1='180' x2='580' y2='180' stroke='#eee'/>\n</svg><figcaption>図1：3 本の「課題→機能」対応。AI 一色の上位に多様なジャンルが並んだ。</figcaption></figure>\n\n<h4>ayghri/i-have-adhd（—・⭐—）</h4>\n<p><strong>解決したい課題：</strong>コーディングエージェントの回答は冗長になりがちで、肝心の結論が長文に埋もれてしまう。<strong>提供する機能：</strong>エージェントの出力を<strong>結論ファースト・簡潔</strong>に整形させる ADHD フレンドリーなスキルで、Claude Code などに導入して使う。Trendshift 日次 1 位・New 2026 で本日のモメンタム筆頭。実用性とネタ性を兼ね、公開直後から急上昇した。</p>\n\n<h4>liquidslr/system-design-notes（—・⭐—）</h4>\n<p><strong>解決したい課題：</strong>システム設計の面接対策や設計知識を、断片的な記事でなく体系立てて学びたいという普遍的な需要。<strong>提供する機能：</strong>名著『System Design Interview』の要点を<strong>章立てで整理した学習ノート集</strong>で、スケーラビリティ・一貫性・キャッシュなどの設計トピックを網羅する。Trendshift 日次 2 位。AI 一色の上位に非 AI・教育ジャンルとして多様性をもたらした。</p>\n\n<h4>openai/NavierStokesAndEuler（Lean・⭐—）</h4>\n<p><strong>解決したい課題：</strong>Navier–Stokes/Euler 方程式の有限時間爆発（blowup）という重い結果を、人手の査読だけでなく<strong>機械的に検証</strong>して信頼性を担保したい。<strong>提供する機能：</strong>その結果を <strong>Lean 4 で形式検証</strong>した証明リポジトリで、Clay 研究所のミレニアム問題 (C)(D) に対応する結果を含む。OpenAI 発・題材の重さから、Trendshift 日次 5 位・New 2026 で「形式数学 × AI」という異色ジャンルが上位に食い込んだ。</p>\n\n<h4>まとめ</h4>\n<p>自分が今日試すなら、まず <strong>i-have-adhd</strong> をスキルとして入れてエージェント出力を結論ファーストに矯正する。学習面では system-design-notes を設計レビューの下敷きに、NavierStokesAndEuler は形式検証の実例として眺める価値がある。</p>",
+      "sources": [
+        {
+          "title": "ayghri/i-have-adhd",
+          "url": "https://github.com/ayghri/i-have-adhd"
+        },
+        {
+          "title": "liquidslr/system-design-notes",
+          "url": "https://github.com/liquidslr/system-design-notes"
+        },
+        {
+          "title": "openai/NavierStokesAndEuler",
+          "url": "https://github.com/openai/NavierStokesAndEuler"
+        }
+      ]
+    },
     {
       "id": "2026-09-09-claude-code",
       "date": "2026-09-09",
