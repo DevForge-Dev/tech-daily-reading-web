@@ -1,0 +1,91 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Scroll Snap Events で『どこにスナップしたか』をJSで正確に拾う — scrollsnapchanging と scrollsnapchange — デイリー技術深掘り 読み物</title><meta name="description" content="CSS scroll-snap は気持ちよく止まるまではCSSで完結するが、『今どこに着地したか』をJSで正確に知る手段が長らく無かった。先行の scrollsnapchanging と確定の scrollsnapchange がそれを解決する。App Router での島化まで。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-11-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Scroll Snap Events で『どこにスナップしたか』をJSで正確に拾う — scrollsnapchanging と scrollsnapchange — デイリー技術深掘り 読み物"><meta property="og:description" content="CSS scroll-snap は気持ちよく止まるまではCSSで完結するが、『今どこに着地したか』をJSで正確に知る手段が長らく無かった。先行の scrollsnapchanging と確定の scrollsnapchange がそれを解決する。App Router での島化まで。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-11-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>Scroll Snap Events で『どこにスナップしたか』をJSで正確に拾う — scrollsnapchanging と scrollsnapchange</h1> <p class="lede">CSS scroll-snap は気持ちよく止まるまではCSSで完結するが、『今どこに着地したか』をJSで正確に知る手段が長らく無かった。先行の scrollsnapchanging と確定の scrollsnapchange がそれを解決する。App Router での島化まで。</p> <div class="meta"> <span>📅 2026年9月11日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="0">
+<p>CSS scroll-snap（<code>scroll-snap-type</code>／<code>scroll-snap-align</code>）は「気持ちよく止まる」までは CSS だけで完結する。しかし<strong>『今どのアイテムにスナップしたか／これから何にスナップしようとしているか』</strong>を JS で正確に知る手段が長らく無かった。従来は IntersectionObserver で「ポートの大半を占める要素＝スナップ対象だろう」と<strong>推測</strong>し <code>scrollend</code> を待つ回りくどい実装しかできず、フリック操作では取りこぼしが出ていた。</p>
+
+<h4 id="sec-1">何が新しいか — 対になった2イベント</h4>
+<p><code>SnapEvent</code> インターフェースの2イベントが性格の対になっている。<strong>scrollsnapchanging</strong> は<strong>先行・積極的</strong>：スクロール中（指を離す前）に「離したらここに着地する」と判定した瞬間に発火し、1ジェスチャで複数回出うる。フリックで複数を飛び越えても途中は飛ばして<strong>最終着地の1つだけ</strong>通知する。<strong>scrollsnapchange</strong> は<strong>遅延・確定</strong>：完全静止し、かつ対象が変わった時だけ <code>scrollend</code> の直前に発火する（対象が変わらなければ出ない）。</p>
+
+<figure class='fig'><svg viewBox='0 0 600 170' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <text x='300' y='18' font-size='13' text-anchor='middle' fill='#333'>1回のフリック中に何が発火するか</text>
+  <line x1='40' y1='120' x2='560' y2='120' stroke='#bbb' stroke-width='2'></line>
+  <text x='40' y='140' font-size='10' fill='#777'>指を離す</text>
+  <text x='520' y='140' font-size='10' fill='#777'>静止</text>
+  <circle cx='150' cy='120' r='6' fill='#1f6feb'></circle>
+  <text x='150' y='100' font-size='9.5' fill='#1f4fa8' text-anchor='middle'>changing</text>
+  <circle cx='250' cy='120' r='6' fill='#1f6feb'></circle>
+  <text x='250' y='100' font-size='9.5' fill='#1f4fa8' text-anchor='middle'>changing</text>
+  <circle cx='350' cy='120' r='6' fill='#1f6feb'></circle>
+  <text x='350' y='100' font-size='9.5' fill='#1f4fa8' text-anchor='middle'>changing</text>
+  <circle cx='500' cy='120' r='7' fill='#1a7f37'></circle>
+  <text x='500' y='100' font-size='9.5' fill='#1a7f37' text-anchor='middle'>change</text>
+  <text x='300' y='162' font-size='10.5' fill='#555' text-anchor='middle'>先行(青)は即応フィードバック向き／確定(緑)は着地後の一度きり演出向き</text>
+</svg><figcaption>図1：changing は移動中に複数回、change は確定時に一度だけ。</figcaption></figure>
+
+<h4 id="sec-2">イベントオブジェクトと対応状況</h4>
+<p><code>event.snapTargetInline</code>／<code>event.snapTargetBlock</code> にスナップした<strong>要素ノード</strong>が入る（横のみなら Block は null、縦のみなら Inline は null）。発火はスナップ・コンテナで、<code>document</code>／<code>window</code> でも受けられる。対応は 2026-09 時点で <strong>Chrome/Edge 129+</strong>のみで <strong>Firefox/Safari 未対応＝Baseline 未達</strong>。必ず<strong>プログレッシブ・エンハンスメント前提</strong>で使う。</p>
+
+<h4 id="sec-3">App Router での組み込み</h4>
+<p>スクロールイベント購読はブラウザ専用なので <code>'use client'</code> 必須。スクローラーを小さな Client Component（島）に隔離し、周囲は Server Component のまま。ギャラリー画像や見出しは RSC 側から <code>children</code>／props で渡し、<strong>イベント配線だけ</strong>をクライアントに置く。初期アクティブは <code>useState(0)</code> で決め打ちし、マウント後にイベントで更新して hydration mismatch を避ける。未対応ブラウザは IntersectionObserver へフォールバックする。</p>
+
+<h4 id="sec-4">落とし穴</h4>
+<p><code>scrollsnapchange</code> は「対象が変わらない微スクロール」では発火しない＝常時ハンドラを載せない（それは scroll／scrollend の仕事）。<code>scrollsnapchanging</code> は高頻度で出るので中で DOM 大量更新をしない（クラス付替え程度に）。そもそも <code>scroll-snap-align</code> の付いた子が無いと発火しない。ピッカーとして使うならキーボード/スクリーンリーダー導線を別途用意する。</p>
+
+<h4 id="sec-5">ひとことまとめ</h4>
+<p>「推測なし・正確・適切なタイミング」でスナップ状態を拾える素の API。カルーセルのドット同期や着地演出が依存ゼロで書ける。ただし Chrome 系限定なので、フォールバック込みで“進歩的強化”として仕込むのが正解。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://developer.chrome.com/blog/scroll-snap-events" target="_blank" rel="noopener noreferrer"> Scroll Snap Events | Chrome for Developers </a> </li><li> <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Scroll_snap/Using_scroll_snap_events" target="_blank" rel="noopener noreferrer"> Using scroll snap events | MDN </a> </li><li> <a href="https://developer.mozilla.org/en-US/docs/Web/API/SnapEvent" target="_blank" rel="noopener noreferrer"> SnapEvent インターフェース | MDN </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 何が新しいか — 対になった2イベント </a> </li><li> <a href="#sec-2" data-toc="sec-2"> イベントオブジェクトと対応状況 </a> </li><li> <a href="#sec-3" data-toc="sec-3"> App Router での組み込み </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 落とし穴 </a> </li><li> <a href="#sec-5" data-toc="sec-5"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-09-11</div> <div>⏱ 読了 約3分</div> <div>🏷 Next.js</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
