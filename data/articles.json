@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-09-10T04:50:19.202Z",
+  "generatedAt": "2026-09-11T04:50:31.958Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,72 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-09-11-claude-code",
+      "date": "2026-09-11",
+      "topic": "Claude Code",
+      "title": "v2.1.267 — maxEffortLevel で努力度に上限、--system-prompt-snapshot off で毎回再描画。週次上限は9/14から恒久+25%",
+      "lede": "派手な新機能より『制御とコスト』の週。全プロバイダの努力度に上限をかける maxEffortLevel、プロンプト再描画オプション、そして9/14からの週次上限恒久+25%と Fable/Mythos 5.1 のキャッシュ75%値下げを棚卸しする。",
+      "articleHtml": "\n<p>9月9日公開の <strong>v2.1.267</strong> は、エージェント運用の『制御』を強める地味だが効く更新だ。暴走的な高コスト推論を組織として抑える仕組みと、プロンプト調整をやりやすくする仕掛けが中心。あわせて 9/14 から始まる週次上限の恒久+25%、9/1 の Fable 5.1／Mythos 5.1 のコスト改善まで、この時期に効いてくる変更をまとめて押さえ直す。</p>\n\n<h4>何が新しい/重要か</h4>\n<p>新設の <code>maxEffortLevel</code> は努力度（effort level）に<strong>上限</strong>をかける設定で、トップレベルにも <code>modelSettings</code> 配下の<strong>モデル単位</strong>にも書ける。効く範囲は <strong>Bedrock・Vertex・Foundry を含む全プロバイダ</strong>。利用者はより低い水準を選べるが上限を超える指定はできないため、チームとして高コスト推論の暴走を防げる。もう一つの <code>--system-prompt-snapshot off</code> は、会話に記録済みのプロンプトを再利用せず<strong>毎リクエストでシステムプロンプトを新規描画</strong>する。プロンプト文言を詰める反復検証がやりやすくなる。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <text x='300' y='20' font-size='13' text-anchor='middle' fill='#333'>9月の Claude Code：制御とコストの3点</text>\n  <rect x='16' y='36' width='182' height='150' rx='8' fill='#f5f0ff' stroke='#7b3fe4'/>\n  <text x='28' y='58' font-size='12' fill='#5a2ec0' font-weight='bold'>maxEffortLevel</text>\n  <text x='28' y='80' font-size='10.5' fill='#555'>努力度に上限</text>\n  <text x='28' y='98' font-size='10.5' fill='#555'>全プロバイダ対応</text>\n  <text x='28' y='116' font-size='10.5' fill='#555'>(Bedrock/Vertex/</text>\n  <text x='28' y='132' font-size='10.5' fill='#555'>Foundry)</text>\n  <text x='28' y='156' font-size='10.5' fill='#555'>下方向の選択は自由</text>\n  <rect x='209' y='36' width='182' height='150' rx='8' fill='#f3f6ff' stroke='#1f6feb'/>\n  <text x='221' y='58' font-size='12' fill='#1f4fa8' font-weight='bold'>snapshot off</text>\n  <text x='221' y='80' font-size='10.5' fill='#555'>記録済みを再利用せず</text>\n  <text x='221' y='98' font-size='10.5' fill='#555'>毎回プロンプト再描画</text>\n  <text x='221' y='120' font-size='10.5' fill='#555'>文言の反復調整が</text>\n  <text x='221' y='136' font-size='10.5' fill='#555'>しやすい</text>\n  <rect x='402' y='36' width='182' height='150' rx='8' fill='#eef8f0' stroke='#1a7f37'/>\n  <text x='414' y='58' font-size='12' fill='#1a7f37' font-weight='bold'>上限・価格</text>\n  <text x='414' y='80' font-size='10.5' fill='#555'>週次上限 9/14から</text>\n  <text x='414' y='98' font-size='10.5' fill='#555'>恒久 +25%</text>\n  <text x='414' y='120' font-size='10.5' fill='#555'>Fable/Mythos 5.1</text>\n  <text x='414' y='136' font-size='10.5' fill='#555'>キャッシュ読込 -75%</text>\n  <text x='414' y='158' font-size='10.5' fill='#555'>($0.25/100万)</text>\n</svg><figcaption>図1：v2.1.267 の2機能と、9月の上限・価格まわりの変更。</figcaption></figure>\n\n<h4>設定の型</h4>\n<pre><code>{\n  \"maxEffortLevel\": \"medium\",\n  \"modelSettings\": {\n    \"claude-opus\": { \"maxEffortLevel\": \"high\" }\n  }\n}</code></pre>\n<p>週次上限は、期間限定の +50% プロモが 9/13(PT) まで4度目の延長、そして <strong>9/14 から Pro・Max・Team・シート課金 Enterprise の標準週次上限が恒久的に +25%</strong>になる。プロモ終了後も従来比で実効上限が底上げされる形だ。価格面では 9/1 の <strong>Fable 5.1／Mythos 5.1</strong> が単価据え置き（$10／$50 per 1M）のまま<strong>キャッシュ読み込みを75%値下げ（$0.25/100万）</strong>し、典型ワークロードで約25%・エージェント型で最大45%のコスト削減につながる。</p>\n\n<h4>実務での使いどころ</h4>\n<p>複数人でモデルを共有するチームは、既定を <code>medium</code> に絞りつつ Opus 等の高価モデルだけ <code>high</code> を許すといった<strong>モデル別ガード</strong>が組める。CI や自動化で走らせる箇所は特に上限を低く固定して事故的な高コスト実行を封じたい。プロンプト調整期は <code>--system-prompt-snapshot off</code> を付けて、system prompt の文言変更が即座に反映される状態で回すと検証が速い。</p>\n\n<h4>注意点・落とし穴</h4>\n<p><code>maxEffortLevel</code> はあくまで<strong>上限</strong>であって固定値ではない。実際の努力度はモデル/呼び出し側の指定との<strong>低い方</strong>に丸められる点を理解して設計する。<code>snapshot off</code> は毎回プロンプトを描き直すためキャッシュ効率とのトレードオフがあり、調整が終わったら外すのが基本。プロモ由来の +50% と恒久 +25% は別物なので、9/14 以降の恒常的な水準で運用計画を立てる。</p>\n\n<h4>ひとことまとめ</h4>\n<p>『どこまで頑張らせるか』を組織で締められる週。maxEffortLevel でコスト暴走を封じ、キャッシュ75%減で下地のコストも下がり、週次上限も底上げ。毎日回すエージェント運用の“財布”まわりが一段固くなった。</p>",
+      "sources": [
+        {
+          "title": "Claude Code v2.1.267（claudeupdates.dev）",
+          "url": "https://www.claudeupdates.dev/version/2.1.267"
+        },
+        {
+          "title": "週次上限 9/14 恒久+25%（digitalapplied.com）",
+          "url": "https://www.digitalapplied.com/blog/claude-code-weekly-limit-reduction-september-14"
+        },
+        {
+          "title": "Fable 5.1／Mythos 5.1（releasebot.io）",
+          "url": "https://releasebot.io/updates/anthropic"
+        }
+      ]
+    },
+    {
+      "id": "2026-09-11-nextjs",
+      "date": "2026-09-11",
+      "topic": "Next.js",
+      "title": "Scroll Snap Events で『どこにスナップしたか』をJSで正確に拾う — scrollsnapchanging と scrollsnapchange",
+      "lede": "CSS scroll-snap は気持ちよく止まるまではCSSで完結するが、『今どこに着地したか』をJSで正確に知る手段が長らく無かった。先行の scrollsnapchanging と確定の scrollsnapchange がそれを解決する。App Router での島化まで。",
+      "articleHtml": "\n<p>CSS scroll-snap（<code>scroll-snap-type</code>／<code>scroll-snap-align</code>）は「気持ちよく止まる」までは CSS だけで完結する。しかし<strong>『今どのアイテムにスナップしたか／これから何にスナップしようとしているか』</strong>を JS で正確に知る手段が長らく無かった。従来は IntersectionObserver で「ポートの大半を占める要素＝スナップ対象だろう」と<strong>推測</strong>し <code>scrollend</code> を待つ回りくどい実装しかできず、フリック操作では取りこぼしが出ていた。</p>\n\n<h4>何が新しいか — 対になった2イベント</h4>\n<p><code>SnapEvent</code> インターフェースの2イベントが性格の対になっている。<strong>scrollsnapchanging</strong> は<strong>先行・積極的</strong>：スクロール中（指を離す前）に「離したらここに着地する」と判定した瞬間に発火し、1ジェスチャで複数回出うる。フリックで複数を飛び越えても途中は飛ばして<strong>最終着地の1つだけ</strong>通知する。<strong>scrollsnapchange</strong> は<strong>遅延・確定</strong>：完全静止し、かつ対象が変わった時だけ <code>scrollend</code> の直前に発火する（対象が変わらなければ出ない）。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 170' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <text x='300' y='18' font-size='13' text-anchor='middle' fill='#333'>1回のフリック中に何が発火するか</text>\n  <line x1='40' y1='120' x2='560' y2='120' stroke='#bbb' stroke-width='2'/>\n  <text x='40' y='140' font-size='10' fill='#777'>指を離す</text>\n  <text x='520' y='140' font-size='10' fill='#777'>静止</text>\n  <circle cx='150' cy='120' r='6' fill='#1f6feb'/>\n  <text x='150' y='100' font-size='9.5' fill='#1f4fa8' text-anchor='middle'>changing</text>\n  <circle cx='250' cy='120' r='6' fill='#1f6feb'/>\n  <text x='250' y='100' font-size='9.5' fill='#1f4fa8' text-anchor='middle'>changing</text>\n  <circle cx='350' cy='120' r='6' fill='#1f6feb'/>\n  <text x='350' y='100' font-size='9.5' fill='#1f4fa8' text-anchor='middle'>changing</text>\n  <circle cx='500' cy='120' r='7' fill='#1a7f37'/>\n  <text x='500' y='100' font-size='9.5' fill='#1a7f37' text-anchor='middle'>change</text>\n  <text x='300' y='162' font-size='10.5' fill='#555' text-anchor='middle'>先行(青)は即応フィードバック向き／確定(緑)は着地後の一度きり演出向き</text>\n</svg><figcaption>図1：changing は移動中に複数回、change は確定時に一度だけ。</figcaption></figure>\n\n<h4>イベントオブジェクトと対応状況</h4>\n<p><code>event.snapTargetInline</code>／<code>event.snapTargetBlock</code> にスナップした<strong>要素ノード</strong>が入る（横のみなら Block は null、縦のみなら Inline は null）。発火はスナップ・コンテナで、<code>document</code>／<code>window</code> でも受けられる。対応は 2026-09 時点で <strong>Chrome/Edge 129+</strong>のみで <strong>Firefox/Safari 未対応＝Baseline 未達</strong>。必ず<strong>プログレッシブ・エンハンスメント前提</strong>で使う。</p>\n\n<h4>App Router での組み込み</h4>\n<p>スクロールイベント購読はブラウザ専用なので <code>'use client'</code> 必須。スクローラーを小さな Client Component（島）に隔離し、周囲は Server Component のまま。ギャラリー画像や見出しは RSC 側から <code>children</code>／props で渡し、<strong>イベント配線だけ</strong>をクライアントに置く。初期アクティブは <code>useState(0)</code> で決め打ちし、マウント後にイベントで更新して hydration mismatch を避ける。未対応ブラウザは IntersectionObserver へフォールバックする。</p>\n\n<h4>落とし穴</h4>\n<p><code>scrollsnapchange</code> は「対象が変わらない微スクロール」では発火しない＝常時ハンドラを載せない（それは scroll／scrollend の仕事）。<code>scrollsnapchanging</code> は高頻度で出るので中で DOM 大量更新をしない（クラス付替え程度に）。そもそも <code>scroll-snap-align</code> の付いた子が無いと発火しない。ピッカーとして使うならキーボード/スクリーンリーダー導線を別途用意する。</p>\n\n<h4>ひとことまとめ</h4>\n<p>「推測なし・正確・適切なタイミング」でスナップ状態を拾える素の API。カルーセルのドット同期や着地演出が依存ゼロで書ける。ただし Chrome 系限定なので、フォールバック込みで“進歩的強化”として仕込むのが正解。</p>",
+      "sources": [
+        {
+          "title": "Scroll Snap Events | Chrome for Developers",
+          "url": "https://developer.chrome.com/blog/scroll-snap-events"
+        },
+        {
+          "title": "Using scroll snap events | MDN",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Scroll_snap/Using_scroll_snap_events"
+        },
+        {
+          "title": "SnapEvent インターフェース | MDN",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/SnapEvent"
+        }
+      ]
+    },
+    {
+      "id": "2026-09-11-flutter",
+      "date": "2026-09-11",
+      "topic": "Flutter",
+      "title": "Flutter 3.47 — Material/Cupertino が 1.0 スタンドアロン化、Impeller が全デスクトップ既定に",
+      "lede": "3.47 の目玉は design system のコアSDKからの分離。Material/Cupertino が独立した1.0パッケージになり更新が速く届き、未使用UIを外してapp sizeも削減。Impellerは全デスクトップで既定、Widget Previewsも安定化。",
+      "articleHtml": "\n<p>現行安定版は <strong>Flutter 3.47.x／Dart 3.13.x</strong>（3.47.0 は 2026-08-12）。今日の主役は <strong>material_ui／cupertino_ui 1.0 の standalone 化</strong>だ。Material／Cupertino がコア SDK から独立した <strong>1.0 パッケージ</strong>へ分離し、design system が四半期の SDK リリースサイクルから <strong>decouple</strong> された。</p>\n\n<h4>何が変わるか</h4>\n<p>分離の狙いは二つ。第一に <strong>Material 3 の更新が SDK を待たずに速く届く</strong>こと。第二に、使っていない UI をバイナリから外せるので <strong>app size を削減</strong>できること。移行は当面 <strong>opt-in</strong> で既存 import は互換維持されるため、いきなり壊れる心配はない。もう一つの柱が <strong>Impeller が macOS／Windows／Linux の全デスクトップで既定</strong>になったこと（iOS=Metal／Android=Vulkan は従来どおり）。<strong>Widget Previews が stable</strong> になり、ローカルビルドキャッシュで起動が速く、リアルタイム検索/フィルタも付いた。最低 iOS 15、Web は WebAssembly が前進。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 190' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <text x='300' y='18' font-size='13' text-anchor='middle' fill='#333'>design system の分離（3.47）</text>\n  <rect x='24' y='38' width='250' height='128' rx='8' fill='#f4f4f6' stroke='#888'/>\n  <text x='40' y='60' font-size='12' fill='#444' font-weight='bold'>従来：コアSDK同梱</text>\n  <text x='40' y='84' font-size='10.5' fill='#555'>Material/Cupertino が</text>\n  <text x='40' y='100' font-size='10.5' fill='#555'>SDK に内蔵</text>\n  <text x='40' y='122' font-size='10.5' fill='#b02a26'>四半期リリース待ち</text>\n  <text x='40' y='142' font-size='10.5' fill='#b02a26'>未使用UIも同梱</text>\n  <rect x='326' y='38' width='250' height='128' rx='8' fill='#eef7fc' stroke='#0277bd'/>\n  <text x='342' y='60' font-size='12' fill='#025b8f' font-weight='bold'>3.47：1.0 独立パッケージ</text>\n  <text x='342' y='84' font-size='10.5' fill='#555'>material_ui / cupertino_ui</text>\n  <text x='342' y='100' font-size='10.5' fill='#555'>を個別に更新</text>\n  <text x='342' y='122' font-size='10.5' fill='#1a7f37'>M3更新が速く届く</text>\n  <text x='342' y='142' font-size='10.5' fill='#1a7f37'>未使用UIを外しサイズ減</text>\n</svg><figcaption>図1：SDK同梱から独立1.0パッケージへ。opt-inで互換維持。</figcaption></figure>\n\n<h4>状態管理・パフォーマンスの現在地</h4>\n<p>新規プロジェクトの既定は <strong>Riverpod 3.3.1 ＋ code generation</strong>：<code>@riverpod</code> codegen で compile-time safety／context-free reads／first-class async を低ボイラープレートで。unified Ref・自動リトライ・experimental offline persistence・Mutations API も入る。監査証跡が要る規制業界や複雑並行は <strong>Bloc 9.1.1（bloc 9.2.x）</strong>が本線。パフォーマンスは<strong>不要な rebuild が遅延の約7割</strong>という実測が軸で、<code>const</code>・<code>build()</code>分割・<code>ref.watch(provider.select(...))</code>／<code>BlocSelector</code> での最小スライス購読・<code>RepaintBoundary</code> 隔離が効く。重い計算は <code>Isolate.run()</code>／<code>compute()</code> で背景 isolate へ逃がす。</p>\n\n<h4>実務での使いどころ・注意点</h4>\n<p>3.47 へ上げても design system 移行は急がなくてよい（opt-in）。まずは Impeller 既定化で desktop の描画が変わるので、<strong>profile モード＋DevTools</strong> でフレーム予算（60fps=16ms／90fps=11ms／120fps=8.3ms）を実測し回帰が無いか確認する。Rive は Impeller で稀に視覚/性能バグがあり、切り分けは <code>--no-enable-impeller</code> で Skia に落として比較。次の機能リリースは年4回サイクルで <strong>2026年11月</strong>見込み。</p>\n\n<h4>ひとことまとめ</h4>\n<p>「UI レイヤをSDKから切り離す」構造改革の号。更新速度とアプリサイズの両取りが狙いで、当面は opt-in なので落ち着いて追随できる。土台の Impeller 全面化で描画は安定側へ、状態管理は Riverpod 3.3 既定が定着。</p>",
+      "sources": [
+        {
+          "title": "Flutter 3.47 What's New（bidev）",
+          "url": "https://www.bidev.dev/blog/flutter-3-47-whats-new"
+        },
+        {
+          "title": "Flutter 3.47 release notes（公式）",
+          "url": "https://docs.flutter.dev/release/release-notes/release-notes-3.47.0"
+        },
+        {
+          "title": "Best Flutter State Management 2026（foresightmobile）",
+          "url": "https://foresightmobile.com/blog/best-flutter-state-management"
+        }
+      ]
+    },
     {
       "id": "2026-09-10-claude-code",
       "date": "2026-09-10",
