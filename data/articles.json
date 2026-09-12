@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-09-11T04:50:31.958Z",
+  "generatedAt": "2026-09-12T04:48:13.548Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,98 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-09-12-claude-code",
+      "date": "2026-09-12",
+      "topic": "Claude Code",
+      "title": "v2.1.268 — gateway.yamlのpricingで/costがメーター一致、/diffライブ差分パネル、既定はFable 5.1・1Mコンテキスト",
+      "lede": "派手さより「運用の締め」の週。gateway.yamlのpricingでサインイン済みクライアントに同一レートを配り/costを組織の支出メーターに一致させる管理強化、会話の横で未コミット変更を追う/diffライブパネル、そしてFable 5.1既定化と1Mコンテキスト標準化を棚卸しする。",
+      "articleHtml": "\n<p>9月のClaude Codeは新機能の派手さより<strong>「組織としての運用を締める」</strong>方向に効く更新が続いている。今日は9/10公開の <code>v2.1.268</code> のゲートウェイ課金管理、少し前に入った <code>/diff</code> のライブ差分パネル、そして <strong>Fable 5.1</strong> の既定化＋1Mコンテキスト標準化を、この時期に効いてくる変更としてまとめて押さえ直す。</p>\n\n<h4>何が新しい/重要か</h4>\n<p><code>v2.1.268</code> の目玉は <code>gateway.yaml</code> の <code>pricing:</code> 設定だ。これを置くと、<strong>サインイン済みのClaude Codeクライアント</strong>が managed settings 経由で<strong>組織と同一のレート</strong>を受け取り、<code>/cost</code> やテレメトリの表示が<strong>組織の支出メーターと一致</strong>する。価格は <code>multiplier</code> と <code>overrides</code>（upstream / model / input / output / cache_read / cache_write）で細かく指定でき、ゲートウェイ v2.1.227 以降＋<code>admin:</code>、または 2.1.268 以降の <code>managed:</code>（1つ以上のポリシー必須）で有効化する。あわせて <code>access_control.allow_cidrs</code> が空のときの起動時警告、公開アドレスからの初回リクエスト警告、社内IPv4帯から <code>/login</code> を許す <code>gatewayInternalNetworks</code> も入った。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <text x='300' y='20' font-size='13' text-anchor='middle' fill='#333'>9月のClaude Code：運用を締める3点</text>\n  <rect x='16' y='36' width='182' height='150' rx='8' fill='#eef8f0' stroke='#1a7f37'/>\n  <text x='28' y='58' font-size='12' fill='#1a7f37' font-weight='bold'>gateway pricing</text>\n  <text x='28' y='80' font-size='10.5' fill='#555'>同一レートを配信</text>\n  <text x='28' y='98' font-size='10.5' fill='#555'>/cost がメーター一致</text>\n  <text x='28' y='116' font-size='10.5' fill='#555'>multiplier / overrides</text>\n  <text x='28' y='134' font-size='10.5' fill='#555'>(input/output/cache)</text>\n  <text x='28' y='158' font-size='10.5' fill='#555'>CIDR警告も追加</text>\n  <rect x='209' y='36' width='182' height='150' rx='8' fill='#f3f6ff' stroke='#1f6feb'/>\n  <text x='221' y='58' font-size='12' fill='#1f4fa8' font-weight='bold'>/diff ライブ</text>\n  <text x='221' y='80' font-size='10.5' fill='#555'>会話の横に差分</text>\n  <text x='221' y='98' font-size='10.5' fill='#555'>未コミットを常時表示</text>\n  <text x='221' y='116' font-size='10.5' fill='#555'>編集に追随し更新</text>\n  <text x='221' y='134' font-size='10.5' fill='#555'>トグルで開閉</text>\n  <text x='221' y='158' font-size='10.5' fill='#555'>(フル画面時)</text>\n  <rect x='402' y='36' width='182' height='150' rx='8' fill='#f5f0ff' stroke='#7b3fe4'/>\n  <text x='414' y='58' font-size='12' fill='#5a2ec0' font-weight='bold'>Fable 5.1 既定</text>\n  <text x='414' y='80' font-size='10.5' fill='#555'>2.1.257以降の既定</text>\n  <text x='414' y='98' font-size='10.5' fill='#555'>Opus 5/Fable 5.1/</text>\n  <text x='414' y='116' font-size='10.5' fill='#555'>Sonnet 5 は1M標準</text>\n  <text x='414' y='134' font-size='10.5' fill='#555'>価格改善</text>\n  <text x='414' y='158' font-size='10.5' fill='#555'>カスタム時刻表示</text>\n</svg><figcaption>図1：9月に効く3つの変更。課金管理・差分の可視化・既定モデル。</figcaption></figure>\n\n<h4>/diff と 既定モデル</h4>\n<p><code>/diff</code> は <code>v2.1.260</code> で追加され、フルスクリーン表示中に<strong>会話の横へ差分パネル</strong>を開き、Claudeが編集するそばから<strong>未コミットの変更をライブ更新</strong>する。これまで2つ目のターミナルやIDEを併用して追っていた変更を、同一画面で並べて確認できる。トグル式で、1回目で開き2回目で閉じる。フルスクリーン外では従来型の差分表示になる。モデル面では <code>v2.1.257</code> 以降 <strong>Fable 5.1 が新しい既定のFableモデル</strong>になり、<strong>Opus 5・Fable 5.1・Sonnet 5 はいずれも1Mコンテキストが標準</strong>、価格も改善した。時刻表示のカスタマイズ設定も新設されている。</p>\n\n<h4>実務での使いどころ・注意点</h4>\n<p>ゲートウェイ運用のチームは、まず <code>pricing:</code> を入れて <code>/cost</code> を実支出と一致させ、<strong>誰がいくら使ったかを同じ物差しで見る</strong>ところから始めたい。<code>allow_cidrs</code> 空の起動警告は放置せず、公開面を絞る。<code>/diff</code> は大きめのリファクタを回すときに常時開いておくと、Claudeの編集の当否をその場で判断できる。注意点として、<code>pricing:</code> は上流の実価格ではなく<strong>組織が見せたいレート</strong>なので設定値の管理を明確にすること、<code>managed:</code> はポリシー最低1つが必須である点を押さえる。</p>\n\n<h4>ひとことまとめ</h4>\n<p>「いくらで、どこから、どのモデルで」を組織で締める回。pricingでコストの見え方を揃え、/diffで変更を可視化し、既定はFable 5.1・1Mへ。毎日回すエージェント運用の足回りが一段固くなった。</p>",
+      "sources": [
+        {
+          "title": "Claude Code v2.1.268 リリース（GitHub）",
+          "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.268"
+        },
+        {
+          "title": "v2.1.260 の /diff ライブ差分パネル（clauding.de）",
+          "url": "https://clauding.de/en/posts/claude-code-2-1-260"
+        },
+        {
+          "title": "Fable 5.1 既定化・1Mコンテキスト（releasebot.io）",
+          "url": "https://releasebot.io/updates/anthropic/claude-code"
+        }
+      ]
+    },
+    {
+      "id": "2026-09-12-nextjs",
+      "date": "2026-09-12",
+      "topic": "Next.js",
+      "title": "サードパーティスクリプトを性能を落とさず積む — next/scriptの4戦略と@next/third-parties",
+      "lede": "GA/GTM・チャット・地図・動画はCore Web Vitalsの主要な悪化要因。素の<script>はメインスレッドを塞ぎINP/LCP/TBTを一気に悪化させる。next/scriptの読み込み戦略を用途で選び、GA/GTM/YouTube/Mapsは@next/third-partiesに任せる、App Router前提の正しい積み方を整理する。",
+      "articleHtml": "\n<p>アナリティクス・タグマネージャ・チャットサポート・SNS埋め込み・地図・動画といった<strong>サードパーティスクリプトは、Core Web Vitals（CWV）の最大級の悪化要因</strong>だ。素の <code>&lt;script&gt;</code> をそのまま置くとメインスレッドを塞ぎ、<strong>INP（旧FID）・LCP・TBT</strong>を一気に悪化させる。Next.jsは①読み込みタイミングを制御する組み込みの <code>next/script</code>、②GA/GTM/YouTube/Mapsを最適化済みで包む <code>@next/third-parties</code> を用意している。App Router前提の正しい置き場所と戦略、<code>'use client'</code> 要否の落とし穴を押さえる。</p>\n\n<h4>4つのloading strategy</h4>\n<p><code>next/script</code>（Next.js 16.3系で確認）の <code>strategy</code> は4種類。<code>beforeInteractive</code> はNext.jsコードより前・ハイドレーション前に読み、<strong>必ずルートレイアウトに置く</strong>必要があり、常に <code>&lt;head&gt;</code> に注入され<strong>ドキュメント読み込み時に1回だけ</strong>実行される。用途は<strong>ボット検知・Cookie同意</strong>などサイト全体で最速に要るものだけ。<code>afterInteractive</code> は<strong>既定値</strong>で、ハイドレーション後にクライアント側で読み、<strong>タグマネージャ・アナリティクス</strong>向け。<code>lazyOnload</code> はアイドル時に全リソース取得後読み、<strong>チャット・SNSウィジェット</strong>など低優先向け。<code>worker</code> は実験的で<strong>App Routerでは未対応</strong>（<code>pages/</code> のみ）。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 235' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <text x='300' y='18' font-size='13' text-anchor='middle' fill='#333'>next/script の戦略選択（読み込みが早い順 → 遅い順）</text>\n  <rect x='16' y='34' width='568' height='40' rx='6' fill='#ffecec' stroke='#e5484d'/>\n  <text x='26' y='52' font-size='12' font-weight='bold' fill='#c0272d'>beforeInteractive</text>\n  <text x='26' y='68' font-size='10.5' fill='#555'>ハイドレ前・head注入・1回だけ / ボット検知・Cookie同意のみ / ルートレイアウト必須</text>\n  <rect x='16' y='80' width='568' height='40' rx='6' fill='#eaf3ff' stroke='#1f6feb'/>\n  <text x='26' y='98' font-size='12' font-weight='bold' fill='#1f4fa8'>afterInteractive（既定）</text>\n  <text x='26' y='114' font-size='10.5' fill='#555'>ハイドレ後に注入 / アナリティクス・タグマネージャ / 任意のページに置ける</text>\n  <rect x='16' y='126' width='568' height='40' rx='6' fill='#eef8f0' stroke='#1a7f37'/>\n  <text x='26' y='144' font-size='12' font-weight='bold' fill='#1a7f37'>lazyOnload</text>\n  <text x='26' y='160' font-size='10.5' fill='#555'>アイドル時・全リソース取得後 / チャット・SNSウィジェット等の低優先</text>\n  <rect x='16' y='172' width='568' height='40' rx='6' fill='#f2f2f4' stroke='#999'/>\n  <text x='26' y='190' font-size='12' font-weight='bold' fill='#666'>worker（実験的）</text>\n  <text x='26' y='206' font-size='10.5' fill='#555'>Web Workerへオフロード / App Router未対応（pages/のみ）→ 実質使わない</text>\n</svg><figcaption>図1：分析/タグは既定のafterInteractive、背景系はlazyOnload、beforeInteractiveは全体最速要件だけ。</figcaption></figure>\n\n<h4>落とし穴：イベントハンドラは Client Component 限定</h4>\n<p><code>onLoad</code> / <code>onReady</code> / <code>onError</code> は<strong>Server Componentでは動かない</strong>ため、使うファイルに <code>'use client'</code> が必要。さらに <code>onLoad</code>・<code>onError</code> は <code>beforeInteractive</code> と併用不可で、代わりに <code>onReady</code> を使う。<code>onReady</code> はロード完了時＋<strong>マウントのたび</strong>（ルート遷移で再マウントされる度）に走るので、Google Maps のように毎回インスタンス化し直す用途に向く。GA/GTMのイベント送信ヘルパ（<code>sendGAEvent</code>/<code>sendGTMEvent</code>）も<strong>Client Componentから呼ぶ</strong>。スクリプトURLに秘密キーを含めない（クライアントに露出する）。</p>\n\n<pre><code>// @next/third-parties：GA はルートレイアウトに1回\n// app/layout.tsx\nimport { GoogleAnalytics } from '@next/third-parties/google'\nexport default function RootLayout({ children }) {\n  return (&lt;html lang=\"ja\"&gt;&lt;body&gt;{children}\n    &lt;GoogleAnalytics gaId=\"G-XXXXXXXXXX\" /&gt;\n  &lt;/body&gt;&lt;/html&gt;)\n}</code></pre>\n\n<h4>実務での判断・まとめ</h4>\n<p>迷ったら<strong>afterInteractive（既定）</strong>。<code>beforeInteractive</code> は「全体最速が本当に要るもの」だけ・ルートレイアウトのみに限定する。<strong>分析タグをbeforeInteractiveからafterInteractiveへ落とすだけでTBTが大きく改善</strong>することが多い。チャット/SNSは <code>lazyOnload</code>。GA/GTM/YouTube/Mapsは <code>@next/third-parties</code>（現状experimentalなので <code>@latest</code> 固定推奨）に任せると、内部で適切な戦略とファサード（YouTubeはlite-youtube-embed）を使い手書きより安全にCWVを守れる。Lighthouse/WebPageTestで before/after を必ず測る。</p>",
+      "sources": [
+        {
+          "title": "Next.js 公式: Script Component（strategy一覧）",
+          "url": "https://nextjs.org/docs/app/api-reference/components/script"
+        },
+        {
+          "title": "Next.js 公式: Optimizing Scripts",
+          "url": "https://nextjs.org/docs/app/guides/scripts"
+        },
+        {
+          "title": "Next.js 公式: Third Party Libraries（@next/third-parties）",
+          "url": "https://nextjs.org/docs/app/guides/third-party-libraries"
+        }
+      ]
+    },
+    {
+      "id": "2026-09-12-flutter",
+      "date": "2026-09-12",
+      "topic": "Flutter",
+      "title": "iOS/macOSの依存管理がSwiftPM既定へ（3.44〜）— 併用移行と、typed go_router・Hero・ListView最適化",
+      "lede": "Flutter 3.44以降、新規プロジェクトのiOS/macOS依存管理の既定がCocoaPodsからSwiftPMへ。解決・ビルドが高速化しXcode統合も向上、既存はPodfileを検出して段階移行できる。あわせて今日の実践トピック（typed go_router×Riverpod、Heroの共有要素遷移、ListView.builderのlazy build）も整理する。",
+      "articleHtml": "\n<p>今日の主役は<strong>Swift Package Manager（SwiftPM）がiOS/macOSの依存管理の既定に</strong>なったこと。<strong>Flutter 3.44</strong> 以降、新規プロジェクトの既定が <strong>CocoaPods から SwiftPM</strong> へ移行した。パッケージ解決・ビルドが高速化し、native Xcodeプロジェクトとの統合が向上、SwiftPMスキームの早期除外などでビルド時間も最適化される。現行安定版は <strong>Flutter 3.47.x / Dart 3.13.x</strong>、次の安定機能リリースは年4回サイクルで<strong>2026年11月</strong>見込みだ。</p>\n\n<h4>既存アプリはどう動くか</h4>\n<p>いきなり全面切替ではない。既存アプリは <code>flutter</code> コマンドが <strong><code>Podfile</code> を検出</strong>し、<strong>CocoaPodsと併用しつつ段階的にSwiftPMへ移行</strong>できる。新規は最初からSwiftPM前提。Webは <strong>WebAssembly（WasmGC）</strong> 移行を継続中で、<code>flutter build web --wasm</code> でopt-in（<code>dart:html</code> → <code>package:web</code> 移行が前提）、初期ロード短縮・描画高速化を狙い既定化へ前進している。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 180' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <text x='300' y='20' font-size='13' text-anchor='middle' fill='#333'>iOS/macOS 依存管理：CocoaPods → SwiftPM（3.44〜）</text>\n  <rect x='30' y='44' width='170' height='90' rx='8' fill='#fff4f4' stroke='#e5484d'/>\n  <text x='115' y='70' font-size='12' text-anchor='middle' font-weight='bold' fill='#c0272d'>CocoaPods（従来）</text>\n  <text x='115' y='92' font-size='10.5' text-anchor='middle' fill='#555'>Podfile ベース</text>\n  <text x='115' y='110' font-size='10.5' text-anchor='middle' fill='#555'>既存アプリは併用可</text>\n  <text x='300' y='95' font-size='24' text-anchor='middle' fill='#0277bd'>→</text>\n  <text x='300' y='118' font-size='10' text-anchor='middle' fill='#777'>段階移行</text>\n  <rect x='400' y='44' width='170' height='90' rx='8' fill='#eef7fc' stroke='#0277bd'/>\n  <text x='485' y='70' font-size='12' text-anchor='middle' font-weight='bold' fill='#025a91'>SwiftPM（既定）</text>\n  <text x='485' y='92' font-size='10.5' text-anchor='middle' fill='#555'>解決/ビルド高速化</text>\n  <text x='485' y='110' font-size='10.5' text-anchor='middle' fill='#555'>Xcode統合が向上</text>\n  <text x='300' y='158' font-size='10.5' text-anchor='middle' fill='#777'>新規は最初からSwiftPM前提 ／ 既存はPodfile検出で共存</text>\n</svg><figcaption>図1：新規はSwiftPM既定、既存はCocoaPodsと併用しながら段階移行できる。</figcaption></figure>\n\n<h4>今日の実践トピック</h4>\n<p><strong>アーキテクチャ</strong>：<code>go_router</code> の <strong>type-safe（typed）routes × Riverpod</strong> は、<code>@TypedGoRoute</code> のcode generationでルート/パラメータを<strong>compile-timeに検証</strong>し、runtime errorをcompile errorに倒す。deep link/queryも型安全になり、redirectをprovider（auth状態）で駆動して未認証を <code>/login</code> へ動的リダイレクトできる。2026の既定は<strong>Riverpod 3.3系＋<code>@riverpod</code> codegen</strong>（監査/規制はBloc 9系）。<strong>アニメーション</strong>：<strong>Hero＝共有要素遷移</strong>はsource/destinationに<strong>同一で一意な <code>tag</code></strong> を付け、両画面でaspect ratioとalignmentを揃えて飛行中の歪みを防ぐ。飛行の見た目は <code>flightShuttleBuilder</code>、Hero内のsubtreeは最小化する。</p>\n\n<h4>パフォーマンスと注意点</h4>\n<p>長リストは <code>ListView.builder</code> / <code>SliverList</code> の<strong>lazy build</strong>で、1万件でも可視の約15個のみbuildされる。<code>itemBuilder</code> はスクロール中に頻繁に呼ばれるので<strong>重い計算を置かない</strong>（事前にデータ整形）。要素高さが一定なら <code>itemExtent</code> 指定でlayout計算を削減、<code>cacheExtent</code> は<strong>500〜800px</strong>から調整する（大きいほど滑らかだがメモリを食う）。最も多い根因は<strong>不要なrebuild</strong>で、<code>const</code> 徹底・<code>ref.watch(provider.select(...))</code> で最小スライス購読・重い計算は <code>compute()</code> で背景isolateへ逃がす。計測は必ず<strong>profileモード</strong>でDevTools Performance、フレーム予算は<strong>60fps=16ms / 90fps=11ms / 120fps=8.3ms</strong>。SwiftPMは足回りの高速化なので、まずCIのビルド時間で効果を測るのが分かりやすい。</p>\n\n<h4>ひとことまとめ</h4>\n<p>iOS/macOSの土台がSwiftPMへ。新規は即恩恵、既存は焦らずPodfile併用で段階移行。上物はtyped go_router＋Riverpod、Heroの一意tag、ListViewのlazy buildとフレーム予算という定番を守れば、速さと安全を両取りできる。</p>",
+      "sources": [
+        {
+          "title": "What's new in Flutter 3.44",
+          "url": "https://flutter.dev/blog/whats-new-in-flutter-3-44"
+        },
+        {
+          "title": "Flutter 3.47 release notes",
+          "url": "https://docs.flutter.dev/release/release-notes/release-notes-3.47.0"
+        },
+        {
+          "title": "Hero animations (docs.flutter.dev)",
+          "url": "https://docs.flutter.dev/ui/animations/hero-animations"
+        },
+        {
+          "title": "Typed Routes With go_router And Riverpod",
+          "url": "https://fredgrott.medium.com/typed-routes-with-go-router-and-riverpod-in-flutter-apps-2bc36122e5ba"
+        }
+      ]
+    },
+    {
+      "id": "2026-09-12-github-trending",
+      "date": "2026-09-12",
+      "topic": "GitHub Trending",
+      "title": "9/12の話題リポジトリ — 自己改善する研究ループ・オムニモーダル生成・育てる知識Wiki",
+      "lede": "今日のTrendshift上位New 2026の3本は「使い捨てにしない」で一貫する。ハーネス改善を自動探索するSoL-Pi、1つのTransformerで音声込み動画まで生むMiniMax-H3、都度検索RAGではなく永続Wikiに知識を育てるllm_wiki。効率・生成・蓄積の三方向で毛色が違う。",
+      "articleHtml": "\n<p>今日Trendshift日次で急上昇した3本は、いずれも<strong>New 2026</strong>の新星でありながら射程が大きく異なる。共通するのは<strong>「一度の結果を使い捨てにせず、改善や知識として積み上げる」</strong>という発想だ。効率化（研究ループ）・生成（オムニモーダル）・蓄積（知識Wiki）の三方向から、それぞれ解こうとしている課題と提供する機能を見ていく。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <text x='300' y='18' font-size='13' text-anchor='middle' fill='#333'>今日の3本：解きたい課題 → 提供する機能</text>\n  <line x1='250' y1='30' x2='250' y2='190' stroke='#ddd'/>\n  <rect x='10' y='32' width='240' height='50' fill='#f0fbf3'/>\n  <text x='20' y='50' font-size='11.5' font-weight='bold' fill='#1a7f37'>NVlabs/SoL-Pi（Python）</text>\n  <text x='20' y='68' font-size='10' fill='#555'>課題:エージェントのハーネス改善が手作業</text>\n  <text x='260' y='50' font-size='10.5' fill='#333'>機能:改善を自動探索する研究ループ</text>\n  <text x='260' y='68' font-size='10' fill='#777'>pi比 スコア約94%維持・トークン45〜49%減・コスト約1/3</text>\n  <rect x='10' y='86' width='240' height='50' fill='#eef6ff'/>\n  <text x='20' y='104' font-size='11.5' font-weight='bold' fill='#1f4fa8'>MiniMax-AI/MiniMax-H3</text>\n  <text x='20' y='122' font-size='10' fill='#555'>課題:モダリティ別に分かれた生成基盤</text>\n  <text x='260' y='104' font-size='10.5' fill='#333'>機能:単一Transformerでオムニモーダル生成</text>\n  <text x='260' y='122' font-size='10' fill='#777'>音声込み動画を最大2K/15秒・約8.1k⭐(+684/7d)</text>\n  <rect x='10' y='140' width='240' height='50' fill='#faf5ff'/>\n  <text x='20' y='158' font-size='11.5' font-weight='bold' fill='#5a2ec0'>nashsu/llm_wiki</text>\n  <text x='20' y='176' font-size='10' fill='#555'>課題:文書が増え都度RAG検索は非効率</text>\n  <text x='260' y='158' font-size='10.5' fill='#333'>機能:相互リンクされた永続Wikiに自動整理</text>\n  <text x='260' y='176' font-size='10' fill='#777'>逐次構築・維持するデスクトップアプリ</text>\n</svg><figcaption>図1：3本の「解決したい課題」と「提供する機能」の対応。</figcaption></figure>\n\n<h4>NVlabs/SoL-Pi（Python・New 2026／Trendshift日次7位）</h4>\n<p><strong>解決したい課題</strong>：コーディングエージェントの性能は「ハーネス」（プロンプトやツール実行の足場）に左右されるが、その改善はこれまで人手の試行錯誤に頼ってきた。<strong>提供する機能</strong>：NVIDIA Labs発のSoL-Piは、pi コーディングエージェント・ハーネスを土台に、<strong>ハーネス改善そのものを自動探索する研究ループ</strong>を回す。複数の公開環境をまたいで転移可能な改善を探し、<strong>pi比で平均スコア約94%を保ちつつトークンを45〜49%削減・コストを約1/3</strong>という数字が話題化した。大手研究×New 2026で本日のモメンタム筆頭級。</p>\n\n<h4>MiniMax-AI/MiniMax-H3（Python・約8.1k⭐／+684/7d）</h4>\n<p><strong>解決したい課題</strong>：テキスト・画像・動画・音声がモデルごとに分断され、モダリティ横断の生成が面倒だった。<strong>提供する機能</strong>：Hailuo 3.0系オープンウェイトのMiniMax-H3は、<strong>1つのTransformerで全モダリティを扱い</strong>、<strong>ネイティブ・ステレオ音声付きの動画を最大2K・15秒</strong>で生成する。ComfyUIワークフローやvLLM対応など周辺整備も進む。AIスキル一色のトレンドに対し、基盤モデル/AIメディアという毛色違いの多様性を足している。</p>\n\n<h4>nashsu/llm_wiki（New 2026／Trendshift日次10位）</h4>\n<p><strong>解決したい課題</strong>：文書が増え続ける現場で、毎回ゼロから検索するRAGは非効率で知識が定着しない。<strong>提供する機能</strong>：llm_wikiは手元のドキュメント群を、<strong>LLMが逐次的に構築・維持する「相互リンクされた永続Wiki」</strong>に自動整理するクロスプラットフォーム・デスクトップアプリ。「都度検索」から「一度整理して育て続ける」への発想転換が、ナレッジ管理の実用ニーズに刺さった。</p>\n\n<h4>まとめ</h4>\n<p>自分が試すなら、まず <strong>llm_wiki</strong> をローカル文書の整理に当てて「育つ知識ベース」の使い勝手を測りたい。SoL-Piの「改善を自動探索する」発想は、毎朝の調査タスクの品質規律（収集→検索→統合→蓄積）を設計し直すヒントになる。3本に通底するのは、出力を蓄積・改善へ回す姿勢だ。</p>",
+      "sources": [
+        {
+          "title": "NVlabs/SoL-Pi",
+          "url": "https://github.com/NVlabs/SoL-Pi"
+        },
+        {
+          "title": "MiniMax-AI/MiniMax-H3",
+          "url": "https://github.com/MiniMax-AI/MiniMax-H3"
+        },
+        {
+          "title": "nashsu/llm_wiki",
+          "url": "https://github.com/nashsu/llm_wiki"
+        }
+      ]
+    },
     {
       "id": "2026-09-11-claude-code",
       "date": "2026-09-11",
