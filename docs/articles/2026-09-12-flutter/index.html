@@ -1,0 +1,87 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>iOS/macOSの依存管理がSwiftPM既定へ（3.44〜）— 併用移行と、typed go_router・Hero・ListView最適化 — デイリー技術深掘り 読み物</title><meta name="description" content="Flutter 3.44以降、新規プロジェクトのiOS/macOS依存管理の既定がCocoaPodsからSwiftPMへ。解決・ビルドが高速化しXcode統合も向上、既存はPodfileを検出して段階移行できる。あわせて今日の実践トピック（typed go_router×Riverpod、Heroの共有要素遷移、ListView.builderのlazy build）も整理する。"><meta name="theme-color" content="#0277bd"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-12-flutter/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="iOS/macOSの依存管理がSwiftPM既定へ（3.44〜）— 併用移行と、typed go_router・Hero・ListView最適化 — デイリー技術深掘り 読み物"><meta property="og:description" content="Flutter 3.44以降、新規プロジェクトのiOS/macOS依存管理の既定がCocoaPodsからSwiftPMへ。解決・ビルドが高速化しXcode統合も向上、既存はPodfileを検出して段階移行できる。あわせて今日の実践トピック（typed go_router×Riverpod、Heroの共有要素遷移、ListView.builderのlazy build）も整理する。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-12-flutter/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #29b6f6, #01579b)"> <span class="glyph" aria-hidden="true">◆</span> <div class="kicker">Flutter</div> <h1>iOS/macOSの依存管理がSwiftPM既定へ（3.44〜）— 併用移行と、typed go_router・Hero・ListView最適化</h1> <p class="lede">Flutter 3.44以降、新規プロジェクトのiOS/macOS依存管理の既定がCocoaPodsからSwiftPMへ。解決・ビルドが高速化しXcode統合も向上、既存はPodfileを検出して段階移行できる。あわせて今日の実践トピック（typed go_router×Riverpod、Heroの共有要素遷移、ListView.builderのlazy build）も整理する。</p> <div class="meta"> <span>📅 2026年9月12日</span> <span>⏱ 約3分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#0277bd"> <div> <article class="prose" data-has-mermaid="0">
+<p>今日の主役は<strong>Swift Package Manager（SwiftPM）がiOS/macOSの依存管理の既定に</strong>なったこと。<strong>Flutter 3.44</strong> 以降、新規プロジェクトの既定が <strong>CocoaPods から SwiftPM</strong> へ移行した。パッケージ解決・ビルドが高速化し、native Xcodeプロジェクトとの統合が向上、SwiftPMスキームの早期除外などでビルド時間も最適化される。現行安定版は <strong>Flutter 3.47.x / Dart 3.13.x</strong>、次の安定機能リリースは年4回サイクルで<strong>2026年11月</strong>見込みだ。</p>
+
+<h4 id="sec-1">既存アプリはどう動くか</h4>
+<p>いきなり全面切替ではない。既存アプリは <code>flutter</code> コマンドが <strong><code>Podfile</code> を検出</strong>し、<strong>CocoaPodsと併用しつつ段階的にSwiftPMへ移行</strong>できる。新規は最初からSwiftPM前提。Webは <strong>WebAssembly（WasmGC）</strong> 移行を継続中で、<code>flutter build web --wasm</code> でopt-in（<code>dart:html</code> → <code>package:web</code> 移行が前提）、初期ロード短縮・描画高速化を狙い既定化へ前進している。</p>
+
+<figure class='fig'><svg viewBox='0 0 600 180' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <text x='300' y='20' font-size='13' text-anchor='middle' fill='#333'>iOS/macOS 依存管理：CocoaPods → SwiftPM（3.44〜）</text>
+  <rect x='30' y='44' width='170' height='90' rx='8' fill='#fff4f4' stroke='#e5484d'></rect>
+  <text x='115' y='70' font-size='12' text-anchor='middle' font-weight='bold' fill='#c0272d'>CocoaPods（従来）</text>
+  <text x='115' y='92' font-size='10.5' text-anchor='middle' fill='#555'>Podfile ベース</text>
+  <text x='115' y='110' font-size='10.5' text-anchor='middle' fill='#555'>既存アプリは併用可</text>
+  <text x='300' y='95' font-size='24' text-anchor='middle' fill='#0277bd'>→</text>
+  <text x='300' y='118' font-size='10' text-anchor='middle' fill='#777'>段階移行</text>
+  <rect x='400' y='44' width='170' height='90' rx='8' fill='#eef7fc' stroke='#0277bd'></rect>
+  <text x='485' y='70' font-size='12' text-anchor='middle' font-weight='bold' fill='#025a91'>SwiftPM（既定）</text>
+  <text x='485' y='92' font-size='10.5' text-anchor='middle' fill='#555'>解決/ビルド高速化</text>
+  <text x='485' y='110' font-size='10.5' text-anchor='middle' fill='#555'>Xcode統合が向上</text>
+  <text x='300' y='158' font-size='10.5' text-anchor='middle' fill='#777'>新規は最初からSwiftPM前提 ／ 既存はPodfile検出で共存</text>
+</svg><figcaption>図1：新規はSwiftPM既定、既存はCocoaPodsと併用しながら段階移行できる。</figcaption></figure>
+
+<h4 id="sec-2">今日の実践トピック</h4>
+<p><strong>アーキテクチャ</strong>：<code>go_router</code> の <strong>type-safe（typed）routes × Riverpod</strong> は、<code>@TypedGoRoute</code> のcode generationでルート/パラメータを<strong>compile-timeに検証</strong>し、runtime errorをcompile errorに倒す。deep link/queryも型安全になり、redirectをprovider（auth状態）で駆動して未認証を <code>/login</code> へ動的リダイレクトできる。2026の既定は<strong>Riverpod 3.3系＋<code>@riverpod</code> codegen</strong>（監査/規制はBloc 9系）。<strong>アニメーション</strong>：<strong>Hero＝共有要素遷移</strong>はsource/destinationに<strong>同一で一意な <code>tag</code></strong> を付け、両画面でaspect ratioとalignmentを揃えて飛行中の歪みを防ぐ。飛行の見た目は <code>flightShuttleBuilder</code>、Hero内のsubtreeは最小化する。</p>
+
+<h4 id="sec-3">パフォーマンスと注意点</h4>
+<p>長リストは <code>ListView.builder</code> / <code>SliverList</code> の<strong>lazy build</strong>で、1万件でも可視の約15個のみbuildされる。<code>itemBuilder</code> はスクロール中に頻繁に呼ばれるので<strong>重い計算を置かない</strong>（事前にデータ整形）。要素高さが一定なら <code>itemExtent</code> 指定でlayout計算を削減、<code>cacheExtent</code> は<strong>500〜800px</strong>から調整する（大きいほど滑らかだがメモリを食う）。最も多い根因は<strong>不要なrebuild</strong>で、<code>const</code> 徹底・<code>ref.watch(provider.select(...))</code> で最小スライス購読・重い計算は <code>compute()</code> で背景isolateへ逃がす。計測は必ず<strong>profileモード</strong>でDevTools Performance、フレーム予算は<strong>60fps=16ms / 90fps=11ms / 120fps=8.3ms</strong>。SwiftPMは足回りの高速化なので、まずCIのビルド時間で効果を測るのが分かりやすい。</p>
+
+<h4 id="sec-4">ひとことまとめ</h4>
+<p>iOS/macOSの土台がSwiftPMへ。新規は即恩恵、既存は焦らずPodfile併用で段階移行。上物はtyped go_router＋Riverpod、Heroの一意tag、ListViewのlazy buildとフレーム予算という定番を守れば、速さと安全を両取りできる。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://flutter.dev/blog/whats-new-in-flutter-3-44" target="_blank" rel="noopener noreferrer"> What&#39;s new in Flutter 3.44 </a> </li><li> <a href="https://docs.flutter.dev/release/release-notes/release-notes-3.47.0" target="_blank" rel="noopener noreferrer"> Flutter 3.47 release notes </a> </li><li> <a href="https://docs.flutter.dev/ui/animations/hero-animations" target="_blank" rel="noopener noreferrer"> Hero animations (docs.flutter.dev) </a> </li><li> <a href="https://fredgrott.medium.com/typed-routes-with-go-router-and-riverpod-in-flutter-apps-2bc36122e5ba" target="_blank" rel="noopener noreferrer"> Typed Routes With go_router And Riverpod </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 既存アプリはどう動くか </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 今日の実践トピック </a> </li><li> <a href="#sec-3" data-toc="sec-3"> パフォーマンスと注意点 </a> </li><li> <a href="#sec-4" data-toc="sec-4"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-09-12</div> <div>⏱ 読了 約3分</div> <div>🏷 Flutter</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
