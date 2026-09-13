@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-09-12T04:48:13.548Z",
+  "generatedAt": "2026-09-13T04:46:13.400Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,88 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-09-13-claude-code",
+      "date": "2026-09-13",
+      "topic": "Claude Code",
+      "title": "v2.1.269でclaude plugin eval — プラグインを採点しリリースゲートに、v2.1.270が最新",
+      "lede": "プラグインを『測れる』ようにする回。claude plugin evalが再現可能なスコアをJSON+HTMLで出し、Static/LLM Judge/Monte Carloの3層評価と併せて導入前に採点できる。Agent TeamsとSubagentsの棲み分けも整理する。",
+      "articleHtml": "\n<p>9月のClaude Codeは新機能の派手さより<strong>「品質を計測して運用に組み込む」</strong>方向に効く更新が続く。9/11の <code>v2.1.269</code> でプラグイン評価が公式機能になり、9/12公開の <code>v2.1.270</code> が9/13時点の最新版だ。あわせて出てきた3層評価フレームワークやAgent Teams/Subagentsの実践知と束ねて、いま押さえておきたい点を整理する。</p>\n\n<h4>何が新しい/重要か</h4>\n<p><code>v2.1.269</code> の目玉は新コマンド <code>claude plugin eval</code>。プラグインの eval スイートをClaude Codeに対して実行し、<strong>再現可能なスコア付き結果をJSONとHTMLレポート</strong>で出す。プラグイン無しの<strong>ベースラインと挙動を比較</strong>できるので、そのままリリースゲートに使える。あわせて <code>/output-style [name]</code> で出力スタイルの一覧・切替ができ（Remote Control/ヘッドレス対応）、<strong>Bashツールがファイルを編集した場合は変更ファイルの差分がツール結果に併記</strong>されるようになった。<code>v2.1.270</code> はその流れを汲む累積リリースで、CLI/VS Code/Web/Slackにまたがる信頼性・プロンプトキャッシュ・セッション周りの修正が積み上がっている。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <text x='300' y='20' font-size='13' text-anchor='middle' fill='#333'>プラグイン品質を測る3層（速度↔精度のトレードオフ）</text>\n  <rect x='16' y='38' width='182' height='150' rx='8' fill='#eef8f0' stroke='#1a7f37'/>\n  <text x='28' y='60' font-size='12' fill='#1a7f37' font-weight='bold'>Static</text>\n  <text x='28' y='82' font-size='10.5' fill='#555'>構造の決定論解析</text>\n  <text x='28' y='100' font-size='10.5' fill='#555'>2秒未満・無料</text>\n  <text x='28' y='118' font-size='10.5' fill='#555'>壊れ・欠落の検出</text>\n  <text x='28' y='150' font-size='22' fill='#1a7f37' font-weight='bold'>&lt; 2s</text>\n  <rect x='209' y='38' width='182' height='150' rx='8' fill='#f3f6ff' stroke='#1f6feb'/>\n  <text x='221' y='60' font-size='12' fill='#1f4fa8' font-weight='bold'>LLM Judge</text>\n  <text x='221' y='82' font-size='10.5' fill='#555'>意味的な4次元評価</text>\n  <text x='221' y='100' font-size='10.5' fill='#555'>約30秒</text>\n  <text x='221' y='118' font-size='10.5' fill='#555'>妥当性・有用性</text>\n  <text x='221' y='150' font-size='22' fill='#1f4fa8' font-weight='bold'>~30s</text>\n  <rect x='402' y='38' width='182' height='150' rx='8' fill='#f5f0ff' stroke='#7b3fe4'/>\n  <text x='414' y='60' font-size='12' fill='#5a2ec0' font-weight='bold'>Monte Carlo</text>\n  <text x='414' y='82' font-size='10.5' fill='#555'>50〜100回擬似実行</text>\n  <text x='414' y='100' font-size='10.5' fill='#555'>統計的信頼性</text>\n  <text x='414' y='118' font-size='10.5' fill='#555'>ばらつきを測る</text>\n  <text x='414' y='150' font-size='20' fill='#5a2ec0' font-weight='bold'>2–5min</text>\n</svg><figcaption>図1：導入前にプラグインを採点する3層。上段ほど速く安く、下段ほど深く統計的。</figcaption></figure>\n\n<h4>仕組みと使い分け（Agent Teams vs Subagents）</h4>\n<p>評価と並んで実務で効くのが並列化の設計だ。<strong>Subagents</strong>は独自のコンテキスト窓・システムプロンプト・限定ツール権限を持つ専用インスタンスで、最大の利点は<strong>文脈の保全</strong>。二度と見返さない検索結果やログを逃がせばノイズはその窓に留まり、本会話には<strong>結論だけが戻る</strong>。万能1体より範囲を絞った5〜7体のロースターが有効とされる。一方<strong>Agent Teams</strong>（<code>CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1</code>で有効化・実験的）は、共有タスクリストと<strong>teammate同士の直接メッセージ</strong>で協働する点が違う。並列トラックを持つ大型機能やQAのスウォーム、対立仮説の検証に向く。</p>\n\n<figure class='fig'><pre class=\"mermaid\">flowchart TD\n  A[\"親セッション\"] --> B[\"Subagent: 独自窓で重い探索\"]\n  B --> C[\"結論だけ返す(文脈を汚さない)\"]\n  A --> D[\"Agent Teams\"]\n  D --> E[\"共有タスクリスト\"]\n  D --> F[\"teammate間メッセージ\"]\n  E --> G[\"並列トラックで協働\"]\n  F --> G</pre><figcaption>図2：委譲はSubagent、協働はAgent Teams。通信の有無が分かれ目。</figcaption></figure>\n\n<h4>実務での使いどころ・注意点</h4>\n<p>自作プラグインがあるなら、まず <code>claude plugin eval</code> でベースライン比較を回し、CIのリリースゲートに載せたい。価値が高いのは<strong>自環境固有の知識</strong>（DBスキーマ・テスト規約・デプロイ手順・コーディング規約）をClaudeに与えるプラグインだと指摘されている。3層評価はStaticを常時、LLM JudgeをPR時、Monte Carloをリリース前、と段階配置すると費用対効果がよい。Agent Teamsは実験的なので、まずSubagentsで文脈保全の型を作ってから広げるのが安全。30人規模の組織では共有Skill22＋Hook11で<strong>4か月35%の生産性向上</strong>を維持した事例もあり、単発利用でなくワークフロー化が定着の鍵だ。</p>\n\n<h4>ひとことまとめ</h4>\n<p>「測って締める」回。eval でプラグインを採点し、3層で導入前に見極め、Subagents/Agent Teams で並列を設計する。毎日回すエージェント運用の品質保証が一段固くなった。</p>",
+      "sources": [
+        {
+          "title": "Claude Code v2.1.269 リリース（GitHub）",
+          "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.269"
+        },
+        {
+          "title": "Claude Code 最新版（releasebot）",
+          "url": "https://releasebot.io/updates/anthropic/claude-code"
+        },
+        {
+          "title": "From tasks to swarms: Agent Teams in Claude Code",
+          "url": "https://alexop.dev/posts/from-tasks-to-swarms-agent-teams-in-claude-code/"
+        },
+        {
+          "title": "Claude Code Subagents 実践ガイド（Tembo）",
+          "url": "https://www.tembo.io/blog/claude-code-subagents"
+        },
+        {
+          "title": "プラグイン品質の3層評価（systemprompt.io）",
+          "url": "https://systemprompt.io/guides/best-claude-code-plugins-2026"
+        }
+      ]
+    },
+    {
+      "id": "2026-09-13-flutter",
+      "date": "2026-09-13",
+      "topic": "Flutter",
+      "title": "Flutter 2026『Finishing the Job』— Android legacy Skia撤去でImpeller一本化、Web WasmGCへ",
+      "lede": "既存機能を『完成させる』実行フェーズ。Android 10+でlegacy Skiaを撤去しImpeller(Vulkan)へ一本化、WebはWasmGCを既定ターゲットへ前進。ラスタライズがボトルネックでなくなった今、最適化の軸はbuild/layoutへ移る。",
+      "articleHtml": "\n<p>2026年のFlutterは新機能の乱発でなく<strong>「Finishing the Job（やりかけを完成させる）」</strong>を掲げる実行フェーズにある。今日の主役はレンダリング基盤の一本化だ。<strong>Android 10+（API 29+）で legacy Skia backend を撤去</strong>して <strong>Impeller(Vulkan)</strong> に集約し、<strong>WebAssembly(WasmGC) を Flutter Web の既定コンパイルターゲット</strong>へ前進させる。地味だが、日々のパフォーマンスの前提が変わる更新だ。</p>\n\n<h4>何が新しい/重要か</h4>\n<p>Androidは中間抽象を挟まずネイティブGPUを直接叩き、全shaderを<strong>build時にAOT precompile</strong>して first-run jank（初回のカクつき）を排除する。Webは <code>flutter build web --wasm</code>（WasmGC）でopt-in、<code>dart:html</code>→<code>package:web</code> 移行を前提に起動高速化とJSブリッジ縮小を狙う。ロードマップの4本柱は <strong>Performance(Impeller)・Tooling/DX・Web/Accessibility・Stability＋AI</strong>（GenUI SDK / Dart-Flutter MCP Server）。2026は年4回（2/5/8/11月）のstableをコミットする。現行安定版は <strong>Flutter 3.47.x / Dart 3.13.x</strong>、次の機能リリースは2026年11月見込みで <strong>3.48 / Dart 3.14 が beta</strong>。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <text x='300' y='20' font-size='13' text-anchor='middle' fill='#333'>フレーム予算：落とさないための上限（ms）</text>\n  <text x='70' y='58' font-size='12' fill='#333'>60fps</text>\n  <rect x='120' y='46' width='420' height='20' rx='4' fill='#e6f0ff' stroke='#1f6feb'/>\n  <text x='548' y='61' font-size='11' fill='#1f4fa8'>16ms</text>\n  <text x='70' y='98' font-size='12' fill='#333'>90fps</text>\n  <rect x='120' y='86' width='289' height='20' rx='4' fill='#eaf7ee' stroke='#1a7f37'/>\n  <text x='417' y='101' font-size='11' fill='#1a7f37'>11ms</text>\n  <text x='70' y='138' font-size='12' fill='#333'>120fps</text>\n  <rect x='120' y='126' width='218' height='20' rx='4' fill='#f5eefe' stroke='#7b3fe4'/>\n  <text x='346' y='141' font-size='11' fill='#5a2ec0'>8.3ms</text>\n  <text x='120' y='176' font-size='10.5' fill='#666'>GPU/rasterスレッドは60fpsで4ms未満／120fps狙いは8.3ms未満が目安</text>\n</svg><figcaption>図1：フレーム予算。この上限を超えるとフレーム落ち（赤バー）になる。</figcaption></figure>\n\n<h4>仕組みのポイント（最適化の軸が移った）</h4>\n<p>Impellerが全shaderをAOTでコンパイルした結果、<strong>frame rasterization はもはや主要ボトルネックでない</strong>。今しばしば効くのは <strong>widget build と layout computation</strong> だ。DevTools Performance では <strong>rebuild count と layout pass duration</strong> を主要指標にする。最も多い根因は不要な rebuild で、対策は <code>const</code> 徹底・大きな <code>build()</code> の分割・最小スライス購読（<code>ref.watch(provider.select(...))</code> / <code>BlocSelector</code>）・アニメ領域の <code>RepaintBoundary</code> 隔離。重い計算は <code>Isolate.run()</code>/<code>compute()</code> で背景isolateへ逃がす。計測は必ず<strong>profileモード</strong>で（debugはJIT/assertで歪む）。</p>\n\n<h4>アーキテクチャの定番</h4>\n<p>状態管理と画面遷移も棚卸ししておく。ルーティングは <strong>go_router が公式標準</strong>（月間128万DL超、deep link・browser history・auth redirect・tab shell を自動処理）。新規プロジェクトの既定は <strong>Riverpod 3.3.1＋<code>@riverpod</code> codegen</strong>、監査証跡が要る規制業界（fintech/healthcare）や複雑並行は <strong>Bloc 9.1.1</strong>（<code>hydrated_bloc</code> で永続化）。両者は <code>ProviderScope</code> と <code>MultiBlocProvider</code> で共存できる。アニメは micro=implicit → 宣言的多段=flutter_animate → component=explicit → 共有要素=Hero と用途で使い分け、重いアートは Rive にオフロードして事前ロードする。</p>\n\n<h4>ひとことまとめ</h4>\n<p>基盤を「完成」に寄せる年。Android Skia撤去でImpeller一本化、WebはWasmGCへ。ラスタは片付いたので、次に削るのは rebuild と layout。profileモードで rebuild count を見るのが今日からの基本動作だ。</p>",
+      "sources": [
+        {
+          "title": "Flutter 2026: Impeller, WASM & Cross-Platform（softaims）",
+          "url": "https://softaims.com/blog/flutter-3-impeller-wasm-features-2026"
+        },
+        {
+          "title": "Flutter release notes（公式）",
+          "url": "https://docs.flutter.dev/release/release-notes"
+        },
+        {
+          "title": "Flutter + Impeller: Native 120fps in 2026",
+          "url": "https://shindekalpesharun.medium.com/flutter-impeller-how-to-achieve-native-120fps-performance-in-2026-68ec28cc71e5"
+        },
+        {
+          "title": "Flutter State Management 2026（SharpSkill）",
+          "url": "https://sharpskill.dev/en/blog/flutter/flutter-state-management-2026-riverpod-bloc-getx"
+        },
+        {
+          "title": "Performance best practices（公式）",
+          "url": "https://docs.flutter.dev/perf/best-practices"
+        }
+      ]
+    },
+    {
+      "id": "2026-09-13-github-trending",
+      "date": "2026-09-13",
+      "topic": "GitHub Trending",
+      "title": "9/13の話題リポジトリ — コードレビュー自動化・時系列基盤モデル・AI営業CRMのDevForge適合3本",
+      "lede": "今日のTrendingから、自分のDevForge各プロジェクトに直で効く3本を『解きたい課題』と『提供する機能』で読み解く。SASTの空白、資金繰り予測、AI営業CRM設計——手を動かす前の目利き用メモ。",
+      "articleHtml": "\n<p>今日のTrendingは、AIエージェント/スキル一色の上位群の中に、<strong>実務の穴を埋める実用ツール</strong>が混ざって伸びていた。ここでは自分の DevForge 各プロジェクトに直結する3本を選び、それぞれ<strong>「どんな課題を解こうとしているか」</strong>と<strong>「実際に何ができるか」</strong>に絞って読み解く。共通するのは、既存の手作業や欠けている自動化を、機械可読・セルフホストで置き換えようとする流れだ。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 230' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <text x='300' y='20' font-size='13' text-anchor='middle' fill='#333'>リポジトリ ×（解きたい課題 / 提供する機能）</text>\n  <line x1='16' y1='34' x2='584' y2='34' stroke='#ccc'/>\n  <text x='24' y='54' font-size='11' fill='#1a7f37' font-weight='bold'>open-code-review</text>\n  <text x='210' y='54' font-size='10.5' fill='#555'>手動レビュー/SAST無し</text>\n  <text x='410' y='54' font-size='10.5' fill='#555'>決定論+LLMで行指摘</text>\n  <line x1='16' y1='66' x2='584' y2='66' stroke='#eee'/>\n  <rect x='16' y='74' width='568' height='44' rx='6' fill='#f3f6ff'/>\n  <text x='24' y='102' font-size='11' fill='#1f4fa8' font-weight='bold'>timesfm</text>\n  <text x='210' y='102' font-size='10.5' fill='#555'>予測モデルを都度学習</text>\n  <text x='410' y='102' font-size='10.5' fill='#555'>ゼロショット時系列予測</text>\n  <text x='24' y='150' font-size='11' fill='#5a2ec0' font-weight='bold'>DeskcommCRM</text>\n  <text x='210' y='150' font-size='10.5' fill='#555'>チャット営業の分断</text>\n  <text x='410' y='150' font-size='10.5' fill='#555'>AI常駐セルフホストCRM</text>\n  <line x1='16' y1='162' x2='584' y2='162' stroke='#eee'/>\n  <text x='24' y='190' font-size='10.5' fill='#666'>いずれも Tier B（提案→承認）で、まず1PJのPoCから評価する想定</text>\n</svg><figcaption>図1：3本の「課題→機能」対応。左=解く問題、右=提供する機能。</figcaption></figure>\n\n<h4>alibaba/open-code-review（— ・ ⭐急上昇）</h4>\n<p><strong>解きたい課題：</strong>コードレビューが手動で、CIに自動アプリセキュリティ検査（SAST）が無いという空白。レビュー品質が人依存で、NPEやスレッド安全、XSS/SQLインジェクションのような定番リスクを機械的に拾えていない。<strong>提供する機能：</strong>決定論パイプラインとLLMエージェントの<strong>ハイブリッド</strong>で、<strong>行レベルの精緻な指摘</strong>と多言語ルールセット（NPE/スレッド安全/XSS/SQLi）を機械可読に出す。Alibabaの実運用規模で鍛えられ、OpenAI/Anthropic互換。Trendshift日次23位・New 2026で急上昇。DevForge適合→ §0のSAST空白に直撃し §4 reviewerエージェントの補完にもなる。まず1PJのCIに試験導入し findings を Tier B で回す価値がある。</p>\n\n<h4>google-research/timesfm（Python ・ ⭐約31k / +3.1k・7d）</h4>\n<p><strong>解きたい課題：</strong>需要・トラフィック・金額系列の予測に、系列ごとの追加学習コストがかかること。<strong>提供する機能：</strong>時系列版の<strong>事前学習済み基盤モデル</strong>で、追加学習なしの<strong>ゼロショット</strong>でも将来値を予測できる。findarepoで +3.1k/7d（率約10%）と継続急伸。DevForge適合→ §1 soemo の資金繰り可視化(money-loop)の予測強化や、careport/Aiselly の問い合わせ量・商談パイプライン予測に効く。追加学習なしで試せるので、まず soemo の入金/資金繰り予測 PoC として評価したい。</p>\n\n<h4>melgarafael/DeskcommCRM（— ・ ⭐New）</h4>\n<p><strong>解きたい課題：</strong>「チャットで売る」ビジネスで、AI営業の会話・リード・商談管理がツール間で分断されていること。SaaS依存だとデータ主権やコストも気になる。<strong>提供する機能：</strong>ネイティブAIエージェント＋WhatsApp(WAHA)を備えた<strong>セルフホスト型のオープンソースAI営業OS/CRM</strong>。MCP対応・マルチテナントで、Kommo/Octadesk/Intercomのオープン代替。Trendshift日次18位・New 2026。DevForge適合→ §1 Aiselly のAI営業自動化（リード→アウトリーチ→商談管理）の設計・機能参照として直球。careport/soemo のチャット起点CRM設計の比較対象にもなる。まず Aiselly の商談カンバン/シーケンス設計の参照として評価したい。</p>\n\n<h4>ひとことまとめ</h4>\n<p>今日の3本は「手動→機械可読」「都度学習→ゼロショット」「分断→セルフホスト統合」という置き換えの軸で揃った。自分が最初に触るなら、CIに直挿しできて効果が見えやすい <strong>open-code-review</strong> から。timesfm と DeskcommCRM は該当PJのPoCとして順に評価していく。</p>",
+      "sources": [
+        {
+          "title": "alibaba/open-code-review",
+          "url": "https://github.com/alibaba/open-code-review"
+        },
+        {
+          "title": "google-research/timesfm",
+          "url": "https://github.com/google-research/timesfm"
+        },
+        {
+          "title": "melgarafael/DeskcommCRM",
+          "url": "https://github.com/melgarafael/DeskcommCRM"
+        }
+      ]
+    },
     {
       "id": "2026-09-12-claude-code",
       "date": "2026-09-12",
