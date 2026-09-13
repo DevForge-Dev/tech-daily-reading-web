@@ -1,0 +1,86 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Flutter 2026『Finishing the Job』— Android legacy Skia撤去でImpeller一本化、Web WasmGCへ — デイリー技術深掘り 読み物</title><meta name="description" content="既存機能を『完成させる』実行フェーズ。Android 10+でlegacy Skiaを撤去しImpeller(Vulkan)へ一本化、WebはWasmGCを既定ターゲットへ前進。ラスタライズがボトルネックでなくなった今、最適化の軸はbuild/layoutへ移る。"><meta name="theme-color" content="#0277bd"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-13-flutter/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Flutter 2026『Finishing the Job』— Android legacy Skia撤去でImpeller一本化、Web WasmGCへ — デイリー技術深掘り 読み物"><meta property="og:description" content="既存機能を『完成させる』実行フェーズ。Android 10+でlegacy Skiaを撤去しImpeller(Vulkan)へ一本化、WebはWasmGCを既定ターゲットへ前進。ラスタライズがボトルネックでなくなった今、最適化の軸はbuild/layoutへ移る。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-13-flutter/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #29b6f6, #01579b)"> <span class="glyph" aria-hidden="true">◆</span> <div class="kicker">Flutter</div> <h1>Flutter 2026『Finishing the Job』— Android legacy Skia撤去でImpeller一本化、Web WasmGCへ</h1> <p class="lede">既存機能を『完成させる』実行フェーズ。Android 10+でlegacy Skiaを撤去しImpeller(Vulkan)へ一本化、WebはWasmGCを既定ターゲットへ前進。ラスタライズがボトルネックでなくなった今、最適化の軸はbuild/layoutへ移る。</p> <div class="meta"> <span>📅 2026年9月13日</span> <span>⏱ 約3分</span> <span>🔗 出典 5 件</span> </div> </section> <div class="article-layout" style="--topic:#0277bd"> <div> <article class="prose" data-has-mermaid="0">
+<p>2026年のFlutterは新機能の乱発でなく<strong>「Finishing the Job（やりかけを完成させる）」</strong>を掲げる実行フェーズにある。今日の主役はレンダリング基盤の一本化だ。<strong>Android 10+（API 29+）で legacy Skia backend を撤去</strong>して <strong>Impeller(Vulkan)</strong> に集約し、<strong>WebAssembly(WasmGC) を Flutter Web の既定コンパイルターゲット</strong>へ前進させる。地味だが、日々のパフォーマンスの前提が変わる更新だ。</p>
+
+<h4 id="sec-1">何が新しい/重要か</h4>
+<p>Androidは中間抽象を挟まずネイティブGPUを直接叩き、全shaderを<strong>build時にAOT precompile</strong>して first-run jank（初回のカクつき）を排除する。Webは <code>flutter build web --wasm</code>（WasmGC）でopt-in、<code>dart:html</code>→<code>package:web</code> 移行を前提に起動高速化とJSブリッジ縮小を狙う。ロードマップの4本柱は <strong>Performance(Impeller)・Tooling/DX・Web/Accessibility・Stability＋AI</strong>（GenUI SDK / Dart-Flutter MCP Server）。2026は年4回（2/5/8/11月）のstableをコミットする。現行安定版は <strong>Flutter 3.47.x / Dart 3.13.x</strong>、次の機能リリースは2026年11月見込みで <strong>3.48 / Dart 3.14 が beta</strong>。</p>
+
+<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <text x='300' y='20' font-size='13' text-anchor='middle' fill='#333'>フレーム予算：落とさないための上限（ms）</text>
+  <text x='70' y='58' font-size='12' fill='#333'>60fps</text>
+  <rect x='120' y='46' width='420' height='20' rx='4' fill='#e6f0ff' stroke='#1f6feb'></rect>
+  <text x='548' y='61' font-size='11' fill='#1f4fa8'>16ms</text>
+  <text x='70' y='98' font-size='12' fill='#333'>90fps</text>
+  <rect x='120' y='86' width='289' height='20' rx='4' fill='#eaf7ee' stroke='#1a7f37'></rect>
+  <text x='417' y='101' font-size='11' fill='#1a7f37'>11ms</text>
+  <text x='70' y='138' font-size='12' fill='#333'>120fps</text>
+  <rect x='120' y='126' width='218' height='20' rx='4' fill='#f5eefe' stroke='#7b3fe4'></rect>
+  <text x='346' y='141' font-size='11' fill='#5a2ec0'>8.3ms</text>
+  <text x='120' y='176' font-size='10.5' fill='#666'>GPU/rasterスレッドは60fpsで4ms未満／120fps狙いは8.3ms未満が目安</text>
+</svg><figcaption>図1：フレーム予算。この上限を超えるとフレーム落ち（赤バー）になる。</figcaption></figure>
+
+<h4 id="sec-2">仕組みのポイント（最適化の軸が移った）</h4>
+<p>Impellerが全shaderをAOTでコンパイルした結果、<strong>frame rasterization はもはや主要ボトルネックでない</strong>。今しばしば効くのは <strong>widget build と layout computation</strong> だ。DevTools Performance では <strong>rebuild count と layout pass duration</strong> を主要指標にする。最も多い根因は不要な rebuild で、対策は <code>const</code> 徹底・大きな <code>build()</code> の分割・最小スライス購読（<code>ref.watch(provider.select(...))</code> / <code>BlocSelector</code>）・アニメ領域の <code>RepaintBoundary</code> 隔離。重い計算は <code>Isolate.run()</code>/<code>compute()</code> で背景isolateへ逃がす。計測は必ず<strong>profileモード</strong>で（debugはJIT/assertで歪む）。</p>
+
+<h4 id="sec-3">アーキテクチャの定番</h4>
+<p>状態管理と画面遷移も棚卸ししておく。ルーティングは <strong>go_router が公式標準</strong>（月間128万DL超、deep link・browser history・auth redirect・tab shell を自動処理）。新規プロジェクトの既定は <strong>Riverpod 3.3.1＋<code>@riverpod</code> codegen</strong>、監査証跡が要る規制業界（fintech/healthcare）や複雑並行は <strong>Bloc 9.1.1</strong>（<code>hydrated_bloc</code> で永続化）。両者は <code>ProviderScope</code> と <code>MultiBlocProvider</code> で共存できる。アニメは micro=implicit → 宣言的多段=flutter_animate → component=explicit → 共有要素=Hero と用途で使い分け、重いアートは Rive にオフロードして事前ロードする。</p>
+
+<h4 id="sec-4">ひとことまとめ</h4>
+<p>基盤を「完成」に寄せる年。Android Skia撤去でImpeller一本化、WebはWasmGCへ。ラスタは片付いたので、次に削るのは rebuild と layout。profileモードで rebuild count を見るのが今日からの基本動作だ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://softaims.com/blog/flutter-3-impeller-wasm-features-2026" target="_blank" rel="noopener noreferrer"> Flutter 2026: Impeller, WASM &amp; Cross-Platform（softaims） </a> </li><li> <a href="https://docs.flutter.dev/release/release-notes" target="_blank" rel="noopener noreferrer"> Flutter release notes（公式） </a> </li><li> <a href="https://shindekalpesharun.medium.com/flutter-impeller-how-to-achieve-native-120fps-performance-in-2026-68ec28cc71e5" target="_blank" rel="noopener noreferrer"> Flutter + Impeller: Native 120fps in 2026 </a> </li><li> <a href="https://sharpskill.dev/en/blog/flutter/flutter-state-management-2026-riverpod-bloc-getx" target="_blank" rel="noopener noreferrer"> Flutter State Management 2026（SharpSkill） </a> </li><li> <a href="https://docs.flutter.dev/perf/best-practices" target="_blank" rel="noopener noreferrer"> Performance best practices（公式） </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 何が新しい/重要か </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 仕組みのポイント（最適化の軸が移った） </a> </li><li> <a href="#sec-3" data-toc="sec-3"> アーキテクチャの定番 </a> </li><li> <a href="#sec-4" data-toc="sec-4"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-09-13</div> <div>⏱ 読了 約3分</div> <div>🏷 Flutter</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

@@ -1,0 +1,90 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>9/13の話題リポジトリ — コードレビュー自動化・時系列基盤モデル・AI営業CRMのDevForge適合3本 — デイリー技術深掘り 読み物</title><meta name="description" content="今日のTrendingから、自分のDevForge各プロジェクトに直で効く3本を『解きたい課題』と『提供する機能』で読み解く。SASTの空白、資金繰り予測、AI営業CRM設計——手を動かす前の目利き用メモ。"><meta name="theme-color" content="#238636"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-13-github-trending/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="9/13の話題リポジトリ — コードレビュー自動化・時系列基盤モデル・AI営業CRMのDevForge適合3本 — デイリー技術深掘り 読み物"><meta property="og:description" content="今日のTrendingから、自分のDevForge各プロジェクトに直で効く3本を『解きたい課題』と『提供する機能』で読み解く。SASTの空白、資金繰り予測、AI営業CRM設計——手を動かす前の目利き用メモ。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-13-github-trending/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3fb950, #1a7f37)"> <span class="glyph" aria-hidden="true">★</span> <div class="kicker">GitHub Trending</div> <h1>9/13の話題リポジトリ — コードレビュー自動化・時系列基盤モデル・AI営業CRMのDevForge適合3本</h1> <p class="lede">今日のTrendingから、自分のDevForge各プロジェクトに直で効く3本を『解きたい課題』と『提供する機能』で読み解く。SASTの空白、資金繰り予測、AI営業CRM設計——手を動かす前の目利き用メモ。</p> <div class="meta"> <span>📅 2026年9月13日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#238636"> <div> <article class="prose" data-has-mermaid="0">
+<p>今日のTrendingは、AIエージェント/スキル一色の上位群の中に、<strong>実務の穴を埋める実用ツール</strong>が混ざって伸びていた。ここでは自分の DevForge 各プロジェクトに直結する3本を選び、それぞれ<strong>「どんな課題を解こうとしているか」</strong>と<strong>「実際に何ができるか」</strong>に絞って読み解く。共通するのは、既存の手作業や欠けている自動化を、機械可読・セルフホストで置き換えようとする流れだ。</p>
+
+<figure class='fig'><svg viewBox='0 0 600 230' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <text x='300' y='20' font-size='13' text-anchor='middle' fill='#333'>リポジトリ ×（解きたい課題 / 提供する機能）</text>
+  <line x1='16' y1='34' x2='584' y2='34' stroke='#ccc'></line>
+  <text x='24' y='54' font-size='11' fill='#1a7f37' font-weight='bold'>open-code-review</text>
+  <text x='210' y='54' font-size='10.5' fill='#555'>手動レビュー/SAST無し</text>
+  <text x='410' y='54' font-size='10.5' fill='#555'>決定論+LLMで行指摘</text>
+  <line x1='16' y1='66' x2='584' y2='66' stroke='#eee'></line>
+  <rect x='16' y='74' width='568' height='44' rx='6' fill='#f3f6ff'></rect>
+  <text x='24' y='102' font-size='11' fill='#1f4fa8' font-weight='bold'>timesfm</text>
+  <text x='210' y='102' font-size='10.5' fill='#555'>予測モデルを都度学習</text>
+  <text x='410' y='102' font-size='10.5' fill='#555'>ゼロショット時系列予測</text>
+  <text x='24' y='150' font-size='11' fill='#5a2ec0' font-weight='bold'>DeskcommCRM</text>
+  <text x='210' y='150' font-size='10.5' fill='#555'>チャット営業の分断</text>
+  <text x='410' y='150' font-size='10.5' fill='#555'>AI常駐セルフホストCRM</text>
+  <line x1='16' y1='162' x2='584' y2='162' stroke='#eee'></line>
+  <text x='24' y='190' font-size='10.5' fill='#666'>いずれも Tier B（提案→承認）で、まず1PJのPoCから評価する想定</text>
+</svg><figcaption>図1：3本の「課題→機能」対応。左=解く問題、右=提供する機能。</figcaption></figure>
+
+<h4 id="sec-1">alibaba/open-code-review（— ・ ⭐急上昇）</h4>
+<p><strong>解きたい課題：</strong>コードレビューが手動で、CIに自動アプリセキュリティ検査（SAST）が無いという空白。レビュー品質が人依存で、NPEやスレッド安全、XSS/SQLインジェクションのような定番リスクを機械的に拾えていない。<strong>提供する機能：</strong>決定論パイプラインとLLMエージェントの<strong>ハイブリッド</strong>で、<strong>行レベルの精緻な指摘</strong>と多言語ルールセット（NPE/スレッド安全/XSS/SQLi）を機械可読に出す。Alibabaの実運用規模で鍛えられ、OpenAI/Anthropic互換。Trendshift日次23位・New 2026で急上昇。DevForge適合→ §0のSAST空白に直撃し §4 reviewerエージェントの補完にもなる。まず1PJのCIに試験導入し findings を Tier B で回す価値がある。</p>
+
+<h4 id="sec-2">google-research/timesfm（Python ・ ⭐約31k / +3.1k・7d）</h4>
+<p><strong>解きたい課題：</strong>需要・トラフィック・金額系列の予測に、系列ごとの追加学習コストがかかること。<strong>提供する機能：</strong>時系列版の<strong>事前学習済み基盤モデル</strong>で、追加学習なしの<strong>ゼロショット</strong>でも将来値を予測できる。findarepoで +3.1k/7d（率約10%）と継続急伸。DevForge適合→ §1 soemo の資金繰り可視化(money-loop)の予測強化や、careport/Aiselly の問い合わせ量・商談パイプライン予測に効く。追加学習なしで試せるので、まず soemo の入金/資金繰り予測 PoC として評価したい。</p>
+
+<h4 id="sec-3">melgarafael/DeskcommCRM（— ・ ⭐New）</h4>
+<p><strong>解きたい課題：</strong>「チャットで売る」ビジネスで、AI営業の会話・リード・商談管理がツール間で分断されていること。SaaS依存だとデータ主権やコストも気になる。<strong>提供する機能：</strong>ネイティブAIエージェント＋WhatsApp(WAHA)を備えた<strong>セルフホスト型のオープンソースAI営業OS/CRM</strong>。MCP対応・マルチテナントで、Kommo/Octadesk/Intercomのオープン代替。Trendshift日次18位・New 2026。DevForge適合→ §1 Aiselly のAI営業自動化（リード→アウトリーチ→商談管理）の設計・機能参照として直球。careport/soemo のチャット起点CRM設計の比較対象にもなる。まず Aiselly の商談カンバン/シーケンス設計の参照として評価したい。</p>
+
+<h4 id="sec-4">ひとことまとめ</h4>
+<p>今日の3本は「手動→機械可読」「都度学習→ゼロショット」「分断→セルフホスト統合」という置き換えの軸で揃った。自分が最初に触るなら、CIに直挿しできて効果が見えやすい <strong>open-code-review</strong> から。timesfm と DeskcommCRM は該当PJのPoCとして順に評価していく。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://github.com/alibaba/open-code-review" target="_blank" rel="noopener noreferrer"> alibaba/open-code-review </a> </li><li> <a href="https://github.com/google-research/timesfm" target="_blank" rel="noopener noreferrer"> google-research/timesfm </a> </li><li> <a href="https://github.com/melgarafael/DeskcommCRM" target="_blank" rel="noopener noreferrer"> melgarafael/DeskcommCRM </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> alibaba/open-code-review（— ・ ⭐急上昇） </a> </li><li> <a href="#sec-2" data-toc="sec-2"> google-research/timesfm（Python ・ ⭐約31k / +3.1k・7d） </a> </li><li> <a href="#sec-3" data-toc="sec-3"> melgarafael/DeskcommCRM（— ・ ⭐New） </a> </li><li> <a href="#sec-4" data-toc="sec-4"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-09-13</div> <div>⏱ 読了 約3分</div> <div>🏷 GitHub Trending</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
