@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-09-13T04:46:13.400Z",
+  "generatedAt": "2026-09-14T04:50:35.958Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,76 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-09-14-claude-code",
+      "date": "2026-09-14",
+      "topic": "Claude Code",
+      "title": "v2.1.270で権限回帰を修正 — Fable 5.1・1M文脈を土台に『強制/知識/委譲』の使い分けが定石化",
+      "lede": "9/14時点の最新はv2.1.270。読み取り専用gitコマンドが不意に権限を求める回帰（v2.1.269起因）を潰した安定化リリース。既定はFable 5.1・1M文脈・128K出力で、Hooks=強制/Skills=知識/Subagents=委譲の決定フレームと、マーケット>プラグイン>スキルの配布階層が実務の定石になりつつある。",
+      "articleHtml": "<p>9月のClaude Codeは派手な新機能より<strong>「基盤を固めて運用に組み込む」</strong>更新が続く。9/14時点の最新は9/12公開の <code>v2.1.270</code>——長時間セッションで <code>git status</code>/<code>git log</code> といった<strong>読み取り専用gitコマンドが不意に権限確認を求める回帰</strong>（前版 <code>v2.1.269</code> で混入）を修正した累積リリースだ。plugin evalや <code>/output-style</code> といった大型追加の直後に出た副作用を素早く潰した格好で、9月は <code>v2.1.257</code> のFable 5.1既定化以降、週1〜2本ペースで機能と修正が積み上がっている。</p>\n<h4>何が新しい/重要か</h4>\n<p>土台の既定モデルは <strong>Claude Fable 5.1</strong>。<strong>1Mトークンのコンテキストを標準</strong>で備え、<strong>最大128,000トークンの出力</strong>に対応する。Opus 5 / Sonnet 5 も1M文脈で選べるので、大規模コードベースを一度に読み込ませる長文脈ワークフローが現実的になった。この基盤の上に、カスタマイズの3系統（Hooks・Subagents・Skills）をどう使い分けるかの「決定フレーム」が定着しつつある。</p>\n<figure class='fig'><svg viewBox='0 0 600 230' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n<text x='300' y='20' font-size='13' text-anchor='middle' fill='#333'>カスタマイズ4系統の使い分け</text>\n<rect x='16' y='34' width='280' height='86' rx='8' fill='#f5f0ff' stroke='#7b3fe4'/>\n<text x='30' y='56' font-size='12.5' fill='#5a2ec0' font-weight='bold'>Hooks ＝ 強制（決定論）</text>\n<text x='30' y='78' font-size='10.5' fill='#555'>ライフサイクルで発火するシェル</text>\n<text x='30' y='96' font-size='10.5' fill='#555'>ハルシネーションしない実行</text>\n<text x='30' y='112' font-size='10.5' fill='#555'>書込ブロック/整形/テスト/秘匿</text>\n<rect x='304' y='34' width='280' height='86' rx='8' fill='#eef8f0' stroke='#1a7f37'/>\n<text x='318' y='56' font-size='12.5' fill='#1a7f37' font-weight='bold'>Skills ＝ 知識</text>\n<text x='318' y='78' font-size='10.5' fill='#555'>必要時ロードのフォルダ型指示</text>\n<text x='318' y='96' font-size='10.5' fill='#555'>SKILL.md＋補助スクリプト</text>\n<text x='318' y='112' font-size='10.5' fill='#555'>能力付与/流儀反映の2系統</text>\n<rect x='16' y='128' width='280' height='86' rx='8' fill='#f3f6ff' stroke='#1f6feb'/>\n<text x='30' y='150' font-size='12.5' fill='#1f4fa8' font-weight='bold'>Subagents ＝ 委譲</text>\n<text x='30' y='172' font-size='10.5' fill='#555'>独自コンテキストの専用インスタンス</text>\n<text x='30' y='190' font-size='10.5' fill='#555'>ノイズを閉じ結論だけ返す</text>\n<text x='30' y='206' font-size='10.5' fill='#555'>範囲を絞った5〜7体が有効</text>\n<rect x='304' y='128' width='280' height='86' rx='8' fill='#f7f7f9' stroke='#5a5a66'/>\n<text x='318' y='150' font-size='12.5' fill='#3a3a44' font-weight='bold'>CLAUDE.md ＝ 常時指針</text>\n<text x='318' y='172' font-size='10.5' fill='#555'>プロジェクトの前提を短く常駐</text>\n<text x='318' y='190' font-size='10.5' fill='#555'>長文にせず要点だけ</text>\n<text x='318' y='206' font-size='10.5' fill='#555'>全会話で自動的に効く</text>\n</svg><figcaption>図1：強制はHooks/権限、知識はSkills、委譲はSubagents、常時指針はCLAUDE.mdに短く。</figcaption></figure>\n<h4>仕組み — 配布は3層で整理できる</h4>\n<p>チームで広げる段では<strong>「マーケットプレイス＞プラグイン＞スキル」</strong>の階層が効く。マーケットはプラグインのカタログ、プラグインはスキルの束、スキルは指示のフォルダ、という入れ子だ。導入は <code>/plugin marketplace add owner/repo</code> でマーケットを登録し <code>/plugin install name@marketplace</code> で入れる2コマンド。公式マーケットは自動登録され、コミュニティ版は <code>anthropics/claude-plugins-community</code> を追加する。個人のメモに溜めていた\"やり方の意見\"を、誰でも30秒で購読できるインストール単位に変える配布システムという位置づけだ。</p>\n<h4>実務での使いどころ・注意点</h4>\n<p>まずは自分の環境固有の知識（DBスキーマ・テスト規約・デプロイ手順）をSkillに落とし、強制したいルールはHooksか権限へ、重い探索はSubagentsへ逃がす、という型を作りたい。数字も追い風で、Claude Codeのラン率売上は2026年2月に <strong>$2.5B超</strong>、ビジネス購読は2026年で <strong>4倍</strong>。Deloitteは <strong>47万人超</strong>に展開し、日本企業の事例では実装時間を <strong>平均40〜60%削減</strong>と報告される。注意点は、成功パターンが「少数のパワーユーザーが実績を作って横展開」であること——単発利用でなくHooks/Skillsでワークフロー化して初めて定着する。</p>\n<h4>ひとことまとめ</h4>\n<p>「基盤を固める」回。Fable 5.1・1M文脈を土台に、強制/知識/委譲/常時指針の置き場所を決め、プラグインで配る。毎日回すエージェント運用の再現性が一段上がった。</p>",
+      "sources": [
+        {
+          "title": "Claude Code changelog（公式）",
+          "url": "https://code.claude.com/docs/en/changelog"
+        },
+        {
+          "title": "Hooks・Subagents・Skills 完全ガイド (ofox.ai)",
+          "url": "https://ofox.ai/blog/claude-code-hooks-subagents-skills-complete-guide-2026/"
+        },
+        {
+          "title": "プラグインマーケットプレイス完全ガイド (thepromptshelf)",
+          "url": "https://thepromptshelf.dev/blog/claude-code-plugin-marketplace-2026/"
+        },
+        {
+          "title": "Claude Code statistics (AI Business Weekly)",
+          "url": "https://aibusinessweekly.net/p/claude-code-statistics"
+        }
+      ]
+    },
+    {
+      "id": "2026-09-14-flutter",
+      "date": "2026-09-14",
+      "topic": "Flutter",
+      "title": "Flutter 3.44系のAIネイティブ開発ループ — Agentic Hot ReloadとGenUI(A2UI)がframeworkの中核へ",
+      "lede": "今日の主役はAIが開発ループの中核に入る流れ。Dart & Flutter MCP Serverが起動中アプリを自動検出し、AIの編集を即hot reload（手動接続不要）。GenUIはオープンなA2UIプロトコル上でAIが実Flutterウィジェットをランタイム合成。現行安定はFlutter 3.47.x/Dart 3.13.x、3.48/Dart 3.14はbeta、次の安定は2026年11月。",
+      "articleHtml": "<p>今日のFlutterの主役は<strong>AIネイティブな開発ループがframeworkの中核へ入ってきた</strong>ことだ。これまでAIは「コードの上のレイヤー」にいたが、Google I/O 2026前後の一連の発表で、Flutterは<strong>開発ループそのものにAIを織り込む</strong>方向に舵を切った。中心にあるのが <strong>Dart & Flutter MCP Server</strong> と、その上で動く2つの体験——<strong>Agentic Hot Reload</strong> と <strong>GenUI</strong> である。</p>\n<h4>何が新しい/重要か</h4>\n<p><strong>Agentic Hot Reload</strong> は、MCP Serverが<strong>起動中のアプリを自動検出</strong>し、AIエージェントがコードを編集した瞬間に<strong>手動接続なしでhot reload</strong>する。人間が保存→リロードしていたループをエージェントが自走できる。<strong>GenUI（生成UI）</strong> はGoogle制定のオープンな <strong>A2UI（Agent-to-UI）プロトコル</strong>上に構築され、AIが<strong>実Flutterウィジェットをその場で合成</strong>して完全インタラクティブな画面をランタイム生成する——事前定義レイアウトもアプリストア更新も不要だ。土台の <strong>Dart/Flutter MCP Server</strong> は <code>dart analyze</code> / <code>dart format</code> の結果を自動消費し、language toolingとAIワークフローを接続する。</p>\n<figure class='fig'><pre class=\"mermaid\">flowchart TD\n  A[\"AIエージェントがコード編集\"] --> B[\"Dart & Flutter MCP Server\"]\n  B --> C[\"起動中アプリを自動検出\"]\n  C --> D[\"手動接続なしでhot reload\"]\n  B --> E[\"dart analyze / dart format を消費\"]\n  E --> F[\"解析結果をAIループに還元\"]\n  B --> G[\"GenUI: A2UIで実ウィジェット合成\"]\n  G --> H[\"インタラクティブ画面をランタイム生成\"]</pre><figcaption>図1：MCP Serverを軸に「編集→検出→即リロード」と「実ウィジェット合成」が回る。</figcaption></figure>\n<h4>いま何が安定版か</h4>\n<p>足元のバージョンも押さえたい。現行安定版は <strong>Flutter 3.47.x / Dart 3.13.x</strong>（3.47.0は2026-08-12）、次の <strong>Flutter 3.48 / Dart 3.14 はbeta</strong>。3.47系の到達点は material_ui / cupertino_ui の1.0 standalone化、<strong>Impellerが全デスクトップで既定</strong>、Widget Previews stable、Dart 3.13のprimary constructors / dot shorthandsだ。機能リリースは年4回（2/5/8/11月）で、次の安定機能リリースは<strong>2026年11月</strong>見込み。</p>\n<figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n<text x='16' y='22' font-size='13' fill='#0277bd'>リリース位置（2026年9月時点）</text>\n<line x1='40' y1='70' x2='560' y2='70' stroke='#b0bec5' stroke-width='2'/>\n<circle cx='150' cy='70' r='7' fill='#0277bd'/>\n<text x='150' y='52' font-size='11' text-anchor='middle' fill='#333'>3.47.x 安定</text>\n<text x='150' y='92' font-size='10' text-anchor='middle' fill='#777'>Dart 3.13.x / 08-12</text>\n<circle cx='340' cy='70' r='7' fill='#56c5f5'/>\n<text x='340' y='52' font-size='11' text-anchor='middle' fill='#333'>3.48 beta</text>\n<text x='340' y='92' font-size='10' text-anchor='middle' fill='#777'>Dart 3.14</text>\n<circle cx='520' cy='70' r='7' fill='#fff' stroke='#0277bd' stroke-width='2'/>\n<text x='520' y='52' font-size='11' text-anchor='middle' fill='#333'>次の安定</text>\n<text x='520' y='92' font-size='10' text-anchor='middle' fill='#777'>2026年11月見込</text>\n<text x='16' y='128' font-size='10.5' fill='#777'>機能リリースは年4回（2/5/8/11月）。Impellerは全デスクトップで既定に。</text>\n</svg><figcaption>図2：安定3.47.x → beta 3.48 → 次の安定は11月。年4回サイクル。</figcaption></figure>\n<h4>実務での使いどころ・注意点</h4>\n<p>自分が試すなら、まずMCP Serverを繋いでAgentic Hot Reloadで「編集→即確認」を自走させ、UIの試作にGenUIを当てて反復速度を測りたい。ただしGenUI/A2UIはまだ新しく、<strong>ランタイム合成UIは予測可能性とテスト容易性が課題</strong>になりやすい。プロダクション投入は、状態管理を新規なら<strong>Riverpod 3.3.1＋codegen</strong>、監査/規制は<strong>Bloc 9.0</strong>という基本線を崩さず、生成部分を局所に閉じるのが安全。性能面はImpeller前提でフレーム予算（60fps=16ms/120fps=8.3ms）を守り、計測は必ずprofileモードで。</p>\n<h4>ひとことまとめ</h4>\n<p>AIが「コードを書く道具」から「開発ループの一部」へ。MCP Serverを軸にhot reloadと実ウィジェット合成が回り出した。まずは試作の反復速度で恩恵を測るのが良い入り口だ。</p>",
+      "sources": [
+        {
+          "title": "Flutter at Google I/O 2026 (Very Good Ventures)",
+          "url": "https://verygood.ventures/blog/google-io-2026/"
+        },
+        {
+          "title": "Flutter 3.44: Agentic Hot Reload, GenUI (Medium)",
+          "url": "https://medium.com/@flutter-app/flutter-3-44-is-here-agentic-hot-reload-genui-and-everything-you-need-to-know-c7b416e8e095"
+        },
+        {
+          "title": "Flutter release notes (docs.flutter.dev)",
+          "url": "https://docs.flutter.dev/release/release-notes"
+        }
+      ]
+    },
+    {
+      "id": "2026-09-14-github-trending",
+      "date": "2026-09-14",
+      "topic": "GitHub Trending",
+      "title": "9/14の話題リポジトリ — LLM可観測性・エージェントのWeb収集・AI slop除去",
+      "lede": "本日Trendshift上位から3本。共通するのは『AIエージェントを実運用で信頼できるものにする』道具立て——挙動を見張る(langwatch)、外の情報を取らせる(Agent-Reach)、生成文の質を締める(no-ai-slop)。課題と機能で読み解く。",
+      "articleHtml": "<p>今日の話題を貫くのは<strong>「AIエージェントを実運用で信頼できるものにする」</strong>という一本の線だ。エージェントの挙動を<strong>見張る</strong>、外部の情報を<strong>取らせる</strong>、出力の文章品質を<strong>締める</strong>——本日Trendshift日次上位から、その3方向を代表する3本を「解決したい課題」と「提供する機能」で読み解く。</p>\n<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n<text x='16' y='22' font-size='13' fill='#1a7f37'>今日の3本 — 課題 → 機能</text>\n<line x1='16' y1='34' x2='584' y2='34' stroke='#3fb950'/>\n<text x='16' y='52' font-size='11' fill='#1a7f37'>リポジトリ</text>\n<text x='200' y='52' font-size='11' fill='#1a7f37'>解決したい課題</text>\n<text x='388' y='52' font-size='11' fill='#1a7f37'>提供する機能</text>\n<text x='16' y='84' font-size='11' fill='#333'>langwatch</text>\n<text x='200' y='84' font-size='11' fill='#333'>エージェントが不透明で回帰</text>\n<text x='388' y='84' font-size='11' fill='#333'>OTel可観測性＋評価＋Simテスト</text>\n<text x='16' y='126' font-size='11' fill='#333'>Agent-Reach</text>\n<text x='200' y='126' font-size='11' fill='#333'>外部Webへのアクセスが煩雑</text>\n<text x='388' y='126' font-size='11' fill='#333'>13プラットフォーム収集をCLI集約</text>\n<text x='16' y='168' font-size='11' fill='#333'>no-ai-slop</text>\n<text x='200' y='168' font-size='11' fill='#333'>AI生成文が冗長・空疎</text>\n<text x='388' y='168' font-size='11' fill='#333'>20+のslopパターンを検出・除去</text>\n<line x1='16' y1='96' x2='584' y2='96' stroke='#e0e0e0'/>\n<line x1='16' y1='138' x2='584' y2='138' stroke='#e0e0e0'/>\n</svg><figcaption>図1：今日の3本を「課題→機能」で一望。見張る・取らせる・締める。</figcaption></figure>\n<h4>langwatch/langwatch（TypeScript・⭐約1.2k）</h4>\n<p><strong>解決したい課題</strong>：LLMエージェントは中で何が起きているか見えにくく、プロンプトやモデルを変えたときの<strong>回帰を検知できない</strong>。テストもE2Eはあってもエージェント挙動の評価が抜けがち。<strong>提供する機能</strong>：LLMの<strong>可観測性＋評価＋エージェントのシナリオ/シミュレーション・テスト</strong>を1つに束ねた<strong>OpenTelemetryネイティブ</strong>のOSS基盤。フレームワーク非依存（LangChain/LangGraph/DSPy/OpenAI Agents/CrewAI等）で、本番トレースからマルチターン対話の回帰テストまで扱え、REST＋Python/TS SDK＋MCPサーバを備える。Apache-2.0でDocker/Helmセルフホスト可。本日<strong>Trendshift日次2位</strong>まで上昇。エージェントQAの空白に直撃する点が支持を集めた。</p>\n<h4>Panniantong/Agent-Reach（Python・⭐約693）</h4>\n<p><strong>解決したい課題</strong>：AIエージェントに<strong>インターネットを見る目</strong>がなく、各プラットフォームごとにアクセス手段を用意するのは煩雑でAPI課金も嵩む。<strong>提供する機能</strong>：Twitter/Reddit/YouTube/GitHub/Bilibili/小紅書など<strong>13プラットフォームの閲覧・検索をAPI課金ゼロで1つのCLI/ライブラリに集約</strong>。単なるラッパーではなく「各プラットフォームで最も安定したアクセス手段を選定→インストール→ヘルスチェック→ルーティング」まで面倒を見る<strong>インストーラ/doctor型</strong>で、導入後はエージェントが上流ツールを直接叩く。本日<strong>Trendshift日次5位・New 2026</strong>で急上昇——シェルを叩けるコーディングエージェント利用者に刺さった。</p>\n<h4>petergyang/no-ai-slop（⭐約491）</h4>\n<p><strong>解決したい課題</strong>：AIで大量に文章を作ると<strong>冗長・定型・空疎な言い回し（AI slop）</strong>が混じり、そのまま出すと品質が落ちる。<strong>提供する機能</strong>：任意の文章から<strong>20以上のAI slopパターンを検出・除去</strong>するスキル/ツール。Claude Code等の<strong>生成後段に組み込む品質ゲート</strong>として使え、docs/READMEや提案文、日次ダイジェストのような生成物の仕上げに効く。本日<strong>Trendshift日次15位・New 2026</strong>。「AI生成の質を機械的に締める」具体性が、AIで書く現場に響いた。</p>\n<p><strong>自分が試すなら</strong>、まず langwatch を1プロジェクトのエージェント評価基盤として入れ、収集レイヤーに Agent-Reach、docs/digest生成の後段に no-ai-slop を差し込む——3本とも「作る」より「信頼して運用する」側の道具だ。<strong>まとめ</strong>：エージェントを速く作る競争から、見張り・情報供給・出力品質という<strong>運用の足回り</strong>を固める競争へ。今日の3本はその移り変わりをよく示している。</p>",
+      "sources": [
+        {
+          "title": "langwatch/langwatch",
+          "url": "https://github.com/langwatch/langwatch"
+        },
+        {
+          "title": "Panniantong/Agent-Reach",
+          "url": "https://github.com/Panniantong/Agent-Reach"
+        },
+        {
+          "title": "petergyang/no-ai-slop",
+          "url": "https://github.com/petergyang/no-ai-slop"
+        }
+      ]
+    },
     {
       "id": "2026-09-13-claude-code",
       "date": "2026-09-13",
