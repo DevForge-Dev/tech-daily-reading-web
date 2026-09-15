@@ -1,0 +1,88 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>claude plugin eval で『効くか』を数値化 — あり3回/なし3回の採点、effort上限とAgent Teamsでコスト制御も前進 — デイリー技術深掘り 読み物</title><meta name="description" content="9/12公開のv2.1.269でclaude plugin evalが追加。プラグインをあり3回/なし3回実行してスコア比較し、JSON+HTMLレポートで効果を再現可能に検証できる。v2.1.268/267の統一料金・effort上限でコストを締め、実験的Agent Teamsは共有タスク+メールボックスでセッションを分隊協働させる。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-15-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="claude plugin eval で『効くか』を数値化 — あり3回/なし3回の採点、effort上限とAgent Teamsでコスト制御も前進 — デイリー技術深掘り 読み物"><meta property="og:description" content="9/12公開のv2.1.269でclaude plugin evalが追加。プラグインをあり3回/なし3回実行してスコア比較し、JSON+HTMLレポートで効果を再現可能に検証できる。v2.1.268/267の統一料金・effort上限でコストを締め、実験的Agent Teamsは共有タスク+メールボックスでセッションを分隊協働させる。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-15-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>claude plugin eval で『効くか』を数値化 — あり3回/なし3回の採点、effort上限とAgent Teamsでコスト制御も前進</h1> <p class="lede">9/12公開のv2.1.269でclaude plugin evalが追加。プラグインをあり3回/なし3回実行してスコア比較し、JSON+HTMLレポートで効果を再現可能に検証できる。v2.1.268/267の統一料金・effort上限でコストを締め、実験的Agent Teamsは共有タスク+メールボックスでセッションを分隊協働させる。</p> <div class="meta"> <span>📅 2026年9月15日</span> <span>⏱ 約3分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="0"><p>9月のClaude Codeは派手な新機能というより<strong>「プラグインが本当に効くかを測る」「コストとリソースを締める」</strong>という、運用の地味だが効く更新が軸だ。9/12公開の <code>v2.1.269</code> で追加された <code>claude plugin eval</code> は、勘で語られがちだったプラグインの効果を<strong>数値で検証</strong>できるようにした転換点。あわせて <code>v2.1.268/267</code> で料金と推論コストの制御が前進し、実験的な Agent Teams も姿を見せている。</p>
+<h4 id="sec-1">何が新しい/重要か</h4>
+<p><code>claude plugin eval</code> は、プラグインの eval suite を Claude Code 本体に対して実行し、スコア付きで再現可能な結果を <strong>JSON＋HTMLレポート</strong>で出力する。肝は各ケースを<strong>プラグインを読み込んだ状態で3回・読み込まない状態で3回</strong>走らせ、両者を突き合わせる点。「プラグインありのときだけ振る舞いが変わるか」を定量比較できるので、効果の有無を主観でなくスコアで判断できる。同版では <code>/output-style [name]</code> が Remote Control やクラウド等の headless セッションでも一覧・切替でき、Bash がファイルを編集した場合はその diff がツール結果に添付されるようになった。</p>
+<figure class='fig'><svg viewBox='0 0 600 220' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+<text x='300' y='20' font-size='13' text-anchor='middle' fill='#333'>claude plugin eval — あり3回／なし3回で採点</text>
+<rect x='24' y='40' width='240' height='70' rx='8' fill='#eef8f0' stroke='#1a7f37'></rect>
+<text x='40' y='66' font-size='12' fill='#1a7f37' font-weight='bold'>プラグインあり ×3</text>
+<text x='40' y='88' font-size='10.5' fill='#555'>skill/hook/MCPを読み込んで実行</text>
+<rect x='24' y='120' width='240' height='70' rx='8' fill='#f7f7f9' stroke='#8a8a90'></rect>
+<text x='40' y='146' font-size='12' fill='#555' font-weight='bold'>プラグインなし ×3</text>
+<text x='40' y='168' font-size='10.5' fill='#555'>素の本体だけで同じケース</text>
+<path d='M264 75 L360 105' stroke='#999' stroke-width='1.5' fill='none'></path>
+<path d='M264 155 L360 125' stroke='#999' stroke-width='1.5' fill='none'></path>
+<rect x='360' y='86' width='120' height='58' rx='8' fill='#f5f0ff' stroke='#7b3fe4'></rect>
+<text x='420' y='110' font-size='11.5' fill='#5a2ec0' font-weight='bold' text-anchor='middle'>スコア比較</text>
+<text x='420' y='130' font-size='10' fill='#555' text-anchor='middle'>差分＝効果の有無</text>
+<path d='M480 115 L520 115' stroke='#999' stroke-width='1.5' fill='none' marker-end='url(#ar)'></path>
+<defs><marker id='ar' markerWidth='8' markerHeight='8' refX='6' refY='3' orient='auto'><path d='M0 0 L6 3 L0 6 z' fill='#999'></path></marker></defs>
+<rect x='520' y='90' width='56' height='50' rx='6' fill='#fff' stroke='#333'></rect>
+<text x='548' y='112' font-size='10' fill='#333' text-anchor='middle'>JSON</text>
+<text x='548' y='128' font-size='10' fill='#333' text-anchor='middle'>+HTML</text>
+</svg><figcaption>図1：同一ケースをあり3回／なし3回実行し、スコア差でプラグインの実効性を判定。結果はJSON＋HTMLで再現可能。</figcaption></figure>
+<h4 id="sec-2">仕組み — Agent Teams は「委譲」から「分隊の協働」へ</h4>
+<p>もう一つの見どころが実験的な <strong>Agent Teams</strong>。従来の subagent が親に結果を返すだけの「指示された作業者」なのに対し、teammate は<strong>独立したコンテキストを持つ別セッション</strong>で、<strong>共有タスクリストとメールボックス（相互メッセージ）</strong>を介して peer-to-peer に会話する。team lead が全体をオーケストレーションし、pending/in-progress/completed を共有する。既定では無効で、環境変数 <code>CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1</code> で有効化する。コスト側は <code>v2.1.268</code> が統一料金＋レート自動整合を、<code>v2.1.267</code> が全プロバイダ横断の <strong>effort level（推論の労力）上限</strong>をもたらし、危険な <code>rm</code> の安全確認も強化された。</p>
+<h4 id="sec-3">実務での使いどころ・自分が試すなら</h4>
+<p>自作プラグイン（skill/hook 束）に <code>eval</code> を用意して CI に組み込めば、「新しい指示を足したら本当にスコアが上がったか」を回帰テストのように担保できる。effort 上限はコスト暴走の歯止めとして各プロバイダに設定しておきたい。数字も追い風で、Pragmatic Engineer の1.5万人調査では <strong>「最も愛されるツール」46%</strong>、AIエージェント常用者の <strong>71%</strong> が主力採用。Copilot を売る Microsoft が社内で Claude Code を広く採用、Google 技術者は「1年分の設計を1時間で再現」と証言し、ラン率は <strong>$2.5B超</strong>に達する。</p>
+<h4 id="sec-4">注意点</h4>
+<p><code>eval</code> は1ケースにつき計6回実行するため、ケース数×6のトークン/時間コストがかかる。まずは代表ケースを絞って回すのが現実的。Agent Teams は実験的機能で挙動が変わりうるため、本番ワークフローに常用するのは時期尚早。</p>
+<h4 id="sec-5">ひとことまとめ</h4>
+<p>「効くかを測り、コストを締める」回。プラグインの価値をスコアで検証し、effort 上限で支出を抑え、Agent Teams で協働の芽を試す——エージェント運用の再現性と経済性が一段進んだ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://dev.classmethod.jp/articles/20260912-cc-updates-v2-1-269/" target="_blank" rel="noopener noreferrer"> claude plugin eval 追加（v2.1.269, classmethod） </a> </li><li> <a href="https://code.claude.com/docs/en/changelog" target="_blank" rel="noopener noreferrer"> Claude Code changelog（公式） </a> </li><li> <a href="https://alexop.dev/posts/from-tasks-to-swarms-agent-teams-in-claude-code/" target="_blank" rel="noopener noreferrer"> Agent Teams in Claude Code（alexop.dev） </a> </li><li> <a href="https://serpsculpt.com/claude-code-usage-statistics/" target="_blank" rel="noopener noreferrer"> 開発者1.5万人調査（serpsculpt） </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 何が新しい/重要か </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 仕組み — Agent Teams は「委譲」から「分隊の協働」へ </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 実務での使いどころ・自分が試すなら </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 注意点 </a> </li><li> <a href="#sec-5" data-toc="sec-5"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-09-15</div> <div>⏱ 読了 約3分</div> <div>🏷 Claude Code</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
