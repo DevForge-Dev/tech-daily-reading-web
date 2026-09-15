@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-09-14T04:50:35.958Z",
+  "generatedAt": "2026-09-15T04:47:50.824Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,76 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-09-15-claude-code",
+      "date": "2026-09-15",
+      "topic": "Claude Code",
+      "title": "claude plugin eval で『効くか』を数値化 — あり3回/なし3回の採点、effort上限とAgent Teamsでコスト制御も前進",
+      "lede": "9/12公開のv2.1.269でclaude plugin evalが追加。プラグインをあり3回/なし3回実行してスコア比較し、JSON+HTMLレポートで効果を再現可能に検証できる。v2.1.268/267の統一料金・effort上限でコストを締め、実験的Agent Teamsは共有タスク+メールボックスでセッションを分隊協働させる。",
+      "articleHtml": "<p>9月のClaude Codeは派手な新機能というより<strong>「プラグインが本当に効くかを測る」「コストとリソースを締める」</strong>という、運用の地味だが効く更新が軸だ。9/12公開の <code>v2.1.269</code> で追加された <code>claude plugin eval</code> は、勘で語られがちだったプラグインの効果を<strong>数値で検証</strong>できるようにした転換点。あわせて <code>v2.1.268/267</code> で料金と推論コストの制御が前進し、実験的な Agent Teams も姿を見せている。</p>\n<h4>何が新しい/重要か</h4>\n<p><code>claude plugin eval</code> は、プラグインの eval suite を Claude Code 本体に対して実行し、スコア付きで再現可能な結果を <strong>JSON＋HTMLレポート</strong>で出力する。肝は各ケースを<strong>プラグインを読み込んだ状態で3回・読み込まない状態で3回</strong>走らせ、両者を突き合わせる点。「プラグインありのときだけ振る舞いが変わるか」を定量比較できるので、効果の有無を主観でなくスコアで判断できる。同版では <code>/output-style [name]</code> が Remote Control やクラウド等の headless セッションでも一覧・切替でき、Bash がファイルを編集した場合はその diff がツール結果に添付されるようになった。</p>\n<figure class='fig'><svg viewBox='0 0 600 220' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n<text x='300' y='20' font-size='13' text-anchor='middle' fill='#333'>claude plugin eval — あり3回／なし3回で採点</text>\n<rect x='24' y='40' width='240' height='70' rx='8' fill='#eef8f0' stroke='#1a7f37'/>\n<text x='40' y='66' font-size='12' fill='#1a7f37' font-weight='bold'>プラグインあり ×3</text>\n<text x='40' y='88' font-size='10.5' fill='#555'>skill/hook/MCPを読み込んで実行</text>\n<rect x='24' y='120' width='240' height='70' rx='8' fill='#f7f7f9' stroke='#8a8a90'/>\n<text x='40' y='146' font-size='12' fill='#555' font-weight='bold'>プラグインなし ×3</text>\n<text x='40' y='168' font-size='10.5' fill='#555'>素の本体だけで同じケース</text>\n<path d='M264 75 L360 105' stroke='#999' stroke-width='1.5' fill='none'/>\n<path d='M264 155 L360 125' stroke='#999' stroke-width='1.5' fill='none'/>\n<rect x='360' y='86' width='120' height='58' rx='8' fill='#f5f0ff' stroke='#7b3fe4'/>\n<text x='420' y='110' font-size='11.5' fill='#5a2ec0' font-weight='bold' text-anchor='middle'>スコア比較</text>\n<text x='420' y='130' font-size='10' fill='#555' text-anchor='middle'>差分＝効果の有無</text>\n<path d='M480 115 L520 115' stroke='#999' stroke-width='1.5' fill='none' marker-end='url(#ar)'/>\n<defs><marker id='ar' markerWidth='8' markerHeight='8' refX='6' refY='3' orient='auto'><path d='M0 0 L6 3 L0 6 z' fill='#999'/></marker></defs>\n<rect x='520' y='90' width='56' height='50' rx='6' fill='#fff' stroke='#333'/>\n<text x='548' y='112' font-size='10' fill='#333' text-anchor='middle'>JSON</text>\n<text x='548' y='128' font-size='10' fill='#333' text-anchor='middle'>+HTML</text>\n</svg><figcaption>図1：同一ケースをあり3回／なし3回実行し、スコア差でプラグインの実効性を判定。結果はJSON＋HTMLで再現可能。</figcaption></figure>\n<h4>仕組み — Agent Teams は「委譲」から「分隊の協働」へ</h4>\n<p>もう一つの見どころが実験的な <strong>Agent Teams</strong>。従来の subagent が親に結果を返すだけの「指示された作業者」なのに対し、teammate は<strong>独立したコンテキストを持つ別セッション</strong>で、<strong>共有タスクリストとメールボックス（相互メッセージ）</strong>を介して peer-to-peer に会話する。team lead が全体をオーケストレーションし、pending/in-progress/completed を共有する。既定では無効で、環境変数 <code>CLAUDE_CODE_EXPERIMENTAL_AGENT_TEAMS=1</code> で有効化する。コスト側は <code>v2.1.268</code> が統一料金＋レート自動整合を、<code>v2.1.267</code> が全プロバイダ横断の <strong>effort level（推論の労力）上限</strong>をもたらし、危険な <code>rm</code> の安全確認も強化された。</p>\n<h4>実務での使いどころ・自分が試すなら</h4>\n<p>自作プラグイン（skill/hook 束）に <code>eval</code> を用意して CI に組み込めば、「新しい指示を足したら本当にスコアが上がったか」を回帰テストのように担保できる。effort 上限はコスト暴走の歯止めとして各プロバイダに設定しておきたい。数字も追い風で、Pragmatic Engineer の1.5万人調査では <strong>「最も愛されるツール」46%</strong>、AIエージェント常用者の <strong>71%</strong> が主力採用。Copilot を売る Microsoft が社内で Claude Code を広く採用、Google 技術者は「1年分の設計を1時間で再現」と証言し、ラン率は <strong>$2.5B超</strong>に達する。</p>\n<h4>注意点</h4>\n<p><code>eval</code> は1ケースにつき計6回実行するため、ケース数×6のトークン/時間コストがかかる。まずは代表ケースを絞って回すのが現実的。Agent Teams は実験的機能で挙動が変わりうるため、本番ワークフローに常用するのは時期尚早。</p>\n<h4>ひとことまとめ</h4>\n<p>「効くかを測り、コストを締める」回。プラグインの価値をスコアで検証し、effort 上限で支出を抑え、Agent Teams で協働の芽を試す——エージェント運用の再現性と経済性が一段進んだ。</p>",
+      "sources": [
+        {
+          "title": "claude plugin eval 追加（v2.1.269, classmethod）",
+          "url": "https://dev.classmethod.jp/articles/20260912-cc-updates-v2-1-269/"
+        },
+        {
+          "title": "Claude Code changelog（公式）",
+          "url": "https://code.claude.com/docs/en/changelog"
+        },
+        {
+          "title": "Agent Teams in Claude Code（alexop.dev）",
+          "url": "https://alexop.dev/posts/from-tasks-to-swarms-agent-teams-in-claude-code/"
+        },
+        {
+          "title": "開発者1.5万人調査（serpsculpt）",
+          "url": "https://serpsculpt.com/claude-code-usage-statistics/"
+        }
+      ]
+    },
+    {
+      "id": "2026-09-15-flutter",
+      "date": "2026-09-15",
+      "topic": "Flutter",
+      "title": "Flutter 3.48 / Dart 3.14 beta — Web の WasmGC 既定化が11月安定版の目玉、状態は Freezed 3.x × sealed で網羅",
+      "lede": "現行安定は3.47.x/Dart 3.13.x、いまは3.48/Dart 3.14がbeta。目玉はWebのWasmGCを既定コンパイルターゲットへ前進させ（flutter build web --wasm、dart:html→package:web移行が前提）初期ロードを短縮する点。状態はFreezed 3.x×sealed classesでswitch網羅、新規はRiverpod 3.3.1・監査はBloc 9.0が定番。",
+      "articleHtml": "<p>Flutter は年4回（2/5/8/11月）の機能リリースサイクルで、次の安定版は<strong>2026年11月</strong>見込み。現行安定は <strong>Flutter 3.47.x / Dart 3.13.x</strong>（3.47.0 は 2026-08-12）で、いまは <strong>Flutter 3.48 / Dart 3.14 が beta</strong>。11月に何が降りてくるかは、この beta の中身を見ると輪郭がつかめる。今日の主役はその <strong>Web の大転換</strong>だ。</p>\n<h4>何が新しい/重要か — WasmGC が Web の既定へ</h4>\n<p>beta の目玉は Web ターゲット。<strong>WebAssembly（WasmGC）を既定のコンパイルターゲットへ前進</strong>させ、<code>flutter build web --wasm</code> で opt-in できる。狙いは初期ロード短縮と JS ブリッジの縮小で、前提として <code>dart:html</code> → <code>package:web</code> への移行が必要になる。あわせて不要な SwiftPM スキームの早期除外などで<strong>ビルド時間も最適化</strong>。3.47 系の到達点だった material_ui / cupertino_ui 1.0 の standalone 化、Impeller の全デスクトップ既定、Widget Previews stable の上に積み上がる格好だ。試すなら <code>flutter channel beta &amp;&amp; flutter upgrade</code>、戻すなら <code>flutter channel stable</code>。</p>\n<figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n<text x='300' y='20' font-size='13' text-anchor='middle' fill='#333'>リリースの現在地（2/5/8/11月サイクル）</text>\n<line x1='40' y1='80' x2='560' y2='80' stroke='#ccc' stroke-width='2'/>\n<circle cx='140' cy='80' r='7' fill='#0277bd'/>\n<text x='140' y='60' font-size='11' fill='#0277bd' text-anchor='middle' font-weight='bold'>3.47 stable</text>\n<text x='140' y='104' font-size='10' fill='#555' text-anchor='middle'>Dart 3.13 / 2026-08</text>\n<circle cx='340' cy='80' r='9' fill='#56c5f5' stroke='#0277bd' stroke-width='2'/>\n<text x='340' y='58' font-size='11' fill='#0277bd' text-anchor='middle' font-weight='bold'>3.48 beta ←今ここ</text>\n<text x='340' y='104' font-size='10' fill='#555' text-anchor='middle'>Dart 3.14 / WasmGC既定へ</text>\n<circle cx='520' cy='80' r='7' fill='#fff' stroke='#0277bd' stroke-width='2'/>\n<text x='520' y='60' font-size='11' fill='#555' text-anchor='middle' font-weight='bold'>次の stable</text>\n<text x='520' y='104' font-size='10' fill='#555' text-anchor='middle'>2026-11 見込み</text>\n</svg><figcaption>図1：現行安定3.47の次はbetaの3.48。WasmGC既定化・Impeller Android一本化が11月安定版への布石。</figcaption></figure>\n<h4>仕組み — 状態は Freezed 3.x × sealed で網羅</h4>\n<p>設計面の2026の定番は <strong>Freezed 3.x × sealed classes</strong>。状態を Loading/Data/Error のような代数的データ型（ADT）で表すと、<code>copyWith</code>・<code>==</code>/<code>hashCode</code> が自動生成され、UI 側は Dart 3 の <code>switch</code> で<strong>分岐漏れを compile-time に検出</strong>できる。新しい variant を足すと未処理をコンパイラが指摘してくれるのが効く。</p>\n<figure class='fig'><pre class='mermaid'>flowchart TD\n  A[\"@freezed sealed class State\"] --> B[\"Loading\"]\n  A --> C[\"Data(value)\"]\n  A --> D[\"Error(msg)\"]\n  B --> E[\"switch で網羅チェック\"]\n  C --> E\n  D --> E\n  E --> F[\"variant追加漏れをコンパイラが指摘\"]\n</pre><figcaption>図2：sealed union を switch で受けると、状態の取りこぼしをビルド時に潰せる。</figcaption></figure>\n<p>状態管理の既定線は、新規は <strong>Riverpod 3.3.1＋@riverpod codegen</strong>（compile-time safety・context-free reads・first-class async）、監査/規制が絡む大規模は <strong>Bloc 9.0</strong>（<code>on&lt;Event&gt;</code> の event-driven audit trail、永続化は hydrated_bloc）。どちらも Freezed の sealed state と自然に組み合う。アニメーションは差し替えに <code>AnimatedSwitcher</code>、画面遷移に <code>PageRouteBuilder</code> の <code>transitionsBuilder</code> を宣言的に。</p>\n<h4>実務での使いどころ・注意点</h4>\n<p>まずは新規画面の状態を Freezed の sealed で切り、<code>switch</code> 網羅で握る型を作りたい。<code>AnimatedSwitcher</code> は<strong>切り替え対象に一意な <code>Key</code> を付けないと</strong> Flutter が同一 widget とみなし遷移が起きないのが定番の落とし穴。パフォーマンスは画像を <code>cacheWidth</code>/<code>cacheHeight</code>（内部は <code>ResizeImage</code>）で表示サイズにデコードし、写真は WebP、計測は必ず profile モードで（debug は JIT/assert で歪む）。フレーム予算は <strong>60fps=16／90fps=11／120fps=8.3ms</strong>。</p>\n<h4>ひとことまとめ</h4>\n<p>11月安定版へ向けた「Web の作り替え」回。WasmGC 既定化で初期ロードを削り、状態は Freezed sealed＋switch で堅く、画像デコードとフレーム予算で 120fps を守る——beta のうちに <code>--wasm</code> を素振りしておきたい。</p>",
+      "sources": [
+        {
+          "title": "What's new in the docs（docs.flutter.dev）",
+          "url": "https://docs.flutter.dev/release/whats-new"
+        },
+        {
+          "title": "What's new（dart.dev）",
+          "url": "https://dart.dev/resources/whats-new"
+        },
+        {
+          "title": "freezed（pub.dev）",
+          "url": "https://pub.dev/packages/freezed"
+        }
+      ]
+    },
+    {
+      "id": "2026-09-15-github-trending",
+      "date": "2026-09-15",
+      "topic": "GitHub Trending",
+      "title": "9/15の話題リポジトリ — ローカル音声生成・エージェント動画制作・語学IME",
+      "lede": "今日の3本はローカル/オープンで囲い込みを外す志向とエージェント化が共通項。ElevenLabs代替のローカル音声生成VoiceStudio、コーディング助手を動画制作スタジオ化するOpenMontage、日常のタイピングを語学学習に変えるRust製IME qingjian。",
+      "articleHtml": "<p>9/15 の話題3本を貫くのは<strong>「ローカル/オープンで囲い込みを外す」×「エージェントで作業まるごと任せる」</strong>という二軸。商用APIを置き換えるローカル音声生成、コーディングアシスタントを動画制作スタジオに変えるエージェント基盤、そして毎日のタイピングを語学学習に変える Rust 製 IME——AI一色ではない多様性が今日の顔ぶれだ。各リポジトリについて「解決したい課題」と「提供する機能」を見ていく。</p>\n<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n<text x='300' y='18' font-size='13' text-anchor='middle' fill='#333'>今日の3本：解決したい課題 → 提供する機能</text>\n<line x1='200' y1='30' x2='200' y2='200' stroke='#e0e0e0'/>\n<line x1='400' y1='30' x2='400' y2='200' stroke='#e0e0e0'/>\n<text x='100' y='44' font-size='10.5' fill='#888' text-anchor='middle' font-weight='bold'>リポジトリ</text>\n<text x='300' y='44' font-size='10.5' fill='#888' text-anchor='middle' font-weight='bold'>解決したい課題</text>\n<text x='500' y='44' font-size='10.5' fill='#888' text-anchor='middle' font-weight='bold'>提供する機能</text>\n<line x1='20' y1='52' x2='580' y2='52' stroke='#ccc'/>\n<text x='30' y='78' font-size='11' fill='#1a7f37' font-weight='bold'>VoiceStudio</text>\n<text x='210' y='72' font-size='9.5' fill='#555'>商用API依存で音声が</text><text x='210' y='86' font-size='9.5' fill='#555'>外部流出＋コスト</text>\n<text x='410' y='72' font-size='9.5' fill='#555'>完全ローカル音声クローン</text><text x='410' y='86' font-size='9.5' fill='#555'>/吹替/文字起こし 646言語</text>\n<line x1='20' y1='100' x2='580' y2='100' stroke='#eee'/>\n<text x='30' y='126' font-size='11' fill='#1a7f37' font-weight='bold'>OpenMontage</text>\n<text x='210' y='120' font-size='9.5' fill='#555'>単発生成では制作</text><text x='210' y='134' font-size='9.5' fill='#555'>ワークフロー全体を賄えない</text>\n<text x='410' y='120' font-size='9.5' fill='#555'>12パイプライン/100+ツール</text><text x='410' y='134' font-size='9.5' fill='#555'>でAI助手を制作スタジオ化</text>\n<line x1='20' y1='148' x2='580' y2='148' stroke='#eee'/>\n<text x='30' y='174' font-size='11' fill='#1a7f37' font-weight='bold'>qingjian</text>\n<text x='210' y='168' font-size='9.5' fill='#555'>語学学習が日常の入力と</text><text x='210' y='182' font-size='9.5' fill='#555'>分離している</text>\n<text x='410' y='168' font-size='9.5' fill='#555'>Rust製ピンインIMEが候補横</text><text x='410' y='182' font-size='9.5' fill='#555'>に学習言語の訳語を併記</text>\n</svg><figcaption>図1：3本の「課題→機能」対応。ローカル志向・エージェント化・日常への学習の溶かし込みが共通項。</figcaption></figure>\n<h4>debpalash/VoiceStudio（言語— ・ ⭐約2.4k）</h4>\n<p><strong>解決したい課題：</strong>音声クローンや吹替を ElevenLabs 等の商用 API に頼ると、機微な音声データが外部に出るうえ従量課金が積み上がる。プライバシーとコストの両面で「外に出したくない」需要が満たされていなかった。<strong>提供する機能：</strong>完全ローカルで動く ElevenLabs 代替として、音声クローン・ボイスデザイン・動画吹替・ディクテーション・文字起こし・オーディオブック生成を <strong>646言語</strong>で一つに束ねる。本日 Trendshift 日次3位・New 2026、いいね14/ブックマーク12 と本日のトレンド表で最上位のエンゲージメントを集めた。</p>\n<h4>calesthio/OpenMontage（言語— ・ ⭐約657）</h4>\n<p><strong>解決したい課題：</strong>動画AIは「1本のクリップを生成」に留まりがちで、素材収集から編集・仕上げまでの<strong>制作ワークフロー全体</strong>を任せられなかった。<strong>提供する機能：</strong>「世界初」を掲げるエージェント型動画制作システムで、<strong>12の制作パイプライン・100以上のツール・700超のスキル/知識ファイル</strong>を同梱し、AIコーディングアシスタントを丸ごと動画制作スタジオに変える。単発生成でなく運用寄り・実務寄りの厚みが評価され、日次16位・New 2026 で急上昇した。</p>\n<h4>qingjian-team/qingjian（Rust ・ ⭐約479）</h4>\n<p><strong>解決したい課題：</strong>語学学習は「別途アプリを開く」手間で日常から切れてしまい続かない。<strong>提供する機能：</strong>Rust 製のピンイン入力メソッド「青簡」が、変換候補の隣に<strong>学習中の言語の訳語をもう1列</strong>表示し、毎日のタイピングそのものを学習の場に変える。エージェント/LLM 一色の上位に対し、非AI・システムプログラミング（Rust）・語学という異なる軸を足したユニークさで日次19位・New 2026。</p>\n<h4>まとめ — 自分が試すなら</h4>\n<p>DevForge 的にすぐ効くのは <strong>VoiceStudio</strong>。ローカル完結で音声データを外に出さず、文字起こし〜吹替までを一括で回せるので、社内向けの音声処理を API 費用なしで試せる。制作自動化に興味があるなら OpenMontage の「スキル/知識ファイルでエージェントを専門スタジオ化」する構成が、自作エージェント基盤の設計参照になる。</p>",
+      "sources": [
+        {
+          "title": "debpalash/VoiceStudio",
+          "url": "https://github.com/debpalash/VoiceStudio"
+        },
+        {
+          "title": "calesthio/OpenMontage",
+          "url": "https://github.com/calesthio/OpenMontage"
+        },
+        {
+          "title": "qingjian-team/qingjian",
+          "url": "https://github.com/qingjian-team/qingjian"
+        }
+      ]
+    },
     {
       "id": "2026-09-14-claude-code",
       "date": "2026-09-14",
