@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-09-15T04:47:50.824Z",
+  "generatedAt": "2026-09-17T04:48:20.510Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,144 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-09-17-claude-code",
+      "date": "2026-09-17",
+      "topic": "Claude Code",
+      "title": "Claude Code 2.1.271と9月の運用強化 — 拡張は『どの箱に何を入れるか』で決まる",
+      "lede": "Remote fast mode・per-command allowed_domains・company-wide(managed) MCP…9月の変化を追いつつ、Hook/Skill/Subagent/CLAUDE.mdの役割分担と『計画→並列→ガードレール→検証』の出荷ワークフローを型として整理する。",
+      "articleHtml": "<p>Claude Code は 9 月に入って、単体ツールから「組織の標準ツール」へと重心を移し続けている。9/14 の <strong>v2.1.271</strong> はその象徴で、Remote セッションで <strong>fast mode</strong> が使えるようになり、フルスクリーンの <code>/config</code> パネルが<strong>マウス操作</strong>に対応。さらに auto モードのサンドボックス実行で Bash / PowerShell / Monitor に<strong>コマンド単位の <code>allowed_domains</code></strong> を指定でき、無人・自動実行でも到達先ドメインを絞れるようになった。9 月のリリース群はここに、全社配布できる <strong>company-wide（managed）MCP サーバ</strong>、<code>gatewayInternalNetworks</code> 管理設定、headless 実行のパーミッション制御、GitLab の MR 認識、JSON によるプラグイン検証を積み上げている。個人の便利ツールから、監査と権限が要る企業運用へ、という方向がはっきり見える。</p>\n<h4>拡張は「どの箱に何を入れるか」</h4>\n<p>今日いちばん実用的なのはカスタマイズガイドの整理だ。Claude Code の拡張手段は 4 つあり、役割で使い分ける。<strong>必ず守らせたいルールは Hook / permission で強制</strong>、<strong>プロジェクト固有の文脈知識は Skill</strong> に置いてオンデマンド読み込み、<strong>独立コンテキストで動かす委譲境界は Subagent</strong>、そして<strong>常に真である短い規約だけを CLAUDE.md</strong> に残す。この切り分けを守ると、CLAUDE.md の肥大化を避けつつ必要な情報だけを文脈に載せられる。導入順序は「まず Skill から始め、確実性が要る箇所に Hook を足す」。</p>\n<figure class='fig'><svg viewBox='0 0 600 230' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='230' rx='8' fill='#fff7ed'/><rect x='20' y='20' width='270' height='90' rx='8' fill='#fff' stroke='#d97706' stroke-width='2'/><text x='35' y='45' font-size='13' fill='#92400e'>Hook / permission</text><text x='35' y='68' font-size='11' fill='#555'>必ず守らせる＝強制</text><text x='35' y='88' font-size='11' fill='#555'>例: 危険コマンド遮断・検証</text><rect x='310' y='20' width='270' height='90' rx='8' fill='#fff' stroke='#d97706' stroke-width='2'/><text x='325' y='45' font-size='13' fill='#92400e'>Skill</text><text x='325' y='68' font-size='11' fill='#555'>文脈知識＝オンデマンド</text><text x='325' y='88' font-size='11' fill='#555'>例: 社内規約・作図作法</text><rect x='20' y='120' width='270' height='90' rx='8' fill='#fff' stroke='#d97706' stroke-width='2'/><text x='35' y='145' font-size='13' fill='#92400e'>Subagent</text><text x='35' y='168' font-size='11' fill='#555'>委譲境界＝独立コンテキスト</text><text x='35' y='188' font-size='11' fill='#555'>例: ノイズの多い調査を隔離</text><rect x='310' y='120' width='270' height='90' rx='8' fill='#fff' stroke='#d97706' stroke-width='2'/><text x='325' y='145' font-size='13' fill='#92400e'>CLAUDE.md</text><text x='325' y='168' font-size='11' fill='#555'>常時真の短い規約だけ</text><text x='325' y='188' font-size='11' fill='#555'>肥大化させない</text></svg><figcaption>図1：拡張手段の役割分担。強制は Hook、知識は Skill、委譲は Subagent、常時規約だけ CLAUDE.md。</figcaption></figure>\n<h4>出荷につながるワークフロー</h4>\n<p>もう一つの軸は「再現性のある型」。薄い CLAUDE.md を保ち、あらゆる編集の前に <strong>plan mode</strong> で計画を立て、ノイズの多い調査は subagent へ逃がし、<strong>git worktree</strong> で複数エージェントを並列に走らせ、hook をガードレールに配線し、最後に必ず<strong>検証ループ</strong>で確かめる。単発のプロンプト工夫ではなく、計画→実行→検証を仕組みとして固定するのが安定した成果につながる。</p>\n<figure class='fig'><pre class='mermaid'>flowchart LR\n  A[\"薄いCLAUDE.md\"] --> B[\"plan mode で計画\"]\n  B --> C[\"worktree で並列実行\"]\n  C --> D[\"hook ガードレール\"]\n  D --> E[\"検証ループ\"]\n  E --> F[\"出荷\"]</pre><figcaption>図2：出荷ワークフローの型。plan→並列→ガードレール→検証を毎回通す。</figcaption></figure>\n<h4>自分が試すなら・ひとことまとめ</h4>\n<p>まず既存の CLAUDE.md を棚卸しし、「常に真ではない指示」を Skill へ移す。次に破壊的コマンドや秘密情報アクセスを Hook で遮断し、大きめの調査タスクを Subagent に切り出す。Remote を使うなら per-command <code>allowed_domains</code> でネットワークを絞る。背景として、Claude Code のラン率は $2.5B 超、Claude のビジネス顧客は 30 万社超と報じられ、企業導入前提の機能整備が続いている。要は「箱の役割を守り、計画と検証を型にする」ことが、拡張の効きとチームでの安全運用の両方を決める。</p>",
+      "sources": [
+        {
+          "title": "Anthropic Claude Code updates (releasebot)",
+          "url": "https://releasebot.io/updates/anthropic/claude-code"
+        },
+        {
+          "title": "Claude Code 2.1.259〜 の運用強化 (clauding.de)",
+          "url": "https://clauding.de/en/posts/claude-code-2-1-259/"
+        },
+        {
+          "title": "Customization guide: CLAUDE.md/Skills/Subagents (alexop.dev)",
+          "url": "https://alexop.dev/posts/claude-code-customization-guide-claudemd-skills-subagents/"
+        },
+        {
+          "title": "Workflow best practices that ship code (dev.to)",
+          "url": "https://dev.to/galian/claude-code-workflow-best-practices-that-ship-code-na"
+        },
+        {
+          "title": "Skills & Plugins 完全ガイド2026 (saascity.io)",
+          "url": "https://saascity.io/blog/claude-code-skills-plugins-guide-2026"
+        }
+      ]
+    },
+    {
+      "id": "2026-09-17-nextjs",
+      "date": "2026-09-17",
+      "topic": "Next.js",
+      "title": "Route HandlerからSSEでストリーミング配信 — 即returnしてenqueue、バッファ層を外し、abortを連鎖させる",
+      "lede": "LLMトークン/進捗/通知/ライブダッシュボードをSSEで。ReadableStreamの即return、no-transform・X-Accel-Buffering、request.signalでの中断連鎖、EventSource vs fetch+getReaderの使い分けまでを土台化する。",
+      "articleHtml": "<p>チャットの「トークンが1文字ずつ出る」、長時間ジョブの進捗バー、通知バッジ、ライブダッシュボード。2026 年の Next.js アプリでは<strong>サーバー→クライアントへ継続的に push する</strong>要件が当たり前になった。これを最軽量で実現するのが <strong>Server-Sent Events（SSE）</strong>で、HTTP の 1 本のレスポンスを閉じずに <code>text/event-stream</code> としてチャンクを流し続ける。双方向や低遅延バイナリが要るときだけ WebSocket を検討すればよく、単方向 push なら SSE は「ただの HTTP・自動再接続・実装が桁違いに軽い」と利点が多い。</p>\n<h4>ワイヤープロトコルはほぼ改行だけ</h4>\n<p>1 メッセージ＝ <code>data: ...</code> のあとに<strong>空行（改行2つ）</strong>で 1 イベント確定。これを忘れるとクライアントがイベント境界を検出できない。省略可能フィールドは <code>event:</code>（名前付き）、<code>id:</code>（再接続時に <code>Last-Event-ID</code> で送り返される）、<code>retry:</code>（再接続間隔）、そしてコロン始まりの<strong>コメント行はハートビート（keep-alive ping）</strong>に使う。JSON は 1 行に詰めるのが定石だ。</p>\n<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='200' rx='8' fill='#f5f9ff'/><text x='20' y='34' font-size='13' fill='#0b3d91'>サーバー Route Handler</text><rect x='20' y='48' width='230' height='120' rx='8' fill='#fff' stroke='#0070f3' stroke-width='2'/><text x='34' y='74' font-size='11' fill='#333'>id: 1</text><text x='34' y='94' font-size='11' fill='#333'>event: progress</text><text x='34' y='114' font-size='11' fill='#333'>data: {\"step\":1}</text><text x='34' y='140' font-size='11' fill='#888'>（空行＝1イベント確定）</text><text x='34' y='158' font-size='11' fill='#1a7f37'>: ping  （15秒毎の保活）</text><line x1='250' y1='108' x2='360' y2='108' stroke='#333' stroke-width='2' marker-end='url(#ar)'/><defs><marker id='ar' markerWidth='9' markerHeight='9' refX='6' refY='3' orient='auto'><path d='M0,0 L6,3 L0,6 z' fill='#333'/></marker></defs><rect x='360' y='48' width='220' height='120' rx='8' fill='#fff' stroke='#334155' stroke-width='2'/><text x='374' y='74' font-size='12' fill='#0b3d91'>クライアント</text><text x='374' y='98' font-size='11' fill='#333'>EventSource（GET・自動再接続）</text><text x='374' y='120' font-size='11' fill='#333'>または fetch + getReader()</text><text x='374' y='142' font-size='11' fill='#888'>空行で split → data を parse</text></svg><figcaption>図1：SSE の 1 本の HTTP 上を data フレームとハートビートが流れ、クライアントは空行で分割して受ける。</figcaption></figure>\n<h4>最大の落とし穴は「途中の層がバッファする」</h4>\n<p>ストリームが正しくても、間の層が全チャンクを溜めてから一括転送すると体感は「一括表示」に退化する。潰すべきは、Next.js の圧縮（<code>Cache-Control: no-cache, no-transform</code> を付ける）、リバースプロキシ（<code>X-Accel-Buffering: no</code> で無効化）、CDN のバッファ、そしてハンドラの書き方だ。正解は <strong><code>ReadableStream</code> を即 return し、<code>start(controller)</code> の中で await しながら enqueue</strong> すること。ループを回し切ってから返すと当然バッファされる。<code>NextResponse</code> は溜めることがあるので素の <code>new Response(stream)</code> を使い、<code>export const dynamic = 'force-dynamic'</code> で静的化を確実に外す。</p>\n<h4>クリーンアップと中断連鎖</h4>\n<p>クライアントが離脱すると <code>request.signal</code> が abort する。<code>setInterval</code> / DB 購読 / 上流 fetch を必ず止めないと、サーバーで interval とストリームがリークして CPU と接続を食い続ける。LLM 中継なら、クライアントの <code>AbortController.abort()</code> がサーバーの <code>request.signal</code> を発火させ、上流 SDK の呼び出しまで連鎖キャンセルできる＝課金の無駄も止まる。</p>\n<figure class='fig'><pre class='mermaid'>flowchart LR\n  A[\"ユーザー: 停止/離脱\"] --> B[\"client: AbortController.abort()\"]\n  B --> C[\"server: request.signal abort\"]\n  C --> D[\"clearInterval / DB購読解除\"]\n  C --> E[\"上流LLM呼び出しを cancel\"]</pre><figcaption>図2：中断は一方向に連鎖する。クライアントの abort が上流までキャンセルを伝える。</figcaption></figure>\n<h4>受信の使い分け・ひとことまとめ</h4>\n<p>通知系のように GET と自動再接続で足りるなら <code>EventSource</code>（<code>'use client'</code> 必須）。会話履歴を POST したい・認証ヘッダを載せたいチャット系は、<code>EventSource</code> が GET しか投げられない制約に当たるので <strong><code>fetch</code> + <code>res.body.getReader()</code> + <code>TextDecoder</code></strong> で自前パースする（再接続は自前か <code>@microsoft/fetch-event-source</code>）。高レベルに寄せるなら Vercel AI SDK の <code>streamText().toUIMessageStreamResponse()</code> ＋ <code>useChat</code> がフレーミング・中断・再接続を隠蔽してくれる。要点は「即 return して enqueue、バッファ層を全部外す、abort を必ず処理する」の 3 つだ。</p>",
+      "sources": [
+        {
+          "title": "Next.js Guides: Streaming (公式)",
+          "url": "https://nextjs.org/docs/app/guides/streaming"
+        },
+        {
+          "title": "Next.js Route Handlers (公式)",
+          "url": "https://nextjs.org/docs/app/api-reference/file-conventions/route"
+        },
+        {
+          "title": "Fixing Slow SSE Streaming in Next.js and Vercel (Medium)",
+          "url": "https://medium.com/@oyetoketoby80/fixing-slow-sse-server-sent-events-streaming-in-next-js-and-vercel-99f42fbdb996"
+        },
+        {
+          "title": "Streaming AI Responses in Next.js — SSE, Fetch Streams (dev.to)",
+          "url": "https://dev.to/ahmed_mahmoud360/streaming-ai-responses-in-nextjs-sse-fetch-streams-and-what-breaks-in-production-4f76"
+        },
+        {
+          "title": "MDN: Using server-sent events",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events"
+        }
+      ]
+    },
+    {
+      "id": "2026-09-17-flutter",
+      "date": "2026-09-17",
+      "topic": "Flutter",
+      "title": "Flutter 3.47系の到達点と120fps時代の設計 — Impeller既定・Riverpod 3.3.1・フレーム予算",
+      "lede": "stable 3.47.4/Dart 3.13.3を軸に、アニメの時間設計(micro 50–200/component 200–400/Hero 300–600ms)、状態管理はRiverpod 3.3.1既定・監査はBloc 9.0、性能は60/90/120fpsのフレーム予算で考える。",
+      "articleHtml": "<p>今日の主役は <strong>Flutter 3.47.4 / Dart 3.13.3</strong> の stable パッチ追従だ。2026-09-11 に patch が出て現行安定は 3.47 系を継続。この系の到達点は、<code>material_ui</code> / <code>cupertino_ui</code> 1.0 の standalone 化、<strong>Impeller が全デスクトップで既定</strong>、Widget Previews stable、Dart 3.13 の <code>primary constructors</code> と <code>dot shorthands</code>。beta は 3.48.0-0.5.pre（Dart 3.14）で、Web は <strong>WebAssembly（WasmGC）</strong>を既定コンパイルターゲットへ前進中。次の安定機能リリースは年 4 回サイクルの 2026 年 11 月見込みで、Impeller の Android 一本化と WasmGC 既定化が布石になっている。</p>\n<h4>アニメーションは timing とカーブの設計から</h4>\n<p>UI モーションの約 8 割は <strong>implicit で賄う</strong>のが基本線。時間設計の目安は、micro-interaction が <strong>50–200ms（implicit / controller 不要）</strong>、component 遷移が <strong>200–400ms（explicit / <code>AnimationController</code>＋dispose 必須）</strong>、Hero が <strong>300–600ms</strong>。標準カーブは <code>easeInOut</code> / <code>fastOutSlowIn</code>。多段の振付は <code>flutter_animate</code> の <code>.then()</code> / <code>delay:</code> で宣言的に組み、デザイナー主導の複雑シーケンスは Rive / Lottie にオフロードする。jank の典型は「描画変換のつもりが layout pass を誘発」で、<strong>動きは <code>Transform</code>、フェードは <code>Opacity</code></strong> に閉じるのが鉄則（width/height の setState は layout を走らせる）。</p>\n<figure class='fig'><svg viewBox='0 0 600 170' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='170' rx='8' fill='#eefaf3'/><text x='20' y='30' font-size='13' fill='#0b6b3a'>アニメーションの時間設計</text><rect x='20' y='50' width='150' height='36' rx='6' fill='#fff' stroke='#1a7f37' stroke-width='2'/><text x='30' y='68' font-size='11' fill='#333'>micro 50–200ms</text><text x='30' y='82' font-size='10' fill='#888'>implicit</text><rect x='190' y='50' width='180' height='36' rx='6' fill='#fff' stroke='#1a7f37' stroke-width='2'/><text x='200' y='68' font-size='11' fill='#333'>component 200–400ms</text><text x='200' y='82' font-size='10' fill='#888'>explicit + dispose</text><rect x='390' y='50' width='190' height='36' rx='6' fill='#fff' stroke='#1a7f37' stroke-width='2'/><text x='400' y='68' font-size='11' fill='#333'>Hero 300–600ms</text><text x='400' y='82' font-size='10' fill='#888'>flightShuttleBuilder</text><text x='20' y='120' font-size='12' fill='#0b6b3a'>jank 回避</text><text x='20' y='142' font-size='11' fill='#333'>動き＝Transform ／ フェード＝Opacity（layout を走らせない）</text></svg><figcaption>図1：用途で implicit/explicit/Hero を使い分け、描画は Transform/Opacity に閉じる。</figcaption></figure>\n<h4>状態管理は Riverpod 3.3.1 を既定に</h4>\n<p>選定は benchmark でなく <strong>team expertise・データフローの形・欲しい保証</strong>で決める。新規の既定は <strong>Riverpod 3.3.1＋@riverpod codegen</strong>——compile-time safety・BuildContext 非依存の reads・first-class async を最小 boilerplate で得られ、テストは provider override でツリー非起動、平均 30–40% 少ない行数で書ける。再描画最適化は <code>ref.watch(provider.select(...))</code>。一方 <strong>監査/規制業界（fintech・healthcare）は Bloc 9.0</strong>——events/states/logic を厳格分離し、各 state 変化が特定 event に対応づいて <strong>audit trail</strong> を生む。<code>blocTest</code> で正確な state 列を検証でき、永続化は <code>hydrated_bloc</code>。</p>\n<h4>パフォーマンスはフレーム予算で考える</h4>\n<p>Impeller は iOS＋モダン Android（API 29+）の既定で、全 shader を build 時に precompile して <strong>shader compilation jank を排除</strong>。Skia 比で平均フレームレンダリング時間が約 22% 改善、budget Android で frame time variance 約 60% 減という報告もあり、高リフレッシュで安定 120fps を狙える。フレーム予算は <strong>60fps=16ms / 90fps=11ms / 120fps=8.3ms</strong>。最も多い性能問題は不要な rebuild で、プロパティ不変なら <code>const</code> で完全スキップ、大きな <code>build()</code> を分割、<code>select</code> / <code>BlocSelector</code> で最小スライス購読、アニメ領域を <code>RepaintBoundary</code> で隔離、重い計算は <code>Isolate.run()</code> / <code>compute()</code> で背景 isolate へ。計測は必ず profile モードで DevTools Performance タブを使う。</p>\n<figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='150' rx='8' fill='#eefaf3'/><text x='20' y='28' font-size='13' fill='#0b6b3a'>フレーム予算（1フレームの上限）</text><rect x='20' y='45' width='320' height='22' rx='4' fill='#a7f3d0'/><text x='350' y='61' font-size='11' fill='#333'>60fps = 16ms</text><rect x='20' y='78' width='220' height='22' rx='4' fill='#6ee7b7'/><text x='250' y='94' font-size='11' fill='#333'>90fps = 11ms</text><rect x='20' y='111' width='166' height='22' rx='4' fill='#34d399'/><text x='196' y='127' font-size='11' fill='#333'>120fps = 8.3ms（UI~4ms + Raster~4ms）</text></svg><figcaption>図2：高リフレッシュほど 1 フレームの予算は縮む。超過＝jank。</figcaption></figure>\n<h4>ひとことまとめ</h4>\n<p>3.47 系は「Impeller 既定・standalone UI パッケージ・Dart 3.13 の軽量構文」で土台が固まった段階。自分が試すなら、新規は Riverpod 3.3.1＋codegen で組み、アニメは時間設計の 3 段を守って implicit 中心にし、DevTools の profile 計測で rebuild と raster spike を潰す——この 3 点を型にするのが 120fps 時代の実務解だ。</p>",
+      "sources": [
+        {
+          "title": "Flutter release notes (docs.flutter.dev)",
+          "url": "https://docs.flutter.dev/release/release-notes"
+        },
+        {
+          "title": "What's new (dart.dev)",
+          "url": "https://dart.dev/resources/whats-new"
+        },
+        {
+          "title": "Best Flutter State Management 2026 (Foresight Mobile)",
+          "url": "https://foresightmobile.com/blog/best-flutter-state-management"
+        },
+        {
+          "title": "Flutter + Impeller: native 120fps in 2026 (Medium)",
+          "url": "https://shindekalpesharun.medium.com/flutter-impeller-how-to-achieve-native-120fps-performance-in-2026-68ec28cc71e5"
+        },
+        {
+          "title": "Introduction to animations (docs.flutter.dev)",
+          "url": "https://docs.flutter.dev/ui/animations"
+        }
+      ]
+    },
+    {
+      "id": "2026-09-17-github-trending",
+      "date": "2026-09-17",
+      "topic": "GitHub Trending",
+      "title": "9/17の話題リポジトリ — エージェントに『スキル』を与える3本（実ブラウザ・本番規律・学術作図）",
+      "lede": "BrowserSkill・agent-skills・nature-skillsは、素のエージェントの穴を『実ブラウザ接続』『本番エンジニアリング規律』『学術表現の作法』というスキルで埋めにいく。今日の急上昇を貫く一本の線。",
+      "articleHtml": "<p>本日の Trending を貫く共通点は「<strong>AI エージェントに“スキル”を与える</strong>」流れだ。素のエージェントは放置すると最短経路に流れ、実ブラウザに触れず・仕様やレビューを飛ばし・図版の質もばらつく。今日上位に来た 3 本は、その穴をそれぞれ「実ブラウザ接続」「本番エンジニアリング規律」「学術表現・作図の作法」というスキルの形で埋めにいっている。</p>\n<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='210' rx='8' fill='#f0fdf4'/><line x1='300' y1='30' x2='300' y2='195' stroke='#bbf7d0' stroke-width='1'/><text x='150' y='24' font-size='12' text-anchor='middle' fill='#1a7f37'>解決したい課題</text><text x='450' y='24' font-size='12' text-anchor='middle' fill='#1a7f37'>提供する機能</text><text x='20' y='58' font-size='12' fill='#111'>BrowserSkill</text><text x='40' y='76' font-size='10.5' fill='#555'>エージェントが実ブラウザを使えない</text><text x='320' y='67' font-size='10.5' fill='#555'>ログイン済み実ブラウザに接続・human介入</text><text x='20' y='108' font-size='12' fill='#111'>agent-skills</text><text x='40' y='126' font-size='10.5' fill='#555'>仕様/テスト/レビューを飛ばしがち</text><text x='320' y='117' font-size='10.5' fill='#555'>各フェーズ規律を自動起動スキル化</text><text x='20' y='158' font-size='12' fill='#111'>nature-skills</text><text x='40' y='176' font-size='10.5' fill='#555'>学術文章・図版の質がばらつく</text><text x='320' y='167' font-size='10.5' fill='#555'>Nature級の表現規約＋科研作図の作法</text><line x1='20' y1='86' x2='580' y2='86' stroke='#bbf7d0' stroke-width='1'/><line x1='20' y1='136' x2='580' y2='136' stroke='#bbf7d0' stroke-width='1'/></svg><figcaption>図1：今日の3本を「課題→提供機能」で一望。いずれもエージェントの穴を“スキル”で埋める。</figcaption></figure>\n<h4>Tencent/BrowserSkill（TypeScript・⭐—）</h4>\n<p><strong>解決したい課題：</strong>コーディングエージェントはシェルは叩けても、ユーザーが日常使う「ログイン済みの実ブラウザ」を操作できず、テスト用アカウントの用意や captcha・ログインの壁に阻まれてきた。<strong>提供する機能：</strong>bsk CLI/daemon＋Chrome/Edge 拡張で、<strong>あなたが既にログイン済みの実ブラウザ</strong>をエージェントに開放する。別タブの可視 Agent Window で動くのでユーザーは自分のブラウザを使い続けられ、captcha やログイン・確認は human-in-the-loop で介入できる。Trendshift 日次 19 位・New 2026。要ログイン Web の収集や tool-use ブラウザ操作に直結する。</p>\n<h4>addyosmani/agent-skills（⭐—）</h4>\n<p><strong>解決したい課題：</strong>エージェントは放っておくと最短経路＝仕様の明文化・テスト・セキュリティレビュー・出荷判断の省略に流れがち。<strong>提供する機能：</strong>Addy Osmani（現 Anthropic）発の本番級エンジニアリング・スキル集で、api 設計・frontend・testing・security-review など各フェーズの規律を符号化。<code>npx</code> で 70 以上のエージェント（Claude Code / Cursor / Codex / Copilot 等）に導入でき、<strong>作業内容に応じて自動起動</strong>する。Trendshift 日次 24 位・New 2026。品質ゲートを計画・実装・レビューの全段で効かせられる。</p>\n<h4>Yuan1z0825/nature-skills（⭐—）</h4>\n<p><strong>解決したい課題：</strong>AI に書かせがちな学術文章・図版は、表現や作図の作法が定まらず質が安定しない。<strong>提供する機能：</strong>Nature 誌級の学術的表現と科研向けサイエンス・グラフィックの作法をスキル化し、成果物をその水準へ寄せる。Trendshift 日次 15 位・New 2026。docs / レポート / 論文級図版の表現・作図品質を底上げする、分野特化スキルという具体性が支持された。</p>\n<h4>ひとことまとめ</h4>\n<p>3 本とも「モデルを賢くする」のではなく「<strong>エージェントに規律と道具を外付けする</strong>」方向で急上昇している。自分が試すなら、まず即効性のある agent-skills を導入して仕様・テスト・レビューの抜けを埋め、次に要ログイン Web の作業がある場面で BrowserSkill を human-in-loop 前提で試す。図版の品質が課題なら nature-skills を docs 生成に足す——という順が現実的だ。</p>",
+      "sources": [
+        {
+          "title": "Tencent/BrowserSkill",
+          "url": "https://github.com/Tencent/BrowserSkill"
+        },
+        {
+          "title": "addyosmani/agent-skills",
+          "url": "https://github.com/addyosmani/agent-skills"
+        },
+        {
+          "title": "Yuan1z0825/nature-skills",
+          "url": "https://github.com/Yuan1z0825/nature-skills"
+        }
+      ]
+    },
+    {
+      "id": "2026-09-15-nextjs",
+      "date": "2026-09-15",
+      "topic": "Next.js",
+      "title": "スワイプで消すカードスタック — Pointer Events＋setPointerCapture＋「距離 OR 速度」で依存ゼロの fling-to-dismiss",
+      "lede": "指に1:1追従して投げれば飛び、未達ならバネで戻る。Pointer Events一本化・setPointerCapture・距離/速度のOR判定・transformのみ描画、そしてWCAG 2.5.7のボタン代替までを一気に押さえる。",
+      "articleHtml": "<p>モバイルの通知消去、オンボーディングのカード送り、マッチングの候補送りで頻出する<strong>直接操作（direct manipulation）</strong>——「カードを掴んで横に投げると消える」あのパターンを、依存ゼロで正しく作るための勘所を整理する。指の動きに1:1で追従し、勢いよく投げれば飛び、中途半端なら手元に戻る物理的な手応えが「操作している感」を生む。似て非なる既存パターン（vaul=縦シートのdismiss、dnd-kit=並べ替え）とは役割が違い、本テーマは<strong>最前面カードを横に投げて捨てる（fling to dismiss）</strong>ジェスチャそのものだ。</p>\n<h4>何が要点か</h4>\n<p>核心は4点。(1) <code>pointerdown/move/up</code> の<strong>Pointer Events だけで mouse/touch/pen を一本化</strong>（二重実装や300msクリック、ゴーストクリックを回避）。(2) <code>pointerdown</code> 内で <code>el.setPointerCapture(e.pointerId)</code> を呼び、指がカードや画面の外に出ても<strong>イベントを対象要素に届け続ける</strong>——これを忘れると「速く動かすとドラッグが切れる」最頻出バグになる。(3) 投げたか否かは<strong>移動量 or 放した瞬間の速度のどちらかが閾値超え</strong>で判定（OR にすると「勢いよく弾く」も「ぐいっと寄せる」も両取り）。(4) 未達は<strong>バネで原点復帰</strong>、超過はその向きへ画面外まで飛ばしてDOM除去。</p>\n<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='210' fill='#f7fbff' rx='8'/><rect x='230' y='60' width='140' height='90' rx='12' fill='#fff' stroke='#0070f3' stroke-width='2'/><text x='300' y='110' font-size='13' text-anchor='middle' fill='#0b3d91'>card</text><line x1='300' y1='105' x2='120' y2='105' stroke='#e00' stroke-width='2' marker-end='url(#a)'/><line x1='300' y1='105' x2='480' y2='105' stroke='#1a7f37' stroke-width='2' marker-end='url(#a)'/><defs><marker id='a' markerWidth='8' markerHeight='8' refX='6' refY='3' orient='auto'><path d='M0,0 L6,3 L0,6 z' fill='#333'/></marker></defs><text x='95' y='95' font-size='11' text-anchor='middle' fill='#e00'>NOPE</text><text x='505' y='95' font-size='11' text-anchor='middle' fill='#1a7f37'>LIKE</text><text x='300' y='180' font-size='12' text-anchor='middle' fill='#333'>|offset| &gt; 120px  OR  |velocity| &gt; 0.5px/ms  →  fling out</text><text x='300' y='198' font-size='11' text-anchor='middle' fill='#888'>閾値未満は spring で原点復帰（動かすのは transform と opacity のみ）</text></svg><figcaption>図1：距離 OR 速度で「投げた」を判定。復帰はバネ、描画は transform/opacity に閉じる。</figcaption></figure>\n<h4>仕組みと最小コード</h4>\n<p>Pointer Events 自体に velocity は無いので自前計算する。<code>pointermove</code> ごとに <code>{x,t}</code> を数点保持し、放す直前の直近2〜3サンプルの平均で <code>Δx/Δt</code>（px/ms）を求める（1点差分はノイズで誤爆する）。動かすのは <code>transform: translate() rotate()</code> と <code>opacity</code> だけに閉じ、<code>left</code>/<code>width</code> は使わない（リフローでカクつく）。ドラッグ量に応じて端ほど回転を強め、LIKE/NOPE ラベルの opacity を offsetX にマップすると意図が伝わる。</p>\n<pre><code>function onPointerDown(e){\n  if (e.button !== 0) return;          // 主ボタンのみ\n  card.setPointerCapture(e.pointerId); // ★枠外でも追従\n  start = {x:e.clientX,y:e.clientY};\n  samples = [{x:e.clientX,t:e.timeStamp}];\n}\nfunction onPointerUp(e){\n  const dx = e.clientX - start.x;\n  const a = samples[0], b = samples.at(-1);\n  const v = (b.x-a.x)/Math.max(1,b.t-a.t);        // px/ms\n  (Math.abs(dx)>120 || Math.abs(v)>0.5) ? flingOut(Math.sign(dx||v)) : springBack();\n}\ncard.addEventListener('pointercancel', springBack); // ★中断で復帰</code></pre>\n<p>CSS では <code>touch-action</code> を必ず指定する。横スワイプだけ奪い縦スクロールは残すなら <code>touch-action: pan-y;</code>、全方位ドラッグなら <code>touch-action: none;</code>。未指定だとモバイルでスクロール/ピンチと競合し、ドラッグ中に <code>pointercancel</code> が飛んで掴みが外れる。</p>\n<h4>Next.js（App Router）での組み込み</h4>\n<p>ドラッグ制御の殻だけ <code>'use client'</code> に隔離し、カードの中身（画像・テキスト）は<strong>RSC のまま</strong> <code>next/image</code> 等で描画して <code>children</code> として流し込む。候補一覧は RSC で取得、追加ロードは Server Action か Route Handler でページング。「既読/いいね/スキップ」は Server Action に送り、<code>useOptimistic</code> で<strong>投げた瞬間に UI からカードを除去</strong>→失敗時ロールバック。初期スタックは transform 無しの静止状態で描くので hydration mismatch が起きず、JS 未ロードでも内容とボタンは見える（Progressive Enhancement）。Strict Mode の二重マウント対策として、リスナ登録・rAF・spring ループは <code>useEffect</code> の cleanup で必ず解除する。ライブラリは依存ゼロの vanilla（数十行・挙動を完全掌握）か、宣言的に最短な Motion（<code>drag=\"x\"</code>＋<code>dragSnapToOrigin</code>＋<code>onDragEnd</code> の <code>info.offset.x</code>/<code>info.velocity.x</code> 判定）が現実的。</p>\n<h4>落とし穴とアクセシビリティ</h4>\n<p>最重要は <strong>WCAG 2.2 SC 2.5.7 Dragging Movements（AA）</strong>——ドラッグで達成する機能は<strong>単一ポインタの代替が必須</strong>なので、各カードに「スキップ／いいね」ボタンを併設し、ドラッグはショートカット扱いにする。キーボードは ←/→/Enter で同アクション、消去は <code>aria-live=\"polite\"</code> で通知し「元に戻す」を提供。<code>prefers-reduced-motion: reduce</code> では慣性・回転・バウンドを止め、<strong>消去という結果だけ残す</strong>（即時 or 短いフェード）。その他の定番バグは、<code>pointercancel</code> 未処理での固着、<code>setPointerCapture</code> 忘れでの切断、velocity の1サンプル計算での誤爆、画像のネイティブ drag との競合（<code>user-drag:none</code> / <code>draggable=\"false\"</code>）。</p>\n<h4>ひとことまとめ</h4>\n<p>「Pointer Events 一本化＋setPointerCapture＋距離OR速度＋バネ復帰」の4点と、transform/opacity だけで動かす規律を守れば、依存ゼロでも 60fps の投げ捨てUIは作れる。そのうえで <strong>2.5.7 のボタン代替</strong>と <strong>reduced-motion</strong> を最初から設計に織り込むのが本題だ。自分が試すなら、まず vanilla で最小実装して挙動を掌握し、スタック表示（背後カードの scale+translateY）と Server Action 連携を足す順で組む。</p>",
+      "sources": [
+        {
+          "title": "MDN: setPointerCapture()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture"
+        },
+        {
+          "title": "MDN: Pointer events",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/Pointer_events"
+        },
+        {
+          "title": "Motion for React: Card stack example",
+          "url": "https://motion.dev/examples/react-card-stack"
+        },
+        {
+          "title": "W3C WAI: Understanding SC 2.5.7 Dragging Movements",
+          "url": "https://www.w3.org/WAI/WCAG22/Understanding/dragging-movements.html"
+        }
+      ]
+    },
     {
       "id": "2026-09-15-claude-code",
       "date": "2026-09-15",
