@@ -1,0 +1,73 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Route HandlerからSSEでストリーミング配信 — 即returnしてenqueue、バッファ層を外し、abortを連鎖させる — デイリー技術深掘り 読み物</title><meta name="description" content="LLMトークン/進捗/通知/ライブダッシュボードをSSEで。ReadableStreamの即return、no-transform・X-Accel-Buffering、request.signalでの中断連鎖、EventSource vs fetch+getReaderの使い分けまでを土台化する。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-17-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Route HandlerからSSEでストリーミング配信 — 即returnしてenqueue、バッファ層を外し、abortを連鎖させる — デイリー技術深掘り 読み物"><meta property="og:description" content="LLMトークン/進捗/通知/ライブダッシュボードをSSEで。ReadableStreamの即return、no-transform・X-Accel-Buffering、request.signalでの中断連鎖、EventSource vs fetch+getReaderの使い分けまでを土台化する。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-17-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>Route HandlerからSSEでストリーミング配信 — 即returnしてenqueue、バッファ層を外し、abortを連鎖させる</h1> <p class="lede">LLMトークン/進捗/通知/ライブダッシュボードをSSEで。ReadableStreamの即return、no-transform・X-Accel-Buffering、request.signalでの中断連鎖、EventSource vs fetch+getReaderの使い分けまでを土台化する。</p> <div class="meta"> <span>📅 2026年9月17日</span> <span>⏱ 約4分</span> <span>🔗 出典 5 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="1"><p>チャットの「トークンが1文字ずつ出る」、長時間ジョブの進捗バー、通知バッジ、ライブダッシュボード。2026 年の Next.js アプリでは<strong>サーバー→クライアントへ継続的に push する</strong>要件が当たり前になった。これを最軽量で実現するのが <strong>Server-Sent Events（SSE）</strong>で、HTTP の 1 本のレスポンスを閉じずに <code>text/event-stream</code> としてチャンクを流し続ける。双方向や低遅延バイナリが要るときだけ WebSocket を検討すればよく、単方向 push なら SSE は「ただの HTTP・自動再接続・実装が桁違いに軽い」と利点が多い。</p>
+<h4 id="sec-1">ワイヤープロトコルはほぼ改行だけ</h4>
+<p>1 メッセージ＝ <code>data: ...</code> のあとに<strong>空行（改行2つ）</strong>で 1 イベント確定。これを忘れるとクライアントがイベント境界を検出できない。省略可能フィールドは <code>event:</code>（名前付き）、<code>id:</code>（再接続時に <code>Last-Event-ID</code> で送り返される）、<code>retry:</code>（再接続間隔）、そしてコロン始まりの<strong>コメント行はハートビート（keep-alive ping）</strong>に使う。JSON は 1 行に詰めるのが定石だ。</p>
+<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='200' rx='8' fill='#f5f9ff'></rect><text x='20' y='34' font-size='13' fill='#0b3d91'>サーバー Route Handler</text><rect x='20' y='48' width='230' height='120' rx='8' fill='#fff' stroke='#0070f3' stroke-width='2'></rect><text x='34' y='74' font-size='11' fill='#333'>id: 1</text><text x='34' y='94' font-size='11' fill='#333'>event: progress</text><text x='34' y='114' font-size='11' fill='#333'>data: {"step":1}</text><text x='34' y='140' font-size='11' fill='#888'>（空行＝1イベント確定）</text><text x='34' y='158' font-size='11' fill='#1a7f37'>: ping  （15秒毎の保活）</text><line x1='250' y1='108' x2='360' y2='108' stroke='#333' stroke-width='2' marker-end='url(#ar)'></line><defs><marker id='ar' markerWidth='9' markerHeight='9' refX='6' refY='3' orient='auto'><path d='M0,0 L6,3 L0,6 z' fill='#333'></path></marker></defs><rect x='360' y='48' width='220' height='120' rx='8' fill='#fff' stroke='#334155' stroke-width='2'></rect><text x='374' y='74' font-size='12' fill='#0b3d91'>クライアント</text><text x='374' y='98' font-size='11' fill='#333'>EventSource（GET・自動再接続）</text><text x='374' y='120' font-size='11' fill='#333'>または fetch + getReader()</text><text x='374' y='142' font-size='11' fill='#888'>空行で split → data を parse</text></svg><figcaption>図1：SSE の 1 本の HTTP 上を data フレームとハートビートが流れ、クライアントは空行で分割して受ける。</figcaption></figure>
+<h4 id="sec-2">最大の落とし穴は「途中の層がバッファする」</h4>
+<p>ストリームが正しくても、間の層が全チャンクを溜めてから一括転送すると体感は「一括表示」に退化する。潰すべきは、Next.js の圧縮（<code>Cache-Control: no-cache, no-transform</code> を付ける）、リバースプロキシ（<code>X-Accel-Buffering: no</code> で無効化）、CDN のバッファ、そしてハンドラの書き方だ。正解は <strong><code>ReadableStream</code> を即 return し、<code>start(controller)</code> の中で await しながら enqueue</strong> すること。ループを回し切ってから返すと当然バッファされる。<code>NextResponse</code> は溜めることがあるので素の <code>new Response(stream)</code> を使い、<code>export const dynamic = 'force-dynamic'</code> で静的化を確実に外す。</p>
+<h4 id="sec-3">クリーンアップと中断連鎖</h4>
+<p>クライアントが離脱すると <code>request.signal</code> が abort する。<code>setInterval</code> / DB 購読 / 上流 fetch を必ず止めないと、サーバーで interval とストリームがリークして CPU と接続を食い続ける。LLM 中継なら、クライアントの <code>AbortController.abort()</code> がサーバーの <code>request.signal</code> を発火させ、上流 SDK の呼び出しまで連鎖キャンセルできる＝課金の無駄も止まる。</p>
+<figure class='fig'><pre class='mermaid'>flowchart LR
+  A["ユーザー: 停止/離脱"] --> B["client: AbortController.abort()"]
+  B --> C["server: request.signal abort"]
+  C --> D["clearInterval / DB購読解除"]
+  C --> E["上流LLM呼び出しを cancel"]</pre><figcaption>図2：中断は一方向に連鎖する。クライアントの abort が上流までキャンセルを伝える。</figcaption></figure>
+<h4 id="sec-4">受信の使い分け・ひとことまとめ</h4>
+<p>通知系のように GET と自動再接続で足りるなら <code>EventSource</code>（<code>'use client'</code> 必須）。会話履歴を POST したい・認証ヘッダを載せたいチャット系は、<code>EventSource</code> が GET しか投げられない制約に当たるので <strong><code>fetch</code> + <code>res.body.getReader()</code> + <code>TextDecoder</code></strong> で自前パースする（再接続は自前か <code>@microsoft/fetch-event-source</code>）。高レベルに寄せるなら Vercel AI SDK の <code>streamText().toUIMessageStreamResponse()</code> ＋ <code>useChat</code> がフレーミング・中断・再接続を隠蔽してくれる。要点は「即 return して enqueue、バッファ層を全部外す、abort を必ず処理する」の 3 つだ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://nextjs.org/docs/app/guides/streaming" target="_blank" rel="noopener noreferrer"> Next.js Guides: Streaming (公式) </a> </li><li> <a href="https://nextjs.org/docs/app/api-reference/file-conventions/route" target="_blank" rel="noopener noreferrer"> Next.js Route Handlers (公式) </a> </li><li> <a href="https://medium.com/@oyetoketoby80/fixing-slow-sse-server-sent-events-streaming-in-next-js-and-vercel-99f42fbdb996" target="_blank" rel="noopener noreferrer"> Fixing Slow SSE Streaming in Next.js and Vercel (Medium) </a> </li><li> <a href="https://dev.to/ahmed_mahmoud360/streaming-ai-responses-in-nextjs-sse-fetch-streams-and-what-breaks-in-production-4f76" target="_blank" rel="noopener noreferrer"> Streaming AI Responses in Next.js — SSE, Fetch Streams (dev.to) </a> </li><li> <a href="https://developer.mozilla.org/en-US/docs/Web/API/Server-sent_events/Using_server-sent_events" target="_blank" rel="noopener noreferrer"> MDN: Using server-sent events </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> ワイヤープロトコルはほぼ改行だけ </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 最大の落とし穴は「途中の層がバッファする」 </a> </li><li> <a href="#sec-3" data-toc="sec-3"> クリーンアップと中断連鎖 </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 受信の使い分け・ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-09-17</div> <div>⏱ 読了 約4分</div> <div>🏷 Next.js</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

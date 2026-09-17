@@ -1,0 +1,69 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Flutter 3.47系の到達点と120fps時代の設計 — Impeller既定・Riverpod 3.3.1・フレーム予算 — デイリー技術深掘り 読み物</title><meta name="description" content="stable 3.47.4/Dart 3.13.3を軸に、アニメの時間設計(micro 50–200/component 200–400/Hero 300–600ms)、状態管理はRiverpod 3.3.1既定・監査はBloc 9.0、性能は60/90/120fpsのフレーム予算で考える。"><meta name="theme-color" content="#0277bd"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-17-flutter/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Flutter 3.47系の到達点と120fps時代の設計 — Impeller既定・Riverpod 3.3.1・フレーム予算 — デイリー技術深掘り 読み物"><meta property="og:description" content="stable 3.47.4/Dart 3.13.3を軸に、アニメの時間設計(micro 50–200/component 200–400/Hero 300–600ms)、状態管理はRiverpod 3.3.1既定・監査はBloc 9.0、性能は60/90/120fpsのフレーム予算で考える。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-17-flutter/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #29b6f6, #01579b)"> <span class="glyph" aria-hidden="true">◆</span> <div class="kicker">Flutter</div> <h1>Flutter 3.47系の到達点と120fps時代の設計 — Impeller既定・Riverpod 3.3.1・フレーム予算</h1> <p class="lede">stable 3.47.4/Dart 3.13.3を軸に、アニメの時間設計(micro 50–200/component 200–400/Hero 300–600ms)、状態管理はRiverpod 3.3.1既定・監査はBloc 9.0、性能は60/90/120fpsのフレーム予算で考える。</p> <div class="meta"> <span>📅 2026年9月17日</span> <span>⏱ 約4分</span> <span>🔗 出典 5 件</span> </div> </section> <div class="article-layout" style="--topic:#0277bd"> <div> <article class="prose" data-has-mermaid="0"><p>今日の主役は <strong>Flutter 3.47.4 / Dart 3.13.3</strong> の stable パッチ追従だ。2026-09-11 に patch が出て現行安定は 3.47 系を継続。この系の到達点は、<code>material_ui</code> / <code>cupertino_ui</code> 1.0 の standalone 化、<strong>Impeller が全デスクトップで既定</strong>、Widget Previews stable、Dart 3.13 の <code>primary constructors</code> と <code>dot shorthands</code>。beta は 3.48.0-0.5.pre（Dart 3.14）で、Web は <strong>WebAssembly（WasmGC）</strong>を既定コンパイルターゲットへ前進中。次の安定機能リリースは年 4 回サイクルの 2026 年 11 月見込みで、Impeller の Android 一本化と WasmGC 既定化が布石になっている。</p>
+<h4 id="sec-1">アニメーションは timing とカーブの設計から</h4>
+<p>UI モーションの約 8 割は <strong>implicit で賄う</strong>のが基本線。時間設計の目安は、micro-interaction が <strong>50–200ms（implicit / controller 不要）</strong>、component 遷移が <strong>200–400ms（explicit / <code>AnimationController</code>＋dispose 必須）</strong>、Hero が <strong>300–600ms</strong>。標準カーブは <code>easeInOut</code> / <code>fastOutSlowIn</code>。多段の振付は <code>flutter_animate</code> の <code>.then()</code> / <code>delay:</code> で宣言的に組み、デザイナー主導の複雑シーケンスは Rive / Lottie にオフロードする。jank の典型は「描画変換のつもりが layout pass を誘発」で、<strong>動きは <code>Transform</code>、フェードは <code>Opacity</code></strong> に閉じるのが鉄則（width/height の setState は layout を走らせる）。</p>
+<figure class='fig'><svg viewBox='0 0 600 170' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='170' rx='8' fill='#eefaf3'></rect><text x='20' y='30' font-size='13' fill='#0b6b3a'>アニメーションの時間設計</text><rect x='20' y='50' width='150' height='36' rx='6' fill='#fff' stroke='#1a7f37' stroke-width='2'></rect><text x='30' y='68' font-size='11' fill='#333'>micro 50–200ms</text><text x='30' y='82' font-size='10' fill='#888'>implicit</text><rect x='190' y='50' width='180' height='36' rx='6' fill='#fff' stroke='#1a7f37' stroke-width='2'></rect><text x='200' y='68' font-size='11' fill='#333'>component 200–400ms</text><text x='200' y='82' font-size='10' fill='#888'>explicit + dispose</text><rect x='390' y='50' width='190' height='36' rx='6' fill='#fff' stroke='#1a7f37' stroke-width='2'></rect><text x='400' y='68' font-size='11' fill='#333'>Hero 300–600ms</text><text x='400' y='82' font-size='10' fill='#888'>flightShuttleBuilder</text><text x='20' y='120' font-size='12' fill='#0b6b3a'>jank 回避</text><text x='20' y='142' font-size='11' fill='#333'>動き＝Transform ／ フェード＝Opacity（layout を走らせない）</text></svg><figcaption>図1：用途で implicit/explicit/Hero を使い分け、描画は Transform/Opacity に閉じる。</figcaption></figure>
+<h4 id="sec-2">状態管理は Riverpod 3.3.1 を既定に</h4>
+<p>選定は benchmark でなく <strong>team expertise・データフローの形・欲しい保証</strong>で決める。新規の既定は <strong>Riverpod 3.3.1＋@riverpod codegen</strong>——compile-time safety・BuildContext 非依存の reads・first-class async を最小 boilerplate で得られ、テストは provider override でツリー非起動、平均 30–40% 少ない行数で書ける。再描画最適化は <code>ref.watch(provider.select(...))</code>。一方 <strong>監査/規制業界（fintech・healthcare）は Bloc 9.0</strong>——events/states/logic を厳格分離し、各 state 変化が特定 event に対応づいて <strong>audit trail</strong> を生む。<code>blocTest</code> で正確な state 列を検証でき、永続化は <code>hydrated_bloc</code>。</p>
+<h4 id="sec-3">パフォーマンスはフレーム予算で考える</h4>
+<p>Impeller は iOS＋モダン Android（API 29+）の既定で、全 shader を build 時に precompile して <strong>shader compilation jank を排除</strong>。Skia 比で平均フレームレンダリング時間が約 22% 改善、budget Android で frame time variance 約 60% 減という報告もあり、高リフレッシュで安定 120fps を狙える。フレーム予算は <strong>60fps=16ms / 90fps=11ms / 120fps=8.3ms</strong>。最も多い性能問題は不要な rebuild で、プロパティ不変なら <code>const</code> で完全スキップ、大きな <code>build()</code> を分割、<code>select</code> / <code>BlocSelector</code> で最小スライス購読、アニメ領域を <code>RepaintBoundary</code> で隔離、重い計算は <code>Isolate.run()</code> / <code>compute()</code> で背景 isolate へ。計測は必ず profile モードで DevTools Performance タブを使う。</p>
+<figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='150' rx='8' fill='#eefaf3'></rect><text x='20' y='28' font-size='13' fill='#0b6b3a'>フレーム予算（1フレームの上限）</text><rect x='20' y='45' width='320' height='22' rx='4' fill='#a7f3d0'></rect><text x='350' y='61' font-size='11' fill='#333'>60fps = 16ms</text><rect x='20' y='78' width='220' height='22' rx='4' fill='#6ee7b7'></rect><text x='250' y='94' font-size='11' fill='#333'>90fps = 11ms</text><rect x='20' y='111' width='166' height='22' rx='4' fill='#34d399'></rect><text x='196' y='127' font-size='11' fill='#333'>120fps = 8.3ms（UI~4ms + Raster~4ms）</text></svg><figcaption>図2：高リフレッシュほど 1 フレームの予算は縮む。超過＝jank。</figcaption></figure>
+<h4 id="sec-4">ひとことまとめ</h4>
+<p>3.47 系は「Impeller 既定・standalone UI パッケージ・Dart 3.13 の軽量構文」で土台が固まった段階。自分が試すなら、新規は Riverpod 3.3.1＋codegen で組み、アニメは時間設計の 3 段を守って implicit 中心にし、DevTools の profile 計測で rebuild と raster spike を潰す——この 3 点を型にするのが 120fps 時代の実務解だ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://docs.flutter.dev/release/release-notes" target="_blank" rel="noopener noreferrer"> Flutter release notes (docs.flutter.dev) </a> </li><li> <a href="https://dart.dev/resources/whats-new" target="_blank" rel="noopener noreferrer"> What&#39;s new (dart.dev) </a> </li><li> <a href="https://foresightmobile.com/blog/best-flutter-state-management" target="_blank" rel="noopener noreferrer"> Best Flutter State Management 2026 (Foresight Mobile) </a> </li><li> <a href="https://shindekalpesharun.medium.com/flutter-impeller-how-to-achieve-native-120fps-performance-in-2026-68ec28cc71e5" target="_blank" rel="noopener noreferrer"> Flutter + Impeller: native 120fps in 2026 (Medium) </a> </li><li> <a href="https://docs.flutter.dev/ui/animations" target="_blank" rel="noopener noreferrer"> Introduction to animations (docs.flutter.dev) </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> アニメーションは timing とカーブの設計から </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 状態管理は Riverpod 3.3.1 を既定に </a> </li><li> <a href="#sec-3" data-toc="sec-3"> パフォーマンスはフレーム予算で考える </a> </li><li> <a href="#sec-4" data-toc="sec-4"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-09-17</div> <div>⏱ 読了 約4分</div> <div>🏷 Flutter</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

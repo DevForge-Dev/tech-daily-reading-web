@@ -1,0 +1,84 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>スワイプで消すカードスタック — Pointer Events＋setPointerCapture＋「距離 OR 速度」で依存ゼロの fling-to-dismiss — デイリー技術深掘り 読み物</title><meta name="description" content="指に1:1追従して投げれば飛び、未達ならバネで戻る。Pointer Events一本化・setPointerCapture・距離/速度のOR判定・transformのみ描画、そしてWCAG 2.5.7のボタン代替までを一気に押さえる。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-15-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="スワイプで消すカードスタック — Pointer Events＋setPointerCapture＋「距離 OR 速度」で依存ゼロの fling-to-dismiss — デイリー技術深掘り 読み物"><meta property="og:description" content="指に1:1追従して投げれば飛び、未達ならバネで戻る。Pointer Events一本化・setPointerCapture・距離/速度のOR判定・transformのみ描画、そしてWCAG 2.5.7のボタン代替までを一気に押さえる。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-15-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>スワイプで消すカードスタック — Pointer Events＋setPointerCapture＋「距離 OR 速度」で依存ゼロの fling-to-dismiss</h1> <p class="lede">指に1:1追従して投げれば飛び、未達ならバネで戻る。Pointer Events一本化・setPointerCapture・距離/速度のOR判定・transformのみ描画、そしてWCAG 2.5.7のボタン代替までを一気に押さえる。</p> <div class="meta"> <span>📅 2026年9月15日</span> <span>⏱ 約5分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="0"><p>モバイルの通知消去、オンボーディングのカード送り、マッチングの候補送りで頻出する<strong>直接操作（direct manipulation）</strong>——「カードを掴んで横に投げると消える」あのパターンを、依存ゼロで正しく作るための勘所を整理する。指の動きに1:1で追従し、勢いよく投げれば飛び、中途半端なら手元に戻る物理的な手応えが「操作している感」を生む。似て非なる既存パターン（vaul=縦シートのdismiss、dnd-kit=並べ替え）とは役割が違い、本テーマは<strong>最前面カードを横に投げて捨てる（fling to dismiss）</strong>ジェスチャそのものだ。</p>
+<h4 id="sec-1">何が要点か</h4>
+<p>核心は4点。(1) <code>pointerdown/move/up</code> の<strong>Pointer Events だけで mouse/touch/pen を一本化</strong>（二重実装や300msクリック、ゴーストクリックを回避）。(2) <code>pointerdown</code> 内で <code>el.setPointerCapture(e.pointerId)</code> を呼び、指がカードや画面の外に出ても<strong>イベントを対象要素に届け続ける</strong>——これを忘れると「速く動かすとドラッグが切れる」最頻出バグになる。(3) 投げたか否かは<strong>移動量 or 放した瞬間の速度のどちらかが閾値超え</strong>で判定（OR にすると「勢いよく弾く」も「ぐいっと寄せる」も両取り）。(4) 未達は<strong>バネで原点復帰</strong>、超過はその向きへ画面外まで飛ばしてDOM除去。</p>
+<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='210' fill='#f7fbff' rx='8'></rect><rect x='230' y='60' width='140' height='90' rx='12' fill='#fff' stroke='#0070f3' stroke-width='2'></rect><text x='300' y='110' font-size='13' text-anchor='middle' fill='#0b3d91'>card</text><line x1='300' y1='105' x2='120' y2='105' stroke='#e00' stroke-width='2' marker-end='url(#a)'></line><line x1='300' y1='105' x2='480' y2='105' stroke='#1a7f37' stroke-width='2' marker-end='url(#a)'></line><defs><marker id='a' markerWidth='8' markerHeight='8' refX='6' refY='3' orient='auto'><path d='M0,0 L6,3 L0,6 z' fill='#333'></path></marker></defs><text x='95' y='95' font-size='11' text-anchor='middle' fill='#e00'>NOPE</text><text x='505' y='95' font-size='11' text-anchor='middle' fill='#1a7f37'>LIKE</text><text x='300' y='180' font-size='12' text-anchor='middle' fill='#333'>|offset| &gt; 120px  OR  |velocity| &gt; 0.5px/ms  →  fling out</text><text x='300' y='198' font-size='11' text-anchor='middle' fill='#888'>閾値未満は spring で原点復帰（動かすのは transform と opacity のみ）</text></svg><figcaption>図1：距離 OR 速度で「投げた」を判定。復帰はバネ、描画は transform/opacity に閉じる。</figcaption></figure>
+<h4 id="sec-2">仕組みと最小コード</h4>
+<p>Pointer Events 自体に velocity は無いので自前計算する。<code>pointermove</code> ごとに <code>{x,t}</code> を数点保持し、放す直前の直近2〜3サンプルの平均で <code>Δx/Δt</code>（px/ms）を求める（1点差分はノイズで誤爆する）。動かすのは <code>transform: translate() rotate()</code> と <code>opacity</code> だけに閉じ、<code>left</code>/<code>width</code> は使わない（リフローでカクつく）。ドラッグ量に応じて端ほど回転を強め、LIKE/NOPE ラベルの opacity を offsetX にマップすると意図が伝わる。</p>
+<pre><code>function onPointerDown(e){
+  if (e.button !== 0) return;          // 主ボタンのみ
+  card.setPointerCapture(e.pointerId); // ★枠外でも追従
+  start = {x:e.clientX,y:e.clientY};
+  samples = [{x:e.clientX,t:e.timeStamp}];
+}
+function onPointerUp(e){
+  const dx = e.clientX - start.x;
+  const a = samples[0], b = samples.at(-1);
+  const v = (b.x-a.x)/Math.max(1,b.t-a.t);        // px/ms
+  (Math.abs(dx)>120 || Math.abs(v)>0.5) ? flingOut(Math.sign(dx||v)) : springBack();
+}
+card.addEventListener('pointercancel', springBack); // ★中断で復帰</code></pre>
+<p>CSS では <code>touch-action</code> を必ず指定する。横スワイプだけ奪い縦スクロールは残すなら <code>touch-action: pan-y;</code>、全方位ドラッグなら <code>touch-action: none;</code>。未指定だとモバイルでスクロール/ピンチと競合し、ドラッグ中に <code>pointercancel</code> が飛んで掴みが外れる。</p>
+<h4 id="sec-3">Next.js（App Router）での組み込み</h4>
+<p>ドラッグ制御の殻だけ <code>'use client'</code> に隔離し、カードの中身（画像・テキスト）は<strong>RSC のまま</strong> <code>next/image</code> 等で描画して <code>children</code> として流し込む。候補一覧は RSC で取得、追加ロードは Server Action か Route Handler でページング。「既読/いいね/スキップ」は Server Action に送り、<code>useOptimistic</code> で<strong>投げた瞬間に UI からカードを除去</strong>→失敗時ロールバック。初期スタックは transform 無しの静止状態で描くので hydration mismatch が起きず、JS 未ロードでも内容とボタンは見える（Progressive Enhancement）。Strict Mode の二重マウント対策として、リスナ登録・rAF・spring ループは <code>useEffect</code> の cleanup で必ず解除する。ライブラリは依存ゼロの vanilla（数十行・挙動を完全掌握）か、宣言的に最短な Motion（<code>drag="x"</code>＋<code>dragSnapToOrigin</code>＋<code>onDragEnd</code> の <code>info.offset.x</code>/<code>info.velocity.x</code> 判定）が現実的。</p>
+<h4 id="sec-4">落とし穴とアクセシビリティ</h4>
+<p>最重要は <strong>WCAG 2.2 SC 2.5.7 Dragging Movements（AA）</strong>——ドラッグで達成する機能は<strong>単一ポインタの代替が必須</strong>なので、各カードに「スキップ／いいね」ボタンを併設し、ドラッグはショートカット扱いにする。キーボードは ←/→/Enter で同アクション、消去は <code>aria-live="polite"</code> で通知し「元に戻す」を提供。<code>prefers-reduced-motion: reduce</code> では慣性・回転・バウンドを止め、<strong>消去という結果だけ残す</strong>（即時 or 短いフェード）。その他の定番バグは、<code>pointercancel</code> 未処理での固着、<code>setPointerCapture</code> 忘れでの切断、velocity の1サンプル計算での誤爆、画像のネイティブ drag との競合（<code>user-drag:none</code> / <code>draggable="false"</code>）。</p>
+<h4 id="sec-5">ひとことまとめ</h4>
+<p>「Pointer Events 一本化＋setPointerCapture＋距離OR速度＋バネ復帰」の4点と、transform/opacity だけで動かす規律を守れば、依存ゼロでも 60fps の投げ捨てUIは作れる。そのうえで <strong>2.5.7 のボタン代替</strong>と <strong>reduced-motion</strong> を最初から設計に織り込むのが本題だ。自分が試すなら、まず vanilla で最小実装して挙動を掌握し、スタック表示（背後カードの scale+translateY）と Server Action 連携を足す順で組む。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://developer.mozilla.org/en-US/docs/Web/API/Element/setPointerCapture" target="_blank" rel="noopener noreferrer"> MDN: setPointerCapture() </a> </li><li> <a href="https://developer.mozilla.org/en-US/docs/Web/API/Pointer_events" target="_blank" rel="noopener noreferrer"> MDN: Pointer events </a> </li><li> <a href="https://motion.dev/examples/react-card-stack" target="_blank" rel="noopener noreferrer"> Motion for React: Card stack example </a> </li><li> <a href="https://www.w3.org/WAI/WCAG22/Understanding/dragging-movements.html" target="_blank" rel="noopener noreferrer"> W3C WAI: Understanding SC 2.5.7 Dragging Movements </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 何が要点か </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 仕組みと最小コード </a> </li><li> <a href="#sec-3" data-toc="sec-3"> Next.js（App Router）での組み込み </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 落とし穴とアクセシビリティ </a> </li><li> <a href="#sec-5" data-toc="sec-5"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-09-15</div> <div>⏱ 読了 約5分</div> <div>🏷 Next.js</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
