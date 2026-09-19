@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-09-18T04:48:17.048Z",
+  "generatedAt": "2026-09-19T04:54:54.279Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,76 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-09-19-claude-code",
+      "date": "2026-09-19",
+      "topic": "Claude Code",
+      "title": "v2.1.276 緊急ホットフィックスとProjectsベータ刷新 — 回帰を即塞ぎ、並列エージェントを統括する",
+      "lede": "v2.1.275でプロキシ/ゲートウェイ経由が全て400になる回帰をv2.1.276が緊急修正。claude.aiのスキル/プラグインは端末へ自動同期。9/17にはProjectsをベータ刷新し、コーディネーターが並列スレッドを分解・委譲・統合。ただし既定Opus・並列で上限に早く到達する点に注意。",
+      "articleHtml": "<p>Claude Code の直近は「壊れた回帰を即座に塞ぐ」運用フェーズに入っている。9/18 の <strong>v2.1.276</strong> は緊急ホットフィックスで、直前の v2.1.275 が抱えた回帰——<code>ANTHROPIC_BASE_URL</code> がプロキシや LLM ゲートウェイを指す構成で<strong>全リクエストが 400 エラーになる</strong>——を修正した。プロキシ/ゲートウェイ運用のチームは即アップデートが必須だ。あわせて v2.1.275 では、claude.ai で有効化したスキル/プラグインを同じアカウントの端末セッションへ<strong>自動同期</strong>する挙動が入った。ローカルで独自管理しているなら競合確認とオプトアウトを検討したい。</p>\n<h4>Projects ベータ刷新——並列エージェントの統括</h4>\n<p>9/17 には <strong>Claude Code Projects</strong> がベータで刷新された。<strong>コーディネーター</strong>がリクエストを分解して作業を委譲し、複数の<strong>並列エージェントスレッド</strong>を走らせて結果をレビュー・統合する。各スレッドは別ブランチ/リポジトリコピー上の独立したクラウドセッションで動き、<strong>プロジェクトメモリ</strong>とアップロード済みファイル・生成成果物の<strong>ライブラリ</strong>を共有する。コーディネーターとワーカーで<strong>モデルと思考努力レベルを個別指定</strong>でき、まず一部の Pro/Max から提供が始まった。</p>\n<figure class='fig'><svg viewBox='0 0 600 220' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='220' rx='8' fill='#fff7ed'/><rect x='210' y='16' width='180' height='44' rx='8' fill='#fff' stroke='#d97706' stroke-width='2'/><text x='300' y='38' font-size='13' fill='#92400e' text-anchor='middle'>コーディネーター</text><text x='300' y='54' font-size='10' fill='#555' text-anchor='middle'>分解・委譲・統合</text><rect x='30' y='110' width='150' height='50' rx='8' fill='#fff' stroke='#1a7f37' stroke-width='2'/><text x='105' y='140' font-size='11' fill='#1a7f37' text-anchor='middle'>ワーカー #1</text><rect x='225' y='110' width='150' height='50' rx='8' fill='#fff' stroke='#1a7f37' stroke-width='2'/><text x='300' y='140' font-size='11' fill='#1a7f37' text-anchor='middle'>ワーカー #2</text><rect x='420' y='110' width='150' height='50' rx='8' fill='#fff' stroke='#1a7f37' stroke-width='2'/><text x='495' y='140' font-size='11' fill='#1a7f37' text-anchor='middle'>ワーカー #3</text><line x1='300' y1='60' x2='105' y2='110' stroke='#d97706' stroke-width='1.5'/><line x1='300' y1='60' x2='300' y2='110' stroke='#d97706' stroke-width='1.5'/><line x1='300' y1='60' x2='495' y2='110' stroke='#d97706' stroke-width='1.5'/><rect x='30' y='180' width='540' height='28' rx='6' fill='#ecfdf5' stroke='#1a7f37' stroke-width='1.5'/><text x='300' y='198' font-size='11' fill='#1a7f37' text-anchor='middle'>共有メモリ ＋ ファイル/成果物ライブラリ</text></svg><figcaption>図1：コーディネーターが並列ワーカーを統括し、メモリとライブラリを共有する。</figcaption></figure>\n<h4>強力さと消費のトレードオフ</h4>\n<p>実務の注意点は消費だ。並列フルセッションのため既定で <strong>Opus・高努力度</strong>が割り当てられ、同時に多数を回すと<strong>利用上限に早く到達</strong>する。対策は役割別の配分——コーディネーターには上位モデルと高努力度、テスト実行など定型ワーカーには標準モデルと低努力度、というように割り当てる。拡張の3手法（<strong>Hooks は決定論的だが仕込みすぎると DX を損なう／Skills はオンデマンド読み込みで粒度設計が肝／Subagents は文脈汚染を防ぐが乱用で調整コスト増</strong>）を目的で選び分ける判断軸も、この並列運用と地続きだ。</p>\n<h4>自分が試すなら・まとめ</h4>\n<p>試すなら、まず調査系タスクを1本 Projects のワーカーに委譲し、コーディネーターだけ Opus・ワーカーは標準モデルに落として上限消費を観察するとよい。導入は国内でも加速しており、NEC が日本初のグローバルパートナーとして約3万人へ展開＋CoE 設置、日立は約29万人規模で計画、GMO インターネットが戦略的提携、海外 Ramp はインシデント調査を80%短縮したと公式ベースで報じられている。<strong>ひとことで言えば、回帰を即塞ぎつつ「並列を統括する基盤」へ</strong>——今日の軸はこの二つだ。</p>",
+      "sources": [
+        {
+          "title": "CC updates v2.1.276 (classmethod)",
+          "url": "https://dev.classmethod.jp/articles/20260918-cc-updates-v2-1-276/"
+        },
+        {
+          "title": "Anthropic redesigns Claude Code Projects (unite.ai)",
+          "url": "https://www.unite.ai/anthropic-redesigns-claude-code-projects-to-coordinate-agent-threads/"
+        },
+        {
+          "title": "New Projects default Opus・利用上限の注意 (implicator.ai)",
+          "url": "https://www.implicator.ai/anthropic-claude-code-projects-opus-default/"
+        },
+        {
+          "title": "Claude導入事例まとめ2026 (tufecompany)",
+          "url": "https://tufecompany.co.jp/blog/claude-donyu-jirei-2026"
+        }
+      ]
+    },
+    {
+      "id": "2026-09-18-nextjs",
+      "date": "2026-09-18",
+      "topic": "Next.js",
+      "title": "Draft Modeで安全なヘッドレスCMSプレビュー — キャッシュ全透過とuse cache／SameSiteの罠",
+      "lede": "draftMode()は特定リクエストだけNext.jsの全キャッシュ層を透過させ、常に最新の下書きを上流から取り直す仕組み。15でasync化、16では必ずawait。isEnabledはuse cache内でも読める。root layoutで読むと全体が動的化、SameSite=Laxでiframeが壁、Edgeでenable()が落ちる等の罠に注意。",
+      "articleHtml": "<p>ヘッドレス CMS 運用で必ず出るのが「編集者が<strong>未公開の下書き</strong>を本番と同じレンダリングで確認したい」という要件だ。だが App Router は既定でキャッシュ/静的化/ISR が効くため、素直に fetch すると編集者にもキャッシュ済みの公開版が見えてしまう。<strong>Draft Mode</strong>（<code>next/headers</code> の <code>draftMode()</code>）はこの一点だけを解く——特定リクエストに限り <strong>Next.js の全キャッシュ層を透過</strong>させ、常に最新の下書きを上流から取り直す。Pages Router の旧 Preview Mode の後継で、App Router では draftMode() に一本化された。</p>\n<h4>API と挙動（16 の肝）</h4>\n<p><strong>Next.js 15 で同期→async 化</strong>され、16 では必ず <code>await draftMode()</code>。返り値は <code>isEnabled</code>（今 Draft か・Server Component や use cache 内でも読める）／<code>enable()</code>・<code>disable()</code>（Route Handler か Server Action 専用、<code>__prerender_bypass</code> Cookie を出し入れ）。Cookie が載ると <code>fetch()</code> は fetch キャッシュを飛ばしネットワーク直行、<code>'use cache'</code> 配下は毎リクエスト再実行され結果を保存しない。<strong>ページ側は「今 Draft か」を知らなくてよい</strong>のが要点だ。</p>\n<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='210' rx='8' fill='#f4f4f5'/><rect x='20' y='38' width='130' height='44' rx='8' fill='#fff' stroke='#111' stroke-width='1.5'/><text x='85' y='64' font-size='11' fill='#111' text-anchor='middle'>一般訪問者</text><rect x='20' y='120' width='130' height='44' rx='8' fill='#fff' stroke='#2563eb' stroke-width='2'/><text x='85' y='142' font-size='11' fill='#2563eb' text-anchor='middle'>編集者(Draft)</text><rect x='240' y='80' width='160' height='50' rx='8' fill='#fff' stroke='#111' stroke-width='1.5'/><text x='320' y='101' font-size='11' fill='#111' text-anchor='middle'>App Router</text><text x='320' y='117' font-size='9' fill='#555' text-anchor='middle'>cache / ISR / use cache</text><rect x='450' y='80' width='130' height='50' rx='8' fill='#fff' stroke='#1a7f37' stroke-width='2'/><text x='515' y='108' font-size='11' fill='#1a7f37' text-anchor='middle'>ヘッドレスCMS</text><line x1='150' y1='60' x2='240' y2='98' stroke='#111' stroke-width='1.5'/><text x='165' y='72' font-size='9' fill='#111'>キャッシュ版</text><line x1='150' y1='142' x2='240' y2='112' stroke='#2563eb' stroke-width='2' stroke-dasharray='5 3'/><text x='150' y='168' font-size='9' fill='#2563eb'>__prerender_bypass Cookie</text><line x1='400' y1='105' x2='450' y2='105' stroke='#1a7f37' stroke-width='2' stroke-dasharray='5 3'/><text x='405' y='98' font-size='9' fill='#1a7f37'>透過→最新</text></svg><figcaption>図1：Draft Cookie を持つ編集者だけキャッシュを透過し、CMS の最新下書きに到達する。</figcaption></figure>\n<h4>実装の型</h4>\n<p>契約は「Studio の Preview→<code>/api/draft?secret=XXX&slug=/posts/foo</code> を新規タブ(GET)で開く」。Next 側は <strong>secret 検証→slug 実在確認→enable()→検証済み slug へ redirect</strong>。GET なのは CMS がタブで開く操作が GET だから。離脱は <strong>POST（Server Action）</strong>が正解で、<code>Link</code> は既定 prefetch で<strong>クリック前に Cookie を勝手に触る事故</strong>になるため使わない（どうしてもなら <code>prefetch={false}</code>、フォームは prefetch されず安全）。</p>\n<h4>落とし穴・まとめ</h4>\n<p>実運用の罠は多層だ。<strong>root layout で draftMode() を読むとアプリ全体が動的化</strong>するので、バナーは末端の <code>Suspense</code> 島に隔離する。<code>__prerender_bypass</code> は既定 <strong>SameSite=Lax</strong> で CMS の iframe（クロスサイト）に送られず、Contentful/Sanity/DatoCMS の公式パッケージは Set-Cookie を <code>SameSite=None; Secure</code> へ書き換えて回避している（実装依存で将来壊れうる）。ほかに <strong>Edge Runtime で enable() が落ちる</strong>（Node.js runtime に置く）、<strong>open redirect</strong>（検証済み slug へ飛ばす）、secret は<strong>定数時間比較</strong>、Draft 中は <code>noindex</code>。<strong>まとめると Draft Mode は「公開前にキャッシュを一時的に無視する」ピース</strong>で、revalidateTag（公開後にキャッシュを捨てる）の対に当たる。</p>",
+      "sources": [
+        {
+          "title": "Next.js Guides: Draft Mode",
+          "url": "https://nextjs.org/docs/app/guides/draft-mode"
+        },
+        {
+          "title": "Next.js Functions: draftMode",
+          "url": "https://nextjs.org/docs/app/api-reference/functions/draft-mode"
+        },
+        {
+          "title": "vercel/next.js discussion #74789 (SameSite=None)",
+          "url": "https://github.com/vercel/next.js/discussions/74789"
+        }
+      ]
+    },
+    {
+      "id": "2026-09-19-flutter",
+      "date": "2026-09-19",
+      "topic": "Flutter",
+      "title": "Widget Previews（stable）を毎日の開発ループへ — 全体ビルドなしで個別ウィジェットを反復",
+      "lede": "Flutter 3.47でstable昇格したWidget Previewsが主役。アプリ全体をbuild/起動せず個別ウィジェットをrender・inspect・iterateできる。現行安定版は3.47.4/Dart 3.13.3、@Previewアノテーションとローカルビルドキャッシュ、リアルタイム検索を搭載。beta 3.48/Dart 3.14、次の安定は11月見込み。",
+      "articleHtml": "<p>今日の主役は <strong>Widget Previews（stable）を毎日の開発ループに組み込む</strong>ことだ。Flutter <strong>3.47</strong>（2026-08-12）で stable に昇格し、アプリ全体を build・起動せずに<strong>個別ウィジェットだけを render・inspect・iterate</strong>できる。現行の安定版は <strong>Flutter 3.47.4 / Dart 3.13.3</strong>（2026-09-11 の patch）で、Impeller は全デスクトップで既定、最低 iOS 15 / macOS 12 に上がった。</p>\n<h4>何が新しいか</h4>\n<p>プレビュー対象は <code>@Preview</code> アノテーションで宣言し、IDE は <code>dart/textDocument/getFlutterWidgetPreviews</code> でメタデータを取得する。<strong>ローカルビルドキャッシュ</strong>で起動を高速化し、<strong>リアルタイムのプレビュー検索/フィルタ</strong>も載った。言語側では <strong>Dart 3.13</strong> が primary constructors と dot shorthands を stable 化し、formatter・pub workspace・JS interop・tree-shaking を改善している。beta は <strong>Flutter 3.48 / Dart 3.14</strong> で WasmGC 既定化と Android の Impeller 一本化を継続、次の安定機能リリースは <strong>2026 年 11 月</strong>見込みだ。</p>\n<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg'><rect x='0' y='0' width='600' height='200' rx='8' fill='#eff6ff'/><rect x='24' y='78' width='120' height='46' rx='8' fill='#fff' stroke='#1e40af' stroke-width='2'/><text x='84' y='105' font-size='11' fill='#1e40af' text-anchor='middle'>コード編集</text><rect x='170' y='78' width='120' height='46' rx='8' fill='#fff' stroke='#1e40af' stroke-width='2'/><text x='230' y='99' font-size='11' fill='#1e40af' text-anchor='middle'>@Preview</text><text x='230' y='114' font-size='9' fill='#555' text-anchor='middle'>宣言</text><rect x='316' y='78' width='140' height='46' rx='8' fill='#fff' stroke='#1e40af' stroke-width='2'/><text x='386' y='99' font-size='11' fill='#1e40af' text-anchor='middle'>render / inspect</text><text x='386' y='114' font-size='9' fill='#555' text-anchor='middle'>個別ウィジェット</text><rect x='482' y='78' width='94' height='46' rx='8' fill='#dbeafe' stroke='#1e40af' stroke-width='2'/><text x='529' y='105' font-size='11' fill='#1e40af' text-anchor='middle'>iterate</text><line x1='144' y1='101' x2='170' y2='101' stroke='#1e40af' stroke-width='1.5'/><line x1='290' y1='101' x2='316' y2='101' stroke='#1e40af' stroke-width='1.5'/><line x1='456' y1='101' x2='482' y2='101' stroke='#1e40af' stroke-width='1.5'/><path d='M529,124 C529,168 84,168 84,124' fill='none' stroke='#1e40af' stroke-width='1.5' stroke-dasharray='5 3'/><text x='300' y='160' font-size='10' fill='#1e40af' text-anchor='middle'>アプリ全体を build/起動せず高速ループ</text></svg><figcaption>図1：Widget Previews は全体ビルドを挟まず、編集→プレビュー→反復を高速化する。</figcaption></figure>\n<h4>実務での使いどころ</h4>\n<p>状態管理の基本線は変わらない——新規は <strong>Riverpod 3.3.1 ＋ @riverpod codegen</strong>、監査/規制業界は <strong>Bloc 9.2.x</strong>。DI は <code>get_it</code>＋<code>injectable</code> で Repository/UseCase/DataSource を層ごとに登録し状態層へ注入する。アニメーションは micro=implicit → 多段=<code>flutter_animate</code> のチェーン → component=explicit、と用途で使い分ける。パフォーマンスは <strong>RepaintBoundary＋const で描画コストを局所化</strong>し、重い計算は <code>Isolate.run()</code>/<code>compute()</code> で背景 isolate へ逃がすのが定石だ。</p>\n<h4>注意点・まとめ</h4>\n<p>計測は必ず <strong>profile モード</strong>で DevTools の flame chart を見て、フレーム予算（<strong>60fps=16ms / 90fps=11ms / 120fps=8.3ms</strong>）を超える関数を特定する。Widget Previews はあくまで開発補助で、実機の描画/入力挙動の最終確認までは置き換えられない点に注意。<strong>まとめると、レンダラは Impeller 前提、開発ループは Widget Previews で速く、状態は Riverpod 3 で堅く</strong>——2026 秋の Flutter はこの形だ。</p>",
+      "sources": [
+        {
+          "title": "What's new in Flutter 3.47 (flutter.dev)",
+          "url": "https://flutter.dev/blog/whats-new-in-flutter-3-47"
+        },
+        {
+          "title": "Flutter what's new in the docs",
+          "url": "https://docs.flutter.dev/release/whats-new"
+        },
+        {
+          "title": "Dart: What's new (dart.dev)",
+          "url": "https://dart.dev/resources/whats-new"
+        }
+      ]
+    },
     {
       "id": "2026-09-18-claude-code",
       "date": "2026-09-18",
