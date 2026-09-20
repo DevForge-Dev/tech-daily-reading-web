@@ -1,0 +1,68 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>auto modeがサーバサイド分類器へ（v2.1.278）— 分類オーバーヘッド非課金と、AGENTS.mdフォールバックの正しい理解 — デイリー技術深掘り 読み物</title><meta name="description" content="v2.1.278でauto mode（モデル自動選択）の分類がサーバサイドの分類器ルーティング既定に。API/Enterpriseでは分類オーバーヘッドが非課金になり、/statusに『Auto mode server』行が追加。前版v2.1.277はCLAUDE.md不在時にAGENTS.mdを読むフォールバック対応（マージではない）と、壊れた~/.claude.jsonによるクラッシュ多数を修正。堅牢化と運用フェーズの回だ。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-20-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="auto modeがサーバサイド分類器へ（v2.1.278）— 分類オーバーヘッド非課金と、AGENTS.mdフォールバックの正しい理解 — デイリー技術深掘り 読み物"><meta property="og:description" content="v2.1.278でauto mode（モデル自動選択）の分類がサーバサイドの分類器ルーティング既定に。API/Enterpriseでは分類オーバーヘッドが非課金になり、/statusに『Auto mode server』行が追加。前版v2.1.277はCLAUDE.md不在時にAGENTS.mdを読むフォールバック対応（マージではない）と、壊れた~/.claude.jsonによるクラッシュ多数を修正。堅牢化と運用フェーズの回だ。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-20-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>auto modeがサーバサイド分類器へ（v2.1.278）— 分類オーバーヘッド非課金と、AGENTS.mdフォールバックの正しい理解</h1> <p class="lede">v2.1.278でauto mode（モデル自動選択）の分類がサーバサイドの分類器ルーティング既定に。API/Enterpriseでは分類オーバーヘッドが非課金になり、/statusに『Auto mode server』行が追加。前版v2.1.277はCLAUDE.md不在時にAGENTS.mdを読むフォールバック対応（マージではない）と、壊れた~/.claude.jsonによるクラッシュ多数を修正。堅牢化と運用フェーズの回だ。</p> <div class="meta"> <span>📅 2026年9月20日</span> <span>⏱ 約3分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="0"><p>直近のClaude Codeは派手な新機能より<strong>運用の足回りを整える</strong>方向が続く。今日の軸は2つ——9/19の <strong>v2.1.278</strong> による auto mode のサーバサイド化と、9/18の <strong>v2.1.277</strong> による AGENTS.md フォールバックおよびクラッシュ修正だ。どちらも「毎日エージェントを回すチーム」に効く実務寄りの変更である。</p>
+<h4 id="sec-1">何が新しいか（v2.1.278）</h4>
+<p>auto mode はタスクに応じてモデルを自動選択する仕組みだが、その<strong>分類処理</strong>がこれまでクライアント側で走っていた。v2.1.278 では Claude API・Enterprise ユーザー向けに<strong>サーバサイドの分類器ルーティングが既定</strong>となり、従来クライアントで発生していた<strong>分類オーバーヘッドが課金対象外</strong>になった。auto mode を多用するほどコスト効率が効いてくる。あわせて <code>/status</code> に <strong>「Auto mode server」</strong>の行が加わり、今どちらの分類経路で動いているかを確認できる。</p>
+<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='11.5'><rect x='0' y='0' width='600' height='210' rx='8' fill='#faf9ff'></rect><text x='16' y='24' font-size='13' font-weight='700' fill='#4a2fb8'>auto mode の分類がクライアント→サーバへ</text><rect x='24' y='44' width='250' height='140' rx='10' fill='#fff' stroke='#b9a8ff' stroke-width='1.5'></rect><text x='149' y='64' text-anchor='middle' font-weight='700' fill='#6b6b70'>従来（〜v2.1.277）</text><rect x='44' y='78' width='210' height='30' rx='6' fill='#f0edff'></rect><text x='149' y='97' text-anchor='middle' fill='#333'>クライアントで分類</text><text x='149' y='128' text-anchor='middle' fill='#b03030'>= 分類オーバーヘッドを課金</text><text x='149' y='150' text-anchor='middle' fill='#333'>経路が見えにくい</text><rect x='326' y='44' width='250' height='140' rx='10' fill='#fff' stroke='#7b3fe4' stroke-width='2'></rect><text x='451' y='64' text-anchor='middle' font-weight='700' fill='#4a2fb8'>v2.1.278（既定）</text><rect x='346' y='78' width='210' height='30' rx='6' fill='#ece5ff'></rect><text x='451' y='97' text-anchor='middle' fill='#333'>サーバ側の分類器で振り分け</text><text x='451' y='128' text-anchor='middle' fill='#1a7f37'>= API/Enterpriseは非課金</text><text x='451' y='150' text-anchor='middle' fill='#333'>/status に Auto mode server</text><path d='M280 114 L322 114' stroke='#7b3fe4' stroke-width='2' marker-end='url(#ar)'></path><defs><marker id='ar' markerWidth='9' markerHeight='9' refX='6' refY='3' orient='auto'><path d='M0 0 L6 3 L0 6 z' fill='#7b3fe4'></path></marker></defs></svg><figcaption>図1：分類処理がサーバ側へ移り、API/Enterpriseでは分類分の課金が消える。</figcaption></figure>
+<h4 id="sec-2">AGENTS.md は『フォールバック』であって『マージ』ではない（v2.1.277）</h4>
+<p>v2.1.277 は、<strong>CLAUDE.md が存在しないプロジェクトでのみ AGENTS.md を代わりに読む</strong>フォールバックを追加した。ここを誤解しやすいが、両ファイルの内容を<strong>統合（マージ）するわけではない</strong>。CLAUDE.md を持つ既存プロジェクトでは従来通り CLAUDE.md が優先され、AGENTS.md は無視される。切替は <code>/config</code> の「Project instructions」から可能で、Bedrock/Vertex/Foundry は未対応。加えて、壊れた <code>~/.claude.json</code>——不正な theme 値で起動時クラッシュ、不正な <code>claudeAiMcpEverConnected</code> 値で <code>/mcp</code> や <code>/plugin manage</code> がクラッシュ——を回避する堅牢化が入っている。</p>
+<h4 id="sec-3">実務での使いどころ・注意点</h4>
+<p>試すなら、まず <code>/status</code> で自分のセッションが「Auto mode server」経路かを確認し、auto mode 主体のワークフローでコスト挙動を観察するとよい。他ツールと規約を揃えたくて AGENTS.md へ寄せたいなら、CLAUDE.md を残したままだと読まれない点に注意——移行時は明示的に切替える。拡張機能の使い分け（<strong>強制=Hooks/権限、知識=Skills、委譲境界=Subagents、常時指針=CLAUDE.md</strong>）という判断軸は引き続き有効で、まず Skills から始め、決定論的な強制が要れば Hooks を足し、並列・文脈分離が要れば Subagents を使う段階導入が定石だ。国内では PC Watch が Projects 刷新（「あとはよろしく」でスコープ設定〜委譲〜統合まで自動）を報じ、実務導入も個人試用→部署PoC→全社標準へと広がっている。</p>
+<h4 id="sec-4">ひとことまとめ</h4>
+<p><strong>コスト（auto mode 非課金化）と堅牢性（クラッシュ修正）を静かに底上げしつつ、AGENTS.md 対応で他ツールとの相互運用に一歩</strong>——今日はそういう地固めの回だった。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://code.claude.com/docs/en/changelog" target="_blank" rel="noopener noreferrer"> Claude Code changelog (v2.1.278) </a> </li><li> <a href="https://github.com/anthropics/claude-code/releases/tag/v2.1.277" target="_blank" rel="noopener noreferrer"> claude-code releases v2.1.277 </a> </li><li> <a href="https://windowsforum.com/news/claude-code-2-1-277-adds-agents-md-fallback-not-merge.445031/" target="_blank" rel="noopener noreferrer"> AGENTS.md fallback not merge (WindowsForum) </a> </li><li> <a href="https://pc.watch.impress.co.jp/docs/news/2142119.html" target="_blank" rel="noopener noreferrer"> PC Watch：Claude Code Projects刷新 </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 何が新しいか（v2.1.278） </a> </li><li> <a href="#sec-2" data-toc="sec-2"> AGENTS.md は『フォールバック』であって『マージ』ではない（v2.1.277） </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 実務での使いどころ・注意点 </a> </li><li> <a href="#sec-4" data-toc="sec-4"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-09-20</div> <div>⏱ 読了 約3分</div> <div>🏷 Claude Code</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
