@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-09-19T04:54:54.279Z",
+  "generatedAt": "2026-09-20T04:51:18.409Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,80 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-09-20-claude-code",
+      "date": "2026-09-20",
+      "topic": "Claude Code",
+      "title": "auto modeがサーバサイド分類器へ（v2.1.278）— 分類オーバーヘッド非課金と、AGENTS.mdフォールバックの正しい理解",
+      "lede": "v2.1.278でauto mode（モデル自動選択）の分類がサーバサイドの分類器ルーティング既定に。API/Enterpriseでは分類オーバーヘッドが非課金になり、/statusに『Auto mode server』行が追加。前版v2.1.277はCLAUDE.md不在時にAGENTS.mdを読むフォールバック対応（マージではない）と、壊れた~/.claude.jsonによるクラッシュ多数を修正。堅牢化と運用フェーズの回だ。",
+      "articleHtml": "<p>直近のClaude Codeは派手な新機能より<strong>運用の足回りを整える</strong>方向が続く。今日の軸は2つ——9/19の <strong>v2.1.278</strong> による auto mode のサーバサイド化と、9/18の <strong>v2.1.277</strong> による AGENTS.md フォールバックおよびクラッシュ修正だ。どちらも「毎日エージェントを回すチーム」に効く実務寄りの変更である。</p>\n<h4>何が新しいか（v2.1.278）</h4>\n<p>auto mode はタスクに応じてモデルを自動選択する仕組みだが、その<strong>分類処理</strong>がこれまでクライアント側で走っていた。v2.1.278 では Claude API・Enterprise ユーザー向けに<strong>サーバサイドの分類器ルーティングが既定</strong>となり、従来クライアントで発生していた<strong>分類オーバーヘッドが課金対象外</strong>になった。auto mode を多用するほどコスト効率が効いてくる。あわせて <code>/status</code> に <strong>「Auto mode server」</strong>の行が加わり、今どちらの分類経路で動いているかを確認できる。</p>\n<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='11.5'><rect x='0' y='0' width='600' height='210' rx='8' fill='#faf9ff'/><text x='16' y='24' font-size='13' font-weight='700' fill='#4a2fb8'>auto mode の分類がクライアント→サーバへ</text><rect x='24' y='44' width='250' height='140' rx='10' fill='#fff' stroke='#b9a8ff' stroke-width='1.5'/><text x='149' y='64' text-anchor='middle' font-weight='700' fill='#6b6b70'>従来（〜v2.1.277）</text><rect x='44' y='78' width='210' height='30' rx='6' fill='#f0edff'/><text x='149' y='97' text-anchor='middle' fill='#333'>クライアントで分類</text><text x='149' y='128' text-anchor='middle' fill='#b03030'>= 分類オーバーヘッドを課金</text><text x='149' y='150' text-anchor='middle' fill='#333'>経路が見えにくい</text><rect x='326' y='44' width='250' height='140' rx='10' fill='#fff' stroke='#7b3fe4' stroke-width='2'/><text x='451' y='64' text-anchor='middle' font-weight='700' fill='#4a2fb8'>v2.1.278（既定）</text><rect x='346' y='78' width='210' height='30' rx='6' fill='#ece5ff'/><text x='451' y='97' text-anchor='middle' fill='#333'>サーバ側の分類器で振り分け</text><text x='451' y='128' text-anchor='middle' fill='#1a7f37'>= API/Enterpriseは非課金</text><text x='451' y='150' text-anchor='middle' fill='#333'>/status に Auto mode server</text><path d='M280 114 L322 114' stroke='#7b3fe4' stroke-width='2' marker-end='url(#ar)'/><defs><marker id='ar' markerWidth='9' markerHeight='9' refX='6' refY='3' orient='auto'><path d='M0 0 L6 3 L0 6 z' fill='#7b3fe4'/></marker></defs></svg><figcaption>図1：分類処理がサーバ側へ移り、API/Enterpriseでは分類分の課金が消える。</figcaption></figure>\n<h4>AGENTS.md は『フォールバック』であって『マージ』ではない（v2.1.277）</h4>\n<p>v2.1.277 は、<strong>CLAUDE.md が存在しないプロジェクトでのみ AGENTS.md を代わりに読む</strong>フォールバックを追加した。ここを誤解しやすいが、両ファイルの内容を<strong>統合（マージ）するわけではない</strong>。CLAUDE.md を持つ既存プロジェクトでは従来通り CLAUDE.md が優先され、AGENTS.md は無視される。切替は <code>/config</code> の「Project instructions」から可能で、Bedrock/Vertex/Foundry は未対応。加えて、壊れた <code>~/.claude.json</code>——不正な theme 値で起動時クラッシュ、不正な <code>claudeAiMcpEverConnected</code> 値で <code>/mcp</code> や <code>/plugin manage</code> がクラッシュ——を回避する堅牢化が入っている。</p>\n<h4>実務での使いどころ・注意点</h4>\n<p>試すなら、まず <code>/status</code> で自分のセッションが「Auto mode server」経路かを確認し、auto mode 主体のワークフローでコスト挙動を観察するとよい。他ツールと規約を揃えたくて AGENTS.md へ寄せたいなら、CLAUDE.md を残したままだと読まれない点に注意——移行時は明示的に切替える。拡張機能の使い分け（<strong>強制=Hooks/権限、知識=Skills、委譲境界=Subagents、常時指針=CLAUDE.md</strong>）という判断軸は引き続き有効で、まず Skills から始め、決定論的な強制が要れば Hooks を足し、並列・文脈分離が要れば Subagents を使う段階導入が定石だ。国内では PC Watch が Projects 刷新（「あとはよろしく」でスコープ設定〜委譲〜統合まで自動）を報じ、実務導入も個人試用→部署PoC→全社標準へと広がっている。</p>\n<h4>ひとことまとめ</h4>\n<p><strong>コスト（auto mode 非課金化）と堅牢性（クラッシュ修正）を静かに底上げしつつ、AGENTS.md 対応で他ツールとの相互運用に一歩</strong>——今日はそういう地固めの回だった。</p>",
+      "sources": [
+        {
+          "title": "Claude Code changelog (v2.1.278)",
+          "url": "https://code.claude.com/docs/en/changelog"
+        },
+        {
+          "title": "claude-code releases v2.1.277",
+          "url": "https://github.com/anthropics/claude-code/releases/tag/v2.1.277"
+        },
+        {
+          "title": "AGENTS.md fallback not merge (WindowsForum)",
+          "url": "https://windowsforum.com/news/claude-code-2-1-277-adds-agents-md-fallback-not-merge.445031/"
+        },
+        {
+          "title": "PC Watch：Claude Code Projects刷新",
+          "url": "https://pc.watch.impress.co.jp/docs/news/2142119.html"
+        }
+      ]
+    },
+    {
+      "id": "2026-09-20-flutter",
+      "date": "2026-09-20",
+      "topic": "Flutter",
+      "title": "iOS 26 / Xcode 26 対応と UIScene ライフサイクル必須化 — Impeller全既定時代の移行チェック",
+      "lede": "Flutter 3.47がApple義務化のUISceneベース・ライフサイクルに追従。旧UIApplicationDelegateからの移行でmulti-window/state restorationが整う。現行安定は3.47.4/Dart 3.13.3、Impellerは全デスクトップで既定。アクセシビリティdocsも全面刷新。beta 3.48/Dart 3.14（WasmGC既定化）、次の安定は11月見込み。",
+      "articleHtml": "<p>今日の主役は <strong>iOS 26 / Xcode 26 / macOS 26 フル対応と、UIScene ベース・ライフサイクルの必須化</strong>だ。Apple が義務化した <strong>UIScene ライフサイクル</strong>に Flutter <strong>3.47</strong> が追従し、旧 <code>UIApplicationDelegate</code> ベースからの移行で <strong>multi-window / state restoration</strong> がきれいに整う。現行の安定版は <strong>Flutter 3.47.4 / Dart 3.13.3</strong>（2026-09-11 patch）で、<strong>Impeller は全デスクトップで既定</strong>、最低 iOS 15 / macOS 12、material_ui / cupertino_ui は 1.0 standalone、Widget Previews は stable に達している。</p>\n<h4>何が新しいか</h4>\n<p>Xcode 26 でビルドするなら UIScene 対応は<strong>実質必須</strong>で、ここが移行の詰まりどころになりやすい。あわせて<strong>アクセシビリティ docs が全面刷新</strong>され、<code>Semantics</code> やスクリーンリーダー対応の指針が再構成された。言語側は <strong>Dart 3.12</strong>（Flutter 3.44 同梱）が <code>private named parameters</code> を導入し、<strong>Dart 3.13</strong> で primary constructors / dot shorthands が stable 化。beta は <strong>Flutter 3.48 / Dart 3.14</strong> で <strong>WasmGC 既定化</strong>と Android の Impeller 一本化を継続し、次の安定機能リリースは <strong>2026年11月</strong>見込みだ。</p>\n<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='11.5'><rect x='0' y='0' width='600' height='200' rx='8' fill='#eef7fc'/><text x='16' y='24' font-size='13' font-weight='700' fill='#0277bd'>iOS/macOS ライフサイクルの移行</text><rect x='24' y='44' width='250' height='120' rx='10' fill='#fff' stroke='#9ad2ec' stroke-width='1.5'/><text x='149' y='64' text-anchor='middle' font-weight='700' fill='#6b6b70'>旧：UIApplicationDelegate</text><text x='149' y='92' text-anchor='middle' fill='#333'>単一ウィンドウ前提</text><text x='149' y='114' text-anchor='middle' fill='#333'>state restoration 弱い</text><text x='149' y='140' text-anchor='middle' fill='#b03030'>Xcode 26 で非対応化</text><rect x='326' y='44' width='250' height='120' rx='10' fill='#fff' stroke='#0277bd' stroke-width='2'/><text x='451' y='64' text-anchor='middle' font-weight='700' fill='#025a8f'>新：UIScene（3.47）</text><text x='451' y='92' text-anchor='middle' fill='#1a7f37'>multi-window 対応</text><text x='451' y='114' text-anchor='middle' fill='#1a7f37'>state restoration が整う</text><text x='451' y='140' text-anchor='middle' fill='#333'>Apple 義務化に追従</text><path d='M280 104 L322 104' stroke='#0277bd' stroke-width='2' marker-end='url(#ar2)'/><defs><marker id='ar2' markerWidth='9' markerHeight='9' refX='6' refY='3' orient='auto'><path d='M0 0 L6 3 L0 6 z' fill='#0277bd'/></marker></defs></svg><figcaption>図1：UIScene 移行で multi-window と state restoration が正しく機能する。</figcaption></figure>\n<h4>仕組みのポイント — Impeller と描画予算</h4>\n<p>レンダラは <strong>Impeller が全プラットフォームの既定</strong>になった。Skia を置き換え iOS=Metal / Android=Vulkan で GPU を直接叩き、<strong>全 shader を build 時に precompile</strong> することで runtime shader compilation jank を根絶する。フレーム予算は <strong>60fps=16ms / 90fps=11ms / 120fps=8.3ms</strong>。パフォーマンス最適化の勘所は変わらず、DevTools で Impeller の draw call batching を見て<strong>layer tree を平坦化</strong>し総 draw call を削減、不要な <code>Opacity</code>/<code>ClipRRect</code> レイヤーを整理、動くアニメ領域は <code>RepaintBoundary</code> で隔離、重い計算は <code>Isolate.run()</code>/<code>compute()</code> で背景 isolate へ逃がす。計測は必ず profile モードで。</p>\n<h4>実務での使いどころ・注意点</h4>\n<p>自分が移行するなら、検証ブランチで Xcode 26 ビルドを通し、<strong>UIScene 対応（AppDelegate/Scene の分離）</strong>を最初に確認する。状態管理の基本線は据え置きで、新規は <strong>Riverpod 3.3.1＋@riverpod codegen</strong>（Provider 比メモリ 20–25%減の実測）、監査/規制業界は <strong>Bloc 9.2.x</strong>（audit trail 生成・<code>blocTest</code> 検証）。アニメは micro=implicit →多段=<code>flutter_animate</code> → component=explicit → 共有要素=Hero と用途で使い分ける。落とし穴は、UIScene 未対応のプラグインが混在するとビルド/復帰まわりで事故りやすい点だ。</p>\n<h4>ひとことまとめ</h4>\n<p><strong>レンダラは Impeller 前提、iOS/macOS は UIScene 前提</strong>——2026 秋の Flutter はこの2つを外すとビルドが通らない。移行の窓は今だ。</p>",
+      "sources": [
+        {
+          "title": "What's new in Flutter 3.47 (flutter.dev)",
+          "url": "https://flutter.dev/blog/whats-new-in-flutter-3-47"
+        },
+        {
+          "title": "Flutter 3.47.0 release notes",
+          "url": "https://docs.flutter.dev/release/release-notes/release-notes-3.47.0"
+        },
+        {
+          "title": "Announcing Dart 3.12",
+          "url": "https://dart.dev/blog/announcing-dart-3-12"
+        },
+        {
+          "title": "How Impeller Is Transforming Flutter UI Rendering in 2026",
+          "url": "https://dev.to/eira-wexford/how-impeller-is-transforming-flutter-ui-rendering-in-2026-3dpd"
+        }
+      ]
+    },
+    {
+      "id": "2026-09-20-github-trending",
+      "date": "2026-09-20",
+      "topic": "GitHub Trending",
+      "title": "9/20の話題リポジトリ — 買い切りMac版フォトショ・computer-use基盤・生成UI",
+      "lede": "本日はエージェント/スキル系が上位を占める中、非AIのクリエイティブ・デスクトップ（Compositor）が日次1位に。表彰台圏のcomputer-use基盤 trycua/cua、Vercel Labs公式の生成UI json-render と合わせ、『作る道具』と『動かす基盤』の両輪が並んだ日。",
+      "articleHtml": "<p>本日の GitHub 界隈は、エージェント／スキル系が上位を席巻する中で<strong>非AIのクリエイティブ・デスクトップアプリが日次1位</strong>に立った点が目を引いた。ここでは傾向を代表する3本——買い切りの Mac 画像編集、computer-use をスケールさせる基盤、LLM 出力を安全に画面化する生成 UI——を、それぞれ「解決したい課題」と「提供する機能」で読み解く。共通するのは、単発の派手さより<strong>『既存の不便を土台から置き換える』</strong>という姿勢だ。</p>\n<figure class='fig'><svg viewBox='0 0 600 250' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='11'><rect x='0' y='0' width='600' height='250' rx='8' fill='#f1fbf4'/><text x='16' y='24' font-size='13' font-weight='700' fill='#1a7f37'>本日の3本：解決したい課題 × 提供する機能</text><line x1='16' y1='40' x2='584' y2='40' stroke='#bfe6cb'/><text x='24' y='58' font-weight='700' fill='#12692c'>リポジトリ</text><text x='210' y='58' font-weight='700' fill='#12692c'>解決したい課題</text><text x='420' y='58' font-weight='700' fill='#12692c'>提供する機能</text><line x1='16' y1='66' x2='584' y2='66' stroke='#bfe6cb'/><text x='24' y='92' fill='#154a24'>Compositor</text><text x='210' y='92' fill='#333'>サブスク型商用</text><text x='210' y='108' fill='#333'>画像編集への不満</text><text x='420' y='92' fill='#333'>買い切り・Mac ネイティブ</text><text x='420' y='108' fill='#333'>のレイヤー画像編集</text><line x1='16' y1='120' x2='584' y2='120' stroke='#e0f2e6'/><text x='24' y='150' fill='#154a24'>trycua/cua</text><text x='210' y='150' fill='#333'>GUI操作エージェントの</text><text x='210' y='166' fill='#333'>単発運用・評価不足</text><text x='420' y='150' fill='#333'>クロスOSマシン群＋</text><text x='420' y='166' fill='#333'>学習/評価ベンチ</text><line x1='16' y1='178' x2='584' y2='178' stroke='#e0f2e6'/><text x='24' y='208' fill='#154a24'>json-render</text><text x='210' y='208' fill='#333'>LLM出力を自由HTMLで</text><text x='210' y='224' fill='#333'>描くと不安全・崩れる</text><text x='420' y='208' fill='#333'>JSON→定義済みUIへ</text><text x='420' y='224' fill='#333'>安全にレンダリング</text></svg><figcaption>図1：3本の「課題→機能」対応。作る道具（Compositor）と動かす基盤（cua）、その橋渡し（json-render）。</figcaption></figure>\n<h4>robbietilton/Compositor（言語: 非公開・⭐スター非公開／Trendshift日次1位）</h4>\n<p><strong>解決したい課題：</strong>写真・画像制作の中核ツールが<strong>サブスク型の商用製品に寡占</strong>され、月額課金や重さに不満を持つ Mac ユーザーが多い。<strong>提供する機能：</strong>macOS ネイティブの「Photoshop 代替」を掲げ、レイヤー編集など画像制作の中核機能を<strong>買い切り・ネイティブ</strong>で提供する。エージェント系が上位を占める中で<strong>非AIのクリエイティブ枠が日次1位</strong>に立ったこと自体が新規性で、「王道の切り口はまだ刺さる」ことを示した。</p>\n<h4>trycua/cua（言語: 非公開・⭐スター非公開／Trendshift日次3位・言及約300）</h4>\n<p><strong>解決したい課題：</strong>GUI 操作エージェント（computer-use）を<strong>単発で動かす段階から先へ進めない</strong>——複数 OS での並列運用や、動作の学習・評価の仕組みが弱い。<strong>提供する機能：</strong>computer-use 2.0 をスケールさせる基盤として、<strong>オープンソースのドライバ・クロス OS のマシン群（fleet）・学習/評価/データ生成のベンチマーク</strong>を備える。表彰台圏に定着しており、エージェントを「再現評価まで回す」段階へ引き上げる位置づけが支持されている。</p>\n<h4>vercel-labs/json-render（言語: 非公開・⭐スター非公開／Trendshift日次11位）</h4>\n<p><strong>解決したい課題：</strong>LLM の生成結果を<strong>自由な HTML としてそのまま描く</strong>と、安全性・保守性・レイアウト崩れの問題が出る。<strong>提供する機能：</strong>Vercel Labs 公式の「生成 UI（Generative UI）」フレームワークで、LLM 出力を <strong>JSON 記述に落とし込み、定義済みの安全な UI コンポーネントへレンダリング</strong>する。Next.js（App Router）標準スタックと親和性が高く、AI チャット回答のリッチ化や AI 生成フォームの画面化に直結する。</p>\n<h4>ひとことまとめ</h4>\n<p>自分が今日1本試すなら、Next.js 前提の <strong>json-render</strong> を生成 UI の実験台に置くのが最短。「作る道具（Compositor）」「動かす基盤（cua）」「橋渡し（json-render）」という三層が同日に並んだのが今日の面白さだ。</p>",
+      "sources": [
+        {
+          "title": "robbietilton/Compositor",
+          "url": "https://github.com/robbietilton/Compositor"
+        },
+        {
+          "title": "trycua/cua",
+          "url": "https://github.com/trycua/cua"
+        },
+        {
+          "title": "vercel-labs/json-render",
+          "url": "https://github.com/vercel-labs/json-render"
+        }
+      ]
+    },
     {
       "id": "2026-09-19-claude-code",
       "date": "2026-09-19",
