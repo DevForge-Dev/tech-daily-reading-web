@@ -1,0 +1,70 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Claude Code Projects ベータ始動 — 閉じても走り続けるクラウド並列スレッド＋共有メモリ — デイリー技術深掘り 読み物</title><meta name="description" content="9/17発表のProjectsが各所で詳報。作業単位を『個別セッションの集合』から『永続プロジェクト』へ。各スレッドは独立クラウドセッション＋専用ブランチで、ラップトップを閉じても走り続け、共有メモリで文脈を再利用する。あわせてv2.1.278のauto modeサーバサイド分類器（分類オーバーヘッド非課金）も整理する。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-21-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Claude Code Projects ベータ始動 — 閉じても走り続けるクラウド並列スレッド＋共有メモリ — デイリー技術深掘り 読み物"><meta property="og:description" content="9/17発表のProjectsが各所で詳報。作業単位を『個別セッションの集合』から『永続プロジェクト』へ。各スレッドは独立クラウドセッション＋専用ブランチで、ラップトップを閉じても走り続け、共有メモリで文脈を再利用する。あわせてv2.1.278のauto modeサーバサイド分類器（分類オーバーヘッド非課金）も整理する。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-21-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>Claude Code Projects ベータ始動 — 閉じても走り続けるクラウド並列スレッド＋共有メモリ</h1> <p class="lede">9/17発表のProjectsが各所で詳報。作業単位を『個別セッションの集合』から『永続プロジェクト』へ。各スレッドは独立クラウドセッション＋専用ブランチで、ラップトップを閉じても走り続け、共有メモリで文脈を再利用する。あわせてv2.1.278のauto modeサーバサイド分類器（分類オーバーヘッド非課金）も整理する。</p> <div class="meta"> <span>📅 2026年9月21日</span> <span>⏱ 約2分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="0"><p>背景から。ここ数週のClaude Codeは派手な新API追加より運用の足回りを固める方向が続いていたが、9/17発表の <strong>Projects（ベータ）</strong> は久々に作業モデルそのものを変える一手だ。MarkTechPostやVentureBeatが揃って詳報し、注目を集めている。</p>
+<h4 id="sec-1">何が新しいか</h4>
+<p>従来は開発者が個別セッションを手動で立て、閉じれば止まっていた。Projectsは作業単位を<strong>永続的なプロジェクト</strong>に置き換える。開発者が高レベルの目標と対象リポジトリを渡すと、Claudeが『chief of staff（参謀長）』のように<strong>スコープ設定→スレッド作成→タスク委譲→レビュー→依存関係の調整</strong>まで一貫して担う。各スレッドは<strong>独立したクラウドセッション</strong>として動き、対象リポジトリの独立コピーと専用ブランチが割り当てられる。ラップトップを閉じてもクラウド側で走り続け、スレッド間で<strong>共有メモリ</strong>とファイル/成果物の共通ライブラリを再利用できる。ベータはまず一部Pro/Maxから提供開始。</p>
+<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='11.5'><rect x='0' y='0' width='600' height='200' rx='8' fill='#faf9ff'></rect><text x='16' y='24' font-size='13' font-weight='700' fill='#4a2fb8'>個別セッションの集合 → 永続プロジェクト</text><rect x='24' y='44' width='230' height='130' rx='10' fill='#fff' stroke='#b9a8ff' stroke-width='1.5'></rect><text x='139' y='64' text-anchor='middle' font-weight='700' fill='#6b6b70'>従来：手動セッション</text><rect x='44' y='78' width='90' height='26' rx='5' fill='#f0edff'></rect><text x='89' y='95' text-anchor='middle' fill='#333'>session</text><rect x='144' y='78' width='90' height='26' rx='5' fill='#f0edff'></rect><text x='189' y='95' text-anchor='middle' fill='#333'>session</text><text x='139' y='132' text-anchor='middle' fill='#b03030'>閉じると停止・文脈は分断</text><rect x='346' y='44' width='230' height='130' rx='10' fill='#fff' stroke='#7b3fe4' stroke-width='2'></rect><text x='461' y='64' text-anchor='middle' font-weight='700' fill='#4a2fb8'>Projects：並列スレッド</text><rect x='366' y='78' width='60' height='26' rx='5' fill='#ece5ff'></rect><text x='396' y='95' text-anchor='middle' fill='#333'>thread</text><rect x='432' y='78' width='60' height='26' rx='5' fill='#ece5ff'></rect><text x='462' y='95' text-anchor='middle' fill='#333'>thread</text><rect x='498' y='78' width='60' height='26' rx='5' fill='#ece5ff'></rect><text x='528' y='95' text-anchor='middle' fill='#333'>thread</text><rect x='366' y='116' width='192' height='24' rx='5' fill='#d9c9ff'></rect><text x='462' y='133' text-anchor='middle' fill='#4a2fb8'>共有メモリ / 共通ライブラリ</text><text x='461' y='160' text-anchor='middle' fill='#1a7f37'>閉じてもクラウドで継続</text><path d='M260 109 L340 109' stroke='#7b3fe4' stroke-width='2' marker-end='url(#cpa)'></path><defs><marker id='cpa' markerWidth='9' markerHeight='9' refX='6' refY='3' orient='auto'><path d='M0 0 L6 3 L0 6 z' fill='#7b3fe4'></path></marker></defs></svg><figcaption>図1：セッションの手動管理から、共有メモリを持つ並列スレッドの永続プロジェクトへ。</figcaption></figure>
+<h4 id="sec-2">もう一つの軸：auto modeのサーバサイド分類器（v2.1.278）</h4>
+<p>コスト面では <strong>v2.1.278</strong> でauto mode（モデル自動選択）の分類が<strong>サーバサイドの分類器ルーティング既定</strong>に。Claude API/Enterpriseでは<strong>分類オーバーヘッドが非課金</strong>になり、Bedrock/Vertex/Foundry・各種ゲートウェイでも既定化された。<code>CLAUDE_CODE_AUTO_MODE_SERVER=0</code> でオプトアウトでき、課金される旧経路にフォールバックする際は警告が表示される。</p>
+<h4 id="sec-3">使いどころ・自分が試すなら</h4>
+<p>Projectsは『長時間・複数リポジトリにまたがる開発の自動化』に効く。試すなら、まず依存の少ない独立タスク（小さなリファクタや調査）を1プロジェクトに切り出し、共有メモリに何が蓄積されるかを観察するとよい。上級運用の定石——文脈は量より『必要なものを必要なときに』、定義→文脈読込→計画提示→小変更→証拠のレビュー可能な流れ、Hooksで決定論的強制・Subagentsで並列/文脈分離——はProjects時代でも有効だ。</p>
+<h4 id="sec-4">注意点・落とし穴</h4>
+<p>クラウドで走り続ける以上、権限・監査・コストの管理が要る。auto modeを多用する組織は <code>/status</code> で分類経路と課金挙動を確認しておきたい。ベータゆえ提供対象は限定的で、挙動も今後変わりうる点は織り込んでおく。</p>
+<h4 id="sec-5">ひとことまとめ</h4>
+<p><strong>『あとはよろしく』でスコープ設定〜委譲〜統合まで走り続ける</strong>——Claude Codeがセッション管理からプロジェクト運営へ一段上がった回だ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://www.marktechpost.com/2026/09/17/anthropic-launches-claude-code-projects-in-beta-parallel-cloud-sessions-that-keep-running-after-you-close-your-laptop/" target="_blank" rel="noopener noreferrer"> Anthropic launches Claude Code Projects in beta (MarkTechPost) </a> </li><li> <a href="https://code.claude.com/docs/en/auto-mode-classifier-billing" target="_blank" rel="noopener noreferrer"> auto mode server-side classifier billing (公式docs) </a> </li><li> <a href="https://venturebeat.com/orchestration/anthropic-launches-claude-code-projects-an-always-on-conversation-that-remembers-and-delegates-your-long-running-dev-work" target="_blank" rel="noopener noreferrer"> VentureBeat：Claude Code Projects </a> </li><li> <a href="https://www.cometapi.com/managing-claude-codes-context/" target="_blank" rel="noopener noreferrer"> Managing Claude Code&#39;s context (CometAPI) </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 何が新しいか </a> </li><li> <a href="#sec-2" data-toc="sec-2"> もう一つの軸：auto modeのサーバサイド分類器（v2.1.278） </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 使いどころ・自分が試すなら </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 注意点・落とし穴 </a> </li><li> <a href="#sec-5" data-toc="sec-5"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-09-21</div> <div>⏱ 読了 約2分</div> <div>🏷 Claude Code</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

@@ -1,0 +1,71 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>9/21の話題リポジトリ — 超小型ツール呼びモデル・エージェント作業環境・文書→Context変換 — デイリー技術深掘り 読み物</title><meta name="description" content="本日のトレンドは、エージェントの実行を支える3層——モデル(needle)・環境(coder)・データ取り込み(docling)——が同時に伸びた点に集約できる。"><meta name="theme-color" content="#238636"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-21-github-trending/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="9/21の話題リポジトリ — 超小型ツール呼びモデル・エージェント作業環境・文書→Context変換 — デイリー技術深掘り 読み物"><meta property="og:description" content="本日のトレンドは、エージェントの実行を支える3層——モデル(needle)・環境(coder)・データ取り込み(docling)——が同時に伸びた点に集約できる。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-21-github-trending/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3fb950, #1a7f37)"> <span class="glyph" aria-hidden="true">★</span> <div class="kicker">GitHub Trending</div> <h1>9/21の話題リポジトリ — 超小型ツール呼びモデル・エージェント作業環境・文書→Context変換</h1> <p class="lede">本日のトレンドは、エージェントの実行を支える3層——モデル(needle)・環境(coder)・データ取り込み(docling)——が同時に伸びた点に集約できる。</p> <div class="meta"> <span>📅 2026年9月21日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#238636"> <div> <article class="prose" data-has-mermaid="0"><p>本日のGitHub Explore Trendingを貫く共通点は、『賢いモデル』そのものより<strong>エージェントを実際に動かすための周辺スタック</strong>が各層で伸びたことだ。ここでは代表3本を、解こうとしている課題と提供機能で読み解く。</p>
+<figure class='fig'><svg viewBox='0 0 600 224' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='11'><rect x='0' y='0' width='600' height='224' rx='8' fill='#f3fbf5'></rect><text x='16' y='24' font-size='13' font-weight='700' fill='#1a7f37'>エージェント実行を支える3層</text><line x1='16' y1='40' x2='584' y2='40' stroke='#bfe6c9'></line><text x='24' y='58' font-weight='700' fill='#1a7f37'>リポジトリ</text><text x='188' y='58' font-weight='700' fill='#1a7f37'>解決したい課題</text><text x='410' y='58' font-weight='700' fill='#1a7f37'>提供する機能</text><line x1='16' y1='66' x2='584' y2='66' stroke='#bfe6c9'></line><text x='24' y='92' fill='#333'>needle</text><text x='24' y='107' fill='#8a8a8a'>モデル層</text><text x='188' y='92' fill='#333'>超小型端末に汎用LLMは</text><text x='188' y='107' fill='#333'>重すぎる</text><text x='410' y='92' fill='#333'>2-bit/8〜29MBの</text><text x='410' y='107' fill='#333'>function callモデル</text><line x1='16' y1='120' x2='584' y2='120' stroke='#e3f4e8'></line><text x='24' y='146' fill='#333'>coder</text><text x='24' y='161' fill='#8a8a8a'>環境層</text><text x='188' y='146' fill='#333'>エージェントの権限/監査</text><text x='188' y='161' fill='#333'>/実行環境の管理</text><text x='410' y='146' fill='#333'>セキュアな</text><text x='410' y='161' fill='#333'>ワークスペース基盤</text><line x1='16' y1='174' x2='584' y2='174' stroke='#e3f4e8'></line><text x='24' y='200' fill='#333'>docling</text><text x='24' y='215' fill='#8a8a8a'>データ層</text><text x='188' y='200' fill='#333'>非構造文書をRAGが</text><text x='188' y='215' fill='#333'>食える形にしたい</text><text x='410' y='200' fill='#333'>多形式→構造化</text><text x='410' y='215' fill='#333'>Markdown/JSON変換</text></svg><figcaption>図1：needle(モデル)・coder(環境)・docling(データ)の「課題→機能」対応。</figcaption></figure>
+<h4 id="sec-1">cactus-compute/needle（Python・⭐約11k）</h4>
+<p><strong>解決したい課題：</strong>携帯・ウェアラブル・スマート家電・ロボット・MCUといった超小型デバイスに汎用LLMは重すぎて載らない。だがツール呼び出しは『検索＋引数抽出＋JSON組み立て』に近く、大規模モデルの汎用推論は本当は要らないのでは、という仮説がある。</p>
+<p><strong>提供する機能：</strong>2-bit・8〜29MBでオンデバイス動作する超小型オートメーション基盤モデル。単発のfunction call・構造化抽出・埋め込みを担う。実験モデルは約26MパラメータのSimple Attention Network（従来のFFN/MLPを撤去）で、本日+234の純モメンタム枠だ。</p>
+<h4 id="sec-2">coder/coder（Go・⭐+402/日）</h4>
+<p><strong>解決したい課題：</strong>エージェントが本番でSide Effectを持つ時代に、その実行環境・身分・凭証・権限・監査・コストを誰がどう管理するのか、という古典的だが未解決のプラットフォーム問題。</p>
+<p><strong>提供する機能：</strong>開発者とそのエージェントのためのセキュアなワークスペースをプラットフォーム化。ワークスペース/ID/権限/ポリシー/コスト/監査/ライフサイクルを一元管理する。多数の定期タスクやエージェントを隔離環境で走らせる設計の参照になり、本日+402で継続的にプロダクト化が進む。</p>
+<h4 id="sec-3">docling-project/docling（Python・⭐+129/日）</h4>
+<p><strong>解決したい課題：</strong>PDF/Office/HTML/画像などの非構造ファイルは、そのままではGenAI/RAGが確実に消費できない。ベクトルDBを再発明せずに『文書→モデルが食える構造化Context』の変換点を埋めたい。</p>
+<p><strong>提供する機能：</strong>IBM発の多形式ドキュメント解析ツール。多様な形式を構造化表現・Markdown/JSONへ統一変換し、RAGにそのまま供給する。継続メンテされる成熟プロジェクトで、本日+129。</p>
+<h4 id="sec-4">まとめ</h4>
+<p>モデル(needle)→環境(coder)→データ取り込み(docling)と、エージェントの実行を支える層が横並びで伸びた。自分が試すなら、まず docling を RAG 前処理として小さく導入するのが投資対効果が高い。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://github.com/cactus-compute/needle" target="_blank" rel="noopener noreferrer"> cactus-compute/needle </a> </li><li> <a href="https://github.com/coder/coder" target="_blank" rel="noopener noreferrer"> coder/coder </a> </li><li> <a href="https://github.com/docling-project/docling" target="_blank" rel="noopener noreferrer"> docling-project/docling </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> cactus-compute/needle（Python・⭐約11k） </a> </li><li> <a href="#sec-2" data-toc="sec-2"> coder/coder（Go・⭐+402/日） </a> </li><li> <a href="#sec-3" data-toc="sec-3"> docling-project/docling（Python・⭐+129/日） </a> </li><li> <a href="#sec-4" data-toc="sec-4"> まとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-09-21</div> <div>⏱ 読了 約3分</div> <div>🏷 GitHub Trending</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
