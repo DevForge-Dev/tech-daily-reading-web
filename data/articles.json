@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-09-20T04:51:18.409Z",
+  "generatedAt": "2026-09-21T04:48:13.481Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,76 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-09-21-claude-code",
+      "date": "2026-09-21",
+      "topic": "Claude Code",
+      "title": "Claude Code Projects ベータ始動 — 閉じても走り続けるクラウド並列スレッド＋共有メモリ",
+      "lede": "9/17発表のProjectsが各所で詳報。作業単位を『個別セッションの集合』から『永続プロジェクト』へ。各スレッドは独立クラウドセッション＋専用ブランチで、ラップトップを閉じても走り続け、共有メモリで文脈を再利用する。あわせてv2.1.278のauto modeサーバサイド分類器（分類オーバーヘッド非課金）も整理する。",
+      "articleHtml": "<p>背景から。ここ数週のClaude Codeは派手な新API追加より運用の足回りを固める方向が続いていたが、9/17発表の <strong>Projects（ベータ）</strong> は久々に作業モデルそのものを変える一手だ。MarkTechPostやVentureBeatが揃って詳報し、注目を集めている。</p>\n<h4>何が新しいか</h4>\n<p>従来は開発者が個別セッションを手動で立て、閉じれば止まっていた。Projectsは作業単位を<strong>永続的なプロジェクト</strong>に置き換える。開発者が高レベルの目標と対象リポジトリを渡すと、Claudeが『chief of staff（参謀長）』のように<strong>スコープ設定→スレッド作成→タスク委譲→レビュー→依存関係の調整</strong>まで一貫して担う。各スレッドは<strong>独立したクラウドセッション</strong>として動き、対象リポジトリの独立コピーと専用ブランチが割り当てられる。ラップトップを閉じてもクラウド側で走り続け、スレッド間で<strong>共有メモリ</strong>とファイル/成果物の共通ライブラリを再利用できる。ベータはまず一部Pro/Maxから提供開始。</p>\n<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='11.5'><rect x='0' y='0' width='600' height='200' rx='8' fill='#faf9ff'/><text x='16' y='24' font-size='13' font-weight='700' fill='#4a2fb8'>個別セッションの集合 → 永続プロジェクト</text><rect x='24' y='44' width='230' height='130' rx='10' fill='#fff' stroke='#b9a8ff' stroke-width='1.5'/><text x='139' y='64' text-anchor='middle' font-weight='700' fill='#6b6b70'>従来：手動セッション</text><rect x='44' y='78' width='90' height='26' rx='5' fill='#f0edff'/><text x='89' y='95' text-anchor='middle' fill='#333'>session</text><rect x='144' y='78' width='90' height='26' rx='5' fill='#f0edff'/><text x='189' y='95' text-anchor='middle' fill='#333'>session</text><text x='139' y='132' text-anchor='middle' fill='#b03030'>閉じると停止・文脈は分断</text><rect x='346' y='44' width='230' height='130' rx='10' fill='#fff' stroke='#7b3fe4' stroke-width='2'/><text x='461' y='64' text-anchor='middle' font-weight='700' fill='#4a2fb8'>Projects：並列スレッド</text><rect x='366' y='78' width='60' height='26' rx='5' fill='#ece5ff'/><text x='396' y='95' text-anchor='middle' fill='#333'>thread</text><rect x='432' y='78' width='60' height='26' rx='5' fill='#ece5ff'/><text x='462' y='95' text-anchor='middle' fill='#333'>thread</text><rect x='498' y='78' width='60' height='26' rx='5' fill='#ece5ff'/><text x='528' y='95' text-anchor='middle' fill='#333'>thread</text><rect x='366' y='116' width='192' height='24' rx='5' fill='#d9c9ff'/><text x='462' y='133' text-anchor='middle' fill='#4a2fb8'>共有メモリ / 共通ライブラリ</text><text x='461' y='160' text-anchor='middle' fill='#1a7f37'>閉じてもクラウドで継続</text><path d='M260 109 L340 109' stroke='#7b3fe4' stroke-width='2' marker-end='url(#cpa)'/><defs><marker id='cpa' markerWidth='9' markerHeight='9' refX='6' refY='3' orient='auto'><path d='M0 0 L6 3 L0 6 z' fill='#7b3fe4'/></marker></defs></svg><figcaption>図1：セッションの手動管理から、共有メモリを持つ並列スレッドの永続プロジェクトへ。</figcaption></figure>\n<h4>もう一つの軸：auto modeのサーバサイド分類器（v2.1.278）</h4>\n<p>コスト面では <strong>v2.1.278</strong> でauto mode（モデル自動選択）の分類が<strong>サーバサイドの分類器ルーティング既定</strong>に。Claude API/Enterpriseでは<strong>分類オーバーヘッドが非課金</strong>になり、Bedrock/Vertex/Foundry・各種ゲートウェイでも既定化された。<code>CLAUDE_CODE_AUTO_MODE_SERVER=0</code> でオプトアウトでき、課金される旧経路にフォールバックする際は警告が表示される。</p>\n<h4>使いどころ・自分が試すなら</h4>\n<p>Projectsは『長時間・複数リポジトリにまたがる開発の自動化』に効く。試すなら、まず依存の少ない独立タスク（小さなリファクタや調査）を1プロジェクトに切り出し、共有メモリに何が蓄積されるかを観察するとよい。上級運用の定石——文脈は量より『必要なものを必要なときに』、定義→文脈読込→計画提示→小変更→証拠のレビュー可能な流れ、Hooksで決定論的強制・Subagentsで並列/文脈分離——はProjects時代でも有効だ。</p>\n<h4>注意点・落とし穴</h4>\n<p>クラウドで走り続ける以上、権限・監査・コストの管理が要る。auto modeを多用する組織は <code>/status</code> で分類経路と課金挙動を確認しておきたい。ベータゆえ提供対象は限定的で、挙動も今後変わりうる点は織り込んでおく。</p>\n<h4>ひとことまとめ</h4>\n<p><strong>『あとはよろしく』でスコープ設定〜委譲〜統合まで走り続ける</strong>——Claude Codeがセッション管理からプロジェクト運営へ一段上がった回だ。</p>",
+      "sources": [
+        {
+          "title": "Anthropic launches Claude Code Projects in beta (MarkTechPost)",
+          "url": "https://www.marktechpost.com/2026/09/17/anthropic-launches-claude-code-projects-in-beta-parallel-cloud-sessions-that-keep-running-after-you-close-your-laptop/"
+        },
+        {
+          "title": "auto mode server-side classifier billing (公式docs)",
+          "url": "https://code.claude.com/docs/en/auto-mode-classifier-billing"
+        },
+        {
+          "title": "VentureBeat：Claude Code Projects",
+          "url": "https://venturebeat.com/orchestration/anthropic-launches-claude-code-projects-an-always-on-conversation-that-remembers-and-delegates-your-long-running-dev-work"
+        },
+        {
+          "title": "Managing Claude Code's context (CometAPI)",
+          "url": "https://www.cometapi.com/managing-claude-codes-context/"
+        }
+      ]
+    },
+    {
+      "id": "2026-09-21-flutter",
+      "date": "2026-09-21",
+      "topic": "Flutter",
+      "title": "material_ui / cupertino_ui 1.0 が standalone パッケージ化 — SDKを待たずデザインシステムを更新",
+      "lede": "本日の主役はデザインシステムのコアSDKからの切り離し。material_ui / cupertino_ui 1.0 がpub.devからweekly配信され、SDK更新を待たずウィジェット改善を受け取れる。使う分だけ依存でき app size 削減にも効く。現行安定は Flutter 3.47.4 / Dart 3.13.3。",
+      "articleHtml": "<p>背景。Flutterではデザインシステム（Material/Cupertino）がコアSDKに同梱され、ウィジェットの改善や新コンポーネントを受け取るにはSDK自体の更新を待つ必要があった。本日の主役 <strong>material_ui / cupertino_ui 1.0 の standalone パッケージ化</strong> はこの前提を崩す。</p>\n<h4>何が新しいか</h4>\n<p>デザインシステムがコアSDKから切り離され、<strong>pub.devからweeklyでリリース</strong>される。SDKを更新しなくてもウィジェット改善・新コンポーネントを取り込めるうえ、<strong>使うデザインシステムだけ依存</strong>できるので <strong>app size削減</strong>にも効く。移行は <code>dart fix --apply --code=migrate_design_widgets</code> でimportを自動書き換え。旧 <code>material.dart</code> / <code>cupertino.dart</code> は2026年秋（11月stable予定）にdeprecated見込みだ。</p>\n<figure class='fig'><svg viewBox='0 0 600 190' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='11.5'><rect x='0' y='0' width='600' height='190' rx='8' fill='#f5fbff'/><text x='16' y='24' font-size='13' font-weight='700' fill='#0553b1'>デザインシステムがSDKから独立</text><rect x='24' y='44' width='230' height='120' rx='10' fill='#fff' stroke='#8fc3f0' stroke-width='1.5'/><text x='139' y='64' text-anchor='middle' font-weight='700' fill='#6b6b70'>従来：SDK同梱</text><rect x='44' y='78' width='190' height='30' rx='6' fill='#e5f1fb'/><text x='139' y='98' text-anchor='middle' fill='#333'>Flutter SDK ⊃ Material/Cupertino</text><text x='139' y='134' text-anchor='middle' fill='#b03030'>UI改善はSDK更新待ち</text><rect x='346' y='44' width='230' height='120' rx='10' fill='#fff' stroke='#1a73e8' stroke-width='2'/><text x='461' y='64' text-anchor='middle' font-weight='700' fill='#0553b1'>1.0：standalone</text><rect x='362' y='78' width='96' height='30' rx='6' fill='#dceafc'/><text x='410' y='98' text-anchor='middle' fill='#333'>material_ui</text><rect x='466' y='78' width='100' height='30' rx='6' fill='#dceafc'/><text x='516' y='98' text-anchor='middle' fill='#333'>cupertino_ui</text><text x='461' y='134' text-anchor='middle' fill='#1a7f37'>pub.dev weekly / 使う分だけ依存</text><path d='M260 104 L340 104' stroke='#1a73e8' stroke-width='2' marker-end='url(#fla)'/><defs><marker id='fla' markerWidth='9' markerHeight='9' refX='6' refY='3' orient='auto'><path d='M0 0 L6 3 L0 6 z' fill='#1a73e8'/></marker></defs></svg><figcaption>図1：コアSDK同梱から、pub.dev weekly配信のstandaloneパッケージへ。</figcaption></figure>\n<h4>足回り：安定版と言語機能</h4>\n<p>現行安定は <strong>Flutter 3.47.4 / Dart 3.13.3</strong>（9/11 patch）。3.47系はImpellerが全デスクトップ既定・Widget Previews stable・最低iOS15/macOS12・iOS26/Xcode26対応が到達点。<strong>Dart 3.13</strong> でprimary constructors / dot shorthandsがstableになり、型が推論できる文脈で <code>.start</code> のように先頭ドットで列挙値・staticメンバ・constructorを省略でき、冗長な型名の反復を減らせる。betaは Flutter 3.48 / Dart 3.14（WasmGC既定化・Androidの Impeller 一本化・build hooks stable）。</p>\n<h4>実務での使いどころ・自分が試すなら</h4>\n<p>新規は最初からstandalone前提で依存を組むと、後の移行コストが小さい。既存アプリは <code>dart fix</code> をブランチで当てて差分を確認してからマージ。デザインシステムだけ先行アップデートしてUI改善を早取りする運用も現実的だ。状態管理は新規=Riverpod 3.3.1＋@riverpod codegen、監査/規制はBloc 9.0、ルーティングはgo_routerの型安全ルート（<code>@TypedGoRoute</code>）が引き続き既定線。</p>\n<h4>注意点・落とし穴</h4>\n<p>weekly配信ゆえバージョン整合の管理が要る。標準ウィジェットは11月stableまで併存するが、deprecated後の移行を見越して早めにimportを寄せておくと安全だ。</p>\n<h4>ひとことまとめ</h4>\n<p><strong>UIの進化速度がSDKのリリース周期から解き放たれた</strong>——それが1.0 standalone化の本質だ。</p>",
+      "sources": [
+        {
+          "title": "What's new in Flutter 3.47",
+          "url": "https://flutter.dev/blog/whats-new-in-flutter-3-47"
+        },
+        {
+          "title": "Flutter 3.47.0 release notes",
+          "url": "https://docs.flutter.dev/release/release-notes/release-notes-3.47.0"
+        },
+        {
+          "title": "Dart what's new",
+          "url": "https://dart.dev/resources/whats-new"
+        }
+      ]
+    },
+    {
+      "id": "2026-09-21-github-trending",
+      "date": "2026-09-21",
+      "topic": "GitHub Trending",
+      "title": "9/21の話題リポジトリ — 超小型ツール呼びモデル・エージェント作業環境・文書→Context変換",
+      "lede": "本日のトレンドは、エージェントの実行を支える3層——モデル(needle)・環境(coder)・データ取り込み(docling)——が同時に伸びた点に集約できる。",
+      "articleHtml": "<p>本日のGitHub Explore Trendingを貫く共通点は、『賢いモデル』そのものより<strong>エージェントを実際に動かすための周辺スタック</strong>が各層で伸びたことだ。ここでは代表3本を、解こうとしている課題と提供機能で読み解く。</p>\n<figure class='fig'><svg viewBox='0 0 600 224' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='11'><rect x='0' y='0' width='600' height='224' rx='8' fill='#f3fbf5'/><text x='16' y='24' font-size='13' font-weight='700' fill='#1a7f37'>エージェント実行を支える3層</text><line x1='16' y1='40' x2='584' y2='40' stroke='#bfe6c9'/><text x='24' y='58' font-weight='700' fill='#1a7f37'>リポジトリ</text><text x='188' y='58' font-weight='700' fill='#1a7f37'>解決したい課題</text><text x='410' y='58' font-weight='700' fill='#1a7f37'>提供する機能</text><line x1='16' y1='66' x2='584' y2='66' stroke='#bfe6c9'/><text x='24' y='92' fill='#333'>needle</text><text x='24' y='107' fill='#8a8a8a'>モデル層</text><text x='188' y='92' fill='#333'>超小型端末に汎用LLMは</text><text x='188' y='107' fill='#333'>重すぎる</text><text x='410' y='92' fill='#333'>2-bit/8〜29MBの</text><text x='410' y='107' fill='#333'>function callモデル</text><line x1='16' y1='120' x2='584' y2='120' stroke='#e3f4e8'/><text x='24' y='146' fill='#333'>coder</text><text x='24' y='161' fill='#8a8a8a'>環境層</text><text x='188' y='146' fill='#333'>エージェントの権限/監査</text><text x='188' y='161' fill='#333'>/実行環境の管理</text><text x='410' y='146' fill='#333'>セキュアな</text><text x='410' y='161' fill='#333'>ワークスペース基盤</text><line x1='16' y1='174' x2='584' y2='174' stroke='#e3f4e8'/><text x='24' y='200' fill='#333'>docling</text><text x='24' y='215' fill='#8a8a8a'>データ層</text><text x='188' y='200' fill='#333'>非構造文書をRAGが</text><text x='188' y='215' fill='#333'>食える形にしたい</text><text x='410' y='200' fill='#333'>多形式→構造化</text><text x='410' y='215' fill='#333'>Markdown/JSON変換</text></svg><figcaption>図1：needle(モデル)・coder(環境)・docling(データ)の「課題→機能」対応。</figcaption></figure>\n<h4>cactus-compute/needle（Python・⭐約11k）</h4>\n<p><strong>解決したい課題：</strong>携帯・ウェアラブル・スマート家電・ロボット・MCUといった超小型デバイスに汎用LLMは重すぎて載らない。だがツール呼び出しは『検索＋引数抽出＋JSON組み立て』に近く、大規模モデルの汎用推論は本当は要らないのでは、という仮説がある。</p>\n<p><strong>提供する機能：</strong>2-bit・8〜29MBでオンデバイス動作する超小型オートメーション基盤モデル。単発のfunction call・構造化抽出・埋め込みを担う。実験モデルは約26MパラメータのSimple Attention Network（従来のFFN/MLPを撤去）で、本日+234の純モメンタム枠だ。</p>\n<h4>coder/coder（Go・⭐+402/日）</h4>\n<p><strong>解決したい課題：</strong>エージェントが本番でSide Effectを持つ時代に、その実行環境・身分・凭証・権限・監査・コストを誰がどう管理するのか、という古典的だが未解決のプラットフォーム問題。</p>\n<p><strong>提供する機能：</strong>開発者とそのエージェントのためのセキュアなワークスペースをプラットフォーム化。ワークスペース/ID/権限/ポリシー/コスト/監査/ライフサイクルを一元管理する。多数の定期タスクやエージェントを隔離環境で走らせる設計の参照になり、本日+402で継続的にプロダクト化が進む。</p>\n<h4>docling-project/docling（Python・⭐+129/日）</h4>\n<p><strong>解決したい課題：</strong>PDF/Office/HTML/画像などの非構造ファイルは、そのままではGenAI/RAGが確実に消費できない。ベクトルDBを再発明せずに『文書→モデルが食える構造化Context』の変換点を埋めたい。</p>\n<p><strong>提供する機能：</strong>IBM発の多形式ドキュメント解析ツール。多様な形式を構造化表現・Markdown/JSONへ統一変換し、RAGにそのまま供給する。継続メンテされる成熟プロジェクトで、本日+129。</p>\n<h4>まとめ</h4>\n<p>モデル(needle)→環境(coder)→データ取り込み(docling)と、エージェントの実行を支える層が横並びで伸びた。自分が試すなら、まず docling を RAG 前処理として小さく導入するのが投資対効果が高い。</p>",
+      "sources": [
+        {
+          "title": "cactus-compute/needle",
+          "url": "https://github.com/cactus-compute/needle"
+        },
+        {
+          "title": "coder/coder",
+          "url": "https://github.com/coder/coder"
+        },
+        {
+          "title": "docling-project/docling",
+          "url": "https://github.com/docling-project/docling"
+        }
+      ]
+    },
     {
       "id": "2026-09-20-claude-code",
       "date": "2026-09-20",
