@@ -1,0 +1,68 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>9/22の話題リポジトリ — 非自己回帰の意思決定エンジン・harness競争・Anthropic公式の金融エージェント — デイリー技術深掘り 読み物</title><meta name="description" content="エージェント／harness一色の上位に、超低遅延の「System 1」意思決定モデル(laya)が割り込んだ一日。自社harnessのOSS化(ZCode)とAnthropic公式の金融エージェント配布(financial-services)が並んだ。"><meta name="theme-color" content="#238636"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-22-github-trending/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="9/22の話題リポジトリ — 非自己回帰の意思決定エンジン・harness競争・Anthropic公式の金融エージェント — デイリー技術深掘り 読み物"><meta property="og:description" content="エージェント／harness一色の上位に、超低遅延の「System 1」意思決定モデル(laya)が割り込んだ一日。自社harnessのOSS化(ZCode)とAnthropic公式の金融エージェント配布(financial-services)が並んだ。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-22-github-trending/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3fb950, #1a7f37)"> <span class="glyph" aria-hidden="true">★</span> <div class="kicker">GitHub Trending</div> <h1>9/22の話題リポジトリ — 非自己回帰の意思決定エンジン・harness競争・Anthropic公式の金融エージェント</h1> <p class="lede">エージェント／harness一色の上位に、超低遅延の「System 1」意思決定モデル(laya)が割り込んだ一日。自社harnessのOSS化(ZCode)とAnthropic公式の金融エージェント配布(financial-services)が並んだ。</p> <div class="meta"> <span>📅 2026年9月22日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#238636"> <div> <article class="prose" data-has-mermaid="0"><p>エージェント／コーディングharness一色だった上位に、この日は<strong>超低遅延の「意思決定モデル」</strong>が割り込んだ。純粋な増加率で突出したのは非自己回帰の laya。そこに自社harnessをOSS化する動き（Z.aiのZCode）と、Anthropic公式のドメイン別エージェント配布（financial-services）が並び、「モデル／harness／業務エージェント」の三層がそれぞれ話題を作った一日だった。各リポジトリを「解決したい課題」と「提供する機能」で読み解く。</p>
+<figure class='fig'><svg viewBox='0 0 600 220' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='11'><rect x='0' y='0' width='600' height='220' rx='8' fill='#f4fbf5'></rect><text x='16' y='24' font-size='13' font-weight='700' fill='#1a7f37'>今日の3本：課題 → 提供機能</text><rect x='14' y='36' width='572' height='28' fill='#e7f6ea'></rect><text x='24' y='55' font-weight='700' fill='#1a7f37'>リポジトリ</text><text x='190' y='55' font-weight='700' fill='#1a7f37'>解決したい課題</text><text x='400' y='55' font-weight='700' fill='#1a7f37'>提供する機能</text><g fill='#333'><text x='24' y='92' font-weight='700'>laya</text><text x='24' y='108' font-size='10' fill='#777'>Python ⭐約10k</text><text x='190' y='92'>LLMの逐次生成は</text><text x='190' y='108'>分類/ルーティングに遅い</text><text x='400' y='92'>100+言語のタイプ付き決定を</text><text x='400' y='108'>単一パス 約33msで返す</text><text x='24' y='142' font-weight='700'>ZCode</text><text x='24' y='158' font-size='10' fill='#777'>TypeScript ⭐5.5k</text><text x='190' y='142'>コーディングharnessを</text><text x='190' y='158'>自社モデルで持ちたい</text><text x='400' y='142'>探索/編集/実行を委ねる</text><text x='400' y='158'>拡張可能なCLI harness</text><text x='24' y='192' font-weight='700'>financial-</text><text x='24' y='206' font-weight='700'>services</text><text x='190' y='192'>金融の定型業務を</text><text x='190' y='208'>そのままエージェント化</text><text x='400' y='192'>Pitch/Reconciler/Model等を</text><text x='400' y='208'>Cowork plugin/APIで配布</text></g><line x1='14' y1='118' x2='586' y2='118' stroke='#d3ecd8'></line><line x1='14' y1='168' x2='586' y2='168' stroke='#d3ecd8'></line><line x1='180' y1='36' x2='180' y2='212' stroke='#d3ecd8'></line><line x1='390' y1='36' x2='390' y2='212' stroke='#d3ecd8'></line></svg><figcaption>図1：3本を「何を解こうとし、何を提供するか」で一望する。</figcaption></figure>
+<h4 id="sec-1">NandhaKishorM/laya（Python・⭐約10k）</h4>
+<p><strong>解決したい課題：</strong>LLMのツール選択・分類・ルーティングは、本来「決めるだけ」なのに自己回帰生成を通すため遅く高価。この「意思決定に逐次生成は要らない」という不便を突く。<strong>提供する機能：</strong>100+言語のタイプ付き意思決定を<strong>単一フォワードパス・約33ms</strong>で返す非自己回帰の「System 1」エンジン。厳密妥当スコアリング規則への強化学習（RLCD）で学習し、リクエストごとに最適チェックポイントを選ぶルータを備える。公開わずか4日で約10kスターに達し、派生の laya-mlx / kev も同時急伸——「フロンティアラボが後追いした」という文脈で急拡散し、本日のモメンタム筆頭となった。</p>
+<h4 id="sec-2">zai-org/ZCode（TypeScript・⭐5.5k）</h4>
+<p><strong>解決したい課題：</strong>コーディング・エージェントのharness（探索・編集・実行の足回り）を、他社CLIに頼らず<strong>自社モデル（GLM系）前提で持ちたい</strong>という需要。<strong>提供する機能：</strong>Z.ai（智譜）公式の拡張可能なコーディングharnessで、コード探索・編集・実行をエージェントに委ねる「Claude Code系」の対抗実装。TypeScript・Apache-2.0で、公開2日で約5.5k。各社harness競争（Claude Code / Codex / 各社実装）が新章に入ったことを示す一本で、既存CLIエージェントの設計比較対象として関心を集めた。</p>
+<h4 id="sec-3">anthropics/financial-services（Python・⭐35.8k）</h4>
+<p><strong>解決したい課題：</strong>投資銀行・エクイティリサーチ・PE・ウェルスマネジメントの<strong>定型ワークフローを、汎用チャットではなく業務特化の形で</strong>効率化したい。<strong>提供する機能：</strong>Anthropic公式「Claude for Financial Services」。Pitch Agent / Market Researcher / Earnings Reviewer / Model Builder（ExcelでのDCF・LBO・3表・comps）/ GL Reconciler / Month-End Closer など、名前付き業務エージェント・スキル・データコネクタを、<strong>Cowork プラグインまたはManaged Agents API</strong>の両形態で配布する（全出力は人手承認前提）。約35.8kで公式リファレンスとして注目。自分の用途なら、Coworkプラグインとして最短で試せるのが効く。</p>
+<h4 id="sec-4">まとめ</h4>
+<p>三層のうち、まず試すなら業務直結の <strong>financial-services</strong>（Cowork導入が最短）、設計の観察としては laya の「決定は非自己回帰でよい」という主張が中期的に効きそう。ZCodeはharness設計の比較材料として眺める価値がある。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://github.com/NandhaKishorM/laya" target="_blank" rel="noopener noreferrer"> NandhaKishorM/laya </a> </li><li> <a href="https://github.com/zai-org/ZCode" target="_blank" rel="noopener noreferrer"> zai-org/ZCode </a> </li><li> <a href="https://github.com/anthropics/financial-services" target="_blank" rel="noopener noreferrer"> anthropics/financial-services </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> NandhaKishorM/laya（Python・⭐約10k） </a> </li><li> <a href="#sec-2" data-toc="sec-2"> zai-org/ZCode（TypeScript・⭐5.5k） </a> </li><li> <a href="#sec-3" data-toc="sec-3"> anthropics/financial-services（Python・⭐35.8k） </a> </li><li> <a href="#sec-4" data-toc="sec-4"> まとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-09-22</div> <div>⏱ 読了 約3分</div> <div>🏷 GitHub Trending</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

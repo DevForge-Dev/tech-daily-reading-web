@@ -1,0 +1,68 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>カスタマイズ5手段の輪郭が揃った日 — CLAUDE.md/コマンド/Skills/Subagents/Modsの使い分けとAGENTS.mdフォールバック — デイリー技術深掘り 読み物</title><meta name="description" content="CLI新版は無く（最新v2.1.278）、軸は「カスタマイズ手段の使い分け」。CLAUDE.md・スラッシュコマンド・Skills・Subagentsの役割整理に、TypeScript関数フックModsの一般公開とAGENTS.mdフォールバック定着が重なった。自分の設定を棚卸しするのに丁度いい一日。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-22-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="カスタマイズ5手段の輪郭が揃った日 — CLAUDE.md/コマンド/Skills/Subagents/Modsの使い分けとAGENTS.mdフォールバック — デイリー技術深掘り 読み物"><meta property="og:description" content="CLI新版は無く（最新v2.1.278）、軸は「カスタマイズ手段の使い分け」。CLAUDE.md・スラッシュコマンド・Skills・Subagentsの役割整理に、TypeScript関数フックModsの一般公開とAGENTS.mdフォールバック定着が重なった。自分の設定を棚卸しするのに丁度いい一日。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-22-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>カスタマイズ5手段の輪郭が揃った日 — CLAUDE.md/コマンド/Skills/Subagents/Modsの使い分けとAGENTS.mdフォールバック</h1> <p class="lede">CLI新版は無く（最新v2.1.278）、軸は「カスタマイズ手段の使い分け」。CLAUDE.md・スラッシュコマンド・Skills・Subagentsの役割整理に、TypeScript関数フックModsの一般公開とAGENTS.mdフォールバック定着が重なった。自分の設定を棚卸しするのに丁度いい一日。</p> <div class="meta"> <span>📅 2026年9月22日</span> <span>⏱ 約3分</span> <span>🔗 出典 5 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="0"><p>背景から。ここ数週のClaude Codeは派手なAPI追加より運用の足回りを固める流れで、この日もCLI新版は無い（最新は9/19のv2.1.278）。代わりに各所の記事が揃って扱ったのが「カスタマイズ手段の使い分け」だ。CLAUDE.md・スラッシュコマンド・Skills・Subagentsをどう役割分担させるか——設定が増えてきた今こそ棚卸しに向くテーマで、そこにMods（関数フック）の一般公開とAGENTS.mdフォールバックの定着が重なった。</p>
+<h4 id="sec-1">何が新しいか</h4>
+<p>公式軸は週次まとめ。<strong>AGENTS.md対応</strong>が既定挙動として定着し、CLAUDE.mdがあればそれを優先、無ければAGENTS.mdへフォールバックする（<code>claude-md-or-agents-md</code>、/configで優先順位変更可）。2.1.268で入れた<strong>denyルール変更は2.1.273で差し戻し</strong>、2.1.275で起きたゲートウェイ経由の全リクエスト400回帰は2.1.276で緊急修正された。さらに<strong>Mods</strong>——プラグイン挙動をTypeScript関数で書く仕組み——が sec-default / diff / telemetry の3種で一般公開（要 <code>CLAUDE_CODE_ENABLE_FUNCTION_HOOKS=1</code>）。9/16の<strong>Claude Slides</strong>（/slidesでデッキ生成・PPT/PDF出力）も定着した。</p>
+<figure class='fig'><svg viewBox='0 0 600 280' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='11.5'><rect x='0' y='0' width='600' height='280' rx='8' fill='#fbfaff'></rect><text x='16' y='24' font-size='13' font-weight='700' fill='#4a2fb8'>カスタマイズ5手段の使い分け</text><rect x='14' y='38' width='572' height='30' fill='#efeaff'></rect><text x='24' y='58' font-weight='700' fill='#4a2fb8'>手段</text><text x='170' y='58' font-weight='700' fill='#4a2fb8'>発火のしかた</text><text x='360' y='58' font-weight='700' fill='#4a2fb8'>向いている用途</text><g fill='#333'><text x='24' y='90'>CLAUDE.md</text><text x='170' y='90'>毎会話の冒頭で常時ロード</text><text x='360' y='90'>プロジェクト規約・常識</text><text x='24' y='128'>スラッシュコマンド</text><text x='170' y='128'>手動・引数付きで起動</text><text x='360' y='128'>定型マクロ（自動永続しない）</text><text x='24' y='166'>Skill</text><text x='170' y='166'>説明一致でモデルが自動起動</text><text x='360' y='166'>反復手順（待機時 約100tok）</text><text x='24' y='204'>Subagent</text><text x='170' y='204'>委譲時に別コンテキストで</text><text x='360' y='204'>調査・並列（要約のみ返す）</text><text x='24' y='242'>Mods</text><text x='170' y='242'>関数フックとして実行</text><text x='360' y='242'>挙動をTS関数で記述</text></g><line x1='14' y1='104' x2='586' y2='104' stroke='#e2dcff'></line><line x1='14' y1='142' x2='586' y2='142' stroke='#e2dcff'></line><line x1='14' y1='180' x2='586' y2='180' stroke='#e2dcff'></line><line x1='14' y1='218' x2='586' y2='218' stroke='#e2dcff'></line><line x1='158' y1='38' x2='158' y2='260' stroke='#e2dcff'></line><line x1='350' y1='38' x2='350' y2='260' stroke='#e2dcff'></line></svg><figcaption>図1：常時ロード（CLAUDE.md）から関数フック（Mods）まで、発火のしかたで役割が分かれる。</figcaption></figure>
+<h4 id="sec-2">仕組みと実務での勘所</h4>
+<p>4層の境界はこう捉えると迷わない。<strong>CLAUDE.md</strong>は常時ロードの規約だが、長いセッションでは優先度が下がる（コンテキストドリフト）ので「絶対守らせたい規約」だけに絞る。<strong>スラッシュコマンド</strong>は引数を取れる手動マクロで自動永続はしない。<strong>Skill</strong>はプロンプトが説明（description）に一致すると自動起動する「モデル起動」型で、待機中は1件約100トークンしか食わないため50個入れても軽い。<strong>Subagent</strong>は別コンテキスト・別ツール権限・別モデルの隔離インスタンスで、調査結果の要約だけをメインに返す。実戦の定石は、何でも屋を1体でなく<strong>3〜7体の専門特化</strong>（explorer/reviewer/test/doc）を用意し、各々に単一の仕事と最小権限を与えること。並列は3〜5体まで（超えると要約統合コストが利得を上回る）、<code>SubagentStop</code>フックでテスト通過や秘密情報除去を返却前に強制する。</p>
+<h4 id="sec-3">落とし穴</h4>
+<p>最大の不意打ちは<strong>Subagentのモデル継承</strong>。2026年既定ではリードのモデルを継承するため、triageまでOpusで走って意図せず高額課金になりやすい——triageはHaiku等に明示固定してコストを制御する。Skillは<code>SKILL.md</code>を500行未満に保ち、エッジケースやスクリプトは参照サブディレクトリへ逃がして必要時のみ読ませる。外部システム接続はMCP、隔離・並列はSubagent、反復手順はSkill、という住み分けを崩さないこと。</p>
+<h4 id="sec-4">ひとことまとめ</h4>
+<p>新版は無くとも「手段の輪郭」が揃った日。まず自分のCLAUDE.mdを規約だけに削り、Subagentのモデルを明示指定するところから手を付けたい。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://alexop.dev/posts/claude-code-customization-guide-claudemd-skills-subagents/" target="_blank" rel="noopener noreferrer"> Claude Code カスタマイズ完全ガイド（alexop.dev） </a> </li><li> <a href="https://www.totalum.app/blog/claude-code-subagents-totalum" target="_blank" rel="noopener noreferrer"> Claude Code Subagents 実戦プレイブック（totalum） </a> </li><li> <a href="https://duet.so/guides/claude-code-skills-complete-guide" target="_blank" rel="noopener noreferrer"> Skills完全ガイド（duet.so） </a> </li><li> <a href="https://blog.serverworks.co.jp/2026/09/19/190000" target="_blank" rel="noopener noreferrer"> Mods＋Claude Slides整理（serverworks） </a> </li><li> <a href="https://qiita.com/aicoding-guide/items/8ab9d3885652fdbc138a" target="_blank" rel="noopener noreferrer"> 今週のClaude Code変更点まとめ（Qiita） </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 何が新しいか </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 仕組みと実務での勘所 </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 落とし穴 </a> </li><li> <a href="#sec-4" data-toc="sec-4"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-09-22</div> <div>⏱ 読了 約3分</div> <div>🏷 Claude Code</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

@@ -1,0 +1,76 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>縦スクロールで横に流れるギャラリーをCSSだけで — sticky × Scroll-driven Animations（view-timeline） — デイリー技術深掘り 読み物</title><meta name="description" content="JSライブラリ定番だったpinned horizontal scrollを、Scroll-driven Animations（animation-timeline）でJSゼロ・'use client'不要のServer Componentのまま実装する。2025-09のSafari 26追随で実用ラインに。ただしFirefox未対応でBaseline未達、フォールバック必須。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-21-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="縦スクロールで横に流れるギャラリーをCSSだけで — sticky × Scroll-driven Animations（view-timeline） — デイリー技術深掘り 読み物"><meta property="og:description" content="JSライブラリ定番だったpinned horizontal scrollを、Scroll-driven Animations（animation-timeline）でJSゼロ・'use client'不要のServer Componentのまま実装する。2025-09のSafari 26追随で実用ラインに。ただしFirefox未対応でBaseline未達、フォールバック必須。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-21-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>縦スクロールで横に流れるギャラリーをCSSだけで — sticky × Scroll-driven Animations（view-timeline）</h1> <p class="lede">JSライブラリ定番だったpinned horizontal scrollを、Scroll-driven Animations（animation-timeline）でJSゼロ・&#39;use client&#39;不要のServer Componentのまま実装する。2025-09のSafari 26追随で実用ラインに。ただしFirefox未対応でBaseline未達、フォールバック必須。</p> <div class="meta"> <span>📅 2026年9月21日</span> <span>⏱ 約3分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="0"><p>エージェンシー系サイトの定番演出——「ページを縦にスクロールすると、あるセクションだけ横に流れる」pinned horizontal scroll。従来は GSAP ScrollTrigger の <code>pin</code> などJSライブラリで、<code>scroll</code> イベントごとに <code>transform</code> を書き換えて実装していた。これを <strong>Scroll-driven Animations（<code>animation-timeline</code>）</strong> で、JSゼロ・コンポジタスレッド駆動・<code>'use client'</code> 不要のServer Componentのまま書けるのが今回の主題だ。</p>
+<h4 id="sec-1">なぜ今か</h4>
+<p>Chrome/Edge 115（2023-07）に続き、<strong>2025-09のSafari 26 / iOS 26</strong> が追随したことで実用ラインに乗った。App Router的にはハイドレーション不要・バンドル増ゼロ・RSC/SSR/キャッシュに無干渉で、相性は最上級。ただし<strong>Firefoxは未対応</strong>（フラグ止まり）で <strong>Baseline未達</strong>のため、フォールバック前提で入れる。</p>
+<h4 id="sec-2">仕組み（3層構造）</h4>
+<p>背の高いラッパーで「横移動に使う縦距離」を稼ぎ、その中のstickyなピンが画面に貼り付いて“止まって見える”領域を作り、トラック（flexのパネル列）がタイムラインに連動して <code>translateX</code> する。速度はラッパーの <code>height</code> で調整する（高いほどゆっくり）。</p>
+<figure class='fig'><svg viewBox='0 0 600 230' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='11.5'><rect x='0' y='0' width='600' height='230' rx='8' fill='#f6fbff'></rect><text x='16' y='24' font-size='13' font-weight='700' fill='#0b6bcb'>sticky × view-timeline の3層</text><rect x='24' y='40' width='150' height='170' rx='8' fill='#fff' stroke='#8fc3f0' stroke-width='1.5'></rect><text x='99' y='60' text-anchor='middle' font-weight='700' fill='#0b6bcb'>.wrap</text><text x='99' y='78' text-anchor='middle' fill='#555'>height:380vh</text><text x='99' y='94' text-anchor='middle' fill='#555'>view-timeline:--h</text><rect x='40' y='104' width='118' height='92' rx='6' fill='#eaf4fe' stroke='#8fc3f0'></rect><text x='99' y='122' text-anchor='middle' font-weight='700' fill='#0b6bcb'>.pin</text><text x='99' y='138' text-anchor='middle' fill='#555'>sticky top:0</text><text x='99' y='152' text-anchor='middle' fill='#555'>height:100vh</text><rect x='50' y='158' width='98' height='30' rx='4' fill='#d4e9fc'></rect><text x='99' y='178' text-anchor='middle' fill='#0b6bcb'>.track flex</text><text x='210' y='108' fill='#333'>animation-timeline: --h で購読し</text><text x='210' y='128' fill='#333'>@keyframes で translateX 再生:</text><rect x='210' y='140' width='360' height='30' rx='5' fill='#fff' stroke='#8fc3f0'></rect><text x='224' y='160' fill='#0b6bcb' font-family='monospace' font-size='12'>translateX(calc(-100% + 100vw))</text><text x='210' y='190' fill='#666' font-size='10.5'>100%=トラック総幅→枚数に依らず終端が自動計算</text></svg><figcaption>図1：ラッパーで距離を稼ぎ、ピンで固定し、トラックがスクロール進捗に連動して横移動する。</figcaption></figure>
+<p>肝は <code>calc(-100% + 100vw)</code>。<code>100%</code> がトラック自身の総幅なので、パネル枚数や各幅に依らず「最後のパネルまで見せて止まる」終端が自動で決まる。タイムラインはセクション完結なら <code>view-timeline</code> + <code>animation-range: contain 0% contain 100%</code> が扱いやすい。</p>
+<pre><code>.wrap  { height: 380vh; view-timeline: --h block; }
+.pin   { position: sticky; top: 0; height: 100vh; overflow: hidden; }
+.track { display:flex; height:100%;
+  animation: slide linear both;
+  animation-timeline: --h;
+  animation-range: contain 0% contain 100%; }
+@keyframes slide { to { transform: translateX(calc(-100% + 100vw)); } }</code></pre>
+<h4 id="sec-3">注意点・落とし穴</h4>
+<p><strong>フォールバックは必須</strong>。<code>@supports not (animation-timeline: view())</code> で、ラッパーを <code>height:auto</code>・ピンを <code>position:static</code>・トラックを <code>overflow-x:auto</code>（+ <code>scroll-snap</code>）にしてネイティブ横スクロールへ退避する。<code>prefers-reduced-motion: reduce</code> でも同じ形に落とす（スクロールジャックは乗り物酔いの原因）。<code>animation-range</code> の指定漏れは全ビュー区間にマップされてパネルが画面外でも動くので <code>contain</code> を明示。縦スクロールバー幅で <code>100vw</code> がわずかに過剰移動する場合は <code>100dvw</code> へ切替える。</p>
+<h4 id="sec-4">ひとことまとめ</h4>
+<p>「JSで毎フレーム書き換えていた演出」が、CSSだけ・Server Componentのままに置き換わる好例。フォールバックさえ書けば、Firefoxでも“横に見られる”状態は保てる。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Guides/Scroll-driven_animations" target="_blank" rel="noopener noreferrer"> MDN: CSS scroll-driven animations </a> </li><li> <a href="https://web-platform-dx.github.io/web-features-explorer/features/scroll-driven-animations/" target="_blank" rel="noopener noreferrer"> Web Platform Features Explorer: Scroll-driven animations </a> </li><li> <a href="https://caniuse.com/wf-scroll-driven-animations" target="_blank" rel="noopener noreferrer"> Can I use: Scroll-driven animations </a> </li><li> <a href="https://southleft.com/insights/development/scroll-based-animations-with-css-scroll-timeline/" target="_blank" rel="noopener noreferrer"> Southleft: Scroll-based animations with CSS scroll-timeline </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> なぜ今か </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 仕組み（3層構造） </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 注意点・落とし穴 </a> </li><li> <a href="#sec-4" data-toc="sec-4"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-09-21</div> <div>⏱ 読了 約3分</div> <div>🏷 Next.js</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
