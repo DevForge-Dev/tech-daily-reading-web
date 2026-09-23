@@ -1,0 +1,115 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>v2.1.280でOpus 5.5が既定Opusに — 1Mコンテキスト＆$4/$20、Pro/Team Standardの既定もSonnet→Opusへ — デイリー技術深掘り 読み物</title><meta name="description" content="9/22公開のv2.1.280は新モデルClaude Opus 5.5を既定Opusに据え、Pro/Team Standardの既定もOpusへ統一。キャッシュ・セキュリティ・MCP周りの修正も入った大型リリース。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-23-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="v2.1.280でOpus 5.5が既定Opusに — 1Mコンテキスト＆$4/$20、Pro/Team Standardの既定もSonnet→Opusへ — デイリー技術深掘り 読み物"><meta property="og:description" content="9/22公開のv2.1.280は新モデルClaude Opus 5.5を既定Opusに据え、Pro/Team Standardの既定もOpusへ統一。キャッシュ・セキュリティ・MCP周りの修正も入った大型リリース。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-23-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>v2.1.280でOpus 5.5が既定Opusに — 1Mコンテキスト＆$4/$20、Pro/Team Standardの既定もSonnet→Opusへ</h1> <p class="lede">9/22公開のv2.1.280は新モデルClaude Opus 5.5を既定Opusに据え、Pro/Team Standardの既定もOpusへ統一。キャッシュ・セキュリティ・MCP周りの修正も入った大型リリース。</p> <div class="meta"> <span>📅 2026年9月23日</span> <span>⏱ 約4分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="1"><p>Claude Code の日次追跡で、9/22 公開の <strong>v2.1.280</strong> は久々の大型リリースとなった。目玉はモデルそのもので、新世代の <strong>Claude Opus 5.5</strong>（<code>claude-opus-5-5</code>）が「既定の Opus」に昇格し、あわせて Pro・Team Standard プランの既定モデルまで Sonnet から Opus へ引き上げられた。ここ数日「カスタマイズ手段の整理（CLAUDE.md/Skills/Subagents…）」といったソフトな話題が続いていたので、モデル世代とプラン既定が同時に動いたのは節目として大きい。</p>
+
+<h4 id="sec-1">何が新しいか — Opus 5.5 が既定、Pro/Team Standard も Opus へ</h4>
+<p>Opus 5.5 は <strong>100万トークン（1M）のコンテキスト</strong>を備え、価格は <strong>入力 $4 / 出力 $20 per MTok</strong>（キャッシュ読み出しは $0.20/MTok と割安）。従来は上位（Max・Team Premium・Enterprise）だけが既定 Opus だったが、今回 Pro と Team Standard の既定も Sonnet→Opus に統一され、既定でより賢いモデルが走る構図になった。UI 面でもフルスクリーン時の <code>/skills</code> 一覧のホイールスクロールなどマウス操作が拡充され、ダイアログのキー処理（Ctrl+C/D の二度押し、y/n 誤爆）も直っている。</p>
+
+<figure class='fig'>
+<svg viewBox='0 0 600 250' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <rect x='0' y='0' width='600' height='250' fill='#fff7ed'></rect>
+  <text x='300' y='26' text-anchor='middle' font-size='14' font-weight='700' fill='#9a3412'>v2.1.280：既定モデルの引き上げ</text>
+  
+  <text x='150' y='58' text-anchor='middle' font-size='12' font-weight='700' fill='#7c2d12'>Before</text>
+  <text x='450' y='58' text-anchor='middle' font-size='12' font-weight='700' fill='#7c2d12'>After（Opus 5.5）</text>
+  <line x1='300' y1='40' x2='300' y2='230' stroke='#fdba74' stroke-width='1'></line>
+  
+  <g font-size='11.5' fill='#431407'>
+    <text x='30' y='88'>Pro 既定</text>
+    <rect x='95' y='76' width='95' height='20' rx='4' fill='#fed7aa'></rect><text x='142' y='90' text-anchor='middle'>Sonnet</text>
+    <rect x='388' y='76' width='120' height='20' rx='4' fill='#f97316'></rect><text x='448' y='90' text-anchor='middle' fill='#fff'>Opus 5.5</text>
+    <text x='30' y='120'>Team Std 既定</text>
+    <rect x='95' y='108' width='95' height='20' rx='4' fill='#fed7aa'></rect><text x='142' y='122' text-anchor='middle'>Sonnet</text>
+    <rect x='388' y='108' width='120' height='20' rx='4' fill='#f97316'></rect><text x='448' y='122' text-anchor='middle' fill='#fff'>Opus 5.5</text>
+    <text x='30' y='152'>Max/Ent 既定</text>
+    <rect x='95' y='140' width='95' height='20' rx='4' fill='#fdba74'></rect><text x='142' y='154' text-anchor='middle'>旧 Opus</text>
+    <rect x='388' y='140' width='120' height='20' rx='4' fill='#f97316'></rect><text x='448' y='154' text-anchor='middle' fill='#fff'>Opus 5.5</text>
+  </g>
+  
+  <rect x='30' y='180' width='540' height='44' rx='6' fill='#ffedd5' stroke='#fb923c'></rect>
+  <text x='300' y='199' text-anchor='middle' font-size='11.5' font-weight='700' fill='#9a3412'>Opus 5.5 スペック</text>
+  <text x='300' y='216' text-anchor='middle' font-size='11' fill='#7c2d12'>1M コンテキスト ・ $4 / $20 per MTok ・ キャッシュ読み $0.20/MTok</text>
+</svg>
+<figcaption>図1：Pro / Team Standard の既定が Sonnet→Opus 5.5 に。上位プランと横並びになった。</figcaption>
+</figure>
+
+<h4 id="sec-2">安定性・セキュリティ・MCP 周りの修正</h4>
+<p>地味だが実務に効く修正も多い。ホストアプリからの<strong>モデル切替で次プロンプトのプロンプトキャッシュが外れる</strong>問題、<strong>シンボリックリンク経由でファイル書き込みが誤って許可される</strong>セキュリティ問題を是正。MCP ツール説明・サーバー指示の <strong>2,048 文字上限</strong>を <code>CLAUDE_CODE_MAX_MCP_DESCRIPTION_LENGTH</code> で変更できるようになった。加えて <code>~/.claude/skills/</code> のスキルが manifest.json の記載でゴミ箱に移動されるバグや、自動モードが無回答時に無限リトライする挙動も直っている。</p>
+
+<h4 id="sec-3">あわせて読みたい：4プリミティブの使い分け</h4>
+<p>同日の技術記事では、Skills / Subagents / Hooks / Workflows を「現行モデルが単独で苦手な部分を補うもの」と捉え、<em>症状</em>で選ぶ指針が整理されていた。指示の反復は Rule、貼り付け手順は Skill（<code>/deploy</code> 等の動詞）、出力で文脈が溢れるなら Subagent へ委譲、必ず起きてほしい処理は Hook（exit code 2 でブロック）、多段検証は Workflow、という対応だ。</p>
+
+<figure class='fig'>
+<pre class='mermaid'>flowchart TD
+  S["症状は？"] --> R["指示の反復 → Rule"]
+  S --> K["貼り付け手順 → Skill(/deploy)"]
+  S --> U["出力で文脈が溢れる → Subagent"]
+  S --> H["必ず起きてほしい → Hook(exit 2)"]
+  S --> W["多段検証したい → Workflow"]</pre>
+<figcaption>図2：プリミティブは「症状」で選ぶ。反復→Rule、手順→Skill、文脈溢れ→Subagent、必須→Hook、多段検証→Workflow。</figcaption>
+</figure>
+
+<h4 id="sec-4">実務での使いどころ・自分が試すなら</h4>
+<p>まず既定 Opus 化のコスト影響を見たい。1M コンテキストは大きいリポジトリ横断で効く一方、$4/$20 は Sonnet より高いので、<strong>定期タスク側は必要な所だけ Opus</strong>に寄せ、軽い整形は下位モデルへ振り分けるのが現実的。MCP 説明の上限緩和は、説明が長い自作サーバーが切り詰められていた場合に効くので、<code>CLAUDE_CODE_MAX_MCP_DESCRIPTION_LENGTH</code> を上げて挙動を確認したい。</p>
+
+<h4 id="sec-5">注意点・落とし穴</h4>
+<p>既定モデルが上がると<strong>1タスクあたりのトークン単価が上がる</strong>。多数の定期タスクを回している運用ほど請求に効くので、明示的にモデルを固定するタスクは意図通りか点検を。シンボリックリンク書き込みの修正はセキュリティ更新なので、<strong>できるだけ早く v2.1.280 へ上げる</strong>のが安全。</p>
+
+<h4 id="sec-6">ひとことまとめ</h4>
+<p>「既定でより賢いモデルが走る」時代の節目。恩恵とコストは表裏なので、既定 Opus 化を歓迎しつつ、タスク単位でのモデル選択とコスト観測をセットで運用したい。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://code.claude.com/docs/en/changelog" target="_blank" rel="noopener noreferrer"> Claude Code changelog </a> </li><li> <a href="https://claude-code-log.com/" target="_blank" rel="noopener noreferrer"> claude-code-log（v2.1.280 修正まとめ） </a> </li><li> <a href="https://dev.to/remybuilds/claude-code-skills-vs-subagents-vs-hooks-vs-workflows-which-to-use-in-2026-5bcf" target="_blank" rel="noopener noreferrer"> Skills vs Subagents vs Hooks vs Workflows（dev.to） </a> </li><li> <a href="https://smartscope.blog/en/generative-ai/claude/claude-code-best-practices-advanced-2026/" target="_blank" rel="noopener noreferrer"> 上級ベストプラクティス11選（smartscope） </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 何が新しいか — Opus 5.5 が既定、Pro/Team Standard も Opus へ </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 安定性・セキュリティ・MCP 周りの修正 </a> </li><li> <a href="#sec-3" data-toc="sec-3"> あわせて読みたい：4プリミティブの使い分け </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 実務での使いどころ・自分が試すなら </a> </li><li> <a href="#sec-5" data-toc="sec-5"> 注意点・落とし穴 </a> </li><li> <a href="#sec-6" data-toc="sec-6"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-09-23</div> <div>⏱ 読了 約4分</div> <div>🏷 Claude Code</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

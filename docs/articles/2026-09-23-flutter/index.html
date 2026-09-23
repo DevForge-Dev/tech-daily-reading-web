@@ -1,0 +1,98 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>CustomPainterでcanvas駆動アニメ — repaint:controllerでrebuildを飛ばす（3.47系/MVVM/コールドスタートも） — デイリー技術深掘り 読み物</title><meta name="description" content="標準widgetで描けない有機的な曲線・進捗リング・path追従は最終手段のCustomPainterへ。AnimationControllerをrepaintに渡してpaintだけ走らせる勘所と、3.47系・MVVM・起動最適化の要点。"><meta name="theme-color" content="#0277bd"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-23-flutter/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="CustomPainterでcanvas駆動アニメ — repaint:controllerでrebuildを飛ばす（3.47系/MVVM/コールドスタートも） — デイリー技術深掘り 読み物"><meta property="og:description" content="標準widgetで描けない有機的な曲線・進捗リング・path追従は最終手段のCustomPainterへ。AnimationControllerをrepaintに渡してpaintだけ走らせる勘所と、3.47系・MVVM・起動最適化の要点。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-23-flutter/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #29b6f6, #01579b)"> <span class="glyph" aria-hidden="true">◆</span> <div class="kicker">Flutter</div> <h1>CustomPainterでcanvas駆動アニメ — repaint:controllerでrebuildを飛ばす（3.47系/MVVM/コールドスタートも）</h1> <p class="lede">標準widgetで描けない有機的な曲線・進捗リング・path追従は最終手段のCustomPainterへ。AnimationControllerをrepaintに渡してpaintだけ走らせる勘所と、3.47系・MVVM・起動最適化の要点。</p> <div class="meta"> <span>📅 2026年9月23日</span> <span>⏱ 約4分</span> <span>🔗 出典 5 件</span> </div> </section> <div class="article-layout" style="--topic:#0277bd"> <div> <article class="prose" data-has-mermaid="1"><p>Flutter のアニメーションは、implicit / explicit の標準 widget で大半が足りる。だがスピードメーター、進捗リング、有機的な曲線、リアルタイムの path 追従など<strong>標準 widget では描けない領域</strong>に来ると、最終手段が <code>CustomPainter</code> による canvas 駆動アニメーションになる。今日はこの CustomPainter を主役に、あわせて 3.47 系リリース・公式 MVVM・コールドスタート最適化の要点を整理する。</p>
+
+<h4 id="sec-1">何が要点か — repaint:controller で rebuild を飛ばす</h4>
+<p>CustomPainter アニメの勘所は、<code>AnimationController</code> を <strong><code>CustomPainter(repaint: controller)</code></strong> に渡すこと。こうすると <strong>paint フェーズだけが走り、widget rebuild をスキップ</strong>して無駄を省ける。さらに <code>shouldRepaint(oldDelegate)</code> は視覚変化が無ければ <strong><code>false</code></strong> を返して再描画自体を回避する。path 追従は <code>Path.computeMetrics()</code> ＋ <code>getTangentForOffset(distance)</code> で path 上の座標と接線角を取得し、ベジェ曲線に沿って要素を滑らかに動かす（重い数式は不要）。path metrics は path が変わらない限り<strong>キャッシュ</strong>し、<code>paint()</code> 内で毎フレーム再計算しないのが鉄則だ。</p>
+
+<figure class='fig'>
+<pre class='mermaid'>flowchart LR
+  A["AnimationController(vsync,duration)"] --> B["CustomPaint(painter: MyPainter(repaint: controller))"]
+  B --> C["controller の tick で paint() だけ再実行"]
+  C --> D["widget build/layout はスキップ = 省コスト"]
+  C --> E["shouldRepaint → 変化なしなら false で再描画も回避"]</pre>
+<figcaption>図1：repaint に controller を渡すと paint だけが走る。build を巻き込まないのがカスタム描画アニメの心臓部。</figcaption>
+</figure>
+
+<h4 id="sec-2">アニメーション技法の使い分け</h4>
+<p>粒度で道具を選ぶ。小さな変化は implicit、多段は flutter_animate、コンポーネント単位は explicit、画面間の共有要素は Hero、その先の完全カスタム描画が CustomPainter という段階だ。</p>
+
+<figure class='fig'>
+<svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <rect x='0' y='0' width='600' height='210' fill='#ecfeff'></rect>
+  <text x='300' y='24' text-anchor='middle' font-size='14' font-weight='700' fill='#155e75'>アニメーションの選択ラダー（下ほど自由・高コスト）</text>
+  <g font-size='11'>
+    <rect x='40' y='40' width='520' height='24' rx='4' fill='#cffafe'></rect><text x='52' y='57' fill='#0e7490'>micro（50–200ms）→ implicit：AnimatedOpacity / AnimatedContainer（controller 不要）</text>
+    <rect x='40' y='70' width='520' height='24' rx='4' fill='#a5f3fc'></rect><text x='52' y='87' fill='#0e7490'>多段の連鎖 → flutter_animate（宣言的にチェーン）</text>
+    <rect x='40' y='100' width='520' height='24' rx='4' fill='#67e8f9'></rect><text x='52' y='117' fill='#155e75'>component（200–400ms）→ explicit：AnimationController + AnimatedBuilder（dispose 必須）</text>
+    <rect x='40' y='130' width='520' height='24' rx='4' fill='#22d3ee'></rect><text x='52' y='147' fill='#083344'>共有要素（300–600ms）→ Hero</text>
+    <rect x='40' y='160' width='520' height='24' rx='4' fill='#0891b2'></rect><text x='52' y='177' fill='#fff'>完全カスタム描画 → CustomPainter（repaint: controller・RepaintBoundary で隔離）</text>
+  </g>
+</svg>
+<figcaption>図2：まず implicit、足りなければ段を下げる。CustomPainter は「標準で描けない」時の最終段。</figcaption>
+</figure>
+
+<h4 id="sec-3">足回り：3.47 系リリースと MVVM・起動最適化</h4>
+<p>現行安定版は <strong>Flutter 3.47.4 / Dart 3.13.3</strong>。3.47 系は Impeller が全デスクトップ既定、Widget Previews stable、material_ui/cupertino_ui 1.0 standalone、最低 iOS 15 が到達点で、パッチは PowerVR GPU の Impeller 不具合修正なども積み上げた。Dart 3.13 では <strong>primary constructors</strong> と <strong>dot shorthands</strong>（<code>.start</code> のように先頭ドット省略）が stable に。設計は公式アーキテクチャガイドの <strong>MVVM</strong> が軸で、UI 層（View＋ViewModel）と Data 層（Repository＋Service）に分け、Repository を single source of truth に据える。実装は Riverpod 3.3.x の Notifier/AsyncNotifier か Bloc 9.2.x が定番だ。</p>
+
+<h4 id="sec-4">実務での使いどころ・注意点</h4>
+<p>コールドスタートは "do less at startup" が原則。独立初期化は <code>Future.wait()</code> で並列化、重い JSON parse や画像処理は <code>compute()</code> / <code>Isolate.spawn()</code> で背景 isolate に逃がし UI スレッドを空ける。CustomPainter 側の注意は、<strong>canvas 変換を <code>save()</code>/<code>restore()</code> で局所化</strong>し、描画領域を <strong><code>RepaintBoundary</code></strong> で外側の再描画から隔離すること。<code>shouldRepaint</code> を安易に <code>true</code> 固定にすると毎フレーム全再描画になり、せっかくの省コストが台無しになる。計測は <code>flutter run --profile --trace-startup</code> ＋ DevTools Timeline で。</p>
+
+<h4 id="sec-5">ひとことまとめ</h4>
+<p>CustomPainter は「自由の代わりにコスト」を払う最終手段。repaint:controller・shouldRepaint・path metrics キャッシュ・RepaintBoundary の 4 点を押さえれば、120fps を保ったまま標準 widget の外側を描ける。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://verygood.ventures/blog/mastering-custompainter-in-flutter-from-svgs-to-racetracks/" target="_blank" rel="noopener noreferrer"> Mastering CustomPainter（Very Good Ventures） </a> </li><li> <a href="https://api.flutter.dev/flutter/rendering/CustomPainter-class.html" target="_blank" rel="noopener noreferrer"> CustomPainter API </a> </li><li> <a href="https://docs.flutter.dev/release/release-notes" target="_blank" rel="noopener noreferrer"> Flutter release notes </a> </li><li> <a href="https://docs.flutter.dev/app-architecture/guide" target="_blank" rel="noopener noreferrer"> Flutter architecture guide </a> </li><li> <a href="https://docs.flutter.dev/perf/best-practices" target="_blank" rel="noopener noreferrer"> Performance best practices </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 何が要点か — repaint:controller で rebuild を飛ばす </a> </li><li> <a href="#sec-2" data-toc="sec-2"> アニメーション技法の使い分け </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 足回り：3.47 系リリースと MVVM・起動最適化 </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 実務での使いどころ・注意点 </a> </li><li> <a href="#sec-5" data-toc="sec-5"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-09-23</div> <div>⏱ 読了 約4分</div> <div>🏷 Flutter</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
