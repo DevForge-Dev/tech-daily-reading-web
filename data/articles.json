@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-09-22T04:44:13.992Z",
+  "generatedAt": "2026-09-23T04:50:14.185Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,110 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-09-23-claude-code",
+      "date": "2026-09-23",
+      "topic": "Claude Code",
+      "title": "v2.1.280でOpus 5.5が既定Opusに — 1Mコンテキスト＆$4/$20、Pro/Team Standardの既定もSonnet→Opusへ",
+      "lede": "9/22公開のv2.1.280は新モデルClaude Opus 5.5を既定Opusに据え、Pro/Team Standardの既定もOpusへ統一。キャッシュ・セキュリティ・MCP周りの修正も入った大型リリース。",
+      "articleHtml": "<p>Claude Code の日次追跡で、9/22 公開の <strong>v2.1.280</strong> は久々の大型リリースとなった。目玉はモデルそのもので、新世代の <strong>Claude Opus 5.5</strong>（<code>claude-opus-5-5</code>）が「既定の Opus」に昇格し、あわせて Pro・Team Standard プランの既定モデルまで Sonnet から Opus へ引き上げられた。ここ数日「カスタマイズ手段の整理（CLAUDE.md/Skills/Subagents…）」といったソフトな話題が続いていたので、モデル世代とプラン既定が同時に動いたのは節目として大きい。</p>\n\n<h4>何が新しいか — Opus 5.5 が既定、Pro/Team Standard も Opus へ</h4>\n<p>Opus 5.5 は <strong>100万トークン（1M）のコンテキスト</strong>を備え、価格は <strong>入力 $4 / 出力 $20 per MTok</strong>（キャッシュ読み出しは $0.20/MTok と割安）。従来は上位（Max・Team Premium・Enterprise）だけが既定 Opus だったが、今回 Pro と Team Standard の既定も Sonnet→Opus に統一され、既定でより賢いモデルが走る構図になった。UI 面でもフルスクリーン時の <code>/skills</code> 一覧のホイールスクロールなどマウス操作が拡充され、ダイアログのキー処理（Ctrl+C/D の二度押し、y/n 誤爆）も直っている。</p>\n\n<figure class='fig'>\n<svg viewBox='0 0 600 250' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='0' y='0' width='600' height='250' fill='#fff7ed'/>\n  <text x='300' y='26' text-anchor='middle' font-size='14' font-weight='700' fill='#9a3412'>v2.1.280：既定モデルの引き上げ</text>\n  <!-- headers -->\n  <text x='150' y='58' text-anchor='middle' font-size='12' font-weight='700' fill='#7c2d12'>Before</text>\n  <text x='450' y='58' text-anchor='middle' font-size='12' font-weight='700' fill='#7c2d12'>After（Opus 5.5）</text>\n  <line x1='300' y1='40' x2='300' y2='230' stroke='#fdba74' stroke-width='1'/>\n  <!-- rows -->\n  <g font-size='11.5' fill='#431407'>\n    <text x='30' y='88'>Pro 既定</text>\n    <rect x='95' y='76' width='95' height='20' rx='4' fill='#fed7aa'/><text x='142' y='90' text-anchor='middle'>Sonnet</text>\n    <rect x='388' y='76' width='120' height='20' rx='4' fill='#f97316'/><text x='448' y='90' text-anchor='middle' fill='#fff'>Opus 5.5</text>\n    <text x='30' y='120'>Team Std 既定</text>\n    <rect x='95' y='108' width='95' height='20' rx='4' fill='#fed7aa'/><text x='142' y='122' text-anchor='middle'>Sonnet</text>\n    <rect x='388' y='108' width='120' height='20' rx='4' fill='#f97316'/><text x='448' y='122' text-anchor='middle' fill='#fff'>Opus 5.5</text>\n    <text x='30' y='152'>Max/Ent 既定</text>\n    <rect x='95' y='140' width='95' height='20' rx='4' fill='#fdba74'/><text x='142' y='154' text-anchor='middle'>旧 Opus</text>\n    <rect x='388' y='140' width='120' height='20' rx='4' fill='#f97316'/><text x='448' y='154' text-anchor='middle' fill='#fff'>Opus 5.5</text>\n  </g>\n  <!-- spec strip -->\n  <rect x='30' y='180' width='540' height='44' rx='6' fill='#ffedd5' stroke='#fb923c'/>\n  <text x='300' y='199' text-anchor='middle' font-size='11.5' font-weight='700' fill='#9a3412'>Opus 5.5 スペック</text>\n  <text x='300' y='216' text-anchor='middle' font-size='11' fill='#7c2d12'>1M コンテキスト ・ $4 / $20 per MTok ・ キャッシュ読み $0.20/MTok</text>\n</svg>\n<figcaption>図1：Pro / Team Standard の既定が Sonnet→Opus 5.5 に。上位プランと横並びになった。</figcaption>\n</figure>\n\n<h4>安定性・セキュリティ・MCP 周りの修正</h4>\n<p>地味だが実務に効く修正も多い。ホストアプリからの<strong>モデル切替で次プロンプトのプロンプトキャッシュが外れる</strong>問題、<strong>シンボリックリンク経由でファイル書き込みが誤って許可される</strong>セキュリティ問題を是正。MCP ツール説明・サーバー指示の <strong>2,048 文字上限</strong>を <code>CLAUDE_CODE_MAX_MCP_DESCRIPTION_LENGTH</code> で変更できるようになった。加えて <code>~/.claude/skills/</code> のスキルが manifest.json の記載でゴミ箱に移動されるバグや、自動モードが無回答時に無限リトライする挙動も直っている。</p>\n\n<h4>あわせて読みたい：4プリミティブの使い分け</h4>\n<p>同日の技術記事では、Skills / Subagents / Hooks / Workflows を「現行モデルが単独で苦手な部分を補うもの」と捉え、<em>症状</em>で選ぶ指針が整理されていた。指示の反復は Rule、貼り付け手順は Skill（<code>/deploy</code> 等の動詞）、出力で文脈が溢れるなら Subagent へ委譲、必ず起きてほしい処理は Hook（exit code 2 でブロック）、多段検証は Workflow、という対応だ。</p>\n\n<figure class='fig'>\n<pre class='mermaid'>flowchart TD\n  S[\"症状は？\"] --> R[\"指示の反復 → Rule\"]\n  S --> K[\"貼り付け手順 → Skill(/deploy)\"]\n  S --> U[\"出力で文脈が溢れる → Subagent\"]\n  S --> H[\"必ず起きてほしい → Hook(exit 2)\"]\n  S --> W[\"多段検証したい → Workflow\"]</pre>\n<figcaption>図2：プリミティブは「症状」で選ぶ。反復→Rule、手順→Skill、文脈溢れ→Subagent、必須→Hook、多段検証→Workflow。</figcaption>\n</figure>\n\n<h4>実務での使いどころ・自分が試すなら</h4>\n<p>まず既定 Opus 化のコスト影響を見たい。1M コンテキストは大きいリポジトリ横断で効く一方、$4/$20 は Sonnet より高いので、<strong>定期タスク側は必要な所だけ Opus</strong>に寄せ、軽い整形は下位モデルへ振り分けるのが現実的。MCP 説明の上限緩和は、説明が長い自作サーバーが切り詰められていた場合に効くので、<code>CLAUDE_CODE_MAX_MCP_DESCRIPTION_LENGTH</code> を上げて挙動を確認したい。</p>\n\n<h4>注意点・落とし穴</h4>\n<p>既定モデルが上がると<strong>1タスクあたりのトークン単価が上がる</strong>。多数の定期タスクを回している運用ほど請求に効くので、明示的にモデルを固定するタスクは意図通りか点検を。シンボリックリンク書き込みの修正はセキュリティ更新なので、<strong>できるだけ早く v2.1.280 へ上げる</strong>のが安全。</p>\n\n<h4>ひとことまとめ</h4>\n<p>「既定でより賢いモデルが走る」時代の節目。恩恵とコストは表裏なので、既定 Opus 化を歓迎しつつ、タスク単位でのモデル選択とコスト観測をセットで運用したい。</p>",
+      "sources": [
+        {
+          "title": "Claude Code changelog",
+          "url": "https://code.claude.com/docs/en/changelog"
+        },
+        {
+          "title": "claude-code-log（v2.1.280 修正まとめ）",
+          "url": "https://claude-code-log.com/"
+        },
+        {
+          "title": "Skills vs Subagents vs Hooks vs Workflows（dev.to）",
+          "url": "https://dev.to/remybuilds/claude-code-skills-vs-subagents-vs-hooks-vs-workflows-which-to-use-in-2026-5bcf"
+        },
+        {
+          "title": "上級ベストプラクティス11選（smartscope）",
+          "url": "https://smartscope.blog/en/generative-ai/claude/claude-code-best-practices-advanced-2026/"
+        }
+      ]
+    },
+    {
+      "id": "2026-09-22-nextjs",
+      "date": "2026-09-22",
+      "topic": "Next.js",
+      "title": "Container Queries（@container）で“ビューポート非依存”の真にレスポンシブなコンポーネント — App Router × Tailwind v4",
+      "lede": "同じカード部品を広いメインにも狭いサイドバーにも置ける。@mediaのビューポート依存を捨て、親コンテナ幅でレイアウトが自律的に組み変わる。’use client’不要でRSCのまま動く。",
+      "articleHtml": "<p>レスポンシブ設計の主役だった <code>@media</code> は、常に<strong>ビューポート幅</strong>を見る。しかしコンポーネント指向（RSC / shadcn / デザインシステム）では、同じカード部品が「広いメイン領域」にも「狭いサイドバー」にも置かれる。ビューポートが同じでも、置かれた<strong>親コンテナの幅</strong>は違う——ここで <code>@media</code> は破綻し、<code>isSidebar</code> のような prop のバケツリレーやページ別の上書き CSS が増えていく。</p>\n\n<h4>何が新しいか — 親コンテナ幅で組み変わる</h4>\n<p><strong>Container Queries は「自分を囲む親の幅」でスタイルを切り替える。</strong>これでコンポーネントは「どこに置かれても自分の幅に応じて正しく組み変わる」＝真の意味で再利用可能になる。2023 年に主要ブラウザへ載り、2026 年現在は <strong>Baseline widely available</strong>（クエリ長単位 <code>cqw/cqi</code> 等も含む）。ポリフィル不要で本番投入できる。Next.js と相性が良いのは、<strong>純粋に CSS だけで完結し <code>'use client'</code> が一切不要</strong>な点だ（＝Server Component のまま動く）。</p>\n\n<figure class='fig'>\n<svg viewBox='0 0 600 240' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='0' y='0' width='600' height='240' fill='#eff6ff'/>\n  <text x='300' y='24' text-anchor='middle' font-size='14' font-weight='700' fill='#1e3a8a'>同じ &lt;Card&gt; 部品・置き場所で自律的に組み変わる</text>\n  <!-- main area (wide) -->\n  <rect x='30' y='45' width='300' height='170' rx='8' fill='#dbeafe' stroke='#60a5fa'/>\n  <text x='180' y='64' text-anchor='middle' font-size='11' fill='#1d4ed8'>メイン領域（広い / @md 以上）→ 横並び</text>\n  <rect x='50' y='78' width='90' height='118' rx='5' fill='#bfdbfe'/><text x='95' y='142' text-anchor='middle' font-size='10' fill='#1e40af'>画像</text>\n  <rect x='150' y='78' width='160' height='24' rx='4' fill='#93c5fd'/><text x='230' y='95' text-anchor='middle' font-size='10' fill='#fff'>タイトル</text>\n  <rect x='150' y='110' width='160' height='14' rx='3' fill='#c7dcfd'/>\n  <rect x='150' y='130' width='160' height='14' rx='3' fill='#c7dcfd'/>\n  <rect x='150' y='150' width='120' height='14' rx='3' fill='#c7dcfd'/>\n  <!-- sidebar (narrow) -->\n  <rect x='400' y='45' width='170' height='170' rx='8' fill='#dbeafe' stroke='#60a5fa'/>\n  <text x='485' y='64' text-anchor='middle' font-size='11' fill='#1d4ed8'>サイドバー（狭い）→ 縦積み</text>\n  <rect x='420' y='78' width='130' height='58' rx='5' fill='#bfdbfe'/><text x='485' y='111' text-anchor='middle' font-size='10' fill='#1e40af'>画像</text>\n  <rect x='420' y='144' width='130' height='20' rx='4' fill='#93c5fd'/><text x='485' y='158' text-anchor='middle' font-size='10' fill='#fff'>タイトル</text>\n  <rect x='420' y='170' width='130' height='12' rx='3' fill='#c7dcfd'/>\n  <rect x='420' y='188' width='100' height='12' rx='3' fill='#c7dcfd'/>\n</svg>\n<figcaption>図1：<code>@container</code> なら prop を渡さずに、広いメインでは横並び・狭いサイドバーでは縦積みへ同じ部品が自律変形する。</figcaption>\n</figure>\n\n<h4>仕組みと最大の落とし穴（2層構造が必須）</h4>\n<p>親を <code>container-type: inline-size</code> で「クエリコンテナ」に指定し、子孫側で <code>@container (min-width: 420px){…}</code> と書くと、最も近い祖先コンテナの幅で分岐する。名前付きは <code>container-name</code>、長さ単位は <code>cqi</code>（コンテナ幅の 1%）で <code>font-size: clamp(1rem, 4cqi, 1.75rem)</code> のように親幅比例のタイポも作れる。<strong>最大の落とし穴は「コンテナは自分自身をクエリできない」</strong>こと。<code>@container</code> が当たるのは<strong>子孫</strong>なので、部品には必ず「外側ラッパ（＝コンテナ）＋中身」の 2 層が要る。</p>\n\n<figure class='fig'>\n<pre class='mermaid'>flowchart TD\n  W[\".wrapper : container-type: inline-size (外側=コンテナ)\"] --> C[\".card : @container (min-width:420px) で分岐する子孫\"]\n  C --> G1[\"420px 未満 → grid 1列(縦積み)\"]\n  C --> G2[\"420px 以上 → grid-cols 160px 1fr(横並び)\"]</pre>\n<figcaption>図2：ルート自身はクエリ対象外。ラッパをコンテナにし、中身を子孫として分岐させる。</figcaption>\n</figure>\n\n<h4>Next.js（App Router）での組み込み・Tailwind v4</h4>\n<p>CSS Modules でもグローバル CSS でも <code>'use client'</code> 不要で RSC のまま使える。Tailwind は v3 では <code>@tailwindcss/container-queries</code> プラグインが要ったが、<strong>v4 ではコア内蔵</strong>。コンテナに <code>@container/card</code>、子孫に <code>@md:grid-cols-[160px_1fr]</code> のように付けると、「この部品を囲む <code>@container</code> の幅」基準で効く（ビューポート基準の <code>md:</code> とは別物）。SSR/RSC キャッシュとは無関係で、JS 計測も window サイズ依存もないため、<strong>FOUC やレイアウトシフトが <code>@media</code> 版より起きにくい</strong>のも利点だ。</p>\n\n<h4>注意点</h4>\n<p><code>container-type: size</code>（縦横両方）は高さ包含が効いて中身から高さが決まらず 0 に潰れやすい。特別な理由がなければ <code>inline-size</code> を使う。containment は新しい包含ブロック/スタッキング文脈を作るため、<code>position: sticky</code> や <code>z-index</code> の基準が変わることがあり、組み込み後の実挙動確認が要る。列数変化の transition は効かないので、切替の演出は透明度/transform 側に寄せ、<code>prefers-reduced-motion</code> で無効化する。</p>\n\n<h4>ひとことまとめ</h4>\n<p>「ページが部品を配置する」から「部品が置き場所に合わせて自分で組み変わる」へ。2 層構造さえ守れば、prop バケツリレーを一掃できる、CSS だけの強力な武器だ。</p>",
+      "sources": [
+        {
+          "title": "MDN: CSS container queries",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_containment/Container_queries"
+        },
+        {
+          "title": "MDN: container-type",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/container-type"
+        },
+        {
+          "title": "Tailwind CSS Docs: Responsive design（Container queries）",
+          "url": "https://tailwindcss.com/docs/responsive-design"
+        },
+        {
+          "title": "LogRocket: Container queries in 2026",
+          "url": "https://blog.logrocket.com/container-queries-2026/"
+        }
+      ]
+    },
+    {
+      "id": "2026-09-23-flutter",
+      "date": "2026-09-23",
+      "topic": "Flutter",
+      "title": "CustomPainterでcanvas駆動アニメ — repaint:controllerでrebuildを飛ばす（3.47系/MVVM/コールドスタートも）",
+      "lede": "標準widgetで描けない有機的な曲線・進捗リング・path追従は最終手段のCustomPainterへ。AnimationControllerをrepaintに渡してpaintだけ走らせる勘所と、3.47系・MVVM・起動最適化の要点。",
+      "articleHtml": "<p>Flutter のアニメーションは、implicit / explicit の標準 widget で大半が足りる。だがスピードメーター、進捗リング、有機的な曲線、リアルタイムの path 追従など<strong>標準 widget では描けない領域</strong>に来ると、最終手段が <code>CustomPainter</code> による canvas 駆動アニメーションになる。今日はこの CustomPainter を主役に、あわせて 3.47 系リリース・公式 MVVM・コールドスタート最適化の要点を整理する。</p>\n\n<h4>何が要点か — repaint:controller で rebuild を飛ばす</h4>\n<p>CustomPainter アニメの勘所は、<code>AnimationController</code> を <strong><code>CustomPainter(repaint: controller)</code></strong> に渡すこと。こうすると <strong>paint フェーズだけが走り、widget rebuild をスキップ</strong>して無駄を省ける。さらに <code>shouldRepaint(oldDelegate)</code> は視覚変化が無ければ <strong><code>false</code></strong> を返して再描画自体を回避する。path 追従は <code>Path.computeMetrics()</code> ＋ <code>getTangentForOffset(distance)</code> で path 上の座標と接線角を取得し、ベジェ曲線に沿って要素を滑らかに動かす（重い数式は不要）。path metrics は path が変わらない限り<strong>キャッシュ</strong>し、<code>paint()</code> 内で毎フレーム再計算しないのが鉄則だ。</p>\n\n<figure class='fig'>\n<pre class='mermaid'>flowchart LR\n  A[\"AnimationController(vsync,duration)\"] --> B[\"CustomPaint(painter: MyPainter(repaint: controller))\"]\n  B --> C[\"controller の tick で paint() だけ再実行\"]\n  C --> D[\"widget build/layout はスキップ = 省コスト\"]\n  C --> E[\"shouldRepaint → 変化なしなら false で再描画も回避\"]</pre>\n<figcaption>図1：repaint に controller を渡すと paint だけが走る。build を巻き込まないのがカスタム描画アニメの心臓部。</figcaption>\n</figure>\n\n<h4>アニメーション技法の使い分け</h4>\n<p>粒度で道具を選ぶ。小さな変化は implicit、多段は flutter_animate、コンポーネント単位は explicit、画面間の共有要素は Hero、その先の完全カスタム描画が CustomPainter という段階だ。</p>\n\n<figure class='fig'>\n<svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='0' y='0' width='600' height='210' fill='#ecfeff'/>\n  <text x='300' y='24' text-anchor='middle' font-size='14' font-weight='700' fill='#155e75'>アニメーションの選択ラダー（下ほど自由・高コスト）</text>\n  <g font-size='11'>\n    <rect x='40' y='40' width='520' height='24' rx='4' fill='#cffafe'/><text x='52' y='57' fill='#0e7490'>micro（50–200ms）→ implicit：AnimatedOpacity / AnimatedContainer（controller 不要）</text>\n    <rect x='40' y='70' width='520' height='24' rx='4' fill='#a5f3fc'/><text x='52' y='87' fill='#0e7490'>多段の連鎖 → flutter_animate（宣言的にチェーン）</text>\n    <rect x='40' y='100' width='520' height='24' rx='4' fill='#67e8f9'/><text x='52' y='117' fill='#155e75'>component（200–400ms）→ explicit：AnimationController + AnimatedBuilder（dispose 必須）</text>\n    <rect x='40' y='130' width='520' height='24' rx='4' fill='#22d3ee'/><text x='52' y='147' fill='#083344'>共有要素（300–600ms）→ Hero</text>\n    <rect x='40' y='160' width='520' height='24' rx='4' fill='#0891b2'/><text x='52' y='177' fill='#fff'>完全カスタム描画 → CustomPainter（repaint: controller・RepaintBoundary で隔離）</text>\n  </g>\n</svg>\n<figcaption>図2：まず implicit、足りなければ段を下げる。CustomPainter は「標準で描けない」時の最終段。</figcaption>\n</figure>\n\n<h4>足回り：3.47 系リリースと MVVM・起動最適化</h4>\n<p>現行安定版は <strong>Flutter 3.47.4 / Dart 3.13.3</strong>。3.47 系は Impeller が全デスクトップ既定、Widget Previews stable、material_ui/cupertino_ui 1.0 standalone、最低 iOS 15 が到達点で、パッチは PowerVR GPU の Impeller 不具合修正なども積み上げた。Dart 3.13 では <strong>primary constructors</strong> と <strong>dot shorthands</strong>（<code>.start</code> のように先頭ドット省略）が stable に。設計は公式アーキテクチャガイドの <strong>MVVM</strong> が軸で、UI 層（View＋ViewModel）と Data 層（Repository＋Service）に分け、Repository を single source of truth に据える。実装は Riverpod 3.3.x の Notifier/AsyncNotifier か Bloc 9.2.x が定番だ。</p>\n\n<h4>実務での使いどころ・注意点</h4>\n<p>コールドスタートは \"do less at startup\" が原則。独立初期化は <code>Future.wait()</code> で並列化、重い JSON parse や画像処理は <code>compute()</code> / <code>Isolate.spawn()</code> で背景 isolate に逃がし UI スレッドを空ける。CustomPainter 側の注意は、<strong>canvas 変換を <code>save()</code>/<code>restore()</code> で局所化</strong>し、描画領域を <strong><code>RepaintBoundary</code></strong> で外側の再描画から隔離すること。<code>shouldRepaint</code> を安易に <code>true</code> 固定にすると毎フレーム全再描画になり、せっかくの省コストが台無しになる。計測は <code>flutter run --profile --trace-startup</code> ＋ DevTools Timeline で。</p>\n\n<h4>ひとことまとめ</h4>\n<p>CustomPainter は「自由の代わりにコスト」を払う最終手段。repaint:controller・shouldRepaint・path metrics キャッシュ・RepaintBoundary の 4 点を押さえれば、120fps を保ったまま標準 widget の外側を描ける。</p>",
+      "sources": [
+        {
+          "title": "Mastering CustomPainter（Very Good Ventures）",
+          "url": "https://verygood.ventures/blog/mastering-custompainter-in-flutter-from-svgs-to-racetracks/"
+        },
+        {
+          "title": "CustomPainter API",
+          "url": "https://api.flutter.dev/flutter/rendering/CustomPainter-class.html"
+        },
+        {
+          "title": "Flutter release notes",
+          "url": "https://docs.flutter.dev/release/release-notes"
+        },
+        {
+          "title": "Flutter architecture guide",
+          "url": "https://docs.flutter.dev/app-architecture/guide"
+        },
+        {
+          "title": "Performance best practices",
+          "url": "https://docs.flutter.dev/perf/best-practices"
+        }
+      ]
+    },
+    {
+      "id": "2026-09-23-github-trending",
+      "date": "2026-09-23",
+      "topic": "GitHub Trending",
+      "title": "9/23の話題リポジトリ — async-firstエージェント・Apple Walletスキン・AI可視性(GEO)",
+      "lede": "エージェント一色のトレンドの中、非同期前提のharness(unreal-agent)、非AIのApple Wallet外観カスタム(AirCard)、AIがブランドをどう答えるかを測るGEO(niubigeo)という3ジャンルが急伸。",
+      "articleHtml": "<p>本日の GitHub は相変わらずエージェント／AI が主役だが、その中でも毛色の違う 3 本が急伸した。長時間タスクを非同期前提でさばく <strong>harness</strong>、脱獄なしで Apple Wallet の見た目を変える<strong>非 AI のコンシューマーアプリ</strong>、そして「AI が自社ブランドをどう答えるか」を測る新カテゴリ <strong>GEO</strong>。共通するのは「既存の当たり前（同期実行 / 既製 UI / 従来 SEO）を一段ずらす」発想だ。各リポジトリを〈解決したい課題〉と〈提供する機能〉の 2 点で読み解く。</p>\n\n<figure class='fig'>\n<svg viewBox='0 0 600 250' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='0' y='0' width='600' height='250' fill='#f0fdf4'/>\n  <text x='300' y='24' text-anchor='middle' font-size='14' font-weight='700' fill='#166534'>今日の3本：課題 → 提供機能</text>\n  <line x1='210' y1='36' x2='210' y2='238' stroke='#86efac'/>\n  <line x1='405' y1='36' x2='405' y2='238' stroke='#86efac'/>\n  <text x='105' y='52' text-anchor='middle' font-size='11' font-weight='700' fill='#15803d'>リポジトリ</text>\n  <text x='307' y='52' text-anchor='middle' font-size='11' font-weight='700' fill='#15803d'>解決したい課題</text>\n  <text x='502' y='52' text-anchor='middle' font-size='11' font-weight='700' fill='#15803d'>提供する機能</text>\n  <g font-size='10' fill='#14532d'>\n    <rect x='20' y='64' width='560' height='54' rx='5' fill='#dcfce7'/>\n    <text x='30' y='84' font-weight='700'>unreal-agent</text><text x='30' y='100'>Go ・ ⭐約850</text>\n    <text x='220' y='84'>同期待受のharnessは長時間・並行に</text><text x='220' y='100'>弱い</text>\n    <text x='415' y='84'>非同期を第一級に。投げっぱなし＋</text><text x='415' y='100'>複数エージェント並行実行</text>\n    <rect x='20' y='122' width='560' height='54' rx='5' fill='#bbf7d0'/>\n    <text x='30' y='142' font-weight='700'>AirCard</text><text x='30' y='158'>Swift ・ ⭐約2.8k</text>\n    <text x='220' y='142'>Wallet外観の変更は従来脱獄が必要</text><text x='220' y='158' fill='#166534'>だった</text>\n    <text x='415' y='142'>脱獄不要でiOS18+のWalletカード</text><text x='415' y='158'>スキンを差し替え</text>\n    <rect x='20' y='180' width='560' height='54' rx='5' fill='#dcfce7'/>\n    <text x='30' y='200' font-weight='700'>niubigeo</text><text x='30' y='216'>TS ・ ⭐約4.8k</text>\n    <text x='220' y='200'>AIがブランドをどう言及するかが</text><text x='220' y='216'>不可視（従来SEOでは測れない）</text>\n    <text x='415' y='200'>各AIでのブランド可視性を計測＋</text><text x='415' y='216'>競合比較レポート生成（セルフホスト）</text>\n  </g>\n</svg>\n<figcaption>図1：3本の「解決したい課題 → 提供する機能」対応。async-first / 脱獄不要 / GEO と切り口はバラバラだが、いずれも既存前提を一段ずらす。</figcaption>\n</figure>\n\n<h4>unreallabsai/unreal-agent（Go・⭐約850）</h4>\n<p><strong>解決したい課題：</strong>既存の CLI エージェント harness は、基本的にタスクを投げて結果を待つ同期モデルが中心で、長時間走るタスクや複数エージェントの並行処理を前提にしにくい。<strong>提供する機能：</strong>非同期実行を第一級に据えた軽量な harness（Go・MIT）。長時間タスクを待ち受けずに投げ、複数のエージェント処理を並行で回す設計になっている。前日の ZCode に続く「ハーネス競争」の新章で、今回の差別化点は \"async-first\"。公開わずか約 1 日で約 850 スターという極めて高い増加率が、本日の新星筆頭として注目を集めた理由だ。</p>\n\n<h4>Mak5er/AirCard（Swift・⭐約2.8k）</h4>\n<p><strong>解決したい課題：</strong>Apple Wallet のカード外観（銀行カード・会員証など）を自分好みに変えたくても、従来は脱獄（Jailbreak）が必要で敷居が高かった。<strong>提供する機能：</strong>脱獄不要で iOS 18+ の Wallet カードのスキンを差し替えられるネイティブ Swift アプリ（MIT）。エージェント／AI 一色のトレンドの中で、\"非 AI のコンシューマー\" という別ジャンルの筆頭。iOS 18+ の新 API を突いたニッチ需要と「見た目が変わる」という分かりやすさが刺さり、公開 6 日で約 2.8k スターと純粋な話題性で急伸した。</p>\n\n<h4>Albert-Weasker/niubigeo（TypeScript・⭐約4.8k）</h4>\n<p><strong>解決したい課題：</strong>検索が生成 AI に移る中、「AI（生成 AI 検索・チャット）が自社ブランドをどう見せ・言及するか」は従来の SEO では測れず、可視化されていなかった。<strong>提供する機能：</strong>各種 AI でのブランド可視性を測り、競合比較レポートを生成するセルフホスト型の <strong>GEO（Generative Engine Optimization）</strong>ツール（Apache-2.0）。公式サイトで有償サービスも提供する OSS＋商用ハイブリッド。Trendshift 日次上位に当日 +108 で継続浮上し、公開約 3 週で約 4.8k スターと、\"AI-SEO / GEO\" という新カテゴリの代表格として話題化している。</p>\n\n<h4>まとめ — 自分が試すなら</h4>\n<p>DevForge 文脈で一番効きそうなのは <strong>unreal-agent</strong> の async-first 設計。多数の定期タスクを並行で回す運用の参照になる。GEO（niubigeo）はマーケ観点で \"自分のプロダクトが AI にどう説明されるか\" を一度測ってみる価値があり、AirCard は実装の面白さとして Swift の Wallet API を眺めるサンプルになる。まずは unreal-agent の非同期ループ設計を読むのが投資対効果が高い。</p>",
+      "sources": [
+        {
+          "title": "unreallabsai/unreal-agent",
+          "url": "https://github.com/unreallabsai/unreal-agent"
+        },
+        {
+          "title": "Mak5er/AirCard",
+          "url": "https://github.com/Mak5er/AirCard"
+        },
+        {
+          "title": "Albert-Weasker/niubigeo",
+          "url": "https://github.com/Albert-Weasker/niubigeo"
+        }
+      ]
+    },
     {
       "id": "2026-09-22-claude-code",
       "date": "2026-09-22",
