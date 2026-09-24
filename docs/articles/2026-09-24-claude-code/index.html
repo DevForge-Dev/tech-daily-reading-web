@@ -1,0 +1,101 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>v2.1.281はBedrock/MCPを強化しつつ「autoの再帰rm無確認」を修正 — 助言(CLAUDE.md)と強制(Hook)の設計思想 — デイリー技術深掘り 読み物</title><meta name="description" content="9/23のv2.1.281はBedrockのassume_role/ガードレールとMCP URLモードのelicitationを足しつつ、プロンプトキャッシュ喪失・resumeの二重実行、そしてautoモードでの再帰rm無確認実行を修正した。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-24-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="v2.1.281はBedrock/MCPを強化しつつ「autoの再帰rm無確認」を修正 — 助言(CLAUDE.md)と強制(Hook)の設計思想 — デイリー技術深掘り 読み物"><meta property="og:description" content="9/23のv2.1.281はBedrockのassume_role/ガードレールとMCP URLモードのelicitationを足しつつ、プロンプトキャッシュ喪失・resumeの二重実行、そしてautoモードでの再帰rm無確認実行を修正した。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-24-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>v2.1.281はBedrock/MCPを強化しつつ「autoの再帰rm無確認」を修正 — 助言(CLAUDE.md)と強制(Hook)の設計思想</h1> <p class="lede">9/23のv2.1.281はBedrockのassume_role/ガードレールとMCP URLモードのelicitationを足しつつ、プロンプトキャッシュ喪失・resumeの二重実行、そしてautoモードでの再帰rm無確認実行を修正した。</p> <div class="meta"> <span>📅 2026年9月24日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="0"><p>Claude Code は毎週のように小刻みなリリースを重ねているが、9/23 公開の <strong>v2.1.281</strong> は「エンタープライズ対応の前進」と「安全性の地固め」が同居した回だ。単なる新機能追加ではなく、<em>危うい既定挙動をひとつ潰した</em>点にこそ今日の学びがある。</p>
+
+<h4 id="sec-1">何が変わったか（v2.1.281）</h4>
+<p>エンタープライズ向けには Amazon Bedrock upstream で <code>assume_role</code>（開発者ごとのセッションは任意）と <code>guardrail:{id,version}</code> 指定に対応。Claude Desktop 連携に <code>blockReadsOutsideWorkingDirectories</code> / <code>disableBypassPermissionsMode</code> などのキーと <code>telemetry.resource_attributes</code> が入った。MCP は URL モードの elicitation とサーバー検証を強化。安定性では、MCP 切断やプロキシのストリームイベントで<strong>プロンプトキャッシュが失われる</strong>問題、セッション再開(resume)で旧ターンが変形して再送・巨大セッションが末尾のみ復元・<strong>ツールが二重実行</strong>される不具合を修正した。</p>
+
+<figure class='fig'>
+<svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <rect x='0' y='0' width='600' height='210' fill='#f7f3ff'></rect>
+  <text x='300' y='24' text-anchor='middle' font-size='14' font-weight='700' fill='#6d28d9'>autoモードの破壊的操作フロー（v2.1.281の修正点）</text>
+  <rect x='40' y='44' width='150' height='40' rx='6' fill='#ede9fe' stroke='#a78bfa'></rect>
+  <text x='115' y='68' text-anchor='middle' font-size='11' fill='#4c1d95'>操作を実行しようとする</text>
+  <line x1='190' y1='64' x2='230' y2='64' stroke='#a78bfa' stroke-width='2'></line>
+  <polygon points='230,64 222,60 222,68' fill='#a78bfa'></polygon>
+  <rect x='230' y='44' width='150' height='40' rx='6' fill='#ede9fe' stroke='#a78bfa'></rect>
+  <text x='305' y='68' text-anchor='middle' font-size='11' fill='#4c1d95'>内部の安全分類器で判定</text>
+  <line x1='305' y1='84' x2='305' y2='108' stroke='#a78bfa' stroke-width='2'></line>
+  <rect x='120' y='112' width='170' height='46' rx='6' fill='#dcfce7' stroke='#4ade80'></rect>
+  <text x='205' y='132' text-anchor='middle' font-size='11' fill='#166534'>安全 → 自動承認して実行</text>
+  <text x='205' y='149' text-anchor='middle' font-size='10' fill='#166534'>（手動承認の負担を省く）</text>
+  <rect x='320' y='112' width='240' height='46' rx='6' fill='#fee2e2' stroke='#f87171'></rect>
+  <text x='440' y='130' text-anchor='middle' font-size='11' fill='#991b1b'>危険(再帰rm等) → 明示許可を要求</text>
+  <text x='440' y='148' text-anchor='middle' font-size='10' fill='#991b1b'>旧: 無確認で実行 → 新: 承認制に修正</text>
+  <line x1='250' y1='84' x2='205' y2='108' stroke='#4ade80' stroke-width='2'></line>
+  <line x1='360' y1='84' x2='440' y2='108' stroke='#f87171' stroke-width='2'></line>
+  <text x='300' y='195' text-anchor='middle' font-size='10' fill='#6b7280'>図1：破壊的操作は「分類器で止める」設計。今回その穴（再帰rm）を許可制に是正した。</text>
+</svg>
+<figcaption>図1：autoモードは分類器で危険操作を止める設計。v2.1.281で再帰rmの無確認実行を許可制へ。</figcaption>
+</figure>
+
+<h4 id="sec-2">核心：autoモードの「再帰rm無確認実行」修正</h4>
+<p>今回いちばん重いのは、<strong>autoモードで再帰的な <code>rm</code> が無確認で実行されていた</strong>挙動を明示許可制に改めた点だ（ファイルパスの null バイト処理も是正）。自動承認は「安全な操作は通し、危険な操作は内部の安全分類器で止める」思想で、手動承認の負担と危険な権限バイパスの中間を埋める。だが分類の穴は破壊的操作に直結する。<strong>自動化の価値は、境界（何を通し何を止めるか）の精度で決まる</strong>——今回の修正はそれを地で示した。</p>
+
+<h4 id="sec-3">合わせて読みたい：助言と強制の使い分け</h4>
+<p>今週のチュートリアル群が示す原則は明快だ。<code>CLAUDE.md</code> は<strong>助言</strong>にすぎず（しかも 200 行を超えると遵守率が落ちる）、絶対に守らせたいことは <strong>100% 実行される Hook</strong>（破壊的 git のブロック、編集後の自動 lint、環境準備など）に落とす。繰り返し作業はクリーンな別コンテキストで並列実行できる Subagent へ委譲する。週まとめでは v2.1.277 から <code>CLAUDE.md</code> 無しでも <code>AGENTS.md</code> を直接読めるようになった点も押さえたい（既定 <code>claude-md-or-agents-md</code>）。</p>
+
+<h4 id="sec-4">自分が試すなら</h4>
+<p>(1) 破壊的コマンドを止める <code>PreToolUse</code> Hook を一つ書き、「分類器頼み」を一段減らす。(2) <code>CLAUDE.md</code> を 200 行以内に刈り込み、反復して貼る文脈は「8〜12 個の厳選スキル」＋ <code>.agents/skills/</code> 同梱へ寄せる。(3) resume の二重実行が直ったので、長いセッションの再開を安心して使う。</p>
+
+<h4 id="sec-5">注意点</h4>
+<p>autoモードは「危険を分類器が止める」前提でも過信しない。今回の件が示す通り分類は完璧ではないので、破壊的操作は Hook か手動承認で二重化するのが堅い。Bedrock の <code>assume_role</code>/guardrail はエンタープライズ設定前提の機能で、個人利用ではまず influence しない。</p>
+
+<h4 id="sec-6">ひとことまとめ</h4>
+<p>新機能より「無確認 rm を潰した」ことが今日の主役。自動化は速さではなく<strong>境界設計の信頼</strong>で価値が決まる、と再確認できる回だった。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://code.claude.com/docs/en/changelog" target="_blank" rel="noopener noreferrer"> Claude Code changelog </a> </li><li> <a href="https://qiita.com/aicoding-guide/items/8ab9d3885652fdbc138a" target="_blank" rel="noopener noreferrer"> 今週のCC変更点まとめ（Qiita） </a> </li><li> <a href="https://dev.to/vibehackers/claude-code-hooks-subagents-power-features-the-complete-guide-2026-c71" target="_blank" rel="noopener noreferrer"> Hooks・Subagents完全ガイド(2026) </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 何が変わったか（v2.1.281） </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 核心：autoモードの「再帰rm無確認実行」修正 </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 合わせて読みたい：助言と強制の使い分け </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 自分が試すなら </a> </li><li> <a href="#sec-5" data-toc="sec-5"> 注意点 </a> </li><li> <a href="#sec-6" data-toc="sec-6"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-09-24</div> <div>⏱ 読了 約3分</div> <div>🏷 Claude Code</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
