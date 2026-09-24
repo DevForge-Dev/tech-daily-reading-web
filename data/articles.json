@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-09-23T04:50:14.185Z",
+  "generatedAt": "2026-09-24T04:50:40.265Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,94 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "date": "2026-09-24",
+      "topic": "Claude Code",
+      "title": "v2.1.281はBedrock/MCPを強化しつつ「autoの再帰rm無確認」を修正 — 助言(CLAUDE.md)と強制(Hook)の設計思想",
+      "lede": "9/23のv2.1.281はBedrockのassume_role/ガードレールとMCP URLモードのelicitationを足しつつ、プロンプトキャッシュ喪失・resumeの二重実行、そしてautoモードでの再帰rm無確認実行を修正した。",
+      "articleHtml": "<p>Claude Code は毎週のように小刻みなリリースを重ねているが、9/23 公開の <strong>v2.1.281</strong> は「エンタープライズ対応の前進」と「安全性の地固め」が同居した回だ。単なる新機能追加ではなく、<em>危うい既定挙動をひとつ潰した</em>点にこそ今日の学びがある。</p>\n\n<h4>何が変わったか（v2.1.281）</h4>\n<p>エンタープライズ向けには Amazon Bedrock upstream で <code>assume_role</code>（開発者ごとのセッションは任意）と <code>guardrail:{id,version}</code> 指定に対応。Claude Desktop 連携に <code>blockReadsOutsideWorkingDirectories</code> / <code>disableBypassPermissionsMode</code> などのキーと <code>telemetry.resource_attributes</code> が入った。MCP は URL モードの elicitation とサーバー検証を強化。安定性では、MCP 切断やプロキシのストリームイベントで<strong>プロンプトキャッシュが失われる</strong>問題、セッション再開(resume)で旧ターンが変形して再送・巨大セッションが末尾のみ復元・<strong>ツールが二重実行</strong>される不具合を修正した。</p>\n\n<figure class='fig'>\n<svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='0' y='0' width='600' height='210' fill='#f7f3ff'/>\n  <text x='300' y='24' text-anchor='middle' font-size='14' font-weight='700' fill='#6d28d9'>autoモードの破壊的操作フロー（v2.1.281の修正点）</text>\n  <rect x='40' y='44' width='150' height='40' rx='6' fill='#ede9fe' stroke='#a78bfa'/>\n  <text x='115' y='68' text-anchor='middle' font-size='11' fill='#4c1d95'>操作を実行しようとする</text>\n  <line x1='190' y1='64' x2='230' y2='64' stroke='#a78bfa' stroke-width='2'/>\n  <polygon points='230,64 222,60 222,68' fill='#a78bfa'/>\n  <rect x='230' y='44' width='150' height='40' rx='6' fill='#ede9fe' stroke='#a78bfa'/>\n  <text x='305' y='68' text-anchor='middle' font-size='11' fill='#4c1d95'>内部の安全分類器で判定</text>\n  <line x1='305' y1='84' x2='305' y2='108' stroke='#a78bfa' stroke-width='2'/>\n  <rect x='120' y='112' width='170' height='46' rx='6' fill='#dcfce7' stroke='#4ade80'/>\n  <text x='205' y='132' text-anchor='middle' font-size='11' fill='#166534'>安全 → 自動承認して実行</text>\n  <text x='205' y='149' text-anchor='middle' font-size='10' fill='#166534'>（手動承認の負担を省く）</text>\n  <rect x='320' y='112' width='240' height='46' rx='6' fill='#fee2e2' stroke='#f87171'/>\n  <text x='440' y='130' text-anchor='middle' font-size='11' fill='#991b1b'>危険(再帰rm等) → 明示許可を要求</text>\n  <text x='440' y='148' text-anchor='middle' font-size='10' fill='#991b1b'>旧: 無確認で実行 → 新: 承認制に修正</text>\n  <line x1='250' y1='84' x2='205' y2='108' stroke='#4ade80' stroke-width='2'/>\n  <line x1='360' y1='84' x2='440' y2='108' stroke='#f87171' stroke-width='2'/>\n  <text x='300' y='195' text-anchor='middle' font-size='10' fill='#6b7280'>図1：破壊的操作は「分類器で止める」設計。今回その穴（再帰rm）を許可制に是正した。</text>\n</svg>\n<figcaption>図1：autoモードは分類器で危険操作を止める設計。v2.1.281で再帰rmの無確認実行を許可制へ。</figcaption>\n</figure>\n\n<h4>核心：autoモードの「再帰rm無確認実行」修正</h4>\n<p>今回いちばん重いのは、<strong>autoモードで再帰的な <code>rm</code> が無確認で実行されていた</strong>挙動を明示許可制に改めた点だ（ファイルパスの null バイト処理も是正）。自動承認は「安全な操作は通し、危険な操作は内部の安全分類器で止める」思想で、手動承認の負担と危険な権限バイパスの中間を埋める。だが分類の穴は破壊的操作に直結する。<strong>自動化の価値は、境界（何を通し何を止めるか）の精度で決まる</strong>——今回の修正はそれを地で示した。</p>\n\n<h4>合わせて読みたい：助言と強制の使い分け</h4>\n<p>今週のチュートリアル群が示す原則は明快だ。<code>CLAUDE.md</code> は<strong>助言</strong>にすぎず（しかも 200 行を超えると遵守率が落ちる）、絶対に守らせたいことは <strong>100% 実行される Hook</strong>（破壊的 git のブロック、編集後の自動 lint、環境準備など）に落とす。繰り返し作業はクリーンな別コンテキストで並列実行できる Subagent へ委譲する。週まとめでは v2.1.277 から <code>CLAUDE.md</code> 無しでも <code>AGENTS.md</code> を直接読めるようになった点も押さえたい（既定 <code>claude-md-or-agents-md</code>）。</p>\n\n<h4>自分が試すなら</h4>\n<p>(1) 破壊的コマンドを止める <code>PreToolUse</code> Hook を一つ書き、「分類器頼み」を一段減らす。(2) <code>CLAUDE.md</code> を 200 行以内に刈り込み、反復して貼る文脈は「8〜12 個の厳選スキル」＋ <code>.agents/skills/</code> 同梱へ寄せる。(3) resume の二重実行が直ったので、長いセッションの再開を安心して使う。</p>\n\n<h4>注意点</h4>\n<p>autoモードは「危険を分類器が止める」前提でも過信しない。今回の件が示す通り分類は完璧ではないので、破壊的操作は Hook か手動承認で二重化するのが堅い。Bedrock の <code>assume_role</code>/guardrail はエンタープライズ設定前提の機能で、個人利用ではまず influence しない。</p>\n\n<h4>ひとことまとめ</h4>\n<p>新機能より「無確認 rm を潰した」ことが今日の主役。自動化は速さではなく<strong>境界設計の信頼</strong>で価値が決まる、と再確認できる回だった。</p>",
+      "sources": [
+        {
+          "title": "Claude Code changelog",
+          "url": "https://code.claude.com/docs/en/changelog"
+        },
+        {
+          "title": "今週のCC変更点まとめ（Qiita）",
+          "url": "https://qiita.com/aicoding-guide/items/8ab9d3885652fdbc138a"
+        },
+        {
+          "title": "Hooks・Subagents完全ガイド(2026)",
+          "url": "https://dev.to/vibehackers/claude-code-hooks-subagents-power-features-the-complete-guide-2026-c71"
+        }
+      ],
+      "id": "2026-09-24-claude-code"
+    },
+    {
+      "date": "2026-09-23",
+      "topic": "Next.js",
+      "title": "SVGだけで作る円形プログレス／リングUI — stroke-dashoffsetのdeterminateと、conic-gradient・<progress>の使い分け",
+      "lede": "KPIやアップロード進捗の「円で見せる」UIは、ライブラリ無しでSVGの円＋stroke-dashoffset一本で軽量に作れる。3方式の使い分けと、App RouterでのRSC/Client切り分けを整理する。",
+      "articleHtml": "<p>ダッシュボードの KPI、アップロード進捗、スコア、ポモドーロ、読了率——「円で進捗を見せる」UI は頻出だが、ライブラリを入れなくても <strong>SVG の円＋<code>stroke-dasharray</code>/<code>stroke-dashoffset</code></strong> だけで依存ゼロ・軽量に作れる。線を描くアニメ全般ではなく、本稿は <strong>0〜100% の determinate な進捗</strong>に絞り、(1) SVG ストローク、(2) <code>conic-gradient</code>＋<code>@property</code>、(3) ネイティブ <code>&lt;progress&gt;</code> の 3 系統をどう選ぶかまで整理する。</p>\n\n<h4>仕組み：破線を「どこまで見せるか」で進捗にする</h4>\n<p><code>&lt;circle&gt;</code> の輪郭線を 1 本の破線に見立て、実線長＝円周にして「実線をどこまで見せるか」を <code>stroke-dashoffset</code> でずらす。円周は <code>2 × π × r</code>（<code>r=45</code> なら約 282.74）。<code>stroke-dasharray</code>＝円周、<code>stroke-dashoffset</code>＝<code>円周 ×(1 - progress/100)</code>。円弧は 3 時方向始まりなので、上(12 時)始まりにするには CSS で <code>transform: rotate(-90deg)</code>（<code>transform-box: fill-box</code> 併用）。丸端は <code>stroke-linecap: round</code>。アニメは <code>stroke-dashoffset</code> を CSS <code>transition</code> で補間するのが軽い。</p>\n\n<figure class='fig'>\n<svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='0' y='0' width='600' height='200' fill='#f8fafc'/>\n  <text x='300' y='24' text-anchor='middle' font-size='14' font-weight='700' fill='#0f172a'>stroke-dashoffsetで72%を描く仕組み</text>\n  <g transform='rotate(-90 110 110)'>\n    <circle cx='110' cy='110' r='45' fill='none' stroke='#e2e8f0' stroke-width='12'/>\n    <circle cx='110' cy='110' r='45' fill='none' stroke='#2563eb' stroke-width='12' stroke-linecap='round' stroke-dasharray='282.74' stroke-dashoffset='79.17'/>\n  </g>\n  <text x='110' y='116' text-anchor='middle' font-size='20' font-weight='700' fill='#1e293b'>72%</text>\n  <line x1='170' y1='110' x2='250' y2='110' stroke='#94a3b8'/>\n  <g font-size='11' fill='#334155'>\n    <text x='260' y='70'>円周 = 2 × π × r（r=45 → 約282.74）</text>\n    <text x='260' y='96'>stroke-dasharray = 282.74（全周に実線1本）</text>\n    <text x='260' y='122'>stroke-dashoffset = 282.74 ×(1 − 0.72) ≈ 79.17</text>\n    <text x='260' y='148'>rotate(-90deg)で12時始まり／linecap: round</text>\n  </g>\n  <text x='300' y='186' text-anchor='middle' font-size='10' fill='#64748b'>図1：offset=円周で0%、offset=0で100%。transitionで補間すれば滑らかに動く。</text>\n</svg>\n<figcaption>図1：円周とoffsetの関係。offsetを円周→0へ動かすと0%→100%に埋まる。</figcaption>\n</figure>\n\n<h4>3方式の使い分け</h4>\n<p><strong>SVG ストローク</strong>＝最も柔軟で既定。丸端・多重リング・目盛り・アイコン合成・細かな a11y に強い。<strong>conic-gradient＋@property</strong>＝DOM 1 要素で「塗り」進捗（パイ）に向くが、丸端が作りにくく、アニメには <code>@property</code> 登録が必須（未登録のカスタムプロパティは補間できない）。<strong>&lt;progress&gt;</strong>＝直線バーなら a11y 無料だが円形にはできない。indeterminate（不定スピナー）は短い弧を作り <code>@keyframes spin</code> で回すのが定番。</p>\n\n<pre><code>// progress(0-100) → stroke-dashoffset\nconst r = 45, c = 2 * Math.PI * r;      // 円周 ≈ 282.74\nel.style.strokeDasharray  = String(c);\nel.style.strokeDashoffset = String(c * (1 - p / 100));</code></pre>\n\n<h4>Next.js（App Router）での切り分け</h4>\n<p><strong>静的な determinate リング</strong>（初期表示だけ動かさない）は <strong>Server Component のままでよい</strong>。<code>progress</code> を props で受け、<code>stroke-dashoffset</code> をサーバ側で計算して属性に埋めるだけ——<code>'use client'</code> 不要・JS 0KB。<strong>値がクライアントで動く</strong>（アップロード・カウントダウン・スコア加算）ときは、その<strong>リング描画だけを小さな Client 島</strong>に切り出し、ページ本体は RSC のまま。indeterminate スピナーは純 CSS 回転なので <code>loading.tsx</code>/<code>&lt;Suspense fallback&gt;</code> にそのまま置ける。読了率リングは <code>animation-timeline: scroll()</code> のスクロール駆動で <code>--p</code> を 0→100 に補間すれば JS ゼロで作れる。</p>\n\n<h4>注意点</h4>\n<p><code>&lt;circle&gt;</code> の線幅は中心線基準なので、線の半分が <code>viewBox</code> 外に切れることがある——余白を持たせるか <code>r</code> を線幅ぶん小さく。a11y はラッパーに <code>role=\"progressbar\"</code>＋<code>aria-valuemin/max/now</code> を付け、SVG 本体は <code>aria-hidden=\"true\"</code>。<strong>indeterminate には <code>aria-valuenow</code> を付けない</strong>（誤読の元）。<code>prefers-reduced-motion: reduce</code> では回転を止め、determinate も <code>transition: none</code> で最終値へ即スナップ（情報は失わない）。</p>\n\n<h4>ひとことまとめ</h4>\n<p>「円の進捗」は <code>stroke-dashoffset</code> 一本で足りる。App Router では<strong>静的＝RSC、動く部分だけ Client 島</strong>に切るのがきれいな設計。</p>",
+      "sources": [
+        {
+          "title": "MDN: stroke-dashoffset",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/SVG/Attribute/stroke-dashoffset"
+        },
+        {
+          "title": "MDN: @property",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/@property"
+        },
+        {
+          "title": "Nikita Hlopov: SVG circle progress bar",
+          "url": "https://nikitahl.com/svg-circle-progress"
+        }
+      ],
+      "id": "2026-09-23-nextjs"
+    },
+    {
+      "date": "2026-09-24",
+      "topic": "Flutter",
+      "title": "11月stableに迫るmaterial_ui移行と、Impeller全既定が変えるアニメ・120fps設計",
+      "lede": "3.47でMaterial/CupertinoはSDKから独立パッケージ化。正式deprecationは11月stableから——「まだ壊れない＝11月までに移行」。Impeller全既定・Riverpod 3.x・Android HCPPも今日の要点。",
+      "articleHtml": "<p>Flutter は年 4 回（2/5/8/11 月）の安定リリースサイクルで進む。現行安定版は <strong>Flutter 3.47.4 / Dart 3.13.3</strong>（2026-09-11 patch）、beta は <strong>3.48 / Dart 3.14</strong>。今いちばん締め切りが近いのは <strong>11 月 stable に向けた <code>material_ui</code> / <code>cupertino_ui</code> 移行</strong>だ。</p>\n\n<h4>移行：material_ui / cupertino_ui</h4>\n<p>3.47 で Material/Cupertino は SDK から独立パッケージ（<code>material_ui</code> / <code>cupertino_ui</code> 1.0）へ切り出された。ただし<strong>正式な deprecation は 2026 年 11 月の stable から</strong>で、3.47.x の間は既存コードがそのまま動く。つまり「<strong>まだ壊れない＝11 月までに移行</strong>」が要点。移行コマンドは <code>dart fix --apply --code=migrate_design_widgets</code>。<code>--code=</code> を付けずに <code>dart fix --apply</code> だけだと成功表示でも該当変更が入らない罠がある。fix は <code>pubspec.yaml</code> に <code>material_ui: any</code> を書き込むので、直後に <strong>キャレット制約（例 <code>^3.0.0</code>）</strong>へ置換して破壊的変更の無警告流入を防ぐ。よくある誤解として <strong><code>ChangeNotifier</code> は移動していない</strong>（SDK 内に残り deprecated でもない）。</p>\n\n<figure class='fig'>\n<svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='0' y='0' width='600' height='150' fill='#eff6ff'/>\n  <text x='300' y='24' text-anchor='middle' font-size='14' font-weight='700' fill='#075985'>material_ui 移行のタイムライン</text>\n  <line x1='40' y1='80' x2='560' y2='80' stroke='#7dd3fc' stroke-width='3'/>\n  <circle cx='120' cy='80' r='7' fill='#0284c7'/>\n  <text x='120' y='60' text-anchor='middle' font-size='11' fill='#0c4a6e'>3.47 (8/12)</text>\n  <text x='120' y='104' text-anchor='middle' font-size='10' fill='#334155'>独立パッケージ化</text>\n  <text x='120' y='118' text-anchor='middle' font-size='10' fill='#334155'>（まだ壊れない）</text>\n  <circle cx='320' cy='80' r='7' fill='#0284c7'/>\n  <text x='320' y='60' text-anchor='middle' font-size='11' fill='#0c4a6e'>3.47.x 期間</text>\n  <text x='320' y='104' text-anchor='middle' font-size='10' fill='#334155'>dart fix --code=</text>\n  <text x='320' y='118' text-anchor='middle' font-size='10' fill='#334155'>migrate_design_widgets</text>\n  <circle cx='520' cy='80' r='8' fill='#dc2626'/>\n  <text x='520' y='60' text-anchor='middle' font-size='11' font-weight='700' fill='#991b1b'>2026年11月 stable</text>\n  <text x='520' y='104' text-anchor='middle' font-size='10' fill='#991b1b'>正式 deprecation</text>\n  <text x='300' y='140' text-anchor='middle' font-size='10' fill='#64748b'>図1：まず dart fix --dry-run で差分確認 → 適用 → 制約をキャレットに固定。</text>\n</svg>\n<figcaption>図1：3.47で切り出し済み、11月stableで正式deprecation。猶予のあるうちに移行しておく。</figcaption>\n</figure>\n\n<h4>Impeller全既定とFragmentShader</h4>\n<p>3.47 で Impeller が全デスクトップ既定になり（Android は 3.48 で一本化）、GLSL カスタムシェーダは <strong>AOT（事前）コンパイル</strong>される。グラデーション流動・ノイズ・波紋・溶暗などの GPU 演出が first-frame から jank なく動く（Skia 時代の実行時コンパイル stutter が消える）。3.44 で <code>FragmentShader.getUniformFloat()</code> が入り、uniform を<strong>インデックスでなく名前でバインド</strong>できる（<code>.frag</code> 変更に強い）。制約はラスタ ~4ms を守るため<strong>重い分岐(if/else)を避け、<code>mix()</code>/<code>smoothstep()</code>/<code>clamp()</code> など数式関数を優先、シェーダ実行は 4〜5ms 未満</strong>。既存カスタムシェーダは Impeller 既定化で要再テスト。</p>\n\n<h4>状態管理：Riverpod 3.x</h4>\n<p>現行は <strong>Riverpod 3.x（3.3.x 系）</strong>。要点は <strong>unified Ref</strong>、<code>@riverpod</code> による <strong>code generation</strong>（Notifier 生成でボイラープレート削減）、<strong>automatic retry</strong>（失敗 provider に指数バックオフ）、<strong>experimental persistence</strong>（選択 provider のオフライン保存）。再描画は <code>ref.watch(provider.select(...))</code> で最小スライス購読。監査/規制・大規模チームは明示的な event→state 遷移の <strong>Bloc</strong>（<code>blocTest</code>/<code>hydrated_bloc</code>）が向く。原則は「一つ選んで一貫させ、テストを書く」。</p>\n\n<h4>120fpsのフレーム予算</h4>\n<p>Android の <strong>HCPP</strong>（Hybrid Composition++、Vulkan でレイヤ合成を OS 側へ委譲）で PlatformView 混在画面の jank/入力ズレが緩む。フレーム予算は <strong>120fps = 8.33ms</strong>（UI ~4ms＋ラスタ ~4ms）。リストは <code>ListView.builder</code> で <code>itemExtent</code>（高さ固定＝レイアウト予測可）・<code>cacheExtent: 800</code>・<code>addRepaintBoundaries: true</code>、アニメ領域は <code>RepaintBoundary</code> で隔離。Impeller 移行で jank フレーム 30〜50%減・ラスタ約 50% 高速化の報告もある。</p>\n\n<figure class='fig'>\n<svg viewBox='0 0 600 170' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='0' y='0' width='600' height='170' fill='#f0fdfa'/>\n  <text x='300' y='24' text-anchor='middle' font-size='14' font-weight='700' fill='#0f766e'>1フレームの予算（ミリ秒）</text>\n  <text x='70' y='58' font-size='11' fill='#134e4a'>60fps</text>\n  <rect x='110' y='46' width='320' height='18' rx='3' fill='#99f6e4'/>\n  <text x='438' y='60' font-size='10' fill='#134e4a'>16.7ms</text>\n  <text x='70' y='90' font-size='11' fill='#134e4a'>90fps</text>\n  <rect x='110' y='78' width='220' height='18' rx='3' fill='#5eead4'/>\n  <text x='338' y='92' font-size='10' fill='#134e4a'>11.1ms</text>\n  <text x='70' y='122' font-size='11' font-weight='700' fill='#134e4a'>120fps</text>\n  <rect x='110' y='110' width='83' height='18' rx='3' fill='#2dd4bf'/>\n  <rect x='193' y='110' width='83' height='18' rx='3' fill='#0d9488'/>\n  <text x='151' y='124' text-anchor='middle' font-size='9' fill='#083344'>UI ~4ms</text>\n  <text x='234' y='124' text-anchor='middle' font-size='9' fill='#ffffff'>raster ~4ms</text>\n  <text x='300' y='124' font-size='10' fill='#134e4a'>= 8.33ms</text>\n  <text x='300' y='156' text-anchor='middle' font-size='10' fill='#5b7c78'>図2：高fpsほど予算は薄い。DevToolsのPerformanceをprofileモードで計測しラスタのスパイクを特定。</text>\n</svg>\n<figcaption>図2：120fpsは8.33ms／フレーム。UIとラスタで半々が目安。</figcaption>\n</figure>\n\n<h4>ひとことまとめ</h4>\n<p>今日の最優先は <strong>11 月までの <code>material_ui</code> 移行</strong>（<code>dart fix --code=migrate_design_widgets</code> → 制約固定）。Impeller 全既定で GPU 演出と 120fps がぐっと現実的になった。</p>",
+      "sources": [
+        {
+          "title": "Flutter 3.47 what breaks (DartWay)",
+          "url": "https://dartway.dev/blog/flutter-3-47-what-breaks"
+        },
+        {
+          "title": "What's new in Flutter 3.44",
+          "url": "https://flutter.dev/blog/whats-new-in-flutter-3-44"
+        },
+        {
+          "title": "BLoC vs Riverpod 2026 (ASOasis)",
+          "url": "https://asoasis.tech/articles/2026-04-17-2054-flutter-bloc-vs-riverpod-comparison-2026/"
+        }
+      ],
+      "id": "2026-09-24-flutter"
+    },
+    {
+      "date": "2026-09-24",
+      "topic": "GitHub Trending",
+      "title": "9/24の話題リポジトリ — macOSディスク掃除CLI・常駐パーソナルエージェント・手元GPUの継続学習",
+      "lede": "エージェント／AI 一色のトレンドの中、非AIのmacOS掃除CLI、離席中も走り続けるパーソナルエージェント、8GB VRAMでゼロから学ぶ継続学習——毛色の違う3本が急伸した。",
+      "articleHtml": "<p>本日の GitHub 急上昇上位は「Jev/Laya」系の派生ミーム群でほぼ埋まったため既出扱いで除外し、クラスタ外の新星から<strong>ジャンルの異なる 3 本</strong>を拾った。共通点は「エージェント一色の中で別の需要を突いた」こと——開発者の日常の面倒(ディスク掃除)、常駐して走り続けるエージェント UX、そして巨大クラスタ不要の ML 研究だ。各リポジトリを〈解決したい課題〉と〈提供する機能〉の 2 点で読み解く。</p>\n\n<figure class='fig'>\n<svg viewBox='0 0 600 220' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='0' y='0' width='600' height='220' fill='#f0fdf4'/>\n  <text x='300' y='22' text-anchor='middle' font-size='14' font-weight='700' fill='#166534'>今日の3本：課題 → 提供機能</text>\n  <line x1='170' y1='34' x2='170' y2='206' stroke='#86efac'/>\n  <line x1='385' y1='34' x2='385' y2='206' stroke='#86efac'/>\n  <text x='90' y='50' text-anchor='middle' font-size='11' font-weight='700' fill='#15803d'>リポジトリ</text>\n  <text x='277' y='50' text-anchor='middle' font-size='11' font-weight='700' fill='#15803d'>解決したい課題</text>\n  <text x='492' y='50' text-anchor='middle' font-size='11' font-weight='700' fill='#15803d'>提供する機能</text>\n  <g font-size='10' fill='#14532d'>\n    <rect x='16' y='60' width='568' height='46' rx='5' fill='#dcfce7'/>\n    <text x='26' y='80' font-weight='700'>cleanupper</text><text x='26' y='96'>JS ・ ⭐約720</text>\n    <text x='180' y='80'>Mac のキャッシュ/ログ/Xcode</text><text x='180' y='96'>DerivedData でディスクが逼迫</text>\n    <text x='395' y='80'>1コマンドで安全にスキャン＆</text><text x='395' y='96'>削除して容量を取り戻す CLI</text>\n    <rect x='16' y='110' width='568' height='46' rx='5' fill='#dcfce7'/>\n    <text x='26' y='130' font-weight='700'>openmuse</text><text x='26' y='146'>TS ・ ⭐約1.8k</text>\n    <text x='180' y='130'>エージェントに毎回張り付き</text><text x='180' y='146'>離席中はタスクが止まる</text>\n    <text x='395' y='130'>ブラウザ/端末/ファイルを操り</text><text x='395' y='146'>離席中も走り続ける常駐型</text>\n    <rect x='16' y='160' width='568' height='46' rx='5' fill='#dcfce7'/>\n    <text x='26' y='180' font-weight='700'>mini-AGI</text><text x='26' y='196'>Python ・ ⭐約710</text>\n    <text x='180' y='180'>継続学習に巨大クラスタが</text><text x='180' y='196'>要る前提</text>\n    <text x='395' y='180'>8GB VRAM のノートでゼロから</text><text x='395' y='196'>ストリーム継続学習する実験</text>\n  </g>\n</svg>\n<figcaption>図1：3本の「解決したい課題」と「提供する機能」の対応。いずれも既存の当たり前を一段ずらす。</figcaption>\n</figure>\n\n<h4>SewCabinSpout/cleanupper（JavaScript・⭐約720）</h4>\n<p><strong>解決したい課題：</strong>macOS 開発機はキャッシュ・ログ・Xcode の DerivedData が積もってディスクを圧迫しがちだが、どこを消せば安全かは分かりにくい。<strong>提供する機能：</strong>それらを安全にスキャンして削除し容量を取り戻す、無料 OSS の CLI（MIT）。公開わずか約 0.5 日で約 720★（平均 約 1400★/日ペース）と、本日最速級の新星。エージェント一色の中で「非 AI・開発者ユーティリティ」という別ジャンルの分かりやすさが刺さった。</p>\n\n<h4>CopilotKit/openmuse（TypeScript・⭐約1.8k）</h4>\n<p><strong>解決したい課題：</strong>多くのエージェントは対話に張り付いて指示し続ける前提で、ユーザーが離席するとタスクが止まる。<strong>提供する機能：</strong>ブラウザ・ターミナル・ファイルを扱い、離席中もタスクを走らせ続ける「パーソナル・エージェント」。AG-UI で知られる CopilotKit が long-running/自律継続の UX を OSS で示した参照実装（MIT）。公開約 8 日で約 1.8k★。「待たせず走り続ける」エージェント設計の観察対象になる。</p>\n\n<h4>volotat/mini-AGI（Python・⭐約710）</h4>\n<p><strong>解決したい課題：</strong>継続学習(continual learning)は巨大クラスタ前提で語られがちで、手元では試しにくい。<strong>提供する機能：</strong>8GB VRAM のノート PC 上で、バッチ 1 のデータストリームからゼロから学び続けるモデル（MIT）。公開約 5 日で約 710★。派手なベンチマークではなく「手元で本当に動く」新規性が、ML 研究ジャンルの多様性としてトレンドに刺さった。</p>\n\n<h4>自分が試すなら</h4>\n<p>すぐ効くのは <strong>cleanupper</strong>——Mac 開発機の容量回復は誰でも即効性があり、CLI なので導入も軽い。エージェント運用に関心があれば <strong>openmuse</strong> を「常駐/自律継続 UX の教材」として読むと学びが多い。mini-AGI は実務投入より「手元 GPU で継続学習が動く」感触を得る実験枠。</p>\n\n<h4>ひとことまとめ</h4>\n<p>AI 一色の日でも、<strong>ディスク掃除・常駐エージェント・手元の継続学習</strong>という別ベクトルが伸びた。「既存の当たり前を一段ずらす」のが今日の 3 本の共通項。</p>",
+      "sources": [
+        {
+          "title": "SewCabinSpout/cleanupper",
+          "url": "https://github.com/SewCabinSpout/cleanupper"
+        },
+        {
+          "title": "CopilotKit/openmuse",
+          "url": "https://github.com/CopilotKit/openmuse"
+        },
+        {
+          "title": "volotat/mini-AGI",
+          "url": "https://github.com/volotat/mini-AGI"
+        }
+      ],
+      "id": "2026-09-24-github-trending"
+    },
     {
       "id": "2026-09-23-claude-code",
       "date": "2026-09-23",
