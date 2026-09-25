@@ -1,0 +1,103 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>9/25の話題リポジトリ — エージェント運用を「本番化・コスト・保護」で固める3本 — デイリー技術深掘り 読み物</title><meta name="description" content="個人×多PJでエージェントを回す運用の空白——本番公開＋決済 / モデル振り分けでのコスト圧縮 / 送信前PIIマスク——に効くOSSが同日に急上昇した。"><meta name="theme-color" content="#238636"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-25-github-trending/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="9/25の話題リポジトリ — エージェント運用を「本番化・コスト・保護」で固める3本 — デイリー技術深掘り 読み物"><meta property="og:description" content="個人×多PJでエージェントを回す運用の空白——本番公開＋決済 / モデル振り分けでのコスト圧縮 / 送信前PIIマスク——に効くOSSが同日に急上昇した。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-25-github-trending/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3fb950, #1a7f37)"> <span class="glyph" aria-hidden="true">★</span> <div class="kicker">GitHub Trending</div> <h1>9/25の話題リポジトリ — エージェント運用を「本番化・コスト・保護」で固める3本</h1> <p class="lede">個人×多PJでエージェントを回す運用の空白——本番公開＋決済 / モデル振り分けでのコスト圧縮 / 送信前PIIマスク——に効くOSSが同日に急上昇した。</p> <div class="meta"> <span>📅 2026年9月25日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#238636"> <div> <article class="prose" data-has-mermaid="0"><p>本日の話題枠から、"エージェントが作ったものをどう本番で回すか"という同じ問題系に別々の角度で効く3本を選んだ。<strong>本番公開＋決済</strong>（golive-skill）、<strong>モデル振り分けでのコスト圧縮</strong>（magpie）、<strong>送信前のPIIマスク</strong>（maskit）——deploy・cost・securityの3レイヤーがきれいに揃う。いずれも「作る」より「運用する」側の道具だ。</p>
+<figure class='fig'><svg viewBox='0 0 600 250' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+<rect x='0' y='0' width='600' height='250' rx='8' fill='#f6f8fa'></rect>
+<rect x='10' y='10' width='180' height='34' fill='#1a7f37'></rect>
+<rect x='190' y='10' width='200' height='34' fill='#1a7f37'></rect>
+<rect x='390' y='10' width='200' height='34' fill='#1a7f37'></rect>
+<text x='100' y='32' text-anchor='middle' font-size='12' font-weight='700' fill='#ffffff'>リポジトリ</text>
+<text x='290' y='32' text-anchor='middle' font-size='12' font-weight='700' fill='#ffffff'>解決したい課題</text>
+<text x='490' y='32' text-anchor='middle' font-size='12' font-weight='700' fill='#ffffff'>提供する機能</text>
+
+<rect x='10' y='44' width='580' height='66' fill='#ffffff' stroke='#d0d7de'></rect>
+<text x='20' y='72' font-size='11.5' font-weight='700' fill='#0969da'>golive-skill</text>
+<text x='20' y='92' font-size='10' fill='#57606a'>[deploy] TS ⭐870</text>
+<text x='198' y='70' font-size='10.5' fill='#24292f'>本番公開＋決済が</text>
+<text x='198' y='86' font-size='10.5' fill='#24292f'>手作業で残る</text>
+<text x='398' y='70' font-size='10.5' fill='#24292f'>detect→…→verifyで</text>
+<text x='398' y='86' font-size='10.5' fill='#24292f'>自アカウントに構築</text>
+
+<rect x='10' y='110' width='580' height='66' fill='#f6f8fa' stroke='#d0d7de'></rect>
+<text x='20' y='138' font-size='11.5' font-weight='700' fill='#0969da'>magpie</text>
+<text x='20' y='158' font-size='10' fill='#57606a'>[cost] Go ⭐600</text>
+<text x='198' y='136' font-size='10.5' fill='#24292f'>全モデル高価で</text>
+<text x='198' y='152' font-size='10.5' fill='#24292f'>トークン支出が膨張</text>
+<text x='398' y='136' font-size='10.5' fill='#24292f'>各エージェントの背後</text>
+<text x='398' y='152' font-size='10.5' fill='#24292f'>モデルを差し替え</text>
+
+<rect x='10' y='176' width='580' height='66' fill='#ffffff' stroke='#d0d7de'></rect>
+<text x='20' y='204' font-size='11.5' font-weight='700' fill='#0969da'>maskit</text>
+<text x='20' y='224' font-size='10' fill='#57606a'>[security] Py ⭐280</text>
+<text x='198' y='202' font-size='10.5' fill='#24292f'>外部送信でPIIが</text>
+<text x='198' y='218' font-size='10.5' fill='#24292f'>露出しうる</text>
+<text x='398' y='202' font-size='10.5' fill='#24292f'>送信前にマスク→</text>
+<text x='398' y='218' font-size='10.5' fill='#24292f'>応答で元値に復元</text>
+</svg><figcaption>図1：本日の3本を「解決したい課題 → 提供する機能」で一望（deploy / cost / security の3レイヤー）</figcaption></figure>
+<h4 id="sec-1">mikehasa/golive-skill（TypeScript・⭐約870）</h4>
+<p><strong>解決したい課題：</strong>エージェントでプロダクトは作れても、ホスティング・DB・ドメイン・メール・<em>決済</em>のセットアップという"本番公開の最後の谷"が手作業で残る。特にStripe決済は設計済みでも未実装のまま放置されがちだ。</p>
+<p><strong>提供する機能：</strong>本番化を担うAgent Skill＋依存ゼロのNode CLI。<code>detect→plan→approve→apply→verify</code>のステップで、Supabase/Vercel/Cloudflare/Neonなど<em>自分のアカウント上</em>に構築する。GoLive側のアカウント・バックエンド・テレメトリは不要。公開約2日で約440★/日の本日最速級で、<code>approve</code>ステップ内蔵が"提案→承認"の運用と噛み合ったのが伸びの理由だ。</p>
+<h4 id="sec-2">yetone/magpie（Go・⭐約600）</h4>
+<p><strong>解決したい課題：</strong>Claude Code / Codex / Gemini CLIを毎日多数走らせると、全部を高価なモデルで回すとトークン支出が膨らむ。用途に応じて安価なモデルへ振り分けたいが、各エージェントのモデル切替は個別で面倒。</p>
+<p><strong>提供する機能：</strong>「どのエージェントにも、どのモデルを」を実現するゲートウェイ（<code>avante.nvim</code>の作者製）。メニューバーからCodexをDeepSeekで、Claude CodeをKimiで、というように背後モデルを差し替える。毎日走る定期タスク群のトークンコストを用途別に圧縮できる。公開約2日で約300★/日の高い増加率。</p>
+<h4 id="sec-3">xiaYuTian11/maskit（Python・⭐約280）</h4>
+<p><strong>解決したい課題：</strong>LLM/外部APIへデータを送る経路では、個人情報・機微情報がそのまま外部へ露出しうる。医療・金融のようなドメインでは送信前の防御レイヤーが要る。</p>
+<p><strong>提供する機能：</strong>ローカル完結のプライバシー脱敏ゲートウェイ「数据面具（Data Maskit）」。LLM送信前にリクエスト内のPIIを自動マスク（打码）し、応答をストリーミングで元の値に復元する。Cursorなどのツールからも利用可能。増加率は控えめ（約17★/日）だが、"機微データ保護"という空白に実体を持って効く数少ない一手だ。</p>
+<h4 id="sec-4">まとめ：自分が試すなら</h4>
+<p>3本は個人×多PJの運用に直結する。まず1PJで<strong>golive-skill</strong>を提案→承認で試して本番公開の谷を埋め、次に定期タスクの一部へ<strong>magpie</strong>を挟んでコスト効果を測り、外部送信のあるPJには<strong>maskit</strong>をAPI経路に噛ませる——の順が無理がない。いずれもMIT/ローカル完結寄りで導入コストが軽いのが共通点だ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://github.com/mikehasa/golive-skill" target="_blank" rel="noopener noreferrer"> mikehasa/golive-skill </a> </li><li> <a href="https://github.com/yetone/magpie" target="_blank" rel="noopener noreferrer"> yetone/magpie </a> </li><li> <a href="https://github.com/xiaYuTian11/maskit" target="_blank" rel="noopener noreferrer"> xiaYuTian11/maskit </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> mikehasa/golive-skill（TypeScript・⭐約870） </a> </li><li> <a href="#sec-2" data-toc="sec-2"> yetone/magpie（Go・⭐約600） </a> </li><li> <a href="#sec-3" data-toc="sec-3"> xiaYuTian11/maskit（Python・⭐約280） </a> </li><li> <a href="#sec-4" data-toc="sec-4"> まとめ：自分が試すなら </a> </li> </ul> <div class="reading-box"> <div>📅 2026-09-25</div> <div>⏱ 読了 約3分</div> <div>🏷 GitHub Trending</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

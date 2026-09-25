@@ -1,0 +1,102 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Dart 3.13 の書き味 — primary constructors / dot shorthands と、UIを詰まらせないIsolate設計 — デイリー技術深掘り 読み物</title><meta name="description" content="primary constructorsとdot shorthandsがstable化しボイラープレートを一掃。あわせてフレーム予算とIsolateでUIスレッドを空ける定石、Rive/Blocの勘所まで。"><meta name="theme-color" content="#0277bd"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-25-flutter/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Dart 3.13 の書き味 — primary constructors / dot shorthands と、UIを詰まらせないIsolate設計 — デイリー技術深掘り 読み物"><meta property="og:description" content="primary constructorsとdot shorthandsがstable化しボイラープレートを一掃。あわせてフレーム予算とIsolateでUIスレッドを空ける定石、Rive/Blocの勘所まで。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-25-flutter/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #29b6f6, #01579b)"> <span class="glyph" aria-hidden="true">◆</span> <div class="kicker">Flutter</div> <h1>Dart 3.13 の書き味 — primary constructors / dot shorthands と、UIを詰まらせないIsolate設計</h1> <p class="lede">primary constructorsとdot shorthandsがstable化しボイラープレートを一掃。あわせてフレーム予算とIsolateでUIスレッドを空ける定石、Rive/Blocの勘所まで。</p> <div class="meta"> <span>📅 2026年9月25日</span> <span>⏱ 約4分</span> <span>🔗 出典 5 件</span> </div> </section> <div class="article-layout" style="--topic:#0277bd"> <div> <article class="prose" data-has-mermaid="0"><p>Flutterの今日は<strong>Dart 3.13の言語エルゴノミクス</strong>が主役。安定版は<strong>Flutter 3.47.4 / Dart 3.13.3</strong>、betaが3.48/3.14で、次の安定機能リリースは<strong>2026年11月</strong>見込み。年4回（2/5/8/11月）サイクルの、"言語が地味に効いてくる"回だ。</p>
+<h4 id="sec-1">primary constructors と dot shorthands が stable</h4>
+<p><strong>primary constructors</strong>（3.12でexperimental→3.13でstable）はクラスヘッダに直接コンストラクタ引数を宣言でき、フィールド名/型の重複記述とinitializer listのボイラープレートを一掃する。あわせて<strong>private named parameters</strong>（先頭<code>_</code>の名前付き引数）でprivateフィールドの初期化が簡潔になり、state/modelクラスの定義量が目に見えて減る。</p>
+<pre><code>// before
+class Point {
+  final int x, y;
+  Point({required this.x, required this.y});
+}
+// after — primary constructor
+class Point({required int x, required int y});</code></pre>
+<p><strong>dot shorthands</strong>はenum/静的メンバの型名を省略でき（<code>MainAxisAlignment.start</code> → <code>.start</code>）、<code>switch</code>の網羅分岐や<code>ThemeData</code>構築の冗長さを削る。Freezed 3.xのsealed class＋pattern matchingと組むとstate定義が一段とスリムに。移行は<code>dart fix --dry-run</code>で差分を見てから<code>dart fix --apply</code>で当てるのが安全だ。</p>
+<h4 id="sec-2">UIを詰まらせない：フレーム予算とIsolate</h4>
+<p>パフォーマンスの主役は<strong>重い処理をIsolateへ逃がしてUIスレッドを空ける</strong>こと。フレーム予算は下図の通りで、JSON parse・画像処理・暗号化のようなCPU重い同期処理を<code>build</code>/<code>initState</code>に置くと即座に溢れる。</p>
+<figure class='fig'><svg viewBox='0 0 600 230' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+<rect x='0' y='0' width='600' height='230' rx='8' fill='#f8fafc'></rect>
+<text x='16' y='28' font-size='13' font-weight='700' fill='#0f172a'>1フレームの予算（1ms = 30px）</text>
+
+<text x='16' y='62' font-size='11' fill='#334155'>60fps</text>
+<rect x='90' y='48' width='120' height='24' fill='#2563eb'></rect>
+<rect x='210' y='48' width='120' height='24' fill='#0d9488'></rect>
+<rect x='330' y='48' width='240' height='24' fill='#e2e8f0'></rect>
+<text x='570' y='64' text-anchor='end' font-size='10.5' fill='#475569'>16.0ms</text>
+
+<text x='16' y='106' font-size='11' fill='#334155'>90fps</text>
+<rect x='90' y='92' width='120' height='24' fill='#2563eb'></rect>
+<rect x='210' y='92' width='120' height='24' fill='#0d9488'></rect>
+<rect x='330' y='92' width='90' height='24' fill='#e2e8f0'></rect>
+<text x='420' y='108' text-anchor='end' font-size='10.5' fill='#475569'>11.0ms</text>
+
+<text x='12' y='150' font-size='11' fill='#334155'>120fps</text>
+<rect x='90' y='136' width='120' height='24' fill='#2563eb'></rect>
+<rect x='210' y='136' width='120' height='24' fill='#0d9488'></rect>
+<rect x='330' y='136' width='10' height='24' fill='#e2e8f0'></rect>
+<text x='346' y='152' font-size='10.5' fill='#b91c1c'>8.33ms（ほぼ余白なし）</text>
+
+<rect x='90' y='188' width='14' height='14' fill='#2563eb'></rect><text x='110' y='200' font-size='11' fill='#334155'>UIスレッド build/layout ~4ms</text>
+<rect x='300' y='188' width='14' height='14' fill='#0d9488'></rect><text x='320' y='200' font-size='11' fill='#334155'>ラスタ GPU ~4ms</text>
+<rect x='470' y='188' width='14' height='14' fill='#e2e8f0'></rect><text x='490' y='200' font-size='11' fill='#334155'>余白</text>
+</svg><figcaption>図1：フレーム予算とUI/ラスタの内訳。120fpsは余白がほぼ無く、重い同期処理は即jankになる</figcaption></figure>
+<p>Dart 3の<code>Isolate.run()</code>（旧<code>compute()</code>より簡潔）で単発の重い計算を背景isolateへ投げ、結果だけ受け取る。描画側は<code>const</code>徹底・<code>build()</code>分割・<code>ref.watch(provider.select(...))</code>/<code>BlocSelector</code>での最小スライス購読・アニメ領域を<code>RepaintBoundary</code>で隔離が定番。土台の<strong>Impeller</strong>は全プラットフォーム既定になり、移行報告ではjankフレーム30–50%減。計測は必ずprofileモードでDevTools Performanceを使う。</p>
+<h4 id="sec-3">その他の勘所（Rive / Bloc）</h4>
+<p>アニメは<strong>Rive state machine × data binding</strong>で、複雑なauthored artをコードで手組みせずオフロードし、<code>StateMachineController</code>＋<code>SMITrigger/SMIBool/SMINumber</code>で入力にリアルタイム応答。Riveのプロパティ（テキスト・色・数値）をFlutterのstateへ直結できるdata bindingが定石化した。状態管理は<strong>Bloc 9.2</strong>の<code>bloc_concurrency</code>で、検索連打は<code>restartable()</code>、送信ボタンの二度押しは<code>droppable()</code>、順序が要る処理は<code>sequential()</code>——並行性のバグを設計で断つのが要点。永続化は<code>hydrated_bloc</code>でstateを自動シリアライズ/復元する。</p>
+<h4 id="sec-4">ひとことまとめ</h4>
+<p>新規の既定は<strong>Riverpod 3.x</strong>、監査/規制・大規模チームは<strong>Bloc 9.x</strong>という選定線は不変。今回の目玉はコードの書き味を下げるDart 3.13で、まず<code>dart fix</code>でprimary constructor移行を1クラス試し、重い初期化を<code>Isolate.run()</code>へ逃がすところから手を付けたい。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://dart.dev/blog/announcing-dart-3-12" target="_blank" rel="noopener noreferrer"> Announcing Dart 3.12（primary constructors / private named params） </a> </li><li> <a href="https://flutter.dev/blog/whats-new-in-flutter-3-47" target="_blank" rel="noopener noreferrer"> What&#39;s new in Flutter 3.47 </a> </li><li> <a href="https://verygood.ventures/blog/rive-flutter-genui-integration/" target="_blank" rel="noopener noreferrer"> Rive Animations + GenUI: Flutter Integration Guide </a> </li><li> <a href="https://asoasis.tech/articles/2026-04-17-2054-flutter-bloc-vs-riverpod-comparison-2026/" target="_blank" rel="noopener noreferrer"> BLoC vs Riverpod 2026（ASOasis） </a> </li><li> <a href="https://medium.com/codetodeploy/flutter-performance-optimization-a-practical-guide-for-2026-bc501e44ec6e" target="_blank" rel="noopener noreferrer"> Flutter Performance Optimization 2026 </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> primary constructors と dot shorthands が stable </a> </li><li> <a href="#sec-2" data-toc="sec-2"> UIを詰まらせない：フレーム予算とIsolate </a> </li><li> <a href="#sec-3" data-toc="sec-3"> その他の勘所（Rive / Bloc） </a> </li><li> <a href="#sec-4" data-toc="sec-4"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-09-25</div> <div>⏱ 読了 約4分</div> <div>🏷 Flutter</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
