@@ -1,0 +1,59 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>11月安定版へ降りる三本柱 — WasmGC・Impeller一本化・build hooks、そしてHero/MVVM/jank診断 — デイリー技術深掘り 読み物</title><meta name="description" content="beta 3.48 / Dart 3.14 が確定させた11月の破壊的変更と、Hero・App Architecture・DevTools 診断の実務勘所。"><meta name="theme-color" content="#0277bd"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-26-flutter/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="11月安定版へ降りる三本柱 — WasmGC・Impeller一本化・build hooks、そしてHero/MVVM/jank診断 — デイリー技術深掘り 読み物"><meta property="og:description" content="beta 3.48 / Dart 3.14 が確定させた11月の破壊的変更と、Hero・App Architecture・DevTools 診断の実務勘所。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-26-flutter/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #29b6f6, #01579b)"> <span class="glyph" aria-hidden="true">◆</span> <div class="kicker">Flutter</div> <h1>11月安定版へ降りる三本柱 — WasmGC・Impeller一本化・build hooks、そしてHero/MVVM/jank診断</h1> <p class="lede">beta 3.48 / Dart 3.14 が確定させた11月の破壊的変更と、Hero・App Architecture・DevTools 診断の実務勘所。</p> <div class="meta"> <span>📅 2026年9月26日</span> <span>⏱ 約4分</span> <span>🔗 出典 5 件</span> </div> </section> <div class="article-layout" style="--topic:#0277bd"> <div> <article class="prose" data-has-mermaid="0"><p>この日の主役は <strong>beta 3.48 / Dart 3.14</strong> が 11 月安定版へ降ろす機能の確定だ。現行安定版は <strong>Flutter 3.47.4 / Dart 3.13.3</strong>、beta の最新 pre-release は <code>3.48.0-0.5.pre</code>。年4回（2/5/8/11月）サイクルで次の安定機能リリースは 2026 年 11 月見込みで、beta の三本柱がそのまま 11 月の破壊的変更になる。</p><figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='0' y='0' width='600' height='210' fill='#eef6ff'></rect><line x1='40' y1='50' x2='560' y2='50' stroke='#5aa2ea' stroke-width='2'></line><g font-size='12' fill='#1b62b0' text-anchor='middle'><circle cx='90' cy='50' r='5' fill='#5aa2ea'></circle><text x='90' y='36'>2月</text><circle cx='230' cy='50' r='5' fill='#5aa2ea'></circle><text x='230' y='36'>5月</text><circle cx='370' cy='50' r='5' fill='#5aa2ea'></circle><text x='370' y='36'>8月</text><circle cx='510' cy='50' r='7' fill='#1b62b0'></circle><text x='510' y='34' font-weight='bold'>11月 stable</text></g><text x='300' y='84' text-anchor='middle' font-size='12' fill='#333'>現行 3.47.4 / Dart 3.13.3 →（beta 3.48 / Dart 3.14）→ 11月安定版の三本柱</text><g font-size='11.5' fill='#1b62b0'><rect x='40' y='100' width='168' height='86' rx='6' fill='#dcebfb' stroke='#5aa2ea'></rect><text x='124' y='122' text-anchor='middle' font-weight='bold'>① WasmGC 既定</text><text x='124' y='144' text-anchor='middle'>build web --wasm</text><text x='124' y='162' text-anchor='middle'>package:web へ移行</text><rect x='216' y='100' width='168' height='86' rx='6' fill='#dcebfb' stroke='#5aa2ea'></rect><text x='300' y='122' text-anchor='middle' font-weight='bold'>② Impeller 一本化</text><text x='300' y='144' text-anchor='middle'>Skia opt-out 廃止</text><text x='300' y='162' text-anchor='middle'>Vulkan へ集約</text><rect x='392' y='100' width='168' height='86' rx='6' fill='#dcebfb' stroke='#5aa2ea'></rect><text x='476' y='122' text-anchor='middle' font-weight='bold'>③ build hooks stable</text><text x='476' y='144' text-anchor='middle'>native asset を</text><text x='476' y='162' text-anchor='middle'>pub build で正式化</text></g></svg><figcaption>図1：年4回サイクルと 11月安定版の三本柱。beta 3.48 の変更がそのまま 11月の破壊的変更になる。</figcaption></figure><p>三本柱は <strong>① Web の WasmGC 既定化</strong>（<code>flutter build web --wasm</code>。<code>dart:html</code>→<code>package:web</code> ＋ <code>dart:js_interop</code> 移行が前提）、<strong>② Android の Impeller 一本化</strong>（legacy Skia backend の opt-out を deprecate し Vulkan へ集約）、<strong>③ build hooks stable</strong>（native asset を pub build で扱う仕組みの正式化）。さらに analyzer plugin system でカスタム lint をパッケージ配布可能になる。デザインシステムは <code>material_ui / cupertino_ui 1.0</code> が SDK から独立済みだが、SDK 同梱版の正式 deprecation は 11 月 stable から。3.47.x の間は既存コードが動くので「11 月までに移行」が現実解で、<code>dart fix --apply --code=migrate_design_widgets</code> で差分適用できる。</p><p>アニメーションの話題は Hero（共有要素）トランジション。2画面に同じ <code>tag</code> の <code>Hero</code> を置くと push/pop に連動して要素が「飛ぶ」（標準 300–600ms）。カスタマイズの要は <code>flightShuttleBuilder</code>（飛行中だけ見た目を差し替え）・<code>createRectTween</code>（<code>MaterialRectArcTween</code> で弧を描かせる）・<code>HeroMode</code>。飛ばすのは最小要素にし、画像は前後で同じ <code>ImageProvider</code>／解像度に揃えてちらつきを防ぐ。設計面では公式 App Architecture guide の <strong>MVVM</strong> が土台で、UI 層は View↔ViewModel が 1:1、Data 層は Repository が single source of truth（caching/retry/変換を担当）、Service は state を持たない最下層。Riverpod 3.3 / Bloc 9.2 はこの MVVM に載る「ViewModel の実装詳細」と位置づけられる。</p><figure class='fig'><svg viewBox='0 0 600 175' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='0' y='0' width='600' height='175' fill='#eef6ff'></rect><text x='16' y='26' font-size='13' fill='#1b62b0'>フレーム予算（1フレームで使える時間）</text><g font-size='12' fill='#333'><text x='16' y='58'>60fps</text><rect x='90' y='47' width='400' height='16' rx='3' fill='#c9def7'></rect><rect x='90' y='47' width='400' height='16' rx='3' fill='none' stroke='#5aa2ea'></rect><text x='500' y='60' fill='#1b62b0'>16.7ms</text><text x='16' y='90'>90fps</text><rect x='90' y='79' width='266' height='16' rx='3' fill='#c9def7'></rect><rect x='90' y='79' width='266' height='16' rx='3' fill='none' stroke='#5aa2ea'></rect><text x='366' y='92' fill='#1b62b0'>11.1ms</text><text x='16' y='122'>120fps</text><rect x='90' y='111' width='200' height='16' rx='3' fill='#c9def7'></rect><rect x='90' y='111' width='100' height='16' rx='3' fill='#8fc0f0'></rect><rect x='90' y='111' width='200' height='16' rx='3' fill='none' stroke='#5aa2ea'></rect><text x='300' y='124' fill='#1b62b0'>8.33ms</text></g><text x='16' y='156' font-size='11' fill='#555'>内訳の目安：UIスレッド ~4ms（濃い部分）＋ ラスタスレッド ~4ms。profileモードで計測。</text></svg><figcaption>図2：リフレッシュレート別のフレーム予算。数値を割ると jank になる。</figcaption></figure><p>パフォーマンスは DevTools を使った jank 診断が実務的だ。鉄則は<strong>必ず profile モード</strong>（debug の VM は数値が代表しない）。Performance overlay の上下2グラフ（UI thread / raster thread）で赤バーの出る側を見て「build が重い」か「描画が重い」かを切り分け、Rebuild counts で過剰 rebuild を、CPU profiler でホットな関数を特定する。対処は <code>const</code> 徹底・<code>ref.watch(provider.select(...))</code>/<code>BlocSelector</code> で最小購読・アニメ領域を <code>RepaintBoundary</code> で隔離・重い同期処理を <code>Isolate.run()</code> へ・長リストは <code>ListView.builder</code>＋<code>cacheExtent</code>（固定高なら <code>itemExtent</code>）。<strong>ひとことまとめ</strong>：Impeller が全既定で shader jank は 30–50% 減。本番は 3.47 系を維持しつつ、11 月の Wasm・Impeller・design widget 分離を beta で前倒し検証しておくのが吉。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://github.com/flutter/flutter/issues/192593" target="_blank" rel="noopener noreferrer"> beta Flutter 3.48.0-0.5.pre release issue </a> </li><li> <a href="https://docs.flutter.dev/release/release-notes" target="_blank" rel="noopener noreferrer"> Flutter release notes </a> </li><li> <a href="https://docs.flutter.dev/ui/animations/hero-animations" target="_blank" rel="noopener noreferrer"> Hero animations (Flutter docs) </a> </li><li> <a href="https://docs.flutter.dev/app-architecture/guide" target="_blank" rel="noopener noreferrer"> Flutter architecture guide </a> </li><li> <a href="https://docs.flutter.dev/tools/devtools/performance" target="_blank" rel="noopener noreferrer"> Use the Performance view (DevTools) </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

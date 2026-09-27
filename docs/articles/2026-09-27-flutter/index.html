@@ -1,0 +1,113 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Flutter 3.47深掘り — Impellerが全デスクトップ既定に、アニメは宣言的チェーン、go_routerは型安全へ — デイリー技術深掘り 読み物</title><meta name="description" content="現行安定3.47/Dart3.13。Impellerのデスクトップ既定化、flutter_animateの連鎖、go_routerのcodegen、画像デコード最適化までを一望。"><meta name="theme-color" content="#0277bd"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-27-flutter/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Flutter 3.47深掘り — Impellerが全デスクトップ既定に、アニメは宣言的チェーン、go_routerは型安全へ — デイリー技術深掘り 読み物"><meta property="og:description" content="現行安定3.47/Dart3.13。Impellerのデスクトップ既定化、flutter_animateの連鎖、go_routerのcodegen、画像デコード最適化までを一望。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-27-flutter/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #29b6f6, #01579b)"> <span class="glyph" aria-hidden="true">◆</span> <div class="kicker">Flutter</div> <h1>Flutter 3.47深掘り — Impellerが全デスクトップ既定に、アニメは宣言的チェーン、go_routerは型安全へ</h1> <p class="lede">現行安定3.47/Dart3.13。Impellerのデスクトップ既定化、flutter_animateの連鎖、go_routerのcodegen、画像デコード最適化までを一望。</p> <div class="meta"> <span>📅 2026年9月27日</span> <span>⏱ 約3分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#0277bd"> <div> <article class="prose" data-has-mermaid="0"><p>2026 年秋の Flutter は「レンダラの世代交代」が節目になった。現行安定は <strong>Flutter 3.47 / Dart 3.13.3</strong>（9/11 パッチ）、次の安定機能リリースは <strong>11 月</strong>、beta は 3.48 / Dart 3.14。日々の UI 実装に効く変更が広範囲に入っている。</p>
+
+<h4 id="sec-1">何が新しいか</h4>
+<p>最大の節目は <strong>3.47 で Impeller が macOS / Windows / Linux の既定レンダラに昇格</strong>したこと。SDF（Signed Distance Function）レンダリングで文字が鮮明になり、macOS では Wide Gamut Color が既定 ON。最低 OS が <strong>iOS 15 / macOS 12</strong> に引き上げられ、iOS の Swift Package Manager 移行は上位100プラグイン中92 まで到達した。デザイン面では <code>material_ui</code> / <code>cupertino_ui</code> 1.0 が standalone パッケージ化され、<code>dart fix --apply --code=migrate_design_widgets</code> で移行できる（旧ライブラリは11月に deprecate）。Web は <strong>WasmGC 既定化</strong>へ前進した。</p>
+
+<figure class='fig'><svg viewBox='0 0 600 176' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <rect x='0' y='0' width='600' height='176' fill='#eef7ff' rx='8'></rect>
+  <text x='300' y='24' font-size='13' font-weight='bold' text-anchor='middle' fill='#0b4a6f'>アニメーション技法の選択マップ</text>
+  <rect x='16' y='40' width='108' height='44' fill='#cfeafe' stroke='#0ea5e9' rx='6'></rect>
+  <text x='70' y='60' font-size='10' text-anchor='middle' fill='#0b4a6f'>micro 演出</text>
+  <text x='70' y='74' font-size='9' text-anchor='middle' fill='#075985'>implicit 50-200ms</text>
+  <rect x='140' y='40' width='108' height='44' fill='#cfeafe' stroke='#0ea5e9' rx='6'></rect>
+  <text x='194' y='60' font-size='10' text-anchor='middle' fill='#0b4a6f'>連鎖</text>
+  <text x='194' y='74' font-size='9' text-anchor='middle' fill='#075985'>flutter_animate</text>
+  <rect x='264' y='40' width='108' height='44' fill='#cfeafe' stroke='#0ea5e9' rx='6'></rect>
+  <text x='318' y='60' font-size='10' text-anchor='middle' fill='#0b4a6f'>精密制御</text>
+  <text x='318' y='74' font-size='9' text-anchor='middle' fill='#075985'>explicit(dispose必須)</text>
+  <rect x='388' y='40' width='96' height='44' fill='#cfeafe' stroke='#0ea5e9' rx='6'></rect>
+  <text x='436' y='60' font-size='10' text-anchor='middle' fill='#0b4a6f'>画面遷移</text>
+  <text x='436' y='74' font-size='9' text-anchor='middle' fill='#075985'>Hero 300-600ms</text>
+  <rect x='16' y='104' width='230' height='44' fill='#dbeafe' stroke='#0ea5e9' rx='6'></rect>
+  <text x='131' y='124' font-size='10' text-anchor='middle' fill='#0b4a6f'>描画駆動</text>
+  <text x='131' y='138' font-size='9' text-anchor='middle' fill='#075985'>CustomPainter</text>
+  <rect x='262' y='104' width='222' height='44' fill='#dbeafe' stroke='#0ea5e9' rx='6'></rect>
+  <text x='373' y='124' font-size='10' text-anchor='middle' fill='#0b4a6f'>重いアート</text>
+  <text x='373' y='138' font-size='9' text-anchor='middle' fill='#075985'>Rive (state machine)</text>
+  <line x1='124' y1='62' x2='138' y2='62' stroke='#0284c7' stroke-width='2'></line>
+  <line x1='248' y1='62' x2='262' y2='62' stroke='#0284c7' stroke-width='2'></line>
+  <line x1='372' y1='62' x2='386' y2='62' stroke='#0284c7' stroke-width='2'></line>
+  <text x='530' y='62' font-size='9' text-anchor='middle' fill='#075985'>土台=Impeller</text>
+  <text x='530' y='76' font-size='9' text-anchor='middle' fill='#075985'>AOTシェーダ</text>
+</svg><figcaption>図1：軽い演出から重いアートまで、コストと制御精度で技法を選ぶ。命令的な定型を避けたい連鎖は flutter_animate。</figcaption></figure>
+
+<h4 id="sec-2">仕組みの勘所（アニメとアーキ）</h4>
+<p>アニメは <code>flutter_animate</code> が Effect をメソッドチェーンで宣言する——<code>widget.animate().fadeIn().slide().scale()</code> のように書き、<code>.then(delay: ...)</code> で順次連結、<code>AnimationController</code> の定型を排除できる。ループや外部制御は <code>onPlay</code> / <code>Animate(controller:)</code> で行う。アーキテクチャは <code>go_router</code> が中心で、<strong><code>@TypedGoRoute</code> の codegen で type-safe routes</strong> を生成し（<code>const XRoute().go(context)</code>）、文字列パスの typo を排除する。ボトムナビ等のネストしたタブは <strong><code>StatefulShellRoute.indexedStack</code></strong> で各ブランチの state（スクロール位置・入力）を保持したまま切替。認証ガードは <code>redirect</code> に集約する。新規の既定は <strong>Riverpod 3.3.x</strong>（@riverpod codegen・自動リトライ）、監査/規制/大規模は <strong>Bloc 9.2.x</strong> という住み分けだ。</p>
+
+<h4 id="sec-3">パフォーマンスとフレーム予算</h4>
+<p>UI パフォーマンスで最重要なのは <strong>画像のデコード解像度を落とす</strong>こと。<code>Image(..., cacheWidth: 300)</code> や <code>ResizeImage</code> で表示サイズにデコードし、元解像度のまま抱えない。ネットワーク画像は <code>cached_network_image</code>（<code>memCacheWidth</code>）＋幅・高さ明示。再描画の隔離は <code>RepaintBoundary</code>、長リストは <code>ListView.builder</code> ＋ <code>cacheExtent</code> / <code>itemExtent</code>。そして計測は必ず profile モードで DevTools を使う。</p>
+
+<figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <rect x='0' y='0' width='600' height='150' fill='#eef7ff' rx='8'></rect>
+  <text x='300' y='24' font-size='13' font-weight='bold' text-anchor='middle' fill='#0b4a6f'>フレーム予算（1フレームで使える時間）</text>
+  <text x='70' y='56' font-size='11' text-anchor='end' fill='#075985'>60fps</text>
+  <rect x='80' y='44' width='480' height='18' fill='#7dd3fc' rx='3'></rect>
+  <text x='566' y='58' font-size='11' fill='#0b4a6f'>16ms</text>
+  <text x='70' y='90' font-size='11' text-anchor='end' fill='#075985'>90fps</text>
+  <rect x='80' y='78' width='330' height='18' fill='#38bdf8' rx='3'></rect>
+  <text x='416' y='92' font-size='11' fill='#0b4a6f'>11ms</text>
+  <text x='70' y='124' font-size='11' text-anchor='end' fill='#075985'>120fps</text>
+  <rect x='80' y='112' width='250' height='18' fill='#0ea5e9' rx='3'></rect>
+  <text x='336' y='126' font-size='11' fill='#0b4a6f'>8.33ms</text>
+</svg><figcaption>図2：リフレッシュレートが上がるほど1フレームの予算は縮む。120fps では 8.33ms を超えるとジャンク。</figcaption></figure>
+
+<h4 id="sec-4">まとめ</h4>
+<p>「Impeller が全デスクトップで既定」「アニメは宣言的チェーン」「ルーティングは codegen で型安全」の3点が、いま新規プロジェクトで押さえるべき既定値だ。自分が試すなら、既存の implicit アニメを flutter_animate に寄せて定型を削り、go_router を <code>@TypedGoRoute</code> 化して文字列パスを一掃するのが投資対効果が高い。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://flutter.dev/blog/whats-new-in-flutter-3-47" target="_blank" rel="noopener noreferrer"> What&#39;s new in Flutter 3.47 </a> </li><li> <a href="https://pub.dev/packages/flutter_animate" target="_blank" rel="noopener noreferrer"> flutter_animate (pub.dev) </a> </li><li> <a href="https://docs.flutter.dev/app-architecture" target="_blank" rel="noopener noreferrer"> Flutter App Architecture </a> </li><li> <a href="https://docs.flutter.dev/perf/best-practices" target="_blank" rel="noopener noreferrer"> Flutter performance best practices </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 何が新しいか </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 仕組みの勘所（アニメとアーキ） </a> </li><li> <a href="#sec-3" data-toc="sec-3"> パフォーマンスとフレーム予算 </a> </li><li> <a href="#sec-4" data-toc="sec-4"> まとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-09-27</div> <div>⏱ 読了 約3分</div> <div>🏷 Flutter</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

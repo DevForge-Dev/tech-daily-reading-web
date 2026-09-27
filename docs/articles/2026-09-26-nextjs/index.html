@@ -1,0 +1,111 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Vercel AI SDK 7でストリーミングチャットを組む — streamText × useChat × UIMessage/parts — デイリー技術深掘り 読み物</title><meta name="description" content="v7でAPI名が総入れ替え。サーバのstreamTextとクライアントのuseChatで型安全なチャットを最短で組む、今動く書き方。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-26-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Vercel AI SDK 7でストリーミングチャットを組む — streamText × useChat × UIMessage/parts — デイリー技術深掘り 読み物"><meta property="og:description" content="v7でAPI名が総入れ替え。サーバのstreamTextとクライアントのuseChatで型安全なチャットを最短で組む、今動く書き方。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-26-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>Vercel AI SDK 7でストリーミングチャットを組む — streamText × useChat × UIMessage/parts</h1> <p class="lede">v7でAPI名が総入れ替え。サーバのstreamTextとクライアントのuseChatで型安全なチャットを最短で組む、今動く書き方。</p> <div class="meta"> <span>📅 2026年9月26日</span> <span>⏱ 約3分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="0"><p>入力すると LLM がトークンを逐次生成し、UI に1文字ずつ流れ込むチャット／コパイロット UI は、2026 年の Next.js アプリで最頻出の機能になった。生の Route Handler から SSE を手書きしても実現はできるが、プロトコル・再接続・ツール呼び出し・メッセージ整形・型付けを全部自前で抱えることになる。Vercel <strong>AI SDK</strong> はこの層を丸ごと引き受ける事実上の標準で、サーバの <code>streamText()</code> とクライアントの <code>useChat()</code> の2つで型安全なストリーミングチャットがほぼ完成する。</p>
+
+<h4 id="sec-1">何が新しいか（v7 でAPI名が総入れ替え）</h4>
+<p>厄介なのは<strong>バージョンが速い</strong>こと。現時点の npm 最新はコア <code>ai</code> が <strong>7.0.x</strong>、React アダプタ <code>@ai-sdk/react</code> が <strong>4.0.x</strong> と<strong>メジャー番号が別採番</strong>で、プロバイダ（<code>@ai-sdk/openai</code> 等）も v7 世代へ揃える必要がある。ネット上のチュートリアルの大半は v4/v5 で止まっており、名前がいくつも変わっている。前提として v7 は <strong>Node.js 22+ / ESM 専用</strong>。</p>
+
+<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <rect x='0' y='0' width='600' height='210' fill='#eff6ff' rx='8'></rect>
+  <text x='300' y='30' font-size='13' font-weight='bold' text-anchor='middle' fill='#1e3a8a'>App Router の住み分け</text>
+  <rect x='20' y='70' width='150' height='70' fill='#dbeafe' stroke='#3b82f6' rx='6'></rect>
+  <text x='95' y='98' font-size='12' font-weight='bold' text-anchor='middle' fill='#1e3a8a'>クライアント島</text>
+  <text x='95' y='116' font-size='11' text-anchor='middle' fill='#1e40af'>useChat()</text>
+  <text x='95' y='132' font-size='10' text-anchor='middle' fill='#1e40af'>sendMessage({text})</text>
+  <rect x='225' y='70' width='150' height='70' fill='#dbeafe' stroke='#3b82f6' rx='6'></rect>
+  <text x='300' y='96' font-size='12' font-weight='bold' text-anchor='middle' fill='#1e3a8a'>Route Handler</text>
+  <text x='300' y='114' font-size='10' text-anchor='middle' fill='#1e40af'>streamText()</text>
+  <text x='300' y='130' font-size='10' text-anchor='middle' fill='#1e40af'>APIキーはここに閉じる</text>
+  <rect x='430' y='70' width='150' height='70' fill='#dbeafe' stroke='#3b82f6' rx='6'></rect>
+  <text x='505' y='100' font-size='12' font-weight='bold' text-anchor='middle' fill='#1e3a8a'>LLM</text>
+  <text x='505' y='120' font-size='10' text-anchor='middle' fill='#1e40af'>openai('gpt-4o')</text>
+  <line x1='170' y1='95' x2='223' y2='95' stroke='#2563eb' stroke-width='2' marker-end='url(#ar)'></line>
+  <text x='197' y='88' font-size='9' text-anchor='middle' fill='#1e3a8a'>POST</text>
+  <line x1='375' y1='95' x2='428' y2='95' stroke='#2563eb' stroke-width='2' marker-end='url(#ar)'></line>
+  <line x1='430' y1='125' x2='377' y2='125' stroke='#60a5fa' stroke-width='2' marker-end='url(#ar)'></line>
+  <line x1='225' y1='125' x2='172' y2='125' stroke='#60a5fa' stroke-width='2' marker-end='url(#ar)'></line>
+  <text x='300' y='175' font-size='10' text-anchor='middle' fill='#1e40af'>戻りは UIMessage の parts を SSE でストリーム → parts を map して描画</text>
+  <defs><marker id='ar' markerWidth='8' markerHeight='8' refX='6' refY='3' orient='auto'><path d='M0,0 L6,3 L0,6 Z' fill='#2563eb'></path></marker></defs>
+</svg><figcaption>図1：LLM を呼ぶのはサーバの Route Handler だけ。UI は use client の小島に隔離し、ページ本体は RSC のまま。</figcaption></figure>
+
+<h4 id="sec-2">仕組みの勘所</h4>
+<p>設計の核心は <strong>UIMessage / parts モデル</strong>だ。UI の真実である <code>UIMessage</code>（ID・メタ・<code>parts</code> を持つ）と、LLM 入力用に最適化した <code>ModelMessage</code> を分離し、<code>convertToModelMessages()</code> で変換してから渡す。レンダリングでは <strong><code>message.content</code> を読まず必ず <code>message.parts</code> を回す</strong>——1応答は <code>text</code> / <code>reasoning</code> / <code>tool-&lt;name&gt;</code> / <code>data-&lt;name&gt;</code> などの順序付き配列で、content を読むとツール呼び出しや推論・ファイルが空になる。履歴は RSC で DB から読み、props でクライアント島へ渡して <code>useChat({ messages })</code> に流す。保存はサーバ側の終了コールバック（v7 の <code>onEnd</code>）で確定した <code>UIMessage[]</code> 全体を書く——クライアント保存は改ざん・欠落リスクがある。</p>
+
+<figure class='fig'><svg viewBox='0 0 600 176' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <rect x='0' y='0' width='600' height='176' fill='#f0fdf4' rx='8'></rect>
+  <text x='300' y='24' font-size='13' font-weight='bold' text-anchor='middle' fill='#14532d'>“古い記事”対策：v4/v5 → v7 の改名早見表</text>
+  <rect x='14' y='36' width='285' height='26' fill='#bbf7d0' rx='4'></rect>
+  <rect x='301' y='36' width='285' height='26' fill='#bbf7d0' rx='4'></rect>
+  <text x='156' y='54' font-size='11' font-weight='bold' text-anchor='middle' fill='#166534'>旧</text>
+  <text x='443' y='54' font-size='11' font-weight='bold' text-anchor='middle' fill='#166534'>v7</text>
+  <text x='156' y='80' font-size='10' text-anchor='middle' fill='#052e16'>ai/react の useChat 入力状態</text>
+  <text x='443' y='80' font-size='10' text-anchor='middle' fill='#052e16'>@ai-sdk/react + 自前 useState</text>
+  <text x='156' y='102' font-size='10' text-anchor='middle' fill='#052e16'>append() / api 直指定</text>
+  <text x='443' y='102' font-size='10' text-anchor='middle' fill='#052e16'>sendMessage() / DefaultChatTransport</text>
+  <text x='156' y='124' font-size='10' text-anchor='middle' fill='#052e16'>system / onFinish / parameters</text>
+  <text x='443' y='124' font-size='10' text-anchor='middle' fill='#052e16'>instructions / onEnd / inputSchema</text>
+  <text x='156' y='146' font-size='10' text-anchor='middle' fill='#052e16'>toUIMessageStreamResponse()</text>
+  <text x='443' y='146' font-size='10' text-anchor='middle' fill='#052e16'>createUIMessageStreamResponse(…)</text>
+  <text x='156' y='168' font-size='10' text-anchor='middle' fill='#052e16'>maxSteps（クライアント）</text>
+  <text x='443' y='168' font-size='10' text-anchor='middle' fill='#052e16'>stopWhen: isStepCount(n)（サーバ）</text>
+  <line x1='300' y1='66' x2='300' y2='176' stroke='#86efac'></line>
+</svg><figcaption>図2：多くのチュートリアルが壊れる原因はこの改名。<code>npx @ai-sdk/codemod upgrade</code> で機械変換できる部分も多い。</figcaption></figure>
+
+<h4 id="sec-3">落とし穴と自分の試し方</h4>
+<p>ハマりどころは、番号ズレによる型不整合、<code>parts</code> を無視した表示欠落、サーバレスの関数タイムアウト（<code>export const maxDuration = 30</code> を Route Handler に置く）、<code>stopWhen</code> 付け忘れによるツールループ暴走、そして入力状態の二重管理（v7 の <code>useChat</code> は入力を持たない）。自分が試すなら、まず既存の生 SSE 実装（LLM 以外の任意イベント向き）はそのまま残し、チャット部分だけ AI SDK 7 へ載せ替えて住み分けるのが安全だ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://ai-sdk.dev/docs/getting-started/nextjs-app-router" target="_blank" rel="noopener noreferrer"> AI SDK — Next.js App Router クイックスタート </a> </li><li> <a href="https://ai-sdk.dev/docs/ai-sdk-ui/chatbot" target="_blank" rel="noopener noreferrer"> AI SDK — Chatbot（useChat）ガイド </a> </li><li> <a href="https://ai-sdk.dev/docs/migration-guides/migration-guide-7-0" target="_blank" rel="noopener noreferrer"> 移行ガイド 6.x → 7.0 </a> </li><li> <a href="https://vercel.com/changelog/ai-sdk-7" target="_blank" rel="noopener noreferrer"> Vercel Changelog — AI SDK 7 </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 何が新しいか（v7 でAPI名が総入れ替え） </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 仕組みの勘所 </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 落とし穴と自分の試し方 </a> </li> </ul> <div class="reading-box"> <div>📅 2026-09-26</div> <div>⏱ 読了 約3分</div> <div>🏷 Next.js</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

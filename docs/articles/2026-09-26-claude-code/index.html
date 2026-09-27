@@ -1,0 +1,100 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Claude Code 週次総まとめ — /doctor prompt-auditとOpus 5.5既定化、AGENTS.md対応まで — デイリー技術深掘り 読み物</title><meta name="description" content="changelog v2.1.283の自己監査コマンドから、クラウドセッション正式提供・Opus 5.5既定化・Hooks強制ゲートまで、この週の実務インパクトを整理する。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-26-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Claude Code 週次総まとめ — /doctor prompt-auditとOpus 5.5既定化、AGENTS.md対応まで — デイリー技術深掘り 読み物"><meta property="og:description" content="changelog v2.1.283の自己監査コマンドから、クラウドセッション正式提供・Opus 5.5既定化・Hooks強制ゲートまで、この週の実務インパクトを整理する。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-26-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>Claude Code 週次総まとめ — /doctor prompt-auditとOpus 5.5既定化、AGENTS.md対応まで</h1> <p class="lede">changelog v2.1.283の自己監査コマンドから、クラウドセッション正式提供・Opus 5.5既定化・Hooks強制ゲートまで、この週の実務インパクトを整理する。</p> <div class="meta"> <span>📅 2026年9月26日</span> <span>⏱ 約4分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="1"><p>この一週間の Claude Code は、派手な新機能よりも「毎日の運用が事故りにくくなる」地味な改善がまとまって入った週だった。changelog の刻みと週次まとめを合わせて読むと、狙いは<strong>恒久メモリ（CLAUDE.md）の品質管理・モデル制御・クラウド運用の安定化</strong>に集約されている。</p>
+
+<h4 id="sec-1">何が新しいか</h4>
+<p>最新版は <strong>v2.1.283（9/25 公開）</strong>。目玉は CLAUDE.md やプロンプト記法を自己監査する新コマンド <code>/doctor prompt-audit</code> で、肥大した指示や曖昧な書き方を点検できる。管理設定には <code>availableModelsMatch</code> / <code>deniedModels</code> が加わり、組織で使えるモデルの許可・拒否を細かく制御できるようになった。加えてヒントヘッダに <code>x-claude-code-prompt-id</code> を付けてリクエストをグルーピングし、MCP ツール出力を OpenTelemetry の span イベントへ記録。バグ修正では SDK セッションで deferred ツール呼び出しや完了済みツール結果が失われる問題、長時間実行中に MCP 進捗通知が破棄される問題、セッション終了後に stdio MCP サーバーが残る問題を一掃した。</p>
+<p>週次（9/18〜24）では運用面のインパクトが大きい。<strong>v2.1.277</strong> で CLAUDE.md が無いとき <code>AGENTS.md</code> をプロジェクト指示として読むようになり、Codex や Cursor と指示ファイルを重複なく共有できる。<strong>9/23 にクラウドセッションが Pro/Max/Team 向けへ正式提供</strong>となり、Anthropic のクラウド上でセッションが永続化して端末をまたいで作業を続けられる。Auto Mode の安全分類器はサーバー側へ移り、対象プランでは分類のための課金が発生しない。そして <strong>v2.1.280 で Opus 5.5 が既定モデル</strong>になった。</p>
+
+<figure class='fig'><pre class='mermaid'>flowchart TD
+  A["Claudeがツール実行を要求"] --> B["PreToolUse Hook 起動"]
+  B --> C{"危険な操作か"}
+  C -->|"はい"| D["exit code 2 で停止"]
+  C -->|"いいえ"| E["exit code 0 で通過"]
+  D --> F["操作はブロックされ実行されない"]
+  E --> G["ツールを実行"]</pre><figcaption>図1：Hooks を「お願い」でなく強制ゲートにする流れ。CLAUDE.md の記憶に頼らず、終了コード2で毎回確実に止める。</figcaption></figure>
+
+<h4 id="sec-2">実務での使いどころ</h4>
+<p>上級ベストプラクティスの勘所は4つ。第一に、安全要件は CLAUDE.md の「お願い」ではなく <strong>PreToolUse Hook で確定ブロック</strong>する——bash スクリプトを終了コード2で終わらせれば、Claude の記憶に依存せず毎回操作を止められる。第二に、調査や検証はメインセッションでやらず <strong>Subagent へ隔離</strong>し、失敗手法が後続を汚す「コンテキスト汚染」を防ぐ。第三に、同じ問題で2回つまずいたら <code>/clear</code> で失敗パターンを一掃して再スタート。第四に、lint やテスト等の安全な反復操作は <code>permissions.allow</code> で自動許可し、承認過多→無確認クリック→安全性低下という悪循環を断つ（機密ファイルは <code>deny</code> で隠す）。自分が回している定期タスク群なら、まず各 CLAUDE.md を <code>/doctor prompt-audit</code> にかけ、<code>rm</code> や force push に Hook ゲートを1本差すのが即効性がある。</p>
+
+<h4 id="sec-3">Skill の配布3方式</h4>
+<p>作った Skill を配る手段は用途で分かれる。自前の <strong>Plugin Marketplace</strong>（GitHub リポジトリ＋設定ファイル）はチーム共有向き、<strong>公式 Plugin Store</strong> は審査つきの一般公開向き、vercel-labs の <strong>Skills CLI</strong> は Cursor / Copilot など40超のエージェント横断向き。Plugin 経由は <code>/plugin:skill</code> とプレフィックスが付く一方、Skills CLI は環境をまたいで名前が一貫するのが実務上の分かれ目だ。</p>
+<figure class='fig'><svg viewBox='0 0 600 190' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <rect x='0' y='0' width='600' height='190' fill='#fff7ed' rx='8'></rect>
+  <rect x='14' y='14' width='572' height='30' fill='#fed7aa' rx='5'></rect>
+  <text x='120' y='34' font-size='12' font-weight='bold' text-anchor='middle' fill='#7c2d12'>方式</text>
+  <text x='330' y='34' font-size='12' font-weight='bold' text-anchor='middle' fill='#7c2d12'>向いている用途</text>
+  <text x='510' y='34' font-size='12' font-weight='bold' text-anchor='middle' fill='#7c2d12'>名前の見え方</text>
+  <line x1='234' y1='14' x2='234' y2='176' stroke='#fdba74'></line>
+  <line x1='426' y1='14' x2='426' y2='176' stroke='#fdba74'></line>
+  <text x='120' y='70' font-size='12' text-anchor='middle' fill='#431407'>Plugin Marketplace</text>
+  <text x='330' y='70' font-size='11' text-anchor='middle' fill='#431407'>チーム / コミュニティ共有</text>
+  <text x='510' y='70' font-size='11' text-anchor='middle' fill='#431407'>/plugin:skill</text>
+  <line x1='14' y1='88' x2='586' y2='88' stroke='#fdba74'></line>
+  <text x='120' y='116' font-size='12' text-anchor='middle' fill='#431407'>公式 Plugin Store</text>
+  <text x='330' y='116' font-size='11' text-anchor='middle' fill='#431407'>審査つきの一般公開</text>
+  <text x='510' y='116' font-size='11' text-anchor='middle' fill='#431407'>プレフィックス付き</text>
+  <line x1='14' y1='134' x2='586' y2='134' stroke='#fdba74'></line>
+  <text x='120' y='162' font-size='12' text-anchor='middle' fill='#431407'>Skills CLI (vercel-labs)</text>
+  <text x='330' y='162' font-size='11' text-anchor='middle' fill='#431407'>40+ エージェント横断配布</text>
+  <text x='510' y='162' font-size='11' text-anchor='middle' fill='#431407'>名前が一貫</text>
+</svg><figcaption>図2：Skill 配布3方式の使い分け。名前の一貫性が要るならクロスエージェントの Skills CLI。</figcaption></figure>
+
+<h4 id="sec-4">注意点とまとめ</h4>
+<p>Opus 5.5 の既定化で Pro/Team Standard は Sonnet から切り替わり、トークン消費とレイテンシの体感が変わる点は定期タスク運用者ほど効いてくる。モデル制御は組織設定なので、個人環境では <code>availableModels</code> 系は無関係。総じて「壊れにくく、指示を点検でき、モデルを選べる」方向に一歩進んだ週で、まずは自分の CLAUDE.md 監査と Hook ゲート1本から取り込むのがコスパが良い。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://code.claude.com/docs/en/changelog" target="_blank" rel="noopener noreferrer"> 公式 changelog </a> </li><li> <a href="https://blog.serverworks.co.jp/2026/09/26/190000" target="_blank" rel="noopener noreferrer"> 週次まとめ（サーバーワークス） </a> </li><li> <a href="https://smartscope.blog/en/generative-ai/claude/claude-code-best-practices-advanced-2026/" target="_blank" rel="noopener noreferrer"> Claude Code 上級ベストプラクティス </a> </li><li> <a href="https://zenn.dev/singularity/articles/claude-code-skill-distribution" target="_blank" rel="noopener noreferrer"> Skill 配布3方式（Zenn） </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 何が新しいか </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 実務での使いどころ </a> </li><li> <a href="#sec-3" data-toc="sec-3"> Skill の配布3方式 </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 注意点とまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-09-26</div> <div>⏱ 読了 約4分</div> <div>🏷 Claude Code</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
