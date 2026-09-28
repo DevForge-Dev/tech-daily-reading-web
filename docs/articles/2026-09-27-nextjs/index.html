@@ -1,0 +1,76 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Jotai を App Router で安全に — atom×RSC境界、useHydrateAtomsとhydration mismatch回避 — デイリー技術深掘り 読み物</title><meta name="description" content="サーバーで取った初期値を、リクエスト間で漏らさずクライアント状態へ渡す設計を型として押さえる。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-27-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Jotai を App Router で安全に — atom×RSC境界、useHydrateAtomsとhydration mismatch回避 — デイリー技術深掘り 読み物"><meta property="og:description" content="サーバーで取った初期値を、リクエスト間で漏らさずクライアント状態へ渡す設計を型として押さえる。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-27-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>Jotai を App Router で安全に — atom×RSC境界、useHydrateAtomsとhydration mismatch回避</h1> <p class="lede">サーバーで取った初期値を、リクエスト間で漏らさずクライアント状態へ渡す設計を型として押さえる。</p> <div class="meta"> <span>📅 2026年9月27日</span> <span>⏱ 約3分</span> <span>🔗 出典 6 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="1"><p>Jotai は Recoil 系譜の<strong>ボトムアップ型・アトミック</strong>な状態管理（pmndrs製、現行 v2 / 2.8.x）。Zustand が「1つのストアをトップダウンに切る」のに対し、Jotai は <code>atom()</code> という最小の状態単位を組み合わせて依存グラフを作り、購読している atom が変わったコンポーネントだけを再描画する。<code>useState</code> の延長の書き味で、Context の「値が変わると配下が全再描画」も、Zustand のセレクタ設計の負担も避けられるのが持ち味だ。</p>
+<p>App Router で効くのは、<strong>RSC（Server Components）との境界設計がそのまま状態設計になる</strong>点。atom は本質的にクライアント状態で、サーバーで取った初期値を<strong>リクエストごとに閉じたストアへ注入</strong>できれば、「サーバー取得データをクライアントの初期値にする」頻出パターンを hydration mismatch なしに書ける。逆にここを外すと、グローバルストア共有によるリクエスト間のデータ漏洩や、localStorage 由来の初期値ズレを踏む。</p>
+<figure class='fig'><pre class='mermaid'>flowchart TD
+  A["RSC: await getUser()"] --> B["propsでClient Componentへ"]
+  B --> C["useHydrateAtoms 初回だけ注入"]
+  C --> D["リクエストごとに閉じたstore"]
+  D --> E["以降はクライアント状態として更新"]</pre><figcaption>図1：サーバー取得値を漏れなくクライアント初期値へ渡す王道フロー。</figcaption></figure>
+<p>肝は3つ。①<strong>Provider は必須級</strong>——default store をサーバーで使うと全リクエストが同一ストアを共有し、あるユーザーの状態が別ユーザーへ漏れうる。<code>'use client'</code> の Providers を <code>app/layout.tsx</code> で children に被せ、リクエストごとにストアを分離する。②<strong><code>useHydrateAtoms</code> は初回だけ</strong>——名前に反してクライアントフックで、そのストアに一度しか初期値を入れない。③<strong>派生・非同期 atom</strong>——<code>atom((get)=&gt;...)</code> は依存が変われば自動再計算、read が Promise を返せば非同期 atom になり <code>&lt;Suspense&gt;</code> でサスペンドする（SSR中はPromiseを返せないので初期値は hydrate 方式で渡す）。</p>
+<p>実装の王道はこう：</p>
+<pre><code>// page.tsx (RSC)
+const user = await getUser();
+return &lt;UserPanel initialUser={user} /&gt;;
+
+// user-panel.tsx ('use client')
+useHydrateAtoms([[userAtom, initialUser]]); // 初回だけ
+const [user, setUser] = useAtom(userAtom);</code></pre>
+<p><strong>落とし穴</strong>：hydration は初回レンダのみ。<code>router.push()</code> のソフト遷移では Provider が保持されて再 hydrate されず、サーバーの新しい値が反映されない。対策は (a) <code>app/template.tsx</code> に Provider を置く（遷移ごと再マウント＝再hydrate だが全クライアント状態がリセットされる）か、(b) <code>useHydrateAtoms</code> ＋ <code>useEffect</code> で明示更新。<code>atomWithStorage</code> はサーバーHTMLが initialValue、クライアントは保存値を読むため mismatch の主因——見た目に効くものは <code>ssr:false</code> の <code>next/dynamic</code> か ClientOnly でクライアント専用描画にする。URL同期の <code>atomWithHash</code> は Next 13+ で <code>Router.events</code> 非公開のため実質使えず、URL状態は <code>nuqs</code> や <code>useSearchParams</code> を第一候補に。</p>
+<p><strong>ひとこと</strong>：Zustand=一枚岩ストア、Jotai=細粒度の派生状態、と状態の「形」で住み分ける。App Router では「RSCで取得→propsでClientへ→useHydrateAtomsで初期値化」を型として覚えれば、漏れず・ズレずに書ける。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://jotai.org/docs/guides/nextjs" target="_blank" rel="noopener noreferrer"> Jotai公式 — Next.js ガイド </a> </li><li> <a href="https://jotai.org/docs/utilities/ssr" target="_blank" rel="noopener noreferrer"> Jotai公式 — SSR (useHydrateAtoms) </a> </li><li> <a href="https://jotai.org/docs/utilities/storage" target="_blank" rel="noopener noreferrer"> Jotai公式 — Storage (atomWithStorage/getOnInit) </a> </li><li> <a href="https://jotai.org/docs/guides/migrating-to-v2-api" target="_blank" rel="noopener noreferrer"> Jotai公式 — v2 API migration </a> </li><li> <a href="https://github.com/pmndrs/jotai/discussions/2337" target="_blank" rel="noopener noreferrer"> Discussion #2337 — Jotai in Next.js app router </a> </li><li> <a href="https://blog.logrocket.com/using-jotai-next-js/" target="_blank" rel="noopener noreferrer"> LogRocket — Using Jotai with Next.js </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

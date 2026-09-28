@@ -1,0 +1,83 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>静かな週末に運用の型を締める — claude plugin evalと「助言 vs 強制」の設計思想 — デイリー技術深掘り 読み物</title><meta name="description" content="新リリースはなくても、eval・Hook強制・Skill厳選・stable運用という“守られる仕組み”が出そろった一日。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-27-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="静かな週末に運用の型を締める — claude plugin evalと「助言 vs 強制」の設計思想 — デイリー技術深掘り 読み物"><meta property="og:description" content="新リリースはなくても、eval・Hook強制・Skill厳選・stable運用という“守られる仕組み”が出そろった一日。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-27-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>静かな週末に運用の型を締める — claude plugin evalと「助言 vs 強制」の設計思想</h1> <p class="lede">新リリースはなくても、eval・Hook強制・Skill厳選・stable運用という“守られる仕組み”が出そろった一日。</p> <div class="meta"> <span>📅 2026年9月27日</span> <span>⏱ 約3分</span> <span>🔗 出典 7 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="1"><p>週末（9/26〜27）は新バージョンのリリースがなく、最新安定版は9/25の v2.1.283 のまま。派手な更新がない代わりに、この週末は「Claude Code をどう<strong>運用</strong>するか」の型が出そろった。ひとつ前の v2.1.282 では、広い端末で本文の行幅だけを抑える <code>maxProseWidth</code>、Chrome連携と管理MCPを併用する <code>allowClaudeInChromeWithManagedMcp</code>、初回リクエストの低遅延化などが入り、セッション再送の変形や compaction 失敗といった地味だが効く不具合も潰されている。</p>
+<p>公式『What's New』の目玉は <code>claude plugin eval</code>。作ったプラグインを一連のテストケースで実行して<strong>スコア化</strong>し、プラグイン無し（ベースライン）と比較できる。<code>claude plugin eval init</code> が評価ケースとグレーダーの下書きまで生成するので、「そのプラグインが本当に効いているか」を勘ではなく数字で検証できるようになった。</p>
+<figure class='fig'><pre class='mermaid'>flowchart LR
+  A["claude plugin eval init"] --> B["評価ケース+グレーダーを生成"]
+  B --> C["テストスイートで実行"]
+  C --> D["結果をスコア化"]
+  D --> E["no-pluginベースラインと比較"]
+  E --> F["効果を数値で判定"]</pre><figcaption>図1：plugin eval はプラグインの効果を主観ではなく数値で検証する。</figcaption></figure>
+<p>チュートリアル群で一貫していたのは<strong>「助言」と「強制」を分ける</strong>思想だ。CLAUDE.md の指示は約80%しか守られない一方、終了コード2を返す bash フックは確定実行で、破壊的な git 操作のブロックや編集後の自動 lint を100%強制できる。CLAUDE.md は150〜200行を超えると遵守率が目に見えて落ちるため、ビルドコマンド・アーキテクチャ・必須ワークフローに絞り、<code>@path</code> インポートで本体を肥大化させないのが定石。Skill も同じ発想で「8〜12個に厳選」が鉄則——増やすほどコンテキストを食い、性能は上がらない。Subagent は役割別（reviewer / test-writer）に作り、読み取りは Haiku・バランス作業は Sonnet とモデルを使い分け、独立コンテキストで並列実行させる。</p>
+<figure class='fig'><svg viewBox='0 0 600 165' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <rect x='0' y='0' width='600' height='165' fill='#faf5ff' rx='8'></rect>
+  <text x='20' y='30' font-size='13' font-weight='bold' fill='#6b21a8'>指示の「守られ方」— 助言 vs 強制</text>
+  <text x='20' y='68' font-size='11' fill='#3b0764'>CLAUDE.md（助言）</text>
+  <rect x='170' y='56' width='332' height='18' fill='#e9d5ff' rx='4'></rect>
+  <rect x='170' y='56' width='266' height='18' fill='#a855f7' rx='4'></rect>
+  <text x='512' y='70' font-size='11' fill='#6b21a8'>約80%</text>
+  <text x='20' y='112' font-size='11' fill='#3b0764'>Hook（exit 2・強制）</text>
+  <rect x='170' y='100' width='332' height='18' fill='#e9d5ff' rx='4'></rect>
+  <rect x='170' y='100' width='332' height='18' fill='#7e22ce' rx='4'></rect>
+  <text x='512' y='114' font-size='11' fill='#6b21a8'>100%</text>
+  <text x='20' y='148' font-size='10' fill='#7c3aed'>破壊的なgit操作のブロックや編集後lintは、確定実行のHookで100%強制できる</text>
+</svg><figcaption>図2：CLAUDE.mdの指示遵守は約80%、Hook（終了コード2）は確定実行で100%。</figcaption></figure>
+<p>自分が試すなら、まず破壊的操作を止める Hook を1本（exit 2）入れ、CLAUDE.md を200行以内に削り、Skill を棚卸しして未使用を落とす。運用ガイドは「即更新」より stable チャンネルで約1週間遅れの安定版を勧めており、デフォルトモデルが Sonnet→Opus 系へ段階変更されているので<strong>更新後は必ず <code>/model</code> で確認</strong>。新型モデルでは Todo 系ツールが既定オフになり <code>CLAUDE_CODE_ENABLE_TODO_TOOLS=1</code> で戻せる点も落とし穴だ。</p>
+<p>事例では、Coder が Agent Relay に Claude Code を統合し、顧客のクラウド／VPC／オンプレで<strong>自己ホスト実行＋完全監査</strong>を可能にして、金融など規制業界の導入障壁を外した。市場面では2026年5月に企業AI採用シェアで Anthropic 34.4%が OpenAI 32.3%を初逆転、年換算売上$30B超、Claude Code 単体でも$2.5B——牽引役はまさにこの自律コーディングだ。</p>
+<p><strong>ひとこと</strong>：静かな週末こそ運用の型を締める好機。eval で効果を測り、Hook で強制し、CLAUDE.md と Skill を絞る——「守られる仕組み」に投資した分だけ、日々の事故が減る。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://code.claude.com/docs/en/changelog" target="_blank" rel="noopener noreferrer"> 公式changelog </a> </li><li> <a href="https://code.claude.com/docs/en/whats-new" target="_blank" rel="noopener noreferrer"> 公式 What&#39;s New </a> </li><li> <a href="https://dev.to/vibehackers/claude-code-hooks-subagents-power-features-the-complete-guide-2026-c71" target="_blank" rel="noopener noreferrer"> Claude Code Hooks/Subagents 完全ガイド2026 (dev.to) </a> </li><li> <a href="https://www.developersdigest.tech/blog/best-claude-code-skills-2026" target="_blank" rel="noopener noreferrer"> 2026年のClaude Code Skill厳選10選 (developersdigest) </a> </li><li> <a href="https://uravation.com/media/claude-code-update-operation-guide-2026/" target="_blank" rel="noopener noreferrer"> Claude Code運用ガイド 2026年9月 (uravation) </a> </li><li> <a href="https://www.globenewswire.com/news-release/2026/09/15/3362210/0/en/coder-brings-claude-code-to-agent-relay-unlocking-agentic-development-for-the-world-s-most-regulated-enterprises.html" target="_blank" rel="noopener noreferrer"> Coder brings Claude Code to Agent Relay </a> </li><li> <a href="https://www.eweek.com/artificial-intelligence/anthropic-overtakes-openai-enterprise-ai-adoption-neuron/" target="_blank" rel="noopener noreferrer"> Anthropic overtakes OpenAI in enterprise AI (eWeek) </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
