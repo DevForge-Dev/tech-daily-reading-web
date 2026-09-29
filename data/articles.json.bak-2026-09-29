@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-09-29T04:47:51.000Z",
+  "generatedAt": "2026-09-28T04:55:08.529Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,32 +8,6 @@
     "GitHub Trending"
   ],
   "articles": [
-    {
-      "date": "2026-09-29",
-      "topic": "Flutter",
-      "title": "Flutterの手触りは物理で決まる — animateWith×damping ratioとSliver遅延生成",
-      "lede": "duration固定のカーブを卒業。SpringSimulationとdamping ratioで、時間ではなく物理で手触りを設計する。",
-      "articleHtml": "<p>Flutterは11月の次期安定版へ向けて<strong>beta 3.48 / Dart 3.14</strong>が進行中（現行安定は3.47.4）。この時期に効くのは派手な新機能より「仕上げ」の実務ノウハウで、なかでも<strong>物理ベース（spring）アニメーション</strong>は手触りを一段引き上げる。</p>\n\n<h4>何が新しい・重要か</h4>\n<p>duration固定のカーブから、物理法則で減衰・振動する動きへ発想を移す。核は <code>AnimationController.animateWith(simulation)</code> に <code>SpringSimulation</code> を渡すこと。動きの表情は <code>SpringDescription.withDampingRatio(mass, stiffness, ratio)</code> の <strong>ratio</strong> ひとつで決まる。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 220' xmlns='http://www.w3.org/2000/svg'>\n<rect x='0' y='0' width='600' height='220' fill='#f7fbff'/>\n<rect x='15' y='34' width='170' height='150' fill='#eaf3fb' stroke='#02569B' stroke-width='1' rx='6'/>\n<rect x='215' y='34' width='170' height='150' fill='#eaf3fb' stroke='#02569B' stroke-width='1' rx='6'/>\n<rect x='415' y='34' width='170' height='150' fill='#eaf3fb' stroke='#02569B' stroke-width='1' rx='6'/>\n<line x1='22' y1='99' x2='178' y2='99' stroke='#9bb7cf' stroke-width='1' stroke-dasharray='4 3'/>\n<line x1='222' y1='99' x2='378' y2='99' stroke='#9bb7cf' stroke-width='1' stroke-dasharray='4 3'/>\n<line x1='422' y1='99' x2='578' y2='99' stroke='#9bb7cf' stroke-width='1' stroke-dasharray='4 3'/>\n<polyline points='22,176 45,154 65,99 85,62 105,114 125,86 145,102 178,99' fill='none' stroke='#02569B' stroke-width='2.5'/>\n<polyline points='222,176 246,168 266,142 286,114 306,102 326,100 346,99 378,99' fill='none' stroke='#0b8043' stroke-width='2.5'/>\n<polyline points='422,176 452,171 484,162 512,148 540,128 562,114 578,106' fill='none' stroke='#b06f00' stroke-width='2.5'/>\n<text x='100' y='24' font-family='sans-serif' font-size='12' fill='#02569B' text-anchor='middle'>ratio &lt; 1 : バウンド</text>\n<text x='300' y='24' font-family='sans-serif' font-size='12' fill='#0b8043' text-anchor='middle'>ratio = 1 : 臨界減衰</text>\n<text x='500' y='24' font-family='sans-serif' font-size='12' fill='#b06f00' text-anchor='middle'>ratio &gt; 1 : 過減衰</text>\n<text x='100' y='204' font-family='sans-serif' font-size='11' fill='#555' text-anchor='middle'>オーバーシュートして着地</text>\n<text x='300' y='204' font-family='sans-serif' font-size='11' fill='#555' text-anchor='middle'>最短・無振動</text>\n<text x='500' y='204' font-family='sans-serif' font-size='11' fill='#555' text-anchor='middle'>ゆっくり接近</text>\n</svg><figcaption>図1：damping ratio が動きの表情を決める（点線＝着地目標）。UIの着地は0.7〜0.9が心地よい。</figcaption></figure>\n\n<h4>仕組みを噛み砕く</h4>\n<p>ratio&lt;1 でオーバーシュート（バウンド）、=1 で臨界減衰（最短・無振動）、&gt;1 で過減衰（ゆっくり接近）。放り投げ（fling）は <code>GestureDetector.onPanEnd</code> の <code>velocity.pixelsPerSecond</code> を初速として渡すと、指を離した勢いをそのまま引き継げる。</p>\n\n<pre><code>final sim = SpringSimulation(\n  SpringDescription.withDampingRatio(\n    mass: 1, stiffness: 500, ratio: 0.8),\n  0, 1,                        // start, end\n  velocity.pixelsPerSecond.dy, // onPanEnd の初速\n);\ncontroller.animateWith(sim);</code></pre>\n\n<h4>実務での使いどころ</h4>\n<p>ドラッグ可能なカードやボトムシートに好適。<strong>Material 3 Expressive</strong> は標準モーションがspring化され、割り込み時も<em>現在の速度から</em>滑らかに継続する——途中で向きが変わっても不自然にならない。自分が試すなら、既存の <code>AnimatedContainer</code> のドラッグ解放部だけを <code>animateWith</code> に差し替えて、着地の違いを体感するのが早い。</p>\n\n<figure class='fig'><pre class='mermaid'>flowchart TD\n  A[\"動きの種類は？\"] --> B[\"微小な状態変化\"]\n  A --> C[\"物理的な手触り・放り投げ\"]\n  A --> D[\"画面遷移\"]\n  B --> B1[\"implicit: AnimatedContainer 50-200ms\"]\n  C --> C1[\"explicit: animateWith + SpringSimulation\"]\n  D --> D1[\"Hero / PageRoute\"]</pre><figcaption>図2：動きの性質で技法を選ぶ。物理的な手触りが要る所だけspringを使うのがコツ。</figcaption></figure>\n\n<h4>注意点・落とし穴</h4>\n<p>explicit系は <code>AnimationController</code> の <strong>dispose 必須</strong>（忘れるとリーク）。微小変化はimplicitで十分で、何でもspringにすると過剰になる。長いリストと併用するなら描画側も締める：<code>CustomScrollView</code> ＋ Sliver で遅延生成し、固定高なら <code>SliverFixedExtentList(itemExtent:)</code> で各要素の測定パスを省く。120fps＝8.33ms/フレームの予算内に収め、土台の<strong>Impeller</strong>がshader jankを排除する。</p>\n\n<h4>ひとことまとめ</h4>\n<p>springは「時間」でなく「物理」で動きを設計する発想転換。<code>ratio</code>を一つ変えるだけで表情が変わるので、まず0.8から始めて詰めるとよい。</p>",
-      "sources": [
-        {
-          "title": "SpringSimulation class (API)",
-          "url": "https://api.flutter.dev/flutter/physics/SpringSimulation-class.html"
-        },
-        {
-          "title": "Animate using a physics simulation (cookbook)",
-          "url": "https://docs.flutter.dev/cookbook/animation/physics-simulation"
-        },
-        {
-          "title": "Advanced scrolling and slivers (docs)",
-          "url": "https://docs.flutter.dev/learn/tutorial/slivers"
-        },
-        {
-          "title": "Flutter release notes",
-          "url": "https://docs.flutter.dev/release/release-notes"
-        }
-      ],
-      "id": "2026-09-29-flutter"
-    },
     {
       "date": "2026-09-27",
       "topic": "Claude Code",
