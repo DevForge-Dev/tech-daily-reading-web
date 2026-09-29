@@ -1,0 +1,109 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Flutterの手触りは物理で決まる — animateWith×damping ratioとSliver遅延生成 — デイリー技術深掘り 読み物</title><meta name="description" content="duration固定のカーブを卒業。SpringSimulationとdamping ratioで、時間ではなく物理で手触りを設計する。"><meta name="theme-color" content="#0277bd"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-29-flutter/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Flutterの手触りは物理で決まる — animateWith×damping ratioとSliver遅延生成 — デイリー技術深掘り 読み物"><meta property="og:description" content="duration固定のカーブを卒業。SpringSimulationとdamping ratioで、時間ではなく物理で手触りを設計する。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-29-flutter/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #29b6f6, #01579b)"> <span class="glyph" aria-hidden="true">◆</span> <div class="kicker">Flutter</div> <h1>Flutterの手触りは物理で決まる — animateWith×damping ratioとSliver遅延生成</h1> <p class="lede">duration固定のカーブを卒業。SpringSimulationとdamping ratioで、時間ではなく物理で手触りを設計する。</p> <div class="meta"> <span>📅 2026年9月29日</span> <span>⏱ 約3分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#0277bd"> <div> <article class="prose" data-has-mermaid="1"><p>Flutterは11月の次期安定版へ向けて<strong>beta 3.48 / Dart 3.14</strong>が進行中（現行安定は3.47.4）。この時期に効くのは派手な新機能より「仕上げ」の実務ノウハウで、なかでも<strong>物理ベース（spring）アニメーション</strong>は手触りを一段引き上げる。</p>
+
+<h4 id="sec-1">何が新しい・重要か</h4>
+<p>duration固定のカーブから、物理法則で減衰・振動する動きへ発想を移す。核は <code>AnimationController.animateWith(simulation)</code> に <code>SpringSimulation</code> を渡すこと。動きの表情は <code>SpringDescription.withDampingRatio(mass, stiffness, ratio)</code> の <strong>ratio</strong> ひとつで決まる。</p>
+
+<figure class='fig'><svg viewBox='0 0 600 220' xmlns='http://www.w3.org/2000/svg'>
+<rect x='0' y='0' width='600' height='220' fill='#f7fbff'></rect>
+<rect x='15' y='34' width='170' height='150' fill='#eaf3fb' stroke='#02569B' stroke-width='1' rx='6'></rect>
+<rect x='215' y='34' width='170' height='150' fill='#eaf3fb' stroke='#02569B' stroke-width='1' rx='6'></rect>
+<rect x='415' y='34' width='170' height='150' fill='#eaf3fb' stroke='#02569B' stroke-width='1' rx='6'></rect>
+<line x1='22' y1='99' x2='178' y2='99' stroke='#9bb7cf' stroke-width='1' stroke-dasharray='4 3'></line>
+<line x1='222' y1='99' x2='378' y2='99' stroke='#9bb7cf' stroke-width='1' stroke-dasharray='4 3'></line>
+<line x1='422' y1='99' x2='578' y2='99' stroke='#9bb7cf' stroke-width='1' stroke-dasharray='4 3'></line>
+<polyline points='22,176 45,154 65,99 85,62 105,114 125,86 145,102 178,99' fill='none' stroke='#02569B' stroke-width='2.5'></polyline>
+<polyline points='222,176 246,168 266,142 286,114 306,102 326,100 346,99 378,99' fill='none' stroke='#0b8043' stroke-width='2.5'></polyline>
+<polyline points='422,176 452,171 484,162 512,148 540,128 562,114 578,106' fill='none' stroke='#b06f00' stroke-width='2.5'></polyline>
+<text x='100' y='24' font-family='sans-serif' font-size='12' fill='#02569B' text-anchor='middle'>ratio &lt; 1 : バウンド</text>
+<text x='300' y='24' font-family='sans-serif' font-size='12' fill='#0b8043' text-anchor='middle'>ratio = 1 : 臨界減衰</text>
+<text x='500' y='24' font-family='sans-serif' font-size='12' fill='#b06f00' text-anchor='middle'>ratio &gt; 1 : 過減衰</text>
+<text x='100' y='204' font-family='sans-serif' font-size='11' fill='#555' text-anchor='middle'>オーバーシュートして着地</text>
+<text x='300' y='204' font-family='sans-serif' font-size='11' fill='#555' text-anchor='middle'>最短・無振動</text>
+<text x='500' y='204' font-family='sans-serif' font-size='11' fill='#555' text-anchor='middle'>ゆっくり接近</text>
+</svg><figcaption>図1：damping ratio が動きの表情を決める（点線＝着地目標）。UIの着地は0.7〜0.9が心地よい。</figcaption></figure>
+
+<h4 id="sec-2">仕組みを噛み砕く</h4>
+<p>ratio&lt;1 でオーバーシュート（バウンド）、=1 で臨界減衰（最短・無振動）、&gt;1 で過減衰（ゆっくり接近）。放り投げ（fling）は <code>GestureDetector.onPanEnd</code> の <code>velocity.pixelsPerSecond</code> を初速として渡すと、指を離した勢いをそのまま引き継げる。</p>
+
+<pre><code>final sim = SpringSimulation(
+  SpringDescription.withDampingRatio(
+    mass: 1, stiffness: 500, ratio: 0.8),
+  0, 1,                        // start, end
+  velocity.pixelsPerSecond.dy, // onPanEnd の初速
+);
+controller.animateWith(sim);</code></pre>
+
+<h4 id="sec-3">実務での使いどころ</h4>
+<p>ドラッグ可能なカードやボトムシートに好適。<strong>Material 3 Expressive</strong> は標準モーションがspring化され、割り込み時も<em>現在の速度から</em>滑らかに継続する——途中で向きが変わっても不自然にならない。自分が試すなら、既存の <code>AnimatedContainer</code> のドラッグ解放部だけを <code>animateWith</code> に差し替えて、着地の違いを体感するのが早い。</p>
+
+<figure class='fig'><pre class='mermaid'>flowchart TD
+  A["動きの種類は？"] --> B["微小な状態変化"]
+  A --> C["物理的な手触り・放り投げ"]
+  A --> D["画面遷移"]
+  B --> B1["implicit: AnimatedContainer 50-200ms"]
+  C --> C1["explicit: animateWith + SpringSimulation"]
+  D --> D1["Hero / PageRoute"]</pre><figcaption>図2：動きの性質で技法を選ぶ。物理的な手触りが要る所だけspringを使うのがコツ。</figcaption></figure>
+
+<h4 id="sec-4">注意点・落とし穴</h4>
+<p>explicit系は <code>AnimationController</code> の <strong>dispose 必須</strong>（忘れるとリーク）。微小変化はimplicitで十分で、何でもspringにすると過剰になる。長いリストと併用するなら描画側も締める：<code>CustomScrollView</code> ＋ Sliver で遅延生成し、固定高なら <code>SliverFixedExtentList(itemExtent:)</code> で各要素の測定パスを省く。120fps＝8.33ms/フレームの予算内に収め、土台の<strong>Impeller</strong>がshader jankを排除する。</p>
+
+<h4 id="sec-5">ひとことまとめ</h4>
+<p>springは「時間」でなく「物理」で動きを設計する発想転換。<code>ratio</code>を一つ変えるだけで表情が変わるので、まず0.8から始めて詰めるとよい。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://api.flutter.dev/flutter/physics/SpringSimulation-class.html" target="_blank" rel="noopener noreferrer"> SpringSimulation class (API) </a> </li><li> <a href="https://docs.flutter.dev/cookbook/animation/physics-simulation" target="_blank" rel="noopener noreferrer"> Animate using a physics simulation (cookbook) </a> </li><li> <a href="https://docs.flutter.dev/learn/tutorial/slivers" target="_blank" rel="noopener noreferrer"> Advanced scrolling and slivers (docs) </a> </li><li> <a href="https://docs.flutter.dev/release/release-notes" target="_blank" rel="noopener noreferrer"> Flutter release notes </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 何が新しい・重要か </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 仕組みを噛み砕く </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 実務での使いどころ </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 注意点・落とし穴 </a> </li><li> <a href="#sec-5" data-toc="sec-5"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-09-29</div> <div>⏱ 読了 約3分</div> <div>🏷 Flutter</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
