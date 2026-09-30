@@ -1,0 +1,99 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Motion の useScroll — スクロール進捗を「0→1」に一元化してパララックス/プログレスバー — デイリー技術深掘り 読み物</title><meta name="description" content="scrollイベントの自前購読を卒業。位置をMotionValue(0→1)へ変換→useTransformで任意の出力に写像→useSpringで慣性。CSSの穴を埋めるJSルートの定番。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-29-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Motion の useScroll — スクロール進捗を「0→1」に一元化してパララックス/プログレスバー — デイリー技術深掘り 読み物"><meta property="og:description" content="scrollイベントの自前購読を卒業。位置をMotionValue(0→1)へ変換→useTransformで任意の出力に写像→useSpringで慣性。CSSの穴を埋めるJSルートの定番。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-29-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>Motion の useScroll — スクロール進捗を「0→1」に一元化してパララックス/プログレスバー</h1> <p class="lede">scrollイベントの自前購読を卒業。位置をMotionValue(0→1)へ変換→useTransformで任意の出力に写像→useSpringで慣性。CSSの穴を埋めるJSルートの定番。</p> <div class="meta"> <span>📅 2026年9月29日</span> <span>⏱ 約4分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="1"><p>背景: 「スクロール量に比例して動く」演出——プログレスバー・パララックス（前景が速く背景が遅い視差）・要素通過のフェード/スケール——はモダンLPやストーリーテリング系の中核だ。CSSの<code>animation-timeline</code>はJSゼロで書けるが、2026-09時点で<strong>Firefoxが未対応</strong>のため、全ブラウザで確実に効かせたい本番案件ではJSライブラリの出番が残る。その定番が<strong>Motion（旧Framer Motion、importは <code>motion/react</code>）</strong>の<code>useScroll</code>だ。</p>
+
+<h4 id="sec-1">何が新しい・重要か — 一本道のデータフロー</h4>
+<p>核心は「スクロール位置を<strong>MotionValue</strong>（0→1の進捗、またはpx）に変換 → <code>useTransform</code>で任意の出力（<code>y</code>/<code>scale</code>/<code>opacity</code>/<code>blur()</code>/色）へ写像 → 必要なら<code>useSpring</code>で慣性を足す」という一本道だ。命令的なscroll購読＋毎フレームの<code>getBoundingClientRect</code>を書かずに済み、しかも<strong>可能な場合はネイティブ<code>ScrollTimeline</code>にオフロード</strong>して完全ハードウェア合成＝メインスレッドを塞がない。</p>
+
+<figure class='fig'><pre class='mermaid'>flowchart LR
+  A["スクロール位置"] --> B["MotionValue 0→1 (scrollYProgress)"]
+  B --> C["useTransform で写像"]
+  C --> D["y / scale / opacity / blur / 色"]
+  B --> E["useSpring 慣性"]
+  E --> D</pre><figcaption>図1：位置→進捗→写像→出力。慣性が要る所だけ useSpring を挟む</figcaption></figure>
+
+<h4 id="sec-2">仕組みのポイント</h4>
+<p><code>useScroll</code>は<code>scrollY/scrollX</code>（絶対px）と<code>scrollYProgress/scrollXProgress</code>（正規化0→1）を返す。<code>target</code> refで「その要素がcontainerを横切る進捗」を測り、<code>offset:["start end","end start"]</code>で「下から入る→上へ抜ける」全区間を0→1にできる。<code>useTransform</code>は入力配列と出力配列を対応させるだけで多段キーフレームも表現できる。</p>
+
+<pre><code>const { scrollYProgress } = useScroll({ target: ref, offset: ['start end','end start'] })
+const y       = useTransform(scrollYProgress, [0,1], ['-20%','20%'])   // パララックス
+const opacity = useTransform(scrollYProgress, [0,0.25,0.75,1], [0,1,1,0]) // 多段</code></pre>
+
+<figure class='fig'><svg viewBox='0 0 600 168' xmlns='http://www.w3.org/2000/svg'>
+<rect x='0' y='0' width='600' height='168' fill='#f4f8ff'></rect>
+<text x='300' y='22' text-anchor='middle' font-size='13' font-weight='bold' fill='#123a7a'>scroll-linked と scroll-triggered の使い分け</text>
+<rect x='24' y='40' width='266' height='108' rx='8' fill='#e7f0ff' stroke='#2f6fe0'></rect>
+<text x='36' y='62' font-size='12' font-weight='bold' fill='#1c4fb0'>scroll-linked（useScroll）</text>
+<text x='36' y='84' font-size='11' fill='#22314a'>値がスクロール位置に連続的に紐づく</text>
+<text x='36' y='104' font-size='11' fill='#22314a'>パララックス／プログレスバー</text>
+<text x='36' y='124' font-size='11' fill='#22314a'>スクラブ再生向き</text>
+<rect x='310' y='40' width='266' height='108' rx='8' fill='#e7f0ff' stroke='#2f6fe0'></rect>
+<text x='322' y='62' font-size='12' font-weight='bold' fill='#1c4fb0'>scroll-triggered（whileInView）</text>
+<text x='322' y='84' font-size='11' fill='#22314a'>入った/出た瞬間に単発発火</text>
+<text x='322' y='104' font-size='11' fill='#22314a'>フェードイン／リビール</text>
+<text x='322' y='124' font-size='11' fill='#22314a'>連続追従が不要なら軽い</text>
+</svg><figcaption>図2：連続追従なら useScroll、単発の「出すだけ」なら whileInView</figcaption></figure>
+
+<h4 id="sec-3">App Router での組み込み</h4>
+<p><code>useScroll</code>系はブラウザAPI依存なので、使うコンポーネントは<code>'use client'</code>。ただし<strong>演出の「島」だけをクライアント化</strong>し、ページ本体・データ取得はRSCのまま<code>children</code>で流し込むのが定石だ。バンドル削減は<code>LazyMotion</code>＋<code>m</code>で機能を遅延ロード。単純な「出すだけ」はCSS <code>animation-timeline:view()</code>に寄せ、Motionは連続追従が本当に要る所だけに絞る。</p>
+
+<h4 id="sec-4">注意点・落とし穴</h4>
+<p>MotionValueを<strong>render中に<code>.get()</code>で読まない</strong>（再レンダーが走らず値が外れる）。<code>style</code>にMotionValueのまま渡すか<code>useTransform</code>経由にする。SSRでは初期進捗が0なので、重要コンテンツは初期可視にしてエンハンスで動きを足す。<code>prefers-reduced-motion</code>時は<code>useReducedMotion()</code>で移動レンジを0に潰し<code>opacity</code>のみに落とす。</p>
+
+<p><strong>ひとことまとめ</strong>: scroll-linked＝<code>useScroll</code>（連続追従）、scroll-triggered＝<code>whileInView</code>（単発リビール）。この使い分けが、軽さと表現力の分岐点になる。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://motion.dev/docs/react-scroll-animations" target="_blank" rel="noopener noreferrer"> Motion: React scroll animations </a> </li><li> <a href="https://motion.dev/docs/react-use-scroll" target="_blank" rel="noopener noreferrer"> Motion: useScroll API </a> </li><li> <a href="https://motion.dev/docs/react-use-reduced-motion" target="_blank" rel="noopener noreferrer"> Motion: useReducedMotion </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 何が新しい・重要か — 一本道のデータフロー </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 仕組みのポイント </a> </li><li> <a href="#sec-3" data-toc="sec-3"> App Router での組み込み </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 注意点・落とし穴 </a> </li> </ul> <div class="reading-box"> <div>📅 2026-09-29</div> <div>⏱ 読了 約4分</div> <div>🏷 Next.js</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

@@ -1,0 +1,100 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Claude Code v2.1.28x — 管理者モデルガバナンス強化と、4プリミティブの使い分け — デイリー技術深掘り 読み物</title><meta name="description" content="新機能ラッシュは一段落。deniedModels・availableModelsMatch=exactで“意図しないモデル切替”を封じ、CLAUDE.md/コマンド/Subagent/Skillの役割を腑分けする定着フェーズ。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-29-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Claude Code v2.1.28x — 管理者モデルガバナンス強化と、4プリミティブの使い分け — デイリー技術深掘り 読み物"><meta property="og:description" content="新機能ラッシュは一段落。deniedModels・availableModelsMatch=exactで“意図しないモデル切替”を封じ、CLAUDE.md/コマンド/Subagent/Skillの役割を腑分けする定着フェーズ。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-29-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>Claude Code v2.1.28x — 管理者モデルガバナンス強化と、4プリミティブの使い分け</h1> <p class="lede">新機能ラッシュは一段落。deniedModels・availableModelsMatch=exactで“意図しないモデル切替”を封じ、CLAUDE.md/コマンド/Subagent/Skillの役割を腑分けする定着フェーズ。</p> <div class="meta"> <span>📅 2026年9月29日</span> <span>⏱ 約3分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="0"><p>背景: 9/29時点で最新は<strong>v2.1.284（9/28）</strong>で、この日の新規リリースは無し。先週の大型更新（Opus 5.5が既定Opus化＝1Mコンテキスト・$4/$20、新既定Sonnet 5.5＝1M・$2/$10）から一段落し、直近は<strong>定着フェーズ</strong>にある。注目は派手な機能より、企業運用に効く「モデルガバナンス」と、カスタマイズ4種の整理だ。</p>
+
+<h4 id="sec-1">何が新しい・重要か</h4>
+<p>v2.1.282〜283で管理者向けモデルガバナンスが強化された。<code>deniedModels</code>は<code>availableModels</code>で許可済みのモデルでも特定モデルだけを個別ブロックできる。<code>availableModelsMatch:"exact"</code>にすると各エントリは名指しバージョンのみ許可＝<strong>新リリースを一覧へ明示登録するまで自動採用しない</strong>ため、想定外の切替を防げる。加えて<code>/doctor prompt-audit</code>がCLAUDE.md・skills・agents・commandsを走査して「旧モデル向けに書かれたプロンプト」を検出。表示面は<code>maxProseWidth</code>でワイド端末の本文幅を制限しつつ、表やコードブロックはフル幅を維持する。</p>
+
+<figure class='fig'><svg viewBox='0 0 600 268' xmlns='http://www.w3.org/2000/svg'>
+<rect x='0' y='0' width='600' height='268' fill='#fff7f2'></rect>
+<text x='300' y='24' text-anchor='middle' font-size='13' font-weight='bold' fill='#7a3b1a'>カスタマイズ4プリミティブの使い分け</text>
+<g font-size='11' fill='#3a2416'>
+<rect x='24' y='40' width='266' height='96' rx='8' fill='#fdece0' stroke='#d9772e'></rect>
+<text x='36' y='62' font-size='12' font-weight='bold' fill='#b5551a'>CLAUDE.md</text>
+<text x='36' y='82'>常に真の短い規約</text>
+<text x='36' y='100'>起動時に自動読込</text>
+<text x='36' y='118' fill='#8a6a55'>※長時間で文脈ドリフト注意</text>
+<rect x='310' y='40' width='266' height='96' rx='8' fill='#fdece0' stroke='#d9772e'></rect>
+<text x='322' y='62' font-size='12' font-weight='bold' fill='#b5551a'>スラッシュコマンド</text>
+<text x='322' y='82'>/cmd で明示起動</text>
+<text x='322' y='100'>引数付き反復ワークフロー</text>
+<text x='322' y='118' fill='#8a6a55'>※入口を手で叩く</text>
+<rect x='24' y='150' width='266' height='96' rx='8' fill='#fdece0' stroke='#d9772e'></rect>
+<text x='36' y='172' font-size='12' font-weight='bold' fill='#b5551a'>Subagent</text>
+<text x='36' y='192'>独立文脈で走る調査主体</text>
+<text x='36' y='210'>本体会話を軽く保つ</text>
+<text x='36' y='228' fill='#8a6a55'>※要約だけ本体へ返す</text>
+<rect x='310' y='150' width='266' height='96' rx='8' fill='#fdece0' stroke='#d9772e'></rect>
+<text x='322' y='172' font-size='12' font-weight='bold' fill='#b5551a'>Skill</text>
+<text x='322' y='192'>タスク一致で自動適用</text>
+<text x='322' y='210'>呼出時のみ読込（常時トークン不要）</text>
+<text x='322' y='228' fill='#8a6a55'>※SKILL.md＋一文description</text>
+</g>
+</svg><figcaption>図1：CLAUDE.md／コマンド／Subagent／Skill を「いつ・どう起動するか」で腑分け</figcaption></figure>
+
+<h4 id="sec-2">4プリミティブの使い分け</h4>
+<p><strong>CLAUDE.md</strong>＝起動時に自動読込される「常に真の短い規約」（長時間セッションでは文脈ドリフトに注意）。<strong>スラッシュコマンド</strong>＝<code>/cmd</code>で明示起動する引数付きの反復ワークフロー。<strong>Subagent</strong>＝独立した文脈で走らせる調査主体で、本体会話を軽く保てる。<strong>Skill</strong>＝タスク記述に一致すると自動適用され、呼出時のみ読込むためCLAUDE.mdと違い常時トークンを消費しない。導入は<code>.claude/skills/&lt;名前&gt;/SKILL.md</code>に一文descriptionを置いて再起動するだけだ。</p>
+
+<h4 id="sec-3">実務での使いどころ・自分が試すなら</h4>
+<p>ドキュメント取得のような調査は<strong>Subagentに委譲</strong>し、文脈肥大を防いで要約だけ本体へ返す。破壊的コマンドは<code>PreToolUse</code> Hook（終了コード0=成功／2=ブロック／1=非ブロック警告）で<code>rm -rf</code>等を照合・遮断。導入順序は<strong>Skill→Hook→Subagent</strong>が定石。SKILL.mdは1500語以内・番号付き手順・成果志向のdescriptionで確実にロードさせる。</p>
+
+<h4 id="sec-4">注意点・落とし穴</h4>
+<p>Skillは依存物としてバージョン固定＋セキュリティ監査を徹底する。<code>availableModelsMatch:"exact"</code>は安全な反面、登録漏れで「使えるはずのモデルが一覧に出ない」事故が起きるので、運用手順に“新モデルの明示登録”ステップを組み込むこと。</p>
+
+<p><strong>ひとことまとめ</strong>: 「Skill=やり方を教える／Hook=必ず起こす／Subagent=委譲する」。ガバナンス設定で会社の想定外切替を止め、4プリミティブを組み合わせて本体会話を集中させるのが今の勘所だ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://releasebot.io/updates/anthropic/claude-code" target="_blank" rel="noopener noreferrer"> Anthropic Claude Code updates (releasebot) </a> </li><li> <a href="https://code.claude.com/docs/en/changelog" target="_blank" rel="noopener noreferrer"> Claude Code changelog </a> </li><li> <a href="https://alexop.dev/posts/claude-code-customization-guide-claudemd-skills-subagents/" target="_blank" rel="noopener noreferrer"> Claude Code customization guide (alexop.dev) </a> </li><li> <a href="https://www.totalum.app/blog/claude-code-skills-totalum" target="_blank" rel="noopener noreferrer"> Claude Code Skills 2026 guide (totalum) </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 何が新しい・重要か </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 4プリミティブの使い分け </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 実務での使いどころ・自分が試すなら </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 注意点・落とし穴 </a> </li> </ul> <div class="reading-box"> <div>📅 2026-09-29</div> <div>⏱ 読了 約3分</div> <div>🏷 Claude Code</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
