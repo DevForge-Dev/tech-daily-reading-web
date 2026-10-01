@@ -1,0 +1,94 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Next.js 16 の型安全ルーティング — typedRoutes と PageProps/LayoutProps/RouteContext — デイリー技術深掘り 読み物</title><meta name="description" content="文字列でルートを指すAPIの“型検査の空白地帯”をNext.js 16が塞ぐ。存在しないパスやparamsのタイポがコンパイル時に赤くなり、フォルダ名変更＝ルート変更のリンク切れも検出できる。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-30-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Next.js 16 の型安全ルーティング — typedRoutes と PageProps/LayoutProps/RouteContext — デイリー技術深掘り 読み物"><meta property="og:description" content="文字列でルートを指すAPIの“型検査の空白地帯”をNext.js 16が塞ぐ。存在しないパスやparamsのタイポがコンパイル時に赤くなり、フォルダ名変更＝ルート変更のリンク切れも検出できる。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-30-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>Next.js 16 の型安全ルーティング — typedRoutes と PageProps/LayoutProps/RouteContext</h1> <p class="lede">文字列でルートを指すAPIの“型検査の空白地帯”をNext.js 16が塞ぐ。存在しないパスやparamsのタイポがコンパイル時に赤くなり、フォルダ名変更＝ルート変更のリンク切れも検出できる。</p> <div class="meta"> <span>📅 2026年9月30日</span> <span>⏱ 約5分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="1"><p>App Routerで文字列でルートを指すAPI——<code>&lt;Link href&gt;</code>・<code>router.push</code>・<code>redirect</code>・<code>params</code>/<code>searchParams</code>——は、長らく型検査の空白地帯だった。<code>/aboot</code>のようなタイポや動的セグメント名の間違いはビルドを通ってしまい、実行時404で初めて気づく。Next.js 16はこの穴を2つの機能でまとめて塞いだ。ORM（Drizzle/Prisma）でデータ層の型安全は取れても、ルーティング層はこれまで手動だった部分だ。</p>
+<h4 id="sec-1">何が新しいか</h4>
+<p>一つは<strong>typedRoutes（Statically Typed Links）</strong>。v13.2でベータ導入されたものが16系で<code>experimental.typedRoutes</code>からトップレベルの<code>typedRoutes</code>へ昇格し、“stable”扱いになった。<code>&lt;Link&gt;</code>のhrefと<code>next/navigation</code>のpush/replace/prefetchを、アプリに実在するルートだけに制限する。もう一つは<strong>PageProps / LayoutProps / RouteContext</strong>という3つのグローバルヘルパー型（import不要）。ルートリテラル（例 <code>'/blog/[slug]'</code>）を渡すだけで、params・searchParams・名前付きスロットが自動で型付く。手書きの<code>params: Promise&lt;{ slug: string }&gt;</code>を廃せる。</p>
+<figure class='fig'><pre class='mermaid'>flowchart LR
+  DEV["next dev / build / typegen"] --> GEN[".next/types に隠し .d.ts を生成"]
+  GEN --> TSC["tsc と IDE プラグインが型検査"]
+  TSC --> OK["実在ルートのみ Link/push で許可"]
+  TSC --> NG["存在しないパスは型エラー"]</pre><figcaption>図1：型生成の流れ。生成物は出力に含まれずランタイムに干渉しない。</figcaption></figure>
+<h4 id="sec-2">仕組み</h4>
+<p>next dev / next build / next typegen 実行時に、Next.jsが<code>.next/types</code>配下へ隠し<code>.d.ts</code>を生成し、アプリ内の全ルートを列挙してLinkのhref型やnavigationメソッドの引数型に流し込む。<strong>リテラル文字列は検証される</strong>（テンプレートリテラル <code>/blog/${slug}</code> も可）。実行時に組み立てる非リテラル文字列は<code>as Route</code>キャストが要る。ヘルパー型のparams/searchParamsは<strong>Promiseなのでawait必須</strong>（Next.js 15+の非同期params）、静的ルートではparamsは<code>{}</code>に解決される。<code>LayoutProps</code>は並列ルートの名前付きスロット（<code>app/dashboard/@analytics</code>→<code>props.analytics</code>）をディレクトリ構造から推論する。</p>
+<figure class='fig'><svg viewBox='0 0 600 180' xmlns='http://www.w3.org/2000/svg' font-family='monospace'>
+  <rect x='8' y='8' width='584' height='164' rx='10' fill='#eff6ff' stroke='#2563eb' stroke-width='1.5'></rect>
+  <text x='24' y='36' font-size='12' fill='#1e3a8a' font-family='sans-serif' font-weight='700'>typedRoutes が検証するもの / しないもの</text>
+  <text x='24' y='64' font-size='11.5' fill='#166534'>✓ &lt;Link href="/about" /&gt;</text>
+  <text x='320' y='64' font-size='11' fill='#334155' font-family='sans-serif'>実在ルート → OK</text>
+  <text x='24' y='88' font-size='11.5' fill='#166534'>✓ &lt;Link href={`/blog/${slug}`} /&gt;</text>
+  <text x='320' y='88' font-size='11' fill='#334155' font-family='sans-serif'>テンプレートリテラル → OK</text>
+  <text x='24' y='112' font-size='11.5' fill='#b91c1c'>✗ &lt;Link href="/aboot" /&gt;</text>
+  <text x='320' y='112' font-size='11' fill='#334155' font-family='sans-serif'>存在しない → 型エラー</text>
+  <text x='24' y='136' font-size='11.5' fill='#a16207'>△ href={('/blog/'+slug) as Route}</text>
+  <text x='320' y='136' font-size='11' fill='#334155' font-family='sans-serif'>非リテラルは as Route が必要</text>
+  <text x='24' y='160' font-size='10.5' fill='#64748b' font-family='sans-serif'>検証は“形状が実在するか”のみ。slug値やクエリキーの正しさは別途Zod/nuqsで。</text>
+</svg><figcaption>図2：検証されるのはルート形状の実在のみ。値のバリデーションは守備範囲外。</figcaption></figure>
+<h4 id="sec-3">実務での組み込み</h4>
+<p>手順はシンプル。(1) <code>next.config.ts</code>に<code>typedRoutes: true</code>、(2) tsconfigのincludeに<code>.next/types/**/*.ts</code>があるか確認、(3) 一度<code>next dev</code>か<code>next typegen</code>で型を生成、(4) ページ/レイアウト/Route Handlerのpropsを<code>PageProps&lt;...&gt;</code>等へ置換し手書きのPromise注釈を削除。typedRoutesもヘルパー型も<strong>ビルド時/型レベルの機能でランタイムに干渉しない</strong>ため、<code>&lt;Link&gt;</code>やredirectを使うページはRSCのままでよく、クライアントJSは増えない。</p>
+<pre><code>// next.config.ts
+const nextConfig = { typedRoutes: true }
+
+// app/blog/[slug]/page.tsx — params が自動で型付く（要 await）
+export default async function Page(props: PageProps&lt;'/blog/[slug]'&gt;) {
+  const { slug } = await props.params   // slug: string（キー厳格）
+  return &lt;h1&gt;Blog: {slug}&lt;/h1&gt;
+}</code></pre>
+<h4 id="sec-4">落とし穴</h4>
+<p><code>as Route</code>は安全弁ではなく“逃げ道”で、間違った文字列もTSに飲ませられる＝実行時404を握り潰す。動的リンクは可能な限りテンプレートリテラルで書き、キャストは<code>proxy.ts</code>のリダイレクト先など静的解析できないケースに限定する。CIでは<strong>next typegen → tsc --noEmit の順</strong>にしないと、型生成前の実行で<code>PageProps</code>が「Cannot find name」になって落ちる。<code>.next/types</code>のinclude漏れ、params/searchParamsの未await（searchParamsアクセスは動的レンダリングを誘発）も頻出バグだ。</p>
+<p><strong>ひとこと：</strong>フォルダ名変更＝ルート変更でリンク切れがコンパイル時に赤くなるのは効く。フロント〜ルート〜データ取得まで型が繋がる“最後のピース”が実用レベルに来た。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://nextjs.org/docs/app/api-reference/config/next-config-js/typedRoutes" target="_blank" rel="noopener noreferrer"> Next.js Docs — typedRoutes（stable） </a> </li><li> <a href="https://nextjs.org/docs/app/api-reference/config/typescript" target="_blank" rel="noopener noreferrer"> Next.js Docs — TypeScript（Typed Links / Route-Aware Helpers） </a> </li><li> <a href="https://dev.to/bharathkumar28/nextjs-16-type-safety-async-pageprops-typed-routes-3ilc" target="_blank" rel="noopener noreferrer"> DEV — Next.js 16 Type Safety: PageProps, LayoutProps, RouteContext </a> </li><li> <a href="https://www.flightcontrol.dev/blog/fix-nextjs-routing-to-have-full-type-safety" target="_blank" rel="noopener noreferrer"> flightcontrol — Fix Next.js routing to have full type-safety </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 何が新しいか </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 仕組み </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 実務での組み込み </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 落とし穴 </a> </li> </ul> <div class="reading-box"> <div>📅 2026-09-30</div> <div>⏱ 読了 約5分</div> <div>🏷 Next.js</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

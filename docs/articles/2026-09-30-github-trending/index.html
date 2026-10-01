@@ -1,0 +1,87 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>9/30の話題リポジトリ — 反検知ブラウザAI・会話でゲームMOD・ノッチ常駐の相棒 — デイリー技術深掘り 読み物</title><meta name="description" content="この日の急上昇はAIを“人の操作の肩代わり”へ寄せる3本。feder-cr/dots・universal-modder・coucou を、解決したい課題と提供する機能で読む。"><meta name="theme-color" content="#238636"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-30-github-trending/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="9/30の話題リポジトリ — 反検知ブラウザAI・会話でゲームMOD・ノッチ常駐の相棒 — デイリー技術深掘り 読み物"><meta property="og:description" content="この日の急上昇はAIを“人の操作の肩代わり”へ寄せる3本。feder-cr/dots・universal-modder・coucou を、解決したい課題と提供する機能で読む。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-09-30-github-trending/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3fb950, #1a7f37)"> <span class="glyph" aria-hidden="true">★</span> <div class="kicker">GitHub Trending</div> <h1>9/30の話題リポジトリ — 反検知ブラウザAI・会話でゲームMOD・ノッチ常駐の相棒</h1> <p class="lede">この日の急上昇はAIを“人の操作の肩代わり”へ寄せる3本。feder-cr/dots・universal-modder・coucou を、解決したい課題と提供する機能で読む。</p> <div class="meta"> <span>📅 2026年9月30日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#238636"> <div> <article class="prose" data-has-mermaid="0"><p>9/30の急上昇は「AI×自動化の実用」から「遊び」「デスクトップ常駐」まで幅があった。共通するのは、いずれもAIエージェントを“人の操作の肩代わり”に寄せている点だ。増加率（当日増÷総スター）で見た本日の筆頭3本を、<strong>解決したい課題</strong>と<strong>提供する機能</strong>で読み解く。</p>
+<figure class='fig'><svg viewBox='0 0 600 230' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <rect x='8' y='8' width='584' height='214' rx='10' fill='#f0fdf4' stroke='#3fb950' stroke-width='1.5'></rect>
+  <line x1='150' y1='44' x2='150' y2='214' stroke='#86efac' stroke-width='1'></line>
+  <line x1='370' y1='44' x2='370' y2='214' stroke='#86efac' stroke-width='1'></line>
+  <text x='79' y='34' text-anchor='middle' font-size='11.5' font-weight='700' fill='#166534'>リポジトリ</text>
+  <text x='260' y='34' text-anchor='middle' font-size='11.5' font-weight='700' fill='#166534'>解決したい課題</text>
+  <text x='481' y='34' text-anchor='middle' font-size='11.5' font-weight='700' fill='#166534'>提供する機能</text>
+  <line x1='16' y1='44' x2='584' y2='44' stroke='#86efac' stroke-width='1'></line>
+  <text x='22' y='76' font-size='11' font-weight='700' fill='#14532d'>feder-cr/dots</text><text x='22' y='92' font-size='9.5' fill='#3f6212'>Python ★1.9k</text>
+  <text x='158' y='72' font-size='10' fill='#1a2e05'>自動化がbot検知の壁に</text><text x='158' y='88' font-size='10' fill='#1a2e05'>突き当たる</text>
+  <text x='378' y='72' font-size='10' fill='#1a2e05'>反検知ブラウザを内蔵し</text><text x='378' y='88' font-size='10' fill='#1a2e05'>操作を代行する自律AI</text>
+  <line x1='16' y1='108' x2='584' y2='108' stroke='#bbf7d0' stroke-width='1'></line>
+  <text x='22' y='140' font-size='11' font-weight='700' fill='#14532d'>universal-modder</text><text x='22' y='156' font-size='9.5' fill='#3f6212'>Python ★780</text>
+  <text x='158' y='136' font-size='10' fill='#1a2e05'>PCゲームMODは</text><text x='158' y='152' font-size='10' fill='#1a2e05'>ツールチェーンが複雑</text>
+  <text x='378' y='136' font-size='10' fill='#1a2e05'>Claude Code＋fal MCPで</text><text x='378' y='152' font-size='10' fill='#1a2e05'>会話でMOD・生成</text>
+  <line x1='16' y1='172' x2='584' y2='172' stroke='#bbf7d0' stroke-width='1'></line>
+  <text x='22' y='200' font-size='11' font-weight='700' fill='#14532d'>Louis-CFM/coucou</text><text x='22' y='214' font-size='9.5' fill='#3f6212'>Swift ★1.2k</text>
+  <text x='158' y='196' font-size='10' fill='#1a2e05'>AI助手は“呼びに行く”</text><text x='158' y='212' font-size='10' fill='#1a2e05'>常駐体験が乏しい</text>
+  <text x='378' y='196' font-size='10' fill='#1a2e05'>ノッチ常駐の相棒が</text><text x='378' y='212' font-size='10' fill='#1a2e05'>画面を見守り気づきを提示</text>
+</svg><figcaption>図1：本日3本の「課題→機能」対応。AIを人の操作の肩代わりへ寄せる点が共通。</figcaption></figure>
+<h4 id="sec-1">feder-cr/dots（Python・⭐約1.9k）</h4>
+<p><strong>解決したい課題：</strong>既存のbrowser-use系AIエージェントは、ログインや購入の自動化でbot検知の壁に突き当たる。<strong>提供する機能：</strong>反検知の“見えない”ブラウザを丸ごと内蔵し、ブロックされずに実際の人間の操作（ログイン・購入など）を代行する自律エージェント。Auto_Jobs_Applierで知られるfeder-crの新作で、公開約1日で約1.9k・fork約320と本日の新規リポジトリでは実測最速級。AI×ブラウザ自動化のモメンタム筆頭（MIT）。</p>
+<h4 id="sec-2">rehan-remade/universal-modder（Python・⭐約780）</h4>
+<p><strong>解決したい課題：</strong>PCゲームのMOD制作はツールチェーンが複雑で参入障壁が高い。<strong>提供する機能：</strong>「Claudeをゲームに向けるだけ」で所有するほぼ全てのPCゲームをMODできるClaude Code用スキル群＋fal MCP。テクスチャ生成やアセット差し替えを会話で行える。公開当日で約780・fork約53。生成AI一色の上位群に“ゲーム応用”という毛色の違いで新規性・多様性を足した純モメンタム枠（MIT）。</p>
+<h4 id="sec-3">Louis-CFM/coucou（Swift・⭐約1.2k）</h4>
+<p><strong>解決したい課題：</strong>AIアシスタントは基本“こちらから呼びに行く”もので、作業中にそっと気づきをくれる常駐体験が乏しい。<strong>提供する機能：</strong>macOSのノッチ（Windowsは画面上部）に住む小さな相棒。画面を見張り、Claude連携でリマインドや気づきを差し込む常駐コンパニオン。Dynamic Island風UIの可愛さと手軽さで拡散し、公開約3日で約1.2k・fork約154。Swift/macOSネイティブという異色の消費者向け枠（MIT）。</p>
+<h4 id="sec-4">まとめ</h4>
+<p>自分が試すなら実務直結は<strong>dots</strong>——調査タスクのログイン壁を越える反検知ブラウザは、毎朝の自動調査が踏む“ログインできず詰まる”弱点を補える可能性がある。coucouは常駐UIの作法の参考に、universal-modderはエージェントに創作を丸投げする設計の遊びとして眺めておきたい。この日はDevForge適合枠（hypoarena・openai/mcp-extensions・dioramas）も動いており、根拠グラフやMCP拡張、AI生成3D LPは別途要チェックだ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://github.com/feder-cr/dots" target="_blank" rel="noopener noreferrer"> feder-cr/dots </a> </li><li> <a href="https://github.com/rehan-remade/universal-modder" target="_blank" rel="noopener noreferrer"> rehan-remade/universal-modder </a> </li><li> <a href="https://github.com/Louis-CFM/coucou" target="_blank" rel="noopener noreferrer"> Louis-CFM/coucou </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> feder-cr/dots（Python・⭐約1.9k） </a> </li><li> <a href="#sec-2" data-toc="sec-2"> rehan-remade/universal-modder（Python・⭐約780） </a> </li><li> <a href="#sec-3" data-toc="sec-3"> Louis-CFM/coucou（Swift・⭐約1.2k） </a> </li><li> <a href="#sec-4" data-toc="sec-4"> まとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-09-30</div> <div>⏱ 読了 約3分</div> <div>🏷 GitHub Trending</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
