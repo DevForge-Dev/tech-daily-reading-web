@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-10-01T04:51:51.519Z",
+  "generatedAt": "2026-09-30T04:52:47.593Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,114 +8,6 @@
     "GitHub Trending"
   ],
   "articles": [
-    {
-      "date": "2026-09-30",
-      "topic": "Claude Code",
-      "title": "Claude Code v2.1.286/285 — 権限UIの可視化と設定ガバナンス、7層スタックで捉える運用",
-      "lede": "派手な新機能より“運用の地固め”。件数表示・拡張思考の保持・WebFetch無効化・allowedProviders で、長時間・無人・組織規模の運用に耐える足場を固める2連続リリース。",
-      "articleHtml": "<p>9月末のClaude Codeは、派手な新機能より「運用の地固め」に寄った2連続リリースだった。無人のスケジュール実行や組織導入が当たり前になった今、効いてくるのは“安全に回り続ける”ための細部だ。</p>\n<h4>2連続リリースの中身</h4>\n<p><strong>v2.1.286（9/30）</strong>はUIと安定性が主役。権限リクエストが溜まると「5件中2件」のように<strong>件数を表示</strong>し、フルスクリーン一覧の「他N件」行をマウス操作できるようになった。拡張思考（extended thinking）ブロックが<strong>モデル切替や再開セッションをまたいでも保持</strong>され、artifact公開はデザイン計画を返信ではなくページ本体へ書き込む。修正も厚く、gcp/awsの認証リフレッシュが重複ログインを開く不具合、<code>--resume</code>/<code>--continue</code>がバッチ並列ツール後にターンを落とす不具合、そして<strong>MCPサインイン資格情報がエラーメッセージに露出</strong>する不具合などが潰れた。</p>\n<p><strong>v2.1.285（9/29）</strong>は設定・運用系の拡充。環境変数<code>CLAUDE_CODE_DISABLE_WEB_FETCH</code>でWebFetchを無効化、<code>claude --desktop</code>で現ディレクトリをデスクトップ版で開き、<code>claude plugin configure</code>と.mcpbの<code>&lt;server&gt;.&lt;key&gt;=&lt;value&gt;</code>構文でインストール時に設定値を渡せる。管理設定<code>allowedProviders</code>でマシンが使えるAPIプロバイダを制限できる。SDKの遅延ツール喪失やstdio MCPの残留、クラウドセッション再起動後のartifact更新拒否も修正された。</p>\n<figure class='fig'><svg viewBox='0 0 600 230' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='8' y='8' width='280' height='214' rx='10' fill='#fff7ed' stroke='#f59e0b' stroke-width='1.5'/>\n  <rect x='312' y='8' width='280' height='214' rx='10' fill='#fff7ed' stroke='#ea580c' stroke-width='1.5'/>\n  <text x='148' y='34' text-anchor='middle' font-size='14' font-weight='700' fill='#9a3412'>v2.1.285（9/29）</text>\n  <text x='452' y='34' text-anchor='middle' font-size='14' font-weight='700' fill='#9a3412'>v2.1.286（9/30）</text>\n  <text x='22' y='60' font-size='11.5' fill='#7c2d12'>設定・運用の拡充</text>\n  <text x='22' y='84' font-size='11' fill='#431407'>• CLAUDE_CODE_DISABLE_WEB_FETCH</text>\n  <text x='22' y='106' font-size='11' fill='#431407'>• claude --desktop で現dirを開く</text>\n  <text x='22' y='128' font-size='11' fill='#431407'>• plugin configure / .mcpb 設定構文</text>\n  <text x='22' y='150' font-size='11' fill='#431407'>• allowedProviders でAPI制限</text>\n  <text x='22' y='178' font-size='11' fill='#431407'>修正: 遅延ツール喪失 / stdio残留 /</text>\n  <text x='22' y='196' font-size='11' fill='#431407'>再起動後のartifact更新拒否</text>\n  <text x='326' y='60' font-size='11.5' fill='#7c2d12'>UI・安定性</text>\n  <text x='326' y='84' font-size='11' fill='#431407'>• 権限プロンプトに「5件中2件」表示</text>\n  <text x='326' y='106' font-size='11' fill='#431407'>• 拡張思考をモデル切替/再開で保持</text>\n  <text x='326' y='128' font-size='11' fill='#431407'>• artifact公開はページ本体へ記載</text>\n  <text x='326' y='150' font-size='11' fill='#431407'>修正: 認証リフレッシュ重複ログイン</text>\n  <text x='326' y='172' font-size='11' fill='#431407'>修正: --resume/--continue のターン喪失</text>\n  <text x='326' y='194' font-size='11' fill='#431407'>修正: MCP資格情報のエラー露出</text>\n</svg><figcaption>図1：9/29→9/30の2連続リリース。左が設定・運用、右がUI・安定性と修正。</figcaption></figure>\n<h4>スタックとして捉え直す</h4>\n<p>個々の機能を点で覚えるより、MCP（外部接続）/CLAUDE.md（記憶）/Skills（統合拡張）/サブエージェント（並列専門家）/Hooks（自動化）/Plugins（配布）/スケジュールタスクの<strong>7層スタック</strong>で捉えると使い分けが早い。静的知識はCLAUDE.md、再利用ワークフローはSkills、文脈分離が要る深掘りはサブエージェント、規則の強制はHooks（exit code 2でブロック）、定期処理はスケジュールタスク、という割り当てだ。</p>\n<figure class='fig'><pre class='mermaid'>flowchart TD\n  U[\"あなたの指示\"] --> CM[\"CLAUDE.md: 記憶\"]\n  U --> SK[\"Skills: 再利用ワークフロー\"]\n  U --> SA[\"サブエージェント: 並列・文脈分離\"]\n  CM --> CORE[\"Claude Code 本体\"]\n  SK --> CORE\n  SA --> CORE\n  CORE --> HK[\"Hooks: 規則の強制(exit 2)\"]\n  CORE --> MCP[\"MCP: 外部接続\"]\n  CORE --> ST[\"スケジュールタスク: 定期実行\"]\n  HK --> OUT[\"安全な成果物\"]\n  MCP --> OUT\n  ST --> OUT</pre><figcaption>図2：7層スタックの役割分担。強制はHooks、定期はスケジュールタスクへ。</figcaption></figure>\n<h4>自分の運用にどう効くか</h4>\n<p>無人運用では<code>allowedProviders</code>と<code>CLAUDE_CODE_DISABLE_WEB_FETCH</code>で“暴走の芽”を事前に閉じ、SubagentStopの品質ゲート（型チェック・テスト）で成果物を担保するのが現実解。CLAUDE.mdは「消しても困らない指示は削る」で簡潔に保ち、知識はSkillsへ逃がす——30人組織の導入事例では<strong>800行超でSkill起動率が40%低下</strong>し、「400行上限」をPRレビューで強制していた（90日で監査19→41、生産性+35%）。</p>\n<h4>注意点</h4>\n<p>件数表示やマウス操作は便利だが、無人実行では結局<code>--allowedTools</code>と<code>--output-format json</code>の併用が安全弁になる。資格情報露出の修正が入った点からも、ログやエラー出力を外部へ流す運用は最新版への追従を前提にしたい。なお「本番コードの80%はClaude」「企業採用でAnthropicがOpenAIを初逆転」といったニュースは勢いを示すが、検証ガードレール（CIのAIレビュー層が本番バグの約1/3を捕捉）とセットで語られている点を忘れずに。</p>\n<p><strong>ひとこと：</strong>機能ラッシュ後の“締め”の回。可視化・保持・ガバナンスで、長時間・無人・組織規模の運用に耐える足場が整った。</p>",
-      "sources": [
-        {
-          "title": "Claude Code changelog（v2.1.286 / v2.1.285）",
-          "url": "https://code.claude.com/docs/en/changelog"
-        },
-        {
-          "title": "Understanding the Claude Code full stack（7層整理）",
-          "url": "https://alexop.dev/posts/understanding-claude-code-full-stack/"
-        },
-        {
-          "title": "Claude Code Hooks 実践ガイド2026",
-          "url": "https://yuto-lab.com/blog/claude-code-hooks-practical-guide-2026/"
-        },
-        {
-          "title": "30-dev-shop の導入事例（CLAUDE.md 400行上限）",
-          "url": "https://www.digitalapplied.com/blog/case-study-claude-code-team-adoption-30-dev-shop-2026"
-        },
-        {
-          "title": "Anthropic: 本番コードの80%はClaude",
-          "url": "https://venturebeat.com/technology/anthropic-says-80-of-its-new-production-code-is-now-authored-by-claude-how-your-enterprise-can-keep-up"
-        }
-      ],
-      "id": "2026-09-30-claude-code"
-    },
-    {
-      "date": "2026-09-30",
-      "topic": "Next.js",
-      "title": "Next.js 16 の型安全ルーティング — typedRoutes と PageProps/LayoutProps/RouteContext",
-      "lede": "文字列でルートを指すAPIの“型検査の空白地帯”をNext.js 16が塞ぐ。存在しないパスやparamsのタイポがコンパイル時に赤くなり、フォルダ名変更＝ルート変更のリンク切れも検出できる。",
-      "articleHtml": "<p>App Routerで文字列でルートを指すAPI——<code>&lt;Link href&gt;</code>・<code>router.push</code>・<code>redirect</code>・<code>params</code>/<code>searchParams</code>——は、長らく型検査の空白地帯だった。<code>/aboot</code>のようなタイポや動的セグメント名の間違いはビルドを通ってしまい、実行時404で初めて気づく。Next.js 16はこの穴を2つの機能でまとめて塞いだ。ORM（Drizzle/Prisma）でデータ層の型安全は取れても、ルーティング層はこれまで手動だった部分だ。</p>\n<h4>何が新しいか</h4>\n<p>一つは<strong>typedRoutes（Statically Typed Links）</strong>。v13.2でベータ導入されたものが16系で<code>experimental.typedRoutes</code>からトップレベルの<code>typedRoutes</code>へ昇格し、“stable”扱いになった。<code>&lt;Link&gt;</code>のhrefと<code>next/navigation</code>のpush/replace/prefetchを、アプリに実在するルートだけに制限する。もう一つは<strong>PageProps / LayoutProps / RouteContext</strong>という3つのグローバルヘルパー型（import不要）。ルートリテラル（例 <code>'/blog/[slug]'</code>）を渡すだけで、params・searchParams・名前付きスロットが自動で型付く。手書きの<code>params: Promise&lt;{ slug: string }&gt;</code>を廃せる。</p>\n<figure class='fig'><pre class='mermaid'>flowchart LR\n  DEV[\"next dev / build / typegen\"] --> GEN[\".next/types に隠し .d.ts を生成\"]\n  GEN --> TSC[\"tsc と IDE プラグインが型検査\"]\n  TSC --> OK[\"実在ルートのみ Link/push で許可\"]\n  TSC --> NG[\"存在しないパスは型エラー\"]</pre><figcaption>図1：型生成の流れ。生成物は出力に含まれずランタイムに干渉しない。</figcaption></figure>\n<h4>仕組み</h4>\n<p>next dev / next build / next typegen 実行時に、Next.jsが<code>.next/types</code>配下へ隠し<code>.d.ts</code>を生成し、アプリ内の全ルートを列挙してLinkのhref型やnavigationメソッドの引数型に流し込む。<strong>リテラル文字列は検証される</strong>（テンプレートリテラル <code>/blog/${slug}</code> も可）。実行時に組み立てる非リテラル文字列は<code>as Route</code>キャストが要る。ヘルパー型のparams/searchParamsは<strong>Promiseなのでawait必須</strong>（Next.js 15+の非同期params）、静的ルートではparamsは<code>{}</code>に解決される。<code>LayoutProps</code>は並列ルートの名前付きスロット（<code>app/dashboard/@analytics</code>→<code>props.analytics</code>）をディレクトリ構造から推論する。</p>\n<figure class='fig'><svg viewBox='0 0 600 180' xmlns='http://www.w3.org/2000/svg' font-family='monospace'>\n  <rect x='8' y='8' width='584' height='164' rx='10' fill='#eff6ff' stroke='#2563eb' stroke-width='1.5'/>\n  <text x='24' y='36' font-size='12' fill='#1e3a8a' font-family='sans-serif' font-weight='700'>typedRoutes が検証するもの / しないもの</text>\n  <text x='24' y='64' font-size='11.5' fill='#166534'>✓ &lt;Link href=\"/about\" /&gt;</text>\n  <text x='320' y='64' font-size='11' fill='#334155' font-family='sans-serif'>実在ルート → OK</text>\n  <text x='24' y='88' font-size='11.5' fill='#166534'>✓ &lt;Link href={`/blog/${slug}`} /&gt;</text>\n  <text x='320' y='88' font-size='11' fill='#334155' font-family='sans-serif'>テンプレートリテラル → OK</text>\n  <text x='24' y='112' font-size='11.5' fill='#b91c1c'>✗ &lt;Link href=\"/aboot\" /&gt;</text>\n  <text x='320' y='112' font-size='11' fill='#334155' font-family='sans-serif'>存在しない → 型エラー</text>\n  <text x='24' y='136' font-size='11.5' fill='#a16207'>△ href={('/blog/'+slug) as Route}</text>\n  <text x='320' y='136' font-size='11' fill='#334155' font-family='sans-serif'>非リテラルは as Route が必要</text>\n  <text x='24' y='160' font-size='10.5' fill='#64748b' font-family='sans-serif'>検証は“形状が実在するか”のみ。slug値やクエリキーの正しさは別途Zod/nuqsで。</text>\n</svg><figcaption>図2：検証されるのはルート形状の実在のみ。値のバリデーションは守備範囲外。</figcaption></figure>\n<h4>実務での組み込み</h4>\n<p>手順はシンプル。(1) <code>next.config.ts</code>に<code>typedRoutes: true</code>、(2) tsconfigのincludeに<code>.next/types/**/*.ts</code>があるか確認、(3) 一度<code>next dev</code>か<code>next typegen</code>で型を生成、(4) ページ/レイアウト/Route Handlerのpropsを<code>PageProps&lt;...&gt;</code>等へ置換し手書きのPromise注釈を削除。typedRoutesもヘルパー型も<strong>ビルド時/型レベルの機能でランタイムに干渉しない</strong>ため、<code>&lt;Link&gt;</code>やredirectを使うページはRSCのままでよく、クライアントJSは増えない。</p>\n<pre><code>// next.config.ts\nconst nextConfig = { typedRoutes: true }\n\n// app/blog/[slug]/page.tsx — params が自動で型付く（要 await）\nexport default async function Page(props: PageProps&lt;'/blog/[slug]'&gt;) {\n  const { slug } = await props.params   // slug: string（キー厳格）\n  return &lt;h1&gt;Blog: {slug}&lt;/h1&gt;\n}</code></pre>\n<h4>落とし穴</h4>\n<p><code>as Route</code>は安全弁ではなく“逃げ道”で、間違った文字列もTSに飲ませられる＝実行時404を握り潰す。動的リンクは可能な限りテンプレートリテラルで書き、キャストは<code>proxy.ts</code>のリダイレクト先など静的解析できないケースに限定する。CIでは<strong>next typegen → tsc --noEmit の順</strong>にしないと、型生成前の実行で<code>PageProps</code>が「Cannot find name」になって落ちる。<code>.next/types</code>のinclude漏れ、params/searchParamsの未await（searchParamsアクセスは動的レンダリングを誘発）も頻出バグだ。</p>\n<p><strong>ひとこと：</strong>フォルダ名変更＝ルート変更でリンク切れがコンパイル時に赤くなるのは効く。フロント〜ルート〜データ取得まで型が繋がる“最後のピース”が実用レベルに来た。</p>",
-      "sources": [
-        {
-          "title": "Next.js Docs — typedRoutes（stable）",
-          "url": "https://nextjs.org/docs/app/api-reference/config/next-config-js/typedRoutes"
-        },
-        {
-          "title": "Next.js Docs — TypeScript（Typed Links / Route-Aware Helpers）",
-          "url": "https://nextjs.org/docs/app/api-reference/config/typescript"
-        },
-        {
-          "title": "DEV — Next.js 16 Type Safety: PageProps, LayoutProps, RouteContext",
-          "url": "https://dev.to/bharathkumar28/nextjs-16-type-safety-async-pageprops-typed-routes-3ilc"
-        },
-        {
-          "title": "flightcontrol — Fix Next.js routing to have full type-safety",
-          "url": "https://www.flightcontrol.dev/blog/fix-nextjs-routing-to-have-full-type-safety"
-        }
-      ],
-      "id": "2026-09-30-nextjs"
-    },
-    {
-      "date": "2026-10-01",
-      "topic": "Flutter",
-      "title": "Flutter 2026-10-01 — 3.50へ降りる土台と、AnimatedList・feature-first・ValueNotifierの実務",
-      "lede": "現行安定は3.47.5。11月の3.50へWasmGC既定化とImpeller一本化が降りてくる。アニメ（リスト増減）・設計（feature-first 3レイヤ）・パフォ（ピンポイント再ビルド）を実務目線で。",
-      "articleHtml": "<p>現行の安定版はFlutter 3.47.5 / Dart 3.13.4（9/18 patch）、betaは3.49.0-0.1.pre / Dart 3.14。次の安定機能リリース<strong>3.50は2026年11月</strong>で、そこへ降りてくる主目玉が<strong>WebのWasmGC既定化</strong>（<code>flutter build web --wasm</code>、<code>dart:html</code>→<code>package:web</code>）と<strong>AndroidのImpeller一本化</strong>（legacy Skiaバックエンド撤去、API29+）だ。2026ロードマップ“Finishing the Job”は年4回サイクル（2/5/8/11月）、Performance・DX/Tooling・Web/Accessibility・Stability＋AIの4本柱で進む。</p>\n<figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <line x1='40' y1='70' x2='560' y2='70' stroke='#60a5fa' stroke-width='2'/>\n  <circle cx='90' cy='70' r='7' fill='#93c5fd'/><text x='90' y='48' text-anchor='middle' font-size='11.5' font-weight='700' fill='#1e40af'>3.41</text><text x='90' y='98' text-anchor='middle' font-size='10.5' fill='#475569'>2月</text>\n  <circle cx='230' cy='70' r='7' fill='#93c5fd'/><text x='230' y='48' text-anchor='middle' font-size='11.5' font-weight='700' fill='#1e40af'>3.44</text><text x='230' y='98' text-anchor='middle' font-size='10.5' fill='#475569'>5月</text>\n  <circle cx='370' cy='70' r='9' fill='#2563eb'/><text x='370' y='46' text-anchor='middle' font-size='11.5' font-weight='700' fill='#1e40af'>3.47（現行安定）</text><text x='370' y='98' text-anchor='middle' font-size='10.5' fill='#475569'>8月・3.47.5</text>\n  <circle cx='520' cy='70' r='9' fill='#f97316'/><text x='520' y='46' text-anchor='middle' font-size='11.5' font-weight='700' fill='#c2410c'>3.50</text><text x='520' y='98' text-anchor='middle' font-size='10.5' fill='#c2410c'>11月</text>\n  <text x='520' y='122' text-anchor='middle' font-size='10' fill='#9a3412'>WasmGC既定 / Impeller一本化</text>\n</svg><figcaption>図1：2026の年4回サイクル。11月の3.50でWeb(Wasm)とImpellerが大きく動く。</figcaption></figure>\n<h4>アニメ：リストの増減はAnimatedListに任せる</h4>\n<p>行の挿入/削除を自然に見せるなら<code>AnimatedList</code>。<code>GlobalKey&lt;AnimatedListState&gt;</code>を保持し、<code>_key.currentState!.insertItem(index)</code>/<code>removeItem(...)</code>を呼ぶと該当行だけをフレームワークがアニメする。肝は<strong>データ配列の変更とListへの通知を必ず対で</strong>行うこと（片方だけだとindexがずれる）。itemBuilderの<code>animation</code>を<code>SizeTransition(sizeFactor: animation, child: FadeTransition(...))</code>に通すと高さ＋フェードの出入りになる。removeItemのbuilderには“削除直前の中身”を渡す（配列からは既に消えているため）。使い分けの軸は、micro=implicit（<code>AnimatedContainer</code>）→リスト増減=AnimatedList/AnimatedGrid→連鎖=flutter_animate→精密/多段=explicit（dispose必須）→重いアート=Rive/Lottie。土台のImpellerがshaderをAOT precompileして120fpsを支える。</p>\n<h4>設計：feature-first × 3レイヤ</h4>\n<p><code>lib/features/&lt;feature&gt;/</code>の下を<strong>presentation</strong>（widgets・ViewModel/Notifier）/<strong>domain</strong>（entities・repository抽象・use cases）/<strong>data</strong>（models・data sources・repository実装）に割り、横断コードは<code>lib/core/</code>へ。肝は<strong>domainをFlutter/パッケージ非依存に保つ</strong>こと——抽象クラス（interface）だけ置き、dataが実装する。依存方向は<code>presentation → domain ← data</code>で内向き固定（domainは他層をimportしない）。エラーは<code>Either&lt;Failure, T&gt;</code>（fpdart）かDart 3のsealed Resultで型として表し、UIはswitch/whenで網羅チェックする。DIは<code>get_it</code>＋<code>injectable</code>でrepository/use caseを登録し、Riverpod Notifierへ注入、テストは<code>overrideWithValue</code>で差し替える。</p>\n<figure class='fig'><pre class='mermaid'>flowchart LR\n  P[\"presentation (widgets・Notifier)\"] --> D[\"domain (entities・use cases・抽象)\"]\n  DA[\"data (models・repository実装)\"] --> D\n  D -.実装を注入.-> DA</pre><figcaption>図2：依存は内向き。domainは中心に座り他層に依存しない（過剰レイヤは小規模で負債）。</figcaption></figure>\n<h4>パフォ：ValueNotifierでピンポイント再ビルド</h4>\n<p>単一値なら<code>ValueNotifier</code>＋<code>ValueListenableBuilder</code>で<strong>その builder だけ</strong>再ビルドでき、<code>setState</code>のようにwidget全体を巻き込まない（パッケージ不要）。不変の重い子は<code>child:</code>へ逃がして毎フレームの再生成を防ぎ、使い終えたら<code>dispose()</code>で破棄。複数値は<code>Listenable.merge([a, b])</code>でまとめて購読できる。局所UI state（フォーム1項目・カウンタ・スクロール位置・アニメ値）に最適で、アプリ全体の共有・DI・非同期はRiverpod/Blocの担当という役割分担になる。計測は必ず<strong>profileモード</strong>のDevTools PerformanceでUIスレッド（Dart実行）とRasterスレッド（GPU）を分離して見る（フレーム予算 60=16.6 / 90=11.1 / 120=8.33ms）。</p>\n<p><strong>ひとこと：</strong>新規既定はRiverpod 3.3＋go_router＋Freezed、監査/規制/大規模はBloc 9.2。11月の3.50に向けて、Web（Wasm）とImpeller一本化は今から手元で試しておきたい。</p>",
-      "sources": [
-        {
-          "title": "Flutter versions（flutterreleases）",
-          "url": "https://flutterreleases.com/flutter-versions/"
-        },
-        {
-          "title": "Flutter & Dart 2026 roadmap",
-          "url": "https://flutter.dev/blog/flutter-darts-2026-roadmap"
-        },
-        {
-          "title": "AnimatedList (API)",
-          "url": "https://api.flutter.dev/flutter/widgets/AnimatedList-class.html"
-        },
-        {
-          "title": "Flutter app architecture guide",
-          "url": "https://docs.flutter.dev/app-architecture"
-        },
-        {
-          "title": "ValueListenableBuilder (API)",
-          "url": "https://api.flutter.dev/flutter/widgets/ValueListenableBuilder-class.html"
-        }
-      ],
-      "id": "2026-10-01-flutter"
-    },
-    {
-      "date": "2026-09-30",
-      "topic": "GitHub Trending",
-      "title": "9/30の話題リポジトリ — 反検知ブラウザAI・会話でゲームMOD・ノッチ常駐の相棒",
-      "lede": "この日の急上昇はAIを“人の操作の肩代わり”へ寄せる3本。feder-cr/dots・universal-modder・coucou を、解決したい課題と提供する機能で読む。",
-      "articleHtml": "<p>9/30の急上昇は「AI×自動化の実用」から「遊び」「デスクトップ常駐」まで幅があった。共通するのは、いずれもAIエージェントを“人の操作の肩代わり”に寄せている点だ。増加率（当日増÷総スター）で見た本日の筆頭3本を、<strong>解決したい課題</strong>と<strong>提供する機能</strong>で読み解く。</p>\n<figure class='fig'><svg viewBox='0 0 600 230' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='8' y='8' width='584' height='214' rx='10' fill='#f0fdf4' stroke='#3fb950' stroke-width='1.5'/>\n  <line x1='150' y1='44' x2='150' y2='214' stroke='#86efac' stroke-width='1'/>\n  <line x1='370' y1='44' x2='370' y2='214' stroke='#86efac' stroke-width='1'/>\n  <text x='79' y='34' text-anchor='middle' font-size='11.5' font-weight='700' fill='#166534'>リポジトリ</text>\n  <text x='260' y='34' text-anchor='middle' font-size='11.5' font-weight='700' fill='#166534'>解決したい課題</text>\n  <text x='481' y='34' text-anchor='middle' font-size='11.5' font-weight='700' fill='#166534'>提供する機能</text>\n  <line x1='16' y1='44' x2='584' y2='44' stroke='#86efac' stroke-width='1'/>\n  <text x='22' y='76' font-size='11' font-weight='700' fill='#14532d'>feder-cr/dots</text><text x='22' y='92' font-size='9.5' fill='#3f6212'>Python ★1.9k</text>\n  <text x='158' y='72' font-size='10' fill='#1a2e05'>自動化がbot検知の壁に</text><text x='158' y='88' font-size='10' fill='#1a2e05'>突き当たる</text>\n  <text x='378' y='72' font-size='10' fill='#1a2e05'>反検知ブラウザを内蔵し</text><text x='378' y='88' font-size='10' fill='#1a2e05'>操作を代行する自律AI</text>\n  <line x1='16' y1='108' x2='584' y2='108' stroke='#bbf7d0' stroke-width='1'/>\n  <text x='22' y='140' font-size='11' font-weight='700' fill='#14532d'>universal-modder</text><text x='22' y='156' font-size='9.5' fill='#3f6212'>Python ★780</text>\n  <text x='158' y='136' font-size='10' fill='#1a2e05'>PCゲームMODは</text><text x='158' y='152' font-size='10' fill='#1a2e05'>ツールチェーンが複雑</text>\n  <text x='378' y='136' font-size='10' fill='#1a2e05'>Claude Code＋fal MCPで</text><text x='378' y='152' font-size='10' fill='#1a2e05'>会話でMOD・生成</text>\n  <line x1='16' y1='172' x2='584' y2='172' stroke='#bbf7d0' stroke-width='1'/>\n  <text x='22' y='200' font-size='11' font-weight='700' fill='#14532d'>Louis-CFM/coucou</text><text x='22' y='214' font-size='9.5' fill='#3f6212'>Swift ★1.2k</text>\n  <text x='158' y='196' font-size='10' fill='#1a2e05'>AI助手は“呼びに行く”</text><text x='158' y='212' font-size='10' fill='#1a2e05'>常駐体験が乏しい</text>\n  <text x='378' y='196' font-size='10' fill='#1a2e05'>ノッチ常駐の相棒が</text><text x='378' y='212' font-size='10' fill='#1a2e05'>画面を見守り気づきを提示</text>\n</svg><figcaption>図1：本日3本の「課題→機能」対応。AIを人の操作の肩代わりへ寄せる点が共通。</figcaption></figure>\n<h4>feder-cr/dots（Python・⭐約1.9k）</h4>\n<p><strong>解決したい課題：</strong>既存のbrowser-use系AIエージェントは、ログインや購入の自動化でbot検知の壁に突き当たる。<strong>提供する機能：</strong>反検知の“見えない”ブラウザを丸ごと内蔵し、ブロックされずに実際の人間の操作（ログイン・購入など）を代行する自律エージェント。Auto_Jobs_Applierで知られるfeder-crの新作で、公開約1日で約1.9k・fork約320と本日の新規リポジトリでは実測最速級。AI×ブラウザ自動化のモメンタム筆頭（MIT）。</p>\n<h4>rehan-remade/universal-modder（Python・⭐約780）</h4>\n<p><strong>解決したい課題：</strong>PCゲームのMOD制作はツールチェーンが複雑で参入障壁が高い。<strong>提供する機能：</strong>「Claudeをゲームに向けるだけ」で所有するほぼ全てのPCゲームをMODできるClaude Code用スキル群＋fal MCP。テクスチャ生成やアセット差し替えを会話で行える。公開当日で約780・fork約53。生成AI一色の上位群に“ゲーム応用”という毛色の違いで新規性・多様性を足した純モメンタム枠（MIT）。</p>\n<h4>Louis-CFM/coucou（Swift・⭐約1.2k）</h4>\n<p><strong>解決したい課題：</strong>AIアシスタントは基本“こちらから呼びに行く”もので、作業中にそっと気づきをくれる常駐体験が乏しい。<strong>提供する機能：</strong>macOSのノッチ（Windowsは画面上部）に住む小さな相棒。画面を見張り、Claude連携でリマインドや気づきを差し込む常駐コンパニオン。Dynamic Island風UIの可愛さと手軽さで拡散し、公開約3日で約1.2k・fork約154。Swift/macOSネイティブという異色の消費者向け枠（MIT）。</p>\n<h4>まとめ</h4>\n<p>自分が試すなら実務直結は<strong>dots</strong>——調査タスクのログイン壁を越える反検知ブラウザは、毎朝の自動調査が踏む“ログインできず詰まる”弱点を補える可能性がある。coucouは常駐UIの作法の参考に、universal-modderはエージェントに創作を丸投げする設計の遊びとして眺めておきたい。この日はDevForge適合枠（hypoarena・openai/mcp-extensions・dioramas）も動いており、根拠グラフやMCP拡張、AI生成3D LPは別途要チェックだ。</p>",
-      "sources": [
-        {
-          "title": "feder-cr/dots",
-          "url": "https://github.com/feder-cr/dots"
-        },
-        {
-          "title": "rehan-remade/universal-modder",
-          "url": "https://github.com/rehan-remade/universal-modder"
-        },
-        {
-          "title": "Louis-CFM/coucou",
-          "url": "https://github.com/Louis-CFM/coucou"
-        }
-      ],
-      "id": "2026-09-30-github-trending"
-    },
     {
       "date": "2026-09-29",
       "topic": "Claude Code",
