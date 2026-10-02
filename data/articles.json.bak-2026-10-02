@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-10-02T04:49:46.041Z",
+  "generatedAt": "2026-10-01T04:51:51.519Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,72 +8,6 @@
     "GitHub Trending"
   ],
   "articles": [
-    {
-      "date": "2026-10-01",
-      "topic": "Claude Code",
-      "title": "Claude Code v2.1.287 — プラグインが挙動に介入する「Claude Mods」、傍らで見張る『You Should Know』",
-      "lede": "機能を足すプラグインから、エージェントの振る舞いそのものを変える“Mods”へ。10/1リリースの目玉と、Barclaysの全社展開まで。",
-      "articleHtml": "<p>10月1日に公開された v2.1.287 は、Claude Code を「チャット」から「プログラム可能なプラットフォーム」へ押し進める節目になった。目玉は、プラグインが本体のより深い挙動に介入できる新しい拡張層<strong>「Claude Mods」</strong>だ。これまでのプラグインが skill / hook / コマンドを配って<em>機能を足す</em>ものだったのに対し、Mods はエージェントの<em>振る舞いそのもの</em>を調整できる点が新しい。</p>\n<h4>何が新しいか</h4>\n<p>公式が内蔵 Mod として用意した<strong>「You Should Know」</strong>は代表例で、<code>/plugin enable cc-plugin-you-should-know@builtin</code> で有効化すると、副次（サイド）エージェントがセッションを見守り、潜在的な問題や見落としに気づいた時点で横から指摘してくれる。あわせて <code>/agents</code> 一覧にセッション名・タスク名で絞る <code>n:&lt;text&gt;</code> フィルタ、MCP サーバーからの <strong>URL 方式 elicitation</strong>（2025-11-25 プロトコル）対応、Windows で Bash/PowerShell の一方を拒否するともう一方も無効化される起動時警告が入った。修正も厚く、危険な <code>rm</code> の安全策喪失、クラウド/Remote Control のファイル配信タイムアウト（30→35秒）、8000px 超画像の自動縮小、添付16件超の欠落などが解消されている。</p>\n<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='8' y='8' width='584' height='194' rx='10' fill='#f6f8fa' stroke='#8957e5' stroke-width='1.5'/>\n  <text x='300' y='30' text-anchor='middle' font-size='12.5' font-weight='700' fill='#4c2889'>プラグイン vs Claude Mods</text>\n  <rect x='28' y='48' width='250' height='138' rx='8' fill='#ffffff' stroke='#c4b5fd' stroke-width='1.3'/>\n  <text x='153' y='70' text-anchor='middle' font-size='11.5' font-weight='700' fill='#5b21b6'>従来プラグイン</text>\n  <text x='44' y='96' font-size='10' fill='#333'>skill / hook / コマンドを配布</text>\n  <text x='44' y='118' font-size='10' fill='#333'>= 機能を「足す」層</text>\n  <text x='44' y='150' font-size='10' fill='#666'>例: 定型手順の自動化、</text>\n  <text x='44' y='166' font-size='10' fill='#666'>Lint 強制、動的注入</text>\n  <rect x='322' y='48' width='250' height='138' rx='8' fill='#faf5ff' stroke='#8957e5' stroke-width='1.6'/>\n  <text x='447' y='70' text-anchor='middle' font-size='11.5' font-weight='700' fill='#4c2889'>Claude Mods（新）</text>\n  <text x='338' y='96' font-size='10' fill='#333'>本体の挙動に介入する層</text>\n  <text x='338' y='118' font-size='10' fill='#333'>= 振る舞いを「変える」</text>\n  <text x='338' y='150' font-size='10' fill='#666'>例: You Should Know が</text>\n  <text x='338' y='166' font-size='10' fill='#666'>作業を見張り問題を指摘</text>\n</svg><figcaption>図1：機能追加のプラグインに対し、Mods はエージェントの振る舞い自体を調整する新しい層。</figcaption></figure>\n<h4>仕組み（You Should Know の動き）</h4>\n<p>本体エージェントが作業する傍らで、別コンテキストの副次エージェントが進行を観測し、見落としや潜在リスクに気づいたときだけ割り込む——という監視ループになる。常時助言で邪魔をするのではなく「気づいた時点で横から」なのが肝だ。</p>\n<figure class='fig'><pre class='mermaid'>flowchart LR\n  U[\"開発者の指示\"] --> M[\"本体エージェント<br/>作業を実行\"]\n  M --> O[\"成果物・変更\"]\n  M -. 進行を観測 .-> S[\"You Should Know<br/>副次エージェント\"]\n  S -- 問題/見落としを検知 --> W[\"横から指摘\"]\n  W --> U</pre><figcaption>図2：本体の作業を副次エージェントが見守り、気づいた時だけ指摘する監視ループ。</figcaption></figure>\n<h4>自分が試すなら</h4>\n<p>まず <code>/plugin enable cc-plugin-you-should-know@builtin</code> で監視 Mod を入れ、長時間・無人のスケジュール実行やマイグレーション作業に当てて「見落とし指摘」の精度を確かめたい。チュートリアル群（Hooks/Subagents/Skills 完全ガイド、Boris 直伝ベストプラクティス）とも接続し、<strong>訂正のたびに CLAUDE.md を 200 行以下で更新</strong>、並列ワークツリー 3〜5 個で文脈汚染を避ける運用に、Mod の自動指摘を重ねるのが筋が良さそうだ。</p>\n<h4>注意点</h4>\n<p>Mods は本体挙動に深く介入できるぶん、何を監視し何に割り込むのかを把握しないと、かえってノイズや予期しない挙動変更になりうる。チーム導入時は運用規約と対応づけて有効化範囲を絞るのが安全。Windows の Bash/PowerShell 無効化警告のように、環境依存の落とし穴も増えている。</p>\n<h4>ひとこと</h4>\n<p>「プラグイン＝機能追加」から「Mods＝振る舞いの調整」へ。Barclays が開発者の50%へ展開（2027年までに大半）という当日ニュースとも符合する、運用規模を見据えたアップデートだ。",
-      "sources": [
-        {
-          "title": "Claude Code Changelog（v2.1.287 / Claude Mods / You Should Know）",
-          "url": "https://code.claude.com/docs/en/changelog"
-        },
-        {
-          "title": "Hooks/Subagents/Skills Complete Guide",
-          "url": "https://dev.to/owen_fox/claude-code-hooks-subagents-and-skills-complete-guide-hjm"
-        },
-        {
-          "title": "Anthropic: Barclays scales Claude",
-          "url": "https://www.anthropic.com/news/barclays-scales-claude"
-        }
-      ],
-      "id": "2026-10-01-claude-code"
-    },
-    {
-      "date": "2026-10-02",
-      "topic": "Flutter",
-      "title": "Flutter 2026-10-02 — AIが開発ループに入り込み、signalsが第3の状態管理に",
-      "lede": "dart mcp-server と Agentic Hot Reload で AI が開発の“一部”へ。signals の台頭、leak_tracker の CI 統合まで、3.50（11月）へ降りる足場を読む。",
-      "articleHtml": "<p>現行の安定版は <strong>Flutter 3.47.5 / Dart 3.13.4</strong>、beta は <strong>3.49.0 / Dart 3.14</strong>、次の安定機能リリースは <strong>3.50（2026年11月）</strong>。この日の“主役”は、AI がフレームワーク周辺のツールではなく<strong>開発ループそのものの一部</strong>になり始めた、という潮目の変化だ。</p>\n<h4>何が新しいか — AIネイティブな開発ループ</h4>\n<p><strong>Dart &amp; Flutter MCP Server</strong>（<code>dart mcp-server</code>）が起動中のアプリを自動検出し、AI エージェントのコード変更を <strong>Agentic Hot Reload</strong> で即反映する。さらに <code>dart analyze</code> / <code>format</code> / <code>test</code> の結果も MCP 経由で AI が読み取り、修正ループを自動で回す。UI 生成側では <strong>GenUI</strong> が A2UI プロトコル上で LLM 応答から実ウィジェットをランタイム合成し、サーバ側の生成フローは <strong>Genkit for Dart</strong> が担う。</p>\n<figure class='fig'><pre class='mermaid'>flowchart LR\n  A[\"AIエージェント<br/>コード変更\"] --> B[\"dart mcp-server<br/>起動中アプリを検出\"]\n  B --> C[\"Agentic Hot Reload<br/>即反映\"]\n  C --> D[\"dart analyze / test<br/>結果を出力\"]\n  D -- MCP経由で消費 --> A</pre><figcaption>図1：変更→即反映→検査結果の取り込み、を AI が自律で回す開発ループ。</figcaption></figure>\n<p>Dart 3.14（beta）では <strong>dot shorthands</strong> が定着（<code>MainAxisAlignment.start</code> → <code>.start</code>）、<strong>build hooks</strong>（<code>hook/build.dart</code>）でネイティブアセット同梱と <strong>link hooks の tree-shaking</strong>（未使用ネイティブシンボル除去）が入る。<strong>macros は無期限ポーズ</strong>のままで、生成は <code>build_runner</code>＋<code>source_gen</code> が主軸だ。</p>\n<h4>状態管理 — signals が第3の選択肢に</h4>\n<p><code>signal()</code> / <code>computed()</code> / <code>effect()</code> の<strong>細粒度リアクティビティ</strong>を持つ signals が浮上した。依存を自動追跡し、変化した computed だけを再評価する SolidJS/Preact 系の設計で、UI は <code>Watch((){...})</code> か <code>SignalsMixin</code> で購読する。ボイラープレートが少なく学習コストも低い。一方で<strong>大規模のガバナンス・監査・一貫性は Riverpod 3.3 / Bloc 9.2 が依然優位</strong>という住み分けだ。</p>\n<figure class='fig'><svg viewBox='0 0 600 170' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='8' y='8' width='584' height='154' rx='10' fill='#f0f9ff' stroke='#0ea5e9' stroke-width='1.5'/>\n  <text x='300' y='30' text-anchor='middle' font-size='12' font-weight='700' fill='#075985'>2026 の使い分け（規模 × 一貫性）</text>\n  <rect x='28' y='46' width='172' height='100' rx='8' fill='#ffffff' stroke='#7dd3fc' stroke-width='1.3'/>\n  <text x='114' y='68' text-anchor='middle' font-size='11' font-weight='700' fill='#0369a1'>signals</text>\n  <text x='114' y='92' text-anchor='middle' font-size='9.5' fill='#444'>小〜中規模・手触り重視</text>\n  <text x='114' y='110' text-anchor='middle' font-size='9.5' fill='#444'>最小ボイラープレート</text>\n  <text x='114' y='132' text-anchor='middle' font-size='9.5' fill='#777'>細粒度・自動依存追跡</text>\n  <rect x='214' y='46' width='172' height='100' rx='8' fill='#ffffff' stroke='#7dd3fc' stroke-width='1.3'/>\n  <text x='300' y='68' text-anchor='middle' font-size='11' font-weight='700' fill='#0369a1'>Riverpod 3.3</text>\n  <text x='300' y='92' text-anchor='middle' font-size='9.5' fill='#444'>新規の既定線</text>\n  <text x='300' y='110' text-anchor='middle' font-size='9.5' fill='#444'>codegen・unified Ref</text>\n  <text x='300' y='132' text-anchor='middle' font-size='9.5' fill='#777'>retry・offline・Mutations</text>\n  <rect x='400' y='46' width='172' height='100' rx='8' fill='#ffffff' stroke='#7dd3fc' stroke-width='1.3'/>\n  <text x='486' y='68' text-anchor='middle' font-size='11' font-weight='700' fill='#0369a1'>Bloc 9.2</text>\n  <text x='486' y='92' text-anchor='middle' font-size='9.5' fill='#444'>監査・規制・大規模</text>\n  <text x='486' y='110' text-anchor='middle' font-size='9.5' fill='#444'>event transformer</text>\n  <text x='486' y='132' text-anchor='middle' font-size='9.5' fill='#777'>hydrated・blocTest</text>\n</svg><figcaption>図2：signals は小〜中規模の手触り、大規模・監査は Riverpod/Bloc。「一つ選んで一貫させる」が原則。</figcaption></figure>\n<h4>パフォーマンス — leak_tracker が CI の番人に</h4>\n<p><code>leak_tracker</code> が <code>flutter_test</code> に統合され、<code>testWidgets</code> 実行中に AnimationController・StreamSubscription・TextEditingController・FocusNode などの <strong>dispose 忘れを自動検出</strong>する。CI に組み込めば回帰を防げる。DevTools の Memory view で snapshot を diff、Allocation Tracing で割当元を辿る定石も健在だ。</p>\n<h4>自分が試すなら・注意点</h4>\n<p>まず <code>dart mcp-server</code> を Claude Code 等に繋いで Agentic Hot Reload の往復を体感し、小さな画面で signals を試す。11月の 3.50 では <strong>Android が Impeller 一本化</strong>（legacy Skia 撤去・API29+）、<strong>Web は WasmGC 既定</strong>（<code>dart:html</code>→<code>package:web</code>）になるため、移行の下準備（<code>dart fix --apply --code=migrate_design_widgets</code> は <code>--code</code> 無しだと無変更の罠）は早めに。macros 前提の設計は当面見送りが無難だ。</p>\n<h4>ひとこと</h4>\n<p>AI が「開発ループの中」に入った年。手触りの signals と、番人の leak_tracker を両輪に、3.50 へ向けて足場を固めたい。",
-      "sources": [
-        {
-          "title": "What's new in Flutter（AI tools）",
-          "url": "https://flutter.dev/blog/whats-new-in-flutter-3-44"
-        },
-        {
-          "title": "Flutter 3.44: Agentic Hot Reload / SwiftPM default",
-          "url": "https://byteiota.com/flutter-344-agentic-hot-reload-swiftpm-default/"
-        },
-        {
-          "title": "Riverpod 3 vs BLoC vs Signals 2026",
-          "url": "https://theflutterk.it.com/blog/flutter-riverpod-3-vs-bloc-vs-signals-2026"
-        }
-      ],
-      "id": "2026-10-02-flutter"
-    },
-    {
-      "date": "2026-10-01",
-      "topic": "GitHub Trending",
-      "title": "10/1の話題リポジトリ — 自前で動く常駐エージェント・電波を観る端末・自己修正する視覚AI",
-      "lede": "AI一色のトレンドに「自分の手元で完結」という軸。open-dot・Fieldwatch・VisionHOPE を、解決したい課題と提供する機能で読む。",
-      "articleHtml": "<p>この日の純粋な急上昇（増加率＝当日増÷総スター）を貫くのは、<strong>「自分の手元・自分の端末で完結する」</strong>という軸だ。クラウド前提の派手な AI ではなく、ローカルで動く常駐エージェント、バックエンド不要の観測ツール、再現可能な研究実装——の3本を、<strong>解決したい課題</strong>と<strong>提供する機能</strong>で読み解く。</p>\n<figure class='fig'><svg viewBox='0 0 600 232' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='8' y='8' width='584' height='216' rx='10' fill='#f0fdf4' stroke='#3fb950' stroke-width='1.5'/>\n  <line x1='150' y1='44' x2='150' y2='216' stroke='#86efac' stroke-width='1'/>\n  <line x1='370' y1='44' x2='370' y2='216' stroke='#86efac' stroke-width='1'/>\n  <text x='79' y='34' text-anchor='middle' font-size='11.5' font-weight='700' fill='#166534'>リポジトリ</text>\n  <text x='260' y='34' text-anchor='middle' font-size='11.5' font-weight='700' fill='#166534'>解決したい課題</text>\n  <text x='481' y='34' text-anchor='middle' font-size='11.5' font-weight='700' fill='#166534'>提供する機能</text>\n  <line x1='16' y1='44' x2='584' y2='44' stroke='#86efac' stroke-width='1'/>\n  <text x='22' y='76' font-size='11' font-weight='700' fill='#14532d'>open-dot</text><text x='22' y='92' font-size='9.5' fill='#3f6212'>TypeScript ★383</text>\n  <text x='158' y='72' font-size='10' fill='#1a2e05'>OpenAIのDotsを自前の</text><text x='158' y='88' font-size='10' fill='#1a2e05'>キー/環境で動かせない</text>\n  <text x='378' y='72' font-size='10' fill='#1a2e05'>Mac常駐＋1,500+アプリ</text><text x='378' y='88' font-size='10' fill='#1a2e05'>操作・送信前に承認</text>\n  <line x1='16' y1='108' x2='584' y2='108' stroke='#bbf7d0' stroke-width='1'/>\n  <text x='22' y='140' font-size='11' font-weight='700' fill='#14532d'>Fieldwatch</text><text x='22' y='156' font-size='9.5' fill='#3f6212'>Kotlin ★1.2k</text>\n  <text x='158' y='136' font-size='10' fill='#1a2e05'>周囲の電波源を自端末</text><text x='158' y='152' font-size='10' fill='#1a2e05'>だけで観測したい</text>\n  <text x='378' y='136' font-size='10' fill='#1a2e05'>Wi-Fi/BLEを受信専用で</text><text x='378' y='152' font-size='10' fill='#1a2e05'>傍受・可視化(完全ローカル)</text>\n  <line x1='16' y1='172' x2='584' y2='172' stroke='#bbf7d0' stroke-width='1'/>\n  <text x='22' y='202' font-size='11' font-weight='700' fill='#14532d'>VisionHOPE</text><text x='22' y='216' font-size='9.5' fill='#3f6212'>Python ★409</text>\n  <text x='158' y='198' font-size='10' fill='#1a2e05'>視覚バックボーンを</text><text x='158' y='214' font-size='10' fill='#1a2e05'>自己修正させたい</text>\n  <text x='378' y='198' font-size='10' fill='#1a2e05'>SRNLの視覚基盤実装＋</text><text x='378' y='214' font-size='10' fill='#1a2e05'>事前学習重み公開(再現性)</text>\n</svg><figcaption>図1：3本を「解決したい課題 × 提供する機能」で一望。いずれも手元完結が共通項。</figcaption></figure>\n<h4>composio-community/open-dot（TypeScript・⭐383）</h4>\n<p><strong>解決したい課題</strong>：OpenAI が9/29に出した常駐型パーソナルエージェント「Dots」は手軽に自前で動かせない。<strong>提供する機能</strong>：自分の Mac で自前キー（OpenAI/OpenRouter、ローカルの Kimi/DeepSeek/Qwen）を使い常駐エージェントを運用する OSS 版。各 dot が常時ログイン済みの専用ブラウザを持ち、Composio 経由で 1,500+ アプリを操作、送信/決済の前は承認ゲート（human-in-loop）を挟む。公開約2.3日で約383★と本日最速級——Dots 発表直後の“誰でも自前で動かせる版”という時事性が刺さった。</p>\n<h4>OffGridPete/Fieldwatch（Kotlin・⭐1.2k）</h4>\n<p><strong>解決したい課題</strong>：自分の周囲にどんな電波源（Wi-Fi/BLE）があるかを、プライバシーを保ったまま自端末だけで知りたい。<strong>提供する機能</strong>：Wi-Fi AP と Bluetooth LE を<strong>受信専用</strong>で傍受し、可視化・フィルタ・レポートまで行うオフライン完結の Android アプリ。サーバもアカウントも不要で、拡張可能なシグネチャ辞書で機器を同定する。AI 一色のトレンドの中、非 AI のプライバシー/RF ツールが多様性枠として浮上した（MIT）。</p>\n<h4>PSRben/VisionHOPE（Python・⭐409）</h4>\n<p><strong>解決したい課題</strong>：視覚バックボーンを固定の特徴抽出器ではなく“学習中に自分を書き換える自己修正システム”として捉え直す。<strong>提供する機能</strong>：自己参照型の入れ子学習（SRNL）に基づく視覚基盤モデルの PyTorch 公式実装。ImageNet 分類・COCO 検出/セグメ・ADE20K セマセグに加え<strong>事前学習重みまで公開</strong>し再現性が高い。研究の新規性と再現性が研究者層に刺さった（公開約4.7日で409★、MIT）。</p>\n<h4>まとめ — 自分が試すなら</h4>\n<p>いちばん触りたいのは <strong>open-dot</strong>。自前キー＋ローカルモデルで常駐エージェントを安全ゲート付きで動かす設計は、毎朝の調査/digest 自動化にそのまま効く。観測系が好きなら Fieldwatch、ML 研究の骨太さを見たいなら VisionHOPE。共通するのは「クラウド任せにせず手元で回す」思想だ。</p>",
-      "sources": [
-        {
-          "title": "composio-community/open-dot",
-          "url": "https://github.com/composio-community/open-dot"
-        },
-        {
-          "title": "OffGridPete/Fieldwatch",
-          "url": "https://github.com/OffGridPete/Fieldwatch"
-        },
-        {
-          "title": "PSRben/VisionHOPE",
-          "url": "https://github.com/PSRben/VisionHOPE"
-        }
-      ],
-      "id": "2026-10-01-github-trending"
-    },
     {
       "date": "2026-09-30",
       "topic": "Claude Code",
