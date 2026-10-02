@@ -1,0 +1,87 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>10/1の話題リポジトリ — 自前で動く常駐エージェント・電波を観る端末・自己修正する視覚AI — デイリー技術深掘り 読み物</title><meta name="description" content="AI一色のトレンドに「自分の手元で完結」という軸。open-dot・Fieldwatch・VisionHOPE を、解決したい課題と提供する機能で読む。"><meta name="theme-color" content="#238636"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-01-github-trending/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="10/1の話題リポジトリ — 自前で動く常駐エージェント・電波を観る端末・自己修正する視覚AI — デイリー技術深掘り 読み物"><meta property="og:description" content="AI一色のトレンドに「自分の手元で完結」という軸。open-dot・Fieldwatch・VisionHOPE を、解決したい課題と提供する機能で読む。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-01-github-trending/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3fb950, #1a7f37)"> <span class="glyph" aria-hidden="true">★</span> <div class="kicker">GitHub Trending</div> <h1>10/1の話題リポジトリ — 自前で動く常駐エージェント・電波を観る端末・自己修正する視覚AI</h1> <p class="lede">AI一色のトレンドに「自分の手元で完結」という軸。open-dot・Fieldwatch・VisionHOPE を、解決したい課題と提供する機能で読む。</p> <div class="meta"> <span>📅 2026年10月1日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#238636"> <div> <article class="prose" data-has-mermaid="0"><p>この日の純粋な急上昇（増加率＝当日増÷総スター）を貫くのは、<strong>「自分の手元・自分の端末で完結する」</strong>という軸だ。クラウド前提の派手な AI ではなく、ローカルで動く常駐エージェント、バックエンド不要の観測ツール、再現可能な研究実装——の3本を、<strong>解決したい課題</strong>と<strong>提供する機能</strong>で読み解く。</p>
+<figure class='fig'><svg viewBox='0 0 600 232' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <rect x='8' y='8' width='584' height='216' rx='10' fill='#f0fdf4' stroke='#3fb950' stroke-width='1.5'></rect>
+  <line x1='150' y1='44' x2='150' y2='216' stroke='#86efac' stroke-width='1'></line>
+  <line x1='370' y1='44' x2='370' y2='216' stroke='#86efac' stroke-width='1'></line>
+  <text x='79' y='34' text-anchor='middle' font-size='11.5' font-weight='700' fill='#166534'>リポジトリ</text>
+  <text x='260' y='34' text-anchor='middle' font-size='11.5' font-weight='700' fill='#166534'>解決したい課題</text>
+  <text x='481' y='34' text-anchor='middle' font-size='11.5' font-weight='700' fill='#166534'>提供する機能</text>
+  <line x1='16' y1='44' x2='584' y2='44' stroke='#86efac' stroke-width='1'></line>
+  <text x='22' y='76' font-size='11' font-weight='700' fill='#14532d'>open-dot</text><text x='22' y='92' font-size='9.5' fill='#3f6212'>TypeScript ★383</text>
+  <text x='158' y='72' font-size='10' fill='#1a2e05'>OpenAIのDotsを自前の</text><text x='158' y='88' font-size='10' fill='#1a2e05'>キー/環境で動かせない</text>
+  <text x='378' y='72' font-size='10' fill='#1a2e05'>Mac常駐＋1,500+アプリ</text><text x='378' y='88' font-size='10' fill='#1a2e05'>操作・送信前に承認</text>
+  <line x1='16' y1='108' x2='584' y2='108' stroke='#bbf7d0' stroke-width='1'></line>
+  <text x='22' y='140' font-size='11' font-weight='700' fill='#14532d'>Fieldwatch</text><text x='22' y='156' font-size='9.5' fill='#3f6212'>Kotlin ★1.2k</text>
+  <text x='158' y='136' font-size='10' fill='#1a2e05'>周囲の電波源を自端末</text><text x='158' y='152' font-size='10' fill='#1a2e05'>だけで観測したい</text>
+  <text x='378' y='136' font-size='10' fill='#1a2e05'>Wi-Fi/BLEを受信専用で</text><text x='378' y='152' font-size='10' fill='#1a2e05'>傍受・可視化(完全ローカル)</text>
+  <line x1='16' y1='172' x2='584' y2='172' stroke='#bbf7d0' stroke-width='1'></line>
+  <text x='22' y='202' font-size='11' font-weight='700' fill='#14532d'>VisionHOPE</text><text x='22' y='216' font-size='9.5' fill='#3f6212'>Python ★409</text>
+  <text x='158' y='198' font-size='10' fill='#1a2e05'>視覚バックボーンを</text><text x='158' y='214' font-size='10' fill='#1a2e05'>自己修正させたい</text>
+  <text x='378' y='198' font-size='10' fill='#1a2e05'>SRNLの視覚基盤実装＋</text><text x='378' y='214' font-size='10' fill='#1a2e05'>事前学習重み公開(再現性)</text>
+</svg><figcaption>図1：3本を「解決したい課題 × 提供する機能」で一望。いずれも手元完結が共通項。</figcaption></figure>
+<h4 id="sec-1">composio-community/open-dot（TypeScript・⭐383）</h4>
+<p><strong>解決したい課題</strong>：OpenAI が9/29に出した常駐型パーソナルエージェント「Dots」は手軽に自前で動かせない。<strong>提供する機能</strong>：自分の Mac で自前キー（OpenAI/OpenRouter、ローカルの Kimi/DeepSeek/Qwen）を使い常駐エージェントを運用する OSS 版。各 dot が常時ログイン済みの専用ブラウザを持ち、Composio 経由で 1,500+ アプリを操作、送信/決済の前は承認ゲート（human-in-loop）を挟む。公開約2.3日で約383★と本日最速級——Dots 発表直後の“誰でも自前で動かせる版”という時事性が刺さった。</p>
+<h4 id="sec-2">OffGridPete/Fieldwatch（Kotlin・⭐1.2k）</h4>
+<p><strong>解決したい課題</strong>：自分の周囲にどんな電波源（Wi-Fi/BLE）があるかを、プライバシーを保ったまま自端末だけで知りたい。<strong>提供する機能</strong>：Wi-Fi AP と Bluetooth LE を<strong>受信専用</strong>で傍受し、可視化・フィルタ・レポートまで行うオフライン完結の Android アプリ。サーバもアカウントも不要で、拡張可能なシグネチャ辞書で機器を同定する。AI 一色のトレンドの中、非 AI のプライバシー/RF ツールが多様性枠として浮上した（MIT）。</p>
+<h4 id="sec-3">PSRben/VisionHOPE（Python・⭐409）</h4>
+<p><strong>解決したい課題</strong>：視覚バックボーンを固定の特徴抽出器ではなく“学習中に自分を書き換える自己修正システム”として捉え直す。<strong>提供する機能</strong>：自己参照型の入れ子学習（SRNL）に基づく視覚基盤モデルの PyTorch 公式実装。ImageNet 分類・COCO 検出/セグメ・ADE20K セマセグに加え<strong>事前学習重みまで公開</strong>し再現性が高い。研究の新規性と再現性が研究者層に刺さった（公開約4.7日で409★、MIT）。</p>
+<h4 id="sec-4">まとめ — 自分が試すなら</h4>
+<p>いちばん触りたいのは <strong>open-dot</strong>。自前キー＋ローカルモデルで常駐エージェントを安全ゲート付きで動かす設計は、毎朝の調査/digest 自動化にそのまま効く。観測系が好きなら Fieldwatch、ML 研究の骨太さを見たいなら VisionHOPE。共通するのは「クラウド任せにせず手元で回す」思想だ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://github.com/composio-community/open-dot" target="_blank" rel="noopener noreferrer"> composio-community/open-dot </a> </li><li> <a href="https://github.com/OffGridPete/Fieldwatch" target="_blank" rel="noopener noreferrer"> OffGridPete/Fieldwatch </a> </li><li> <a href="https://github.com/PSRben/VisionHOPE" target="_blank" rel="noopener noreferrer"> PSRben/VisionHOPE </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> composio-community/open-dot（TypeScript・⭐383） </a> </li><li> <a href="#sec-2" data-toc="sec-2"> OffGridPete/Fieldwatch（Kotlin・⭐1.2k） </a> </li><li> <a href="#sec-3" data-toc="sec-3"> PSRben/VisionHOPE（Python・⭐409） </a> </li><li> <a href="#sec-4" data-toc="sec-4"> まとめ — 自分が試すなら </a> </li> </ul> <div class="reading-box"> <div>📅 2026-10-01</div> <div>⏱ 読了 約3分</div> <div>🏷 GitHub Trending</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
