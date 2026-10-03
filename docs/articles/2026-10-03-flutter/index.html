@@ -1,0 +1,91 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Flutter 2026-10-03 — build hooks で同梱、transformer で連打制御、Rebuild Stats で可視化 — デイリー技術深掘り 読み物</title><meta name="description" content="11月 3.50 の WasmGC／Impeller 一本化を前に。native assets 同梱、bloc_concurrency の4トランスフォーマー、Hero 共有要素、DevTools Rebuild Stats。"><meta name="theme-color" content="#0277bd"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-03-flutter/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Flutter 2026-10-03 — build hooks で同梱、transformer で連打制御、Rebuild Stats で可視化 — デイリー技術深掘り 読み物"><meta property="og:description" content="11月 3.50 の WasmGC／Impeller 一本化を前に。native assets 同梱、bloc_concurrency の4トランスフォーマー、Hero 共有要素、DevTools Rebuild Stats。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-03-flutter/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #29b6f6, #01579b)"> <span class="glyph" aria-hidden="true">◆</span> <div class="kicker">Flutter</div> <h1>Flutter 2026-10-03 — build hooks で同梱、transformer で連打制御、Rebuild Stats で可視化</h1> <p class="lede">11月 3.50 の WasmGC／Impeller 一本化を前に。native assets 同梱、bloc_concurrency の4トランスフォーマー、Hero 共有要素、DevTools Rebuild Stats。</p> <div class="meta"> <span>📅 2026年10月3日</span> <span>⏱ 約4分</span> <span>🔗 出典 7 件</span> </div> </section> <div class="article-layout" style="--topic:#0277bd"> <div> <article class="prose" data-has-mermaid="0"><p>年4回サイクル（3.41/3.44/3.47/3.50）の締めが近づき、11月の <strong>3.50 stable</strong> には大きな既定変更が控える。現行安定版は <strong>Flutter 3.47.5 / Dart 3.13.4</strong>、beta は <strong>3.49.0-0.1.pre / Dart 3.14.0</strong>。今日の主役は、ビルド基盤・アニメーション・状態管理・計測の各所で「定型作業を仕組みで消す」動きだ。</p>
+<h4 id="sec-1">何が新しいか（リリース）</h4>
+<p>beta で前進したのが <strong>build hooks × native assets</strong>。<code>hook/build.dart</code> がビルド時にネイティブライブラリをコンパイル／取得して同梱し、<code>hook/link.dart</code> の tree-shaking が未使用ネイティブシンボルを除去する。<code>dart run</code>／<code>flutter build</code> がフックを自動実行するので、<code>dart:ffi</code> 連携や C/Rust ライブラリ同梱にありがちな「手動コピー・プラットフォーム分岐」が消える。言語面では Dart 3.14 の <strong>dot shorthands</strong>（<code>MainAxisAlignment.start</code> → <code>.start</code>）が定着、一方 <strong>macros は無期限ポーズ</strong>のままでコード生成は従来どおり <code>build_runner</code>＋<code>source_gen</code> が主軸。そして11月 3.50 の目玉は <strong>Web の WasmGC 既定化</strong>（<code>--wasm</code>、<code>dart:html</code>→<code>package:web</code>）と <strong>Android の Impeller 一本化</strong>（legacy Skia 撤去・API29+）だ。</p>
+<h4 id="sec-2">主役の仕組み：bloc_concurrency の event transformer</h4>
+<p>状態管理で今日いちばん実務に効くのが <code>bloc_concurrency</code>（0.3.0）の event transformer。<code>on&lt;Event&gt;(handler, transformer: ...)</code> に渡すだけで、同一イベントが連続したときの処理方針を宣言的に切り替えられる。未指定は concurrent 相当だが、API 連携では<strong>明示が安全</strong>だ。</p>
+<figure class='fig'><svg viewBox='0 0 600 230' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+<rect x='0' y='0' width='600' height='230' fill='#eef6ff' rx='10'></rect>
+<rect x='0.5' y='0.5' width='599' height='229' fill='none' stroke='#42a5f5' rx='10'></rect>
+<text x='20' y='30' font-size='15' font-weight='bold' fill='#0d47a1'>bloc_concurrency の4トランスフォーマー</text>
+<text x='22' y='58' font-size='11' font-weight='bold' fill='#1565c0'>指定</text>
+<text x='185' y='58' font-size='11' font-weight='bold' fill='#1565c0'>挙動</text>
+<text x='370' y='58' font-size='11' font-weight='bold' fill='#1565c0'>使いどころ</text>
+<line x1='20' y1='66' x2='580' y2='66' stroke='#90caf9'></line>
+<text x='22' y='92' font-size='12' fill='#0d47a1'>concurrent()</text>
+<text x='185' y='92' font-size='11' fill='#102a43'>並行（既定相当）</text>
+<text x='370' y='92' font-size='11' fill='#102a43'>独立で順序不問の処理</text>
+<text x='22' y='126' font-size='12' fill='#0d47a1'>sequential()</text>
+<text x='185' y='126' font-size='11' fill='#102a43'>直列（キュー）</text>
+<text x='370' y='126' font-size='11' fill='#102a43'>順序保証が要るページング</text>
+<text x='22' y='160' font-size='12' fill='#0d47a1'>droppable()</text>
+<text x='185' y='160' font-size='11' fill='#102a43'>処理中は追加を無視</text>
+<text x='370' y='160' font-size='11' fill='#102a43'>送信ボタンの連打</text>
+<text x='22' y='194' font-size='12' fill='#0d47a1'>restartable()</text>
+<text x='185' y='194' font-size='11' fill='#102a43'>最新だけ・前をキャンセル</text>
+<text x='370' y='194' font-size='11' fill='#102a43'>検索サジェスト／補完</text>
+<line x1='20' y1='208' x2='580' y2='208' stroke='#90caf9'></line>
+</svg><figcaption>図1：連打・順序・キャンセルの要求に応じて transformer を選ぶ</figcaption></figure>
+<p>検索サジェストは古い結果の上書きを防ぐ <code>restartable()</code>、送信ボタン連打は <code>droppable()</code>、順序保証が要るページングは <code>sequential()</code>——と、UI の要求がそのまま指定に対応する。土台には <code>hydrated_bloc</code> で状態の自動永続化、<code>bloc_test</code> の <code>blocTest(build/act/expect)</code> で event→state 列を厳密検証、<code>BlocSelector</code> で最小購読、<code>BlocObserver</code> で横断ロギング、が揃う。イベント駆動・監査可能・大規模チームの一貫性は依然 Bloc が優位で、新規の手触り重視は Riverpod 3.3、細粒度は signals、という住み分けだ。</p>
+<h4 id="sec-3">アニメーションと計測</h4>
+<p>画面間の主役は <strong>Hero／共有要素トランジション</strong>。遷移元/先に同じ <code>Hero(tag: 'id', child: ...)</code> を置くだけで、Navigator の push/pop 時にフレームワークが対の widget をルート間で飛ばす（既定の飛行経路は <code>MaterialRectArcTween</code>）。飛行中だけ別 widget に差し替える <code>flightShuttleBuilder</code>、円→矩形を中心基準で補間する radial hero（<code>MaterialRectCenterArcTween</code>＋<code>ClipOval</code>×<code>ClipRect</code>）が実務の勘所。Android の predictive back ジェスチャに合わせた shared element transition も framework へ入りつつある。計測面では DevTools <strong>Performance の Rebuild Stats</strong>（Track Widget Builds）で各 widget のフレーム毎 build 回数がリアルタイム集計でき、多い行をクリックで該当コードへジャンプできる。</p>
+<h4 id="sec-4">落とし穴と自分が試すなら</h4>
+<p>デザインシステム standalone 化（material_ui / cupertino_ui 1.0）の移行は <code>dart fix --apply --code=migrate_design_widgets</code> で、<strong><code>--code</code> 無しは無変更の罠</strong>。計測は必ず profile モードで行い、重い計算は <code>Isolate.run()</code>／<code>compute()</code> で背景 isolate へ逃がす。自分ならまず Rebuild Stats を一周して過剰 rebuild の犯人を <code>const</code> 化・<code>BlocSelector</code>・<code>child:</code> 退避で削り、API 連携の bloc には明示 transformer を入れる。11月 3.50 の WasmGC／Impeller 一本化に備え、<code>dart:html</code> 依存と legacy Skia 前提のコードは今のうちに棚卸ししておきたい。</p>
+<p><strong>ひとこと：</strong>「仕組みで定型を消す」回。ネイティブ同梱は build hooks、連打・順序制御は transformer、過剰 rebuild は Rebuild Stats——手作業と勘を道具に置き換える。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://flutter.dev/blog/flutter-darts-2026-roadmap" target="_blank" rel="noopener noreferrer"> Flutter &amp; Dart 2026 roadmap </a> </li><li> <a href="https://devnewsletter.com/p/state-of-flutter-2026/" target="_blank" rel="noopener noreferrer"> State of Flutter 2026 </a> </li><li> <a href="https://docs.flutter.dev/release/release-notes" target="_blank" rel="noopener noreferrer"> Flutter release notes </a> </li><li> <a href="https://pub.dev/packages/bloc_concurrency" target="_blank" rel="noopener noreferrer"> bloc_concurrency (pub.dev) </a> </li><li> <a href="https://verygood.ventures/blog/how-to-use-bloc-with-streams-and-concurrency/" target="_blank" rel="noopener noreferrer"> Bloc concurrency patterns (VGV) </a> </li><li> <a href="https://docs.flutter.dev/ui/animations/hero-animations" target="_blank" rel="noopener noreferrer"> Hero animations (docs) </a> </li><li> <a href="https://codewithandrea.com/tips/devtools-performance-rebuild-stats/" target="_blank" rel="noopener noreferrer"> DevTools Rebuild Stats </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 何が新しいか（リリース） </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 主役の仕組み：bloc_concurrency の event transformer </a> </li><li> <a href="#sec-3" data-toc="sec-3"> アニメーションと計測 </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 落とし穴と自分が試すなら </a> </li> </ul> <div class="reading-box"> <div>📅 2026-10-03</div> <div>⏱ 読了 約4分</div> <div>🏷 Flutter</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

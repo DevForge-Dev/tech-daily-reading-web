@@ -1,0 +1,92 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>依存ゼロの3Dチルト・ホバーカード — CSS 3D transform × Pointer Events で60fps — デイリー技術深掘り 読み物</title><meta name="description" content="perspective・座標正規化・preserve-3d・CSSグレアの4点と、App Router でのサーバー境界の切り方。rAFスロットルと prefers-reduced-motion まで。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-02-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="依存ゼロの3Dチルト・ホバーカード — CSS 3D transform × Pointer Events で60fps — デイリー技術深掘り 読み物"><meta property="og:description" content="perspective・座標正規化・preserve-3d・CSSグレアの4点と、App Router でのサーバー境界の切り方。rAFスロットルと prefers-reduced-motion まで。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-02-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>依存ゼロの3Dチルト・ホバーカード — CSS 3D transform × Pointer Events で60fps</h1> <p class="lede">perspective・座標正規化・preserve-3d・CSSグレアの4点と、App Router でのサーバー境界の切り方。rAFスロットルと prefers-reduced-motion まで。</p> <div class="meta"> <span>📅 2026年10月2日</span> <span>⏱ 約4分</span> <span>🔗 出典 6 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="1"><p>製品カードやプロフィール、ヒーロー要素に「触れる」質感を与える定番が、ポインタに追従して傾く<strong>3Dチルト／パララックス・ホバーカード</strong>だ。カーソル位置に応じて <code>rotateX</code>／<code>rotateY</code> で立体的に傾き、表面に光沢（グレア）が走り、内部レイヤーが奥行き違いで視差移動する——という表現を、<strong>ライブラリ無し・CSS 3D transform ＋ Pointer Events だけ</strong>で実装できる。2026年も <code>react-parallax-tilt</code>／<code>vanilla-tilt</code> は使われ続ける一方、「軽量・SSR安全・prefers-reduced-motion 対応しやすい」として CSS変数駆動の自前実装が好まれている。</p>
+<h4 id="sec-1">仕組みの要点</h4>
+<p>肝は4つ。(1) <strong>perspective は親に置く</strong>（<code>perspective: 900px</code>・600〜1200px が目安）と複数カードで遠近が共有され並べても破綻しない。(2) ポインタ座標を要素中心基準で <code>-0.5〜0.5</code> に正規化し、<code>rotateY = px*MAX</code>／<code>rotateX = -py*MAX</code>（MAX は 8〜15deg）で角度を出す。(3) カードに <code>transform-style: preserve-3d</code> を付け、内部要素を <code>translateZ()</code> で浮かせると視差とグレアが本物の奥行きに見える（見出し <code>translateZ(48px)</code>、背景 <code>translateZ(0)</code> など）。(4) グレアはポインタ位置を <code>--mx</code>／<code>--my</code> に書き込み、<code>radial-gradient</code> のオーバーレイ＋<code>mix-blend-mode: overlay</code> で下地と馴染ませる。JS 側は <code>transform</code> 文字列を組み立てず、<strong>カスタムプロパティだけ更新</strong>して CSS で組むのがシンプルで速い。</p>
+<figure class='fig'><svg viewBox='0 0 600 220' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+<rect x='0' y='0' width='600' height='220' fill='#eff6ff' rx='10'></rect>
+<rect x='0.5' y='0.5' width='599' height='219' fill='none' stroke='#60a5fa' rx='10'></rect>
+<text x='20' y='28' font-size='14' font-weight='bold' fill='#1e3a8a'>translateZ で奥行き層を分ける（parallax）</text>
+<g transform='translate(70,70)'>
+<rect x='0' y='60' width='240' height='90' fill='#bfdbfe' stroke='#3b82f6' rx='8' transform='skewX(-18)'></rect>
+<text x='40' y='118' font-size='11' fill='#1e40af' transform='skewX(-18)'>背景 z=0</text>
+<rect x='30' y='30' width='240' height='90' fill='#93c5fd' stroke='#2563eb' rx='8' transform='skewX(-18)'></rect>
+<text x='70' y='88' font-size='11' fill='#1e3a8a' transform='skewX(-18)'>画像 z=24</text>
+<rect x='60' y='0' width='240' height='90' fill='#60a5fa' stroke='#1d4ed8' rx='8' transform='skewX(-18)'></rect>
+<text x='100' y='58' font-size='11' fill='#fff' transform='skewX(-18)'>見出し z=48</text>
+</g>
+<text x='360' y='96' font-size='11' fill='#1e40af'>親に perspective:900px</text>
+<text x='360' y='118' font-size='11' fill='#1e40af'>カードに preserve-3d</text>
+<text x='360' y='140' font-size='11' fill='#1e40af'>層ごとに translateZ で浮かせる</text>
+<text x='360' y='162' font-size='11' fill='#1e40af'>→ 傾けると各層がずれて視差に</text>
+</svg><figcaption>図1：手前の層ほど大きな translateZ。傾斜時に層がずれて奥行きが生まれる</figcaption></figure>
+<h4 id="sec-2">Next.js（App Router）への組み込み</h4>
+<p>Pointer Events・<code>useRef</code>・<code>requestAnimationFrame</code>・DOM計測を使うため、Tilt ラッパーは <code>'use client'</code> 必須で RSC では実装できない。賢いのは<strong>サーバー境界の切り方</strong>——カードの<em>中身</em>（画像・見出し・本文）はサーバーコンポーネントのまま <code>children</code> としてクライアントの <code>&lt;Tilt&gt;</code> に渡す。こうするとインタラクションのロジックだけがクライアントバンドルに入り、コンテンツは RSC／ストリーミングの恩恵を受ける。初期描画は <code>--rx:0;--ry:0</code> の傾き0で SSR し、ハイドレーション後に <code>pointerenter</code> でイベントを足せば不整合も起きない。PPR や <code>loading.tsx</code> のスケルトンとも共存できる。</p>
+<figure class='fig'><pre class='mermaid'>flowchart LR
+  A["pointermove 高頻度"] --> B["最新座標だけ保持"]
+  B --> C{"rAF 予約済み?"}
+  C -->|"はい"| D["スキップ"]
+  C -->|"いいえ"| E["rAF 予約"]
+  E --> F["CSS変数 --rx/--ry/--mx/--my 更新"]
+  F --> G["CSS: transform rotateX/rotateY"]</pre><figcaption>図2：rAF スロットルで「毎フレーム最新イベントだけ」を適用しジャンクを防ぐ</figcaption></figure>
+<h4 id="sec-3">落とし穴</h4>
+<p><code>pointermove</code> は高頻度なので毎イベントで DOM を触るとジャンクする——<strong>rAF で最新イベントのみ</strong>を次フレームに適用する。<code>getBoundingClientRect()</code> は <code>pointerenter</code> で一度だけ計測してキャッシュ（毎回呼ぶと強制リフロー）。<code>will-change: transform</code> は常時付けるとレイヤー肥大で逆効果——カードが多ければ enter で付与・leave で外す。タッチでは縦スクロールを奪わないよう <code>touch-action: pan-y</code> を。そして初期HTMLに乱数や「マウント後の値」を入れないこと（ハイドレーション不整合）。</p>
+<h4 id="sec-4">prefers-reduced-motion と自分が試すなら</h4>
+<p><code>matchMedia('(prefers-reduced-motion: reduce)').matches</code> が true なら <code>pointerenter</code> で早期 return し傾き・グレアを一切付けない。CSS 側でも <code>@media (prefers-reduced-motion: reduce)</code> で <code>transform:none</code> の保険をかける。自分なら、まず依存ゼロの自前実装（数十行）で製品カードに入れ、慣性が欲しくなった要素だけ Motion の <code>useSpring</code> に差し替える段階導入が良さそう。</p>
+<p><strong>ひとこと：</strong>「ライブラリで一発」より、CSS変数＋rAF＋サーバー境界の3点を押さえた自前実装のほうが、軽くて SSR に強く長持ちする。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/transform-style" target="_blank" rel="noopener noreferrer"> MDN: transform-style / perspective </a> </li><li> <a href="https://developer.mozilla.org/en-US/docs/Web/API/Pointer_events" target="_blank" rel="noopener noreferrer"> MDN: Pointer events </a> </li><li> <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion" target="_blank" rel="noopener noreferrer"> MDN: prefers-reduced-motion </a> </li><li> <a href="https://www.letsbuildui.dev/articles/a-3d-hover-effect-using-css-transforms/" target="_blank" rel="noopener noreferrer"> Let&#39;s Build UI: A 3D Hover Effect </a> </li><li> <a href="https://www.npmjs.com/package/react-parallax-tilt" target="_blank" rel="noopener noreferrer"> react-parallax-tilt (npm) </a> </li><li> <a href="https://micku7zu.github.io/vanilla-tilt.js/" target="_blank" rel="noopener noreferrer"> vanilla-tilt.js </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 仕組みの要点 </a> </li><li> <a href="#sec-2" data-toc="sec-2"> Next.js（App Router）への組み込み </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 落とし穴 </a> </li><li> <a href="#sec-4" data-toc="sec-4"> prefers-reduced-motion と自分が試すなら </a> </li> </ul> <div class="reading-box"> <div>📅 2026-10-02</div> <div>⏱ 読了 約4分</div> <div>🏷 Next.js</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
