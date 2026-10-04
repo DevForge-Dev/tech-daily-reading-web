@@ -1,0 +1,95 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Flutter “Great Thread Merge” と Riverpod 3 — 2026安定ラインの土台が固まる — デイリー技術深掘り 読み物</title><meta name="description" content="UIスレッドがネイティブへ統合され同期FFIが可能に。Riverpod 3 の AsyncNotifier と animations パッケージで実装の定石も更新。"><meta name="theme-color" content="#0277bd"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-04-flutter/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Flutter “Great Thread Merge” と Riverpod 3 — 2026安定ラインの土台が固まる — デイリー技術深掘り 読み物"><meta property="og:description" content="UIスレッドがネイティブへ統合され同期FFIが可能に。Riverpod 3 の AsyncNotifier と animations パッケージで実装の定石も更新。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-04-flutter/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #29b6f6, #01579b)"> <span class="glyph" aria-hidden="true">◆</span> <div class="kicker">Flutter</div> <h1>Flutter “Great Thread Merge” と Riverpod 3 — 2026安定ラインの土台が固まる</h1> <p class="lede">UIスレッドがネイティブへ統合され同期FFIが可能に。Riverpod 3 の AsyncNotifier と animations パッケージで実装の定石も更新。</p> <div class="meta"> <span>📅 2026年10月4日</span> <span>⏱ 約3分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#0277bd"> <div> <article class="prose" data-has-mermaid="1"><p>Next.App DevCon 2026（10/7–9・FlutterCon と Droidcon が合流）を3日後に控え、ロードマップ『Finishing the Job』の締め——WasmGC 既定化・Impeller 一本化・Material/Cupertino 分離——が現実になりつつある。現行安定版は <strong>Flutter 3.47.5 / Dart 3.13.4</strong>、11月の <strong>3.50</strong> で Web の <code>--wasm</code> 既定化と Android の Impeller 一本化（legacy Skia 撤去・API29+）が入る見込み。</p>
+
+<p><strong>いちばん大きい変化：UI Thread Merge（“Great Thread Merge”）。</strong>Dart の実行が専用 UI スレッドから<strong>ネイティブのプラットフォームスレッドへ統合</strong>された。最大の効果は、platform channel の非同期往復なしに<strong>同期 FFI</strong> で Swift/Kotlin API を直接呼べること。シリアライズ/レイテンシが消えて起動・ネイティブ連携が速くなる。opt-out は撤去済みで2026安定ラインでは既定。</p>
+
+<figure class='fig'>
+<svg viewBox='0 0 600 180' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <rect x='0' y='0' width='600' height='180' fill='#f5faff' rx='8'></rect>
+  <text x='20' y='26' font-size='12' font-weight='bold' fill='#0b63c4'>Before</text>
+  <rect x='20' y='36' width='120' height='40' fill='#e7f0fb' stroke='#0b63c4' rx='6'></rect>
+  <text x='34' y='60' font-size='11' fill='#24292f'>UIスレッド(Dart)</text>
+  <rect x='200' y='36' width='140' height='40' fill='#e7f0fb' stroke='#0b63c4' rx='6'></rect>
+  <text x='214' y='60' font-size='11' fill='#24292f'>Platformスレッド</text>
+  <text x='148' y='52' font-size='10' fill='#d1242f'>channel 非同期往復</text>
+  <path d='M140 56 L200 56' stroke='#d1242f' stroke-width='1.5' marker-end='url(#a)'></path>
+  <text x='20' y='116' font-size='12' font-weight='bold' fill='#1a7f37'>After（統合）</text>
+  <rect x='20' y='126' width='320' height='40' fill='#eaf6ee' stroke='#2da44e' rx='6'></rect>
+  <text x='34' y='150' font-size='11' fill='#24292f'>統合スレッド：同期FFIでSwift/Kotlinを直接呼ぶ</text>
+  <defs><marker id='a' markerWidth='8' markerHeight='8' refX='6' refY='3' orient='auto'><path d='M0 0 L6 3 L0 6 z' fill='#d1242f'></path></marker></defs>
+</svg>
+<figcaption>図1：platform channel の往復が消え、同期FFIでネイティブAPIを直接呼ぶ</figcaption>
+</figure>
+
+<p><strong>状態管理の定石：Riverpod 3 の AsyncNotifier + codegen。</strong><code>@riverpod</code> を付けた関数/クラスの <code>build()</code> から provider を自動生成（<code>build_runner</code>）。非同期は <code>build()</code> が Future/Stream を返し <code>AsyncValue&lt;T&gt;</code> を公開、loading/error/data を型安全に分岐できる。Riverpod 3 では <strong>Mutations API</strong>・<strong>失敗時の自動リトライ（指数バックオフ）</strong>・<strong>stale-while-revalidate のオフライン永続化</strong>が内蔵。購読は <code>ref.watch(provider.select(...))</code> で最小化、<code>autoDispose</code> 既定でリーク防止。テストは <code>ProviderContainer</code> + <code>overrideWith</code> でレンダリング起動なしに検証できる。</p>
+
+<figure class='fig'>
+<pre class='mermaid'>flowchart TD
+  A["画面遷移を作る"] --> B{"関係は?"}
+  B -->|"同一要素が継続"| C["Hero"]
+  B -->|"面が開く/変形"| D["Container Transform(OpenContainer)"]
+  B -->|"兄弟間・階層移動"| E["Shared Axis"]
+  B -->|"無関係な切替"| F["Fade Through"]</pre>
+<figcaption>図2：animations パッケージ — Material motion の使い分け</figcaption>
+</figure>
+
+<p><strong>注意点。</strong>スレッド統合後も UI スレッドを塞げば即ジャンクなので、重い計算は従来どおり <code>Isolate.run()</code>/<code>compute()</code> で逃がす原則は不変。計測は必ず <strong>profile モード</strong>で（debug は JIT+assertion で無意味）。DevTools の Draw Call Batching / Texture Memory View で Impeller の GPU 挙動を監視する。</p>
+
+<p><strong>まとめ：</strong>土台（Impeller + Thread Merge）が速度を底上げし、実装は Riverpod 3 ＋ animations パッケージで“手書き AnimationController なし”へ。新規は Riverpod 3 既定、監査が要る領域は Bloc 9.2、細粒度は signals、という選び分けは据え置き。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://webartdesign.com.au/blog/flutters-2026-roadmap-just-dropped-and-its-all-about-finishing-the-job/" target="_blank" rel="noopener noreferrer"> Flutter 2026 roadmap “Finishing the Job” </a> </li><li> <a href="https://intercode.com/blog/flutter-2026-technical-review" target="_blank" rel="noopener noreferrer"> Flutter 2026 technical review（UI thread merge） </a> </li><li> <a href="https://pub.dev/packages/animations" target="_blank" rel="noopener noreferrer"> animations package (pub.dev) </a> </li><li> <a href="https://theflutterk.it.com/blog/flutter-riverpod-3-vs-bloc-vs-signals-2026" target="_blank" rel="noopener noreferrer"> Riverpod 3 vs BLoC vs Signals (2026) </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
