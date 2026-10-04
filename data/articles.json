@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-10-03T04:50:28.165Z",
+  "generatedAt": "2026-10-04T04:52:16.683Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,102 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-10-03-claude-code",
+      "date": "2026-10-03",
+      "topic": "Claude Code",
+      "title": "Claude Code『Mods』が正式導入 — TS/JSでツール呼び出しにミドルウェアを挿す",
+      "lede": "v2.1.287でHooksの上に“状態を持つTS/JS層”が乗り、プロンプト書き換え・ツール遮断・UI改変まで踏み込めるようになった転換点。",
+      "articleHtml": "<p>10月1日公開の <strong>v2.1.287</strong> で、Claude Code の挙動を深部までいじれる <strong>Mods</strong> が正式導入された。Boris Cherny の「全員が同一の Claude 体験を持つべき理由はない」という言葉どおり、設定や従来 Hooks を越えて“自分の働き方に合わせる”ための仕組みだ。関連で <code>$.ui.selection()</code>（選択テキスト取得）が v2.1.288 で追加され、見落としを指摘する内蔵サイドエージェント『You should know』も同時に入った。</p>\n\n<p><strong>何が新しいか。</strong>Mods は Hooks に TypeScript/JS 関数を登録する仕組みだが、従来 Hooks と違い <em>セッション中ロードされ続けて状態を保持し、UI 要素の追加・更新までできる</em>。モデルに渡る前のプロンプト書き換え、ツール呼び出しの遮断・改変、権限要求の制御、インターフェース再設計、新機能追加——が同じ土俵で行える。</p>\n\n<figure class='fig'>\n<svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='0' y='0' width='600' height='210' fill='#f6f8fa' rx='8'/>\n  <text x='20' y='28' font-size='13' font-weight='bold' fill='#1a7f37'>従来 Hooks</text>\n  <rect x='20' y='40' width='250' height='54' fill='#eaf6ee' stroke='#2da44e' rx='6'/>\n  <text x='32' y='62' font-size='11' fill='#24292f'>イベント時に1回だけ発火</text>\n  <text x='32' y='80' font-size='11' fill='#57606a'>状態なし・UIなし・単発処理</text>\n  <text x='20' y='128' font-size='13' font-weight='bold' fill='#8250df'>Mods（v2.1.287〜）</text>\n  <rect x='20' y='140' width='560' height='54' fill='#f3eefc' stroke='#8250df' rx='6'/>\n  <text x='32' y='162' font-size='11' fill='#24292f'>セッション常駐・状態保持・UI追加/更新</text>\n  <text x='32' y='180' font-size='11' fill='#57606a'>プロンプト書換 / ツール遮断・改変 / 権限制御 / 機能追加</text>\n  <text x='300' y='62' font-size='11' fill='#57606a'>↓ できることが大幅拡張</text>\n</svg>\n<figcaption>図1：従来 Hooks（単発）と Mods（常駐・状態・UI）の違い</figcaption>\n</figure>\n\n<p><strong>実務での使いどころ。</strong>導入48時間レビューで最も実用的とされたのは、Edit/Write が <code>.env</code> や秘密ファイルに触れる前に<strong>遮断するセキュリティガード</strong>。次いでコンテキスト残量・ファイル変更・ターン別タイムラインを出す<strong>ライブ監視ペイン</strong>、過去セッションを Claude に振り返らせて“繰り返す問題”向け mod を提案させる<strong>自己監査</strong>。MIT の mod 50種が <code>claude plugin marketplace add whyashthakker/awesome-claude-code-mods</code> で1分弱で試せる（Context Meter / Task Board / Staged Review が入門向け）。</p>\n\n<p>自分なら、まず「.env 書込み遮断」と「Token Weather（消費率可視化）」を既存 Hooks と並走させて検証から入る。</p>\n\n<figure class='fig'>\n<pre class='mermaid'>flowchart LR\n  U[\"ユーザー入力\"] --> M[\"Mod: プロンプト傍受/書換\"]\n  M --> L[\"Claude（モデル）\"]\n  L --> T[\"ツール呼び出し\"]\n  T --> G[\"Mod: 遮断/改変/権限制御\"]\n  G --> R[\"実行 or 拒否\"]\n  G --> UI[\"Mod: ライブUIへ反映\"]</pre>\n<figcaption>図2：mod がツール呼び出しの前後に割り込む流れ</figcaption>\n</figure>\n\n<p><strong>落とし穴。</strong>mod は<strong>サンドボックス無し＝マシンへフルアクセス</strong>で動く。Read-only Mode のような助言的ガードは真のセキュリティ境界ではなく、本物の制御はネイティブ権限と企業向けの deny 上書き禁止ガードで担保する。第三者コードは必ずソースを読んでから入れること。</p>\n\n<p><strong>まとめ：</strong>Hooks が「点」なら Mods は「常駐するレイヤ」。まず自分用の安全ガードと可視化から始めて、効くパターンを mod 化していくのが現実的な入口。</p>",
+      "sources": [
+        {
+          "title": "Claude Code changelog（公式）",
+          "url": "https://code.claude.com/docs/en/changelog"
+        },
+        {
+          "title": "Mods 導入48時間レビュー（rundatarun.io）",
+          "url": "https://rundatarun.io/p/last-30-days-claude-code-mods-48"
+        },
+        {
+          "title": "MITライセンス mod 50種まとめ（explainx.ai）",
+          "url": "https://www.explainx.ai/blog/awesome-claude-code-mods-50-open-source-mods-install-guide-2026"
+        },
+        {
+          "title": "Anthropic、Claude Code に mods を投入（The New Stack）",
+          "url": "https://thenewstack.io/anthropic-claude-code-mods-plugins"
+        }
+      ]
+    },
+    {
+      "id": "2026-10-03-nextjs",
+      "date": "2026-10-03",
+      "topic": "Next.js",
+      "title": "CSS `:has()` で“JS不要”のインタラクティブUI — App Router / RSC と相性抜群",
+      "lede": "2026年に Widely available 入りした唯一の関係擬似クラス。小さなUI島を Server Component のまま・追加JS 0 で書ける。",
+      "articleHtml": "<p><code>:has()</code> は「子孫や兄弟に条件がマッチする<strong>親（＝主語）</strong>」を選べる唯一の<strong>関係擬似クラス</strong>。長年 CSS に無かった“親セレクタ”と“前の兄弟セレクタ”を同時に実現する。2026年に <strong>Baseline Widely available</strong> へ到達し、<code>querySelector</code>/<code>matches</code> からも使える安定機能になったので、いま改めて実戦投入の価値が高い。</p>\n\n<p><strong>App Router での価値。</strong>これまで <code>useState</code> + <code>'use client'</code> が要った小さなUI島——選択ハイライト・ドロワー開閉・空状態・フォーム検証表示・タブ装飾——を <strong>Server Component のまま・追加JS 0・hydration 0</strong> で書ける。状態をネイティブ部品（checkbox / radio / <code>&lt;details&gt;</code>）の DOM 状態に持たせるので SSR の HTML にそのまま乗り、React state を介さないため hydration mismatch が原理的に起きない。結果 INP / CLS / TBT に効く。</p>\n\n<figure class='fig'>\n<svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='0' y='0' width='600' height='150' fill='#f6f8fa' rx='8'/>\n  <rect x='20' y='30' width='250' height='95' fill='#fff0f0' stroke='#d1242f' rx='6'/>\n  <text x='32' y='52' font-size='12' font-weight='bold' fill='#d1242f'>Before</text>\n  <text x='32' y='74' font-size='11' fill='#24292f'>'use client' + useState</text>\n  <text x='32' y='92' font-size='11' fill='#57606a'>JS配信・hydration・INP悪化</text>\n  <text x='32' y='110' font-size='11' fill='#57606a'>小さな装飾のためにClient島</text>\n  <rect x='330' y='30' width='250' height='95' fill='#eaf6ee' stroke='#2da44e' rx='6'/>\n  <text x='342' y='52' font-size='12' font-weight='bold' fill='#1a7f37'>After :has()</text>\n  <text x='342' y='74' font-size='11' fill='#24292f'>RSCのまま・追加JS 0</text>\n  <text x='342' y='92' font-size='11' fill='#57606a'>hydration 0 / mismatch無</text>\n  <text x='342' y='110' font-size='11' fill='#57606a'>状態はネイティブ部品が保持</text>\n  <text x='285' y='83' font-size='20' fill='#57606a'>→</text>\n</svg>\n<figcaption>図1：Client島を消して RSC に残せる範囲が広がる</figcaption>\n</figure>\n\n<p><strong>仕組みの要点。</strong>主語は <code>:has()</code> が付いた要素そのもの（<code>figure:has(figcaption)</code> は figure を選ぶ）。相対セレクタで <code>:has(&gt; .x)</code>（直下）/ <code>:has(+ .x)</code>（直後の兄弟）/ <code>:has(~ .x)</code>（後続）を書き分け、<code>:checked</code>/<code>:user-invalid</code> など動的擬似クラスと組むと状態変化で再評価されて“疑似リアクティブ”になる。</p>\n\n<pre><code>/* ラジオカードの選択ハイライト（RSCのまま） */\n.card:has(input[type=\"radio\"]:checked){\n  outline:2px solid var(--accent);\n}\n/* 操作後だけ検証色：:invalid より実務的な :user-invalid */\n.field:has(input:user-invalid){ --ring:crimson; }\n/* 空状態 */\n.list:not(:has(> li))::after{ content:\"まだ項目がありません\"; }</code></pre>\n\n<p><strong>落とし穴。</strong>①<strong>非寛容セレクタ</strong>——引数に1つでも無効なものがあると全体が無効化する。寛容にしたいなら内側を <code>:is()</code> で包む。②<code>:has()</code> の中に <code>:has()</code> はネスト不可、擬似要素も引数に取れない。③詳細度は“最も強い引数”と同じで <code>:has(#id)</code> は事故の元 → <code>:has(:where(#id))</code> で0に。④パフォーマンスは <strong>主語をコンポーネント根に絞る</strong>のが鉄則（<code>body:has(...)</code> を高頻度トグルしない）。Tailwind v4 なら <code>has-[:checked]:ring-2</code> 等のバリアントで同じことが書ける。</p>\n\n<p><strong>まとめ：</strong><code>:has()</code> は「見た目だけで完結する局所インタラクション」専用の道具。ルーティングや他コンポーネントへの波及が要る所だけ Client に残す、という線引きが App Router では一番きれい。</p>",
+      "sources": [
+        {
+          "title": "MDN :has()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/:has"
+        },
+        {
+          "title": "CSS-Tricks: :has is an unforgiving selector",
+          "url": "https://css-tricks.com/has-is-an-unforgiving-selector/"
+        },
+        {
+          "title": "Tailwind CSS has-* バリアント（PR #11318）",
+          "url": "https://github.com/tailwindlabs/tailwindcss/pull/11318"
+        }
+      ]
+    },
+    {
+      "id": "2026-10-04-flutter",
+      "date": "2026-10-04",
+      "topic": "Flutter",
+      "title": "Flutter “Great Thread Merge” と Riverpod 3 — 2026安定ラインの土台が固まる",
+      "lede": "UIスレッドがネイティブへ統合され同期FFIが可能に。Riverpod 3 の AsyncNotifier と animations パッケージで実装の定石も更新。",
+      "articleHtml": "<p>Next.App DevCon 2026（10/7–9・FlutterCon と Droidcon が合流）を3日後に控え、ロードマップ『Finishing the Job』の締め——WasmGC 既定化・Impeller 一本化・Material/Cupertino 分離——が現実になりつつある。現行安定版は <strong>Flutter 3.47.5 / Dart 3.13.4</strong>、11月の <strong>3.50</strong> で Web の <code>--wasm</code> 既定化と Android の Impeller 一本化（legacy Skia 撤去・API29+）が入る見込み。</p>\n\n<p><strong>いちばん大きい変化：UI Thread Merge（“Great Thread Merge”）。</strong>Dart の実行が専用 UI スレッドから<strong>ネイティブのプラットフォームスレッドへ統合</strong>された。最大の効果は、platform channel の非同期往復なしに<strong>同期 FFI</strong> で Swift/Kotlin API を直接呼べること。シリアライズ/レイテンシが消えて起動・ネイティブ連携が速くなる。opt-out は撤去済みで2026安定ラインでは既定。</p>\n\n<figure class='fig'>\n<svg viewBox='0 0 600 180' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='0' y='0' width='600' height='180' fill='#f5faff' rx='8'/>\n  <text x='20' y='26' font-size='12' font-weight='bold' fill='#0b63c4'>Before</text>\n  <rect x='20' y='36' width='120' height='40' fill='#e7f0fb' stroke='#0b63c4' rx='6'/>\n  <text x='34' y='60' font-size='11' fill='#24292f'>UIスレッド(Dart)</text>\n  <rect x='200' y='36' width='140' height='40' fill='#e7f0fb' stroke='#0b63c4' rx='6'/>\n  <text x='214' y='60' font-size='11' fill='#24292f'>Platformスレッド</text>\n  <text x='148' y='52' font-size='10' fill='#d1242f'>channel 非同期往復</text>\n  <path d='M140 56 L200 56' stroke='#d1242f' stroke-width='1.5' marker-end='url(#a)'/>\n  <text x='20' y='116' font-size='12' font-weight='bold' fill='#1a7f37'>After（統合）</text>\n  <rect x='20' y='126' width='320' height='40' fill='#eaf6ee' stroke='#2da44e' rx='6'/>\n  <text x='34' y='150' font-size='11' fill='#24292f'>統合スレッド：同期FFIでSwift/Kotlinを直接呼ぶ</text>\n  <defs><marker id='a' markerWidth='8' markerHeight='8' refX='6' refY='3' orient='auto'><path d='M0 0 L6 3 L0 6 z' fill='#d1242f'/></marker></defs>\n</svg>\n<figcaption>図1：platform channel の往復が消え、同期FFIでネイティブAPIを直接呼ぶ</figcaption>\n</figure>\n\n<p><strong>状態管理の定石：Riverpod 3 の AsyncNotifier + codegen。</strong><code>@riverpod</code> を付けた関数/クラスの <code>build()</code> から provider を自動生成（<code>build_runner</code>）。非同期は <code>build()</code> が Future/Stream を返し <code>AsyncValue&lt;T&gt;</code> を公開、loading/error/data を型安全に分岐できる。Riverpod 3 では <strong>Mutations API</strong>・<strong>失敗時の自動リトライ（指数バックオフ）</strong>・<strong>stale-while-revalidate のオフライン永続化</strong>が内蔵。購読は <code>ref.watch(provider.select(...))</code> で最小化、<code>autoDispose</code> 既定でリーク防止。テストは <code>ProviderContainer</code> + <code>overrideWith</code> でレンダリング起動なしに検証できる。</p>\n\n<figure class='fig'>\n<pre class='mermaid'>flowchart TD\n  A[\"画面遷移を作る\"] --> B{\"関係は?\"}\n  B -->|\"同一要素が継続\"| C[\"Hero\"]\n  B -->|\"面が開く/変形\"| D[\"Container Transform(OpenContainer)\"]\n  B -->|\"兄弟間・階層移動\"| E[\"Shared Axis\"]\n  B -->|\"無関係な切替\"| F[\"Fade Through\"]</pre>\n<figcaption>図2：animations パッケージ — Material motion の使い分け</figcaption>\n</figure>\n\n<p><strong>注意点。</strong>スレッド統合後も UI スレッドを塞げば即ジャンクなので、重い計算は従来どおり <code>Isolate.run()</code>/<code>compute()</code> で逃がす原則は不変。計測は必ず <strong>profile モード</strong>で（debug は JIT+assertion で無意味）。DevTools の Draw Call Batching / Texture Memory View で Impeller の GPU 挙動を監視する。</p>\n\n<p><strong>まとめ：</strong>土台（Impeller + Thread Merge）が速度を底上げし、実装は Riverpod 3 ＋ animations パッケージで“手書き AnimationController なし”へ。新規は Riverpod 3 既定、監査が要る領域は Bloc 9.2、細粒度は signals、という選び分けは据え置き。</p>",
+      "sources": [
+        {
+          "title": "Flutter 2026 roadmap “Finishing the Job”",
+          "url": "https://webartdesign.com.au/blog/flutters-2026-roadmap-just-dropped-and-its-all-about-finishing-the-job/"
+        },
+        {
+          "title": "Flutter 2026 technical review（UI thread merge）",
+          "url": "https://intercode.com/blog/flutter-2026-technical-review"
+        },
+        {
+          "title": "animations package (pub.dev)",
+          "url": "https://pub.dev/packages/animations"
+        },
+        {
+          "title": "Riverpod 3 vs BLoC vs Signals (2026)",
+          "url": "https://theflutterk.it.com/blog/flutter-riverpod-3-vs-bloc-vs-signals-2026"
+        }
+      ]
+    },
+    {
+      "id": "2026-10-03-github-trending",
+      "date": "2026-10-03",
+      "topic": "GitHub Trending",
+      "title": "10/3の話題リポジトリ — エージェント専用ブラウザ・スマホ監視・動画スタイル模倣",
+      "lede": "トレンドがエージェント基盤一色の中、Rust製インフラ・端末のモバイル運用・クリエイティブ動画で多様性を担う3本。",
+      "articleHtml": "<p>この日の GitHub トレンドは「エージェントを長時間回す運用層」一色。その中で、<strong>描画を捨てたエージェント専用ブラウザ</strong>・<strong>手元を離れてスマホから監視する運用</strong>・<strong>参照動画の“味”を真似て量産する制作</strong>——と、別々のレイヤで多様性を持ち込んだ3本が急上昇した。共通するのは「エージェントに任せた作業をいかに速く・安全に・離れて回すか」という問いだ。</p>\n\n<figure class='fig'>\n<svg viewBox='0 0 600 230' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='0' y='0' width='600' height='230' fill='#f6f8fa' rx='8'/>\n  <text x='14' y='26' font-size='12' font-weight='bold' fill='#1a1a1a'>リポジトリ</text>\n  <text x='180' y='26' font-size='12' font-weight='bold' fill='#d1242f'>解決したい課題</text>\n  <text x='400' y='26' font-size='12' font-weight='bold' fill='#1a7f37'>提供する機能</text>\n  <line x1='14' y1='34' x2='586' y2='34' stroke='#d0d7de'/>\n  <text x='14' y='62' font-size='11' font-weight='bold' fill='#24292f'>moli</text>\n  <text x='14' y='78' font-size='10' fill='#57606a'>Rust ⭐4.8k</text>\n  <text x='180' y='62' font-size='10' fill='#57606a'>通常ブラウザは描画が重く</text>\n  <text x='180' y='76' font-size='10' fill='#57606a'>エージェントには過剰</text>\n  <text x='400' y='62' font-size='10' fill='#57606a'>描画はオンデマンド・</text>\n  <text x='400' y='76' font-size='10' fill='#57606a'>Markdown/木で抽出</text>\n  <line x1='14' y1='92' x2='586' y2='92' stroke='#eaeef2'/>\n  <text x='14' y='124' font-size='11' font-weight='bold' fill='#24292f'>collie</text>\n  <text x='14' y='140' font-size='10' fill='#57606a'>TS ⭐1.1k</text>\n  <text x='180' y='124' font-size='10' fill='#57606a'>長時間エージェントに</text>\n  <text x='180' y='138' font-size='10' fill='#57606a'>手元で張り付けない</text>\n  <text x='400' y='124' font-size='10' fill='#57606a'>スマホPWAで監視/操作・</text>\n  <text x='400' y='138' font-size='10' fill='#57606a'>入力待ちを通知</text>\n  <line x1='14' y1='154' x2='586' y2='154' stroke='#eaeef2'/>\n  <text x='14' y='186' font-size='11' font-weight='bold' fill='#24292f'>reelmimic</text>\n  <text x='14' y='202' font-size='10' fill='#57606a'>JS ⭐—</text>\n  <text x='180' y='186' font-size='10' fill='#57606a'>お手本動画の“味”を</text>\n  <text x='180' y='200' font-size='10' fill='#57606a'>再現するのが難しい</text>\n  <text x='400' y='186' font-size='10' fill='#57606a'>スタイル解析→同美学で</text>\n  <text x='400' y='200' font-size='10' fill='#57606a'>2Dアニメ生成(7エンジン)</text>\n</svg>\n<figcaption>図1：3本の「解決したい課題 → 提供する機能」対応表</figcaption>\n</figure>\n\n<h4>lexmount/moli（Rust・⭐約4.8k）</h4>\n<p><strong>解決したい課題：</strong>通常のヘッドレスブラウザはレイアウトとピクセル描画が常に走り、エージェント用途には重くメモリを食う。browser-use 系の“画面を見る”前提が、抽出・自動化には過剰だった。<br><strong>提供する機能：</strong>実 V8 で JS/DOM を動かしつつ、<strong>レイアウトと描画は“必要な時だけ”</strong>に切り離して起動とメモリを極小化。CDP・WebDriver(Classic/BiDi)・CLI に対応し、出力を Markdown やセマンティックツリーで返す。Trendshift 日次言及1位・1,100超PRで、“描画ではなく抽出のためのブラウザ”という割り切りが刺さった。</p>\n\n<h4>AltanS/collie（TypeScript・⭐約1.1k）</h4>\n<p><strong>解決したい課題：</strong>エージェントを長時間回す運用で、入力待ちのたびに手元のターミナルへ張り付くのは現実的でない。SSH 常用も煩雑で危うい。<br><strong>提供する機能：</strong>tmux/zellij 等に接続し、<strong>スマホから監視・操作できるセルフホスト PWA</strong>。入力待ちをプッシュ通知し、特殊キー対応のモバイルUIでそのまま指示を返せる。Tailscale バインド＋デバイスペアリングで安全性を確保し、複数マシンを“crew”として束ねフェイルオーバーまで持つ。</p>\n\n<h4>edenfunf/reelmimic（JavaScript・⭐—）</h4>\n<p><strong>解決したい課題：</strong>“お手本動画と同じ雰囲気”で量産したいが、ショット構成・尺・色・カメラワークといった「味」を手で再現するのは難しい。<br><strong>提供する機能：</strong>参照動画から<strong>ショット数/尺/BPM/色/フレーミング/カメラワークを分解</strong>し、絵コンテとスタイル案を承認制で提示→7種の描画エンジン（水彩/アニメ/クレヨン等）でローカル生成。Claude Code/Codex を並列で走らせ、各ショットに品質検証を挟む“監督付き制作”になっている。</p>\n\n<p><strong>自分が試すなら：</strong>まず moli を MCP 経由でエージェントの“軽い観測ブラウザ”として評価。運用が重くなってきたら collie でスマホ監視を足す。reelmimic は墨界/水彩系の動画 artifact 制作の下地として面白い。</p>",
+      "sources": [
+        {
+          "title": "lexmount/moli",
+          "url": "https://github.com/lexmount/moli"
+        },
+        {
+          "title": "AltanS/collie",
+          "url": "https://github.com/AltanS/collie"
+        },
+        {
+          "title": "edenfunf/reelmimic",
+          "url": "https://github.com/edenfunf/reelmimic"
+        }
+      ]
+    },
     {
       "date": "2026-10-02",
       "topic": "Claude Code",
