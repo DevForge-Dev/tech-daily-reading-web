@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-10-06T04:52:36.223Z",
+  "generatedAt": "2026-10-05T05:10:47.700Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -9,123 +9,6 @@
   ],
   "articles": [
     {
-      "id": "2026-10-05-claude-code",
-      "date": "2026-10-05",
-      "topic": "Claude Code",
-      "title": "Claude Code 2026-10-05 — 新機能なしの“地固め”: rmガード第2経路を封鎖、Claude Securityベータ、スキル/サブエージェント運用術",
-      "lede": "本体リリースなしの日こそ、権限ガード・安定版追従・スキル設計の基本を見直す。",
-      "articleHtml": "<p>本日(10/5)はClaude Code本体の新規リリースはなく、最新は10/3のv2.1.289のまま。派手な新機能のない日だが、だからこそ主題は<strong>「足回りの地固め」</strong>——権限ガードの封鎖、安定版の追従、スキル／サブエージェント運用の原則整理に目を向けたい。</p>\n<p><strong>何が動いたか。</strong>v2.1.289は、サンドボックス自動許可下で危険な<code>rm</code>を忍び込ませる<em>第2の回避経路</em>を封鎖した。<code>TZ=\"$HOME\" rm -rf build</code> のように環境変数プレフィックスを付けてBashのdeny/askルールを素通りさせる手口で、前回の<code>bash -c</code>ラッパー回避修正に続く第2弾。ただしCVE割当はなく、効くのは<strong>サンドボックス自動許可時のみ</strong>。注意したいのは、最新が日次でv2.1.286→289と出た一方、<strong>stableチャネルはv2.1.285(9/29)のまま最新から4ビルド遅れ</strong>ている点だ。基盤を共有するCowork(デスクトップ)はv2.19675.0で、<strong>Claude作成のスケジュールタスクが(許可組織では)既定で“自動承認”</strong>に変わり、動画のインライン再生も追加された。</p>\n<figure class='fig'><svg viewBox='0 0 600 212' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n<rect x='0' y='0' width='600' height='212' fill='#fff7ed' rx='10'/>\n<text x='16' y='26' font-size='14' font-weight='bold' fill='#9a3412'>Skills / MCP / サブエージェント の使い分け</text>\n<g font-size='11'>\n<rect x='16' y='40' width='182' height='156' fill='#ffffff' stroke='#fb923c' rx='8'/>\n<rect x='209' y='40' width='182' height='156' fill='#ffffff' stroke='#fb923c' rx='8'/>\n<rect x='402' y='40' width='182' height='156' fill='#ffffff' stroke='#fb923c' rx='8'/>\n<text x='107' y='60' text-anchor='middle' font-weight='bold' fill='#7c2d12'>Skills</text>\n<text x='300' y='60' text-anchor='middle' font-weight='bold' fill='#7c2d12'>MCP</text>\n<text x='493' y='60' text-anchor='middle' font-weight='bold' fill='#7c2d12'>サブエージェント</text>\n<text x='107' y='86' text-anchor='middle' fill='#431407'>待機 ~100トークン</text>\n<text x='300' y='86' text-anchor='middle' fill='#431407'>常時 ~55Kトークン</text>\n<text x='493' y='86' text-anchor='middle' fill='#431407'>別コンテキスト</text>\n<text x='107' y='112' text-anchor='middle' fill='#431407'>トリガ合致時に</text>\n<text x='107' y='128' text-anchor='middle' fill='#431407'>本体~5Kを起動</text>\n<text x='300' y='112' text-anchor='middle' fill='#431407'>外部アクセスが</text>\n<text x='300' y='128' text-anchor='middle' fill='#431407'>要るとき</text>\n<text x='493' y='112' text-anchor='middle' fill='#431407'>独立作業を委ね</text>\n<text x='493' y='128' text-anchor='middle' fill='#431407'>要約だけ親へ</text>\n<text x='107' y='162' text-anchor='middle' fill='#9a3412'>繰り返し手順</text>\n<text x='300' y='162' text-anchor='middle' fill='#9a3412'>DB/API連携</text>\n<text x='493' y='162' text-anchor='middle' fill='#9a3412'>調査・監査</text>\n<text x='107' y='182' text-anchor='middle' fill='#9a3412'>1責務・芯~500t</text>\n<text x='300' y='182' text-anchor='middle' fill='#9a3412'>常時コスト大</text>\n<text x='493' y='182' text-anchor='middle' fill='#9a3412'>入れ子不可</text>\n</g>\n</svg><figcaption>図1：待機コストと起動条件で選ぶ——繰り返し手順はSkills、外部アクセスはMCP、独立作業はサブエージェント。</figcaption></figure>\n<p><strong>仕組みを噛み砕く。</strong>スキルは<em>段階的開示(progressive disclosure)</em>で動く。name＋description(~100トークン)は常時読み込まれ、本体(~5K)はプロンプトがトリガ記述に合致したときだけ起動する。だから最重要原則は<strong>「descriptionが読み込み判断に使う“唯一の信号”」</strong>で、「use when…」型で具体的に書くこと。使い分けは、外部アクセスが要るならMCP(常時~55K)、独立作業ならサブエージェント(別コンテキスト)、繰り返し手順ならSkills(待機~100トークン)。サブエージェントは<code>.claude/agents/</code>にYAML定義を置き、<code>model</code>(haiku/sonnet/opus)と<code>tools</code>のallowlistで役割特化する。制約は入れ子不可・毎回新規起動・作業ディレクトリ非永続。</p>\n<p><strong>自分が試すなら。</strong>まずstable運用なら4ビルド遅れを認識し、サンドボックス自動許可で回しているならrmガード更新を取り込む。スケジュールタスクの既定“自動承認”は便利だが権限範囲を一度点検する。スキルは<code>description</code>を「use when」で磨き、1スキル1責務、芯は~500トークンに絞って詳細は参照ファイルへ逃がす。関連して、Anthropicは脆弱性スキャナ<strong>『Claude Security』</strong>を企業ベータ公開(10/3)——コードベースを走査し、データフロー追跡＋深刻度で優先順位付け、スケジュール実行対応で、<code>/security-review</code>とは別立ての製品だ。</p>\n<p><strong>落とし穴。</strong>サンドボックス修正はいずれも“自動許可時のみ”効く＝非自動運用では別の注意が要る。スキル側は4000トークン級に肥大したSKILL.mdや曖昧なトリガが逆効果になる。</p>\n<p><strong>ひとこと。</strong>新機能のない日ほど、安定版の追従・権限の既定・スキル設計の基本を見直す好機だ。</p>",
-      "sources": [
-        {
-          "title": "Claude Code 2.1.289 — second route past rm guard (mixed-news)",
-          "url": "https://mixed-news.com/en/claude-code-2-1-289-second-route-past-rm-guard-stable-four-builds-behind"
-        },
-        {
-          "title": "Cowork changelog (claude.com)",
-          "url": "https://claude.com/docs/cowork/changelog"
-        },
-        {
-          "title": "Best Claude Code skills 2026 (Firecrawl)",
-          "url": "https://www.firecrawl.dev/blog/best-claude-code-skills"
-        },
-        {
-          "title": "Claude Code Skills complete guide (duet.so)",
-          "url": "https://duet.so/guides/claude-code-skills-complete-guide"
-        },
-        {
-          "title": "Claude Code subagents (tembo.io)",
-          "url": "https://www.tembo.io/blog/claude-code-subagents"
-        },
-        {
-          "title": "Anthropic launches Claude Security scanner (NewsBytes)",
-          "url": "https://www.newsbytesapp.com/news/science/anthropic-launches-claude-security-code-scanner-in-enterprise-public-beta/tldr"
-        }
-      ]
-    },
-    {
-      "id": "2026-10-05-nextjs",
-      "date": "2026-10-05",
-      "topic": "Next.js",
-      "title": "Next.js 16 — JS不要で“広がる画像パネル”: flex-growトランジションだけ、RSCのままアクセシブルに",
-      "lede": "flexとフォーカスだけで、'use client'もバンドル増もなしに横アコーディオンを作る。",
-      "articleHtml": "<p>横並びの画像パネルのうち、カーソルを乗せた(またはキーボードでフォーカスした)一枚だけが大きく広がり、他は細く縮む——「expanding panels / horizontal accordion」と呼ばれる定番インタラクション。ヒーロー、ギャラリー、特集セクション、プラン比較で「少ない面積にリッチな選択肢を詰める」ために使われる。</p>\n<p><strong>何が新しい/効くのか。</strong>肝は<strong>JavaScriptが一切要らない</strong>こと。Flexboxの<code>flex-grow</code>(ショートハンドの<code>flex</code>)はCSSトランジションで補間できるので、<code>:hover</code>と<code>:focus-within</code>に<code>transition</code>を掛けるだけで滑らかに開閉する。JSゼロということは、Next.js App Routerでは<strong>'use client'不要のReact Server Componentのまま</strong>実装でき、ハイドレーション負荷ゼロ・バンドル増ゼロで成立する。</p>\n<figure class='fig'><svg viewBox='0 0 600 180' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n<rect x='0' y='0' width='600' height='180' fill='#eff6ff' rx='10'/>\n<text x='16' y='26' font-size='13' font-weight='bold' fill='#1e3a8a'>:hover / :focus-within で“1枚だけ”広がる（兄弟は相対的に縮む）</text>\n<rect x='20' y='44' width='70' height='110' fill='#bfdbfe' stroke='#3b82f6' rx='8'/>\n<rect x='100' y='44' width='70' height='110' fill='#bfdbfe' stroke='#3b82f6' rx='8'/>\n<rect x='180' y='44' width='300' height='110' fill='#3b82f6' stroke='#1d4ed8' rx='8'/>\n<rect x='490' y='44' width='70' height='110' fill='#bfdbfe' stroke='#3b82f6' rx='8'/>\n<text x='215' y='104' font-size='13' font-weight='bold' fill='#ffffff'>flex: 6（拡大中）</text>\n<text x='55' y='170' font-size='10' text-anchor='middle' fill='#1e40af'>flex:1</text>\n<text x='135' y='170' font-size='10' text-anchor='middle' fill='#1e40af'>flex:1</text>\n<text x='525' y='170' font-size='10' text-anchor='middle' fill='#1e40af'>flex:1</text>\n</svg><figcaption>図1：各パネルは初期 flex:1。ホバー/フォーカスしたパネルを flex:6 にすると兄弟が縮み、transition: flex .5s で滑らかに開く。</figcaption></figure>\n<p><strong>仕組み。</strong><code>display:flex</code>のコンテナに子パネルを並べ、各パネルに<code>flex:1</code>。<code>.panel:hover</code>／<code>.panel:focus-within</code>で<code>flex:6</code>にするだけ——兄弟は相対的に縮むので個別指定は不要。画像は親を<code>position:relative</code>にして<code>&lt;Image fill&gt;</code>、<code>object-fit:cover</code>で追従させ、<code>min-width:0</code>を必ず付ける(付け忘れるとflexアイテムが縮まず崩れる定番の罠)。補間できるのは<code>flex-grow/basis/shrink/gap</code>で、<code>justify-content/align-items/order</code>は離散的に「カクッ」と切り替わる(滑らかにしたいならFLIPが必要)。</p>\n<pre><code>.panels { display:flex; gap:.5rem; height:60vh; }\n.panel  { flex:1; min-width:0; overflow:hidden; border-radius:14px;\n          transition: flex .5s cubic-bezier(.22,1,.36,1); }\n.panel:hover, .panel:focus-within { flex:6; }\n.panel img { width:100%; height:100%; object-fit:cover; display:block; }\n@media (prefers-reduced-motion: reduce){ .panel{ transition:none; } }</code></pre>\n<p><strong>自分が試すなら。</strong>サーバー描画の一覧はRSCのまま置き、クリック開閉が要る時だけ小さなclient子に切り出して<code>aria-expanded</code>をトグルする。LCPになる先頭画像には<code>priority</code>、<code>sizes</code>でオーバーフェッチを防ぐ。</p>\n<p><strong>落とし穴。</strong><code>flex-grow</code>の遷移は毎フレーム<strong>レイアウト(リフロー)</strong>を起こす——<code>transform</code>/<code>opacity</code>のようなコンポジットのみの最適化は効かず、<code>will-change</code>も効果が薄い。数枚〜十数枚なら実用上問題ないが、数十枚を同時アニメートは避ける。アクセシビリティでは、<code>:hover</code>だけだとキーボード/タッチで開けないので<code>:focus-within</code>を必須にし、中に実リンク/ボタンを置く。折り畳み時のラベルは<code>display:none</code>で消すとスクリーンリーダーからも消えるので、見た目だけ隠してラベルは担保する。<code>:focus-visible</code>を潰さず、<code>prefers-reduced-motion</code>で<code>transition</code>を無効化する。</p>\n<p><strong>ひとこと。</strong>「広げる」ためにJSを足す前に、flexとフォーカスだけで足りないかをまず疑う。</p>",
-      "sources": [
-        {
-          "title": "MDN: flex-grow",
-          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/flex-grow"
-        },
-        {
-          "title": "Flexbox Land: Animating flex properties",
-          "url": "https://flexboxland.com/content/05-advanced-concepts/07-animating-flex-properties"
-        },
-        {
-          "title": "web.dev: prefers-reduced-motion",
-          "url": "https://web.dev/articles/prefers-reduced-motion"
-        },
-        {
-          "title": "Next.js Docs: next/image",
-          "url": "https://nextjs.org/docs/app/api-reference/components/image"
-        }
-      ]
-    },
-    {
-      "id": "2026-10-06-flutter",
-      "date": "2026-10-06",
-      "topic": "Flutter",
-      "title": "Flutter 2026-10-06 — 明日開幕Next.App DevCon、3.50で“Finishing the Job”: WasmGC既定化・Impeller一本化",
-      "lede": "DevCon直前。既定化される技術(WasmGC/package:web・Impeller)への追従準備と、アニメ/DI/描画の地固め。",
-      "articleHtml": "<p><strong>主役は明日。</strong>10/7からFlutterConとDroidconが合流した新カンファレンス<strong>Next.App DevCon 2026</strong>(10/7–9)が開幕する。ロードマップ『Finishing the Job』の締めくくりと、<strong>3.50(2026年11月)</strong>の確定情報、基調講演が主役になる見込みだ。現行安定版は<strong>Flutter 3.47.5 / Dart 3.13.4</strong>、betaは3.49系/Dart 3.14で、リリースは年4回(3.41/3.44/3.47/3.50)。</p>\n<p><strong>何が“締め”なのか。</strong>3.50の目玉は3本柱。Webの<strong>WasmGC既定化</strong>(<code>flutter build web --wasm</code>、<code>dart:html</code>→<code>package:web</code>移行)、Androidの<strong>Impeller一本化</strong>(legacy Skiaバックエンド撤去・API29+)、そして<strong>Material/Cupertinoの分離</strong>(material_ui / cupertino_ui 1.0、移行は<code>dart fix --apply --code=migrate_design_widgets</code>——<code>--code</code>無しは無変更の罠)。AIの意図に動的追従する適応型UIを実現する<strong>GenUI SDK×A2UI(Agent-to-UI)プロトコル</strong>もDevConのAIネイティブ開発トラックの中核になる。</p>\n<figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n<rect x='0' y='0' width='600' height='150' fill='#ecfeff' rx='10'/>\n<text x='16' y='26' font-size='14' font-weight='bold' fill='#155e75'>3.50（11月）= 『Finishing the Job』3本柱</text>\n<rect x='16' y='42' width='182' height='92' fill='#ffffff' stroke='#06b6d4' rx='8'/>\n<rect x='209' y='42' width='182' height='92' fill='#ffffff' stroke='#06b6d4' rx='8'/>\n<rect x='402' y='42' width='182' height='92' fill='#ffffff' stroke='#06b6d4' rx='8'/>\n<text x='107' y='66' text-anchor='middle' font-size='12' font-weight='bold' fill='#0e7490'>Web: WasmGC既定</text>\n<text x='107' y='90' text-anchor='middle' font-size='10' fill='#164e63'>--wasm / package:web</text>\n<text x='107' y='110' text-anchor='middle' font-size='10' fill='#164e63'>desktop級の描画へ</text>\n<text x='300' y='66' text-anchor='middle' font-size='12' font-weight='bold' fill='#0e7490'>Android: Impeller一本化</text>\n<text x='300' y='90' text-anchor='middle' font-size='10' fill='#164e63'>legacy Skia撤去</text>\n<text x='300' y='110' text-anchor='middle' font-size='10' fill='#164e63'>API29+ / shader jank排除</text>\n<text x='493' y='66' text-anchor='middle' font-size='12' font-weight='bold' fill='#0e7490'>Material/Cupertino分離</text>\n<text x='493' y='90' text-anchor='middle' font-size='10' fill='#164e63'>material_ui/cupertino_ui 1.0</text>\n<text x='493' y='110' text-anchor='middle' font-size='10' fill='#164e63'>dart fix --code=migrate_...</text>\n</svg><figcaption>図1：3.50で“既定化”される3領域。DevConで実機デモとマイグレーション指針が示される見込み。</figcaption></figure>\n<p><strong>土台も固める。</strong>アニメーションは、<code>AnimatedContainer</code>などの<em>implicit</em>系が第一選択——プロパティを変えて<code>setState</code>するだけで<code>duration</code>/<code>curve</code>に沿って自動補間し、<code>AnimationController</code>の生成・disposeが要らない。独自プロパティは<code>TweenAnimationBuilder</code>でcontroller無しに、子の差し替え演出は<code>AnimatedSwitcher</code>(Keyで検知)で。選び方は次の通り。</p>\n<figure class='fig'><pre class='mermaid'>flowchart TD\n  A[\"アニメ要件\"] --> B[\"50-300msのマイクロ補間?\"]\n  B -->|Yes| C[\"implicit: AnimatedContainer等\"]\n  B -->|No| D[\"連鎖演出?\"]\n  D -->|Yes| E[\"flutter_animate\"]\n  D -->|No| F[\"精密/物理?\"]\n  F -->|Yes| G[\"explicit: AnimationController + dispose\"]\n  F -->|No| H[\"画面間=Hero / 自由描画=CustomPainter / 重い=Rive\"]</pre><figcaption>図2：まずimplicitから。コストの低い順に上げていくのが基本線。</figcaption></figure>\n<p><strong>アーキとパフォーマンス。</strong>DIは<code>get_it</code>(サービスロケータ)＋<code>injectable</code>(<code>@singleton</code>等＋codegen)でRepository/Service/Dioを一元管理し状態層へ注入する。Riverpod 3自体がDIコンテナにもなるので<strong>併用</strong>が実務的——純粋サービスはget_it、UI/状態に紐づく依存はRiverpod provider。新規はRiverpod 3既定、監査要件・大規模・イベント駆動はBloc 9.2、細粒度はsignals。描画負荷は<code>RepaintBoundary</code>で再描画領域を別レイヤに隔離し、計測は必ず<strong>profileモード</strong>でDevToolsのUI(Dart)とRaster(GPU)を分離する(赤がUI側なら<code>build()</code>、Raster側なら<code>saveLayer</code>/<code>Opacity</code>/<code>BackdropFilter</code>を疑う)。フレーム予算は60=16.6 / 90=11.1 / 120=8.33ms。</p>\n<p><strong>落とし穴。</strong>macrosは無期限ポーズが継続——コード生成は従来どおり<code>build_runner</code>＋<code>source_gen</code>で行う。</p>\n<p><strong>ひとこと。</strong>DevConは“仕上げ”の節目。新機能を追う前に、既定化されるWasmGC/package:web・Impeller前提への追従準備を進めておきたい。</p>",
-      "sources": [
-        {
-          "title": "What's new in Flutter 3.47",
-          "url": "https://flutter.dev/blog/whats-new-in-flutter-3-47"
-        },
-        {
-          "title": "Flutter release notes",
-          "url": "https://docs.flutter.dev/release/release-notes"
-        },
-        {
-          "title": "Flutter 2026 roadmap: Finishing the Job",
-          "url": "https://webartdesign.com.au/blog/flutters-2026-roadmap-just-dropped-and-its-all-about-finishing-the-job/"
-        },
-        {
-          "title": "Implicit animations (docs)",
-          "url": "https://docs.flutter.dev/ui/animations/implicit-animations"
-        },
-        {
-          "title": "Riverpod 3 vs BLoC vs Signals (2026)",
-          "url": "https://theflutterk.it.com/blog/flutter-riverpod-3-vs-bloc-vs-signals-2026"
-        },
-        {
-          "title": "Flutter + Impeller: native 120fps in 2026",
-          "url": "https://shindekalpesharun.medium.com/flutter-impeller-how-to-achieve-native-120fps-performance-in-2026-68ec28cc71e5"
-        }
-      ]
-    },
-    {
-      "id": "2026-10-05-github-trending",
-      "date": "2026-10-05",
-      "topic": "GitHub Trending",
-      "title": "10/5の話題リポジトリ — エージェントに逆解析させる・bash出力を圧縮・Claude Codeを23人の仮想チームに",
-      "lede": "スキル経済一色の中、解析(rea)・コスト(rtk)・運用規律(gstack)の3方向。",
-      "articleHtml": "<p>10/5のトレンドは<strong>「エージェント・スキル経済」</strong>一色(ponytail/agent-skills/claude-mem 等の新顔が上位)。その中から、方向性の異なる3本を選んだ——“エージェントに逆解析させる”<strong>rea</strong>、bash出力を圧縮してトークンを削る<strong>rtk</strong>、Claude Codeを<strong>23人の仮想チーム</strong>に変えるgstack。共通するのは「エージェントの作業を、現場の実務(解析・コスト・運用規律)に落とす」視点だ。</p>\n<figure class='fig'><svg viewBox='0 0 600 196' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n<rect x='0' y='0' width='600' height='196' fill='#f0fdf4' rx='10'/>\n<text x='16' y='24' font-size='13' font-weight='bold' fill='#166534'>リポジトリ × 「解決したい課題 / 提供する機能」</text>\n<line x1='16' y1='34' x2='584' y2='34' stroke='#86efac'/>\n<g font-size='10.5'>\n<text x='16' y='54' font-weight='bold' fill='#14532d'>morluto/rea</text>\n<text x='140' y='54' fill='#166534'>課題: 解析ツールが散在しエージェントから扱いにくい</text>\n<text x='140' y='70' fill='#15803d'>機能: 挙動〜バイナリを一貫解析する統一CLI＋MCP</text>\n<line x1='16' y1='82' x2='584' y2='82' stroke='#bbf7d0'/>\n<text x='16' y='102' font-weight='bold' fill='#14532d'>rtk-ai/rtk</text>\n<text x='140' y='102' fill='#166534'>課題: 冗長なbash出力が入力トークンを浪費</text>\n<text x='140' y='118' fill='#15803d'>機能: 出力を4手法で60-90%圧縮するCLIプロキシ</text>\n<line x1='16' y1='130' x2='584' y2='130' stroke='#bbf7d0'/>\n<text x='16' y='150' font-weight='bold' fill='#14532d'>garrytan/gstack</text>\n<text x='140' y='150' fill='#166534'>課題: 1人/小規模では監査・QA・運用が抜けやすい</text>\n<text x='140' y='166' fill='#15803d'>機能: 23ロールの仮想チーム＝監査〜QA〜リリース自動化</text>\n</g>\n</svg><figcaption>図1：3本を貫くのは「エージェントを実務の抜け(解析・コスト・運用)に当てる」こと。</figcaption></figure>\n<h4>morluto/rea（TypeScript・⭐約0.4k）</h4>\n<p><strong>解決したい課題：</strong>ソフトの挙動解析・計測・リバースエンジニアリングは、ツールが散在していてエージェントから一貫して扱いにくい。<strong>提供する機能：</strong>アプリ挙動からネイティブバイナリのレベルまでを<em>一つの流儀で</em>解析・計測・ブラウザ観測・プロセスキャプチャする統一CLI＋MCPサーバ。MCP対応なので既存エージェント(Claude Code等)から呼べる。スキル経済一色の中で“エージェントに逆解析させる”希少ジャンルとして、Trendshift日次1位で話題化した。</p>\n<h4>rtk-ai/rtk（Rust・⭐要検証／本日+約323）</h4>\n<p><strong>解決したい課題：</strong><code>git status</code>や<code>cargo test</code>など開発コマンドの冗長な出力をそのままLLMに渡すと、入力トークンを恒常的に浪費する。<strong>提供する機能：</strong>bash出力をLLMへ渡す前に圧縮するCLIプロキシ。スマートフィルタ／グルーピング／トランケート／重複集約の4手法で、よくある開発コマンドの出力トークンを<strong>60〜90%削減</strong>する(※bill全体ではなくbash出力部分)。依存ゼロ・Rust製・Apache-2.0で、CLAUDE.mdや定期タスク運用に無改造で差し込める点が“コスト削減系”として評価された。</p>\n<h4>garrytan/gstack（TypeScript・⭐未確定／本日+約125）</h4>\n<p><strong>解決したい課題：</strong>1人開発や小規模では、セキュリティ監査・QA・リリース後監視といった役割が抜けやすい。<strong>提供する機能：</strong>Claude Codeを<strong>23の専門ロール</strong>(CEO/デザイナ/EM/QAリード等)の仮想エンジニアチームに変えるスキル集。<code>/cso</code>がOWASP＋STRIDEで監査、<code>/test-audit</code>が高コスト・冗長テストを特定、<code>/qa</code>・<code>/review</code>・<code>/ship</code>・<code>/canary</code>が実装〜PR作成〜デプロイ後監視まで自動化する。9ハーネス対応・MIT。</p>\n<p><strong>自分が試すなら。</strong>効果が即・定量に出る<strong>rtk</strong>(トークン削減)が入口。<strong>rea</strong>は逆解析という希少ジャンルの観察用、<strong>gstack</strong>は“運用規律のテンプレ”として参照価値が高い。</p>",
-      "sources": [
-        {
-          "title": "morluto/rea",
-          "url": "https://github.com/morluto/rea"
-        },
-        {
-          "title": "rtk-ai/rtk",
-          "url": "https://github.com/rtk-ai/rtk"
-        },
-        {
-          "title": "garrytan/gstack",
-          "url": "https://github.com/garrytan/gstack"
-        }
-      ]
-    },
-    {
-      "id": "2026-10-04-claude-code",
       "date": "2026-10-04",
       "topic": "Claude Code",
       "title": "Claude Code v2.1.289 — Mod/プラグインを“落ちない”土台へ、制御は『ハーネス設計』の時代",
@@ -148,10 +31,10 @@
           "title": "Claude Code Tips集『本質は2つ』（Zenn）",
           "url": "https://zenn.dev/acntechjp/articles/5409d8e2ad0767"
         }
-      ]
+      ],
+      "id": "2026-10-04-claude-code"
     },
     {
-      "id": "2026-10-04-nextjs",
       "date": "2026-10-04",
       "topic": "Next.js",
       "title": "Next.js 16 データ取得の“滝”を断つ — 並列フェッチ / React.cache / preload",
@@ -174,10 +57,10 @@
           "title": "Vercel Academy「Data Fetching Without Waterfalls」",
           "url": "https://vercel.com/academy/nextjs-foundations/data-fetching-without-waterfalls"
         }
-      ]
+      ],
+      "id": "2026-10-04-nextjs"
     },
     {
-      "id": "2026-10-05-flutter",
       "date": "2026-10-05",
       "topic": "Flutter",
       "title": "Flutter 2026-10-05 — DevCon直前、3.50へ向け2026安定ラインが固まる",
@@ -200,10 +83,10 @@
           "title": "Flutter + Impeller: native 120fps in 2026",
           "url": "https://shindekalpesharun.medium.com/flutter-impeller-how-to-achieve-native-120fps-performance-in-2026-68ec28cc71e5"
         }
-      ]
+      ],
+      "id": "2026-10-05-flutter"
     },
     {
-      "id": "2026-10-04-github-trending",
       "date": "2026-10-04",
       "topic": "GitHub Trending",
       "title": "10/4の話題リポジトリ — 画像から歩ける3D世界・スマホからエージェント操作・常駐するAI同僚",
@@ -222,7 +105,8 @@
           "title": "CopilotKit/OpenDots",
           "url": "https://github.com/CopilotKit/OpenDots"
         }
-      ]
+      ],
+      "id": "2026-10-04-github-trending"
     },
     {
       "id": "2026-10-03-claude-code",
@@ -321,7 +205,6 @@
       ]
     },
     {
-      "id": "2026-10-02-claude-code",
       "date": "2026-10-02",
       "topic": "Claude Code",
       "title": "Claude Code v2.1.288 — 落ちないエージェントへ、そして『どう社内に配るか』の3軸",
@@ -352,10 +235,10 @@
           "title": "日本IT5社の配布事例",
           "url": "https://zenn.dev/yukibjj/articles/claude-code-enterprise-rollout-5-companies-2026"
         }
-      ]
+      ],
+      "id": "2026-10-02-claude-code"
     },
     {
-      "id": "2026-10-02-nextjs",
       "date": "2026-10-02",
       "topic": "Next.js",
       "title": "依存ゼロの3Dチルト・ホバーカード — CSS 3D transform × Pointer Events で60fps",
@@ -386,10 +269,10 @@
           "title": "vanilla-tilt.js",
           "url": "https://micku7zu.github.io/vanilla-tilt.js/"
         }
-      ]
+      ],
+      "id": "2026-10-02-nextjs"
     },
     {
-      "id": "2026-10-03-flutter",
       "date": "2026-10-03",
       "topic": "Flutter",
       "title": "Flutter 2026-10-03 — build hooks で同梱、transformer で連打制御、Rebuild Stats で可視化",
@@ -424,10 +307,10 @@
           "title": "DevTools Rebuild Stats",
           "url": "https://codewithandrea.com/tips/devtools-performance-rebuild-stats/"
         }
-      ]
+      ],
+      "id": "2026-10-03-flutter"
     },
     {
-      "id": "2026-10-02-github-trending",
       "date": "2026-10-02",
       "topic": "GitHub Trending",
       "title": "10/2の話題リポジトリ — AIエージェントの『運用層』: 多重化・ゲートウェイ・トークン98%削減",
@@ -446,10 +329,10 @@
           "title": "mksglu/context-mode",
           "url": "https://github.com/mksglu/context-mode"
         }
-      ]
+      ],
+      "id": "2026-10-02-github-trending"
     },
     {
-      "id": "2026-10-01-claude-code",
       "date": "2026-10-01",
       "topic": "Claude Code",
       "title": "Claude Code v2.1.287 — プラグインが挙動に介入する「Claude Mods」、傍らで見張る『You Should Know』",
@@ -468,10 +351,10 @@
           "title": "Anthropic: Barclays scales Claude",
           "url": "https://www.anthropic.com/news/barclays-scales-claude"
         }
-      ]
+      ],
+      "id": "2026-10-01-claude-code"
     },
     {
-      "id": "2026-10-02-flutter",
       "date": "2026-10-02",
       "topic": "Flutter",
       "title": "Flutter 2026-10-02 — AIが開発ループに入り込み、signalsが第3の状態管理に",
@@ -490,10 +373,10 @@
           "title": "Riverpod 3 vs BLoC vs Signals 2026",
           "url": "https://theflutterk.it.com/blog/flutter-riverpod-3-vs-bloc-vs-signals-2026"
         }
-      ]
+      ],
+      "id": "2026-10-02-flutter"
     },
     {
-      "id": "2026-10-01-github-trending",
       "date": "2026-10-01",
       "topic": "GitHub Trending",
       "title": "10/1の話題リポジトリ — 自前で動く常駐エージェント・電波を観る端末・自己修正する視覚AI",
@@ -512,10 +395,10 @@
           "title": "PSRben/VisionHOPE",
           "url": "https://github.com/PSRben/VisionHOPE"
         }
-      ]
+      ],
+      "id": "2026-10-01-github-trending"
     },
     {
-      "id": "2026-09-30-claude-code",
       "date": "2026-09-30",
       "topic": "Claude Code",
       "title": "Claude Code v2.1.286/285 — 権限UIの可視化と設定ガバナンス、7層スタックで捉える運用",
@@ -542,10 +425,10 @@
           "title": "Anthropic: 本番コードの80%はClaude",
           "url": "https://venturebeat.com/technology/anthropic-says-80-of-its-new-production-code-is-now-authored-by-claude-how-your-enterprise-can-keep-up"
         }
-      ]
+      ],
+      "id": "2026-09-30-claude-code"
     },
     {
-      "id": "2026-09-30-nextjs",
       "date": "2026-09-30",
       "topic": "Next.js",
       "title": "Next.js 16 の型安全ルーティング — typedRoutes と PageProps/LayoutProps/RouteContext",
@@ -568,10 +451,10 @@
           "title": "flightcontrol — Fix Next.js routing to have full type-safety",
           "url": "https://www.flightcontrol.dev/blog/fix-nextjs-routing-to-have-full-type-safety"
         }
-      ]
+      ],
+      "id": "2026-09-30-nextjs"
     },
     {
-      "id": "2026-10-01-flutter",
       "date": "2026-10-01",
       "topic": "Flutter",
       "title": "Flutter 2026-10-01 — 3.50へ降りる土台と、AnimatedList・feature-first・ValueNotifierの実務",
@@ -598,10 +481,10 @@
           "title": "ValueListenableBuilder (API)",
           "url": "https://api.flutter.dev/flutter/widgets/ValueListenableBuilder-class.html"
         }
-      ]
+      ],
+      "id": "2026-10-01-flutter"
     },
     {
-      "id": "2026-09-30-github-trending",
       "date": "2026-09-30",
       "topic": "GitHub Trending",
       "title": "9/30の話題リポジトリ — 反検知ブラウザAI・会話でゲームMOD・ノッチ常駐の相棒",
@@ -620,10 +503,10 @@
           "title": "Louis-CFM/coucou",
           "url": "https://github.com/Louis-CFM/coucou"
         }
-      ]
+      ],
+      "id": "2026-09-30-github-trending"
     },
     {
-      "id": "2026-09-29-claude-code",
       "date": "2026-09-29",
       "topic": "Claude Code",
       "title": "Claude Code v2.1.28x — 管理者モデルガバナンス強化と、4プリミティブの使い分け",
@@ -646,10 +529,10 @@
           "title": "Claude Code Skills 2026 guide (totalum)",
           "url": "https://www.totalum.app/blog/claude-code-skills-totalum"
         }
-      ]
+      ],
+      "id": "2026-09-29-claude-code"
     },
     {
-      "id": "2026-09-29-nextjs",
       "date": "2026-09-29",
       "topic": "Next.js",
       "title": "Motion の useScroll — スクロール進捗を「0→1」に一元化してパララックス/プログレスバー",
@@ -668,10 +551,10 @@
           "title": "Motion: useReducedMotion",
           "url": "https://motion.dev/docs/react-use-reduced-motion"
         }
-      ]
+      ],
+      "id": "2026-09-29-nextjs"
     },
     {
-      "id": "2026-09-30-flutter",
       "date": "2026-09-30",
       "topic": "Flutter",
       "title": "Flutter 3.47安定/3.48beta — primary constructorsとRiverpod codegen、isolateでUIスレッドを守る",
@@ -694,10 +577,10 @@
           "title": "Improving rendering performance (Flutter docs)",
           "url": "https://docs.flutter.dev/perf/rendering-performance"
         }
-      ]
+      ],
+      "id": "2026-09-30-flutter"
     },
     {
-      "id": "2026-09-29-github-trending",
       "date": "2026-09-29",
       "topic": "GitHub Trending",
       "title": "9/29の話題リポジトリ — ニュース自動キュレーション・AIロゴ設計スキル・エージェント司令塔",
@@ -716,10 +599,10 @@
           "title": "AgentSystemLabs/agent-office",
           "url": "https://github.com/AgentSystemLabs/agent-office"
         }
-      ]
+      ],
+      "id": "2026-09-29-github-trending"
     },
     {
-      "id": "2026-09-29-flutter",
       "date": "2026-09-29",
       "topic": "Flutter",
       "title": "Flutterの手触りは物理で決まる — animateWith×damping ratioとSliver遅延生成",
@@ -742,10 +625,10 @@
           "title": "Flutter release notes",
           "url": "https://docs.flutter.dev/release/release-notes"
         }
-      ]
+      ],
+      "id": "2026-09-29-flutter"
     },
     {
-      "id": "2026-09-27-claude-code",
       "date": "2026-09-27",
       "topic": "Claude Code",
       "title": "静かな週末に運用の型を締める — claude plugin evalと「助言 vs 強制」の設計思想",
@@ -780,10 +663,10 @@
           "title": "Anthropic overtakes OpenAI in enterprise AI (eWeek)",
           "url": "https://www.eweek.com/artificial-intelligence/anthropic-overtakes-openai-enterprise-ai-adoption-neuron/"
         }
-      ]
+      ],
+      "id": "2026-09-27-claude-code"
     },
     {
-      "id": "2026-09-27-nextjs",
       "date": "2026-09-27",
       "topic": "Next.js",
       "title": "Jotai を App Router で安全に — atom×RSC境界、useHydrateAtomsとhydration mismatch回避",
@@ -814,10 +697,10 @@
           "title": "LogRocket — Using Jotai with Next.js",
           "url": "https://blog.logrocket.com/using-jotai-next-js/"
         }
-      ]
+      ],
+      "id": "2026-09-27-nextjs"
     },
     {
-      "id": "2026-09-28-flutter",
       "date": "2026-09-28",
       "topic": "Flutter",
       "title": "Flutter 3.48 beta の実務地図 — Widget Preview安定化・Impellerで起動最適化・Riverpod 3.3のAsyncNotifier",
@@ -852,10 +735,10 @@
           "title": "App size (Flutter docs)",
           "url": "https://docs.flutter.dev/perf/app-size"
         }
-      ]
+      ],
+      "id": "2026-09-28-flutter"
     },
     {
-      "id": "2026-09-27-github-trending",
       "date": "2026-09-27",
       "topic": "GitHub Trending",
       "title": "9/27の話題リポジトリ — オブジェクトストレージ上のグラフDB・学習する記憶・OSS決済基盤",
@@ -874,10 +757,10 @@
           "title": "juspay/hyperswitch",
           "url": "https://github.com/juspay/hyperswitch"
         }
-      ]
+      ],
+      "id": "2026-09-27-github-trending"
     },
     {
-      "id": "2026-09-26-claude-code",
       "date": "2026-09-26",
       "topic": "Claude Code",
       "title": "Claude Code 週次総まとめ — /doctor prompt-auditとOpus 5.5既定化、AGENTS.md対応まで",
@@ -900,10 +783,10 @@
           "title": "Skill 配布3方式（Zenn）",
           "url": "https://zenn.dev/singularity/articles/claude-code-skill-distribution"
         }
-      ]
+      ],
+      "id": "2026-09-26-claude-code"
     },
     {
-      "id": "2026-09-26-nextjs",
       "date": "2026-09-26",
       "topic": "Next.js",
       "title": "Vercel AI SDK 7でストリーミングチャットを組む — streamText × useChat × UIMessage/parts",
@@ -926,10 +809,10 @@
           "title": "Vercel Changelog — AI SDK 7",
           "url": "https://vercel.com/changelog/ai-sdk-7"
         }
-      ]
+      ],
+      "id": "2026-09-26-nextjs"
     },
     {
-      "id": "2026-09-27-flutter",
       "date": "2026-09-27",
       "topic": "Flutter",
       "title": "Flutter 3.47深掘り — Impellerが全デスクトップ既定に、アニメは宣言的チェーン、go_routerは型安全へ",
@@ -952,10 +835,10 @@
           "title": "Flutter performance best practices",
           "url": "https://docs.flutter.dev/perf/best-practices"
         }
-      ]
+      ],
+      "id": "2026-09-27-flutter"
     },
     {
-      "id": "2026-09-26-github-trending",
       "date": "2026-09-26",
       "topic": "GitHub Trending",
       "title": "9/26の話題リポジトリ — GPU製ディスク掃除・依存ゼロの水面シェーダ・電波パケットチャット",
@@ -974,10 +857,10 @@
           "title": "brannondorsey/chattervox",
           "url": "https://github.com/brannondorsey/chattervox"
         }
-      ]
+      ],
+      "id": "2026-09-26-github-trending"
     },
     {
-      "id": "2026-09-25-claude-code",
       "date": "2026-09-25",
       "topic": "Claude Code",
       "title": "運用の成熟へ — スケジュール実行の安定化、コンテキスト効率、そして企業導入の数字",
@@ -1004,10 +887,10 @@
           "title": "企業導入の成功事例集2026",
           "url": "https://claudecode.digirise.ai/blog/claude-code-case-studies-2026"
         }
-      ]
+      ],
+      "id": "2026-09-25-claude-code"
     },
     {
-      "id": "2026-09-25-nextjs",
       "date": "2026-09-25",
       "topic": "Next.js",
       "title": "cmdk で作る ⌘K コマンドパレット — App Router 統合・非同期検索・開閉アニメーション",
@@ -1030,10 +913,10 @@
           "title": "Next.js useRouter（App Router）",
           "url": "https://nextjs.org/docs/app/api-reference/functions/use-router"
         }
-      ]
+      ],
+      "id": "2026-09-25-nextjs"
     },
     {
-      "id": "2026-09-26-flutter",
       "date": "2026-09-26",
       "topic": "Flutter",
       "title": "11月安定版へ降りる三本柱 — WasmGC・Impeller一本化・build hooks、そしてHero/MVVM/jank診断",
@@ -1060,10 +943,10 @@
           "title": "Use the Performance view (DevTools)",
           "url": "https://docs.flutter.dev/tools/devtools/performance"
         }
-      ]
+      ],
+      "id": "2026-09-26-flutter"
     },
     {
-      "id": "2026-09-24-nextjs",
       "date": "2026-09-24",
       "topic": "Next.js",
       "title": "MDX × App Router 実戦 — @next/mdx・リモートMDX・Shikiハイライト・Turbopackの罠",
@@ -1086,10 +969,10 @@
           "title": "next-mdx-remote-client（維持フォーク）",
           "url": "https://github.com/ipikuka/next-mdx-remote-client"
         }
-      ]
+      ],
+      "id": "2026-09-24-nextjs"
     },
     {
-      "id": "2026-09-25-flutter",
       "date": "2026-09-25",
       "topic": "Flutter",
       "title": "Dart 3.13 の書き味 — primary constructors / dot shorthands と、UIを詰まらせないIsolate設計",
@@ -1116,10 +999,10 @@
           "title": "Flutter Performance Optimization 2026",
           "url": "https://medium.com/codetodeploy/flutter-performance-optimization-a-practical-guide-for-2026-bc501e44ec6e"
         }
-      ]
+      ],
+      "id": "2026-09-25-flutter"
     },
     {
-      "id": "2026-09-25-github-trending",
       "date": "2026-09-25",
       "topic": "GitHub Trending",
       "title": "9/25の話題リポジトリ — エージェント運用を「本番化・コスト・保護」で固める3本",
@@ -1138,10 +1021,10 @@
           "title": "xiaYuTian11/maskit",
           "url": "https://github.com/xiaYuTian11/maskit"
         }
-      ]
+      ],
+      "id": "2026-09-25-github-trending"
     },
     {
-      "id": "2026-09-24-claude-code",
       "date": "2026-09-24",
       "topic": "Claude Code",
       "title": "v2.1.281はBedrock/MCPを強化しつつ「autoの再帰rm無確認」を修正 — 助言(CLAUDE.md)と強制(Hook)の設計思想",
@@ -1160,10 +1043,10 @@
           "title": "Hooks・Subagents完全ガイド(2026)",
           "url": "https://dev.to/vibehackers/claude-code-hooks-subagents-power-features-the-complete-guide-2026-c71"
         }
-      ]
+      ],
+      "id": "2026-09-24-claude-code"
     },
     {
-      "id": "2026-09-23-nextjs",
       "date": "2026-09-23",
       "topic": "Next.js",
       "title": "SVGだけで作る円形プログレス／リングUI — stroke-dashoffsetのdeterminateと、conic-gradient・<progress>の使い分け",
@@ -1182,10 +1065,10 @@
           "title": "Nikita Hlopov: SVG circle progress bar",
           "url": "https://nikitahl.com/svg-circle-progress"
         }
-      ]
+      ],
+      "id": "2026-09-23-nextjs"
     },
     {
-      "id": "2026-09-24-flutter",
       "date": "2026-09-24",
       "topic": "Flutter",
       "title": "11月stableに迫るmaterial_ui移行と、Impeller全既定が変えるアニメ・120fps設計",
@@ -1204,10 +1087,10 @@
           "title": "BLoC vs Riverpod 2026 (ASOasis)",
           "url": "https://asoasis.tech/articles/2026-04-17-2054-flutter-bloc-vs-riverpod-comparison-2026/"
         }
-      ]
+      ],
+      "id": "2026-09-24-flutter"
     },
     {
-      "id": "2026-09-24-github-trending",
       "date": "2026-09-24",
       "topic": "GitHub Trending",
       "title": "9/24の話題リポジトリ — macOSディスク掃除CLI・常駐パーソナルエージェント・手元GPUの継続学習",
@@ -1226,7 +1109,8 @@
           "title": "volotat/mini-AGI",
           "url": "https://github.com/volotat/mini-AGI"
         }
-      ]
+      ],
+      "id": "2026-09-24-github-trending"
     },
     {
       "id": "2026-09-23-claude-code",
