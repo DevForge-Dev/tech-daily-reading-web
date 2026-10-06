@@ -1,0 +1,84 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Flutter 2026-10-05 — DevCon直前、3.50へ向け2026安定ラインが固まる — デイリー技術深掘り 読み物</title><meta name="description" content="FlutterCon×Droidcon合流の新カンファが2日後開幕。WasmGC既定化・Impeller一本化の総仕上げと、状態管理3択(Riverpod3/Bloc/signals)の指針が見えてきた。"><meta name="theme-color" content="#0277bd"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-05-flutter/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Flutter 2026-10-05 — DevCon直前、3.50へ向け2026安定ラインが固まる — デイリー技術深掘り 読み物"><meta property="og:description" content="FlutterCon×Droidcon合流の新カンファが2日後開幕。WasmGC既定化・Impeller一本化の総仕上げと、状態管理3択(Riverpod3/Bloc/signals)の指針が見えてきた。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-05-flutter/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #29b6f6, #01579b)"> <span class="glyph" aria-hidden="true">◆</span> <div class="kicker">Flutter</div> <h1>Flutter 2026-10-05 — DevCon直前、3.50へ向け2026安定ラインが固まる</h1> <p class="lede">FlutterCon×Droidcon合流の新カンファが2日後開幕。WasmGC既定化・Impeller一本化の総仕上げと、状態管理3択(Riverpod3/Bloc/signals)の指針が見えてきた。</p> <div class="meta"> <span>📅 2026年10月5日</span> <span>⏱ 約3分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#0277bd"> <div> <article class="prose" data-has-mermaid="0"><p>現行安定版は <strong>Flutter 3.47.5 / Dart 3.13.4</strong>、次の安定機能リリースは11月の <strong>3.50</strong>。そして明後日(10/7-9)、FlutterConとDroidconが合流した新カンファ <strong>Next.App DevCon 2026</strong> が開幕する。ロードマップ『Finishing the Job』の締め——WasmGC既定化・Impeller一本化・Material/Cupertino分離——の最終アナウンスと3.50の確定情報が主役になる見込みで、2026の安定ラインがいよいよ固まる局面だ。</p>
+<p><strong>3.50の目玉。</strong>Webは <code>flutter build web --wasm</code> の <strong>WasmGC既定化</strong>（<code>dart:html</code>→<code>package:web</code> 移行）で、desktop級の描画がブラウザに来る。Androidは <strong>Impeller一本化</strong>でlegacy Skiaバックエンドが撤去されAPI29+が前提に。土台の <strong>Great Thread Merge</strong> も効いてくる——Dart実行が専用UIスレッドからネイティブplatformスレッドへ統合され、platform channelの非同期往復なしに<strong>同期FFI</strong>でSwift/Kotlinを直接呼べる。重い計算は従来どおり <code>Isolate.run()</code>/<code>compute()</code> で別isolateへ逃がす。</p>
+<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' role='img' aria-label='2026年の状態管理3択の選定表'>
+<rect x='0' y='0' width='600' height='210' rx='10' fill='#eff6fb'></rect>
+<rect x='16' y='14' width='568' height='30' rx='5' fill='#0553b1'></rect>
+<text x='110' y='34' fill='#fff' font-size='12' text-anchor='middle'>条件</text>
+<text x='320' y='34' fill='#fff' font-size='12' text-anchor='middle'>推奨</text>
+<text x='500' y='34' fill='#fff' font-size='12' text-anchor='middle'>決め手</text>
+<rect x='16' y='48' width='568' height='48' rx='5' fill='#ffffff' stroke='#bcd4ec'></rect>
+<text x='28' y='77' fill='#1f2937' font-size='12'>新規・標準</text>
+<text x='250' y='77' fill='#0553b1' font-size='12' font-weight='bold'>Riverpod 3</text>
+<text x='400' y='70' fill='#374151' font-size='11'>@riverpod codegen＋AsyncNotifier</text>
+<text x='400' y='86' fill='#374151' font-size='11'>Mutations・自動リトライ・SWR永続化</text>
+<rect x='16' y='100' width='568' height='48' rx='5' fill='#f7fbff' stroke='#bcd4ec'></rect>
+<text x='28' y='129' fill='#1f2937' font-size='12'>監査要件・大規模</text>
+<text x='250' y='129' fill='#0553b1' font-size='12' font-weight='bold'>Bloc 9.2系</text>
+<text x='400' y='122' fill='#374151' font-size='11'>event→stateの単方向・tracing</text>
+<text x='400' y='138' fill='#374151' font-size='11'>金融/医療の再現性・監査性</text>
+<rect x='16' y='152' width='568' height='46' rx='5' fill='#ffffff' stroke='#bcd4ec'></rect>
+<text x='28' y='180' fill='#1f2937' font-size='12'>小〜中・細粒度</text>
+<text x='250' y='180' fill='#0553b1' font-size='12' font-weight='bold'>signals</text>
+<text x='400' y='173' fill='#374151' font-size='11'>signal()/computed()/Watch()</text>
+<text x='400' y='189' fill='#374151' font-size='11'>軽量な細粒度リアクティビティ</text>
+</svg><figcaption>図1：2026年の状態管理3択。原則は「一つ選んで一貫させる」。新規はRiverpod 3が既定線。</figcaption></figure>
+<p><strong>状態管理は「3択を使い分け」で合意が固まった。</strong>新規は <code>@riverpod</code> codegenと <code>AsyncNotifier</code> を軸にした <strong>Riverpod 3</strong> が既定線。Riverpod 3は書き込み/副作用を明示管理する <strong>Mutations API</strong>、失敗時の自動リトライ(指数バックオフ)、stale-while-revalidateのオフライン永続化を内蔵した。監査要件のある金融/医療や大規模チームはevent駆動でtracingの効く <strong>Bloc 9.2系</strong>、小〜中規模の細粒度リアクティビティは <strong>signals</strong>。原則は「一つ選んで一貫させる」。購読は <code>ref.watch(provider.select(...))</code> で最小化し、<code>autoDispose</code> 既定でリークを防ぐ。</p>
+<p><strong>見た目と速度。</strong>Material 3 Expressive では physics(spring)ベースのモーションが標準化し、ImpellerのAOT事前コンパイル描画で表現を増やしても120fpsを維持しやすい。アニメは用途で使い分ける——同一要素の継続はHero、面の変形はContainer Transform、兄弟間移動はShared Axis、無関係な切替はFade Through、連鎖演出は <code>flutter_animate</code>、重いインタラクティブアートはRiveのstate machine。計測は必ず <strong>profileモード</strong>で（debugはJIT＋assertで無意味）。フレーム予算は60=16.6 / 90=11.1 / 120=8.33ms。移行で一点だけ注意：design widgetsの移行は <code>dart fix --apply --code=migrate_design_widgets</code> と <code>--code</code> を付けること（無指定は無変更の罠）。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://flutter.dev/blog/whats-new-in-flutter-3-47" target="_blank" rel="noopener noreferrer"> What&#39;s new in Flutter 3.47 </a> </li><li> <a href="https://webartdesign.com.au/blog/flutters-2026-roadmap-just-dropped-and-its-all-about-finishing-the-job/" target="_blank" rel="noopener noreferrer"> Flutter 2026 roadmap “Finishing the Job” </a> </li><li> <a href="https://theflutterk.it.com/blog/flutter-riverpod-3-vs-bloc-vs-signals-2026" target="_blank" rel="noopener noreferrer"> Riverpod 3 vs BLoC vs Signals (2026) </a> </li><li> <a href="https://shindekalpesharun.medium.com/flutter-impeller-how-to-achieve-native-120fps-performance-in-2026-68ec28cc71e5" target="_blank" rel="noopener noreferrer"> Flutter + Impeller: native 120fps in 2026 </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

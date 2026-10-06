@@ -1,0 +1,91 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Claude Code 2026-10-05 — 新機能なしの“地固め”: rmガード第2経路を封鎖、Claude Securityベータ、スキル/サブエージェント運用術 — デイリー技術深掘り 読み物</title><meta name="description" content="本体リリースなしの日こそ、権限ガード・安定版追従・スキル設計の基本を見直す。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-05-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Claude Code 2026-10-05 — 新機能なしの“地固め”: rmガード第2経路を封鎖、Claude Securityベータ、スキル/サブエージェント運用術 — デイリー技術深掘り 読み物"><meta property="og:description" content="本体リリースなしの日こそ、権限ガード・安定版追従・スキル設計の基本を見直す。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-05-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>Claude Code 2026-10-05 — 新機能なしの“地固め”: rmガード第2経路を封鎖、Claude Securityベータ、スキル/サブエージェント運用術</h1> <p class="lede">本体リリースなしの日こそ、権限ガード・安定版追従・スキル設計の基本を見直す。</p> <div class="meta"> <span>📅 2026年10月5日</span> <span>⏱ 約3分</span> <span>🔗 出典 6 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="0"><p>本日(10/5)はClaude Code本体の新規リリースはなく、最新は10/3のv2.1.289のまま。派手な新機能のない日だが、だからこそ主題は<strong>「足回りの地固め」</strong>——権限ガードの封鎖、安定版の追従、スキル／サブエージェント運用の原則整理に目を向けたい。</p>
+<p><strong>何が動いたか。</strong>v2.1.289は、サンドボックス自動許可下で危険な<code>rm</code>を忍び込ませる<em>第2の回避経路</em>を封鎖した。<code>TZ="$HOME" rm -rf build</code> のように環境変数プレフィックスを付けてBashのdeny/askルールを素通りさせる手口で、前回の<code>bash -c</code>ラッパー回避修正に続く第2弾。ただしCVE割当はなく、効くのは<strong>サンドボックス自動許可時のみ</strong>。注意したいのは、最新が日次でv2.1.286→289と出た一方、<strong>stableチャネルはv2.1.285(9/29)のまま最新から4ビルド遅れ</strong>ている点だ。基盤を共有するCowork(デスクトップ)はv2.19675.0で、<strong>Claude作成のスケジュールタスクが(許可組織では)既定で“自動承認”</strong>に変わり、動画のインライン再生も追加された。</p>
+<figure class='fig'><svg viewBox='0 0 600 212' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+<rect x='0' y='0' width='600' height='212' fill='#fff7ed' rx='10'></rect>
+<text x='16' y='26' font-size='14' font-weight='bold' fill='#9a3412'>Skills / MCP / サブエージェント の使い分け</text>
+<g font-size='11'>
+<rect x='16' y='40' width='182' height='156' fill='#ffffff' stroke='#fb923c' rx='8'></rect>
+<rect x='209' y='40' width='182' height='156' fill='#ffffff' stroke='#fb923c' rx='8'></rect>
+<rect x='402' y='40' width='182' height='156' fill='#ffffff' stroke='#fb923c' rx='8'></rect>
+<text x='107' y='60' text-anchor='middle' font-weight='bold' fill='#7c2d12'>Skills</text>
+<text x='300' y='60' text-anchor='middle' font-weight='bold' fill='#7c2d12'>MCP</text>
+<text x='493' y='60' text-anchor='middle' font-weight='bold' fill='#7c2d12'>サブエージェント</text>
+<text x='107' y='86' text-anchor='middle' fill='#431407'>待機 ~100トークン</text>
+<text x='300' y='86' text-anchor='middle' fill='#431407'>常時 ~55Kトークン</text>
+<text x='493' y='86' text-anchor='middle' fill='#431407'>別コンテキスト</text>
+<text x='107' y='112' text-anchor='middle' fill='#431407'>トリガ合致時に</text>
+<text x='107' y='128' text-anchor='middle' fill='#431407'>本体~5Kを起動</text>
+<text x='300' y='112' text-anchor='middle' fill='#431407'>外部アクセスが</text>
+<text x='300' y='128' text-anchor='middle' fill='#431407'>要るとき</text>
+<text x='493' y='112' text-anchor='middle' fill='#431407'>独立作業を委ね</text>
+<text x='493' y='128' text-anchor='middle' fill='#431407'>要約だけ親へ</text>
+<text x='107' y='162' text-anchor='middle' fill='#9a3412'>繰り返し手順</text>
+<text x='300' y='162' text-anchor='middle' fill='#9a3412'>DB/API連携</text>
+<text x='493' y='162' text-anchor='middle' fill='#9a3412'>調査・監査</text>
+<text x='107' y='182' text-anchor='middle' fill='#9a3412'>1責務・芯~500t</text>
+<text x='300' y='182' text-anchor='middle' fill='#9a3412'>常時コスト大</text>
+<text x='493' y='182' text-anchor='middle' fill='#9a3412'>入れ子不可</text>
+</g>
+</svg><figcaption>図1：待機コストと起動条件で選ぶ——繰り返し手順はSkills、外部アクセスはMCP、独立作業はサブエージェント。</figcaption></figure>
+<p><strong>仕組みを噛み砕く。</strong>スキルは<em>段階的開示(progressive disclosure)</em>で動く。name＋description(~100トークン)は常時読み込まれ、本体(~5K)はプロンプトがトリガ記述に合致したときだけ起動する。だから最重要原則は<strong>「descriptionが読み込み判断に使う“唯一の信号”」</strong>で、「use when…」型で具体的に書くこと。使い分けは、外部アクセスが要るならMCP(常時~55K)、独立作業ならサブエージェント(別コンテキスト)、繰り返し手順ならSkills(待機~100トークン)。サブエージェントは<code>.claude/agents/</code>にYAML定義を置き、<code>model</code>(haiku/sonnet/opus)と<code>tools</code>のallowlistで役割特化する。制約は入れ子不可・毎回新規起動・作業ディレクトリ非永続。</p>
+<p><strong>自分が試すなら。</strong>まずstable運用なら4ビルド遅れを認識し、サンドボックス自動許可で回しているならrmガード更新を取り込む。スケジュールタスクの既定“自動承認”は便利だが権限範囲を一度点検する。スキルは<code>description</code>を「use when」で磨き、1スキル1責務、芯は~500トークンに絞って詳細は参照ファイルへ逃がす。関連して、Anthropicは脆弱性スキャナ<strong>『Claude Security』</strong>を企業ベータ公開(10/3)——コードベースを走査し、データフロー追跡＋深刻度で優先順位付け、スケジュール実行対応で、<code>/security-review</code>とは別立ての製品だ。</p>
+<p><strong>落とし穴。</strong>サンドボックス修正はいずれも“自動許可時のみ”効く＝非自動運用では別の注意が要る。スキル側は4000トークン級に肥大したSKILL.mdや曖昧なトリガが逆効果になる。</p>
+<p><strong>ひとこと。</strong>新機能のない日ほど、安定版の追従・権限の既定・スキル設計の基本を見直す好機だ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://mixed-news.com/en/claude-code-2-1-289-second-route-past-rm-guard-stable-four-builds-behind" target="_blank" rel="noopener noreferrer"> Claude Code 2.1.289 — second route past rm guard (mixed-news) </a> </li><li> <a href="https://claude.com/docs/cowork/changelog" target="_blank" rel="noopener noreferrer"> Cowork changelog (claude.com) </a> </li><li> <a href="https://www.firecrawl.dev/blog/best-claude-code-skills" target="_blank" rel="noopener noreferrer"> Best Claude Code skills 2026 (Firecrawl) </a> </li><li> <a href="https://duet.so/guides/claude-code-skills-complete-guide" target="_blank" rel="noopener noreferrer"> Claude Code Skills complete guide (duet.so) </a> </li><li> <a href="https://www.tembo.io/blog/claude-code-subagents" target="_blank" rel="noopener noreferrer"> Claude Code subagents (tembo.io) </a> </li><li> <a href="https://www.newsbytesapp.com/news/science/anthropic-launches-claude-security-code-scanner-in-enterprise-public-beta/tldr" target="_blank" rel="noopener noreferrer"> Anthropic launches Claude Security scanner (NewsBytes) </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

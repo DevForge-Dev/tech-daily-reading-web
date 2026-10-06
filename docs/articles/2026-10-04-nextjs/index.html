@@ -1,0 +1,79 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Next.js 16 データ取得の“滝”を断つ — 並列フェッチ / React.cache / preload — デイリー技術深掘り 読み物</title><meta name="description" content="awaitの置き方ひとつで直列ウォーターフォールが生まれTTFBが悪化する。fetchが既定キャッシュなしになった16だからこそ、並列・重複排除・先回りの設計が効く。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-04-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Next.js 16 データ取得の“滝”を断つ — 並列フェッチ / React.cache / preload — デイリー技術深掘り 読み物"><meta property="og:description" content="awaitの置き方ひとつで直列ウォーターフォールが生まれTTFBが悪化する。fetchが既定キャッシュなしになった16だからこそ、並列・重複排除・先回りの設計が効く。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-04-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>Next.js 16 データ取得の“滝”を断つ — 並列フェッチ / React.cache / preload</h1> <p class="lede">awaitの置き方ひとつで直列ウォーターフォールが生まれTTFBが悪化する。fetchが既定キャッシュなしになった16だからこそ、並列・重複排除・先回りの設計が効く。</p> <div class="meta"> <span>📅 2026年10月4日</span> <span>⏱ 約3分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="0"><p>App Routerでは Server Component を <code>async</code> にして直接 <code>await fetch()</code> やORMクエリを書ける。書き味は素朴で気持ちいいが、<strong>awaitの置き方ひとつで「リクエストウォーターフォール（直列の滝）」が簡単に生まれる</strong>。互いに独立した取得まで一本道で待たされ、TTFB/LCPを悪化させる。Next.js 16では <code>fetch</code> が既定でキャッシュされず毎リクエスト実行になったため、「いつ走り、いつ重複排除され、いつブロックするか」を設計する価値がいっそう高まっている。</p>
+<p><strong>既定の挙動を押さえる。</strong>layout・page・各セグメントは既定で並列レンダリングされる。直列化が起きるのは「同一コンポーネント内でawaitを並べたとき」と「親→子でデータ依存があるとき」だけだ。また同一レンダーパス内の同じ引数の <code>fetch</code> は自動で重複排除(リクエストメモ化)されるので、props drillingせず必要な場所でその都度呼んでよい。<code>fetch</code> を使わないDB/ORMは効かないので <code>React.cache</code> でラップする。</p>
+<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg' role='img' aria-label='直列と並列のデータ取得の総待ち時間の比較'>
+<rect x='0' y='0' width='600' height='200' rx='10' fill='#eff6ff'></rect>
+<text x='20' y='40' fill='#1e3a8a' font-size='13' font-weight='bold'>直列（アンチパターン）</text>
+<rect x='150' y='28' width='170' height='22' rx='4' fill='#93c5fd'></rect><text x='235' y='44' fill='#0b2e66' font-size='11' text-anchor='middle'>await getA()</text>
+<rect x='320' y='28' width='170' height='22' rx='4' fill='#60a5fa'></rect><text x='405' y='44' fill='#0b2e66' font-size='11' text-anchor='middle'>await getB()</text>
+<line x1='490' y1='22' x2='490' y2='170' stroke='#ef4444' stroke-width='1' stroke-dasharray='4 3'></line><text x='500' y='110' fill='#b91c1c' font-size='11'>総待ち=2倍</text>
+<text x='20' y='100' fill='#1e3a8a' font-size='13' font-weight='bold'>並列（Promise.all）</text>
+<rect x='150' y='88' width='170' height='22' rx='4' fill='#34d399'></rect><text x='235' y='104' fill='#064e3b' font-size='11' text-anchor='middle'>getA() 着火</text>
+<rect x='150' y='116' width='170' height='22' rx='4' fill='#34d399'></rect><text x='235' y='132' fill='#064e3b' font-size='11' text-anchor='middle'>getB() 着火</text>
+<line x1='320' y1='82' x2='320' y2='170' stroke='#059669' stroke-width='1' stroke-dasharray='4 3'></line><text x='330' y='158' fill='#047857' font-size='11'>総待ち≈半分</text>
+</svg><figcaption>図1：独立したリクエストをawaitで並べると総待ち時間が倍に。呼んでから後でまとめて待てば同じ処理が約半分で終わる。</figcaption></figure>
+<p><strong>直列を並列に直す。</strong>独立なのに <code>const a = await getA(); const b = await getB();</code> と書くと、getBはgetA完了まで待つ。関数を<em>先に呼んでPromiseを作り</em>、まとめて待てばよい：</p>
+<pre><code>// ✅ 呼んだ瞬間に両方着火 → まとめて待つ
+const artistData = getArtist(username)   // await しない
+const albumsData = getAlbums(username)
+const [artist, albums] = await Promise.all([artistData, albumsData])
+// 一部失敗を許容するなら Promise.allSettled</code></pre>
+<p>さらに <strong>preloadパターン</strong>——消費コンポーネントの隣に <code>export const preload = (id) =&gt; void getItem(id)</code> を置き、描画より前に着火しておくと、別のブロッキング処理と並行してデータが流れる。成立条件は重複排除（<code>fetch</code>は自動／ORMは<code>React.cache</code>／Cache Componentsなら <code>use cache</code>）だ。</p>
+<p><strong>落とし穴。</strong><code>Promise.all</code> は1つでも失敗すると全体がrejectになる——一部許容は <code>allSettled</code>。<code>React.cache</code> はリクエストスコープのみで、リクエストをまたいだ永続キャッシュではない点に注意。<code>params</code>/<code>searchParams</code> は非同期なので <code>await</code> が要る。<code>loading.js</code> は同一セグメントのlayoutが未キャッシュデータ(<code>cookies()</code>等)を読むとフォールバックせずナビゲーションをブロックするので、その箇所を個別の &lt;Suspense&gt; で包むか取得をpage側へ寄せる。同じコードでも「いつ着火するか」で体感速度は大きく変わる。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://nextjs.org/docs/app/getting-started/fetching-data" target="_blank" rel="noopener noreferrer"> Next.js Docs「Fetching Data」 </a> </li><li> <a href="https://nextjs.org/docs/app/api-reference/functions/fetch" target="_blank" rel="noopener noreferrer"> Next.js Docs「fetch」 </a> </li><li> <a href="https://react.dev/reference/react/cache" target="_blank" rel="noopener noreferrer"> React Docs「cache」 </a> </li><li> <a href="https://vercel.com/academy/nextjs-foundations/data-fetching-without-waterfalls" target="_blank" rel="noopener noreferrer"> Vercel Academy「Data Fetching Without Waterfalls」 </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

@@ -1,0 +1,94 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>10/4の話題リポジトリ — 画像から歩ける3D世界・スマホからエージェント操作・常駐するAI同僚 — デイリー技術深掘り 読み物</title><meta name="description" content="エージェント基盤一色のトレンドの中で、本日は創作3D・端末運用・常駐同僚という毛色の違う3本が急上昇した。"><meta name="theme-color" content="#238636"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-04-github-trending/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="10/4の話題リポジトリ — 画像から歩ける3D世界・スマホからエージェント操作・常駐するAI同僚 — デイリー技術深掘り 読み物"><meta property="og:description" content="エージェント基盤一色のトレンドの中で、本日は創作3D・端末運用・常駐同僚という毛色の違う3本が急上昇した。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-04-github-trending/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3fb950, #1a7f37)"> <span class="glyph" aria-hidden="true">★</span> <div class="kicker">GitHub Trending</div> <h1>10/4の話題リポジトリ — 画像から歩ける3D世界・スマホからエージェント操作・常駐するAI同僚</h1> <p class="lede">エージェント基盤一色のトレンドの中で、本日は創作3D・端末運用・常駐同僚という毛色の違う3本が急上昇した。</p> <div class="meta"> <span>📅 2026年10月4日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#238636"> <div> <article class="prose" data-has-mermaid="0"><p>GitHubのトレンドは相変わらず記憶／RAG／ハーネスといったエージェント基盤一色だ。そんな中で本日急上昇した3本は、いずれもその王道から一歩ずれた——画像を丸ごと世界に変える<strong>創作系</strong>、エージェントを外から操る<strong>運用系</strong>、チャンネルを横断して常駐する<strong>同僚系</strong>。多様性のある顔ぶれが揃った。</p>
+<figure class='fig'><svg viewBox='0 0 600 240' xmlns='http://www.w3.org/2000/svg' role='img' aria-label='本日の話題リポジトリ3本の解決課題と提供機能'>
+<rect x='0' y='0' width='600' height='240' rx='10' fill='#f0fdf4'></rect>
+<rect x='14' y='14' width='572' height='28' rx='5' fill='#1a7f37'></rect>
+<text x='96' y='33' fill='#fff' font-size='12' text-anchor='middle'>リポジトリ</text>
+<text x='270' y='33' fill='#fff' font-size='12' text-anchor='middle'>解決したい課題</text>
+<text x='480' y='33' fill='#fff' font-size='12' text-anchor='middle'>提供する機能</text>
+<rect x='14' y='46' width='572' height='58' rx='5' fill='#ffffff' stroke='#bbf7d0'></rect>
+<text x='26' y='70' fill='#166534' font-size='12' font-weight='bold'>image-blaster</text>
+<text x='26' y='88' fill='#6b7280' font-size='10'>JS ・ ⭐約4.8k</text>
+<text x='200' y='70' fill='#374151' font-size='11'>画像→3D世界化に複数</text>
+<text x='200' y='86' fill='#374151' font-size='11'>ツールを個別に使う手間</text>
+<text x='380' y='70' fill='#374151' font-size='11'>Marble＋Hunyuan3Dを束ね</text>
+<text x='380' y='86' fill='#374151' font-size='11'>5分で歩ける世界/各形式出力</text>
+<rect x='14' y='108' width='572' height='58' rx='5' fill='#f6fef9' stroke='#bbf7d0'></rect>
+<text x='26' y='132' fill='#166534' font-size='12' font-weight='bold'>t3code</text>
+<text x='26' y='150' fill='#6b7280' font-size='10'>TS ・ ⭐約15.6k</text>
+<text x='200' y='132' fill='#374151' font-size='11'>常駐エージェントを外出先</text>
+<text x='200' y='148' fill='#374151' font-size='11'>/別端末から操作・監視</text>
+<text x='380' y='132' fill='#374151' font-size='11'>CC/Codex/Cursor対応の操作面</text>
+<text x='380' y='148' fill='#374151' font-size='11'>mobile/web/desktop・self-host</text>
+<rect x='14' y='170' width='572' height='58' rx='5' fill='#ffffff' stroke='#bbf7d0'></rect>
+<text x='26' y='194' fill='#166534' font-size='12' font-weight='bold'>OpenDots</text>
+<text x='26' y='212' fill='#6b7280' font-size='10'>TS ・ ⭐約3.2k</text>
+<text x='200' y='194' fill='#374151' font-size='11'>単発でなく“横断で常駐</text>
+<text x='200' y='210' fill='#374151' font-size='11'>する同僚”として運用したい</text>
+<text x='380' y='194' fill='#374151' font-size='11'>Text/通話/Slack横断のAI同僚</text>
+<text x='380' y='210' fill='#374151' font-size='11'>隔離PC・承認フロー・self-host</text>
+</svg><figcaption>図1：本日のモメンタム3本を「解決したい課題」と「提供する機能」で対比。創作・運用・常駐と毛色が揃って異なる。</figcaption></figure>
+<h4 id="sec-1">neilsonnn/image-blaster（JavaScript・⭐約4.8k）</h4>
+<p><strong>解決したい課題：</strong>1枚の画像から3D環境・メッシュ・ガウシアンスプラット・効果音までを作ろうとすると、World LabsやHunyuanなど複数のツールを個別に組み合わせる手間がかかる。<strong>提供する機能：</strong>それらを束ねたClaude用スキルセットで、5分弱で「画像→探索できる世界」を生成する。環境はMarble、オブジェクトはHunyuan 3Dが担当し、面数・PBR材質・ポリゴン種別まで調整可能。<code>.glb/.obj/.spz/.mp3</code> で書き出し、Unity/Unreal/Godot・Blender/Mayaへ渡せる(MIT)。<em>なぜ今：</em>エージェント基盤一色の中で希少な創作応用がTrendshift日次上位に。</p>
+<h4 id="sec-2">pingdotgg/t3code（TypeScript・⭐約15.6k）</h4>
+<p><strong>解決したい課題：</strong>手元のマシンで長時間回すAIコーディングエージェントを、外出先や別端末から操作・監視したい。<strong>提供する機能：</strong>Claude Code/Codex/Cursor/Grok Build/OpenCodeに対応した“エージェント操作面”を、モバイル/web/デスクトップで提供。リモート運用前提でself-host可、winget/Homebrew/AURや <code>npx t3@latest</code> で導入できる(MIT)。<em>なぜ今：</em>本日+約492(率約3.2%/日)でTheo(t3)発、fork前提の“truly open”姿勢が支持を集めた。</p>
+<h4 id="sec-3">CopilotKit/OpenDots（TypeScript・⭐約3.2k）</h4>
+<p><strong>解決したい課題：</strong>AIエージェントを単発のチャットでなく「チャンネルを横断して常駐する同僚」として業務に組み込みたい。<strong>提供する機能：</strong>テキスト/通話/Slackをまたいで常駐するAI同僚(Dots)を建てるOSSテンプレート。各Dotに隔離コンピュータ(ブラウザ/FS/シェル)を与え、役割・ツール権限・human-in-the-loop承認・文書WS(Spaces)まで設定できる。CopilotKit/AG-UI/TanStack AI上で完全self-host可(MIT)。<em>なぜ今：</em>Trendshift新顔として登場、常駐エージェント運用の設計を丸ごと公開した点が新しい。</p>
+<p><strong>自分が試すなら。</strong>LP/映像の素材生成の下地としてimage-blaster、エージェントを長時間回す運用の“操作面”としてt3codeから触りたい。OpenDotsは常駐エージェントの権限・承認設計のリファレンスとして読む価値がある。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://github.com/neilsonnn/image-blaster" target="_blank" rel="noopener noreferrer"> neilsonnn/image-blaster </a> </li><li> <a href="https://github.com/pingdotgg/t3code" target="_blank" rel="noopener noreferrer"> pingdotgg/t3code </a> </li><li> <a href="https://github.com/CopilotKit/OpenDots" target="_blank" rel="noopener noreferrer"> CopilotKit/OpenDots </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> neilsonnn/image-blaster（JavaScript・⭐約4.8k） </a> </li><li> <a href="#sec-2" data-toc="sec-2"> pingdotgg/t3code（TypeScript・⭐約15.6k） </a> </li><li> <a href="#sec-3" data-toc="sec-3"> CopilotKit/OpenDots（TypeScript・⭐約3.2k） </a> </li> </ul> <div class="reading-box"> <div>📅 2026-10-04</div> <div>⏱ 読了 約3分</div> <div>🏷 GitHub Trending</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
