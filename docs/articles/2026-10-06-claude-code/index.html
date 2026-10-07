@@ -1,0 +1,79 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Claude Code v2.1.292 — 承認なしartifact公開とeffort、そして“フックで制御”の設計指針 — デイリー技術深掘り 読み物</title><meta name="description" content="日次更新は地固め回。運用に効く細かな改善＋セキュリティ修正と、Steeringの2軸。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-06-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Claude Code v2.1.292 — 承認なしartifact公開とeffort、そして“フックで制御”の設計指針 — デイリー技術深掘り 読み物"><meta property="og:description" content="日次更新は地固め回。運用に効く細かな改善＋セキュリティ修正と、Steeringの2軸。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-06-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>Claude Code v2.1.292 — 承認なしartifact公開とeffort、そして“フックで制御”の設計指針</h1> <p class="lede">日次更新は地固め回。運用に効く細かな改善＋セキュリティ修正と、Steeringの2軸。</p> <div class="meta"> <span>📅 2026年10月6日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="0"><p>Claude Code本体はこのところ<strong>ほぼ日次</strong>でリリースが進み、本日時点の最新は<strong>v2.1.292（10/6）</strong>。派手な新機能というより「毎日の運用で効く細かな改善＋セキュリティ修正」が束で入った回だ。地味だが、自分のように多数のスケジュールタスクを無人で回す運用には直接響く。</p>
+<p><strong>何が入ったか。</strong>v2.1.292では<code>claude plugin install</code>に<code>--marketplace &lt;source&gt;</code>が付き、どのマーケットプレイスから入れるかを明示できるように。Agentツールにはサブエージェントの思考量を指定する<code>effort</code>パラメータが追加された。Artifact一覧の取得上限が<strong>50→200件</strong>に拡大し、<strong>スケジュール/ルーティン実行ではartifactを承認なしで公開</strong>するよう変更（無人実行で承認待ちに詰まらないための変更で、まさにこの読み物タスクのような自動運用に効く）。mod/フック向けにはプロンプトキャッシュや<code>turn.step</code>フックの<code>serverToolUses</code>などメタデータが拡張。直前のv2.1.290（10/5）はマネージドエージェントのオンボーディングや権限粒度（<code>tool.check</code>の<code>agentId</code>、組織必須承認の<code>ceiling</code>）を追加し、v2.1.291（10/6）は<strong>緊急パッチ</strong>でクラウドセッションの権限応答取りこぼしと終了時メッセージ喪失のリグレッションを修正している。</p>
+<figure class='fig'><svg viewBox='0 0 600 232' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+<rect x='0' y='0' width='600' height='232' fill='#eef2ff' rx='10'></rect>
+<text x='16' y='24' font-size='13' font-weight='bold' fill='#3730a3'>制御手段の使い分け（文脈コスト × 強制力）</text>
+<line x1='16' y1='32' x2='584' y2='32' stroke='#c7d2fe'></line>
+<g font-size='10' fill='#4338ca' font-weight='bold'>
+<text x='150' y='48'>文脈コスト</text><text x='250' y='48'>強制力</text><text x='330' y='48'>使いどころ</text>
+</g>
+<g font-size='10.5'>
+<text x='16' y='74' font-weight='bold' fill='#312e81'>CLAUDE.md</text><text x='150' y='74' fill='#4f46e5'>常時・高</text><text x='250' y='74' fill='#4f46e5'>弱（指針）</text><text x='330' y='74' fill='#3730a3'>構成/規約の概観（≤200行）</text>
+<text x='16' y='104' font-weight='bold' fill='#312e81'>rules</text><text x='150' y='104' fill='#4f46e5'>スコープ時</text><text x='250' y='104' fill='#4f46e5'>中</text><text x='330' y='104' fill='#3730a3'>具体制約・paths:で限定</text>
+<text x='16' y='134' font-weight='bold' fill='#312e81'>skills</text><text x='150' y='134' fill='#4f46e5'>起動時のみ</text><text x='250' y='134' fill='#4f46e5'>中</text><text x='330' y='134' fill='#3730a3'>手続き（デプロイ等）</text>
+<text x='16' y='164' font-weight='bold' fill='#312e81'>subagents</text><text x='150' y='164' fill='#4f46e5'>隔離</text><text x='250' y='164' fill='#4f46e5'>中</text><text x='330' y='164' fill='#3730a3'>調査/レビュー（要約だけ返す）</text>
+<text x='16' y='194' font-weight='bold' fill='#312e81'>hooks</text><text x='150' y='194' fill='#4f46e5'>実行時</text><text x='250' y='194' fill='#dc2626' font-weight='bold'>強（確定）</text><text x='330' y='194' fill='#3730a3'>絶対要件（PreToolUse）</text>
+</g>
+<text x='16' y='220' font-size='9.5' fill='#6366f1'>原則：プロンプトで縛らず、仕組み（ルール+スキル+フック）で制御する</text>
+</svg><figcaption>図：Anthropic『Steering Claude Code』の2軸。下ほど“確定的に強制”、上ほど“安いが弱い指針”。</figcaption></figure>
+<p><strong>今日いちばん読むべきは“制御の設計指針”。</strong>Anthropic公式『Steering Claude Code』が、Claudeの挙動を操る手段を<strong>「文脈コスト」×「指示の強制力」</strong>の2軸で整理した。要点は、(1) <code>CLAUDE.md</code>は200行以内に抑えてビルドコマンドや構成・規約の“概観”だけに使う（何でも詰め込む置き場にしない）、(2) 具体的な制約は<code>.claude/rules/</code>へ置き<code>paths:</code>でスコープして無関係作業でのトークン浪費を防ぐ、(3) デプロイ等の手続きはスキル（名前と説明だけ常時読み込み、本体は起動時のみ）、(4) 調査・レビューなど要約だけ戻せばよい副作業はサブエージェントに隔離、(5) <strong>「絶対こうしろ/するな」はプロンプト頼みにせず、ハーネスが実行するフック（PreToolUse等）で確定的に強制</strong>する、というもの。別記事の上級ベストプラクティス11選も同じ思想で、「プロンプトで縛る→仕組み（アーキテクチャ）で制御する」への転換、同じ指摘が2回続いたら<code>/clear</code>、仕様と実装・執筆とレビューのセッション分離、を勧める。</p>
+<p><strong>自分が試すなら。</strong>まず各スケジュールタスクのCLAUDE.mdを「消したらClaudeが間違えるか?」で棚卸しして最小化し、絶対要件（例：特定フォルダ外への書き込み禁止）はPreToolUseフックへ移す。<code>effort</code>はサブエージェントの重さ調整に使えるので、軽い整形系はlow・設計レビューはhighと振り分けると無駄打ちが減る。<strong>注意点：</strong>今回はUNCパス経由のフック承認迂回や改ざんキャッシュのポリシー回避などセキュリティ修正が多い回なので、更新は後回しにしないこと。</p>
+<p><strong>まとめ：</strong>v2.1.292は“地固め”回だが、承認なしartifact公開と<code>effort</code>は自動運用に、Steeringの2軸は日々の設定整理に効く。制御はプロンプトでなく「ルール＋スキル＋フック」の構造へ寄せるのが2026の定石。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://code.claude.com/docs/en/changelog" target="_blank" rel="noopener noreferrer"> Claude Code Changelog </a> </li><li> <a href="https://www.claude.com/blog/steering-claude-code-skills-hooks-rules-subagents-and-more" target="_blank" rel="noopener noreferrer"> Anthropic: Steering Claude Code </a> </li><li> <a href="https://smartscope.blog/en/generative-ai/claude/claude-code-best-practices-advanced-2026/" target="_blank" rel="noopener noreferrer"> Claude Code 上級ベストプラクティス11選 </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

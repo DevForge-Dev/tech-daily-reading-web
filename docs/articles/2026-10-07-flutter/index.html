@@ -1,0 +1,93 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Next.App DevCon 2026 開幕 — WasmGC既定化・Impeller一本化、3.50へ“積み残し完了” — デイリー技術深掘り 読み物</title><meta name="description" content="Day1基調講演でロードマップの締め。足元はstaggered/go_router/sliverの定石も。"><meta name="theme-color" content="#0277bd"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-07-flutter/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Next.App DevCon 2026 開幕 — WasmGC既定化・Impeller一本化、3.50へ“積み残し完了” — デイリー技術深掘り 読み物"><meta property="og:description" content="Day1基調講演でロードマップの締め。足元はstaggered/go_router/sliverの定石も。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-07-flutter/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #29b6f6, #01579b)"> <span class="glyph" aria-hidden="true">◆</span> <div class="kicker">Flutter</div> <h1>Next.App DevCon 2026 開幕 — WasmGC既定化・Impeller一本化、3.50へ“積み残し完了”</h1> <p class="lede">Day1基調講演でロードマップの締め。足元はstaggered/go_router/sliverの定石も。</p> <div class="meta"> <span>📅 2026年10月7日</span> <span>⏱ 約4分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#0277bd"> <div> <article class="prose" data-has-mermaid="0"><p>Flutter/Androidの新カンファレンス<strong>Next.App DevCon 2026</strong>（FlutterConとDroidconが合流、10/7–9）が<strong>本日開幕</strong>。Day1基調講演では、長年のロードマップ『Finishing the Job』の締めくくりと、次期stable<strong>3.50（2026年11月）</strong>の確定スケジュールが示される見込みだ。通底テーマは<strong>AIネイティブ開発（GenUI / A2UI）</strong>。普段の小技ではなく、Flutterの“これから”が見える節目なので今日はここを主役に読む。</p>
+<p><strong>何が確定しそうか。</strong>締めの3本柱は<strong>(1) Web WasmGCの既定化</strong>（今は<code>flutter build web --wasm</code>が必要、3.50で既定へ。ベンチでロード約40%高速・ランタイムメモリ約30%減。<code>dart:html</code>→<code>package:web</code>移行が前提）、<strong>(2) Android Impellerの一本化</strong>（旧Skiaパスの撤収）、<strong>(3) Material/Cupertinoのcore分離</strong>。現行安定版は<strong>3.47.5 / Dart 3.13.4</strong>、betaは3.49系/Dart 3.14.0で、2026は「年4回stable（3.41/3.44/3.47/3.50）＋12 beta」のケイデンスを公約。Dart言語側は<strong>Primary Constructors</strong>（宣言とフィールド定義の同時化）と<strong>Augmentations</strong>が次の目玉で、<strong>macrosは無期限ポーズ継続</strong>——コード生成は当面<code>build_runner</code>＋<code>source_gen</code>のままだ。AIトラックの中核は公式<strong>GenUI SDK</strong>（pub.devでalpha）で、LLMがFlutterのwidgetカタログを使ってUIを生成・動的追従する仕組みである。</p>
+<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+<rect x='0' y='0' width='600' height='200' fill='#eff6ff' rx='10'></rect>
+<text x='16' y='24' font-size='13' font-weight='bold' fill='#075985'>『Finishing the Job』3本柱 → stable 3.50（2026年11月）</text>
+<rect x='16' y='40' width='182' height='80' fill='#e0f2fe' rx='8' stroke='#7dd3fc'></rect>
+<rect x='209' y='40' width='182' height='80' fill='#e0f2fe' rx='8' stroke='#7dd3fc'></rect>
+<rect x='402' y='40' width='182' height='80' fill='#e0f2fe' rx='8' stroke='#7dd3fc'></rect>
+<text x='28' y='62' font-size='11' font-weight='bold' fill='#0369a1'>Web WasmGC 既定化</text>
+<text x='28' y='82' font-size='9.5' fill='#0c4a6e'>ロード約40%速/メモリ約30%減</text>
+<text x='28' y='100' font-size='9.5' fill='#0c4a6e'>dart:html → package:web</text>
+<text x='221' y='62' font-size='11' font-weight='bold' fill='#0369a1'>Android Impeller一本化</text>
+<text x='221' y='82' font-size='9.5' fill='#0c4a6e'>旧Skiaパスを撤収</text>
+<text x='221' y='100' font-size='9.5' fill='#0c4a6e'>初回ジャンク無し/120fps</text>
+<text x='414' y='62' font-size='11' font-weight='bold' fill='#0369a1'>Material/Cupertino分離</text>
+<text x='414' y='82' font-size='9.5' fill='#0c4a6e'>coreから切り出し</text>
+<text x='414' y='100' font-size='9.5' fill='#0c4a6e'>必要なものだけ依存</text>
+<line x1='16' y1='142' x2='584' y2='142' stroke='#7dd3fc'></line>
+<text x='16' y='164' font-size='10' font-weight='bold' fill='#0c4a6e'>2026 ケイデンス:</text>
+<text x='150' y='164' font-size='10' fill='#0c4a6e'>3.41 → 3.44 → 3.47（現行）→ 3.50（11月）＋12 beta</text>
+<text x='16' y='186' font-size='9.5' fill='#0369a1'>現行 3.47.5 / Dart 3.13.4 ・ beta 3.49系 / Dart 3.14.0 ・ DevCon 10/7–9</text>
+</svg><figcaption>図1：3.50に向けた“積み残し完了”の3本柱と2026リリース計画。</figcaption></figure>
+<p><strong>今日の実装トピックも粒ぞろい。</strong>アニメーションは<strong>staggered（時間差）</strong>——controllerは<strong>1つだけ</strong>用意し、各Tweenを<code>CurvedAnimation(parent: controller, curve: Interval(開始%, 終了%))</code>で区切る。区間は重ねてよく（0.0–0.6でslide、0.3–1.0でfade等）、controllerが0→1を一度走るだけで各アニメが自分の区間だけ動く（<code>dispose()</code>必須）。ナビは<strong>go_router 16系</strong>でURL駆動に一元化し、<code>@TypedGoRoute</code>＋build_runnerで<strong>型安全ルート</strong>に、タブごとに独立スタックを持たせるなら<code>StatefulShellRoute.indexedStack</code>。長リストは<code>ListView.builder</code>で遅延生成し、高さ一定なら<code>itemExtent</code>でレイアウト計算を省略、複合スクロールは<code>CustomScrollView</code>＋sliverで。計測は必ず<strong>profileモード</strong>のDevTools Frame chartで、UI(Dart)が赤なら<code>build()</code>、Raster(GPU)が赤なら<code>paint()</code>/<code>saveLayer</code>を疑う。</p>
+<figure class='fig'><svg viewBox='0 0 600 152' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+<rect x='0' y='0' width='600' height='152' fill='#f0f9ff' rx='10'></rect>
+<text x='16' y='24' font-size='12' font-weight='bold' fill='#075985'>今日の実装トリオ：定石</text>
+<line x1='16' y1='32' x2='584' y2='32' stroke='#bae6fd'></line>
+<g font-size='10.5'>
+<text x='16' y='58' font-weight='bold' fill='#0c4a6e'>アニメ</text><text x='110' y='58' fill='#0369a1'>controller 1つ＋Interval(開始%,終了%)で時間差。区間は重ねOK・dispose必須</text>
+<text x='16' y='90' font-weight='bold' fill='#0c4a6e'>ナビ</text><text x='110' y='90' fill='#0369a1'>go_router 16でURL駆動。@TypedGoRouteで型安全、タブはStatefulShellRoute</text>
+<text x='16' y='122' font-weight='bold' fill='#0c4a6e'>長リスト</text><text x='110' y='122' fill='#0369a1'>ListView.builder＋itemExtent、複合はCustomScrollView＋sliver、profileで計測</text>
+</g>
+</svg><figcaption>図2：staggered / go_router / sliver の3点セット。</figcaption></figure>
+<p><strong>自分が試すなら。</strong>まずWebターゲットのプロジェクトで<code>--wasm</code>ビルドのサイズ/速度を測り、<code>dart:html</code>依存の棚卸しを前倒ししておく（3.50の既定化で詰まらないため）。<strong>注意点：</strong>3.50はまだ11月予定でbetaは3.49系、macros前提の設計はしないこと。</p>
+<p><strong>まとめ：</strong>DevCon Day1は「WasmGC既定・Impeller一本化・core分離」で積み残しの完了を示す回。足元はWasm移行の下調べと、staggered/go_router/sliverの定石を押さえておけば十分に追いつける。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://flutter.dev/blog/flutter-darts-2026-roadmap" target="_blank" rel="noopener noreferrer"> Flutter &amp; Dart 2026 roadmap </a> </li><li> <a href="https://devnewsletter.com/p/state-of-flutter-2026/" target="_blank" rel="noopener noreferrer"> State of Flutter 2026 </a> </li><li> <a href="https://docs.flutter.dev/ui/animations/staggered-animations" target="_blank" rel="noopener noreferrer"> Staggered animations (docs) </a> </li><li> <a href="https://docs.flutter.dev/cookbook/lists/long-lists" target="_blank" rel="noopener noreferrer"> Work with long lists (docs) </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
