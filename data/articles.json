@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-10-06T04:52:36.223Z",
+  "generatedAt": "2026-10-07T04:54:36.181Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,102 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "date": "2026-10-06",
+      "topic": "Claude Code",
+      "title": "Claude Code v2.1.292 — 承認なしartifact公開とeffort、そして“フックで制御”の設計指針",
+      "lede": "日次更新は地固め回。運用に効く細かな改善＋セキュリティ修正と、Steeringの2軸。",
+      "articleHtml": "<p>Claude Code本体はこのところ<strong>ほぼ日次</strong>でリリースが進み、本日時点の最新は<strong>v2.1.292（10/6）</strong>。派手な新機能というより「毎日の運用で効く細かな改善＋セキュリティ修正」が束で入った回だ。地味だが、自分のように多数のスケジュールタスクを無人で回す運用には直接響く。</p>\n<p><strong>何が入ったか。</strong>v2.1.292では<code>claude plugin install</code>に<code>--marketplace &lt;source&gt;</code>が付き、どのマーケットプレイスから入れるかを明示できるように。Agentツールにはサブエージェントの思考量を指定する<code>effort</code>パラメータが追加された。Artifact一覧の取得上限が<strong>50→200件</strong>に拡大し、<strong>スケジュール/ルーティン実行ではartifactを承認なしで公開</strong>するよう変更（無人実行で承認待ちに詰まらないための変更で、まさにこの読み物タスクのような自動運用に効く）。mod/フック向けにはプロンプトキャッシュや<code>turn.step</code>フックの<code>serverToolUses</code>などメタデータが拡張。直前のv2.1.290（10/5）はマネージドエージェントのオンボーディングや権限粒度（<code>tool.check</code>の<code>agentId</code>、組織必須承認の<code>ceiling</code>）を追加し、v2.1.291（10/6）は<strong>緊急パッチ</strong>でクラウドセッションの権限応答取りこぼしと終了時メッセージ喪失のリグレッションを修正している。</p>\n<figure class='fig'><svg viewBox='0 0 600 232' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n<rect x='0' y='0' width='600' height='232' fill='#eef2ff' rx='10'/>\n<text x='16' y='24' font-size='13' font-weight='bold' fill='#3730a3'>制御手段の使い分け（文脈コスト × 強制力）</text>\n<line x1='16' y1='32' x2='584' y2='32' stroke='#c7d2fe'/>\n<g font-size='10' fill='#4338ca' font-weight='bold'>\n<text x='150' y='48'>文脈コスト</text><text x='250' y='48'>強制力</text><text x='330' y='48'>使いどころ</text>\n</g>\n<g font-size='10.5'>\n<text x='16' y='74' font-weight='bold' fill='#312e81'>CLAUDE.md</text><text x='150' y='74' fill='#4f46e5'>常時・高</text><text x='250' y='74' fill='#4f46e5'>弱（指針）</text><text x='330' y='74' fill='#3730a3'>構成/規約の概観（≤200行）</text>\n<text x='16' y='104' font-weight='bold' fill='#312e81'>rules</text><text x='150' y='104' fill='#4f46e5'>スコープ時</text><text x='250' y='104' fill='#4f46e5'>中</text><text x='330' y='104' fill='#3730a3'>具体制約・paths:で限定</text>\n<text x='16' y='134' font-weight='bold' fill='#312e81'>skills</text><text x='150' y='134' fill='#4f46e5'>起動時のみ</text><text x='250' y='134' fill='#4f46e5'>中</text><text x='330' y='134' fill='#3730a3'>手続き（デプロイ等）</text>\n<text x='16' y='164' font-weight='bold' fill='#312e81'>subagents</text><text x='150' y='164' fill='#4f46e5'>隔離</text><text x='250' y='164' fill='#4f46e5'>中</text><text x='330' y='164' fill='#3730a3'>調査/レビュー（要約だけ返す）</text>\n<text x='16' y='194' font-weight='bold' fill='#312e81'>hooks</text><text x='150' y='194' fill='#4f46e5'>実行時</text><text x='250' y='194' fill='#dc2626' font-weight='bold'>強（確定）</text><text x='330' y='194' fill='#3730a3'>絶対要件（PreToolUse）</text>\n</g>\n<text x='16' y='220' font-size='9.5' fill='#6366f1'>原則：プロンプトで縛らず、仕組み（ルール+スキル+フック）で制御する</text>\n</svg><figcaption>図：Anthropic『Steering Claude Code』の2軸。下ほど“確定的に強制”、上ほど“安いが弱い指針”。</figcaption></figure>\n<p><strong>今日いちばん読むべきは“制御の設計指針”。</strong>Anthropic公式『Steering Claude Code』が、Claudeの挙動を操る手段を<strong>「文脈コスト」×「指示の強制力」</strong>の2軸で整理した。要点は、(1) <code>CLAUDE.md</code>は200行以内に抑えてビルドコマンドや構成・規約の“概観”だけに使う（何でも詰め込む置き場にしない）、(2) 具体的な制約は<code>.claude/rules/</code>へ置き<code>paths:</code>でスコープして無関係作業でのトークン浪費を防ぐ、(3) デプロイ等の手続きはスキル（名前と説明だけ常時読み込み、本体は起動時のみ）、(4) 調査・レビューなど要約だけ戻せばよい副作業はサブエージェントに隔離、(5) <strong>「絶対こうしろ/するな」はプロンプト頼みにせず、ハーネスが実行するフック（PreToolUse等）で確定的に強制</strong>する、というもの。別記事の上級ベストプラクティス11選も同じ思想で、「プロンプトで縛る→仕組み（アーキテクチャ）で制御する」への転換、同じ指摘が2回続いたら<code>/clear</code>、仕様と実装・執筆とレビューのセッション分離、を勧める。</p>\n<p><strong>自分が試すなら。</strong>まず各スケジュールタスクのCLAUDE.mdを「消したらClaudeが間違えるか?」で棚卸しして最小化し、絶対要件（例：特定フォルダ外への書き込み禁止）はPreToolUseフックへ移す。<code>effort</code>はサブエージェントの重さ調整に使えるので、軽い整形系はlow・設計レビューはhighと振り分けると無駄打ちが減る。<strong>注意点：</strong>今回はUNCパス経由のフック承認迂回や改ざんキャッシュのポリシー回避などセキュリティ修正が多い回なので、更新は後回しにしないこと。</p>\n<p><strong>まとめ：</strong>v2.1.292は“地固め”回だが、承認なしartifact公開と<code>effort</code>は自動運用に、Steeringの2軸は日々の設定整理に効く。制御はプロンプトでなく「ルール＋スキル＋フック」の構造へ寄せるのが2026の定石。</p>",
+      "sources": [
+        {
+          "title": "Claude Code Changelog",
+          "url": "https://code.claude.com/docs/en/changelog"
+        },
+        {
+          "title": "Anthropic: Steering Claude Code",
+          "url": "https://www.claude.com/blog/steering-claude-code-skills-hooks-rules-subagents-and-more"
+        },
+        {
+          "title": "Claude Code 上級ベストプラクティス11選",
+          "url": "https://smartscope.blog/en/generative-ai/claude/claude-code-best-practices-advanced-2026/"
+        }
+      ],
+      "id": "2026-10-06-claude-code"
+    },
+    {
+      "date": "2026-10-06",
+      "topic": "Next.js",
+      "title": "Next.js 16 — runtime='edge' は非推奨に。原則Node.js、移行は“exportを消すだけ”",
+      "lede": "「困ったらEdge」の終わり。Edgeで落ちる仕組みと、2026の選び方。",
+      "articleHtml": "<p>Next.jsには<strong>2つのサーバー実行ランタイム</strong>がある。全Node APIが使える<strong>Node.js（既定）</strong>と、Web標準APIの限定サブセットだけを持つ軽量な<strong>Edge</strong>だ。Edgeは元々、CDN近接の低レイテンシ実行と小さなコールドスタートを狙って<code>export const runtime = 'edge'</code>でページ/レイアウト/Route Handlerに指定できた。ところが<strong>Next.js 16でこの構図が大きく変わった</strong>。「困ったらEdgeに逃がす」時代の終わりで、全App Router開発の土台になる評価軸なので取り上げる。</p>\n<p><strong>何が変わったか。</strong>(1) ルートセグメントの<code>runtime = 'edge'</code>が<strong>非推奨（deprecated）</strong>になり、型も<code>'nodejs' | 'edge' (deprecated)</code>と明記。(2) <code>preferredRegion</code>も非推奨。(3) Proxy（旧middleware）の既定ランタイムも<strong>Edge→Node.js</strong>に変更（Proxyでは<code>runtime</code>設定自体が書けず、書くとthrow）。<code>runtime='edge'</code>を残しているとビルド警告<code>edge-runtime-deprecated</code>が出るが、公式の移行案内は拍子抜けするほど単純で、<strong>「export を削除せよ。Node.jsが既定なので置き換え不要」</strong>。背景はVercelのFluid computeなどNodeサーバーレスのコールドスタート/コスト改善で、「Edgeでしか得られない利点」が薄まったことにある。</p>\n<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n<rect x='0' y='0' width='600' height='210' fill='#eff6ff' rx='10'/>\n<text x='16' y='24' font-size='13' font-weight='bold' fill='#1e3a8a'>Edgeランタイム：使える / 使えない</text>\n<line x1='16' y1='32' x2='584' y2='32' stroke='#bfdbfe'/>\n<rect x='16' y='42' width='276' height='156' fill='#ecfdf5' rx='8' stroke='#6ee7b7'/>\n<rect x='308' y='42' width='276' height='156' fill='#fef2f2' rx='8' stroke='#fca5a5'/>\n<text x='28' y='62' font-size='11' font-weight='bold' fill='#047857'>✓ 使える（Web標準）</text>\n<g font-size='10' fill='#065f46'>\n<text x='28' y='84'>fetch / Request / Response / Headers</text>\n<text x='28' y='104'>crypto / SubtleCrypto（import不要）</text>\n<text x='28' y='124'>ReadableStream / TextEncoder</text>\n<text x='28' y='144'>URL / URLPattern / Intl</text>\n<text x='28' y='164'>AsyncLocalStorage（Next提供）</text>\n<text x='28' y='184'>process.env 参照可</text>\n</g>\n<text x='320' y='62' font-size='11' font-weight='bold' fill='#b91c1c'>✗ 使えない</text>\n<g font-size='10' fill='#991b1b'>\n<text x='320' y='84'>fs / net / child_process</text>\n<text x='320' y='104'>node:crypto 等のNodeモジュール</text>\n<text x='320' y='124'>require 直呼び（ESMのみ）</text>\n<text x='320' y='144'>eval / new Function</text>\n<text x='320' y='164'>WASMの実行時 compile/instantiate</text>\n<text x='320' y='184'>ISR（Incremental Static Regen）</text>\n</g>\n</svg><figcaption>図1：Edgeは“Web標準の限定サブセット”。Node依存のimportが混入するとビルド/実行時に落ちる。</figcaption></figure>\n<p><strong>なぜEdgeで“なぜか本番で落ちる”のか。</strong>Edgeは<code>fs</code>/<code>net</code>/<code>child_process</code>などネイティブNode APIが全面非対応で、<code>require</code>直呼びも禁止（ESMのみ）。さらに<code>eval</code>/<code>new Function</code>や<code>WebAssembly.instantiate</code>のような動的コード評価も無効、そして<strong>ISR非対応</strong>。だからEdge指定のルートに、内部でNodeネイティブを触るパッケージ（DBドライバのネイティブバインディング、<code>fs</code>を使う画像処理、Nodeの<code>crypto</code>前提のライブラリ等）をimportすると、ビルド時に<code>node-module-in-edge-runtime</code>、または到達時に実行時エラーになる。紛らわしいのが<code>crypto</code>で、グローバルのWeb Crypto（<code>crypto.randomUUID()</code>）は動くのに、<code>import crypto from 'node:crypto'</code>は落ちる——「Web標準のcryptoか、Nodeモジュールのcryptoか」の見分けが肝だ。</p>\n<figure class='fig'><pre class='mermaid'>flowchart TD\n  A[\"ルートの実行環境を選ぶ\"] --> B[\"ISR/DB/Nodeドライバ/after/use cache を使う?\"]\n  B -->|Yes| C[\"Node.js（runtimeを書かない=既定）\"]\n  B -->|No| D[\"超軽量・無状態の地理分散HTTP変換だけ?\"]\n  D -->|Yes| E[\"Proxy（16は既定でNode.js）で足りることが多い\"]\n  D -->|No| C\n  C --> F[\"既存の runtime=edge は削除（16でdeprecated）\"]</pre><figcaption>図2：2026時点は原則Node.js。ルートで“edge”をあえて選ぶ理由はほぼ無い。</figcaption></figure>\n<p><strong>実務の指針（2026）。</strong>原則は<strong>Node.js（既定のまま、<code>runtime</code>を書かない）</strong>。レンダリング、データ取得、DBアクセス、<code>after()</code>、<code>use cache</code>、ISR——ほとんどの実ルートはこれが最適だ。既存コードに<code>export const runtime = 'edge'</code>があれば原則削除してNodeへ寄せる。削除して動かなくなるのは「Edgeでは本来動かないNode依存を無理にEdgeで動かしていた」稀なケースだけで、むしろNodeに戻すとNode APIが解禁され安定する。<strong>落とし穴：</strong>ISR（<code>generateStaticParams</code>＋<code>revalidate</code>）のページを絶対にEdge化しないこと。どうしても外せない動的評価はProxyの<code>unstable_allowDynamic</code>（glob配列）で検査除外できるが、実際に実行されればthrowする“到達しない箇所専用”の緩和策にすぎない。</p>\n<p><strong>まとめ：</strong>ルートでは<code>runtime</code>を書かず既定のNode.jsに集約し、Edgeは本当に必要な境界だけ——それも多くはProxy（Node既定）で足りる。移行は「<code>export const runtime = 'edge'</code>を消すだけ」で怖がらなくてよい。</p>",
+      "sources": [
+        {
+          "title": "Next.js Docs: Edge Runtime",
+          "url": "https://nextjs.org/docs/app/api-reference/edge"
+        },
+        {
+          "title": "Route Segment Config: runtime",
+          "url": "https://nextjs.org/docs/app/api-reference/file-conventions/route-segment-config/runtime"
+        },
+        {
+          "title": "Error: edge-runtime-deprecated",
+          "url": "https://nextjs.org/docs/messages/edge-runtime-deprecated"
+        },
+        {
+          "title": "Error: node-module-in-edge-runtime",
+          "url": "https://nextjs.org/docs/messages/node-module-in-edge-runtime"
+        }
+      ],
+      "id": "2026-10-06-nextjs"
+    },
+    {
+      "date": "2026-10-07",
+      "topic": "Flutter",
+      "title": "Next.App DevCon 2026 開幕 — WasmGC既定化・Impeller一本化、3.50へ“積み残し完了”",
+      "lede": "Day1基調講演でロードマップの締め。足元はstaggered/go_router/sliverの定石も。",
+      "articleHtml": "<p>Flutter/Androidの新カンファレンス<strong>Next.App DevCon 2026</strong>（FlutterConとDroidconが合流、10/7–9）が<strong>本日開幕</strong>。Day1基調講演では、長年のロードマップ『Finishing the Job』の締めくくりと、次期stable<strong>3.50（2026年11月）</strong>の確定スケジュールが示される見込みだ。通底テーマは<strong>AIネイティブ開発（GenUI / A2UI）</strong>。普段の小技ではなく、Flutterの“これから”が見える節目なので今日はここを主役に読む。</p>\n<p><strong>何が確定しそうか。</strong>締めの3本柱は<strong>(1) Web WasmGCの既定化</strong>（今は<code>flutter build web --wasm</code>が必要、3.50で既定へ。ベンチでロード約40%高速・ランタイムメモリ約30%減。<code>dart:html</code>→<code>package:web</code>移行が前提）、<strong>(2) Android Impellerの一本化</strong>（旧Skiaパスの撤収）、<strong>(3) Material/Cupertinoのcore分離</strong>。現行安定版は<strong>3.47.5 / Dart 3.13.4</strong>、betaは3.49系/Dart 3.14.0で、2026は「年4回stable（3.41/3.44/3.47/3.50）＋12 beta」のケイデンスを公約。Dart言語側は<strong>Primary Constructors</strong>（宣言とフィールド定義の同時化）と<strong>Augmentations</strong>が次の目玉で、<strong>macrosは無期限ポーズ継続</strong>——コード生成は当面<code>build_runner</code>＋<code>source_gen</code>のままだ。AIトラックの中核は公式<strong>GenUI SDK</strong>（pub.devでalpha）で、LLMがFlutterのwidgetカタログを使ってUIを生成・動的追従する仕組みである。</p>\n<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n<rect x='0' y='0' width='600' height='200' fill='#eff6ff' rx='10'/>\n<text x='16' y='24' font-size='13' font-weight='bold' fill='#075985'>『Finishing the Job』3本柱 → stable 3.50（2026年11月）</text>\n<rect x='16' y='40' width='182' height='80' fill='#e0f2fe' rx='8' stroke='#7dd3fc'/>\n<rect x='209' y='40' width='182' height='80' fill='#e0f2fe' rx='8' stroke='#7dd3fc'/>\n<rect x='402' y='40' width='182' height='80' fill='#e0f2fe' rx='8' stroke='#7dd3fc'/>\n<text x='28' y='62' font-size='11' font-weight='bold' fill='#0369a1'>Web WasmGC 既定化</text>\n<text x='28' y='82' font-size='9.5' fill='#0c4a6e'>ロード約40%速/メモリ約30%減</text>\n<text x='28' y='100' font-size='9.5' fill='#0c4a6e'>dart:html → package:web</text>\n<text x='221' y='62' font-size='11' font-weight='bold' fill='#0369a1'>Android Impeller一本化</text>\n<text x='221' y='82' font-size='9.5' fill='#0c4a6e'>旧Skiaパスを撤収</text>\n<text x='221' y='100' font-size='9.5' fill='#0c4a6e'>初回ジャンク無し/120fps</text>\n<text x='414' y='62' font-size='11' font-weight='bold' fill='#0369a1'>Material/Cupertino分離</text>\n<text x='414' y='82' font-size='9.5' fill='#0c4a6e'>coreから切り出し</text>\n<text x='414' y='100' font-size='9.5' fill='#0c4a6e'>必要なものだけ依存</text>\n<line x1='16' y1='142' x2='584' y2='142' stroke='#7dd3fc'/>\n<text x='16' y='164' font-size='10' font-weight='bold' fill='#0c4a6e'>2026 ケイデンス:</text>\n<text x='150' y='164' font-size='10' fill='#0c4a6e'>3.41 → 3.44 → 3.47（現行）→ 3.50（11月）＋12 beta</text>\n<text x='16' y='186' font-size='9.5' fill='#0369a1'>現行 3.47.5 / Dart 3.13.4 ・ beta 3.49系 / Dart 3.14.0 ・ DevCon 10/7–9</text>\n</svg><figcaption>図1：3.50に向けた“積み残し完了”の3本柱と2026リリース計画。</figcaption></figure>\n<p><strong>今日の実装トピックも粒ぞろい。</strong>アニメーションは<strong>staggered（時間差）</strong>——controllerは<strong>1つだけ</strong>用意し、各Tweenを<code>CurvedAnimation(parent: controller, curve: Interval(開始%, 終了%))</code>で区切る。区間は重ねてよく（0.0–0.6でslide、0.3–1.0でfade等）、controllerが0→1を一度走るだけで各アニメが自分の区間だけ動く（<code>dispose()</code>必須）。ナビは<strong>go_router 16系</strong>でURL駆動に一元化し、<code>@TypedGoRoute</code>＋build_runnerで<strong>型安全ルート</strong>に、タブごとに独立スタックを持たせるなら<code>StatefulShellRoute.indexedStack</code>。長リストは<code>ListView.builder</code>で遅延生成し、高さ一定なら<code>itemExtent</code>でレイアウト計算を省略、複合スクロールは<code>CustomScrollView</code>＋sliverで。計測は必ず<strong>profileモード</strong>のDevTools Frame chartで、UI(Dart)が赤なら<code>build()</code>、Raster(GPU)が赤なら<code>paint()</code>/<code>saveLayer</code>を疑う。</p>\n<figure class='fig'><svg viewBox='0 0 600 152' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n<rect x='0' y='0' width='600' height='152' fill='#f0f9ff' rx='10'/>\n<text x='16' y='24' font-size='12' font-weight='bold' fill='#075985'>今日の実装トリオ：定石</text>\n<line x1='16' y1='32' x2='584' y2='32' stroke='#bae6fd'/>\n<g font-size='10.5'>\n<text x='16' y='58' font-weight='bold' fill='#0c4a6e'>アニメ</text><text x='110' y='58' fill='#0369a1'>controller 1つ＋Interval(開始%,終了%)で時間差。区間は重ねOK・dispose必須</text>\n<text x='16' y='90' font-weight='bold' fill='#0c4a6e'>ナビ</text><text x='110' y='90' fill='#0369a1'>go_router 16でURL駆動。@TypedGoRouteで型安全、タブはStatefulShellRoute</text>\n<text x='16' y='122' font-weight='bold' fill='#0c4a6e'>長リスト</text><text x='110' y='122' fill='#0369a1'>ListView.builder＋itemExtent、複合はCustomScrollView＋sliver、profileで計測</text>\n</g>\n</svg><figcaption>図2：staggered / go_router / sliver の3点セット。</figcaption></figure>\n<p><strong>自分が試すなら。</strong>まずWebターゲットのプロジェクトで<code>--wasm</code>ビルドのサイズ/速度を測り、<code>dart:html</code>依存の棚卸しを前倒ししておく（3.50の既定化で詰まらないため）。<strong>注意点：</strong>3.50はまだ11月予定でbetaは3.49系、macros前提の設計はしないこと。</p>\n<p><strong>まとめ：</strong>DevCon Day1は「WasmGC既定・Impeller一本化・core分離」で積み残しの完了を示す回。足元はWasm移行の下調べと、staggered/go_router/sliverの定石を押さえておけば十分に追いつける。</p>",
+      "sources": [
+        {
+          "title": "Flutter & Dart 2026 roadmap",
+          "url": "https://flutter.dev/blog/flutter-darts-2026-roadmap"
+        },
+        {
+          "title": "State of Flutter 2026",
+          "url": "https://devnewsletter.com/p/state-of-flutter-2026/"
+        },
+        {
+          "title": "Staggered animations (docs)",
+          "url": "https://docs.flutter.dev/ui/animations/staggered-animations"
+        },
+        {
+          "title": "Work with long lists (docs)",
+          "url": "https://docs.flutter.dev/cookbook/lists/long-lists"
+        }
+      ],
+      "id": "2026-10-07-flutter"
+    },
+    {
+      "date": "2026-10-06",
+      "topic": "GitHub Trending",
+      "title": "10/6の話題リポジトリ — ローカル記憶の新ハーネス・Ghidraをエージェント化・OSINTをグラフで",
+      "lede": "エージェント記憶一色の中、“大型の新ハーネス/逆解析/調査”と方向の違う3本。",
+      "articleHtml": "<p>この日もトレンドは<strong>「エージェント・記憶・スキル経済」</strong>一色。その中から既出クラスタを避け、方向性の異なる3本を選んだ——ローカル記憶を持つ大型の新ハーネス<strong>openhuman</strong>、バイナリ解析をエージェント化する定番<strong>GhidraMCP</strong>、OSINT調査をグラフで組む<strong>flowsint</strong>。共通するのは「エージェントや可視化を“現場の具体作業”に接続する」視点だ。</p>\n<figure class='fig'><svg viewBox='0 0 600 196' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n<rect x='0' y='0' width='600' height='196' fill='#f0fdf4' rx='10'/>\n<text x='16' y='24' font-size='13' font-weight='bold' fill='#166534'>リポジトリ × 「解決したい課題 / 提供する機能」</text>\n<line x1='16' y1='34' x2='584' y2='34' stroke='#86efac'/>\n<g font-size='10'>\n<text x='16' y='58' font-weight='bold' fill='#14532d'>openhuman</text>\n<text x='140' y='54' fill='#166534'>課題: 記憶とマルチエージェント統括が分断・クラウド依存</text>\n<text x='140' y='70' fill='#15803d'>機能: Memory Tree＋Obsidianの永続記憶＋5000+ MCP統括</text>\n<line x1='16' y1='82' x2='584' y2='82' stroke='#bbf7d0'/>\n<text x='16' y='106' font-weight='bold' fill='#14532d'>GhidraMCP</text>\n<text x='140' y='102' fill='#166534'>課題: Ghidraをエージェントから操作する標準口が無い</text>\n<text x='140' y='118' fill='#15803d'>機能: 逆コンパイル/リネーム/列挙をMCPツール化し自律解析</text>\n<line x1='16' y1='130' x2='584' y2='130' stroke='#bbf7d0'/>\n<text x='16' y='154' font-weight='bold' fill='#14532d'>flowsint</text>\n<text x='140' y='150' fill='#166534'>課題: OSINTの複雑な関係が表/メモでは追えない</text>\n<text x='140' y='166' fill='#15803d'>機能: エンティティ関係をグラフ化する拡張可能な調査WB</text>\n</g>\n<text x='16' y='188' font-size='9' fill='#16a34a'>※増加数/総スターはトラッカーにより食い違いあり。GitHubページで検証した概数。</text>\n</svg><figcaption>図：方向の違う3本を「課題→機能」で一望。</figcaption></figure>\n<h4>tinyhumansai/openhuman（Rust・⭐約41k）</h4>\n<p><strong>解決したい課題：</strong>既存のエージェント記憶・ハーネス（mem0 / claude-mem / openrig 等）はクラウド前提だったり、永続記憶と多エージェント統括が分断されていたりする。開発者は「手元に残る永続記憶」と「耐久的なワークフロー上での複数エージェント統括」を一体で欲しい。<strong>提供する機能：</strong>ローカルファーストのエージェント・ハーネス。<strong>Memory Tree＋Obsidianボルト連携</strong>で永続記憶を持ち、耐久グラフ・ワークフロー上でマルチエージェントを統括、<strong>100+ OAuth／5000+ MCPサーバ</strong>と接続する。Rust製で、日中スナップショットで約39.7k→41.4k（＝+約1.7k）と短時間で急伸し、本日のモメンタム筆頭になった（ライセンスはGPL-3.0なので製品組み込みは要注意）。</p>\n<h4>LaurieWired/GhidraMCP（Java・⭐約10.4k）</h4>\n<p><strong>解決したい課題：</strong>リバースエンジニアリング（RE）の中核ツールGhidraは強力だが、LLMエージェントから直接操作する標準的な口が無く、解析の自動化がしづらい。<strong>提供する機能：</strong>Ghidraの<strong>逆コンパイル、メソッド/データのリネーム、関数・クラス・インポート/エクスポート列挙</strong>などの中核機能を<strong>MCPツールとして公開</strong>し、Claude等のエージェントにバイナリ解析を自律実行させる。本日+約129（率約1.2%/日）とクリーンに伸び、“エージェント×バイナリ解析”という希少ジャンルで存在感を示した（Apache-2.0、防御/解析用途）。</p>\n<h4>reconurge/flowsint（TypeScript・⭐約9.2k）</h4>\n<p><strong>解決したい課題：</strong>サイバー調査（OSINT）では人物・ドメイン・インシデント間の関係が複雑で、表やメモだけでは全体像を追えない。<strong>提供する機能：</strong>エンティティ間の関係を<strong>グラフで描く、視覚的で拡張可能な調査ワークベンチ</strong>。ノード／グラフで関係性を可視化し、カスタムの調査フローを組み立てられるモダンなWebプラットフォーム。本日+約104（率約1.1%/日）で伸び、ハーネス一色のトレンドに“非ハーネスの視覚ツール”として多様性を加えた。</p>\n<p><strong>自分が試すなら。</strong>手元で一番効きそうなのは<strong>GhidraMCP</strong>——既にClaude中心の運用なので、怪しいバイナリや自作ネイティブの挙動確認をエージェント経由で回せる（解析は自己資産・許可範囲で）。openhumanはローカル記憶の作りが面白いが、GPL-3.0のため“試用・学習”に留め、製品には混ぜない。flowsintは調査系の仕事が来たとき用にブックマーク。<strong>まとめ：</strong>派手な記憶ハーネスより、GhidraMCPのように「既存の強ツールにエージェントの口を付ける」系が自分の実務には刺さる。</p>",
+      "sources": [
+        {
+          "title": "tinyhumansai/openhuman",
+          "url": "https://github.com/tinyhumansai/openhuman"
+        },
+        {
+          "title": "LaurieWired/GhidraMCP",
+          "url": "https://github.com/LaurieWired/GhidraMCP"
+        },
+        {
+          "title": "reconurge/flowsint",
+          "url": "https://github.com/reconurge/flowsint"
+        }
+      ],
+      "id": "2026-10-06-github-trending"
+    },
     {
       "id": "2026-10-05-claude-code",
       "date": "2026-10-05",
