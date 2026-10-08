@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-10-08T04:46:26.564Z",
+  "generatedAt": "2026-10-07T04:54:36.181Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,32 +8,6 @@
     "GitHub Trending"
   ],
   "articles": [
-    {
-      "date": "2026-10-08",
-      "topic": "Flutter",
-      "title": "DevCon 2026 Day2 — Dart Primary Constructors でボイラープレート撲滅（＋Augmentations）",
-      "lede": "クラスヘッダに引数を直接書く新記法で、フィールド宣言・初期化・引数の三重定義が1行に。macros停滞の穴はAugmentationsが埋める。",
-      "articleHtml": "<p>DevCon 2026 の Day 2（10/8）言語トラックで、Dart の次の目玉「Primary Constructors」が実演された。無期限ポーズ中の macros に代わり、ボイラープレート削減を<strong>言語機能側から</strong>進める動きで、Flutter の data class や <code>@riverpod</code> の Notifier まわりの「同じ名前を何度も書く」苦痛に効く。</p>\n<p><strong>何が新しいか。</strong>クラスヘッダに引数を直接書けるようになる。<code>class Point(final int x, final int y);</code> と書くだけで、フィールド宣言・<code>this.x</code> 初期化・initializer list の三重定義が1行に畳まれる。<code>const</code>、named（<code>class User({required final String id})</code>）、先頭 <code>_</code> の private named parameter にも対応する。</p>\n<figure class='fig'><svg viewBox='0 0 600 250' xmlns='http://www.w3.org/2000/svg' role='img' aria-label='従来の三重定義とPrimary Constructorの比較'>\n<rect x='0' y='0' width='600' height='250' fill='#f5f9ff'/>\n<text x='20' y='28' font-family='sans-serif' font-size='14' font-weight='bold' fill='#0b4a9c'>従来：同じフィールド名を3回書く</text>\n<rect x='20' y='42' width='230' height='40' rx='6' fill='#ffffff' stroke='#1976d2'/>\n<text x='34' y='66' font-family='monospace' font-size='12' fill='#13304f'>① final int x;  （宣言）</text>\n<rect x='20' y='92' width='230' height='40' rx='6' fill='#ffffff' stroke='#1976d2'/>\n<text x='34' y='116' font-family='monospace' font-size='12' fill='#13304f'>② Point(this.x) （引数）</text>\n<rect x='20' y='142' width='230' height='40' rx='6' fill='#ffffff' stroke='#1976d2'/>\n<text x='34' y='166' font-family='monospace' font-size='12' fill='#13304f'>③ : x = x    （初期化）</text>\n<path d='M262 112 L322 112' stroke='#0b4a9c' stroke-width='2' fill='none' marker-end='url(#ar)'/>\n<defs><marker id='ar' markerWidth='10' markerHeight='10' refX='8' refY='3' orient='auto'><path d='M0 0 L8 3 L0 6 z' fill='#0b4a9c'/></marker></defs>\n<text x='20' y='216' font-family='sans-serif' font-size='14' font-weight='bold' fill='#1a7f37'>Primary Constructor：1行に圧縮</text>\n<rect x='335' y='88' width='245' height='52' rx='6' fill='#e8f6ec' stroke='#1a7f37'/>\n<text x='348' y='112' font-family='monospace' font-size='12' fill='#13421f'>class Point(</text>\n<text x='348' y='130' font-family='monospace' font-size='12' fill='#13421f'>  final int x, final int y);</text>\n</svg><figcaption>図1：フィールド宣言・コンストラクタ引数・初期化の三重定義（左）が、ヘッダ1行（右）にまとまる。</figcaption></figure>\n<p><strong>仕組み。</strong>ヘッダのパラメータが、暗黙のフィールド宣言＋初期化として展開される。従来との差は次の通り。</p>\n<pre><code>// 従来：id / name を実質3回記述\nclass User {\n  final String id;\n  final String name;\n  const User({required this.id, required this.name});\n}\n\n// Primary Constructor：ヘッダ1行\nclass User({required final String id, required final String name});</code></pre>\n<p>合わせて <strong>Augmentations</strong>（<code>augment class</code> / <code>augment</code> 宣言）も要注目。既存クラスにメンバーを後付けで「追記」でき、生成コードを本体から分離できる。これが止まっている macros の穴を部分的に埋める。codegen 自体は引き続き <code>build_runner</code> ＋ <code>source_gen</code> が担う。</p>\n<p><strong>自分が試すなら。</strong>まずボイラープレートが最も多いモデル層（API レスポンスの data class）で素振りし、次に <code>@riverpod</code> の <code>Notifier</code> サブクラスへ。既存コードの一括移行は急がず、新規ファイルから少しずつ。</p>\n<p><strong>注意点。</strong>現行の安定版は Flutter 3.47.5 / Dart 3.13.4、beta が 3.49 系 / Dart 3.14.0 で、Primary Constructors は<strong>まだ固まりきっていないプレビュー段階</strong>。private named の <code>_</code> 規則など記法が変わる余地があるため、本番コードの全面書き換えは時期尚早。</p>\n<p><strong>まとめ。</strong>「同じ名前を3回書く」Dart の宿痾に、ついに言語側のメスが入った。次期 stable 3.50（11月）の WasmGC 既定化・Impeller 一本化と並んで、2026 後半の Flutter/Dart は「書く量を減らす」方向に明確に舵を切っている。</p>",
-      "sources": [
-        {
-          "title": "Dart Primary Constructors (Code With Andrea)",
-          "url": "https://codewithandrea.com/articles/dart-primary-constructors/"
-        },
-        {
-          "title": "What's new in Flutter 3.47",
-          "url": "https://flutter.dev/blog/whats-new-in-flutter-3-47"
-        },
-        {
-          "title": "Flutter & Dart 2026 roadmap",
-          "url": "https://flutter.dev/blog/flutter-darts-2026-roadmap"
-        },
-        {
-          "title": "What's new in the docs (Flutter)",
-          "url": "https://docs.flutter.dev/release/whats-new"
-        }
-      ],
-      "id": "2026-10-08-flutter"
-    },
     {
       "date": "2026-10-06",
       "topic": "Claude Code",
