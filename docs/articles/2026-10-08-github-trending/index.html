@@ -1,0 +1,85 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>10/8の話題リポジトリ — Docker公式エージェント基盤・AI動画制作・写真の位置推定 — デイリー技術深掘り 読み物</title><meta name="description" content="エージェント一色のなか、方向の違う3本。生成AIを特定の現場作業に接続する実用志向。"><meta name="theme-color" content="#238636"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-08-github-trending/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="10/8の話題リポジトリ — Docker公式エージェント基盤・AI動画制作・写真の位置推定 — デイリー技術深掘り 読み物"><meta property="og:description" content="エージェント一色のなか、方向の違う3本。生成AIを特定の現場作業に接続する実用志向。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-08-github-trending/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3fb950, #1a7f37)"> <span class="glyph" aria-hidden="true">★</span> <div class="kicker">GitHub Trending</div> <h1>10/8の話題リポジトリ — Docker公式エージェント基盤・AI動画制作・写真の位置推定</h1> <p class="lede">エージェント一色のなか、方向の違う3本。生成AIを特定の現場作業に接続する実用志向。</p> <div class="meta"> <span>📅 2026年10月8日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#238636"> <div> <article class="prose" data-has-mermaid="0"><p>トレンドが「エージェント・記憶・スキル経済」一色のなか、この日の話題枠は<strong>方向のまったく違う3本</strong>だった——インフラ大手Dockerの公式エージェント基盤、台本から動画を自動生成するプラットフォーム、写真の撮影地を推定するスキル。共通するのは「生成AIを<strong>特定の現場作業</strong>に接続する」実用志向だ（増加数はトラッカー表示とライブ値の乖離が大きく、スターはGitHubページ実測の概数）。</p>
+<figure class='fig'><svg viewBox='0 0 600 190' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+<rect x='0' y='0' width='600' height='190' fill='#f0fdf4' rx='10'></rect>
+<text x='16' y='24' font-size='13' font-weight='bold' fill='#166534'>リポジトリ × 「解決したい課題 / 提供する機能」</text>
+<line x1='16' y1='34' x2='584' y2='34' stroke='#86efac'></line>
+<g font-size='10'>
+<text x='16' y='58' font-weight='bold' fill='#14532d'>docker-agent</text>
+<text x='150' y='54' fill='#166534'>課題: エージェントの定義・配布・実行がバラバラ</text>
+<text x='150' y='70' fill='#15803d'>機能: YAML定義＋MCP付与＋OCI配布をDocker流に標準化</text>
+<line x1='16' y1='82' x2='584' y2='82' stroke='#bbf7d0'></line>
+<text x='16' y='106' font-weight='bold' fill='#14532d'>printfilm</text>
+<text x='150' y='102' fill='#166534'>課題: 台本から"配信できる動画"までの工程が多すぎる</text>
+<text x='150' y='118' fill='#15803d'>機能: 絵コンテ→画像→動画→FFmpeg合成を一気通貫</text>
+<line x1='16' y1='130' x2='584' y2='130' stroke='#bbf7d0'></line>
+<text x='16' y='154' font-weight='bold' fill='#14532d'>geo-sleuth</text>
+<text x='150' y='150' fill='#166534'>課題: 文字情報の無い写真の撮影地が分からない</text>
+<text x='150' y='166' fill='#15803d'>機能: OSM＋標高＋衛星＋SVを突合し推論過程つきで推定</text>
+</g>
+<text x='16' y='184' font-size='9' fill='#16a34a'>※スターはGitHubページ実測の概数。当日増加はトラッカー乖離のため確定不能。</text>
+</svg><figcaption>図：方向の違う3本を「課題→機能」で一望。</figcaption></figure>
+<h4 id="sec-1">docker/docker-agent（Go・⭐約4.2k）</h4>
+<p><strong>解決したい課題：</strong>エージェントの作り方・ツール付与・配布・実行がプロジェクトごとにバラバラで、再利用も共有も難しい。<strong>提供する機能：</strong>エージェントを<strong>YAMLで定義</strong>し、MCPサーバを含むツールを与えて実行、複数エージェントがタスクを委譲し合うマルチエージェント構成も組める。OpenAI/Anthropic/Gemini/Docker Model Runner等マルチプロバイダ対応で、<strong>Docker CLIプラグイン</strong>として動き、作ったエージェントは<strong>OCIレジストリで配布</strong>できる（Apache-2.0）。<strong>なぜ今：</strong>コミュニティ発のハーネス一色のなか、インフラ大手が"エージェントをDocker流に標準化"する公式参入として本日突出した。</p>
+<h4 id="sec-2">yi1108/printfilm（Python/TypeScript・⭐約3.7k）</h4>
+<p><strong>解決したい課題：</strong>台本やトピックから「配信できる動画」に仕上げるまでの工程（絵コンテ・画像・動画・合成）が多く、個人やマーケ現場には重い。<strong>提供する機能：</strong>台本/トピック→<strong>絵コンテ→画像生成→動画生成→FFmpeg合成</strong>までを一気通貫で回すAI動画／ショートドラマ制作基盤。単発生成のツールセンター、管理バックエンド、<code>/api/v1</code>の公開API、Docker配備を備える（FastAPI＋React19、MIT）。<strong>なぜ今：</strong>エージェント一色のトレンドに対し、"ストーリー→尺のある動画"という消費者/マーケ寄りの別ジャンルとして浮上した多様性枠。</p>
+<h4 id="sec-3">Oldcircle/geo-sleuth（Python・⭐約1.2k）</h4>
+<p><strong>解決したい課題：</strong>文字情報の無い写真が「どこで撮られたか」を人手で突き止めるのは困難。<strong>提供する機能：</strong>OpenStreetMapの地物・標高のスカイライン・衛星画像・ストリートビューを突き合わせ、<strong>推論の過程を示しながら</strong>位置を割り出す Agent Skill（SKILL.md＋Python、複数のコーディングエージェント上で動く、MIT）。<strong>なぜ今：</strong>増加"率"主軸で見た本日の新顔で、OSINT/位置推定という非ハーネスの異色ジャンルとして話題化。利用は自分の写真や許可のある写真に限るよう明記されている。</p>
+<p><strong>自分が試すなら。</strong>DevForgeのエージェント運用の標準化という点では docker-agent が本命（YAML＋OCIは既存のDocker基盤と素直に噛む）。一方、LP/紹介素材づくりなら printfilm の一気通貫パイプラインが刺さる。geo-sleuth は「推論過程を提示するスキル」の作り方のお手本として読む価値がある。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://github.com/docker/docker-agent" target="_blank" rel="noopener noreferrer"> docker/docker-agent </a> </li><li> <a href="https://github.com/yi1108/printfilm" target="_blank" rel="noopener noreferrer"> yi1108/printfilm </a> </li><li> <a href="https://github.com/Oldcircle/geo-sleuth" target="_blank" rel="noopener noreferrer"> Oldcircle/geo-sleuth </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> docker/docker-agent（Go・⭐約4.2k） </a> </li><li> <a href="#sec-2" data-toc="sec-2"> yi1108/printfilm（Python/TypeScript・⭐約3.7k） </a> </li><li> <a href="#sec-3" data-toc="sec-3"> Oldcircle/geo-sleuth（Python・⭐約1.2k） </a> </li> </ul> <div class="reading-box"> <div>📅 2026-10-08</div> <div>⏱ 読了 約3分</div> <div>🏷 GitHub Trending</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

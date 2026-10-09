@@ -1,0 +1,84 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Claude Code v2.1.295 — フック/HTTPフックに onFailure:&quot;block&quot;、OSC 7501、MCP説明16Kへ — デイリー技術深掘り 読み物</title><meta name="description" content="改善13件・バグ修正97件の大型版。自然言語フックの&#34;取りこぼし&#34;を塞ぐ安全性パッチ v2.1.294 も同日。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-08-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Claude Code v2.1.295 — フック/HTTPフックに onFailure:&#34;block&#34;、OSC 7501、MCP説明16Kへ — デイリー技術深掘り 読み物"><meta property="og:description" content="改善13件・バグ修正97件の大型版。自然言語フックの&#34;取りこぼし&#34;を塞ぐ安全性パッチ v2.1.294 も同日。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-08-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>Claude Code v2.1.295 — フック/HTTPフックに onFailure:&quot;block&quot;、OSC 7501、MCP説明16Kへ</h1> <p class="lede">改善13件・バグ修正97件の大型版。自然言語フックの&quot;取りこぼし&quot;を塞ぐ安全性パッチ v2.1.294 も同日。</p> <div class="meta"> <span>📅 2026年10月8日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="0"><p>この日の中心は公式リリース。最新は<strong>v2.1.295（10/8）</strong>で、改善13件・バグ修正97件を含む大型版だ。同日には小さな安全性パッチ<strong>v2.1.294</strong>も出ており、「フックを自然言語の指示文で書く」運用がじわじわ普及したいま、その信頼性を補強する内容になっている。</p>
+<p><strong>何が新しいか。</strong>フック／HTTPフックに <code>onFailure:"block"</code> が加わり、起動失敗・タイムアウト・想定外の終了コードのときに対象アクションを<strong>通さずブロック</strong>できるようになった。これまで「失敗したら素通り」だった検証フックが、初めて"ゲート"として機能する。端末向けには <strong>Program Status Protocol（OSC 7501）</strong>対応が入り、対応端末が稼働中／入力待ち／完了を表示できる。地味だが効くのが<strong>MCPツール説明の読み込み上限を 2,048→16,384 文字へ拡張</strong>した点と、サブエージェントが <code>skills</code> から<strong>最大32スキルを各1回だけ事前ロード</strong>できるようになった点。mod向けには通知 <code>$.ui.notify</code> や <code>Button</code> の子要素対応も追加された。</p>
+<figure class='fig'><svg viewBox='0 0 600 212' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+<rect x='0' y='0' width='600' height='212' fill='#fff7ed' rx='10'></rect>
+<text x='16' y='24' font-size='13' font-weight='bold' fill='#9a3412'>v2.1.295 の要点（分類ごと）</text>
+<line x1='16' y1='32' x2='584' y2='32' stroke='#fdba74'></line>
+<g font-size='10'>
+<text x='16' y='54' font-weight='bold' fill='#7c2d12'>安全性</text>
+<text x='150' y='54' fill='#9a3412'>onFailure:"block" — 失敗/タイムアウト時にアクションをブロック</text>
+<text x='16' y='78' font-weight='bold' fill='#7c2d12'>端末連携</text>
+<text x='150' y='78' fill='#9a3412'>Program Status Protocol（OSC 7501）= 稼働/入力待ち/完了を表示</text>
+<text x='16' y='102' font-weight='bold' fill='#7c2d12'>コンテキスト</text>
+<text x='150' y='102' fill='#9a3412'>MCPツール説明 2,048→16,384 文字へ拡張</text>
+<text x='16' y='126' font-weight='bold' fill='#7c2d12'>サブエージェント</text>
+<text x='150' y='126' fill='#9a3412'>skills から最大32件を各1回だけ事前ロード</text>
+<text x='16' y='150' font-weight='bold' fill='#7c2d12'>mod/UI</text>
+<text x='150' y='150' fill='#9a3412'>$.ui.notify 通知・Button子要素・リトライ最大待ち時間設定</text>
+<text x='16' y='174' font-weight='bold' fill='#7c2d12'>規模</text>
+<text x='150' y='174' fill='#9a3412'>改善13件・バグ修正97件（VSCode/Tag/Review/クラウド横断）</text>
+</g>
+<text x='16' y='200' font-size='9' fill='#c2410c'>同日 v2.1.294：指示文で書いた prompt/agent フックがブロック対象を素通りする不具合を修正。</text>
+</svg><figcaption>図1：v2.1.295 の変更を分類で一望。</figcaption></figure>
+<p><strong>仕組みのポイント。</strong><code>onFailure:"block"</code> は、CLAUDE.md の指示が「依頼」にすぎないのに対し、フックが「強制」を担うという設計思想の延長にある。10/8更新の『Agentic Workflows 2026 Playbook』も、検証ループを <strong>PostToolUseフックでlint・Stopフックでテスト通過までブロック</strong>する型として挙げており、今回の <code>onFailure:"block"</code> は「フック自身が落ちたときの穴」を塞ぐ最後のピースと言える。</p>
+<p><strong>自分が試すなら。</strong>まず既存の検証フック（lint/test）に <code>onFailure:"block"</code> を付けて、フックのクラッシュが"緑扱い"になっていないか確認する。次にMCP説明上限が上がったので、要点が削られて渡っていたツール（長い説明のMCP）を見直す。サブエージェントのスキル事前ロードは、読解をfan-outする運用（本体には要約だけ残す型）と相性が良い。</p>
+<p><strong>注意点。</strong>modはサンドボックスされず<strong>ユーザー権限で動く</strong>（mod実践ガイドが強調）。サードパーティ製は導入前に <code>claude plugin validate</code>/<code>test</code> で検証し、チームは <code>allowManagedModsOnly</code> で統制する。<code>onFailure:"block"</code> はブロックが"厳しすぎ"ると開発を止めるので、まずは重要フックだけに限定したい。</p>
+<p><strong>ひとこと。</strong>新機能より「フックを信頼できるゲートにする」補強が主役の日。自然言語フック時代の地固めとして要チェック。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://code.claude.com/docs/en/changelog" target="_blank" rel="noopener noreferrer"> Claude Code Changelog </a> </li><li> <a href="https://www.developersdigest.tech/blog/claude-code-mods-guide-2026" target="_blank" rel="noopener noreferrer"> Claude Code Mods：何で・どう書くか </a> </li><li> <a href="https://capitalandcompute.net/blog/claude-code-agentic-workflows/" target="_blank" rel="noopener noreferrer"> Claude Code Agentic Workflows 2026 Playbook </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
