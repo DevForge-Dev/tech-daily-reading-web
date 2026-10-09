@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-10-08T04:46:26.564Z",
+  "generatedAt": "2026-10-09T04:49:26.731Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,98 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "date": "2026-10-08",
+      "topic": "Claude Code",
+      "title": "Claude Code v2.1.295 — フック/HTTPフックに onFailure:\"block\"、OSC 7501、MCP説明16Kへ",
+      "lede": "改善13件・バグ修正97件の大型版。自然言語フックの\"取りこぼし\"を塞ぐ安全性パッチ v2.1.294 も同日。",
+      "articleHtml": "<p>この日の中心は公式リリース。最新は<strong>v2.1.295（10/8）</strong>で、改善13件・バグ修正97件を含む大型版だ。同日には小さな安全性パッチ<strong>v2.1.294</strong>も出ており、「フックを自然言語の指示文で書く」運用がじわじわ普及したいま、その信頼性を補強する内容になっている。</p>\n<p><strong>何が新しいか。</strong>フック／HTTPフックに <code>onFailure:\"block\"</code> が加わり、起動失敗・タイムアウト・想定外の終了コードのときに対象アクションを<strong>通さずブロック</strong>できるようになった。これまで「失敗したら素通り」だった検証フックが、初めて\"ゲート\"として機能する。端末向けには <strong>Program Status Protocol（OSC 7501）</strong>対応が入り、対応端末が稼働中／入力待ち／完了を表示できる。地味だが効くのが<strong>MCPツール説明の読み込み上限を 2,048→16,384 文字へ拡張</strong>した点と、サブエージェントが <code>skills</code> から<strong>最大32スキルを各1回だけ事前ロード</strong>できるようになった点。mod向けには通知 <code>$.ui.notify</code> や <code>Button</code> の子要素対応も追加された。</p>\n<figure class='fig'><svg viewBox='0 0 600 212' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n<rect x='0' y='0' width='600' height='212' fill='#fff7ed' rx='10'/>\n<text x='16' y='24' font-size='13' font-weight='bold' fill='#9a3412'>v2.1.295 の要点（分類ごと）</text>\n<line x1='16' y1='32' x2='584' y2='32' stroke='#fdba74'/>\n<g font-size='10'>\n<text x='16' y='54' font-weight='bold' fill='#7c2d12'>安全性</text>\n<text x='150' y='54' fill='#9a3412'>onFailure:\"block\" — 失敗/タイムアウト時にアクションをブロック</text>\n<text x='16' y='78' font-weight='bold' fill='#7c2d12'>端末連携</text>\n<text x='150' y='78' fill='#9a3412'>Program Status Protocol（OSC 7501）= 稼働/入力待ち/完了を表示</text>\n<text x='16' y='102' font-weight='bold' fill='#7c2d12'>コンテキスト</text>\n<text x='150' y='102' fill='#9a3412'>MCPツール説明 2,048→16,384 文字へ拡張</text>\n<text x='16' y='126' font-weight='bold' fill='#7c2d12'>サブエージェント</text>\n<text x='150' y='126' fill='#9a3412'>skills から最大32件を各1回だけ事前ロード</text>\n<text x='16' y='150' font-weight='bold' fill='#7c2d12'>mod/UI</text>\n<text x='150' y='150' fill='#9a3412'>$.ui.notify 通知・Button子要素・リトライ最大待ち時間設定</text>\n<text x='16' y='174' font-weight='bold' fill='#7c2d12'>規模</text>\n<text x='150' y='174' fill='#9a3412'>改善13件・バグ修正97件（VSCode/Tag/Review/クラウド横断）</text>\n</g>\n<text x='16' y='200' font-size='9' fill='#c2410c'>同日 v2.1.294：指示文で書いた prompt/agent フックがブロック対象を素通りする不具合を修正。</text>\n</svg><figcaption>図1：v2.1.295 の変更を分類で一望。</figcaption></figure>\n<p><strong>仕組みのポイント。</strong><code>onFailure:\"block\"</code> は、CLAUDE.md の指示が「依頼」にすぎないのに対し、フックが「強制」を担うという設計思想の延長にある。10/8更新の『Agentic Workflows 2026 Playbook』も、検証ループを <strong>PostToolUseフックでlint・Stopフックでテスト通過までブロック</strong>する型として挙げており、今回の <code>onFailure:\"block\"</code> は「フック自身が落ちたときの穴」を塞ぐ最後のピースと言える。</p>\n<p><strong>自分が試すなら。</strong>まず既存の検証フック（lint/test）に <code>onFailure:\"block\"</code> を付けて、フックのクラッシュが\"緑扱い\"になっていないか確認する。次にMCP説明上限が上がったので、要点が削られて渡っていたツール（長い説明のMCP）を見直す。サブエージェントのスキル事前ロードは、読解をfan-outする運用（本体には要約だけ残す型）と相性が良い。</p>\n<p><strong>注意点。</strong>modはサンドボックスされず<strong>ユーザー権限で動く</strong>（mod実践ガイドが強調）。サードパーティ製は導入前に <code>claude plugin validate</code>/<code>test</code> で検証し、チームは <code>allowManagedModsOnly</code> で統制する。<code>onFailure:\"block\"</code> はブロックが\"厳しすぎ\"ると開発を止めるので、まずは重要フックだけに限定したい。</p>\n<p><strong>ひとこと。</strong>新機能より「フックを信頼できるゲートにする」補強が主役の日。自然言語フック時代の地固めとして要チェック。</p>",
+      "sources": [
+        {
+          "title": "Claude Code Changelog",
+          "url": "https://code.claude.com/docs/en/changelog"
+        },
+        {
+          "title": "Claude Code Mods：何で・どう書くか",
+          "url": "https://www.developersdigest.tech/blog/claude-code-mods-guide-2026"
+        },
+        {
+          "title": "Claude Code Agentic Workflows 2026 Playbook",
+          "url": "https://capitalandcompute.net/blog/claude-code-agentic-workflows/"
+        }
+      ],
+      "id": "2026-10-08-claude-code"
+    },
+    {
+      "date": "2026-10-08",
+      "topic": "Next.js",
+      "title": "useOptimistic で楽観的UI — 送信前に先出し、成功で収束・失敗で自動ロールバック",
+      "lede": "対話UIの5プリミティブの中核。親stateの更新を忘れなければコードは驚くほど短い。",
+      "articleHtml": "<p>ミューテーション（いいね／優先度切替／コメント投稿／カード移動）は、サーバー往復が終わるまで画面が変わらない。素朴に <code>await serverAction()</code> を待つと、<strong>クリックしたのに何も起きない空白時間</strong>が生まれ、体感（INP）が悪化する。これを埋めるのが React 19 の <code>useOptimistic</code> だ。Next.js公式が2026年に出した「Building interactive apps（Taskboard）」ガイドは、<code>&lt;Suspense&gt;</code>／<code>useOptimistic</code>／<code>useTransition</code>／<code>useActionState</code>／<code>data-pending</code> の<strong>5プリミティブの組み合わせ</strong>として対話UIを体系化した。本稿はその中核を深掘りする。</p>\n<p><strong>何が新しく、何が効くのか。</strong><code>const [opt, addOpt] = useOptimistic(state, updateFn?)</code>。<code>state</code> は「本物の値」（通常はServer Componentから届くprops）、<code>updateFn</code> は現在状態と楽観値から次の楽観状態を返す<strong>純関数</strong>。返る <code>opt</code> は<strong>Actionが進行中の間だけ</strong>楽観値になり、終わると <code>state</code> に戻る。核心は「楽観を消すための追加レンダーが無い」こと——本物と楽観が同じレンダーで収束するのでチラつかない。</p>\n<figure class='fig'><pre class='mermaid'>flowchart LR\n  A[\"クリック\"] --> B[\"addOptimistic で先出し（今のフレーム）\"]\n  B --> C[\"Server Action 実行\"]\n  C -->|\"成功: refresh()/updateTag() で state 更新\"| D[\"新propsへ収束（追加レンダー無し）\"]\n  C -->|\"失敗: throw\"| E[\"元の state で再描画＝自動ロールバック\"]</pre><figcaption>図1：先出し→サーバー往復→成功で収束／失敗で自動復帰の流れ。</figcaption></figure>\n<p><strong>収束とロールバックの要点。</strong>成功時は、Server Action が <code>refresh()</code>（動的読み取りの再実行）か <code>updateTag()</code>（キャッシュのタグ無効化）を呼んでRSCを再レンダーし、新propsが <code>state</code> に届くことで確定する。<strong>親が state を更新しないと楽観値はAction終了で消える</strong>——これが「一瞬出て元に戻る」最頻出バグの正体だ。失敗時は Action が throw すると現在の <code>state</code>（＝変わっていない元値）で再描画され、<strong>自前のロールバックを書かずに</strong>元へ戻る。保留中に state が変化すれば、新しい state を土台に updateFn が再実行される（リベース）。</p>\n<p><strong>最重要の制約。</strong><code>addOptimistic</code> は<strong>必ずAction（startTransitionに渡す関数 or action/formAction prop）の中で呼ぶ</strong>。外で呼ぶと「outside a Transition」警告が出て一瞬描画してすぐ戻る。レンダー中にsetterを呼ばない。保留項目のkeyは <code>crypto.randomUUID()</code> の安定IDにし、本物が届いた時のkey衝突を避ける。className等は<strong>propsの古い値ではなく楽観値から読む</strong>と連打トグルが正しく進む。</p>\n<p><strong>使い分け。</strong>Server Actions/RSCネイティブで、クライアントに大きな状態ストアを持ち込まないなら <code>useOptimistic</code>（自動ロールバック）。細かい再試行や無限スクロール等クライアントが真実源なら TanStack Query/SWR（<code>onMutate</code>でロールバックを自分で書く）。<strong>ひとこと：</strong>「送信前に結果を先出しし、成功で確定・失敗で自動で戻す」——対話UIの気持ちよさの核。親stateの更新を忘れないことだけ守れば、コードは驚くほど短い。</p>",
+      "sources": [
+        {
+          "title": "React: useOptimistic",
+          "url": "https://react.dev/reference/react/useOptimistic"
+        },
+        {
+          "title": "Next.js: Building interactive apps（Taskboard）",
+          "url": "https://nextjs.org/docs/app/guides/interactive-apps"
+        },
+        {
+          "title": "React: useTransition",
+          "url": "https://react.dev/reference/react/useTransition"
+        },
+        {
+          "title": "Next.js: refresh()",
+          "url": "https://nextjs.org/docs/app/api-reference/functions/refresh"
+        }
+      ],
+      "id": "2026-10-08-nextjs"
+    },
+    {
+      "date": "2026-10-09",
+      "topic": "Flutter",
+      "title": "Material/Cupertino が SDK から独立 — material_ui / cupertino_ui 1.0 移行が本番化",
+      "lede": "変わるのは import 元だけ。3.50（11月）の旧ライブラリ deprecation 前に dart fix で済ませたい。",
+      "articleHtml": "<p>DevCon 2026 最終日（10/9）に、長く予告されてきた大きな構造変更が本番化した。<strong>Material / Cupertino が SDK から独立</strong>し、<code>material_ui</code> / <code>cupertino_ui</code> 1.0 への移行が実運用フェーズに入る。<code>import 'package:flutter/material.dart';</code> が <code>import 'package:material_ui/material_ui.dart';</code> に変わる——が、<strong>シンボル名・クラス名は不変で、変わるのは import 元だけ</strong>というのが最大の要点だ。</p>\n<p><strong>なぜ分離するのか。</strong>両パッケージ1.0は Flutter 3.47 に同梱され、中身は3.44で凍結されたフレームワークコードに一致する。SDK本体から切り離すことで、<strong>デザインライブラリを SDK と独立したペースでリリース</strong>できるようになる。SDK内蔵の旧 Material/Cupertino は<strong>次期stable（3.50・2026年11月）で正式 deprecation 予定</strong>なので、移行は\"いつか\"ではなく今期の宿題だ。</p>\n<figure class='fig'><svg viewBox='0 0 600 180' xmlns='http://www.w3.org/2000/svg' font-family='monospace'>\n<rect x='0' y='0' width='600' height='180' fill='#eff6ff' rx='10'/>\n<text x='16' y='24' font-size='13' font-weight='bold' fill='#1e40af' font-family='sans-serif'>移行は3ステップ（dart fix が大半を自動化）</text>\n<line x1='16' y1='32' x2='584' y2='32' stroke='#93c5fd'/>\n<text x='16' y='58' font-size='10' fill='#1d4ed8'>1) flutter pub add material_ui / cupertino_ui</text>\n<text x='40' y='74' font-size='9' fill='#2563eb' font-family='sans-serif'>依存追加（dart fix は依存追加まではやらない）</text>\n<text x='16' y='100' font-size='10' fill='#1d4ed8'>2) dart fix --apply --code=migrate_design_widgets</text>\n<text x='40' y='116' font-size='9' fill='#2563eb' font-family='sans-serif'>import を一括書換（symbol名は不変）</text>\n<text x='16' y='142' font-size='10' fill='#1d4ed8'>3) dart fix（再実行）</text>\n<text x='40' y='158' font-size='9' fill='#2563eb' font-family='sans-serif'>import ソート等 lint を整える</text>\n</svg><figcaption>図1：material_ui / cupertino_ui への移行手順。</figcaption></figure>\n<p><strong>互換ブリッジと落とし穴。</strong>旧 import のままの3rd-party依存があるときは <code>MaterialApp.builder</code> で <code>MaterialUiCompatibilityBridge(child: child!)</code> を噛ませる。ただしこれは Theme/Localization を注入するだけで<strong>型不一致は直さない</strong>——<code>ColorScheme</code> や <code>FloatingActionButtonLocation</code> などを旧 <code>package:flutter/material</code> の値のまま新パッケージ型の引数に渡すことはできず、その依存は先に移行が必要だ。ローカライズは <code>flutter_localizations</code> のデザイン部が分離され、<code>localizationsDelegates</code> は <code>GlobalMaterialLocalizations.delegates</code> 1行で済むようになった。</p>\n<p><strong>同じ日のもう一つの主役＝デスクトップの Impeller 既定化。</strong>3.47 で macOS（Metal）/ Windows・Linux（Vulkan）でも Impeller が既定レンダラに昇格した。シェーダを<strong>ビルド時に事前コンパイル</strong>するため、初回アニメ時の shader compilation jank が構造的に消える。アニメーションも <code>AnimationController</code> 不要の <code>TweenAnimationBuilder</code>（任意値の1回遷移）や <code>AnimatedSwitcher</code>（widget入替のクロスフェード）で軽く書ける。</p>\n<p><strong>現行バージョンと今後。</strong>安定は <strong>Flutter 3.47.5 / Dart 3.13.4</strong>、beta は 3.49系。3.50（11月）では Web の <strong>WasmGC 既定化</strong>・Android の <strong>Impeller 一本化</strong>も入る。<strong>ひとこと：</strong>import を書き換えるだけの\"痛くない破壊的変更\"。3.50で旧ライブラリが deprecation になる前に、<code>dart fix</code> で一気に済ませておきたい。</p>",
+      "sources": [
+        {
+          "title": "material_ui / cupertino_ui 移行（breaking changes）",
+          "url": "https://docs.flutter.dev/release/breaking-changes/material-ui-and-cupertino-ui"
+        },
+        {
+          "title": "What's new in Flutter 3.47",
+          "url": "https://flutter.dev/blog/whats-new-in-flutter-3-47"
+        },
+        {
+          "title": "Flutter & Dart 2026 roadmap",
+          "url": "https://flutter.dev/blog/flutter-darts-2026-roadmap"
+        }
+      ],
+      "id": "2026-10-09-flutter"
+    },
+    {
+      "date": "2026-10-08",
+      "topic": "GitHub Trending",
+      "title": "10/8の話題リポジトリ — Docker公式エージェント基盤・AI動画制作・写真の位置推定",
+      "lede": "エージェント一色のなか、方向の違う3本。生成AIを特定の現場作業に接続する実用志向。",
+      "articleHtml": "<p>トレンドが「エージェント・記憶・スキル経済」一色のなか、この日の話題枠は<strong>方向のまったく違う3本</strong>だった——インフラ大手Dockerの公式エージェント基盤、台本から動画を自動生成するプラットフォーム、写真の撮影地を推定するスキル。共通するのは「生成AIを<strong>特定の現場作業</strong>に接続する」実用志向だ（増加数はトラッカー表示とライブ値の乖離が大きく、スターはGitHubページ実測の概数）。</p>\n<figure class='fig'><svg viewBox='0 0 600 190' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n<rect x='0' y='0' width='600' height='190' fill='#f0fdf4' rx='10'/>\n<text x='16' y='24' font-size='13' font-weight='bold' fill='#166534'>リポジトリ × 「解決したい課題 / 提供する機能」</text>\n<line x1='16' y1='34' x2='584' y2='34' stroke='#86efac'/>\n<g font-size='10'>\n<text x='16' y='58' font-weight='bold' fill='#14532d'>docker-agent</text>\n<text x='150' y='54' fill='#166534'>課題: エージェントの定義・配布・実行がバラバラ</text>\n<text x='150' y='70' fill='#15803d'>機能: YAML定義＋MCP付与＋OCI配布をDocker流に標準化</text>\n<line x1='16' y1='82' x2='584' y2='82' stroke='#bbf7d0'/>\n<text x='16' y='106' font-weight='bold' fill='#14532d'>printfilm</text>\n<text x='150' y='102' fill='#166534'>課題: 台本から\"配信できる動画\"までの工程が多すぎる</text>\n<text x='150' y='118' fill='#15803d'>機能: 絵コンテ→画像→動画→FFmpeg合成を一気通貫</text>\n<line x1='16' y1='130' x2='584' y2='130' stroke='#bbf7d0'/>\n<text x='16' y='154' font-weight='bold' fill='#14532d'>geo-sleuth</text>\n<text x='150' y='150' fill='#166534'>課題: 文字情報の無い写真の撮影地が分からない</text>\n<text x='150' y='166' fill='#15803d'>機能: OSM＋標高＋衛星＋SVを突合し推論過程つきで推定</text>\n</g>\n<text x='16' y='184' font-size='9' fill='#16a34a'>※スターはGitHubページ実測の概数。当日増加はトラッカー乖離のため確定不能。</text>\n</svg><figcaption>図：方向の違う3本を「課題→機能」で一望。</figcaption></figure>\n<h4>docker/docker-agent（Go・⭐約4.2k）</h4>\n<p><strong>解決したい課題：</strong>エージェントの作り方・ツール付与・配布・実行がプロジェクトごとにバラバラで、再利用も共有も難しい。<strong>提供する機能：</strong>エージェントを<strong>YAMLで定義</strong>し、MCPサーバを含むツールを与えて実行、複数エージェントがタスクを委譲し合うマルチエージェント構成も組める。OpenAI/Anthropic/Gemini/Docker Model Runner等マルチプロバイダ対応で、<strong>Docker CLIプラグイン</strong>として動き、作ったエージェントは<strong>OCIレジストリで配布</strong>できる（Apache-2.0）。<strong>なぜ今：</strong>コミュニティ発のハーネス一色のなか、インフラ大手が\"エージェントをDocker流に標準化\"する公式参入として本日突出した。</p>\n<h4>yi1108/printfilm（Python/TypeScript・⭐約3.7k）</h4>\n<p><strong>解決したい課題：</strong>台本やトピックから「配信できる動画」に仕上げるまでの工程（絵コンテ・画像・動画・合成）が多く、個人やマーケ現場には重い。<strong>提供する機能：</strong>台本/トピック→<strong>絵コンテ→画像生成→動画生成→FFmpeg合成</strong>までを一気通貫で回すAI動画／ショートドラマ制作基盤。単発生成のツールセンター、管理バックエンド、<code>/api/v1</code>の公開API、Docker配備を備える（FastAPI＋React19、MIT）。<strong>なぜ今：</strong>エージェント一色のトレンドに対し、\"ストーリー→尺のある動画\"という消費者/マーケ寄りの別ジャンルとして浮上した多様性枠。</p>\n<h4>Oldcircle/geo-sleuth（Python・⭐約1.2k）</h4>\n<p><strong>解決したい課題：</strong>文字情報の無い写真が「どこで撮られたか」を人手で突き止めるのは困難。<strong>提供する機能：</strong>OpenStreetMapの地物・標高のスカイライン・衛星画像・ストリートビューを突き合わせ、<strong>推論の過程を示しながら</strong>位置を割り出す Agent Skill（SKILL.md＋Python、複数のコーディングエージェント上で動く、MIT）。<strong>なぜ今：</strong>増加\"率\"主軸で見た本日の新顔で、OSINT/位置推定という非ハーネスの異色ジャンルとして話題化。利用は自分の写真や許可のある写真に限るよう明記されている。</p>\n<p><strong>自分が試すなら。</strong>DevForgeのエージェント運用の標準化という点では docker-agent が本命（YAML＋OCIは既存のDocker基盤と素直に噛む）。一方、LP/紹介素材づくりなら printfilm の一気通貫パイプラインが刺さる。geo-sleuth は「推論過程を提示するスキル」の作り方のお手本として読む価値がある。</p>",
+      "sources": [
+        {
+          "title": "docker/docker-agent",
+          "url": "https://github.com/docker/docker-agent"
+        },
+        {
+          "title": "yi1108/printfilm",
+          "url": "https://github.com/yi1108/printfilm"
+        },
+        {
+          "title": "Oldcircle/geo-sleuth",
+          "url": "https://github.com/Oldcircle/geo-sleuth"
+        }
+      ],
+      "id": "2026-10-08-github-trending"
+    },
     {
       "date": "2026-10-08",
       "topic": "Flutter",
