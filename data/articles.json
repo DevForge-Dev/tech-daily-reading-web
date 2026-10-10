@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-10-09T04:49:26.731Z",
+  "generatedAt": "2026-10-10T04:53:11.152Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,102 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "date": "2026-10-09",
+      "topic": "Claude Code",
+      "title": "Claude Code v2.1.296 — MCP説明の上限を4,096字へ、Sonnet 5.5キャッシュ読取を半額、サブエージェントに`autoCompactWindow`",
+      "lede": "新機能より\"運用の目盛り\"を整える版。上限倍増・キャッシュ半額・サブエージェントの自動コンパクトで、大量・長時間のエージェント運用がそのまま安く・安定する。",
+      "articleHtml": "<p>背景。Claude Codeは「フックやスキルを自然言語で書く」運用が定着し、長いMCP説明文やサーバ指示をツール検索経由で読む構成が当たり前になってきた。そこで効いてくるのが<strong>説明文の文字数上限</strong>と<strong>キャッシュ読取のコスト</strong>だ。本日10/9公開の最新<strong>v2.1.296</strong>は、まさにこの2点に手を入れた「大量運用の最適化」版で、改善9件・バグ修正56件を含む。</p>\n<p><strong>何が新しいか。</strong>第一に、ツール検索経由で読むMCPツール説明・サーバ指示の既定上限を<strong>2,048→4,096文字</strong>へ倍増（前日の2.1.295では個別上限を16,384文字へ拡張済み）。第二に、<code>/cost</code>・ステータスライン・<code>--max-budget-usd</code>・SDKのコスト計算が参照するSonnet 5.5の<strong>キャッシュ読取単価を$0.20→$0.10/Mtokへ半減</strong>。第三に、サブエージェントに本体より早く自動コンパクトを掛ける<code>autoCompactWindow</code>、Readに巨大テキストを一括読みする<code>allow_large</code>、過負荷(529)リトライの最大待ちを延ばす<code>CLAUDE_CODE_OVERLOADED_RETRY_MAX_DELAY_MS</code>が加わった。</p>\n<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='24' text-anchor='middle' font-size='13' fill='#c9513a'>v2.1.296 の主な数値変更（前 → 後）</text><text x='24' y='72' font-size='12' fill='#333'>MCP説明/サーバ指示 上限</text><rect x='250' y='56' width='80' height='22' rx='3' fill='#f3d9d2' stroke='#c9513a'/><text x='290' y='72' text-anchor='middle' font-size='12' fill='#333'>2,048字</text><text x='348' y='73' text-anchor='middle' font-size='15' fill='#c9513a'>→</text><rect x='370' y='56' width='120' height='22' rx='3' fill='#c9513a'/><text x='430' y='72' text-anchor='middle' font-size='12' fill='#fff'>4,096字</text><text x='24' y='132' font-size='12' fill='#333'>Sonnet 5.5 キャッシュ読取</text><rect x='250' y='116' width='80' height='22' rx='3' fill='#f3d9d2' stroke='#c9513a'/><text x='290' y='132' text-anchor='middle' font-size='11' fill='#333'>$0.20/Mtok</text><text x='348' y='133' text-anchor='middle' font-size='15' fill='#c9513a'>→</text><rect x='370' y='116' width='120' height='22' rx='3' fill='#c9513a'/><text x='430' y='132' text-anchor='middle' font-size='11' fill='#fff'>$0.10/Mtok</text><text x='300' y='178' text-anchor='middle' font-size='11' fill='#777'>改善9件・バグ修正56件。前日2.1.295でツール検索の個別上限は16,384字へ</text></svg><figcaption>図1：v2.1.296 の主な数値変更（上限は倍増、キャッシュ読取は半額）</figcaption></figure>\n<p><strong>仕組みのポイント。</strong><code>autoCompactWindow</code>はサブエージェント側の文脈を本体とは独立のタイミングで畳めるようにするもので、長時間走る監査・レビュー系サブエージェントが文脈あふれで失速するのを防ぐ。全ワークフローエージェントを一つのモデルで走らせる<code>CLAUDE_CODE_WORKFLOW_SUBAGENT_MODEL</code>と併用すれば、重い並列処理の挙動とコストが読みやすくなる。</p>\n<p><strong>自分が試すなら。</strong>多数のMCPを束ねたプロジェクトで、まず説明上限4,096字を前提に各サーバの指示文を書き直す。そのうえでSonnet 5.5を\"長い定型プロンプトを使い回す\"キャッシュ多用の設計に寄せ、<code>/cost</code>で半額化の効き目を測る。あわせて10/7公開の新モデル<strong>Claude Haiku 5.5</strong>（Haiku 4.5比で実行コスト約75%減、API既定Haiku、1Mコンテキスト・$0.10/$0.50 per Mtok）を、要約・分類・コンパクトなどのサブエージェントに割り当てる。</p>\n<p><strong>落とし穴。</strong>上限引き上げは\"書いてよい量\"が増えるだけで、冗長な指示はかえって文脈を圧迫する。キャッシュ半額もキャッシュが当たる設計でなければ効かない。ポリシー面では10/8の利用規約改定（選挙妨害・偽報道の禁止、モデルへの執拗な虐待の明文禁止。通常の反論・創作・研究/テストは対象外）がClaude全体に及ぶ点も要確認。<strong>ひとことまとめ：</strong>派手さはないが、上限4,096字・キャッシュ半額・自動コンパクトで\"大量運用のコスト最適化\"を静かに進めた版だ。</p>",
+      "sources": [
+        {
+          "title": "Claude Code Changelog",
+          "url": "https://code.claude.com/docs/en/changelog"
+        },
+        {
+          "title": "Anthropic releases Claude Haiku 5.5",
+          "url": "https://letsdatascience.com/news/anthropic-releases-claude-haiku-55-for-high-volume-tasks-1c6260b4"
+        },
+        {
+          "title": "Anthropic changes usage policy (TechCrunch)",
+          "url": "https://techcrunch.com/2026/10/08/anthropic-changes-usage-policy-to-ban-model-abuse-and-election-interference/"
+        }
+      ],
+      "id": "2026-10-09-claude-code"
+    },
+    {
+      "date": "2026-10-09",
+      "topic": "Next.js",
+      "title": "`authInterrupts` — App Routerで401/403を`notFound()`流に投げる（forbidden / unauthorized）",
+      "lede": "401/403を\"投げて最寄り境界で描く\"宣言的モデル。実験的で本番非推奨だが、DAL中心の多層防御と相性がよく、CVE-2026-44575の教訓とも噛み合う。",
+      "articleHtml": "<p>背景。App Routerの認証/認可は長く「middlewareでリダイレクト」か「各ページで手書きガード→<code>redirect('/login')</code>」の2択で、<em>正しいHTTPステータス(401/403)</em>とは結びついていなかった。実験的API <code>authInterrupts</code> は、ここに<code>notFound()</code>流の宣言的モデルを持ち込む。</p>\n<p><strong>何が新しいか。</strong><code>next.config.ts</code>で<code>experimental.authInterrupts: true</code>を立てると、<code>next/navigation</code>の<strong><code>unauthorized()</code>（401）</strong>と<strong><code>forbidden()</code>（403）</strong>が使える。前者は未ログイン＝「誰か分からない」、後者は権限不足＝「誰か分かるが禁止」に対応し、最寄りの<code>unauthorized.tsx</code>/<code>forbidden.tsx</code>を描画する。<code>redirect()</code>と違いURLは変わらず、サーバー側でその場でレンダリングを停止する。導入はv15.1.0、ただしv16.4.0時点でも\"not recommended for production\"のまま。</p>\n<figure class='fig'><pre class='mermaid'>flowchart TD\n  A[\"リクエスト\"] --> B[\"verifySession() を DAL で呼ぶ\"]\n  B --> C{\"セッションは?\"}\n  C -->|\"未ログイン\"| D[\"unauthorized() → 401 を throw\"]\n  C -->|\"権限不足\"| E[\"forbidden() → 403 を throw\"]\n  C -->|\"OK\"| F[\"ページ本体を描画\"]\n  D --> G[\"unauthorized.tsx を描画\"]\n  E --> H[\"forbidden.tsx を描画\"]\n</pre><figcaption>図1：authInterrupts の判定フロー（DALで判定し、throwして最寄り境界を描画）</figcaption></figure>\n<p><strong>仕組みのポイント。</strong>認可チェックはエッジではなく<strong>データを読む場所（DAL）</strong>に寄せるのが要。<code>return</code>は不要（戻り値型は<code>never</code>で即throw）、<code>await</code>必須、そして<strong><code>try/catch</code>で囲むとインターセプトを握りつぶす</strong>（必要時は<code>unstable_rethrow()</code>で再throw）。root layoutからは呼べない。</p>\n<pre><code>// app/admin/page.tsx\nconst s = await verifySession()\nif (s?.role !== 'admin') forbidden()  // 403 を throw、forbidden.tsx を描画</code></pre>\n<p><strong>タイムリーな理由と落とし穴。</strong>2026年5月のCVE-2026-44575（CVSS 7.5 High）は「middleware/proxyの照合だけに認可を頼ると、細工した<code>.rsc</code>やprefetch URLで保護ページに到達できる」というバイパス（修正15.5.16/16.2.5）。<code>forbidden()</code>をDALで呼ぶ設計はその裏付けになる。もう一つの罠は<strong>ステータスの機微</strong>で、<code>&lt;Suspense&gt;</code>のストリーミング開始<em>後</em>に呼ぶとシェルは送出済みのため<strong>ステータスは200のまま</strong>中身だけ差し替わる。厳密な403が要るなら判定をストリーミング前かProxy(旧middleware)に置く。<strong>まとめ：</strong>宣言的で書き味はよいが、実験的フラグ・本番非推奨・200問題の3点を踏まえて段階導入したい。</p>",
+      "sources": [
+        {
+          "title": "Next.js Docs — authInterrupts",
+          "url": "https://nextjs.org/docs/app/api-reference/config/next-config-js/authInterrupts"
+        },
+        {
+          "title": "Next.js Docs — forbidden",
+          "url": "https://nextjs.org/docs/app/api-reference/functions/forbidden"
+        },
+        {
+          "title": "Next.js Docs — Authentication (DAL)",
+          "url": "https://nextjs.org/docs/app/guides/authentication"
+        },
+        {
+          "title": "CVE-2026-44575",
+          "url": "https://fieldguide.lutrasecurity.com/CVE-2026-44575/"
+        }
+      ],
+      "id": "2026-10-09-nextjs"
+    },
+    {
+      "date": "2026-10-10",
+      "topic": "Flutter",
+      "title": "Next.App DevCon 2026 閉幕 — \"Finishing the Job\" 3.50の3本柱（WasmGC既定・Impeller一本化・Material/Cupertino分離）",
+      "lede": "派手な新機能より\"積み残しの完了\"。WasmGC・Impeller・UIライブラリ分離の3点が11月の3.50で揃い、ツールチェーンはAIネイティブへ本格シフトする。",
+      "articleHtml": "<p>背景。昨日（10/9）、FlutterCon×Droidconが合流した<strong>Next.App DevCon 2026</strong>（10/7–9）が閉幕した。基調講演の総括テーマは<strong>\"Finishing the Job\"</strong>——長く積み残してきた移行を次期安定<strong>3.50（11月）</strong>で出揃わせる、という宣言だ。</p>\n<p><strong>何が確定したか（3本柱）。</strong>(1) Webの<strong>WasmGC既定化</strong>、(2) Androidの<strong>Impeller一本化</strong>（legacy Skia撤去・API29+）、(3) <strong>Material/Cupertinoのcore分離</strong>（<code>material_ui</code>/<code>cupertino_ui</code> 1.0）。現行安定は<strong>3.47.5 / Dart 3.13.4</strong>、betaは3.49系 / Dart 3.14.0で、これが11月に3.50へ昇格する。年4回（3.41/3.44/3.47/3.50）の安定リリース体制は継続。</p>\n<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='24' text-anchor='middle' font-size='13' fill='#0b63c6'>\"Finishing the Job\" — 3.50（11月）で出揃う3本柱</text><rect x='20' y='46' width='175' height='118' rx='8' fill='#e8f1fb' stroke='#0b63c6'/><text x='107' y='78' text-anchor='middle' font-size='13' fill='#0b63c6'>Web</text><text x='107' y='104' text-anchor='middle' font-size='12' fill='#333'>WasmGC</text><text x='107' y='124' text-anchor='middle' font-size='12' fill='#333'>既定化</text><rect x='212' y='46' width='176' height='118' rx='8' fill='#e8f1fb' stroke='#0b63c6'/><text x='300' y='78' text-anchor='middle' font-size='13' fill='#0b63c6'>Android</text><text x='300' y='104' text-anchor='middle' font-size='12' fill='#333'>Impeller一本化</text><text x='300' y='124' text-anchor='middle' font-size='11' fill='#333'>(legacy Skia撤去)</text><rect x='405' y='46' width='175' height='118' rx='8' fill='#e8f1fb' stroke='#0b63c6'/><text x='492' y='78' text-anchor='middle' font-size='13' fill='#0b63c6'>UI core分離</text><text x='492' y='104' text-anchor='middle' font-size='11' fill='#333'>material_ui /</text><text x='492' y='124' text-anchor='middle' font-size='11' fill='#333'>cupertino_ui 1.0</text><text x='300' y='190' text-anchor='middle' font-size='11' fill='#777'>現行安定 3.47.5 / Dart 3.13.4 → beta 3.49 が 11月に 3.50 stable へ昇格</text></svg><figcaption>図1：次期安定3.50で出揃う「Finishing the Job」の3本柱</figcaption></figure>\n<p><strong>AIネイティブが通底。</strong><strong>GenUI SDK×A2UIプロトコル</strong>（LLM応答から実ウィジェットをランタイム合成）、<code>dart mcp-server</code>＋<strong>Agentic Hot Reload</strong>、サーバ側<strong>Genkit for Dart</strong>、端末側<strong>on-device Gemma</strong>（GPU/NPU）まで、ツールチェーン全体がエージェント前提に寄った。iOSは<strong>Swift Package Manager既定</strong>（上位100プラグイン中92が移行）、実採用例としてToyota 2026 RAV4やLG webOS。</p>\n<p><strong>実務の効き所。</strong>画面遷移は<code>PageTransitionsTheme</code>で<code>ThemeData</code>に集約し、M3新既定の<code>FadeForwardsPageTransitionsBuilder</code>やAndroidの<code>PredictiveBackPageTransitionsBuilder</code>（戻るジェスチャで遷移先プレビュー）をプラットフォーム別に差す。状態設計は<strong>Freezed 3.x</strong>のsealed unionで<code>Result&lt;T&gt;</code>やネットワーク状態を定義し、Dart 3の網羅switchでケース漏れをコンパイルエラーにできる。</p>\n<p><strong>自分が試すなら＆落とし穴。</strong>遅さの切り分けはDevToolsの<strong>Enhance Tracing</strong>（Track Widget Builds / Layouts / Paints）で工程別に見るのが近道。計測は必ず<code>--profile</code>（debugは3–5倍遅い）。フレーム予算は60/90/120fpsで16.6/11.1/<strong>8.33ms</strong>。3.50はbetaの昇格なので、WasmGCやImpeller一本化を見越して今のうちにbetaで回帰確認しておきたい。<strong>まとめ：</strong>3本柱が11月に揃い\"完了\"フェーズに入る——既存アプリの移行チェックは今が仕込みどき。</p>",
+      "sources": [
+        {
+          "title": "What's new in Flutter 3.47",
+          "url": "https://flutter.dev/blog/whats-new-in-flutter-3-47"
+        },
+        {
+          "title": "Flutter release notes",
+          "url": "https://docs.flutter.dev/release/release-notes"
+        },
+        {
+          "title": "Flutter animations",
+          "url": "https://docs.flutter.dev/ui/animations"
+        },
+        {
+          "title": "DevTools Performance",
+          "url": "https://docs.flutter.dev/tools/devtools/performance"
+        }
+      ],
+      "id": "2026-10-10-flutter"
+    },
+    {
+      "date": "2026-10-09",
+      "topic": "GitHub Trending",
+      "title": "10/9の話題リポジトリ — ブラウザ常駐エージェント・公開データの3D地球・依存ゼロのローカルMoE推論",
+      "lede": "本日のモメンタム枠3本を貫くのは\"身近さ\"——ブラウザ拡張・ブラウザ完結・一般的なコンシューマ機で動く、の3本。",
+      "articleHtml": "<p>本日のGitHub日次は老舗が上位を占める古いキャッシュ状態だったため、Trendshift日次＋複数トラッカー（gittrend・gitnova・coddykit）を突き合わせ、総スターは各GitHubページで実測検証して選んだ。急上昇の\"モメンタム枠\"3本を貫くのは<strong>「誰のPCでもすぐ動く身近さ」</strong>——ブラウザ拡張・ブラウザ完結・一般的なコンシューマ機で動く、という共通点だ。</p>\n<figure class='fig'><svg viewBox='0 0 600 212' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='18' text-anchor='middle' font-size='13' fill='#1a7f37'>10/9の3本：解決したい課題 → 提供する機能</text><rect x='8' y='28' width='132' height='26' fill='#dff3e4' stroke='#1a7f37'/><rect x='140' y='28' width='210' height='26' fill='#dff3e4' stroke='#1a7f37'/><rect x='350' y='28' width='242' height='26' fill='#dff3e4' stroke='#1a7f37'/><text x='74' y='45' text-anchor='middle' font-size='11' fill='#1a7f37'>リポジトリ</text><text x='245' y='45' text-anchor='middle' font-size='11' fill='#1a7f37'>解決したい課題</text><text x='471' y='45' text-anchor='middle' font-size='11' fill='#1a7f37'>提供する機能</text><rect x='8' y='54' width='132' height='50' fill='#f7fcf9' stroke='#bfe3cb'/><rect x='140' y='54' width='210' height='50' fill='#f7fcf9' stroke='#bfe3cb'/><rect x='350' y='54' width='242' height='50' fill='#f7fcf9' stroke='#bfe3cb'/><text x='74' y='83' text-anchor='middle' font-size='10' fill='#111'>webbrain</text><text x='245' y='76' text-anchor='middle' font-size='10' fill='#333'>エージェント導入が</text><text x='245' y='90' text-anchor='middle' font-size='10' fill='#333'>CLI/専用アプリで重い</text><text x='471' y='76' text-anchor='middle' font-size='10' fill='#333'>サイドパネル常駐・操作代行</text><text x='471' y='90' text-anchor='middle' font-size='10' fill='#333'>(BYOキー, Chrome/Firefox)</text><rect x='8' y='104' width='132' height='50' fill='#ffffff' stroke='#bfe3cb'/><rect x='140' y='104' width='210' height='50' fill='#ffffff' stroke='#bfe3cb'/><rect x='350' y='104' width='242' height='50' fill='#ffffff' stroke='#bfe3cb'/><text x='74' y='133' text-anchor='middle' font-size='10' fill='#111'>gods-eye-view</text><text x='245' y='126' text-anchor='middle' font-size='10' fill='#333'>\"今\"の公開データが</text><text x='245' y='140' text-anchor='middle' font-size='10' fill='#333'>散在し俯瞰できない</text><text x='471' y='126' text-anchor='middle' font-size='10' fill='#333'>ライブフィードを3D地球に</text><text x='471' y='140' text-anchor='middle' font-size='10' fill='#333'>可視化(ブラウザ完結)</text><rect x='8' y='154' width='132' height='50' fill='#f7fcf9' stroke='#bfe3cb'/><rect x='140' y='154' width='210' height='50' fill='#f7fcf9' stroke='#bfe3cb'/><rect x='350' y='154' width='242' height='50' fill='#f7fcf9' stroke='#bfe3cb'/><text x='74' y='183' text-anchor='middle' font-size='10' fill='#111'>colibri</text><text x='245' y='176' text-anchor='middle' font-size='10' fill='#333'>大MoEがVRAM/費用で</text><text x='245' y='190' text-anchor='middle' font-size='10' fill='#333'>手元で動かせない</text><text x='471' y='176' text-anchor='middle' font-size='10' fill='#333'>依存ゼロC・重みをディスク</text><text x='471' y='190' text-anchor='middle' font-size='10' fill='#333'>ストリームで一般機で実行</text></svg><figcaption>図1：モメンタム枠3本の「課題 → 提供機能」対応</figcaption></figure>\n<h4>webbrain-one/webbrain（JavaScript・⭐約694）</h4>\n<p><strong>解決したい課題。</strong>AIエージェントは強力だが、導入にCLIや専用アプリのセットアップが要り「今見ているページを手伝ってほしい」という日常作業には重い。<strong>提供する機能。</strong>ブラウザのサイドパネルにエージェントを常駐させ、開いているページへの質問に加えクリック・入力・ページ遷移まで代行する。モデルはBYOキー、Chrome/Firefox対応のMIT拡張で、インストール即利用。実測スターは小さいが、日次トラッカーで本日2位表示と増加\"率\"が突出した。</p>\n<h4>bilawalsidhu/gods-eye-view（JavaScript・⭐約48.6k）</h4>\n<p><strong>解決したい課題。</strong>航空機・船舶・衛星・地震・公開カメラといった\"今\"の公開データは散在し、関連づけて俯瞰する手段がない。<strong>提供する機能。</strong>それらのライブフィードをフォトリアルな3D地球儀上にリアルタイム表示する。CesiumJS＋バニラJS＋Viteでサーバ不要・ブラウザ完結、MIT。エージェント/スキル一色のトレンドのなか\"非AIのデータビジュアライゼーション\"として突出し、既知クリエイター発で各所に拡散した。</p>\n<h4>JustVugg/colibri（C・⭐約40.6k）</h4>\n<p><strong>解決したい課題。</strong>大規模MoEモデルはVRAMを食い、クラウドAPIはコストがかさむ——手元の普通のPCで動かしたいという実需に既存ランタイムは応えきれない。<strong>提供する機能。</strong>依存ゼロのC製推論エンジンで、エキスパートの重みをディスクからストリーミングすることで、VRAMの限られたコンシューマ機でも巨大MoEを実行する。Apache-2.0。ローカル/エッジ推論という\"非クラウドAI基盤\"の系譜で高増加枠に入った。</p>\n<p><strong>まとめ・自分が試すなら。</strong>まず<strong>webbrain</strong>をBYOキーで入れ、日常ブラウジングのエージェント化を体験するのが最短。可視化の着想は<strong>gods-eye-view</strong>のデータ地球が刺激的で、毎朝digestのビジュアル表現の参考になる。コスト最適化の実験なら<strong>colibri</strong>でローカルMoEを一度動かしてみたい。</p>",
+      "sources": [
+        {
+          "title": "webbrain-one/webbrain",
+          "url": "https://github.com/webbrain-one/webbrain"
+        },
+        {
+          "title": "bilawalsidhu/gods-eye-view",
+          "url": "https://github.com/bilawalsidhu/gods-eye-view"
+        },
+        {
+          "title": "JustVugg/colibri",
+          "url": "https://github.com/JustVugg/colibri"
+        }
+      ],
+      "id": "2026-10-09-github-trending"
+    },
     {
       "date": "2026-10-08",
       "topic": "Claude Code",
