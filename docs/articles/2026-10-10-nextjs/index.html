@@ -1,0 +1,72 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>App Router のグローバル・ルート遷移プログレスバー — router.events 無き世界での開始/完了検知 — デイリー技術深掘り 読み物</title><meta name="description" content="YouTube風トップローディングバーを App Router で正しく作る鍵は、URLコミットでなく&#34;描画準備完了&#34;を捉えること。React Transition の isPending が完了シグナルになる。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-10-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="App Router のグローバル・ルート遷移プログレスバー — router.events 無き世界での開始/完了検知 — デイリー技術深掘り 読み物"><meta property="og:description" content="YouTube風トップローディングバーを App Router で正しく作る鍵は、URLコミットでなく&#34;描画準備完了&#34;を捉えること。React Transition の isPending が完了シグナルになる。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-10-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>App Router のグローバル・ルート遷移プログレスバー — router.events 無き世界での開始/完了検知</h1> <p class="lede">YouTube風トップローディングバーを App Router で正しく作る鍵は、URLコミットでなく&quot;描画準備完了&quot;を捉えること。React Transition の isPending が完了シグナルになる。</p> <div class="meta"> <span>📅 2026年10月10日</span> <span>⏱ 約4分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="1"><p>背景。画面上端を左→右に走る細い読み込みバーは、遷移が一瞬で終わらない時でも「いま遷移中」を即座に伝える定番UIだ。Pages Router 時代は<code>Router.events</code>（routeChangeStart/Complete/Error）を購読すれば数行で作れた。ところが<strong>App Router はこの<code>router.events</code>を持たない</strong>。さらに<code>router.push()</code>の戻り値は<strong>void</strong>で「遷移完了」を<code>await</code>でも取れない。加えて prefetch＋<code>loading.tsx</code>で多くの遷移が"ほぼ瞬間"になり、素朴なバーは一瞬チラついて消えるだけの邪魔者になる。<strong>「開始をどう捕まえ／完了をどう知り／速い遷移でチラつかせない」</strong>の3点が本題だ。</p>
+<p><strong>開始シグナル。</strong>起点は<code>&lt;Link onNavigate&gt;</code>（Next 15.3+）。<strong>同一オリジンのSPA遷移時だけ</strong>発火し、Cmd/Ctrl+クリック（新規タブ）・外部URL・<code>download</code>付きリンクでは発火しない——バーを出すべきでない遷移で勝手に黙ってくれるので都合がよい。プログラム遷移は<code>onNavigate</code>が効かないので、<code>start()</code>＋<code>startTransition(() =&gt; router.push(href))</code>でラップした薄いwrapperを使う。</p>
+<p><strong>完了シグナル（本丸）。</strong>App Routerの遷移は<strong>React Transitionとして走り</strong>、<code>router.push</code>は新しいRSCツリー（＋データ）が準備できるまで"サスペンド"する。だから<code>startTransition</code>で包むと、<code>useTransition()</code>の<strong>isPending が新ページを実際に描画できるまで true</strong>のまま → false に落ちた瞬間が「完了」になる。<strong>URLコミットでなく"描画準備完了"を捉える</strong>ので、streaming下でも破綻しにくい。これがVercel公式例<code>react-transition-progress</code>やbuilduiの「Global progress」記事の肝だ。</p>
+<figure class='fig'><pre class='mermaid'>flowchart LR
+  L["Link onNavigate (SPA遷移のみ発火)"] --> S["start() 擬似進捗を8%へ"]
+  S --> T["startTransition(router.push)"]
+  T --> P["isPending=true 90%へ漸近"]
+  P --> R["新RSCツリー 描画準備OK"]
+  R --> D["isPending=false → done() 100%"]</pre><figcaption>図1：開始は onNavigate、完了は Transition の isPending 立ち下がりで捉える。</figcaption></figure>
+<p><strong>擬似進捗。</strong>"本当の進捗%"は取れないので、NProgress流のトリクルで"それらしく"見せる。開始で8%へジャンプ→pending中は90%あたりへ漸近的にincrement→完了で一気に100%→フェードアウト。芯は <code>value = value &gt;= 90 ? value : value + (90 - value) * 0.1 + 0.5</code> の一行だ。</p>
+<figure class='fig'><svg viewBox='0 0 600 160' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='22' text-anchor='middle' font-size='13' fill='#2f6bff'>擬似進捗（トリクル）の3段階</text><text x='30' y='55' font-size='12' fill='#333'>開始</text><rect x='96' y='43' width='470' height='14' rx='7' fill='#e7eefc'></rect><rect x='96' y='43' width='38' height='14' rx='7' fill='#2f6bff'></rect><text x='560' y='55' font-size='11' fill='#2f6bff' text-anchor='end'>8%</text><text x='30' y='95' font-size='12' fill='#333'>pending</text><rect x='96' y='83' width='470' height='14' rx='7' fill='#e7eefc'></rect><rect x='96' y='83' width='423' height='14' rx='7' fill='#2f6bff'></rect><text x='560' y='95' font-size='11' fill='#2f6bff' text-anchor='end'>~90% へ漸近</text><text x='30' y='135' font-size='12' fill='#333'>完了</text><rect x='96' y='123' width='470' height='14' rx='7' fill='#e7eefc'></rect><rect x='96' y='123' width='470' height='14' rx='7' fill='#1f49b5'></rect><text x='560' y='135' font-size='11' fill='#fff' text-anchor='end'>100% → fade</text></svg><figcaption>図2：実進捗は不明。8%へ跳ね→90%へ漸近→完了で一気に100%にして消す。</figcaption></figure>
+<p><strong>ドロップイン・ライブラリ。</strong>最速は<code>nextjs-toploader</code>（root layoutに<code>&lt;NextTopLoader /&gt;</code>を置くだけ）。設定したいなら<code>@bprogress/next</code>（<code>ProgressProvider</code>で<code>children</code>をラップ、height/color/showSpinnerなど）。準公式はVercelの<code>react-transition-progress</code>。いずれも内部で<code>Link</code>/<code>router</code>をパッチして全遷移を自動検知する。</p>
+<p><strong>アクセシビリティとCLS。</strong>擬似進捗は実進捗を持たない装飾なので、純装飾なら<code>aria-hidden="true"</code>にしてスクリーンリーダーに誤った%を読ませない。ルート変更自体はNext内蔵のRoute Announcerが読むので二重に読ませない。バーは<code>position:fixed; top:0</code>でレイアウトフローから外し<strong>CLSゼロ</strong>、変化は<code>transform: scaleX()</code>でコンポジタ合成し60fps。<code>prefers-reduced-motion</code>ではシマー等を止め「出る→消える」の2状態に寄せる。</p>
+<p><strong>自分が試すなら。</strong>まず<code>nextjs-toploader</code>で体感を掴み、挙動を細かく制御したくなったらゼロ依存の方式①（カスタムLink＋<code>startTransition</code>でisPendingを観測）に置き換える。戻る/進む（popstate）でも出したいなら<code>usePathname</code>側でも拾う二段構えにする。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://nextjs.org/docs/app/getting-started/linking-and-navigating" target="_blank" rel="noopener noreferrer"> Linking and Navigating (Next.js) </a> </li><li> <a href="https://github.com/vercel/react-transition-progress" target="_blank" rel="noopener noreferrer"> vercel/react-transition-progress </a> </li><li> <a href="https://buildui.com/posts/global-progress-in-nextjs" target="_blank" rel="noopener noreferrer"> Global progress in Next.js (buildui) </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

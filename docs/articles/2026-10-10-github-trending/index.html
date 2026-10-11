@@ -1,0 +1,67 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>10/10 の話題リポジトリ — AI生成コードを安全実行(mxc)・UI出力を標準化(OpenUI)・AIスロップ排除(anti-slop) — デイリー技術深掘り 読み物</title><meta name="description" content="エージェントに大量のコードとUIを書かせる時代の&#34;品質と安全&#34;を別角度から埋める3本。実行の封じ込め、出力の標準化、見た目の脱・量産臭。"><meta name="theme-color" content="#238636"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-10-github-trending/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="10/10 の話題リポジトリ — AI生成コードを安全実行(mxc)・UI出力を標準化(OpenUI)・AIスロップ排除(anti-slop) — デイリー技術深掘り 読み物"><meta property="og:description" content="エージェントに大量のコードとUIを書かせる時代の&#34;品質と安全&#34;を別角度から埋める3本。実行の封じ込め、出力の標準化、見た目の脱・量産臭。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-10-github-trending/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3fb950, #1a7f37)"> <span class="glyph" aria-hidden="true">★</span> <div class="kicker">GitHub Trending</div> <h1>10/10 の話題リポジトリ — AI生成コードを安全実行(mxc)・UI出力を標準化(OpenUI)・AIスロップ排除(anti-slop)</h1> <p class="lede">エージェントに大量のコードとUIを書かせる時代の&quot;品質と安全&quot;を別角度から埋める3本。実行の封じ込め、出力の標準化、見た目の脱・量産臭。</p> <div class="meta"> <span>📅 2026年10月10日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#238636"> <div> <article class="prose" data-has-mermaid="0"><p>今日の3本を貫くのは「<strong>AIが生み出すもの（コード・UI・文章）をどう御すか</strong>」という一点だ。実行を封じ込める<strong>mxc</strong>、UI出力を共通の型に乗せる<strong>OpenUI</strong>、"いかにもAI製"の量産臭を弾く<strong>anti-slop</strong>。エージェントがコードもUIも書く前提に立つと、どれも素通りできない穴を埋めている。</p>
+<figure class='fig'><svg viewBox='0 0 600 250' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='22' text-anchor='middle' font-size='13' fill='#1a7f37'>3本の「解決したい課題 → 提供する機能」</text><line x1='24' y1='40' x2='576' y2='40' stroke='#cfd8dc'></line><text x='32' y='58' font-size='11' fill='#555'>リポジトリ</text><text x='188' y='58' font-size='11' fill='#555'>解決したい課題</text><text x='400' y='58' font-size='11' fill='#555'>提供する機能</text><line x1='24' y1='66' x2='576' y2='66' stroke='#cfd8dc'></line><text x='32' y='104' font-size='11' fill='#1a7f37'>microsoft/mxc</text><text x='188' y='98' font-size='10.5' fill='#333'>信頼できないコードの</text><text x='188' y='114' font-size='10.5' fill='#333'>安全実行が無い</text><text x='400' y='98' font-size='10.5' fill='#333'>OS分離〜VMで宣言的に</text><text x='400' y='114' font-size='10.5' fill='#333'>サンドボックス実行</text><line x1='24' y1='132' x2='576' y2='132' stroke='#eceff1'></line><text x='32' y='170' font-size='11' fill='#1a7f37'>thesysdev/openui</text><text x='188' y='164' font-size='10.5' fill='#333'>LLMのUI出力を各FWへ</text><text x='188' y='180' font-size='10.5' fill='#333'>安全に描く型が無い</text><text x='400' y='164' font-size='10.5' fill='#333'>OpenUI Langで範囲定義し</text><text x='400' y='180' font-size='10.5' fill='#333'>React/Vue等へ逐次描画</text><line x1='24' y1='198' x2='576' y2='198' stroke='#eceff1'></line><text x='32' y='230' font-size='11' fill='#1a7f37'>anti-slop</text><text x='188' y='224' font-size='10.5' fill='#333'>汎用的な"AI製"の</text><text x='188' y='240' font-size='10.5' fill='#333'>UI/文章/コード</text><text x='400' y='224' font-size='10.5' fill='#333'>38必須ルール＋チェックで</text><text x='400' y='240' font-size='10.5' fill='#333'>スロップだけを除去</text></svg><figcaption>図1：3本の課題と機能の対応。実行・描画・品質の3レイヤを別々に補う。</figcaption></figure>
+<h4 id="sec-1">microsoft/mxc（Rust・⭐約2.5k）</h4>
+<p><strong>解決したい課題。</strong>CIに自動セキュリティ検査が無い、機微データをどう守るか、そして<strong>エージェントが生成したコードを安全に実行する</strong>場所が無い——信頼境界を宣言的に敷ける仕組みが不在だった。<strong>提供する機能。</strong>信頼できないコードをWindows/Linux/macOSでサンドボックス実行する。OSネイティブの<strong>プロセス分離からフルVM</strong>まで複数の封じ込めバックエンドを選べ、ファイル/ネット/UIのアクセスを<strong>ポリシーで宣言的に設定</strong>、拒否時の診断も内蔵。Rust/.NET/Node用SDK付き。本日<strong>+約669（率約27%/日）</strong>と勢いが強く、MIT・Microsoft公式なので製品組み込みもしやすいのが急上昇の理由だ。</p>
+<h4 id="sec-2">thesysdev/openui（TypeScript・⭐約10.6k）</h4>
+<p><strong>解決したい課題。</strong>LLMが吐くUIを各フレームワークへ安全に描画する<strong>共通の型が無く</strong>、モデルが"何を生成してよいか"の範囲も曖昧だった。<strong>提供する機能。</strong>ストリーミング前提の記述言語<strong>OpenUI Lang</strong>で、モデルが生成してよいコンポーネントを定義し、その出力を<strong>React/Vue/Svelte/Angular</strong>のいずれかへ逐次レンダリングする。"生成UIの共通標準"という位置づけで、実測⭐約10.6k・本日+約363、MITで製品に組み込める点が後押ししている。</p>
+<h4 id="sec-3">miqdadbadjuber/anti-slop（JavaScript・⭐約5.4k）</h4>
+<p><strong>解決したい課題。</strong>AIコーディングエージェントが吐きがちな、<strong>"いかにもAI製"の汎用的なUI・文章・コード（スロップ）</strong>をどう弾くか。<strong>提供する機能。</strong><strong>38個の必須ルール＋領域別スキル＋納品前チェックリスト</strong>で汎用AI出力を排除する。特徴は、見た目の方向性は別のデザイン定義に委ね、<strong>視覚スタイルを押し付けずスロップだけをフィルタ</strong>する役割特化。本日<strong>+約535（率約10%/日）</strong>と急伸した新顔で、MITで即導入できる手軽さが話題性につながった。</p>
+<p><strong>自分が試すなら。</strong>エージェント生成コードのCI隔離に<strong>mxc</strong>、AI生成UIの画面化に<strong>OpenUI</strong>、納品前の質の最終ゲートに<strong>anti-slop</strong>——役割が綺麗に分かれるので組み合わせて効く。ただしスター数や増加はトラッカー表示と実測の乖離が大きい例が多く、自己申告値も含むため、採用時は実挙動で確かめること。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://github.com/microsoft/mxc" target="_blank" rel="noopener noreferrer"> microsoft/mxc </a> </li><li> <a href="https://github.com/thesysdev/openui" target="_blank" rel="noopener noreferrer"> thesysdev/openui </a> </li><li> <a href="https://github.com/miqdadbadjuber/anti-slop" target="_blank" rel="noopener noreferrer"> miqdadbadjuber/anti-slop </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> microsoft/mxc（Rust・⭐約2.5k） </a> </li><li> <a href="#sec-2" data-toc="sec-2"> thesysdev/openui（TypeScript・⭐約10.6k） </a> </li><li> <a href="#sec-3" data-toc="sec-3"> miqdadbadjuber/anti-slop（JavaScript・⭐約5.4k） </a> </li> </ul> <div class="reading-box"> <div>📅 2026-10-10</div> <div>⏱ 読了 約3分</div> <div>🏷 GitHub Trending</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
