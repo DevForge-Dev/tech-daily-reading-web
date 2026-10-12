@@ -1,0 +1,73 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>next-safe-action v8 で Server Actions を型安全に — Standard Schema 採用でアダプタ不要、エラーは既定で握って漏らさない — デイリー技術深掘り 読み物</title><meta name="description" content="素のServer Actionsが空ける3つの穴（検証なし・エラー漏洩・認可の手書き）を薄いラッパー1枚で塞ぐ。v8はStandard Schemaに乗り換え、Zod/Valibot/ArkTypeをそのまま渡せる。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-11-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="next-safe-action v8 で Server Actions を型安全に — Standard Schema 採用でアダプタ不要、エラーは既定で握って漏らさない — デイリー技術深掘り 読み物"><meta property="og:description" content="素のServer Actionsが空ける3つの穴（検証なし・エラー漏洩・認可の手書き）を薄いラッパー1枚で塞ぐ。v8はStandard Schemaに乗り換え、Zod/Valibot/ArkTypeをそのまま渡せる。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-11-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>next-safe-action v8 で Server Actions を型安全に — Standard Schema 採用でアダプタ不要、エラーは既定で握って漏らさない</h1> <p class="lede">素のServer Actionsが空ける3つの穴（検証なし・エラー漏洩・認可の手書き）を薄いラッパー1枚で塞ぐ。v8はStandard Schemaに乗り換え、Zod/Valibot/ArkTypeをそのまま渡せる。</p> <div class="meta"> <span>📅 2026年10月11日</span> <span>⏱ 約4分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="0"><p>背景。App Routerの<strong>Server Actions</strong>は「<code>'use server'</code>を付けた非同期関数をそのまま呼べる」手軽さが魅力だが、生のまま使うと3つの穴が空く。(1) 引数が実質<code>any</code>で実行時バリデーションが無い（クライアントから任意の値が来る＝公開エンドポイント）、(2) throwしたエラーがスタックごと本番でクライアントへ漏れうる、(3) 認証チェックやログ取りを毎アクション手書きする羽目になる。</p>
+<p><strong>何が新しいか。</strong><code>next-safe-action</code>（現行<strong>v8.6.0</strong>）は、この3つを薄いラッパー1枚で塞ぐライブラリ。v8最大のトピックは<strong>Standard Schema採用</strong>だ。v7まで必要だった<code>validationAdapter</code>が不要になり、Zod・Valibot・ArkTypeなど<a href='https://standardschema.dev/'>Standard Schema</a>準拠ライブラリをそのまま渡せる。バリデーション断片化を解消する業界標準に素直に乗り、乗り換えコストが大きく下がった。</p>
+<p><strong>仕組み（4段チェーン）。</strong>tRPCに着想を得た「クライアント生成→ミドルウェア→入力スキーマ→ハンドラ」のチェーンで、契約を全アクションに強制する。<code>createSafeActionClient()</code>で共通のエラー整形・メタデータ型を集約し、<code>.use()</code>で認可やログを<code>ctx</code>に型付きで積み上げ、<code>.inputSchema()</code>（v7で<code>.schema()</code>から改名）を通過した値だけが<code>parsedInput</code>に入り、<code>.action()</code>で本体を書く。</p>
+<figure class='fig'><svg viewBox='0 0 600 230' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><text x='300' y='22' text-anchor='middle' font-size='13' fill='#111'>next-safe-action v8 の4段チェーン</text><rect x='14' y='44' width='126' height='58' rx='6' fill='#eef3fb' stroke='#6b8fd6'></rect><text x='77' y='68' text-anchor='middle' font-size='10' fill='#2f4e8f'>①クライアント生成</text><text x='77' y='86' text-anchor='middle' font-size='9' fill='#555'>エラー整形/型集約</text><rect x='158' y='44' width='126' height='58' rx='6' fill='#eef3fb' stroke='#6b8fd6'></rect><text x='221' y='68' text-anchor='middle' font-size='10' fill='#2f4e8f'>②.use ミドルウェア</text><text x='221' y='86' text-anchor='middle' font-size='9' fill='#555'>認可/ログ→ctx</text><rect x='302' y='44' width='126' height='58' rx='6' fill='#eef3fb' stroke='#6b8fd6'></rect><text x='365' y='68' text-anchor='middle' font-size='10' fill='#2f4e8f'>③.inputSchema</text><text x='365' y='86' text-anchor='middle' font-size='9' fill='#555'>検証→parsedInput</text><rect x='446' y='44' width='140' height='58' rx='6' fill='#e9f7ee' stroke='#3fae6b'></rect><text x='516' y='68' text-anchor='middle' font-size='10' fill='#1a7f4e'>④.action 本体</text><text x='516' y='86' text-anchor='middle' font-size='9' fill='#555'>parsedInput/ctx</text><text x='148' y='78' font-size='13' fill='#6b8fd6'>→</text><text x='292' y='78' font-size='13' fill='#6b8fd6'>→</text><text x='436' y='78' font-size='13' fill='#3fae6b'>→</text><line x1='300' y1='110' x2='300' y2='130' stroke='#bbb'></line><rect x='70' y='132' width='460' height='78' rx='6' fill='#fafafa' stroke='#ccc'></rect><text x='300' y='154' text-anchor='middle' font-size='10.5' fill='#333'>返り値は常に defined な1つの形（直接分割代入OK）</text><text x='150' y='182' text-anchor='middle' font-size='10.5' fill='#1a7f4e'>data</text><text x='300' y='182' text-anchor='middle' font-size='10.5' fill='#b08500'>validationErrors</text><text x='452' y='182' text-anchor='middle' font-size='10.5' fill='#c2410c'>serverError</text><text x='300' y='200' text-anchor='middle' font-size='9' fill='#999'>throw時は汎用文言だけ→情報漏洩しない（既定フェイルセーフ）</text></svg><figcaption>図1：クライアント生成→ミドルウェア→入力スキーマ→ハンドラの4段。戻りは必ず data / validationErrors / serverError の決まった形。</figcaption></figure>
+<p><strong>返り値とエラー処理が肝。</strong>アクションの戻りは常に<code>{ data, validationErrors, serverError }</code>の決まった形。既定は<strong>フェイルセーフ</strong>で、ハンドラがthrowしても汎用文言<code>"Something went wrong"</code>だけが<code>serverError</code>に入り、詳細はサーバログ止まり＝情報漏洩しない。<code>handleServerError</code>で<code>ActionError</code>など想定内の例外だけメッセージをユーザーに通せる。</p>
+<pre><code>// lib/safe-action.ts （'use server' は付けない！）
+export const actionClient = createSafeActionClient({
+  handleServerError(e) {
+    console.error(e.message);               // 詳細はログだけ
+    if (e instanceof ActionError) return e.message;
+    return "予期しないエラーが発生しました";  // それ以外は汎用
+  },
+});</code></pre>
+<p><strong>落とし穴。</strong>クライアント設定ファイル（<code>lib/safe-action.ts</code>）に<code>'use server'</code>を<strong>書かない</strong>——付けてよいのはアクションをexportするファイルだけ。Server Actionsは裏でPOSTエンドポイントとして公開されるので「サーバーだから安全」ではなく、認可は必ずミドルウェア/DALで。フックの<code>execute()</code>はfire-and-forgetでthrowしないため、結果で分岐したいなら<code>executeAsync()</code>を使う。成功後の<code>revalidatePath</code>/<code>revalidateTag</code>（Next.js 16は<code>updateTag</code>）は手動だ。v8では<code>redirect()</code>/<code>notFound()</code>が透過的に扱われ、状態は<code>hasNavigated</code>・新設の<code>onNavigation</code>で受ける（<code>handleServerError</code>内で握り潰すと遷移が死ぬ）。</p>
+<p><strong>ひとこと。</strong>素のServer Actionsの"手軽さ"は本番では穴になる。型安全・エラー隠蔽・認可集約を一枚で担保できるこのレイヤは、公開APIとしてのServer Actionsに素直に効く。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://next-safe-action.dev/docs/getting-started" target="_blank" rel="noopener noreferrer"> next-safe-action 公式: Getting started </a> </li><li> <a href="https://next-safe-action.dev/docs/migrations/v7-to-v8" target="_blank" rel="noopener noreferrer"> v7 → v8 マイグレーション </a> </li><li> <a href="https://standardschema.dev/" target="_blank" rel="noopener noreferrer"> Standard Schema 仕様 </a> </li><li> <a href="https://www.npmjs.com/package/next-safe-action" target="_blank" rel="noopener noreferrer"> npm: next-safe-action </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
