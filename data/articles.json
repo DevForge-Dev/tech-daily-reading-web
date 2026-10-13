@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-10-12T04:53:26.819Z",
+  "generatedAt": "2026-10-13T04:54:28.589Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,106 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "date": "2026-10-12",
+      "topic": "Claude Code",
+      "title": "Claude Code を\"仕組みで縛る\" — onFailure:\"block\"・Mods・Hooks上級運用の棚卸し（v2.1.296据え置き週）",
+      "lede": "新バージョンが止まった週だからこそ、CLAUDE.mdの「助言」とHooks/Modsの「強制・拡張」の使い分けを整理する。",
+      "articleHtml": "<p>10/12（月）時点で公式changelogは10/9のv2.1.296が最新のまま。週末を挟んで更新は途切れ、新機能待ちの谷間だ。だからこそ、直近に入った制御系の機能を「どの層に置くか」という観点で棚卸ししておきたい。Claude Code を安全に動かす鍵は、派手な新機能より、ルールを<strong>どの仕組みで効かせるか</strong>の設計にある。</p>\n<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n<text x='300' y='22' text-anchor='middle' font-size='13' fill='#1f6feb'>Claude Code を縛る3層 — 助言 / 強制 / 拡張</text>\n<rect x='20' y='40' width='175' height='140' rx='8' fill='#eef4ff' stroke='#1f6feb'/>\n<rect x='212' y='40' width='175' height='140' rx='8' fill='#fff4ec' stroke='#d9730d'/>\n<rect x='404' y='40' width='175' height='140' rx='8' fill='#eefcf0' stroke='#1a7f37'/>\n<text x='107' y='66' text-anchor='middle' font-size='12' fill='#1f6feb'>CLAUDE.md</text>\n<text x='107' y='88' text-anchor='middle' font-size='12' fill='#333'>助言</text>\n<text x='107' y='116' text-anchor='middle' font-size='9.5' fill='#555'>Claudeの判断に委ねる</text>\n<text x='107' y='132' text-anchor='middle' font-size='9.5' fill='#555'>短く保つ</text>\n<text x='107' y='162' text-anchor='middle' font-size='9' fill='#888'>例: 規約・前提</text>\n<text x='299' y='66' text-anchor='middle' font-size='12' fill='#d9730d'>Hooks</text>\n<text x='299' y='88' text-anchor='middle' font-size='12' fill='#333'>強制</text>\n<text x='299' y='116' text-anchor='middle' font-size='9.5' fill='#555'>PreToolUseでexit code 2</text>\n<text x='299' y='132' text-anchor='middle' font-size='9.5' fill='#555'>onFailure:\"block\"</text>\n<text x='299' y='162' text-anchor='middle' font-size='9' fill='#888'>例: 機微ファイル保護</text>\n<text x='491' y='66' text-anchor='middle' font-size='12' fill='#1a7f37'>Mods</text>\n<text x='491' y='88' text-anchor='middle' font-size='12' fill='#333'>拡張</text>\n<text x='491' y='116' text-anchor='middle' font-size='9.5' fill='#555'>プロンプト/ツール/UI</text>\n<text x='491' y='132' text-anchor='middle' font-size='9.5' fill='#555'>状態保持・UI描画</text>\n<text x='491' y='162' text-anchor='middle' font-size='9' fill='#888'>例: Token Weather</text>\n</svg><figcaption>図1：効かせたいルールの性質で置き場所を決める。</figcaption></figure>\n<p><strong>何が新しく・重要か。</strong>先週のv2.1.295で入った <code>onFailure:\"block\"</code> は、コマンド/HTTPフックが起動失敗・タイムアウト・終了コード0/2以外で終わったとき、ツール呼び出し自体をブロックできる仕組み。公式Hooksリファレンスにはまだ未記載で、<code>async</code> や Stop/SessionStart系のフックは対象外、値の綴り間違いは設定ファイルごと黙ってスキップされる点に注意が要る。v2.1.292のAgentツール <code>effort</code> は、環境変数 <code>CLAUDE_CODE_EFFORT_LEVEL</code> ＞ 呼び出し時指定 ＞ サブエージェントのフロントマター ＞ セッション設定、の優先順で効く。</p>\n<figure class='fig'><svg viewBox='0 0 600 165' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n<text x='300' y='20' text-anchor='middle' font-size='12' fill='#d9730d'>onFailure:\"block\" — フック失敗でツール呼び出しを止める</text>\n<rect x='18' y='62' width='120' height='46' rx='6' fill='#eef4ff' stroke='#1f6feb'/>\n<text x='78' y='82' text-anchor='middle' font-size='10.5' fill='#333'>コマンド/HTTP</text>\n<text x='78' y='98' text-anchor='middle' font-size='10.5' fill='#333'>フック実行</text>\n<rect x='190' y='55' width='170' height='60' rx='6' fill='#fff8f0' stroke='#d9730d'/>\n<text x='275' y='80' text-anchor='middle' font-size='10' fill='#333'>失敗/タイムアウト/</text>\n<text x='275' y='96' text-anchor='middle' font-size='10' fill='#333'>終了コード≠0,2 ?</text>\n<rect x='430' y='38' width='152' height='40' rx='6' fill='#fdecea' stroke='#c0392b'/>\n<text x='506' y='62' text-anchor='middle' font-size='10.5' fill='#c0392b'>ツール呼び出しをブロック</text>\n<rect x='430' y='104' width='152' height='40' rx='6' fill='#eefcf0' stroke='#1a7f37'/>\n<text x='506' y='128' text-anchor='middle' font-size='10.5' fill='#1a7f37'>ツール実行を許可</text>\n<line x1='138' y1='85' x2='188' y2='85' stroke='#999' stroke-width='1.5'/><polygon points='188,85 180,81 180,89' fill='#999'/>\n<line x1='360' y1='72' x2='428' y2='60' stroke='#c0392b' stroke-width='1.5'/><polygon points='428,60 419,59 422,67' fill='#c0392b'/>\n<text x='392' y='56' text-anchor='middle' font-size='9' fill='#c0392b'>該当</text>\n<line x1='360' y1='98' x2='428' y2='122' stroke='#1a7f37' stroke-width='1.5'/><polygon points='428,122 419,117 416,125' fill='#1a7f37'/>\n<text x='392' y='118' text-anchor='middle' font-size='9' fill='#1a7f37'>正常終了</text>\n</svg><figcaption>図2：綴り間違いは「スキップ」＝素通りするので、設定の検証は必須。</figcaption></figure>\n<p><strong>仕組みを噛み砕くと、</strong>3層で考えると整理しやすい。<code>CLAUDE.md</code> はあくまでClaudeの判断に委ねる\"助言\"で、短く保つのが鉄則。確実に効かせたいルールは <code>Hooks</code> で\"強制\"する——例えばPreToolUseフックで <code>.env</code>/<code>.key</code>/<code>.pem</code> への書き込みを exit code 2 で機械的にブロックする。さらに画面やプロンプトに踏み込む\"拡張\"が <code>Mods</code>（v2.1.287以降で既定オン）で、プロンプト書き換え・ツール呼び出しの保留/拒否/置換・UIパネル追加ができ、Hooksと違いClaude Code内部で動くため状態保持とUI描画が可能だ。</p>\n<p><strong>自分が試すなら、</strong>機微ファイル保護はCLAUDE.mdに書くだけで満足せず必ずPreToolUseフックに落とす。レビューを挟みたい危険コマンドは公式サンプルMod「Blast Radius」を雛形に保留させ、コンテキスト使用量は「Token Weather」で可視化する。<strong>注意点。</strong>Modsはユーザー権限かつサンドボックス外で動くので、配布元を信頼できるものに限定し <code>claude plugin validate</code> で中身を確認。組織運用では <code>allowManagedModsOnly</code> でユーザー導入Modを禁止するのが安全だ。</p>\n<p><strong>ひとこと。</strong>「助言＝CLAUDE.md／強制＝Hooks／拡張＝Mods」の三分法で、効かせたいルールの性質に応じて置き場所を決める——新版が乏しい週の収穫はこの運用の型だった。</p>",
+      "sources": [
+        {
+          "title": "Claude Code changelog",
+          "url": "https://code.claude.com/docs/en/changelog"
+        },
+        {
+          "title": "週次まとめ（10/2〜10/8・serverworks）",
+          "url": "https://blog.serverworks.co.jp/2026/10/10/190000"
+        },
+        {
+          "title": "Claude Code Modsとは｜できること・作り方",
+          "url": "https://uravation.com/media/claude-code-mods-guide-2026-10/"
+        },
+        {
+          "title": "Hooks・サブエージェント・コンテキスト管理（上級BP）",
+          "url": "https://smartscope.blog/en/generative-ai/claude/claude-code-best-practices-advanced-2026/"
+        }
+      ],
+      "id": "2026-10-12-claude-code"
+    },
+    {
+      "date": "2026-10-12",
+      "topic": "Next.js",
+      "title": "いいね（ハート）ボタンのマイクロインタラクション — スプリング＋パーティクル・バーストをGPUだけで",
+      "lede": "派手に見えて実装コストが低い\"いいね\"の演出を、transform/opacityだけ・新API不要で堅牢に作る。",
+      "articleHtml": "<p>「いいね／お気に入り／ブックマーク」はほぼ全アプリにあるトグル操作だ。タップした瞬間にハートがスプリングでポンと弾み（overshoot）、周囲に小さな粒子が放射状にバーストする——X（Twitter）やInstagramで知られたこの演出は、「押した」という手応え（perceived responsiveness）を一気に高める。なぜ今あらためて取り上げるかというと、<strong>派手なのに実装コストが低く、GPUだけで完結できる</strong>という設計上の気持ちよさがあるからだ。</p>\n<p><strong>何が新しく・効くのか。</strong>アニメーションを <code>transform</code> と <code>opacity</code> だけに閉じれば、メインスレッド／レイアウト／ペイントを汚さずコンポジタ合成で走る。実験的APIは不要で、<code>@keyframes</code> ＋CSS変数、または Web Animations API（WAAPI）だけで全モダンブラウザで動く。バネの質感は <code>linear()</code> イージング（Chrome 113+／Firefox 112+／Safari 17.2+。2026年は広くベースライン）でJSライブラリなしに出せる。</p>\n<figure class='fig'><svg viewBox='0 0 600 180' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n<text x='300' y='20' text-anchor='middle' font-size='12' fill='#7c3aed'>ポップ：scale を 1 → 1.3 → 0.9 → 1.0 でオーバーシュート</text>\n<line x1='40' y1='150' x2='565' y2='150' stroke='#cfd8dc'/>\n<line x1='40' y1='100' x2='565' y2='100' stroke='#e0e0e0' stroke-dasharray='4 4'/>\n<text x='30' y='104' text-anchor='end' font-size='9' fill='#999'>1.0</text>\n<polyline points='40,100 190,58 340,116 520,100 565,100' fill='none' stroke='#7c3aed' stroke-width='2.5'/>\n<circle cx='40' cy='100' r='3.5' fill='#7c3aed'/><circle cx='190' cy='58' r='3.5' fill='#7c3aed'/><circle cx='340' cy='116' r='3.5' fill='#7c3aed'/><circle cx='520' cy='100' r='3.5' fill='#7c3aed'/>\n<text x='190' y='48' text-anchor='middle' font-size='9.5' fill='#7c3aed'>1.3 ふくらむ</text>\n<text x='340' y='134' text-anchor='middle' font-size='9.5' fill='#7c3aed'>0.9 ちぢむ</text>\n<text x='520' y='92' text-anchor='middle' font-size='9.5' fill='#555'>1.0 落ち着く</text>\n<text x='300' y='170' text-anchor='middle' font-size='9' fill='#999'>時間 →（約420ms・transform のみ）</text>\n</svg><figcaption>図1：行き過ぎて戻るバネ曲線。linear() で近似すればJS不要。</figcaption></figure>\n<p><strong>仕組み。</strong>実体は本物の <code>&lt;button&gt;</code> にして <code>aria-pressed</code> で状態を支援技術へ伝える（<code>div onClick</code> では作らない）。塗りハートを <code>scale(0)→(1)</code> で出すと、色のクロスフェードより弾んで見える。粒子は固定数をあらかじめDOMに置き、各粒子に角度 <code>--angle</code> を持たせて <code>translate</code> で外へ飛ばす。連打で確実に再生させたいなら WAAPIの <code>element.animate()</code> が楽だ（CSSだと「クラス除去→強制リフロー→再付与」が要る）。</p>\n<figure class='fig'><svg viewBox='0 0 600 170' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n<text x='300' y='18' text-anchor='middle' font-size='12' fill='#7c3aed'>タップ即アニメ ＋ 楽観的更新（ネットワークを待たない）</text>\n<rect x='16' y='66' width='86' height='40' rx='6' fill='#f3eeff' stroke='#7c3aed'/><text x='59' y='90' text-anchor='middle' font-size='10.5' fill='#333'>タップ</text>\n<rect x='150' y='30' width='186' height='38' rx='6' fill='#f3eeff' stroke='#7c3aed'/><text x='243' y='53' text-anchor='middle' font-size='9.5' fill='#333'>アニメ即再生（transform/opacity）</text>\n<rect x='150' y='102' width='186' height='38' rx='6' fill='#eef4ff' stroke='#1f6feb'/><text x='243' y='125' text-anchor='middle' font-size='9.5' fill='#333'>Server Action ＋ useOptimistic</text>\n<rect x='384' y='84' width='78' height='38' rx='6' fill='#fafafa' stroke='#999'/><text x='423' y='107' text-anchor='middle' font-size='10' fill='#333'>即反映</text>\n<rect x='500' y='54' width='84' height='34' rx='6' fill='#eefcf0' stroke='#1a7f37'/><text x='542' y='75' text-anchor='middle' font-size='10' fill='#1a7f37'>確定</text>\n<rect x='500' y='118' width='84' height='34' rx='6' fill='#fdecea' stroke='#c0392b'/><text x='542' y='139' text-anchor='middle' font-size='9.5' fill='#c0392b'>自動ロールバック</text>\n<line x1='102' y1='80' x2='148' y2='49' stroke='#999' stroke-width='1.3'/><polygon points='148,49 139,49 143,57' fill='#999'/>\n<line x1='102' y1='92' x2='148' y2='121' stroke='#999' stroke-width='1.3'/><polygon points='148,121 143,113 139,121' fill='#999'/>\n<line x1='336' y1='121' x2='382' y2='106' stroke='#999' stroke-width='1.3'/><polygon points='382,106 373,105 376,113' fill='#999'/>\n<line x1='462' y1='96' x2='498' y2='74' stroke='#1a7f37' stroke-width='1.3'/><polygon points='498,74 489,74 493,82' fill='#1a7f37'/>\n<line x1='462' y1='108' x2='498' y2='132' stroke='#c0392b' stroke-width='1.3'/><polygon points='498,132 489,132 493,124' fill='#c0392b'/>\n</svg><figcaption>図2：押下で即・楽観的に描画。サーバー結果は後追いし、失敗はReactが巻き戻す。</figcaption></figure>\n<p><strong>Next.js（App Router）での組み込み。</strong>ボタンはインタラクティブなので <code>'use client'</code> 必須。初期の liked／いいね数は RSC でDBから取得し props で注入すると、SSRのチラつきが消える。ミューテーションは Server Action にし、<code>useOptimistic</code> ＋ <code>useTransition</code> で即時フィードバック、失敗時はReactが自動ロールバックする。アニメの発火はネットワーク完了に依存させず、押下即で再生する。</p>\n<p><strong>落とし穴。</strong><code>width/height/box-shadow</code> はアニメしない（レイアウト／ペイントが頻発する）。粒子角度を <code>Math.random()</code> でレンダー時に決めるとハイドレーション不一致になるので、等間隔で決定的に算出するかクリック時に決める。<code>prefers-reduced-motion</code> では弾み・バーストを止め、塗りの切替だけ残す——「動きを減らす」であって「機能を消す」ではない。<strong>ひとこと。</strong>本物のボタン＋transform/opacity＋楽観的更新。この3点で\"軽くて気持ちいい\"いいねになる。</p>",
+      "sources": [
+        {
+          "title": "MDN: linear() easing function",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/easing-function/linear"
+        },
+        {
+          "title": "MDN: Web Animations API（Element.animate()）",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/Web_Animations_API"
+        },
+        {
+          "title": "Next.js Docs: Server Actions and Mutations",
+          "url": "https://nextjs.org/docs/app/getting-started/updating-data"
+        },
+        {
+          "title": "React Docs: useOptimistic",
+          "url": "https://react.dev/reference/react/useOptimistic"
+        }
+      ],
+      "id": "2026-10-12-nextjs"
+    },
+    {
+      "date": "2026-10-13",
+      "topic": "Flutter",
+      "title": "Flutter 3.50 ブランチカット — Wasm遅延ロードGAとImpeller一本化、Riverpod 3の状態標準化",
+      "lede": "11月の安定版へ向け3.50が確定。配信とレンダリングの刷新に、Riverpod 3のMutations/永続化/自動リトライを添える。",
+      "articleHtml": "<p>安定チャンネルは <strong>Flutter 3.47.7 / Dart 3.13.5</strong>（10/8のpatch）。そして10/6に <strong>3.50のブランチカット</strong>が実行され、master に入ったPRがこの時点で3.50に確定した。beta は数日内、stable は11月の見込みだ。節目の大きい更新なので、何が変わるかを押さえておきたい。</p>\n<p><strong>何が新しく・重要か。</strong>3.50の目玉は3つ。(1) Webの <strong>Wasm遅延ロード</strong>（deferred/lazy loading）が experimental → stable GA に昇格し、分割配信で初回バンドルを削減。(2) Androidで <strong>legacy Skia バックエンドが API29+ で正式に引退</strong>し、<strong>Impeller 一本化</strong>が完了。(3) Webの <strong>WasmGC 既定化</strong>も前進。言語側は Dart 3.14 で <strong>Augmentations</strong>（外部コードから既存クラスへメンバーを追加）が入る見込みで、macros は引き続きポーズ——コード生成は当面 <code>build_runner</code> ＋ <code>source_gen</code> が主軸のままだ。</p>\n<figure class='fig'><svg viewBox='0 0 600 170' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n<text x='300' y='20' text-anchor='middle' font-size='12' fill='#0553b1'>Flutter 3.50（11月stable）の主な変更</text>\n<rect x='24' y='36' width='552' height='36' rx='6' fill='#eaf3ff' stroke='#0553b1'/>\n<rect x='24' y='36' width='6' height='36' fill='#0553b1'/>\n<text x='44' y='53' font-size='10.5' fill='#0553b1'>Web ｜ Wasm遅延ロード</text>\n<text x='44' y='67' font-size='9.5' fill='#555'>experimental → stable GA（分割配信で初回バンドル削減）</text>\n<rect x='24' y='80' width='552' height='36' rx='6' fill='#eefcf0' stroke='#1a7f37'/>\n<rect x='24' y='80' width='6' height='36' fill='#1a7f37'/>\n<text x='44' y='97' font-size='10.5' fill='#1a7f37'>Android ｜ Impeller 一本化</text>\n<text x='44' y='111' font-size='9.5' fill='#555'>legacy Skia が API29+ で正式引退</text>\n<rect x='24' y='124' width='552' height='36' rx='6' fill='#f3eeff' stroke='#7c3aed'/>\n<rect x='24' y='124' width='6' height='36' fill='#7c3aed'/>\n<text x='44' y='141' font-size='10.5' fill='#7c3aed'>Web ｜ WasmGC 既定化</text>\n<text x='44' y='155' font-size='9.5' fill='#555'>3.50 ラインで前進</text>\n</svg><figcaption>図1：準備は flutter build web --wasm と beta でのCI先行検証。</figcaption></figure>\n<p><strong>状態管理の要点——Riverpod 3.4系。</strong>実験的に <strong>Mutations</strong> が入った。<code>final addTodo = Mutation&lt;void&gt;();</code> を宣言し <code>addTodo.run(ref, () async {...})</code> で副作用を実行、<code>ref.watch</code> で <code>MutationIdle / Pending / Error / Success</code> を switch 分岐でき、「送信中スピナー・成功トースト・失敗再試行」の状態管理が標準化される。オフライン永続化は <code>build</code> 冒頭で <code>persist(...)</code> を呼ぶだけ（<code>JsonSqFliteStorage</code>、既定キャッシュ2日、<code>AsyncValue.isFromCache</code> で由来判定）。失敗した provider は指数バックオフ（200ms→最大6.4秒）で自動リトライし、<code>null</code> を返すと停止する。</p>\n<figure class='fig'><svg viewBox='0 0 600 160' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n<text x='300' y='20' text-anchor='middle' font-size='12' fill='#0553b1'>Riverpod 3 Mutation の状態遷移</text>\n<rect x='22' y='68' width='104' height='44' rx='8' fill='#f3f4f6' stroke='#888'/><text x='74' y='94' text-anchor='middle' font-size='11' fill='#333'>Idle</text>\n<rect x='210' y='68' width='120' height='44' rx='8' fill='#eaf3ff' stroke='#0553b1'/><text x='270' y='94' text-anchor='middle' font-size='11' fill='#0553b1'>Pending</text>\n<rect x='436' y='36' width='140' height='40' rx='8' fill='#eefcf0' stroke='#1a7f37'/><text x='506' y='61' text-anchor='middle' font-size='11' fill='#1a7f37'>Success</text>\n<rect x='436' y='104' width='140' height='40' rx='8' fill='#fdecea' stroke='#c0392b'/><text x='506' y='129' text-anchor='middle' font-size='11' fill='#c0392b'>Error</text>\n<line x1='126' y1='90' x2='208' y2='90' stroke='#999' stroke-width='1.5'/><polygon points='208,90 199,86 199,94' fill='#999'/>\n<text x='167' y='82' text-anchor='middle' font-size='8.5' fill='#777'>.run(ref, …)</text>\n<line x1='330' y1='82' x2='434' y2='58' stroke='#1a7f37' stroke-width='1.5'/><polygon points='434,58 425,57 428,65' fill='#1a7f37'/><text x='378' y='62' text-anchor='middle' font-size='8.5' fill='#1a7f37'>成功</text>\n<line x1='330' y1='98' x2='434' y2='122' stroke='#c0392b' stroke-width='1.5'/><polygon points='434,122 425,122 428,114' fill='#c0392b'/><text x='378' y='120' text-anchor='middle' font-size='8.5' fill='#c0392b'>失敗</text>\n<path d='M460 104 C420 112 330 120 300 114' fill='none' stroke='#c0392b' stroke-width='1.2' stroke-dasharray='4 3'/><polygon points='300,114 309,112 307,119' fill='#c0392b'/><text x='392' y='140' text-anchor='middle' font-size='8.5' fill='#c0392b'>自動リトライ（指数バックオフ）</text>\n</svg><figcaption>図2：switch で UI を書けば、送信中→成功/失敗の分岐が型で漏れない。</figcaption></figure>\n<p><strong>UIとアニメーション。</strong>Material 3 Expressive は spring（物理ベース）モーションが核で、押下での形状モーフや選択ピルの拡大が spring 駆動になる。<code>flutter_animate</code> は <code>Text('Hi').animate().fadeIn().slide().scale()</code> と effect をチェーンでき、<code>.then()</code> が前 effect の delay＋duration から次の開始を自動計算してくれる。<strong>注意点。</strong>spring/morph は毎フレーム再描画なので必ず <code>--profile</code> で計測し（debug は3〜5倍遅い）、重い画面は <code>RepaintBoundary</code> で隔離する。<strong>ひとこと。</strong>3.50は「配信を軽く・描画をImpellerに統一」、状態は Riverpod 3 で非同期の定型を言語化する年だ。まず beta でCIを1本回し、11月の切替コストを前倒しで潰しておきたい。</p>",
+      "sources": [
+        {
+          "title": "Flutter versions（flutterreleases.com）",
+          "url": "https://flutterreleases.com/flutter-versions/"
+        },
+        {
+          "title": "What's new in Riverpod 3.0",
+          "url": "https://riverpod.dev/docs/whats_new"
+        },
+        {
+          "title": "material_3_expressive 1.0.7 (pub.dev docs)",
+          "url": "https://pub.dev/documentation/material_3_expressive/1.0.7/"
+        },
+        {
+          "title": "flutter_animate 2.2.0 API docs",
+          "url": "https://pub.dev/documentation/flutter_animate/2.2.0/flutter_animate/"
+        }
+      ],
+      "id": "2026-10-13-flutter"
+    },
+    {
+      "date": "2026-10-12",
+      "topic": "GitHub Trending",
+      "title": "10/12の話題リポジトリ — Mac内をAIで意味検索(DigUp)・回線束ねて高速DL(plexo)・5MBネイティブJSアプリ(tinyjsapp)",
+      "lede": "AIエージェント一色のトレンドの隙間で、率主軸で急伸したのは\"手元で完結する\"デスクトップ道具3本だった。",
+      "articleHtml": "<p>10/12にGitHubで増加「率」主軸で上位に来たのは、クラウドやエージェントではなく、自分のPCで閉じる小さく鋭いツール3本だった。共通するのは、誰もが持つ身近な不便を、一発で伝わる明快な価値で解いている点。派手なエージェントの隙間を突く道具たちを、「解決したい課題」と「提供する機能」の2軸で読む。</p>\n<figure class='fig'><svg viewBox='0 0 600 230' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n<text x='300' y='22' text-anchor='middle' font-size='13' fill='#1a7f37'>3本の「解決したい課題 → 提供する機能」</text>\n<line x1='24' y1='40' x2='576' y2='40' stroke='#cfd8dc'/>\n<text x='30' y='58' font-size='11' fill='#555'>リポジトリ</text><text x='196' y='58' font-size='11' fill='#555'>解決したい課題</text><text x='392' y='58' font-size='11' fill='#555'>提供する機能</text>\n<line x1='24' y1='66' x2='576' y2='66' stroke='#cfd8dc'/>\n<text x='30' y='100' font-size='10.5' fill='#1a7f37'>DigUp</text><text x='30' y='114' font-size='8.5' fill='#999'>Swift ★1.9k</text>\n<text x='196' y='96' font-size='10' fill='#333'>中身をクラウドに送らず</text><text x='196' y='111' font-size='10' fill='#333'>Mac内を意味で探したい</text>\n<text x='392' y='96' font-size='10' fill='#333'>EmbeddingGemmaをオンデバイス</text><text x='392' y='111' font-size='10' fill='#333'>実行しマルチモーダル検索</text>\n<line x1='24' y1='128' x2='576' y2='128' stroke='#eceff1'/>\n<text x='30' y='162' font-size='10.5' fill='#1a7f37'>plexo</text><text x='30' y='176' font-size='8.5' fill='#999'>TS ★3.1k</text>\n<text x='196' y='158' font-size='10' fill='#333'>1本のDLが遅く帯域を</text><text x='196' y='173' font-size='10' fill='#333'>使い切れない</text>\n<text x='392' y='158' font-size='10' fill='#333'>複数接続を並列集約して</text><text x='392' y='173' font-size='10' fill='#333'>1ファイルを高速取得</text>\n<line x1='24' y1='190' x2='576' y2='190' stroke='#eceff1'/>\n<text x='30' y='214' font-size='10.5' fill='#1a7f37'>tinyjsapp</text><text x='30' y='227' font-size='8.5' fill='#999'>C ★1.0k</text>\n<text x='196' y='210' font-size='10' fill='#333'>Electronは配布が肥大</text>\n<text x='392' y='210' font-size='10' fill='#333'>JSで約5MBのネイティブ単体実行ファイル</text>\n</svg><figcaption>図1：3本とも「ローカル完結 × 一つの明快な価値」で勝っている。</figcaption></figure>\n<h4>ARahim3/DigUp（Swift・⭐約1.9k）</h4>\n<p><strong>解決したい課題：</strong>Mac内の写真・PDF・録音・動画・コードは増えるほどファイル名では探せない。かといって中身をクラウドに送るのは避けたい。<strong>提供する機能：</strong>Google DeepMindの EmbeddingGemma 2 を llama.cpp で完全オンデバイス実行し、\"内容\"で横断セマンティック検索する。メニューバー常駐、クラウド送信なし。公開約4日で約1.9k（平均約460★/日）の新星で、「非クラウドAI」という分かりやすい価値が急伸の軸になっている。</p>\n<h4>anmolkapil/plexo（TypeScript・⭐約3.1k）</h4>\n<p><strong>解決したい課題：</strong>1本のダウンロードが遅く、回線の帯域を使い切れないという古典的だが普遍的な不便。<strong>提供する機能：</strong>複数のネットワーク接続を並列に束ね（帯域アグリゲーション）、1ファイルを分割並列取得して高速化するクロスプラットフォームのDLマネージャ。Windows/macOS/Linux対応・MITで導入障壁が低く、非AIユーティリティの多様性枠として Trendshift 日次上位に現れた。</p>\n<h4>tarwin/tinyjsapp（C・⭐約1.0k／本日+約142）</h4>\n<p><strong>解決したい課題：</strong>Electron でデスクトップアプリを作ると配布サイズが肥大する。<strong>提供する機能：</strong>JavaScript でバックエンドもフロントも書き、約5MBのネイティブ単体実行ファイルにビルドする軽量ツールキット。\"とにかく軽い\"の一点突破が開発者に刺さり、当日+約142と純増が明確だった。</p>\n<p><strong>まとめ。</strong>3本に共通するのは「ローカル完結 × 明快な一つの価値」。派手なエージェントの隙間で、小さな道具が率で勝つ日だった。自分で試すなら、まずは手元のファイル整理に効く DigUp のオンデバイス検索から触ってみたい。</p>",
+      "sources": [
+        {
+          "title": "ARahim3/DigUp",
+          "url": "https://github.com/ARahim3/DigUp"
+        },
+        {
+          "title": "anmolkapil/plexo",
+          "url": "https://github.com/anmolkapil/plexo"
+        },
+        {
+          "title": "tarwin/tinyjsapp",
+          "url": "https://github.com/tarwin/tinyjsapp"
+        }
+      ],
+      "id": "2026-10-12-github-trending"
+    },
     {
       "date": "2026-10-11",
       "topic": "Claude Code",
