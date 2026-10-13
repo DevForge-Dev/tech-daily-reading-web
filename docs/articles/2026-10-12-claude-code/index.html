@@ -1,0 +1,102 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Claude Code を&quot;仕組みで縛る&quot; — onFailure:&quot;block&quot;・Mods・Hooks上級運用の棚卸し（v2.1.296据え置き週） — デイリー技術深掘り 読み物</title><meta name="description" content="新バージョンが止まった週だからこそ、CLAUDE.mdの「助言」とHooks/Modsの「強制・拡張」の使い分けを整理する。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-12-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Claude Code を&#34;仕組みで縛る&#34; — onFailure:&#34;block&#34;・Mods・Hooks上級運用の棚卸し（v2.1.296据え置き週） — デイリー技術深掘り 読み物"><meta property="og:description" content="新バージョンが止まった週だからこそ、CLAUDE.mdの「助言」とHooks/Modsの「強制・拡張」の使い分けを整理する。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-12-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>Claude Code を&quot;仕組みで縛る&quot; — onFailure:&quot;block&quot;・Mods・Hooks上級運用の棚卸し（v2.1.296据え置き週）</h1> <p class="lede">新バージョンが止まった週だからこそ、CLAUDE.mdの「助言」とHooks/Modsの「強制・拡張」の使い分けを整理する。</p> <div class="meta"> <span>📅 2026年10月12日</span> <span>⏱ 約3分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="0"><p>10/12（月）時点で公式changelogは10/9のv2.1.296が最新のまま。週末を挟んで更新は途切れ、新機能待ちの谷間だ。だからこそ、直近に入った制御系の機能を「どの層に置くか」という観点で棚卸ししておきたい。Claude Code を安全に動かす鍵は、派手な新機能より、ルールを<strong>どの仕組みで効かせるか</strong>の設計にある。</p>
+<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+<text x='300' y='22' text-anchor='middle' font-size='13' fill='#1f6feb'>Claude Code を縛る3層 — 助言 / 強制 / 拡張</text>
+<rect x='20' y='40' width='175' height='140' rx='8' fill='#eef4ff' stroke='#1f6feb'></rect>
+<rect x='212' y='40' width='175' height='140' rx='8' fill='#fff4ec' stroke='#d9730d'></rect>
+<rect x='404' y='40' width='175' height='140' rx='8' fill='#eefcf0' stroke='#1a7f37'></rect>
+<text x='107' y='66' text-anchor='middle' font-size='12' fill='#1f6feb'>CLAUDE.md</text>
+<text x='107' y='88' text-anchor='middle' font-size='12' fill='#333'>助言</text>
+<text x='107' y='116' text-anchor='middle' font-size='9.5' fill='#555'>Claudeの判断に委ねる</text>
+<text x='107' y='132' text-anchor='middle' font-size='9.5' fill='#555'>短く保つ</text>
+<text x='107' y='162' text-anchor='middle' font-size='9' fill='#888'>例: 規約・前提</text>
+<text x='299' y='66' text-anchor='middle' font-size='12' fill='#d9730d'>Hooks</text>
+<text x='299' y='88' text-anchor='middle' font-size='12' fill='#333'>強制</text>
+<text x='299' y='116' text-anchor='middle' font-size='9.5' fill='#555'>PreToolUseでexit code 2</text>
+<text x='299' y='132' text-anchor='middle' font-size='9.5' fill='#555'>onFailure:"block"</text>
+<text x='299' y='162' text-anchor='middle' font-size='9' fill='#888'>例: 機微ファイル保護</text>
+<text x='491' y='66' text-anchor='middle' font-size='12' fill='#1a7f37'>Mods</text>
+<text x='491' y='88' text-anchor='middle' font-size='12' fill='#333'>拡張</text>
+<text x='491' y='116' text-anchor='middle' font-size='9.5' fill='#555'>プロンプト/ツール/UI</text>
+<text x='491' y='132' text-anchor='middle' font-size='9.5' fill='#555'>状態保持・UI描画</text>
+<text x='491' y='162' text-anchor='middle' font-size='9' fill='#888'>例: Token Weather</text>
+</svg><figcaption>図1：効かせたいルールの性質で置き場所を決める。</figcaption></figure>
+<p><strong>何が新しく・重要か。</strong>先週のv2.1.295で入った <code>onFailure:"block"</code> は、コマンド/HTTPフックが起動失敗・タイムアウト・終了コード0/2以外で終わったとき、ツール呼び出し自体をブロックできる仕組み。公式Hooksリファレンスにはまだ未記載で、<code>async</code> や Stop/SessionStart系のフックは対象外、値の綴り間違いは設定ファイルごと黙ってスキップされる点に注意が要る。v2.1.292のAgentツール <code>effort</code> は、環境変数 <code>CLAUDE_CODE_EFFORT_LEVEL</code> ＞ 呼び出し時指定 ＞ サブエージェントのフロントマター ＞ セッション設定、の優先順で効く。</p>
+<figure class='fig'><svg viewBox='0 0 600 165' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+<text x='300' y='20' text-anchor='middle' font-size='12' fill='#d9730d'>onFailure:"block" — フック失敗でツール呼び出しを止める</text>
+<rect x='18' y='62' width='120' height='46' rx='6' fill='#eef4ff' stroke='#1f6feb'></rect>
+<text x='78' y='82' text-anchor='middle' font-size='10.5' fill='#333'>コマンド/HTTP</text>
+<text x='78' y='98' text-anchor='middle' font-size='10.5' fill='#333'>フック実行</text>
+<rect x='190' y='55' width='170' height='60' rx='6' fill='#fff8f0' stroke='#d9730d'></rect>
+<text x='275' y='80' text-anchor='middle' font-size='10' fill='#333'>失敗/タイムアウト/</text>
+<text x='275' y='96' text-anchor='middle' font-size='10' fill='#333'>終了コード≠0,2 ?</text>
+<rect x='430' y='38' width='152' height='40' rx='6' fill='#fdecea' stroke='#c0392b'></rect>
+<text x='506' y='62' text-anchor='middle' font-size='10.5' fill='#c0392b'>ツール呼び出しをブロック</text>
+<rect x='430' y='104' width='152' height='40' rx='6' fill='#eefcf0' stroke='#1a7f37'></rect>
+<text x='506' y='128' text-anchor='middle' font-size='10.5' fill='#1a7f37'>ツール実行を許可</text>
+<line x1='138' y1='85' x2='188' y2='85' stroke='#999' stroke-width='1.5'></line><polygon points='188,85 180,81 180,89' fill='#999'></polygon>
+<line x1='360' y1='72' x2='428' y2='60' stroke='#c0392b' stroke-width='1.5'></line><polygon points='428,60 419,59 422,67' fill='#c0392b'></polygon>
+<text x='392' y='56' text-anchor='middle' font-size='9' fill='#c0392b'>該当</text>
+<line x1='360' y1='98' x2='428' y2='122' stroke='#1a7f37' stroke-width='1.5'></line><polygon points='428,122 419,117 416,125' fill='#1a7f37'></polygon>
+<text x='392' y='118' text-anchor='middle' font-size='9' fill='#1a7f37'>正常終了</text>
+</svg><figcaption>図2：綴り間違いは「スキップ」＝素通りするので、設定の検証は必須。</figcaption></figure>
+<p><strong>仕組みを噛み砕くと、</strong>3層で考えると整理しやすい。<code>CLAUDE.md</code> はあくまでClaudeの判断に委ねる"助言"で、短く保つのが鉄則。確実に効かせたいルールは <code>Hooks</code> で"強制"する——例えばPreToolUseフックで <code>.env</code>/<code>.key</code>/<code>.pem</code> への書き込みを exit code 2 で機械的にブロックする。さらに画面やプロンプトに踏み込む"拡張"が <code>Mods</code>（v2.1.287以降で既定オン）で、プロンプト書き換え・ツール呼び出しの保留/拒否/置換・UIパネル追加ができ、Hooksと違いClaude Code内部で動くため状態保持とUI描画が可能だ。</p>
+<p><strong>自分が試すなら、</strong>機微ファイル保護はCLAUDE.mdに書くだけで満足せず必ずPreToolUseフックに落とす。レビューを挟みたい危険コマンドは公式サンプルMod「Blast Radius」を雛形に保留させ、コンテキスト使用量は「Token Weather」で可視化する。<strong>注意点。</strong>Modsはユーザー権限かつサンドボックス外で動くので、配布元を信頼できるものに限定し <code>claude plugin validate</code> で中身を確認。組織運用では <code>allowManagedModsOnly</code> でユーザー導入Modを禁止するのが安全だ。</p>
+<p><strong>ひとこと。</strong>「助言＝CLAUDE.md／強制＝Hooks／拡張＝Mods」の三分法で、効かせたいルールの性質に応じて置き場所を決める——新版が乏しい週の収穫はこの運用の型だった。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://code.claude.com/docs/en/changelog" target="_blank" rel="noopener noreferrer"> Claude Code changelog </a> </li><li> <a href="https://blog.serverworks.co.jp/2026/10/10/190000" target="_blank" rel="noopener noreferrer"> 週次まとめ（10/2〜10/8・serverworks） </a> </li><li> <a href="https://uravation.com/media/claude-code-mods-guide-2026-10/" target="_blank" rel="noopener noreferrer"> Claude Code Modsとは｜できること・作り方 </a> </li><li> <a href="https://smartscope.blog/en/generative-ai/claude/claude-code-best-practices-advanced-2026/" target="_blank" rel="noopener noreferrer"> Hooks・サブエージェント・コンテキスト管理（上級BP） </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

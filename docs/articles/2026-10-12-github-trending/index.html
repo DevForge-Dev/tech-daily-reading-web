@@ -1,0 +1,83 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>10/12の話題リポジトリ — Mac内をAIで意味検索(DigUp)・回線束ねて高速DL(plexo)・5MBネイティブJSアプリ(tinyjsapp) — デイリー技術深掘り 読み物</title><meta name="description" content="AIエージェント一色のトレンドの隙間で、率主軸で急伸したのは&#34;手元で完結する&#34;デスクトップ道具3本だった。"><meta name="theme-color" content="#238636"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-12-github-trending/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="10/12の話題リポジトリ — Mac内をAIで意味検索(DigUp)・回線束ねて高速DL(plexo)・5MBネイティブJSアプリ(tinyjsapp) — デイリー技術深掘り 読み物"><meta property="og:description" content="AIエージェント一色のトレンドの隙間で、率主軸で急伸したのは&#34;手元で完結する&#34;デスクトップ道具3本だった。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-12-github-trending/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3fb950, #1a7f37)"> <span class="glyph" aria-hidden="true">★</span> <div class="kicker">GitHub Trending</div> <h1>10/12の話題リポジトリ — Mac内をAIで意味検索(DigUp)・回線束ねて高速DL(plexo)・5MBネイティブJSアプリ(tinyjsapp)</h1> <p class="lede">AIエージェント一色のトレンドの隙間で、率主軸で急伸したのは&quot;手元で完結する&quot;デスクトップ道具3本だった。</p> <div class="meta"> <span>📅 2026年10月12日</span> <span>⏱ 約2分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#238636"> <div> <article class="prose" data-has-mermaid="0"><p>10/12にGitHubで増加「率」主軸で上位に来たのは、クラウドやエージェントではなく、自分のPCで閉じる小さく鋭いツール3本だった。共通するのは、誰もが持つ身近な不便を、一発で伝わる明快な価値で解いている点。派手なエージェントの隙間を突く道具たちを、「解決したい課題」と「提供する機能」の2軸で読む。</p>
+<figure class='fig'><svg viewBox='0 0 600 230' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+<text x='300' y='22' text-anchor='middle' font-size='13' fill='#1a7f37'>3本の「解決したい課題 → 提供する機能」</text>
+<line x1='24' y1='40' x2='576' y2='40' stroke='#cfd8dc'></line>
+<text x='30' y='58' font-size='11' fill='#555'>リポジトリ</text><text x='196' y='58' font-size='11' fill='#555'>解決したい課題</text><text x='392' y='58' font-size='11' fill='#555'>提供する機能</text>
+<line x1='24' y1='66' x2='576' y2='66' stroke='#cfd8dc'></line>
+<text x='30' y='100' font-size='10.5' fill='#1a7f37'>DigUp</text><text x='30' y='114' font-size='8.5' fill='#999'>Swift ★1.9k</text>
+<text x='196' y='96' font-size='10' fill='#333'>中身をクラウドに送らず</text><text x='196' y='111' font-size='10' fill='#333'>Mac内を意味で探したい</text>
+<text x='392' y='96' font-size='10' fill='#333'>EmbeddingGemmaをオンデバイス</text><text x='392' y='111' font-size='10' fill='#333'>実行しマルチモーダル検索</text>
+<line x1='24' y1='128' x2='576' y2='128' stroke='#eceff1'></line>
+<text x='30' y='162' font-size='10.5' fill='#1a7f37'>plexo</text><text x='30' y='176' font-size='8.5' fill='#999'>TS ★3.1k</text>
+<text x='196' y='158' font-size='10' fill='#333'>1本のDLが遅く帯域を</text><text x='196' y='173' font-size='10' fill='#333'>使い切れない</text>
+<text x='392' y='158' font-size='10' fill='#333'>複数接続を並列集約して</text><text x='392' y='173' font-size='10' fill='#333'>1ファイルを高速取得</text>
+<line x1='24' y1='190' x2='576' y2='190' stroke='#eceff1'></line>
+<text x='30' y='214' font-size='10.5' fill='#1a7f37'>tinyjsapp</text><text x='30' y='227' font-size='8.5' fill='#999'>C ★1.0k</text>
+<text x='196' y='210' font-size='10' fill='#333'>Electronは配布が肥大</text>
+<text x='392' y='210' font-size='10' fill='#333'>JSで約5MBのネイティブ単体実行ファイル</text>
+</svg><figcaption>図1：3本とも「ローカル完結 × 一つの明快な価値」で勝っている。</figcaption></figure>
+<h4 id="sec-1">ARahim3/DigUp（Swift・⭐約1.9k）</h4>
+<p><strong>解決したい課題：</strong>Mac内の写真・PDF・録音・動画・コードは増えるほどファイル名では探せない。かといって中身をクラウドに送るのは避けたい。<strong>提供する機能：</strong>Google DeepMindの EmbeddingGemma 2 を llama.cpp で完全オンデバイス実行し、"内容"で横断セマンティック検索する。メニューバー常駐、クラウド送信なし。公開約4日で約1.9k（平均約460★/日）の新星で、「非クラウドAI」という分かりやすい価値が急伸の軸になっている。</p>
+<h4 id="sec-2">anmolkapil/plexo（TypeScript・⭐約3.1k）</h4>
+<p><strong>解決したい課題：</strong>1本のダウンロードが遅く、回線の帯域を使い切れないという古典的だが普遍的な不便。<strong>提供する機能：</strong>複数のネットワーク接続を並列に束ね（帯域アグリゲーション）、1ファイルを分割並列取得して高速化するクロスプラットフォームのDLマネージャ。Windows/macOS/Linux対応・MITで導入障壁が低く、非AIユーティリティの多様性枠として Trendshift 日次上位に現れた。</p>
+<h4 id="sec-3">tarwin/tinyjsapp（C・⭐約1.0k／本日+約142）</h4>
+<p><strong>解決したい課題：</strong>Electron でデスクトップアプリを作ると配布サイズが肥大する。<strong>提供する機能：</strong>JavaScript でバックエンドもフロントも書き、約5MBのネイティブ単体実行ファイルにビルドする軽量ツールキット。"とにかく軽い"の一点突破が開発者に刺さり、当日+約142と純増が明確だった。</p>
+<p><strong>まとめ。</strong>3本に共通するのは「ローカル完結 × 明快な一つの価値」。派手なエージェントの隙間で、小さな道具が率で勝つ日だった。自分で試すなら、まずは手元のファイル整理に効く DigUp のオンデバイス検索から触ってみたい。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://github.com/ARahim3/DigUp" target="_blank" rel="noopener noreferrer"> ARahim3/DigUp </a> </li><li> <a href="https://github.com/anmolkapil/plexo" target="_blank" rel="noopener noreferrer"> anmolkapil/plexo </a> </li><li> <a href="https://github.com/tarwin/tinyjsapp" target="_blank" rel="noopener noreferrer"> tarwin/tinyjsapp </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> ARahim3/DigUp（Swift・⭐約1.9k） </a> </li><li> <a href="#sec-2" data-toc="sec-2"> anmolkapil/plexo（TypeScript・⭐約3.1k） </a> </li><li> <a href="#sec-3" data-toc="sec-3"> tarwin/tinyjsapp（C・⭐約1.0k／本日+約142） </a> </li> </ul> <div class="reading-box"> <div>📅 2026-10-12</div> <div>⏱ 読了 約2分</div> <div>🏷 GitHub Trending</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
