@@ -1,0 +1,105 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>更新が止まった週にこそ読む — 権限バイパス系セキュリティ修正の中身と、v2.1.296「現在地」チートシート — デイリー技術深掘り 読み物</title><meta name="description" content="新バージョンが5日連続で出ない静かな週。だからこそ直近で入った権限バイパス修正の中身と、いまのClaude Codeの全体像を棚卸ししておく。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-14-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="更新が止まった週にこそ読む — 権限バイパス系セキュリティ修正の中身と、v2.1.296「現在地」チートシート — デイリー技術深掘り 読み物"><meta property="og:description" content="新バージョンが5日連続で出ない静かな週。だからこそ直近で入った権限バイパス修正の中身と、いまのClaude Codeの全体像を棚卸ししておく。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-14-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>更新が止まった週にこそ読む — 権限バイパス系セキュリティ修正の中身と、v2.1.296「現在地」チートシート</h1> <p class="lede">新バージョンが5日連続で出ない静かな週。だからこそ直近で入った権限バイパス修正の中身と、いまのClaude Codeの全体像を棚卸ししておく。</p> <div class="meta"> <span>📅 2026年10月14日</span> <span>⏱ 約4分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="0">
+<p>10/14時点で公式changelogは<strong>10/9のv2.1.296が最新のまま</strong>で、10/10〜10/14は5日連続で新バージョンが出ていない（直近では最長級の更新停止）。機能が増えない週は退屈に見えるが、こういう時こそ「すでに入った変更の意味」を落ち着いて読むのに向いている。今日は、週次レビュー（週of10/11）が集中して伝えている<strong>権限バイパス系のセキュリティ修正</strong>と、10/13公開のチートシートが描く「現在地」を押さえておく。</p>
+
+<h3>何が重要か：静かな更新の裏で「権限の穴」が4つ塞がれた</h3>
+<p>直近のリリースで目立つのは新機能ではなくセキュリティ修正だ。いずれも「許可したつもりのない操作が通ってしまう」タイプで、Auto Mode前提の運用では見過ごせない。</p>
+
+<figure class='fig'>
+<svg viewBox='0 0 600 250' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <rect x='0' y='0' width='600' height='250' fill='#f6f8fa' rx='8'></rect>
+  <text x='300' y='26' text-anchor='middle' font-size='14' font-weight='bold' fill='#1a1a1a'>v2.1.296前後で塞がれた権限バイパス（抜粋）</text>
+  <g font-size='11'>
+    <rect x='20' y='44' width='270' height='44' fill='#ffe9e9' stroke='#d1242f' rx='5'></rect>
+    <text x='28' y='62' fill='#86181d' font-weight='bold'>① env接頭辞つきBash</text>
+    <text x='28' y='79' fill='#4a4a4a'>TZ=&quot;$HOME&quot; rm -rf … がdeny/askをすり抜け</text>
+    <rect x='20' y='96' width='270' height='44' fill='#ffe9e9' stroke='#d1242f' rx='5'></rect>
+    <text x='28' y='114' fill='#86181d' font-weight='bold'>② シンボリックリンク経由Read</text>
+    <text x='28' y='131' fill='#4a4a4a'>@メンション/IDEでReadのdenyが効かない</text>
+    <rect x='20' y='148' width='270' height='44' fill='#ffe9e9' stroke='#d1242f' rx='5'></rect>
+    <text x='28' y='166' fill='#86181d' font-weight='bold'>③ UNCネットワークパス</text>
+    <text x='28' y='183' fill='#4a4a4a'>PreToolUse/auto modeの承認を回避</text>
+    <rect x='20' y='200' width='270' height='40' fill='#ffe9e9' stroke='#d1242f' rx='5'></rect>
+    <text x='28' y='218' fill='#86181d' font-weight='bold'>④ 読取中のリンク差し替え</text>
+    <text x='28' y='234' fill='#4a4a4a'>notebook/PDFが承認外ファイルを返す</text>
+    <text x='380' y='135' text-anchor='middle' font-size='40' fill='#2da44e'>→</text>
+    <rect x='430' y='96' width='150' height='96' fill='#e6ffed' stroke='#2da44e' rx='6'></rect>
+    <text x='505' y='138' text-anchor='middle' font-size='13' font-weight='bold' fill='#1a7f37'>v2.1.296+</text>
+    <text x='505' y='160' text-anchor='middle' font-size='11' fill='#1a7f37'>で全て解消</text>
+    <text x='505' y='178' text-anchor='middle' font-size='10' fill='#4a4a4a'>→更新を推奨</text>
+  </g>
+</svg>
+<figcaption>図1：Auto Mode前提の運用ほど効くので、v2.1.296以降への更新が勧められている。</figcaption>
+</figure>
+
+<p>あわせて、WebFetchが10万字超を黙って切り捨てていた挙動をやめ、未読量の報告と <code>offset</code> 指定に対応（2.1.290）。過負荷(529)応答のリトライ間隔を延ばす環境変数 <code>CLAUDE_CODE_OVERLOADED_RETRY_BASE/MAX_DELAY_MS</code> も入った。v2.1.296本体では、全ワークフローエージェントを単一モデルで動かす <code>CLAUDE_CODE_WORKFLOW_SUBAGENT_MODEL</code>、サブエージェントごとの <code>autoCompactWindow</code>、Readの <code>allow_large</code>、そして managed PreToolUseフックが <code>continue:false</code> で拒否してもターンが終わらなかったバグの修正が含まれる。</p>
+
+<h3>現在地：120コマンド・33フック・Auto Mode既定・最大20並列</h3>
+<p>10/13公開のチートシートが規模感を一枚で示している。約<strong>120コマンド/スキル・33フックイベント・46ツール・243 settings.jsonキー・391環境変数</strong>。権限は<strong>v2.1.284以降Auto Modeが対話セッションの既定</strong>で、分類器が <code>git reset --hard</code> や <code>terraform destroy</code> のような破壊的操作を明示要求なしでブロックする（旧defaultは「Manual」に改称）。並列実行は<strong>サブエージェントが背景既定・3階層ネスト・最大20並列</strong>、<code>/fork</code> で独自ワークツリーの背景セッション複製、動的ワークフローは <code>.claude/workflows/</code> にJSで保存。既定変更としてTodoWrite/Task系とGlob/Grepが新モデルに既定非提供になった点は、自前のワークフローを組んでいる人ほど影響が出る（必要なら <code>CLAUDE_CODE_ENABLE_TODO_TOOLS=1</code>）。</p>
+
+<h3>自分が試すなら</h3>
+<p>まず <code>claude --version</code> でv2.1.296以上か確認し、古ければ上げる（上の4つの穴が理由として十分）。運用方針は「個別承認を積むよりゴールを与えて背景agentに委譲、重要ルールはhooks/CLAUDE.md/支出上限でコード化」。<code>/doctor</code>・<code>/skill-doctor</code> で不要設定を一度掃除しておくとよい。市場面ではStack Overflow 2026でコーディングagent利用率がClaude Code 65.5% vs Codex 29.5%。API料金はHaiku5.5 $0.10/$0.50、Sonnet5.5 $2/$10、Opus5.5 $4/$20で、大量処理やサブエージェント統括にはHaikuを当てるのが定石になりつつある。</p>
+
+<h3>注意点</h3>
+<p>チートシートや「できること25選」系の記事は<strong>対象バージョンが1世代前のことがある</strong>（Ultraplanが廃止済みなのに新機能表に残る等）。数値や廃止状況は公式changelogで裏取りする前提で読む。週間ニュース（NTTデータが大阪にAnthropic初の日本DCで最終交渉＝$6.3B/500MW、MicrosoftがCopilot経由でClaudeに年$2B超支払い見通し等）は<strong>いずれも報道ベース・未検証</strong>なので、事実として引用しないこと。</p>
+
+<h3>ひとことまとめ</h3>
+<p>新機能ゼロの週＝安全に更新できる週。権限バイパス4件を取り込むだけでも、v2.1.296へ上げる価値がある。</p>
+</article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://code.claude.com/docs/en/changelog" target="_blank" rel="noopener noreferrer"> Claude Code changelog </a> </li><li> <a href="https://dev.to/aicoding-guide/this-week-in-claude-code-codex-and-gemini-cli-week-of-october-11-2026-2k6d" target="_blank" rel="noopener noreferrer"> This Week in Claude Code (week of Oct 11, 2026) </a> </li><li> <a href="https://angelo-lima.fr/en/claude-code-cheatsheet-october-2026-state-of-play-en" target="_blank" rel="noopener noreferrer"> Claude Code Cheatsheet — October 2026 </a> </li><li> <a href="https://tech-insider.org/codex-cli-0-162-vs-claude-code-2-1-296-2026" target="_blank" rel="noopener noreferrer"> Codex CLI 0.162 vs Claude Code 2.1.296 </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

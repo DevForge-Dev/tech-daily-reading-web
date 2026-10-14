@@ -1,0 +1,114 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>10/13の話題リポジトリ — 証拠ベースの人生ガイド(HowToLiveBetter)・歌詞が舞う音楽プレイヤー(folia-major)・Rust製OSS CAD(solidcraft) — デイリー技術深掘り 読み物</title><meta name="description" content="AI一色のトレンドに対し、『知識』『体験』『重い専用ソフトのOSS化』という非AI軸の3本がそろって急伸した日。"><meta name="theme-color" content="#238636"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-13-github-trending/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="10/13の話題リポジトリ — 証拠ベースの人生ガイド(HowToLiveBetter)・歌詞が舞う音楽プレイヤー(folia-major)・Rust製OSS CAD(solidcraft) — デイリー技術深掘り 読み物"><meta property="og:description" content="AI一色のトレンドに対し、『知識』『体験』『重い専用ソフトのOSS化』という非AI軸の3本がそろって急伸した日。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-13-github-trending/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3fb950, #1a7f37)"> <span class="glyph" aria-hidden="true">★</span> <div class="kicker">GitHub Trending</div> <h1>10/13の話題リポジトリ — 証拠ベースの人生ガイド(HowToLiveBetter)・歌詞が舞う音楽プレイヤー(folia-major)・Rust製OSS CAD(solidcraft)</h1> <p class="lede">AI一色のトレンドに対し、『知識』『体験』『重い専用ソフトのOSS化』という非AI軸の3本がそろって急伸した日。</p> <div class="meta"> <span>📅 2026年10月13日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#238636"> <div> <article class="prose" data-has-mermaid="0">
+<p>この日の急上昇は、AI/エージェント一色だった近頃のトレンドに対して<strong>「AIではない価値」で伸びた3本</strong>が目を引いた。証拠ベースの生活知、尖った体験、重い商用ソフトのOSS再実装——課題の立て方がそれぞれ違うので、各リポジトリについて「どんな課題を解こうとしているのか」「何ができるのか」を整理しておく。</p>
+
+<figure class='fig'>
+<svg viewBox='0 0 600 230' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <rect x='0' y='0' width='600' height='230' fill='#f6fbf6' rx='8'></rect>
+  <text x='300' y='24' text-anchor='middle' font-size='13' font-weight='bold' fill='#1a1a1a'>3本の「解きたい課題 → 提供する機能」</text>
+  <line x1='20' y1='40' x2='580' y2='40' stroke='#3fb950' stroke-width='2'></line>
+  <g font-size='10'>
+    <text x='28' y='56' font-weight='bold' fill='#1a7f37'>リポジトリ</text>
+    <text x='210' y='56' font-weight='bold' fill='#1a7f37'>解きたい課題</text>
+    <text x='410' y='56' font-weight='bold' fill='#1a7f37'>提供する機能</text>
+    
+    <text x='28' y='84' fill='#222' font-weight='bold'>HowToLiveBetter</text>
+    <text x='28' y='98' fill='#777' font-size='9'>HTML・⭐約62k</text>
+    <text x='210' y='84' fill='#444'>生活の意思決定が勘頼み</text>
+    <text x='210' y='98' fill='#444'>で情報の質がバラバラ</text>
+    <text x='410' y='84' fill='#444'>各項目にコスト/便益/証拠</text>
+    <text x='410' y='98' fill='#444'>レベル/一次出典を明記</text>
+    <line x1='20' y1='110' x2='580' y2='110' stroke='#d6ead6'></line>
+    
+    <text x='28' y='134' fill='#222' font-weight='bold'>folia-major</text>
+    <text x='28' y='148' fill='#777' font-size='9'>TypeScript・⭐約5.9k</text>
+    <text x='210' y='134' fill='#444'>音源が分散（ローカル/</text>
+    <text x='210' y='148' fill='#444'>navidrome/オンライン）</text>
+    <text x='410' y='134' fill='#444'>横断再生＋歌詞を絢爛に</text>
+    <text x='410' y='148' fill='#444'>アニメ表示するUX</text>
+    <line x1='20' y1='160' x2='580' y2='160' stroke='#d6ead6'></line>
+    
+    <text x='28' y='184' fill='#222' font-weight='bold'>solidcraft</text>
+    <text x='28' y='198' fill='#777' font-size='9'>Rust・⭐約1.8k</text>
+    <text x='210' y='184' fill='#444'>CADが重い商用専用で</text>
+    <text x='210' y='198' fill='#444'>自動化しづらい</text>
+    <text x='410' y='184' fill='#444'>純RustのパラメトリックCAD</text>
+    <text x='410' y='198' fill='#444'>＋MCPでエージェント操作</text>
+  </g>
+  <text x='300' y='222' text-anchor='middle' font-size='9' fill='#888'>※スター数はGitHub API実測の概数</text>
+</svg>
+<figcaption>図1：課題の種類が三者三様。知識・体験・ツールOSS化という非AIの軸でそろって伸びた。</figcaption>
+</figure>
+
+<h4 id="sec-1">eternity4719/HowToLiveBetter（HTML・⭐約62k）</h4>
+<p><strong>解きたい課題</strong>：長寿・防病・急救・節約投資・法律の赤線・医療/社会保険・育児・起業コンプラ・海外移住まで、生活の重要な意思決定が往々にして勘や断片的な情報で行われ、情報の信頼性もバラバラだという問題。<strong>提供する機能</strong>：各項目を『コスト・便益・エビデンスの強さ・一次出典（査読論文と公的文書のみ）』付きでまとめた、コンテンツ型の高コスパ人生ガイド。<strong>なぜ急上昇か</strong>：コードではなく「知識」のリポジトリで、公開約36日で約62k（平均約1,700★/日）という爆発的バイラル。AI一色のトレンドに「実生活を証拠ベースで最適化する」という普遍テーマが刺さった。</p>
+
+<h4 id="sec-2">chthollyphile/folia-major（TypeScript・⭐約5.9k）</h4>
+<p><strong>解きたい課題</strong>：ローカル音源・navidrome・各種オンライン音楽と、聴きたい音源が分散していて横断再生しづらいこと。<strong>提供する機能</strong>：それらを横断再生できるマルチプラットフォーム・プレイヤーで、<strong>歌詞を絢爛にアニメーション表示する体験</strong>に振り切っている。<strong>なぜ急上昇か</strong>：本日git-homedで+約556（当日率約9%相当）と明確な純増。AI偏重への「非AI消費者アプリ」の多様性枠で、体験一点突破の尖り方が支持を集めた。</p>
+
+<h4 id="sec-3">bherbruck/solidcraft（Rust・⭐約1.8k）</h4>
+<p><strong>解きたい課題</strong>：Fusion 360等の商用CADが重く高価で、スクリプトやエージェントからの自動化もしづらいこと。<strong>提供する機能</strong>：純Rust製のオープンソース・パラメトリック3D CAD。デスクトップ/Webで動き、<strong>MCP経由でAIエージェントから自動操作</strong>できる。<strong>なぜ急上昇か</strong>：商用CADをクリーンルームでOSS再実装する潮流の新星で、公開わずか6日で約1.8k（平均約298★/日）とTrendshift日次に登場。「重い専用ソフトをRustで軽量OSS化＋MCP開放」という切り口が開発者に刺さった。</p>
+
+<h3>自分が試すなら</h3>
+<p>すぐ役立つのは<strong>HowToLiveBetter</strong>——読み物として一次出典つきで信頼できる。<strong>solidcraft</strong>はMCP対応が面白く、エージェントからCADを叩く実験に向く（公開直後なので挙動は要観察）。folia-majorはTypeScript・AGPL-3.0なので、ライセンス条件を確認のうえ個人利用から。</p>
+
+<h3>ひとことまとめ</h3>
+<p>AIの波の裏で「知識・体験・ツールのOSS化」が静かに伸びた日。普遍的な課題設定は、AIブームと無関係に強い。</p>
+</article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://github.com/eternity4719/HowToLiveBetter" target="_blank" rel="noopener noreferrer"> eternity4719/HowToLiveBetter </a> </li><li> <a href="https://github.com/chthollyphile/folia-major" target="_blank" rel="noopener noreferrer"> chthollyphile/folia-major </a> </li><li> <a href="https://github.com/bherbruck/solidcraft" target="_blank" rel="noopener noreferrer"> bherbruck/solidcraft </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> eternity4719/HowToLiveBetter（HTML・⭐約62k） </a> </li><li> <a href="#sec-2" data-toc="sec-2"> chthollyphile/folia-major（TypeScript・⭐約5.9k） </a> </li><li> <a href="#sec-3" data-toc="sec-3"> bherbruck/solidcraft（Rust・⭐約1.8k） </a> </li> </ul> <div class="reading-box"> <div>📅 2026-10-13</div> <div>⏱ 読了 約3分</div> <div>🏷 GitHub Trending</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
