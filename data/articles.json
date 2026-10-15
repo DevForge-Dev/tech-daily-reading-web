@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-10-14T04:49:37.182Z",
+  "generatedAt": "2026-10-15T04:48:41.159Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,100 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "date": "2026-10-15",
+      "topic": "Claude Code",
+      "title": "Claude Code v2.1.299/300 — “アイドル圧縮”と可観測性強化、そしてAnthropic自作のソース管理Scion",
+      "lede": "長時間セッションのコスト最適化に効くアイドル圧縮と、OTel/gzip/MCP修正。背景はキャッシュ退避問題としての3層コンテキスト管理。",
+      "articleHtml": "<p>10/9のv2.1.296以降途切れていた公式更新が10/14に再開し、同日に<strong>v2.1.299</strong>と<strong>v2.1.300</strong>が相次いで公開された。長時間セッションを常用する身としては、今回の目玉「アイドル圧縮」はそのまま日々の体感に効く変更なので整理しておく。</p>\n\n<h4>何が新しいか</h4>\n<p>v2.1.299の中心は<strong>アイドル圧縮(idle compaction)</strong>。ターミナルで200Kトークン超の会話が約54分アイドルになると、1時間のプロンプトキャッシュが失効する<em>前に</em>先回りでコンパクトし、次のメッセージで会話全体を再処理せずに済ませる。閾値は<code>CLAUDE_CODE_IDLE_COMPACT_MIN_TOKENS</code>で調整、<code>idleCompaction:false</code>で無効化(いずれもv2.1.290以降)。あわせて--debug時のメモリ肥大や多数サブエージェント実行後の高メモリ、@メンションしたPDFの生バイト保持を修正し、/usageに最大エフォートや巨大ツール結果の警告を追加した。翌番のv2.1.300は可観測性で、OTelの<code>api_request</code>に<code>cache_creation_5m_tokens</code>/<code>cache_creation_1h_tokens</code>を足してキャッシュ書込を存続期間別に計測。大型リクエストはテレメトリ無効時もgzip圧縮し、MCPツールの入力スキーマ拒否で毎ターン400失敗していた不具合を「パラメータなし送信」でフォールバックするよう直した。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 180' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='0' y='0' width='600' height='180' fill='#fff8f0' rx='8'/>\n  <line x1='60' y1='120' x2='560' y2='120' stroke='#d98a3a' stroke-width='2'/>\n  <rect x='97' y='113' width='233' height='14' fill='#f3c98b' rx='7'/>\n  <circle cx='90' cy='120' r='7' fill='#e07b2a'/>\n  <text x='90' y='148' font-size='12' text-anchor='middle' fill='#7a4a16'>会話200K超</text>\n  <text x='90' y='104' font-size='11' text-anchor='middle' fill='#555'>t=0</text>\n  <text x='213' y='100' font-size='12' text-anchor='middle' fill='#7a4a16'>約54分アイドル</text>\n  <circle cx='330' cy='120' r='7' fill='#e07b2a'/>\n  <text x='330' y='148' font-size='12' text-anchor='middle' fill='#7a4a16'>自動コンパクト</text>\n  <text x='330' y='104' font-size='11' text-anchor='middle' fill='#555'>キャッシュ失効の直前</text>\n  <circle cx='520' cy='120' r='7' fill='#2f9e44'/>\n  <text x='520' y='148' font-size='12' text-anchor='middle' fill='#1a7f37'>次メッセージ即応</text>\n  <text x='520' y='104' font-size='11' text-anchor='middle' fill='#555'>全履歴の再処理なし</text>\n</svg><figcaption>図1：アイドル圧縮のタイムライン——キャッシュが失効する前に先回りで畳む。</figcaption></figure>\n\n<h4>仕組み — なぜ“アイドル”で圧縮するのか</h4>\n<p>第三者の解説記事『無限セッションを支えるコンテキスト管理』が背景の理解に効く。Claude Codeは文脈管理を「保存の問題ではなくキャッシュ退避の問題」として3層で扱う。第1層マイクロ圧縮は古いツール結果(ファイル読取・シェル・grep)を短いプレースホルダに置換し、件数超過時と約1時間アイドル時に発火する——この時間ベースの圧縮が、今回正式化された“アイドル圧縮”の原型だ。約1時間でプロンプトキャッシュが失効するなら退避コストはどうせゼロ。ならキャッシュが切れる直前に畳んでおけば、再開時に全履歴を再処理せずに済む、という発想になる。</p>\n\n<figure class='fig'><pre class='mermaid'>flowchart TD\n  A[\"会話(メッセージ配列=キャッシュ)\"] --> B[\"第1層 マイクロ圧縮: 古いツール結果をプレースホルダ化 / 件数超過・約1時間アイドルで発火\"]\n  B --> C[\"第2層 構造圧縮 auto-compact: 上限前に背景LLMが要約\"]\n  C --> D[\"第3層 セッションメモリ: ディスクに規約・エラーパターンを記録\"]</pre><figcaption>図2：Claude Codeの3層コンテキスト管理。第1層の時間ベース圧縮がv2.1.299“アイドル圧縮”の原型。</figcaption></figure>\n\n<h4>事例 — Anthropicが社内Gitを自作Scionへ</h4>\n<p>ニュース面ではAnthropicが社内モノレポのGitを自作のサーバ中心型ソース管理<strong>Scion</strong>へ置換した件(10/13ブログ)。AI生成コードの激増で日次マージが5月の約2,500件から9月には3万件超、履歴約100GB・CIのソース取得が日2,500万回に達し、フルクローン前提が破綻したのが背景。7人が5か月でScionとレビュー基盤Antiqueを構築し、Claudeをシミュレーションや競合解消に多用した(設計とレビューは人間)。これを受けた論考は「Gitは消えないがGitクライアント・モデルが中心性を失う——価値はサーバ側へ、主クライアントは常時接続のAIエージェントになる」と主張し、CursorのフォージOriginと対比する。</p>\n\n<h4>自分が試すなら / 注意点</h4>\n<p>長いセッションを張りっぱなしにする運用なら、アイドル圧縮は基本オンのまま恩恵を受けられる。逆に「アイドル後に文脈が畳まれて困る」ケース(直前の細部に依存した作業)では<code>idleCompaction:false</code>を検討。可観測性を回しているならOTelの新メトリクスで5分/1時間キャッシュの比率を見ておくと、キャッシュ戦略のムダが見える。Scionの話はOSS化されない社内ツールなので直接は使えないが、「マージ/レビュー層が主戦場」という規模別指針(小=ホスト型Git、中=サーバAPI/sparse checkout、超大規模=内製)は自分のCI設計の目安になる。</p>\n\n<h4>ひとことまとめ</h4>\n<p>v2.1.299/300は「長時間・大規模セッションのコスト最適化」に寄った実務アップデート。アイドル圧縮はキャッシュ経済の理解があると腑に落ちる。</p>",
+      "sources": [
+        {
+          "title": "Claude Code changelog",
+          "url": "https://code.claude.com/docs/en/changelog"
+        },
+        {
+          "title": "Claude Code releases (v2.1.300)",
+          "url": "https://www.havoptic.com/releases/claude-code/2026/10"
+        },
+        {
+          "title": "Claude Code best practices (advanced, 2026)",
+          "url": "https://smartscope.blog/en/generative-ai/claude/claude-code-best-practices-advanced-2026/"
+        },
+        {
+          "title": "How Claude Code manages infinite sessions",
+          "url": "https://medium.com/@pbellapu09/how-claude-code-manages-infinite-sessions-without-blowing-the-context-window-8bccb35387fe"
+        },
+        {
+          "title": "Anthropic Scion source control redesign",
+          "url": "https://xenospectrum.com/en/anthropic-scion-source-control-redesign/"
+        },
+        {
+          "title": "AI agents are killing the Git client, not Git",
+          "url": "https://hackernoon.com/ai-agents-are-killing-the-git-client-not-git-what-anthropics-scion-and-cursors-origin-show"
+        }
+      ],
+      "id": "2026-10-15-claude-code"
+    },
+    {
+      "date": "2026-10-15",
+      "topic": "Next.js",
+      "title": "バンドルサイズ最適化 — barrel file問題と optimizePackageImports / next analyze",
+      "lede": "barrel経由のimportでdevチャンクが552kB→64kB（約88%減）。標準のoptimizePackageImportsとnext analyzeで“use client”ツリーを削る。",
+      "articleHtml": "<p>App Routerでは Server Components のおかげでサーバ側コードは原則クライアントに出ない。だが<strong>Client Components(<code>'use client'</code>)が import したものはすべてクライアントバンドルに入る</strong>。LCP/INPはクライアントJSの量にそのまま効くので、ここを削るのがパフォーマンスの本丸になる。今日のテーマは最大級の落とし穴である<strong>barrel file</strong>と、Next.js標準機能での潰し方。</p>\n\n<h4>何が問題か — barrel fileは“全部辿る入口”</h4>\n<p>barrel fileとは<code>export * from './x'</code>を集めた<code>index.ts</code>のこと。1つの名前をimportしただけでも、バンドラ・tsc・devサーバは背後のモジュールグラフを全部解決・評価する。参考記事の実測では、1つのフックをbarrel経由でimportしただけでdevのクライアントチャンクが<strong>552kB</strong>。barrelを外して直接importしたら<strong>64kB</strong>——約<strong>88%削減</strong>だ。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='0' y='0' width='600' height='200' fill='#f0f6ff' rx='8'/>\n  <text x='300' y='28' font-size='13' text-anchor='middle' fill='#1b4a8a'>barrel経由 vs 直接import（devクライアントチャンク）</text>\n  <rect x='120' y='52' width='430' height='34' fill='#5a8fd6' rx='4'/>\n  <text x='112' y='74' font-size='12' text-anchor='end' fill='#333'>barrel経由</text>\n  <text x='542' y='74' font-size='13' text-anchor='end' fill='#fff'>552 kB</text>\n  <rect x='120' y='112' width='50' height='34' fill='#2f9e44' rx='4'/>\n  <text x='112' y='134' font-size='12' text-anchor='end' fill='#333'>直接import</text>\n  <text x='180' y='134' font-size='13' text-anchor='start' fill='#1a7f37'>64 kB</text>\n  <text x='300' y='182' font-size='15' text-anchor='middle' fill='#c0392b' font-weight='bold'>約88%削減</text>\n</svg><figcaption>図1：barrelを外して直接importに変えるだけで、devチャンクが552kB→64kB（参考記事の実測）。</figcaption></figure>\n\n<p>tree-shakingが効く条件は厳しく、(1)ESM出力、(2)副作用なし(<code>\"sideEffects\": false</code>)、(3)トランスパイル後も純粋に見える、が揃って初めて効く。CommonJS出力だと無効、<strong>devモードは原則shakingしない</strong>ため、cold startごとに全モジュール読み込みが起き得る。barrelは循環参照(<code>Cannot access 'X' before initialization</code>)の温床でもある。</p>\n\n<h4>標準機能での対処</h4>\n<p><code>experimental.optimizePackageImports</code>は、barrel importを<strong>ビルド時に「使っているper-moduleの直接import」へ自動で書き換える</strong>。named importの書き味は保ったまま、実際に使うモジュールだけ読む。前提は対象パッケージがper-module出力(distがsrcをミラー)を持つこと。<code>lucide-react</code>・<code>date-fns</code>・<code>@mui/material</code>・<code>recharts</code>・<code>react-icons/*</code>などは<strong>既定で最適化</strong>されるので自分で足さなくてよい。計測はNext.js 16.1+の<code>next analyze</code>(Turbopack Bundle Analyzer)が公式で、importチェーンまで辿れる。Webpack系は従来の<code>@next/bundle-analyzer</code>。</p>\n\n<h4>自分が試すなら</h4>\n<p>手順は「測る→大物を潰す→importを直す→クライアント処理をサーバへ寄せる」。まず<code>npx next analyze</code>でtreemapを開き、<code>'use client'</code>ツリーに紛れ込んだ重いライブラリ(syntax highlight/chart/markdownパーサ)を探す。自前の<code>@/hooks</code>バレル経由は<code>@/hooks/useAuth</code>のように兄弟直importへ。コードハイライトのような重処理は、Client Componentでprismを使う代わりに<strong>Server Componentでshikiの<code>codeToHtml</code></strong>を使い、クライアントには静的HTMLだけ返す。</p>\n\n<h4>注意点</h4>\n<p><code>optimizePackageImports</code>に足したのに縮まないときは、パッケージがper-module出力でない/CJSのことが多い。devチャンクが実際に縮んだか必ず確認する。<code>next.config</code>変更は再起動・再ビルドが要り、計測は本番ビルド(<code>next build</code>)基準で。自作パッケージ側なら<code>\"sideEffects\": false</code>とサブパスexports(<code>\"./*\": \"./dist/*.js\"</code>)を吐き、CIに<code>import/no-cycle</code>を入れておく。</p>\n\n<h4>ひとことまとめ</h4>\n<p>「本当にクライアントに要るか」をまず問い、barrelを外して標準の<code>optimizePackageImports</code>+<code>next analyze</code>で潰す。88%級の削減が普通にあり得る領域。</p>",
+      "sources": [
+        {
+          "title": "Next.js Docs: optimizePackageImports",
+          "url": "https://nextjs.org/docs/app/api-reference/config/next-config-js/optimizePackageImports"
+        },
+        {
+          "title": "Next.js Docs: Optimizing package bundling",
+          "url": "https://nextjs.org/docs/app/guides/package-bundling"
+        },
+        {
+          "title": "Barrel Files: Why index.ts Re-Exports Hurt Tree Shaking (2026)",
+          "url": "https://dev.to/childrentime/barrel-files-why-indexts-re-exports-hurt-tree-shaking-nextjs-dev-memory-and-tsc-2026-3kpm"
+        },
+        {
+          "title": "vercel/next.js Discussion #92926: Barrel imports",
+          "url": "https://github.com/vercel/next.js/discussions/92926"
+        }
+      ],
+      "id": "2026-10-15-nextjs"
+    },
+    {
+      "date": "2026-10-15",
+      "topic": "Flutter",
+      "title": "Flutter 3.47.7 と Impeller の次段階 — WebGPUプレビュー、公式MVVM＋Command、AOTシェーダ",
+      "lede": "3.50（11月）前は3.47.7にpin。WebはWebGPUプレビュー、設計は公式アーキテクチャガイドのMVVM＋Command、描画はImpellerのAOT＋テッセレーション。",
+      "articleHtml": "<p>現行安定は<strong>Flutter 3.47.7 / Dart 3.13.5</strong>(2026-10-08 patch)、betaは3.49.0-0.2.pre。次stable<strong>3.50は11月</strong>で、WebのWasmGC既定化・Android Impeller一本化・Material/Cupertinoのcore分離が出揃う見込み。レンダリングとアーキテクチャの両面で節目なので、今日は「バージョン固定の指針」「公式アーキテクチャガイド」「Impellerの内部」をまとめる。</p>\n\n<h4>何が新しいか — Webレンダリングの次段階</h4>\n<p>Impellerの<strong>Webバックエンドが WebGPU ベースでプレビュー段階</strong>に入った。未対応ブラウザは従来のCanvasKit/Skia系へフォールバック、<code>flutter build web --wasm</code>はWasmGC対応ブラウザで有効になる。レンダラのバックエンドは用途別に整理され、iOS/macOS=Metal、Android=Vulkan(非対応端末はOpenGLフォールバック)、Web=WebGPU(preview)。Androidのlegacy Skiaは3.50でAndroid10+から正式引退予定だ。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='0' y='0' width='600' height='200' fill='#eef7f0' rx='8'/>\n  <text x='300' y='28' font-size='13' text-anchor='middle' fill='#1a7f37'>Impeller レンダラのバックエンド（2026-10）</text>\n  <g font-size='13'>\n    <rect x='50' y='46' width='180' height='34' fill='#d9efe0' stroke='#2f9e44' rx='4'/>\n    <text x='68' y='68' fill='#1a5a2a'>iOS / macOS</text>\n    <text x='300' y='68' fill='#1a5a2a'>Metal</text>\n    <rect x='50' y='90' width='180' height='34' fill='#d9efe0' stroke='#2f9e44' rx='4'/>\n    <text x='68' y='112' fill='#1a5a2a'>Android</text>\n    <text x='300' y='112' fill='#1a5a2a'>Vulkan（非対応→OpenGL）</text>\n    <rect x='50' y='134' width='180' height='34' fill='#fff3d9' stroke='#d98a3a' rx='4'/>\n    <text x='68' y='156' fill='#7a4a16'>Web</text>\n    <text x='300' y='156' fill='#7a4a16'>WebGPU（preview）</text>\n  </g>\n</svg><figcaption>図1：用途別に整理されたバックエンド。Webは WebGPU プレビュー、未対応はCanvasKit/Skiaへフォールバック。</figcaption></figure>\n\n<p>移行の実務としては、3.50前は安定ラインを<strong>3.47.7にpin</strong>し、betaでCIを1本持っておく。material_ui/cupertino_ui分離は<code>dart fix --apply --code=migrate_design_widgets</code>で前倒しできる。</p>\n\n<h4>アーキテクチャ — 公式ガイドのMVVM＋Command</h4>\n<p>公式アーキテクチャガイドは<strong>UI層とデータ層の2分割</strong>を大原則に置く。MVVM対応はView=widget合成／ViewModel／Model=repository+serviceで、各featureはViewとViewModelが1:1。ロジックはViewModelに集約し、ユーザー操作は<strong>Command(ViewModelのメンバ関数)</strong>として公開する。Viewに置いてよいのは表示出し分け・アニメ・デバイス別レイアウト・単純ルーティングのみ。データ層ではrepositoryが信頼できる唯一の情報源でStream/Futureを公開し、<strong>repository同士は依存しない</strong>。serviceは最下層・状態を持たず、データ源1つにつき1クラス。不変モデル(freezed/built_value)・単方向データフロー・DIはprovider・ナビはgo_routerが推奨で、domain層(use-case)は複数repositoryの結合など条件付きで足す。</p>\n\n<figure class='fig'><pre class='mermaid'>flowchart TD\n  V[\"View widget合成\"] --> VM[\"ViewModel: ロジック集約 + Command\"]\n  VM --> R[\"Repository: 唯一の情報源 / Stream・Future\"]\n  R --> S[\"Service: 最下層・状態なし / データ源1つにつき1クラス\"]</pre><figcaption>図2：公式ガイドのUI層／データ層。ViewとViewModelは1:1、repository同士は依存しない。</figcaption></figure>\n\n<h4>パフォーマンス — Impellerの内部</h4>\n<p>Impellerは<strong>ビルド時にシェーダを事前コンパイル(AOT)</strong>するので、SkiaのJITで起きる「初回だけカクつく」shader jankが消える。代償はバイナリがわずかに増えること。描画は複雑なベクターパスを<strong>三角形にテッセレーション</strong>してGPUへ渡しCPU負荷を下げ、blur/shadow/クリップは事前計算パイプラインで処理する。非公式の実測では複雑シーンでラスタ時間が約50%減、ドロップフレーム約90%減との報告もある。計測は<code>flutter run --profile</code>+DevTools(Draw Call Batching／Texture Memory View)が基本。</p>\n\n<h4>自分が試すなら / 注意点</h4>\n<p>頻繁に再描画する領域は<code>RepaintBoundary</code>で隔離し、<strong>スクロール上の<code>BackdropFilter</code>は避ける</strong>。60Hz機で無理に120fpsを狙わない。カスタムGLSL fragment shaderは多くが自動変換されるがビジュアル回帰テストを推奨、Android9以下はドライバ差で挙動が不安定になりうる点に注意。アーキテクチャは「Viewにロジックを置かない／repository同士を繋がない」の2点を守るだけでテスト(fake前提設計)がぐっと楽になる。</p>\n\n<h4>ひとことまとめ</h4>\n<p>3.50前は3.47.7にpin。レンダリングはImpeller/WebGPUで前進、設計は公式MVVM＋Commandが実務の軸。</p>",
+      "sources": [
+        {
+          "title": "Flutter versions (3.47.7)",
+          "url": "https://flutterreleases.com/flutter-versions/"
+        },
+        {
+          "title": "What's new in the docs",
+          "url": "https://docs.flutter.dev/release/whats-new"
+        },
+        {
+          "title": "How Impeller is transforming Flutter rendering 2026",
+          "url": "https://dev.to/eira-wexford/how-impeller-is-transforming-flutter-ui-rendering-in-2026-3dpd"
+        },
+        {
+          "title": "Flutter App architecture guide (docs)",
+          "url": "https://docs.flutter.dev/app-architecture/guide"
+        },
+        {
+          "title": "Architecture recommendations (docs)",
+          "url": "https://docs.flutter.dev/app-architecture/recommendations"
+        },
+        {
+          "title": "Performance best practices (docs)",
+          "url": "https://docs.flutter.dev/perf/best-practices"
+        }
+      ],
+      "id": "2026-10-15-flutter"
+    },
     {
       "date": "2026-10-14",
       "topic": "Claude Code",
