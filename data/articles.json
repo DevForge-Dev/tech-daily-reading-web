@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-10-15T04:48:41.159Z",
+  "generatedAt": "2026-10-16T04:51:37.465Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -9,6 +9,93 @@
   ],
   "articles": [
     {
+      "id": "2026-10-16-claude-code",
+      "date": "2026-10-16",
+      "topic": "Claude Code",
+      "title": "Claude Code v2.1.301とCode Review GA — 「7つの制御手段」で主文脈を守る設計",
+      "lede": "小コンテキスト切替時の自動要約と37件の修正、そしてCode Reviewの一般提供。あわせて読みたいのがCLAUDE.md/skills/subagents/hooks/pluginsの使い分け。",
+      "articleHtml": "<p>公式更新は10/14のv2.1.299/300に続いて10/15に<strong>v2.1.301</strong>へ。さらに同日、Claude Codeのマルチエージェント型PRレビュー機能<strong>Code Review</strong>がTeam/Enterprise向けに一般提供(GA)入りした。設定・運用まわりが一段落したので、あわせて読みたい『制御手段の使い分け』ガイド2本と一緒に整理しておく。</p>\n\n<h4>何が新しいか — v2.1.301とCode Review GA</h4>\n<p>v2.1.301の実務的な目玉は、<strong>小コンテキストモデルへ切り替える際に旧モデルが長い会話を要約してから移行する</strong>挙動（しかも無断でクレジットを消費しないよう修正済み）と、長時間サブエージェント実行中の進捗描画を毎回再処理せず<strong>増分更新で高速化</strong>した点。可観測性では OpenTelemetry の <code>tool_decision</code> イベントに <code>classifier_verdict</code> / <code>permission_mode</code> / <code>classifier_category</code> が加わり、Auto Modeの分類器判定と権限ルールを切り分けて追えるようになった。バグ修正は37件で、PreToolUse(Edit/Write)フック下でもArtifact更新が拒否されない、Readが.xlsm/.parquet/.epub/.heic等のバイナリをテキストとして読まない、などが含まれる。</p>\n<p>Code Reviewはプレビュー比<strong>約3倍速で通常6〜10分</strong>（従来約20分）。並列エージェントが差分と周辺コードをレビュー→<strong>検証ステップで誤検知を除去</strong>→重複排除・重大度順に<strong>インラインコメント＋サマリ＋「Claude Code Review」チェック</strong>として投稿する。既定はスタイルやテスト網羅より<strong>正当性バグ</strong>重視で、REVIEW.md / CLAUDE.md で調整。PRオープン時・各push後・<code>@claude review</code>で起動し、チェックは失敗させず<strong>マージ可否の判断は人に残す</strong>。要件はTeam/Enterprise＋GitHubホスト型で、ZDR/HIPAA/BAA/CMEKは未対応。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 130' xmlns='http://www.w3.org/2000/svg' role='img' aria-label='Code Reviewのパイプライン'>\n<defs><marker id='ccah' markerWidth='9' markerHeight='9' refX='6' refY='3' orient='auto'><path d='M0,0 L6,3 L0,6 z' fill='#d97706'/></marker></defs>\n<rect x='4' y='40' width='108' height='52' rx='8' fill='#fff7ed' stroke='#d97706' stroke-width='1.5'/>\n<text x='58' y='62' text-anchor='middle' font-family='sans-serif' font-size='11.5' fill='#7c2d12'>PR差分＋</text>\n<text x='58' y='78' text-anchor='middle' font-family='sans-serif' font-size='11.5' fill='#7c2d12'>周辺コード</text>\n<rect x='124' y='40' width='108' height='52' rx='8' fill='#fff7ed' stroke='#d97706' stroke-width='1.5'/>\n<text x='178' y='62' text-anchor='middle' font-family='sans-serif' font-size='11.5' fill='#7c2d12'>並列エージェント</text>\n<text x='178' y='78' text-anchor='middle' font-family='sans-serif' font-size='11.5' fill='#7c2d12'>でレビュー</text>\n<rect x='244' y='40' width='108' height='52' rx='8' fill='#fff7ed' stroke='#d97706' stroke-width='1.5'/>\n<text x='298' y='62' text-anchor='middle' font-family='sans-serif' font-size='11.5' fill='#7c2d12'>検証で</text>\n<text x='298' y='78' text-anchor='middle' font-family='sans-serif' font-size='11.5' fill='#7c2d12'>誤検知を除去</text>\n<rect x='364' y='40' width='108' height='52' rx='8' fill='#fff7ed' stroke='#d97706' stroke-width='1.5'/>\n<text x='418' y='62' text-anchor='middle' font-family='sans-serif' font-size='11.5' fill='#7c2d12'>重複排除・</text>\n<text x='418' y='78' text-anchor='middle' font-family='sans-serif' font-size='11.5' fill='#7c2d12'>重大度順</text>\n<rect x='484' y='40' width='112' height='52' rx='8' fill='#ffedd5' stroke='#b45309' stroke-width='1.5'/>\n<text x='540' y='62' text-anchor='middle' font-family='sans-serif' font-size='11' fill='#7c2d12'>コメント＋サマリ</text>\n<text x='540' y='78' text-anchor='middle' font-family='sans-serif' font-size='11' fill='#7c2d12'>＋チェック</text>\n<line x1='113' y1='66' x2='122' y2='66' stroke='#d97706' stroke-width='1.5' marker-end='url(#ccah)'/>\n<line x1='233' y1='66' x2='242' y2='66' stroke='#d97706' stroke-width='1.5' marker-end='url(#ccah)'/>\n<line x1='353' y1='66' x2='362' y2='66' stroke='#d97706' stroke-width='1.5' marker-end='url(#ccah)'/>\n<line x1='473' y1='66' x2='482' y2='66' stroke='#d97706' stroke-width='1.5' marker-end='url(#ccah)'/>\n<text x='300' y='18' text-anchor='middle' font-family='sans-serif' font-size='12.5' fill='#9a3412' font-weight='bold'>Code Review GA：並列→検証→集約のパイプライン</text>\n</svg><figcaption>図1：Code Reviewは差分を並列レビューし、検証で誤検知を落としてから重大度順に投稿する。マージ可否は人が握る。</figcaption></figure>\n\n<h4>仕組み — 7つの制御手段を3軸で見る</h4>\n<p>技術記事2本が共通して言うのは「Claudeの挙動を縛る手段は複数あり、<strong>いつ読み込まれ・コンテキスト圧縮に耐え・トークンをいくら食うか</strong>で使い分ける」こと。CLAUDE.mdは直下が起動時読込でいちばん高価、skillsは名前と説明だけ起動時に読み本体は呼び出し時、subagentsは別窓で最終要約だけ返し、hooksはライフサイクルイベントで発火して圧縮されず主文脈の外に居続ける。よく使う4つを並べるとこうなる。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg' role='img' aria-label='制御手段の比較表'>\n<rect x='2' y='2' width='596' height='196' rx='8' fill='#fffbf5' stroke='#d97706' stroke-width='1.5'/>\n<rect x='2' y='2' width='596' height='34' rx='8' fill='#ffedd5'/>\n<line x1='180' y1='2' x2='180' y2='198' stroke='#f0c99a' stroke-width='1'/>\n<line x1='350' y1='2' x2='350' y2='198' stroke='#f0c99a' stroke-width='1'/>\n<line x1='470' y1='2' x2='470' y2='198' stroke='#f0c99a' stroke-width='1'/>\n<line x1='2' y1='36' x2='598' y2='36' stroke='#e7b483' stroke-width='1.2'/>\n<line x1='2' y1='77' x2='598' y2='77' stroke='#f0c99a' stroke-width='1'/>\n<line x1='2' y1='118' x2='598' y2='118' stroke='#f0c99a' stroke-width='1'/>\n<line x1='2' y1='159' x2='598' y2='159' stroke='#f0c99a' stroke-width='1'/>\n<text x='12' y='24' font-family='sans-serif' font-size='12' fill='#7c2d12' font-weight='bold'>手段</text>\n<text x='190' y='24' font-family='sans-serif' font-size='12' fill='#7c2d12' font-weight='bold'>読込タイミング</text>\n<text x='360' y='24' font-family='sans-serif' font-size='12' fill='#7c2d12' font-weight='bold'>圧縮耐性</text>\n<text x='480' y='24' font-family='sans-serif' font-size='12' fill='#7c2d12' font-weight='bold'>費用</text>\n<text x='12' y='61' font-family='sans-serif' font-size='12' fill='#111' font-weight='bold'>CLAUDE.md</text>\n<text x='190' y='61' font-family='sans-serif' font-size='11.5' fill='#333'>起動時（直下）</text>\n<text x='360' y='61' font-family='sans-serif' font-size='11.5' fill='#333'>残る</text>\n<text x='480' y='61' font-family='sans-serif' font-size='11.5' fill='#b45309'>最大</text>\n<text x='12' y='102' font-family='sans-serif' font-size='12' fill='#111' font-weight='bold'>skills</text>\n<text x='190' y='102' font-family='sans-serif' font-size='11.5' fill='#333'>起動時は説明のみ→呼出時</text>\n<text x='360' y='102' font-family='sans-serif' font-size='11.5' fill='#333'>残る</text>\n<text x='480' y='102' font-family='sans-serif' font-size='11.5' fill='#1a7f37'>小</text>\n<text x='12' y='143' font-family='sans-serif' font-size='12' fill='#111' font-weight='bold'>subagents</text>\n<text x='190' y='143' font-family='sans-serif' font-size='11.5' fill='#333'>呼出時・別窓</text>\n<text x='360' y='143' font-family='sans-serif' font-size='11.5' fill='#333'>要約のみ返す</text>\n<text x='480' y='143' font-family='sans-serif' font-size='11.5' fill='#1a7f37'>隔離</text>\n<text x='12' y='184' font-family='sans-serif' font-size='12' fill='#111' font-weight='bold'>hooks</text>\n<text x='190' y='184' font-family='sans-serif' font-size='11.5' fill='#333'>イベント発火で確定実行</text>\n<text x='360' y='184' font-family='sans-serif' font-size='11.5' fill='#1a7f37'>圧縮されない</text>\n<text x='480' y='184' font-family='sans-serif' font-size='11.5' fill='#1a7f37'>低</text>\n</svg><figcaption>図2：主要4手段の比較。常時必要な規約はhook、重い知識はsubagent、長い手順はskillsへ振り分ける。</figcaption></figure>\n\n<h4>自分が試すなら</h4>\n<p>判断則はシンプルに割り切れる。<strong>「YのあとXを常に」ならhook化</strong>、<strong>「Zは絶対禁止」ならhook／権限ガード</strong>、<strong>長い手続きフローはskills</strong>、<strong>ディレクトリ固有の制約はパススコープrules</strong>、<strong>重い読み込みはsubagentへ委譲</strong>して主文脈を節約。CLAUDE.mdは50〜150行・500トークン未満に抑え<code>/init</code>で雛形生成し、オーナーを置いてコードと同様にレビューする。チームへ配るときはskills/subagents/hooks/MCPを<strong>pluginsに束ねて1手で配布</strong>。</p>\n\n<h4>注意点</h4>\n<p>Code Reviewのチェックはあくまで補助で、落とすのは人の責任——「緑だから安全」ではない。ZDR/HIPAA構成では使えない点も要確認。設定側は、CLAUDE.mdを盛りすぎると起動時トークンを食い、圧縮で古い文脈から落ちる悪循環になるので、<code>/context</code>で窓を見ながら痩せさせる。hookは確定実行ゆえに副作用も確定——<code>.env</code>編集のPreToolUseブロックのような「保証したい動作」に限定する。</p>\n\n<h4>ひとことまとめ</h4>\n<p>v2.1.301は「切替時に旧モデルが要約してから渡す」で長時間セッションのムダ消費をさらに抑える方向。制御手段は<em>読込タイミング×圧縮耐性×費用</em>の3軸で選べば迷わない。常時の規約はhook、重い知識はsubagent、配布はplugin。</p>",
+      "sources": [
+        {
+          "title": "Claude Code changelog",
+          "url": "https://code.claude.com/docs/en/changelog"
+        },
+        {
+          "title": "Anthropic Makes Code Review Generally Available (unite.ai)",
+          "url": "https://www.unite.ai/anthropic-makes-code-review-for-claude-code-generally-available/"
+        },
+        {
+          "title": "The Ultimate Guide to Configuring Claude Code",
+          "url": "https://developerintheloop.substack.com/p/the-ultimate-guide-to-configuring"
+        },
+        {
+          "title": "Mastering Claude Code: skills/hooks/subagents (besthub)",
+          "url": "https://www.besthub.dev/articles/mastering-claude-code-skills-hooks-subagents-and-more-official-guidance-b0f6368f48d6"
+        }
+      ]
+    },
+    {
+      "id": "2026-10-16-nextjs",
+      "date": "2026-10-16",
+      "topic": "Next.js",
+      "title": "共有要素トランジション — view-transition-name を揃えるだけでサムネが詳細へ拡大する",
+      "lede": "一覧のサムネイルが詳細のヒーロー画像へ連続的にモーフ。JS計測が要らなくなった仕組みと、Next.js App Routerでの組み込み、サイレント失敗の落とし穴。",
+      "articleHtml": "<p>写真一覧のサムネイルをタップすると、その画像が<strong>そのまま詳細画面のヒーロー画像へ連続的に拡大</strong>していく——iOSの写真アプリ、ECのカード→商品ページ、ポートフォリオのギャラリー→作品ページで誰もが見たことのある「共有要素（shared element / hero）トランジション」。従来これはFramer Motionの<code>layoutId</code>や自前FLIPで「旧位置を測り→新位置へtransformで寄せる」JS計算が必須だった。それが2025〜2026でほぼ<strong>CSSとブラウザ任せ</strong>になる。</p>\n\n<h4>何が新しいか</h4>\n<p>核は<strong>View Transitions API</strong>。一覧側サムネイルと詳細側ヒーローに<strong>同じ <code>view-transition-name</code> を両方付ける</strong>と、ブラウザが旧スナップショットと新スナップショットを撮り、同名ペアの<strong>位置(transform)・サイズ(width/height)を自動で補間</strong>してくれる。同一ドキュメントView Transitionsは<strong>2025-10にFirefox 144で揃いBaseline Newly available</strong>入りし（Chrome/Edge 111+・Safari 18+）、Reactも<code>&lt;ViewTransition&gt;</code>をcanaryに載せ、Next.js App Routerは<code>experimental.viewTransition</code>フラグでこれをラップした。「ページ遷移そのもののアニメ化」とは別で、本題は<strong>2画面間で“同一要素が生き続けて移動・拡大する”</strong>一点に絞る。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 180' xmlns='http://www.w3.org/2000/svg' role='img' aria-label='サムネイルがヒーローへモーフする概念図'>\n<defs><marker id='nxah' markerWidth='10' markerHeight='10' refX='6' refY='3' orient='auto'><path d='M0,0 L6,3 L0,6 z' fill='#0969da'/></marker></defs>\n<text x='300' y='18' text-anchor='middle' font-family='sans-serif' font-size='12.5' fill='#1f2937' font-weight='bold'>同名の view-transition-name が“同一要素が動いた”をブラウザに教える</text>\n<rect x='18' y='34' width='34' height='34' rx='4' fill='#dbeafe' stroke='#60a5fa'/>\n<rect x='58' y='34' width='34' height='34' rx='4' fill='#0969da' stroke='#0a4a9c'/>\n<rect x='98' y='34' width='34' height='34' rx='4' fill='#dbeafe' stroke='#60a5fa'/>\n<rect x='18' y='74' width='34' height='34' rx='4' fill='#dbeafe' stroke='#60a5fa'/>\n<rect x='58' y='74' width='34' height='34' rx='4' fill='#dbeafe' stroke='#60a5fa'/>\n<rect x='98' y='74' width='34' height='34' rx='4' fill='#dbeafe' stroke='#60a5fa'/>\n<text x='75' y='130' text-anchor='middle' font-family='sans-serif' font-size='11.5' fill='#374151'>一覧のサムネイル</text>\n<text x='75' y='146' text-anchor='middle' font-family='monospace' font-size='10.5' fill='#0969da'>photo-42</text>\n<path d='M150,75 C210,75 220,88 268,88' fill='none' stroke='#0969da' stroke-width='2' marker-end='url(#nxah)'/>\n<text x='210' y='70' text-anchor='middle' font-family='sans-serif' font-size='10.5' fill='#0969da'>自動で補間</text>\n<rect x='300' y='34' width='280' height='104' rx='8' fill='#0969da' stroke='#0a4a9c' stroke-width='1.5'/>\n<text x='440' y='90' text-anchor='middle' font-family='sans-serif' font-size='13' fill='#fff' font-weight='bold'>詳細のヒーロー画像</text>\n<text x='440' y='110' text-anchor='middle' font-family='monospace' font-size='11' fill='#dbeafe'>photo-42</text>\n</svg><figcaption>図1：両画面で同じ名前を付けた要素だけが独立レイヤーで動き、位置とサイズがモーフする。名前なしの領域は root のクロスフェードに溶ける。</figcaption></figure>\n\n<h4>仕組みは3ステップ</h4>\n<p>①旧状態で主役要素に <code>view-transition-name</code> を付与 → ②<code>document.startViewTransition(() =&gt; { DOMを新状態へ })</code> → ③ブラウザが<strong>old / new のスナップショット</strong>を撮り、同名ペアを <code>::view-transition-group(名前)</code> でくくって位置・サイズを補間し、中身はold→newをクロスフェード。<code>view-transition-name: match-element</code>（Chrome 137・Safari 18.4・Firefox 144）を使えば100枚のカードに手で名前を振らずに済むが、これは同一ドキュメント専用。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 120' xmlns='http://www.w3.org/2000/svg' role='img' aria-label='View Transitionsの3ステップ'>\n<defs><marker id='nx2' markerWidth='9' markerHeight='9' refX='6' refY='3' orient='auto'><path d='M0,0 L6,3 L0,6 z' fill='#1f2937'/></marker></defs>\n<rect x='6' y='38' width='176' height='56' rx='8' fill='#f6f8fa' stroke='#1f2937' stroke-width='1.5'/>\n<text x='94' y='60' text-anchor='middle' font-family='sans-serif' font-size='12' fill='#111' font-weight='bold'>① 名前を付与</text>\n<text x='94' y='80' text-anchor='middle' font-family='sans-serif' font-size='10.5' fill='#374151'>開く前に旧要素へ</text>\n<rect x='212' y='38' width='176' height='56' rx='8' fill='#f6f8fa' stroke='#1f2937' stroke-width='1.5'/>\n<text x='300' y='60' text-anchor='middle' font-family='sans-serif' font-size='12' fill='#111' font-weight='bold'>② startViewTransition</text>\n<text x='300' y='80' text-anchor='middle' font-family='sans-serif' font-size='10.5' fill='#374151'>コールバックでDOM更新</text>\n<rect x='418' y='38' width='176' height='56' rx='8' fill='#eaf2fb' stroke='#0969da' stroke-width='1.5'/>\n<text x='506' y='60' text-anchor='middle' font-family='sans-serif' font-size='12' fill='#0a4a9c' font-weight='bold'>③ 補間＋クロスフェード</text>\n<text x='506' y='80' text-anchor='middle' font-family='sans-serif' font-size='10.5' fill='#374151'>old/newスナップショット</text>\n<line x1='183' y1='66' x2='210' y2='66' stroke='#1f2937' stroke-width='1.5' marker-end='url(#nx2)'/>\n<line x1='389' y1='66' x2='416' y2='66' stroke='#1f2937' stroke-width='1.5' marker-end='url(#nx2)'/>\n<text x='300' y='20' text-anchor='middle' font-family='sans-serif' font-size='12.5' fill='#1f2937' font-weight='bold'>スナップショット方式：JSで位置を測らない</text>\n</svg><figcaption>図2：旧要素へ名前を付けるのは startViewTransition を呼ぶ“前”。コールバックの中では遅い（old スナップショットは撮影済み）。</figcaption></figure>\n\n<h4>Next.js（App Router）での組み込み</h4>\n<p>推奨は公式のReact <code>&lt;ViewTransition&gt;</code>。ルートナビゲーションは内部でReact Transitionとして走るため自動発火する。<code>next.config.ts</code>で<code>experimental: { viewTransition: true }</code>を立て、一覧・詳細の<strong>両方で同じ name（例 <code>photo-${id}</code>）</strong>を付けるだけ。多くはServer Componentのままでよく、<code>'use client'</code>は原則不要。素のDOM制御がしたい時だけ<code>document.startViewTransition</code>を島化して使う。</p>\n<pre><code>// next.config.ts\nexport default { experimental: { viewTransition: true } }\n\n// 一覧・詳細の両方で name を一致させる\n&lt;ViewTransition name={`photo-${id}`}&gt;\n  &lt;Image src={photo.src} alt={photo.title} fill /&gt;\n&lt;/ViewTransition&gt;</code></pre>\n\n<h4>落とし穴</h4>\n<p>最大の罠は<strong>重複名のサイレント失敗</strong>。同じ<code>view-transition-name</code>が同時に2つ存在するとマッチに失敗し、全画面が既定クロスフェードへフォールバック＝「ちらつき／点滅」になる。一覧は複数カードがあるので<strong>全カードに固定で名前を付けてはいけない</strong>。正解は「クリックされた1枚にだけ遷移直前に動的付与し、<code>transition.finished</code>で外す」。もう一つは<strong>アスペクト比が変わる画像の歪み</strong>（正方サムネ→横長ヒーロー）で、実務解は<code>::view-transition-old/new { object-fit: cover }</code>。そして<code>prefers-reduced-motion</code>では<strong>動きだけ消して遷移自体は残す</strong>（<code>animation: none</code>で一括ゲート）。</p>\n\n<h4>ひとことまとめ</h4>\n<p>「両方に同じ名前を付けるだけ」でサムネ↔ヒーローが繋がる時代。鍵は<em>name一致</em>、罠は<em>重複名・付与タイミング・アスペクト比</em>。Next.jsなら<code>experimental.viewTransition</code>＋<code>&lt;ViewTransition&gt;</code>でRSCのまま発火できる。</p>",
+      "sources": [
+        {
+          "title": "Next.js 公式ガイド「View Transitions」",
+          "url": "https://nextjs.org/docs/app/guides/view-transitions"
+        },
+        {
+          "title": "Chrome: What's new in view transitions (2025)",
+          "url": "https://developer.chrome.com/blog/view-transitions-in-2025"
+        },
+        {
+          "title": "Jake Archibald: Handling aspect ratio changes",
+          "url": "https://jakearchibald.com/2024/view-transitions-handling-aspect-ratio-changes/"
+        },
+        {
+          "title": "Piccalilli: Why are my view transitions blinking?",
+          "url": "https://piccalil.li/blog/why-are-my-view-transitions-blinking/"
+        },
+        {
+          "title": "MDN: view-transition-name",
+          "url": "https://developer.mozilla.org/docs/Web/CSS/view-transition-name"
+        }
+      ]
+    },
+    {
+      "id": "2026-10-16-flutter",
+      "date": "2026-10-16",
+      "topic": "Flutter",
+      "title": "Flutter 3.50（11月）前の環境対応チェックリストと、レイヤ別テスト戦略",
+      "lede": "3.50はコードより足回り。Java 17・16KB・UIScene・Dart 3.14への備えを今月中に。あわせてunit→widget→integration＋goldenのテストピラミッドを整理。",
+      "articleHtml": "<p>次の安定版<strong>Flutter 3.50は11月</strong>。WasmGC既定・Impeller一本化・material_ui/cupertino_ui分離が揃う節目だが、今回は「コード変更」より<strong>環境・ビルド基盤の対応</strong>の比重が大きい。だからこそ、足回りは今月のうちに固めておきたい。現行安定は<strong>3.47.7 / Dart 3.13.5</strong>、betaは<strong>3.49.0-0.2.pre / Dart 3.14.0</strong>。</p>\n\n<h4>3.50前にやる環境対応チェックリスト</h4>\n<p><strong>Android</strong>は<code>Java 17</code>必須と<strong>16KBページサイズ</strong>対応（大ページ端末でクラッシュしないようNDK・ネイティブ依存を16KB整列ビルドへ）。ImpellerはAPI29+で既定、opt-outは3.38でdeprecated済み。<strong>Apple</strong>は<code>UIScene</code>ライフサイクル移行が必須化の流れで、AppDelegate単独構成は将来ビルド不可。SwiftPM既定化もロードマップ入り（CocoaPodsはメンテナンスモード）。<strong>Dart 3.14</strong>は<code>macros</code>が無期限ポーズ継続で、メタプログラミングは<strong>Augmentations</strong>（2026予定）へ一本化、当面のcodegenは<code>build_runner + source_gen</code>。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 182' xmlns='http://www.w3.org/2000/svg' role='img' aria-label='3.50前の環境対応マトリクス'>\n<text x='300' y='18' text-anchor='middle' font-family='sans-serif' font-size='12.5' fill='#02569b' font-weight='bold'>3.50（11月）前に固める足回り</text>\n<rect x='6' y='30' width='188' height='28' rx='6' fill='#02569b'/>\n<text x='100' y='49' text-anchor='middle' font-family='sans-serif' font-size='12.5' fill='#fff' font-weight='bold'>Android</text>\n<rect x='206' y='30' width='188' height='28' rx='6' fill='#0468d7'/>\n<text x='300' y='49' text-anchor='middle' font-family='sans-serif' font-size='12.5' fill='#fff' font-weight='bold'>Apple</text>\n<rect x='406' y='30' width='188' height='28' rx='6' fill='#1a7f9c'/>\n<text x='500' y='49' text-anchor='middle' font-family='sans-serif' font-size='12.5' fill='#fff' font-weight='bold'>Dart 3.14</text>\n<rect x='6' y='64' width='188' height='110' rx='6' fill='#e7f2fb' stroke='#9fc6ea'/>\n<rect x='206' y='64' width='188' height='110' rx='6' fill='#e7f2fb' stroke='#9fc6ea'/>\n<rect x='406' y='64' width='188' height='110' rx='6' fill='#e7f2fb' stroke='#9fc6ea'/>\n<text x='18' y='88' font-family='sans-serif' font-size='11.5' fill='#0b3a5e'>• Java 17 必須</text>\n<text x='18' y='112' font-family='sans-serif' font-size='11.5' fill='#0b3a5e'>• 16KBページ対応</text>\n<text x='18' y='136' font-family='sans-serif' font-size='11.5' fill='#0b3a5e'>• Impeller API29+既定</text>\n<text x='18' y='160' font-family='sans-serif' font-size='11.5' fill='#0b3a5e'>• AGP9/KGP・SDK最新</text>\n<text x='218' y='88' font-family='sans-serif' font-size='11.5' fill='#0b3a5e'>• UIScene移行(必須化)</text>\n<text x='218' y='112' font-family='sans-serif' font-size='11.5' fill='#0b3a5e'>• AppDelegate単独は不可</text>\n<text x='218' y='136' font-family='sans-serif' font-size='11.5' fill='#0b3a5e'>• SwiftPM既定化へ</text>\n<text x='218' y='160' font-family='sans-serif' font-size='11.5' fill='#0b3a5e'>• CocoaPodsはメンテ</text>\n<text x='418' y='88' font-family='sans-serif' font-size='11.5' fill='#0b3a5e'>• macros 無期限ポーズ</text>\n<text x='418' y='112' font-family='sans-serif' font-size='11.5' fill='#0b3a5e'>• Augmentationsへ一本化</text>\n<text x='418' y='136' font-family='sans-serif' font-size='11.5' fill='#0b3a5e'>• codegenはbuild_runner</text>\n<text x='418' y='160' font-family='sans-serif' font-size='11.5' fill='#0b3a5e'>• dot shorthands可(3.10+)</text>\n</svg><figcaption>図1：3.50はコードより基盤対応が主役。安定ラインは3.47.7にpinしつつ、CIにbetaを1本足して回帰を先に捕まえる。</figcaption></figure>\n\n<p>前倒し移行の実務は、安定ラインを<strong>3.47.7にpin</strong>、<code>flutter channel beta</code>をCIに1本足して3.50回帰を検知、design widget分離は<code>dart fix --apply --code=migrate_design_widgets</code>、<code>flutter build web --wasm</code>と<code>flutter build appbundle</code>を今のうちに緑にしておく、の4点。</p>\n\n<h4>あわせて整える — レイヤ別テスト戦略</h4>\n<p>原則は<strong>「捕まえたい失敗を最も安く捕まえるテストを書く」</strong>。テスト数やカバレッジ数値の最大化が目的ではない。公式アーキ（UI層／データ層・MVVM）を下から厚く・上を薄く積むピラミッドで考える。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 230' xmlns='http://www.w3.org/2000/svg' role='img' aria-label='テストピラミッド'>\n<polygon points='300,20 345,67 255,67' fill='#f59e0b' stroke='#fff' stroke-width='1.5'/>\n<polygon points='255,67 345,67 390,114 210,114' fill='#0468d7' stroke='#fff' stroke-width='1.5'/>\n<polygon points='210,114 390,114 435,161 165,161' fill='#0b84c4' stroke='#fff' stroke-width='1.5'/>\n<polygon points='165,161 435,161 480,208 120,208' fill='#02569b' stroke='#fff' stroke-width='1.5'/>\n<text x='300' y='58' text-anchor='middle' font-family='sans-serif' font-size='10.5' fill='#fff' font-weight='bold'>Golden</text>\n<text x='300' y='98' text-anchor='middle' font-family='sans-serif' font-size='11.5' fill='#fff' font-weight='bold'>Integration</text>\n<text x='300' y='144' text-anchor='middle' font-family='sans-serif' font-size='12.5' fill='#fff' font-weight='bold'>Widget（主力）</text>\n<text x='300' y='192' text-anchor='middle' font-family='sans-serif' font-size='13' fill='#fff' font-weight='bold'>Unit（厚く・最速）</text>\n<text x='352' y='46' font-family='sans-serif' font-size='10.5' fill='#92400e'>視覚が資産の所だけ</text>\n<text x='398' y='98' font-family='sans-serif' font-size='10.5' fill='#0a4a9c'>重要経路を数本</text>\n<text x='442' y='144' font-family='sans-serif' font-size='10.5' fill='#0a4a9c'>タップ・再ビルド検証</text>\n<text x='300' y='224' text-anchor='middle' font-family='sans-serif' font-size='10.5' fill='#02569b'>ViewModel/use-case/repository ＝ mocktail や fake で差し替え</text>\n</svg><figcaption>図2：下ほど多く速く安い。Widgetで取れる失敗はWidget側へ寄せ、遅く壊れやすいIntegrationは重要経路に限定する。</figcaption></figure>\n\n<p>具体には、Unitは純ロジックを<code>mocktail</code>/fakeで（実タイマー・実ネットワークは使わない）、Widgetは<code>testWidgets</code>＋<code>pump/pumpAndSettle</code>で、状態層はRiverpodなら<code>ProviderContainer＋overrides</code>・Blocなら<code>bloc_test</code>。Integrationは<code>integration_test</code>でサインインやチェックアウト等を数本（<code>flutter_driver</code>は3.13以降非推奨）。Goldenは<code>matchesGoldenFile</code>をフォント・環境を固定して範囲を絞り、設計段階は<code>@Preview</code>で反復してから敷く。</p>\n\n<h4>ひとことまとめ</h4>\n<p>3.50は<strong>コードより足回り</strong>——Java 17・16KB・UIScene・Dart 3.14を今月中に。テストは数を競わず「最も安く失敗を捕まえる層」へ寄せる。ついでにパフォは<code>Opacity</code>→<code>AnimatedOpacity</code>、クリップより<code>borderRadius</code>で<code>saveLayer</code>を避け、画像は<code>cacheWidth/Height</code>で表示サイズデコードが効く。</p>",
+      "sources": [
+        {
+          "title": "Flutter versions (flutterreleases.com)",
+          "url": "https://flutterreleases.com/flutter-versions/"
+        },
+        {
+          "title": "State of Flutter 2026 (devnewsletter)",
+          "url": "https://devnewsletter.com/p/state-of-flutter-2026/"
+        },
+        {
+          "title": "What's new in the docs (flutter.dev)",
+          "url": "https://docs.flutter.dev/release/whats-new"
+        },
+        {
+          "title": "Flutter testing strategy 2026 (sagnikbhattacharya)",
+          "url": "https://sagnikbhattacharya.com/blog/flutter-testing-strategy-2026"
+        },
+        {
+          "title": "How to optimise your Flutter app 2026 (foresightmobile)",
+          "url": "https://foresightmobile.com/blog/how-to-optimise-your-flutter-app"
+        }
+      ]
+    },
+    {
+      "id": "2026-10-15-claude-code",
       "date": "2026-10-15",
       "topic": "Claude Code",
       "title": "Claude Code v2.1.299/300 — “アイドル圧縮”と可観測性強化、そしてAnthropic自作のソース管理Scion",
@@ -39,10 +126,10 @@
           "title": "AI agents are killing the Git client, not Git",
           "url": "https://hackernoon.com/ai-agents-are-killing-the-git-client-not-git-what-anthropics-scion-and-cursors-origin-show"
         }
-      ],
-      "id": "2026-10-15-claude-code"
+      ]
     },
     {
+      "id": "2026-10-15-nextjs",
       "date": "2026-10-15",
       "topic": "Next.js",
       "title": "バンドルサイズ最適化 — barrel file問題と optimizePackageImports / next analyze",
@@ -65,10 +152,10 @@
           "title": "vercel/next.js Discussion #92926: Barrel imports",
           "url": "https://github.com/vercel/next.js/discussions/92926"
         }
-      ],
-      "id": "2026-10-15-nextjs"
+      ]
     },
     {
+      "id": "2026-10-15-flutter",
       "date": "2026-10-15",
       "topic": "Flutter",
       "title": "Flutter 3.47.7 と Impeller の次段階 — WebGPUプレビュー、公式MVVM＋Command、AOTシェーダ",
@@ -99,10 +186,10 @@
           "title": "Performance best practices (docs)",
           "url": "https://docs.flutter.dev/perf/best-practices"
         }
-      ],
-      "id": "2026-10-15-flutter"
+      ]
     },
     {
+      "id": "2026-10-14-claude-code",
       "date": "2026-10-14",
       "topic": "Claude Code",
       "title": "更新が止まった週にこそ読む — 権限バイパス系セキュリティ修正の中身と、v2.1.296「現在地」チートシート",
@@ -125,10 +212,10 @@
           "title": "Codex CLI 0.162 vs Claude Code 2.1.296",
           "url": "https://tech-insider.org/codex-cli-0-162-vs-claude-code-2-1-296-2026"
         }
-      ],
-      "id": "2026-10-14-claude-code"
+      ]
     },
     {
+      "id": "2026-10-14-nextjs",
       "date": "2026-10-14",
       "topic": "Next.js",
       "title": "スクロールで「ふわっと出現」をJSゼロで ─ animation-timeline: view() とanimation-range、そして『一度だけ』の壁",
@@ -151,10 +238,10 @@
           "title": "caniuse: animation-timeline: view()",
           "url": "https://caniuse.com/mdn-css_properties_animation-timeline_view"
         }
-      ],
-      "id": "2026-10-14-nextjs"
+      ]
     },
     {
+      "id": "2026-10-14-flutter",
       "date": "2026-10-14",
       "topic": "Flutter",
       "title": "Flutterの『締め切り』が来た ─ Xcode 27 / iOS 27 UIScene必須、SwiftPMが主役、そして120fpsのフレーム予算",
@@ -177,10 +264,10 @@
           "title": "Flutter + Impeller 120fps guide",
           "url": "https://shindekalpesharun.medium.com/flutter-impeller-how-to-achieve-native-120fps-performance-in-2026-68ec28cc71e5"
         }
-      ],
-      "id": "2026-10-14-flutter"
+      ]
     },
     {
+      "id": "2026-10-13-github-trending",
       "date": "2026-10-13",
       "topic": "GitHub Trending",
       "title": "10/13の話題リポジトリ — 証拠ベースの人生ガイド(HowToLiveBetter)・歌詞が舞う音楽プレイヤー(folia-major)・Rust製OSS CAD(solidcraft)",
@@ -199,10 +286,10 @@
           "title": "bherbruck/solidcraft",
           "url": "https://github.com/bherbruck/solidcraft"
         }
-      ],
-      "id": "2026-10-13-github-trending"
+      ]
     },
     {
+      "id": "2026-10-12-claude-code",
       "date": "2026-10-12",
       "topic": "Claude Code",
       "title": "Claude Code を\"仕組みで縛る\" — onFailure:\"block\"・Mods・Hooks上級運用の棚卸し（v2.1.296据え置き週）",
@@ -225,10 +312,10 @@
           "title": "Hooks・サブエージェント・コンテキスト管理（上級BP）",
           "url": "https://smartscope.blog/en/generative-ai/claude/claude-code-best-practices-advanced-2026/"
         }
-      ],
-      "id": "2026-10-12-claude-code"
+      ]
     },
     {
+      "id": "2026-10-12-nextjs",
       "date": "2026-10-12",
       "topic": "Next.js",
       "title": "いいね（ハート）ボタンのマイクロインタラクション — スプリング＋パーティクル・バーストをGPUだけで",
@@ -251,10 +338,10 @@
           "title": "React Docs: useOptimistic",
           "url": "https://react.dev/reference/react/useOptimistic"
         }
-      ],
-      "id": "2026-10-12-nextjs"
+      ]
     },
     {
+      "id": "2026-10-13-flutter",
       "date": "2026-10-13",
       "topic": "Flutter",
       "title": "Flutter 3.50 ブランチカット — Wasm遅延ロードGAとImpeller一本化、Riverpod 3の状態標準化",
@@ -277,10 +364,10 @@
           "title": "flutter_animate 2.2.0 API docs",
           "url": "https://pub.dev/documentation/flutter_animate/2.2.0/flutter_animate/"
         }
-      ],
-      "id": "2026-10-13-flutter"
+      ]
     },
     {
+      "id": "2026-10-12-github-trending",
       "date": "2026-10-12",
       "topic": "GitHub Trending",
       "title": "10/12の話題リポジトリ — Mac内をAIで意味検索(DigUp)・回線束ねて高速DL(plexo)・5MBネイティブJSアプリ(tinyjsapp)",
@@ -299,10 +386,10 @@
           "title": "tarwin/tinyjsapp",
           "url": "https://github.com/tarwin/tinyjsapp"
         }
-      ],
-      "id": "2026-10-12-github-trending"
+      ]
     },
     {
+      "id": "2026-10-11-claude-code",
       "date": "2026-10-11",
       "topic": "Claude Code",
       "title": "Claude Code v2.1.296 を棚卸し — サブエージェントの autoCompactWindow、Read の allow_large、そして Shift-JIS 編集拒否という破壊的変更",
@@ -325,10 +412,10 @@
           "title": "サブエージェント ベストプラクティス Part II (PubNub)",
           "url": "https://www.pubnub.com/blog/best-practices-claude-code-subagents-part-two-from-prompts-to-pipelines/"
         }
-      ],
-      "id": "2026-10-11-claude-code"
+      ]
     },
     {
+      "id": "2026-10-11-nextjs",
       "date": "2026-10-11",
       "topic": "Next.js",
       "title": "next-safe-action v8 で Server Actions を型安全に — Standard Schema 採用でアダプタ不要、エラーは既定で握って漏らさない",
@@ -351,10 +438,10 @@
           "title": "npm: next-safe-action",
           "url": "https://www.npmjs.com/package/next-safe-action"
         }
-      ],
-      "id": "2026-10-11-nextjs"
+      ]
     },
     {
+      "id": "2026-10-11-github-trending",
       "date": "2026-10-11",
       "topic": "GitHub Trending",
       "title": "10/11の話題リポジトリ — 自分のPCで資産管理(aurelio-finance)・スクショを物干しに吊るす(tendedero)・軽量Spotifyクライアント(spotifast)",
@@ -373,10 +460,10 @@
           "title": "crmne/spotifast",
           "url": "https://github.com/crmne/spotifast"
         }
-      ],
-      "id": "2026-10-11-github-trending"
+      ]
     },
     {
+      "id": "2026-10-10-claude-code",
       "date": "2026-10-10",
       "topic": "Claude Code",
       "title": "Mods が正式リリース — TypeScript で Claude Code 自体を拡張、v2.1.287 以降は既定で有効",
@@ -395,10 +482,10 @@
           "title": "Claude Code Changelog",
           "url": "https://code.claude.com/docs/en/changelog"
         }
-      ],
-      "id": "2026-10-10-claude-code"
+      ]
     },
     {
+      "id": "2026-10-10-nextjs",
       "date": "2026-10-10",
       "topic": "Next.js",
       "title": "App Router のグローバル・ルート遷移プログレスバー — router.events 無き世界での開始/完了検知",
@@ -417,10 +504,10 @@
           "title": "Global progress in Next.js (buildui)",
           "url": "https://buildui.com/posts/global-progress-in-nextjs"
         }
-      ],
-      "id": "2026-10-10-nextjs"
+      ]
     },
     {
+      "id": "2026-10-11-flutter",
       "date": "2026-10-11",
       "topic": "Flutter",
       "title": "Flutter 3.47 — Impeller が全デスクトップ既定に、マルチウィンドウ前進と本番アニメの具体値",
@@ -439,10 +526,10 @@
           "title": "Flutter App Architecture (docs)",
           "url": "https://docs.flutter.dev/app-architecture"
         }
-      ],
-      "id": "2026-10-11-flutter"
+      ]
     },
     {
+      "id": "2026-10-10-github-trending",
       "date": "2026-10-10",
       "topic": "GitHub Trending",
       "title": "10/10 の話題リポジトリ — AI生成コードを安全実行(mxc)・UI出力を標準化(OpenUI)・AIスロップ排除(anti-slop)",
@@ -461,10 +548,10 @@
           "title": "miqdadbadjuber/anti-slop",
           "url": "https://github.com/miqdadbadjuber/anti-slop"
         }
-      ],
-      "id": "2026-10-10-github-trending"
+      ]
     },
     {
+      "id": "2026-10-09-claude-code",
       "date": "2026-10-09",
       "topic": "Claude Code",
       "title": "Claude Code v2.1.296 — MCP説明の上限を4,096字へ、Sonnet 5.5キャッシュ読取を半額、サブエージェントに`autoCompactWindow`",
@@ -483,10 +570,10 @@
           "title": "Anthropic changes usage policy (TechCrunch)",
           "url": "https://techcrunch.com/2026/10/08/anthropic-changes-usage-policy-to-ban-model-abuse-and-election-interference/"
         }
-      ],
-      "id": "2026-10-09-claude-code"
+      ]
     },
     {
+      "id": "2026-10-09-nextjs",
       "date": "2026-10-09",
       "topic": "Next.js",
       "title": "`authInterrupts` — App Routerで401/403を`notFound()`流に投げる（forbidden / unauthorized）",
@@ -509,10 +596,10 @@
           "title": "CVE-2026-44575",
           "url": "https://fieldguide.lutrasecurity.com/CVE-2026-44575/"
         }
-      ],
-      "id": "2026-10-09-nextjs"
+      ]
     },
     {
+      "id": "2026-10-10-flutter",
       "date": "2026-10-10",
       "topic": "Flutter",
       "title": "Next.App DevCon 2026 閉幕 — \"Finishing the Job\" 3.50の3本柱（WasmGC既定・Impeller一本化・Material/Cupertino分離）",
@@ -535,10 +622,10 @@
           "title": "DevTools Performance",
           "url": "https://docs.flutter.dev/tools/devtools/performance"
         }
-      ],
-      "id": "2026-10-10-flutter"
+      ]
     },
     {
+      "id": "2026-10-09-github-trending",
       "date": "2026-10-09",
       "topic": "GitHub Trending",
       "title": "10/9の話題リポジトリ — ブラウザ常駐エージェント・公開データの3D地球・依存ゼロのローカルMoE推論",
@@ -557,10 +644,10 @@
           "title": "JustVugg/colibri",
           "url": "https://github.com/JustVugg/colibri"
         }
-      ],
-      "id": "2026-10-09-github-trending"
+      ]
     },
     {
+      "id": "2026-10-08-claude-code",
       "date": "2026-10-08",
       "topic": "Claude Code",
       "title": "Claude Code v2.1.295 — フック/HTTPフックに onFailure:\"block\"、OSC 7501、MCP説明16Kへ",
@@ -579,10 +666,10 @@
           "title": "Claude Code Agentic Workflows 2026 Playbook",
           "url": "https://capitalandcompute.net/blog/claude-code-agentic-workflows/"
         }
-      ],
-      "id": "2026-10-08-claude-code"
+      ]
     },
     {
+      "id": "2026-10-08-nextjs",
       "date": "2026-10-08",
       "topic": "Next.js",
       "title": "useOptimistic で楽観的UI — 送信前に先出し、成功で収束・失敗で自動ロールバック",
@@ -605,10 +692,10 @@
           "title": "Next.js: refresh()",
           "url": "https://nextjs.org/docs/app/api-reference/functions/refresh"
         }
-      ],
-      "id": "2026-10-08-nextjs"
+      ]
     },
     {
+      "id": "2026-10-09-flutter",
       "date": "2026-10-09",
       "topic": "Flutter",
       "title": "Material/Cupertino が SDK から独立 — material_ui / cupertino_ui 1.0 移行が本番化",
@@ -627,10 +714,10 @@
           "title": "Flutter & Dart 2026 roadmap",
           "url": "https://flutter.dev/blog/flutter-darts-2026-roadmap"
         }
-      ],
-      "id": "2026-10-09-flutter"
+      ]
     },
     {
+      "id": "2026-10-08-github-trending",
       "date": "2026-10-08",
       "topic": "GitHub Trending",
       "title": "10/8の話題リポジトリ — Docker公式エージェント基盤・AI動画制作・写真の位置推定",
@@ -649,10 +736,10 @@
           "title": "Oldcircle/geo-sleuth",
           "url": "https://github.com/Oldcircle/geo-sleuth"
         }
-      ],
-      "id": "2026-10-08-github-trending"
+      ]
     },
     {
+      "id": "2026-10-08-flutter",
       "date": "2026-10-08",
       "topic": "Flutter",
       "title": "DevCon 2026 Day2 — Dart Primary Constructors でボイラープレート撲滅（＋Augmentations）",
@@ -675,10 +762,10 @@
           "title": "What's new in the docs (Flutter)",
           "url": "https://docs.flutter.dev/release/whats-new"
         }
-      ],
-      "id": "2026-10-08-flutter"
+      ]
     },
     {
+      "id": "2026-10-06-claude-code",
       "date": "2026-10-06",
       "topic": "Claude Code",
       "title": "Claude Code v2.1.292 — 承認なしartifact公開とeffort、そして“フックで制御”の設計指針",
@@ -697,10 +784,10 @@
           "title": "Claude Code 上級ベストプラクティス11選",
           "url": "https://smartscope.blog/en/generative-ai/claude/claude-code-best-practices-advanced-2026/"
         }
-      ],
-      "id": "2026-10-06-claude-code"
+      ]
     },
     {
+      "id": "2026-10-06-nextjs",
       "date": "2026-10-06",
       "topic": "Next.js",
       "title": "Next.js 16 — runtime='edge' は非推奨に。原則Node.js、移行は“exportを消すだけ”",
@@ -723,10 +810,10 @@
           "title": "Error: node-module-in-edge-runtime",
           "url": "https://nextjs.org/docs/messages/node-module-in-edge-runtime"
         }
-      ],
-      "id": "2026-10-06-nextjs"
+      ]
     },
     {
+      "id": "2026-10-07-flutter",
       "date": "2026-10-07",
       "topic": "Flutter",
       "title": "Next.App DevCon 2026 開幕 — WasmGC既定化・Impeller一本化、3.50へ“積み残し完了”",
@@ -749,10 +836,10 @@
           "title": "Work with long lists (docs)",
           "url": "https://docs.flutter.dev/cookbook/lists/long-lists"
         }
-      ],
-      "id": "2026-10-07-flutter"
+      ]
     },
     {
+      "id": "2026-10-06-github-trending",
       "date": "2026-10-06",
       "topic": "GitHub Trending",
       "title": "10/6の話題リポジトリ — ローカル記憶の新ハーネス・Ghidraをエージェント化・OSINTをグラフで",
@@ -771,8 +858,7 @@
           "title": "reconurge/flowsint",
           "url": "https://github.com/reconurge/flowsint"
         }
-      ],
-      "id": "2026-10-06-github-trending"
+      ]
     },
     {
       "id": "2026-10-05-claude-code",
