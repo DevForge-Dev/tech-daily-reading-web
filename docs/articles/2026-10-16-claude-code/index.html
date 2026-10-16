@@ -1,0 +1,131 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Claude Code v2.1.301とCode Review GA — 「7つの制御手段」で主文脈を守る設計 — デイリー技術深掘り 読み物</title><meta name="description" content="小コンテキスト切替時の自動要約と37件の修正、そしてCode Reviewの一般提供。あわせて読みたいのがCLAUDE.md/skills/subagents/hooks/pluginsの使い分け。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-16-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Claude Code v2.1.301とCode Review GA — 「7つの制御手段」で主文脈を守る設計 — デイリー技術深掘り 読み物"><meta property="og:description" content="小コンテキスト切替時の自動要約と37件の修正、そしてCode Reviewの一般提供。あわせて読みたいのがCLAUDE.md/skills/subagents/hooks/pluginsの使い分け。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-16-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>Claude Code v2.1.301とCode Review GA — 「7つの制御手段」で主文脈を守る設計</h1> <p class="lede">小コンテキスト切替時の自動要約と37件の修正、そしてCode Reviewの一般提供。あわせて読みたいのがCLAUDE.md/skills/subagents/hooks/pluginsの使い分け。</p> <div class="meta"> <span>📅 2026年10月16日</span> <span>⏱ 約4分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="0"><p>公式更新は10/14のv2.1.299/300に続いて10/15に<strong>v2.1.301</strong>へ。さらに同日、Claude Codeのマルチエージェント型PRレビュー機能<strong>Code Review</strong>がTeam/Enterprise向けに一般提供(GA)入りした。設定・運用まわりが一段落したので、あわせて読みたい『制御手段の使い分け』ガイド2本と一緒に整理しておく。</p>
+
+<h4 id="sec-1">何が新しいか — v2.1.301とCode Review GA</h4>
+<p>v2.1.301の実務的な目玉は、<strong>小コンテキストモデルへ切り替える際に旧モデルが長い会話を要約してから移行する</strong>挙動（しかも無断でクレジットを消費しないよう修正済み）と、長時間サブエージェント実行中の進捗描画を毎回再処理せず<strong>増分更新で高速化</strong>した点。可観測性では OpenTelemetry の <code>tool_decision</code> イベントに <code>classifier_verdict</code> / <code>permission_mode</code> / <code>classifier_category</code> が加わり、Auto Modeの分類器判定と権限ルールを切り分けて追えるようになった。バグ修正は37件で、PreToolUse(Edit/Write)フック下でもArtifact更新が拒否されない、Readが.xlsm/.parquet/.epub/.heic等のバイナリをテキストとして読まない、などが含まれる。</p>
+<p>Code Reviewはプレビュー比<strong>約3倍速で通常6〜10分</strong>（従来約20分）。並列エージェントが差分と周辺コードをレビュー→<strong>検証ステップで誤検知を除去</strong>→重複排除・重大度順に<strong>インラインコメント＋サマリ＋「Claude Code Review」チェック</strong>として投稿する。既定はスタイルやテスト網羅より<strong>正当性バグ</strong>重視で、REVIEW.md / CLAUDE.md で調整。PRオープン時・各push後・<code>@claude review</code>で起動し、チェックは失敗させず<strong>マージ可否の判断は人に残す</strong>。要件はTeam/Enterprise＋GitHubホスト型で、ZDR/HIPAA/BAA/CMEKは未対応。</p>
+
+<figure class='fig'><svg viewBox='0 0 600 130' xmlns='http://www.w3.org/2000/svg' role='img' aria-label='Code Reviewのパイプライン'>
+<defs><marker id='ccah' markerWidth='9' markerHeight='9' refX='6' refY='3' orient='auto'><path d='M0,0 L6,3 L0,6 z' fill='#d97706'></path></marker></defs>
+<rect x='4' y='40' width='108' height='52' rx='8' fill='#fff7ed' stroke='#d97706' stroke-width='1.5'></rect>
+<text x='58' y='62' text-anchor='middle' font-family='sans-serif' font-size='11.5' fill='#7c2d12'>PR差分＋</text>
+<text x='58' y='78' text-anchor='middle' font-family='sans-serif' font-size='11.5' fill='#7c2d12'>周辺コード</text>
+<rect x='124' y='40' width='108' height='52' rx='8' fill='#fff7ed' stroke='#d97706' stroke-width='1.5'></rect>
+<text x='178' y='62' text-anchor='middle' font-family='sans-serif' font-size='11.5' fill='#7c2d12'>並列エージェント</text>
+<text x='178' y='78' text-anchor='middle' font-family='sans-serif' font-size='11.5' fill='#7c2d12'>でレビュー</text>
+<rect x='244' y='40' width='108' height='52' rx='8' fill='#fff7ed' stroke='#d97706' stroke-width='1.5'></rect>
+<text x='298' y='62' text-anchor='middle' font-family='sans-serif' font-size='11.5' fill='#7c2d12'>検証で</text>
+<text x='298' y='78' text-anchor='middle' font-family='sans-serif' font-size='11.5' fill='#7c2d12'>誤検知を除去</text>
+<rect x='364' y='40' width='108' height='52' rx='8' fill='#fff7ed' stroke='#d97706' stroke-width='1.5'></rect>
+<text x='418' y='62' text-anchor='middle' font-family='sans-serif' font-size='11.5' fill='#7c2d12'>重複排除・</text>
+<text x='418' y='78' text-anchor='middle' font-family='sans-serif' font-size='11.5' fill='#7c2d12'>重大度順</text>
+<rect x='484' y='40' width='112' height='52' rx='8' fill='#ffedd5' stroke='#b45309' stroke-width='1.5'></rect>
+<text x='540' y='62' text-anchor='middle' font-family='sans-serif' font-size='11' fill='#7c2d12'>コメント＋サマリ</text>
+<text x='540' y='78' text-anchor='middle' font-family='sans-serif' font-size='11' fill='#7c2d12'>＋チェック</text>
+<line x1='113' y1='66' x2='122' y2='66' stroke='#d97706' stroke-width='1.5' marker-end='url(#ccah)'></line>
+<line x1='233' y1='66' x2='242' y2='66' stroke='#d97706' stroke-width='1.5' marker-end='url(#ccah)'></line>
+<line x1='353' y1='66' x2='362' y2='66' stroke='#d97706' stroke-width='1.5' marker-end='url(#ccah)'></line>
+<line x1='473' y1='66' x2='482' y2='66' stroke='#d97706' stroke-width='1.5' marker-end='url(#ccah)'></line>
+<text x='300' y='18' text-anchor='middle' font-family='sans-serif' font-size='12.5' fill='#9a3412' font-weight='bold'>Code Review GA：並列→検証→集約のパイプライン</text>
+</svg><figcaption>図1：Code Reviewは差分を並列レビューし、検証で誤検知を落としてから重大度順に投稿する。マージ可否は人が握る。</figcaption></figure>
+
+<h4 id="sec-2">仕組み — 7つの制御手段を3軸で見る</h4>
+<p>技術記事2本が共通して言うのは「Claudeの挙動を縛る手段は複数あり、<strong>いつ読み込まれ・コンテキスト圧縮に耐え・トークンをいくら食うか</strong>で使い分ける」こと。CLAUDE.mdは直下が起動時読込でいちばん高価、skillsは名前と説明だけ起動時に読み本体は呼び出し時、subagentsは別窓で最終要約だけ返し、hooksはライフサイクルイベントで発火して圧縮されず主文脈の外に居続ける。よく使う4つを並べるとこうなる。</p>
+
+<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg' role='img' aria-label='制御手段の比較表'>
+<rect x='2' y='2' width='596' height='196' rx='8' fill='#fffbf5' stroke='#d97706' stroke-width='1.5'></rect>
+<rect x='2' y='2' width='596' height='34' rx='8' fill='#ffedd5'></rect>
+<line x1='180' y1='2' x2='180' y2='198' stroke='#f0c99a' stroke-width='1'></line>
+<line x1='350' y1='2' x2='350' y2='198' stroke='#f0c99a' stroke-width='1'></line>
+<line x1='470' y1='2' x2='470' y2='198' stroke='#f0c99a' stroke-width='1'></line>
+<line x1='2' y1='36' x2='598' y2='36' stroke='#e7b483' stroke-width='1.2'></line>
+<line x1='2' y1='77' x2='598' y2='77' stroke='#f0c99a' stroke-width='1'></line>
+<line x1='2' y1='118' x2='598' y2='118' stroke='#f0c99a' stroke-width='1'></line>
+<line x1='2' y1='159' x2='598' y2='159' stroke='#f0c99a' stroke-width='1'></line>
+<text x='12' y='24' font-family='sans-serif' font-size='12' fill='#7c2d12' font-weight='bold'>手段</text>
+<text x='190' y='24' font-family='sans-serif' font-size='12' fill='#7c2d12' font-weight='bold'>読込タイミング</text>
+<text x='360' y='24' font-family='sans-serif' font-size='12' fill='#7c2d12' font-weight='bold'>圧縮耐性</text>
+<text x='480' y='24' font-family='sans-serif' font-size='12' fill='#7c2d12' font-weight='bold'>費用</text>
+<text x='12' y='61' font-family='sans-serif' font-size='12' fill='#111' font-weight='bold'>CLAUDE.md</text>
+<text x='190' y='61' font-family='sans-serif' font-size='11.5' fill='#333'>起動時（直下）</text>
+<text x='360' y='61' font-family='sans-serif' font-size='11.5' fill='#333'>残る</text>
+<text x='480' y='61' font-family='sans-serif' font-size='11.5' fill='#b45309'>最大</text>
+<text x='12' y='102' font-family='sans-serif' font-size='12' fill='#111' font-weight='bold'>skills</text>
+<text x='190' y='102' font-family='sans-serif' font-size='11.5' fill='#333'>起動時は説明のみ→呼出時</text>
+<text x='360' y='102' font-family='sans-serif' font-size='11.5' fill='#333'>残る</text>
+<text x='480' y='102' font-family='sans-serif' font-size='11.5' fill='#1a7f37'>小</text>
+<text x='12' y='143' font-family='sans-serif' font-size='12' fill='#111' font-weight='bold'>subagents</text>
+<text x='190' y='143' font-family='sans-serif' font-size='11.5' fill='#333'>呼出時・別窓</text>
+<text x='360' y='143' font-family='sans-serif' font-size='11.5' fill='#333'>要約のみ返す</text>
+<text x='480' y='143' font-family='sans-serif' font-size='11.5' fill='#1a7f37'>隔離</text>
+<text x='12' y='184' font-family='sans-serif' font-size='12' fill='#111' font-weight='bold'>hooks</text>
+<text x='190' y='184' font-family='sans-serif' font-size='11.5' fill='#333'>イベント発火で確定実行</text>
+<text x='360' y='184' font-family='sans-serif' font-size='11.5' fill='#1a7f37'>圧縮されない</text>
+<text x='480' y='184' font-family='sans-serif' font-size='11.5' fill='#1a7f37'>低</text>
+</svg><figcaption>図2：主要4手段の比較。常時必要な規約はhook、重い知識はsubagent、長い手順はskillsへ振り分ける。</figcaption></figure>
+
+<h4 id="sec-3">自分が試すなら</h4>
+<p>判断則はシンプルに割り切れる。<strong>「YのあとXを常に」ならhook化</strong>、<strong>「Zは絶対禁止」ならhook／権限ガード</strong>、<strong>長い手続きフローはskills</strong>、<strong>ディレクトリ固有の制約はパススコープrules</strong>、<strong>重い読み込みはsubagentへ委譲</strong>して主文脈を節約。CLAUDE.mdは50〜150行・500トークン未満に抑え<code>/init</code>で雛形生成し、オーナーを置いてコードと同様にレビューする。チームへ配るときはskills/subagents/hooks/MCPを<strong>pluginsに束ねて1手で配布</strong>。</p>
+
+<h4 id="sec-4">注意点</h4>
+<p>Code Reviewのチェックはあくまで補助で、落とすのは人の責任——「緑だから安全」ではない。ZDR/HIPAA構成では使えない点も要確認。設定側は、CLAUDE.mdを盛りすぎると起動時トークンを食い、圧縮で古い文脈から落ちる悪循環になるので、<code>/context</code>で窓を見ながら痩せさせる。hookは確定実行ゆえに副作用も確定——<code>.env</code>編集のPreToolUseブロックのような「保証したい動作」に限定する。</p>
+
+<h4 id="sec-5">ひとことまとめ</h4>
+<p>v2.1.301は「切替時に旧モデルが要約してから渡す」で長時間セッションのムダ消費をさらに抑える方向。制御手段は<em>読込タイミング×圧縮耐性×費用</em>の3軸で選べば迷わない。常時の規約はhook、重い知識はsubagent、配布はplugin。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://code.claude.com/docs/en/changelog" target="_blank" rel="noopener noreferrer"> Claude Code changelog </a> </li><li> <a href="https://www.unite.ai/anthropic-makes-code-review-for-claude-code-generally-available/" target="_blank" rel="noopener noreferrer"> Anthropic Makes Code Review Generally Available (unite.ai) </a> </li><li> <a href="https://developerintheloop.substack.com/p/the-ultimate-guide-to-configuring" target="_blank" rel="noopener noreferrer"> The Ultimate Guide to Configuring Claude Code </a> </li><li> <a href="https://www.besthub.dev/articles/mastering-claude-code-skills-hooks-subagents-and-more-official-guidance-b0f6368f48d6" target="_blank" rel="noopener noreferrer"> Mastering Claude Code: skills/hooks/subagents (besthub) </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 何が新しいか — v2.1.301とCode Review GA </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 仕組み — 7つの制御手段を3軸で見る </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 自分が試すなら </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 注意点 </a> </li><li> <a href="#sec-5" data-toc="sec-5"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-10-16</div> <div>⏱ 読了 約4分</div> <div>🏷 Claude Code</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
