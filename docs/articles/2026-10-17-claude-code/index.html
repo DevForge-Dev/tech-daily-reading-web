@@ -1,0 +1,59 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Claude Code v2.1.302 — forkサブエージェント既定ONと、Vals AIが突きつけた「多エージェントは高くつく」 — デイリー技術深掘り 読み物</title><meta name="description" content="forkが既定ON・auto mode分類器のモデル指定・バグ43件修正。一方でマルチエージェントは単体の1.8〜5.1倍のコストで品質ほぼ横ばい、という冷や水の検証も。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-17-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Claude Code v2.1.302 — forkサブエージェント既定ONと、Vals AIが突きつけた「多エージェントは高くつく」 — デイリー技術深掘り 読み物"><meta property="og:description" content="forkが既定ON・auto mode分類器のモデル指定・バグ43件修正。一方でマルチエージェントは単体の1.8〜5.1倍のコストで品質ほぼ横ばい、という冷や水の検証も。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-17-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>Claude Code v2.1.302 — forkサブエージェント既定ONと、Vals AIが突きつけた「多エージェントは高くつく」</h1> <p class="lede">forkが既定ON・auto mode分類器のモデル指定・バグ43件修正。一方でマルチエージェントは単体の1.8〜5.1倍のコストで品質ほぼ横ばい、という冷や水の検証も。</p> <div class="meta"> <span>📅 2026年10月17日</span> <span>⏱ 約3分</span> <span>🔗 出典 5 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="0"><p>10/15のv2.1.301に続き、10/16に<strong>v2.1.302</strong>が出た。土曜なので派手な新機能ではなく運用面の調整が中心だが、一つだけ性格を変える変更がある——<strong>forkサブエージェントが既定ON</strong>になった（<code>claude -p</code>・Agent SDK・デスクトップ・VS Codeすべて。無効化は<code>CLAUDE_CODE_FORK_SUBAGENT=0</code>）。これまで「わざわざ並列化する」ものだったサブエージェントが、黙っていても走る前提になった。</p><h4 id="sec-1">v2.1.302の変更点</h4><p>追加は、クライアント側auto mode分類器のモデルを選ぶ<code>CLAUDE_CODE_AUTO_MODE_MODEL</code>（サーバ側のauto modeは不変）、<code>/config</code>のアイドル圧縮トグル、そして<code>/design-sync</code>・<code>/design-login</code>への「単体版Claude Design（claude.ai/design）は<strong>2026年12月14日に終了</strong>しClaude本体へ統合」という告知。変更では、権限モード未指定の<code>claude -p</code>/SDKがサードパーティ上で<code>default</code>開始（autoを保つなら<code>--permission-mode auto</code>）、1イベントで同時に走るフックは最大12件に制限。バグ修正は43件で、128MB超画像の読込拒否、ToolSearch経由や圧縮後ツールのプロンプトキャッシュミス、MCPが新プロトコル2026-07-28を<code>resultType</code>等なしでネゴシエートした際のツール非表示などを含む。</p><h4 id="sec-2">「並列が既定」の直後に出た、冷や水のデータ</h4><p>同じ週、評価機関Vals AIが<strong>マルチエージェントvibe codingベンチ</strong>を公開した。GPT-6 SolとClaude Opus 5.5に、50本のWebアプリを「単体」と「チーム」の2通りで作らせて比較したところ、チーム構成は単体の<strong>1.8〜5.1倍のコスト</strong>がかかった一方、<strong>品質スコアはほとんど上がらなかった</strong>。forkが既定ONになったからといって、むやみに多重化すればトークン代だけが膨らむということだ。</p><figure class='fig'><svg viewBox='0 0 600 230' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='0' y='0' width='600' height='230' fill='#fff8f0'></rect><text x='300' y='26' text-anchor='middle' font-size='14' font-weight='bold' fill='#7a3b00'>単体 vs チーム：コストは跳ね上がり、品質は横ばい</text><line x1='70' y1='185' x2='560' y2='185' stroke='#c98a4a' stroke-width='1'></line><rect x='110' y='120' width='60' height='65' fill='#f0a860' stroke='#b4661a'></rect><text x='140' y='112' text-anchor='middle' font-size='11' fill='#7a3b00'>コスト 1x</text><text x='140' y='202' text-anchor='middle' font-size='11' fill='#7a3b00'>単体</text><rect x='230' y='40' width='60' height='145' fill='#e06a1a' stroke='#b4661a'></rect><text x='260' y='32' text-anchor='middle' font-size='11' fill='#7a3b00'>コスト 1.8〜5.1x</text><text x='260' y='202' text-anchor='middle' font-size='11' fill='#7a3b00'>チーム</text><rect x='390' y='95' width='60' height='90' fill='#6aa84f' stroke='#3f7a2a'></rect><text x='420' y='87' text-anchor='middle' font-size='11' fill='#335c1f'>品質 ≒100</text><text x='420' y='202' text-anchor='middle' font-size='11' fill='#335c1f'>単体</text><rect x='470' y='92' width='60' height='93' fill='#88c070' stroke='#3f7a2a'></rect><text x='500' y='84' text-anchor='middle' font-size='11' fill='#335c1f'>品質 ≒横ばい</text><text x='500' y='202' text-anchor='middle' font-size='11' fill='#335c1f'>チーム</text></svg><figcaption>図1：Vals AI のベンチ（GPT-6 Sol / Opus 5.5・各50本）。チーム化はコストを1.8〜5.1倍にする一方、品質はほぼ変わらない。</figcaption></figure><h4 id="sec-3">では並列はいつ効くのか — 『7つのTips』の読み方</h4><p>実践ガイド『Claude Codeを使いこなす7つのTips』は、subagentの使いどころを「テスト実行やログ調査などノイズの多い作業を別会話にオフロードし、<strong>結論だけ受け取る</strong>」と位置づける。つまり並列化は<em>品質を上げる</em>ためではなく、<em>本線の文脈を汚さない</em>ための道具だ。他の勘所も実務的で、(1)着手前に目的・要件・現状・受け入れ基準の4点を「新しい同僚」に渡すように明確化、(2)CLAUDE.mdは絶対ルール/出力先/応答フォーマットだけに絞る、(3)繰り返す指示は<code>/plan</code>・<code>/build</code>・<code>/commit</code>等のスキルへ、(4)<code>NOW.md</code>中心のメモリで文脈復元、(5)破壊的コマンド前のPreToolUse確認などhooksで自動化、(6)Design→Plan→Build→手動受け入れ。</p><h4 id="sec-4">自分が試すなら</h4><p>forkは既定ONのまま、まず「テスト/lint/ログ grep」のような使い捨て調査だけサブエージェントに投げ、設計や実装の本線は単体で握る。Vals AIの数字を踏まえ、委譲は<strong>ノイズ隔離に限定</strong>してコストを監視する。そしてclaude.ai/designに資産がある人は、12/14の終了前に移行先を確認しておく。</p><h4 id="sec-5">注意点</h4><p>サードパーティプロバイダでautoを前提にしたスクリプトは、v2.1.302以降<code>default</code>開始に倒れる点に注意（明示的に<code>--permission-mode auto</code>）。フックを多用している場合、1イベント同時12件の上限で残りは待機になる。</p><p><strong>ひとこと：</strong>「forkが既定ON」と「多エージェントは割に合わない」が同じ週に並んだのは示唆的だ。並列は“速く賢くなる魔法”ではなく、文脈を汚さずノイズを隔離する配管——そう割り切るほどコストは読める。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://code.claude.com/docs/en/changelog" target="_blank" rel="noopener noreferrer"> Claude Code changelog </a> </li><li> <a href="https://www.besthub.dev/articles/7-practical-tips-to-master-claude-code-and-skip-two-years-of-mistakes-2ebe7f82b009" target="_blank" rel="noopener noreferrer"> 7 Practical Tips to Master Claude Code (besthub) </a> </li><li> <a href="https://www.vals.ai/blogs/multi-agent-vibe-code-bench" target="_blank" rel="noopener noreferrer"> Multi-Agent Vibe Code Bench (Vals AI) </a> </li><li> <a href="https://propakistani.pk/2026/10/10/anthropic-cuts-internet-access-after-ai-agents-exploit-websites/" target="_blank" rel="noopener noreferrer"> Anthropic cuts internet access after AI agents exploit websites </a> </li><li> <a href="https://www.kucoin.com/blog/anthropic-vs-openai-ramp-data-shows-claude-leading-us-enterprise-ai-market-share-at-43-8" target="_blank" rel="noopener noreferrer"> Ramp/Menlo: Claude leading US enterprise AI (KuCoin) </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> v2.1.302の変更点 </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 「並列が既定」の直後に出た、冷や水のデータ </a> </li><li> <a href="#sec-3" data-toc="sec-3"> では並列はいつ効くのか — 『7つのTips』の読み方 </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 自分が試すなら </a> </li><li> <a href="#sec-5" data-toc="sec-5"> 注意点 </a> </li> </ul> <div class="reading-box"> <div>📅 2026-10-17</div> <div>⏱ 読了 約3分</div> <div>🏷 Claude Code</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
