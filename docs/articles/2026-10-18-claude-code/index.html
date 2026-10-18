@@ -1,0 +1,71 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Code Review GA と Idle圧縮、そして『コードは増えてもソフトは増えない』 — レビュー律速時代のClaude Code — デイリー技術深掘り 読み物</title><meta name="description" content="日曜で新リリースはなし（最新 v2.1.302）。代わりに公式の二枚看板 Code Review のGA化と Idle compaction を押さえ、10/17の『産出増がデリバリー増に直結しない』という冷静な論考まで通して読む。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-18-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Code Review GA と Idle圧縮、そして『コードは増えてもソフトは増えない』 — レビュー律速時代のClaude Code — デイリー技術深掘り 読み物"><meta property="og:description" content="日曜で新リリースはなし（最新 v2.1.302）。代わりに公式の二枚看板 Code Review のGA化と Idle compaction を押さえ、10/17の『産出増がデリバリー増に直結しない』という冷静な論考まで通して読む。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-18-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>Code Review GA と Idle圧縮、そして『コードは増えてもソフトは増えない』 — レビュー律速時代のClaude Code</h1> <p class="lede">日曜で新リリースはなし（最新 v2.1.302）。代わりに公式の二枚看板 Code Review のGA化と Idle compaction を押さえ、10/17の『産出増がデリバリー増に直結しない』という冷静な論考まで通して読む。</p> <div class="meta"> <span>📅 2026年10月18日</span> <span>⏱ 約4分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="0"><p>本日10/18(日)は新規のバージョンリリースがなく（最新は10/16の <code>v2.1.302</code>）、公式枠は <strong>10/15にGA化したCode Review</strong> と、最近のchangelogで整備された <strong>Idle compaction（アイドル圧縮）</strong> の二つ。あわせて10/17に出た「コーディングエージェントは<em>より多くのコード</em>を生むが<em>より多くのソフトウェア</em>は生まない」という論考を読むと、機能追加の方向性がきれいに一本の線でつながる。要するに、生成はもう十分速い。詰まっているのは<strong>レビュー</strong>と<strong>運用コスト</strong>のほうだ、という話である。</p>
+<h4 id="sec-1">Code Review が GA に — ルールは base ブランチの REVIEW.md から読む</h4>
+<p>Claude Code の Code Review がリサーチプレビューから一般提供（GA）へ移り、Claude Team / Enterprise で使えるようになった。レビュー時間はプレビュー期の約20分から <strong>6〜10分</strong>に短縮され、管理者はリポジトリ単位で <strong>Quick / Standard / Deep</strong> の深度を選べる。設計上もっとも重要なのは、判定ルールを書いた <code>REVIEW.md</code> を <strong>PR自身の変更ではなく PR の base（デフォルト）ブランチから読む</strong>点だ。つまり PR 側でルールをこっそり緩めることはできず、新しいルールは<strong>先にマージして初めて効く</strong>。「エージェント標準は、PRが書き換えられない場所に置く」という原則の実装で、CODEOWNERS で所有者を固めるのと相性がいい。</p>
+<h4 id="sec-2">Idle compaction — 長時間放置のキャッシュ失効を先回りで潰す</h4>
+<p>もう一つの地味だが効く変更が Idle compaction（v2.1.299〜302 で整備）。<strong>200Kトークンを超え、約54分アイドルになった会話</strong>を、<strong>1時間のプロンプトキャッシュが失効する前に自動で圧縮</strong>する。放置して戻ってきたときのキャッシュミスと、それに伴うコスト増・レイテンシを避けるのが狙いだ。閾値は <code>CLAUDE_CODE_IDLE_COMPACT_MIN_TOKENS</code> で調整でき、<code>settings.json</code> に <code>"idleCompaction": false</code> を書けば無効化、v2.1.302 では <code>/config</code> にON/OFFトグルも追加された。</p>
+<figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='0' y='0' width='600' height='150' fill='#fff7ed'></rect><line x1='40' y1='90' x2='560' y2='90' stroke='#9a3412' stroke-width='1.5'></line><rect x='60' y='70' width='150' height='40' rx='6' fill='#ffedd5' stroke='#ea580c'></rect><text x='135' y='94' font-size='12' text-anchor='middle' fill='#7c2d12'>会話が200K超</text><rect x='260' y='70' width='150' height='40' rx='6' fill='#ffedd5' stroke='#ea580c'></rect><text x='335' y='88' font-size='11' text-anchor='middle' fill='#7c2d12'>約54分アイドル</text><text x='335' y='103' font-size='10' text-anchor='middle' fill='#9a3412'>放置を検知</text><rect x='450' y='62' width='120' height='56' rx='6' fill='#dcfce7' stroke='#16a34a'></rect><text x='510' y='84' font-size='11' text-anchor='middle' fill='#166534'>1h失効の前に</text><text x='510' y='100' font-size='11' text-anchor='middle' fill='#166534'>自動で圧縮</text><text x='210' y='86' font-size='16' fill='#ea580c'>&#8594;</text><text x='410' y='86' font-size='16' fill='#ea580c'>&#8594;</text><text x='40' y='28' font-size='13' fill='#7c2d12' font-weight='bold'>図1：Idle compaction の発火条件</text><text x='40' y='135' font-size='10' fill='#9a3412'>キャッシュミスによるコスト増・復帰遅延を先回りで回避</text></svg><figcaption>図1：200K超かつ約54分アイドルの会話を、1時間キャッシュ失効の前に圧縮する。</figcaption></figure>
+<h4 id="sec-3">『コードは増えてもソフトは増えない』 — ボトルネックはレビュー</h4>
+<p>10/17の論考は、この二つの機能がなぜ重要かを数字で裏打ちする。Chen &amp; Stratton のデータ（2021〜2026/3、700社超・70万人超・約3億件のイベント）では、エージェント導入後に<strong>総行数+30%・コミット+20%・PR+23%</strong>と産出は大きく伸びた。ところが <strong>PR提出〜マージのレビュー時間は+49%</strong>、変更要求付きPRの割合はほぼ倍増し、肝心の <strong>Issue/Epic の解決には統計的に有意な変化がなかった</strong>。産出の増加はレビューに吸収され、デリバリーには届いていない。しかも約95%の企業が導入済みなのに、エージェントが触れているのはレビューコメントの約23%・PRの約11%どまりだ。</p>
+<figure class='fig'><svg viewBox='0 0 600 230' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='0' y='0' width='600' height='230' fill='#f8fafc'></rect><text x='20' y='26' font-size='13' font-weight='bold' fill='#0f172a'>図2：産出は増える／レビューが律速／デリバリーは横ばい</text><line x1='230' y1='45' x2='230' y2='205' stroke='#cbd5e1' stroke-width='1'></line><g font-size='11'><text x='210' y='64' text-anchor='end' fill='#334155'>総行数</text><rect x='232' y='54' width='90' height='14' fill='#60a5fa'></rect><text x='328' y='65' fill='#334155'>+30%</text><text x='210' y='90' text-anchor='end' fill='#334155'>コミット</text><rect x='232' y='80' width='60' height='14' fill='#60a5fa'></rect><text x='298' y='91' fill='#334155'>+20%</text><text x='210' y='116' text-anchor='end' fill='#334155'>PR数</text><rect x='232' y='106' width='69' height='14' fill='#60a5fa'></rect><text x='307' y='117' fill='#334155'>+23%</text><text x='210' y='142' text-anchor='end' fill='#334155'>レビュー時間</text><rect x='232' y='132' width='147' height='14' fill='#f87171'></rect><text x='385' y='143' fill='#b91c1c'>+49%</text><text x='210' y='168' text-anchor='end' fill='#334155'>変更要求付PR</text><rect x='232' y='158' width='200' height='14' fill='#f87171'></rect><text x='438' y='169' fill='#b91c1c'>ほぼ倍増</text><text x='210' y='194' text-anchor='end' fill='#334155'>Issue/Epic解決</text><rect x='232' y='184' width='4' height='14' fill='#94a3b8'></rect><text x='244' y='195' fill='#64748b'>有意差なし</text></g><text x='232' y='222' font-size='10' fill='#2563eb'>青=産出（増）</text><text x='360' y='222' font-size='10' fill='#dc2626'>赤=レビュー負荷（増）</text></svg><figcaption>図2：生成系の指標は軒並み増える一方、レビューが膨らみデリバリー（解決Issue/Epic）は動かない。</figcaption></figure>
+<h4 id="sec-4">自分が運用で効かせるなら</h4>
+<p>やることは明快だ。まず <code>REVIEW.md</code> を base ブランチに置き、CODEOWNERS でレビュー所有者を固めて「ルールを後からPRで緩められない」状態を作る。Code Review は Team/Enterprise 限定なので、個人運用では GitHub 側のレビューゲート（必須レビュー・ブランチ保護）で同じ思想を代替する。Idle compaction はデフォルトONのまま長い調査セッションに効かせ、どうしても文脈を失いたくない重要セッションだけ <code>/compact</code> で「残すべき設計・テスト情報」を明示してから圧縮させる。そして計測軸は<strong>コード量ではなくデリバリー</strong>（解決したIssue/Epic、障害、ロールバック）に寄せる。</p>
+<h4 id="sec-5">落とし穴とまとめ</h4>
+<p>注意点は二つ。<code>REVIEW.md</code> はbase読みゆえ<strong>ルール変更に先行マージのリードタイム</strong>が要る——急いで基準を変えたいときに一手遅れる。Idle compaction は便利な半面<strong>圧縮で文脈が削れる</strong>ので、長丁場の設計会話では失ってはいけない前提を先に書き留めておくこと。結局この日の三題が指すのは同じ結論だ——<strong>生成を増やす前に、レビューと運用コストの処理能力を広げよ</strong>。速く書けること自体は、もう差別化要因ではない。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://dev.to/dav_9d08ede16c60950b/claude-code-review-is-ga-what-a-base-branch-reviewmd-teaches-us-about-agent-standards-2eo" target="_blank" rel="noopener noreferrer"> Claude Code Review is GA — base-branch REVIEW.md（DEV） </a> </li><li> <a href="https://code.claude.com/docs/en/changelog" target="_blank" rel="noopener noreferrer"> Claude Code 公式 changelog </a> </li><li> <a href="https://redreamality.com/blog/coding-agent-more-code-not-more-software-2026/" target="_blank" rel="noopener noreferrer"> Coding agents make more code, not more software（10/17） </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> Code Review が GA に — ルールは base ブランチの REVIEW.md から読む </a> </li><li> <a href="#sec-2" data-toc="sec-2"> Idle compaction — 長時間放置のキャッシュ失効を先回りで潰す </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 『コードは増えてもソフトは増えない』 — ボトルネックはレビュー </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 自分が運用で効かせるなら </a> </li><li> <a href="#sec-5" data-toc="sec-5"> 落とし穴とまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-10-18</div> <div>⏱ 読了 約4分</div> <div>🏷 Claude Code</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

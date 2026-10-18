@@ -1,0 +1,72 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Dart 3.14 Augmentations と 3.50前の環境整備、Lottie実務投入、DIスペクトラム、jank切り分け — デイリー技術深掘り 読み物</title><meta name="description" content="現行stableは3.47.7/Dart3.13.5、3.50 betaのブランチは10/6カット済み。macrosの穴を埋めるAugmentationsを軸に、Lottieの自前制御、DIの6風味、DevToolsでのjank切り分けまで、11月の3.50に向けた実務4題を通して読む。"><meta name="theme-color" content="#0277bd"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-18-flutter/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Dart 3.14 Augmentations と 3.50前の環境整備、Lottie実務投入、DIスペクトラム、jank切り分け — デイリー技術深掘り 読み物"><meta property="og:description" content="現行stableは3.47.7/Dart3.13.5、3.50 betaのブランチは10/6カット済み。macrosの穴を埋めるAugmentationsを軸に、Lottieの自前制御、DIの6風味、DevToolsでのjank切り分けまで、11月の3.50に向けた実務4題を通して読む。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-18-flutter/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #29b6f6, #01579b)"> <span class="glyph" aria-hidden="true">◆</span> <div class="kicker">Flutter</div> <h1>Dart 3.14 Augmentations と 3.50前の環境整備、Lottie実務投入、DIスペクトラム、jank切り分け</h1> <p class="lede">現行stableは3.47.7/Dart3.13.5、3.50 betaのブランチは10/6カット済み。macrosの穴を埋めるAugmentationsを軸に、Lottieの自前制御、DIの6風味、DevToolsでのjank切り分けまで、11月の3.50に向けた実務4題を通して読む。</p> <div class="meta"> <span>📅 2026年10月18日</span> <span>⏱ 約6分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#0277bd"> <div> <article class="prose" data-has-mermaid="0"><p>Flutter は次の節目が近い。現行の安定版は <strong>Flutter 3.47.7 / Dart 3.13.5</strong>（10/8 patch）、beta は <strong>3.49系 / Dart 3.14</strong>で、次の stable <strong>3.50 は11月</strong>、その <strong>3.50 beta のブランチは10/6にカット済み</strong>（master に10/6以前にマージされたPRが確定）。つまり今は「3.50に何が入るか」がほぼ見えていて、<code>flutter channel beta &amp;&amp; flutter upgrade</code> で先取り検証できる好機だ。この日は、言語・アニメ・アーキ・性能の4領域を横断して整理する。</p>
+<h4 id="sec-1">Dart 3.14 の目玉は Augmentations — macros の実務的な代替</h4>
+<p>無期限ポーズに入った macros の穴を埋めるのが <strong>Augmentations</strong> だ。既存クラスに<strong>後付けでメンバー・メソッド・コンストラクタを足せる</strong>言語機能で、<code>augment</code> 宣言により元クラスを汚さずに拡張を分離できる。狙いは codegen（<code>build_runner</code> + <code>source_gen</code>）が<strong>生成コードを本体へ注入する土台</strong>を提供すること。マクロのように「コンパイル時に型を生やす」世界をもう一度、しかし言語機能として現実的な形で取り戻す動きだと捉えるとわかりやすい。beta で早めに素振りし、codegen 依存の生成物がどう変わるかを確認しておきたい。</p>
+<p>3.50の確定事項も実務に効く。<strong>WebAssembly の遅延ロードが stable GA に昇格</strong>、Android は <strong>Impeller 一本化が完了</strong>（legacy Skia バックエンドを Android 10 以降で引退）、<strong>Android 17 の day-zero 対応</strong>も同梱される。SDK 内蔵の Material/Cupertino は11月で正式 deprecation となり、移行は <code>dart fix --apply --code=migrate_design_widgets</code>、import は <code>package:material_ui/material_ui.dart</code> 系へ切り替える。準備としては、安定を <strong>3.47.7 に pin しつつ beta で CI を回し</strong>、<code>flutter build web --wasm</code> と <code>appbundle</code> を今のうちに緑にしておくのが堅い。</p>
+<h4 id="sec-2">Lottie を AnimationController で駆動する（lottie 3.6.1）</h4>
+<p>Lottie は「貼って終わり」でなく自前制御するほど化ける。<code>controller:</code> に <code>AnimationController</code>（<code>vsync</code> は <code>TickerProviderStateMixin</code>）を渡し、<code>onLoaded(composition)</code> で <code>_controller.duration = composition.duration</code> を設定してから <code>forward()</code> すると、前後再生・区間ループ・停止が自在になる（<code>dispose()</code> は必須）。純粋ループだけなら <code>repeat:</code>/<code>animate:</code> でも足りる。フレームレートは既定が <code>FrameRate.composition</code>（AE書き出しレート）で、<code>FrameRate.max</code> にすると<strong>デバイス上限（最大120FPS）</strong>に追従する。さらに <strong><code>LottieDelegates</code></strong> を使えば、<code>ValueDelegate.color/.opacity/.position</code> でレイヤーをパス指定し、1本の <code>.json</code> をテーマ色やデータに応じて<strong>動的に着色・文言差し替え</strong>できる。コスト面では <strong><code>renderCache</code>（v3.0〜）</strong> が各フレームをオフスクリーンに遅延ラスタ化して再利用し CPU/電力を下げる（代償はメモリ増）。使い分けの基準は明快で、<strong>受動再生のデザイナ資産は Lottie、対話・state machine は Rive</strong>、常時ループは画面外で停止させる。</p>
+<h4 id="sec-3">DI は『スペクトラム』で選ぶ</h4>
+<p>状態管理・DIは一つの正解を探すより、<strong>6つの風味の連続体</strong>として捉えると整理しやすい。</p>
+<figure class='fig'><svg viewBox='0 0 600 170' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='0' y='0' width='600' height='170' fill='#f0fdfa'></rect><text x='20' y='26' font-size='13' font-weight='bold' fill='#134e4a'>図1：DIの6風味（左=コンパイル時安全 ⇄ 右=実行時/リアクティブ）</text><line x1='30' y1='95' x2='570' y2='95' stroke='#5eead4' stroke-width='3'></line><g font-size='10' fill='#115e59'><circle cx='70' cy='95' r='6' fill='#14b8a6'></circle><text x='70' y='120' text-anchor='middle'>コンストラクタ</text><text x='70' y='133' text-anchor='middle'>注入</text><circle cx='170' cy='95' r='6' fill='#14b8a6'></circle><text x='170' y='120' text-anchor='middle'>Provider/</text><text x='170' y='133' text-anchor='middle'>InheritedW.</text><circle cx='270' cy='95' r='6' fill='#14b8a6'></circle><text x='270' y='120' text-anchor='middle'>get_it</text><text x='270' y='133' text-anchor='middle'>ロケータ</text><circle cx='370' cy='95' r='6' fill='#14b8a6'></circle><text x='370' y='120' text-anchor='middle'>静的</text><text x='370' y='133' text-anchor='middle'>シングルトン</text><circle cx='470' cy='95' r='6' fill='#14b8a6'></circle><text x='470' y='120' text-anchor='middle'>signals</text><text x='470' y='133' text-anchor='middle'>リアクティブ</text><circle cx='545' cy='95' r='6' fill='#14b8a6'></circle><text x='545' y='75' text-anchor='middle'>injectable</text><text x='545' y='62' text-anchor='middle'>codegen</text></g><text x='20' y='158' font-size='10' fill='#0f766e'>推奨：境界=コンストラクタ注入／全体=グローバル・signals／機能の寿命=ロケータ・Provider。チームで1方式に統一が最重要。</text></svg><figcaption>図1：DIは6風味の連続体。混在が最大の負債なので、チームで方式を一つに統一する。</figcaption></figure>
+<p>肝は <strong>feature-scoped DI＝依存を機能の寿命に縛る</strong>こと。コントローラ/ViewModel はその機能ツリーの頂点に注入し、アプリ全体には晒さない。<code>get_it</code> なら機能突入時に <code>pushNewScope</code>→lazy singleton 登録、離脱時に <code>popScope</code> で破棄する（<strong>手動ライフサイクルが弱点</strong>で、予期せぬ遷移やクラッシュで pop 漏れ→リーク）。ツリー型の Provider なら<strong>ルート widget 除去で自動 dispose</strong>、Riverpod は <code>autoDispose</code> で深いネスト無しに機能スコープ相当を得る。土台は feature-first + go_router、新規は Riverpod 3（<code>autoDispose</code> 既定）、監査・大規模は Bloc 9、細粒度は signals、が指針になる。</p>
+<h4 id="sec-4">スクロール jank は『どのスレッドが赤か』で切り分ける</h4>
+<p>最後に性能。計測の型は <code>flutter run --profile</code>（debug は release 比2〜10倍遅い）→ Performance で janky スクロールを Record → <strong>赤フレームをクリックして Frame Analysis</strong>。ここで<strong>UI スレッドが赤なら Dart コード、Raster スレッドが赤ならシェーダ/画像/エフェクト</strong>を疑う、という分岐が全ての起点だ。予算は 60Hz=16.67ms / 120Hz=8.33ms で、vsync 余白を見て各スレッド実質8ms未満を狙う。UI スレッドの典型犯は <code>build</code> 内での巨大 JSON パース（→<code>compute()</code>/isolate へ）、巨大サブツリーを巻き込む <code>setState</code>（→変化部分を小 widget に隔離）、<code>build</code> 内での <code>TextStyle</code>/<code>Paint</code> の new（→ファイルスコープの <code>const</code> へ巻き上げ）。Raster 側は <code>Opacity</code>/<code>BackdropFilter</code>/<code>antiAlias</code> な <code>ClipRRect</code> が誘発する <code>saveLayer</code>、4K 画像のベタ表示（→<code>cacheWidth</code>/<code>cacheHeight</code> でデコード時ダウンサンプル）、初回シェーダコンパイル（Impeller の AOT で解消）が定番だ。</p>
+<h4 id="sec-5">まとめ — 試すなら</h4>
+<p>この日の4題は「11月の3.50を迎える準備」で一本につながる。<strong>Augmentations を beta で素振りして codegen 生成物を確認</strong>し、<code>--wasm</code>/<code>appbundle</code> のビルドを緑に保つ。アニメは Lottie を <code>AnimationController</code> + <code>renderCache</code> で実務投入、DI はチームで一方式に統一して feature-scoped で寿命を縛る、性能は「赤いスレッドを特定してから手を打つ」。どれも派手さはないが、3.50 の Impeller 一本化と Wasm GA が来たときに効いてくる地力だ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://blurbrahlab.medium.com/flutter-3-50-branches-today-top-10-ai-flutter-news-october-6-2026-97c25f1602c3" target="_blank" rel="noopener noreferrer"> Flutter 3.50 Branches Today（Oct 6, 2026） </a> </li><li> <a href="https://pub.dev/documentation/lottie/latest/" target="_blank" rel="noopener noreferrer"> Lottie for Flutter（pub.dev, 3.6.1） </a> </li><li> <a href="https://dev.to/gde/the-six-flavors-of-dependency-injection-in-flutter-lea" target="_blank" rel="noopener noreferrer"> The Six Flavors of DI in Flutter（dev.to） </a> </li><li> <a href="https://startdebugging.net/2026/05/how-to-profile-jank-in-a-flutter-app-with-devtools/" target="_blank" rel="noopener noreferrer"> How to profile jank in a Flutter app with DevTools </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> Dart 3.14 の目玉は Augmentations — macros の実務的な代替 </a> </li><li> <a href="#sec-2" data-toc="sec-2"> Lottie を AnimationController で駆動する（lottie 3.6.1） </a> </li><li> <a href="#sec-3" data-toc="sec-3"> DI は『スペクトラム』で選ぶ </a> </li><li> <a href="#sec-4" data-toc="sec-4"> スクロール jank は『どのスレッドが赤か』で切り分ける </a> </li><li> <a href="#sec-5" data-toc="sec-5"> まとめ — 試すなら </a> </li> </ul> <div class="reading-box"> <div>📅 2026-10-18</div> <div>⏱ 読了 約6分</div> <div>🏷 Flutter</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
