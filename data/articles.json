@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-10-18T04:46:20.815Z",
+  "generatedAt": "2026-10-19T04:45:12.174Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,72 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-10-19-claude-code",
+      "date": "2026-10-19",
+      "topic": "Claude Code",
+      "title": "fork既定ON×テレメトリ強化 — 「分岐を増やし、増えた分を測る」v2.1.302/300を腰を据えて読む",
+      "lede": "週末を挟み新リリースはなし（最新 v2.1.302）。直近2本のchangelogを通読すると、forkの既定ON（増やす）とOpenTelemetry/キャッシュTTL内訳（測る）が一本の線でつながる。",
+      "articleHtml": "<p>週末を挟んで新しいバージョンのリリースはなく（最新は10/16の <code>v2.1.302</code>）、今日は直近2本のchangelogを腰を据えて読む回。テーマは一本に貫かれている——<strong>「生成はもう速い。詰まっているのは分岐・観測・運用コストのほう」</strong>だ。v2.1.302でfork型サブエージェントが既定ONになり、v2.1.300でOpenTelemetryのGenAI属性とキャッシュ書込TTL内訳が入った。片やエージェントを\"増やす\"機能、片や増えたエージェントの挙動とコストを\"測る\"機能で、きれいに両輪になっている。</p>\n\n<h4>何が変わったか（v2.1.302）</h4>\n<p><strong>fork型サブエージェント（<code>subagent_type:\"fork\"</code>）が既定で有効</strong>に。forkは親セッションの文脈をそのまま引き継いで作業を分岐させる仕組みで、ゼロから文脈を積み直す通常のサブエージェントと違い、\"今の会話の続き\"を別働隊に任せられる。<code>claude -p</code>・Agent SDK・デスクトップ・VS Codeの全面で既定ONになり、切りたい時は <code>CLAUDE_CODE_FORK_SUBAGENT=0</code>。あわせて <code>CLAUDE_AUTO_MODE_MODEL</code> でAuto mode分類器のモデルを指定できるようになった。10/15のチートシートが整理するとおり、対話セッションの既定権限モードは<strong>Auto</strong>（旧既定はManualに改称）、既定モデルは<strong>Opus 5.5（medium）</strong>だ。</p>\n\n<figure class='fig'><pre class='mermaid'>flowchart LR\n  P[\"親セッション(文脈あり)\"] -->|\"fork 既定ON\"| F[\"fork サブエージェント\"]\n  P -->|\"通常 subagent\"| N[\"新規サブエージェント(文脈ゼロ)\"]\n  F --> R[\"文脈を引き継ぎ分岐作業\"]\n  N --> R2[\"指示だけで独立作業\"]</pre><figcaption>図1：forkは親の文脈を引き継ぐ。通常のサブエージェントは指示だけで文脈ゼロから動く。</figcaption></figure>\n\n<h4>観測性の底上げ（v2.1.300）</h4>\n<p>トレースに <code>gen_ai.provider.name</code> / <code>gen_ai.conversation.id</code> / <code>gen_ai.tool.name</code> / <code>error.type</code> などOpenTelemetry GenAIセマンティック規約の属性が付き、<code>api_request</code> イベントにはキャッシュ書込を <code>cache_creation_5m_tokens</code> と <code>cache_creation_1h_tokens</code> のTTL別に分けた内訳が入った。forkで並列作業が増えるほど「どのサブエージェントがどれだけキャッシュを焼いたか」が効いてくるので、この2つは同じ問題の表裏だ。トレースはベータで <code>CLAUDE_CODE_ENABLE_TELEMETRY=1</code> + <code>CLAUDE_CODE_ENHANCED_TELEMETRY_BETA=1</code> が必要。Claude Platform on AWSでは別モデルに相談する <code>/advisor</code> も使えるようになった（Bedrockは非対応、<code>CLAUDE_CODE_DISABLE_ADVISOR_TOOL=1</code>で無効）。</p>\n\n<h4>実務での使いどころ・自分が試すなら</h4>\n<p>まず <code>CLAUDE_CODE_ENABLE_TELEMETRY=1</code> + 拡張ベータを入れ、普段のタスクで <code>cache_creation_1h_tokens</code> がどれだけ出るか地の値を取る。次にforkを意識的に使って長い調査タスクを分岐させ、同じダッシュボードでトークン挙動を観察する。効くのは「分岐の前後でキャッシュ書込がどう動くか」を数字で握ること。落とし穴は<strong>既定ONを知らずにfork乱立 → TTL別キャッシュ書込がかさむ</strong>パターンで、コストが跳ねたら <code>CLAUDE_CODE_FORK_SUBAGENT=0</code> で一旦戻して比較するのが安全だ。</p>\n\n<h4>ひとこと</h4>\n<p>エコシステム側も『Claude for Startups』拡充やFDE1万人育成の『Frontier Academy』始動と外堀が埋まりつつあるが、日々の開発で効くのは「分岐を増やし、増えた分を測る」この地味な2本。<strong>forkを使うなら同時にテレメトリも入れる</strong>——セットで扱うのが今日の学びだ。</p>",
+      "sources": [
+        {
+          "title": "Claude Code 公式changelog（v2.1.302）",
+          "url": "https://code.claude.com/docs/en/changelog"
+        },
+        {
+          "title": "Classmethod: Claude Code v2.1.300 updates",
+          "url": "https://dev.classmethod.jp/en/articles/20261015-cc-updates-v2-1-300/"
+        },
+        {
+          "title": "Claude Code Cheat Sheet October 2026（DEV）",
+          "url": "https://dev.to/anglo_lima/claude-code-cheat-sheet-october-2026-the-complete-state-of-play-1j26"
+        }
+      ]
+    },
+    {
+      "id": "2026-10-19-nextjs",
+      "date": "2026-10-19",
+      "topic": "Next.js",
+      "title": "macOS風ドック・マグニフィケーション — 距離→サイズ写像という一つの発想と、widthかtransformかの判断",
+      "lede": "カーソルに近いアイコンほど膨らむDock挙動。主要UIライブラリが共有する中核アルゴリズムを分解し、Motion実装・reflow回避・App Router組み込みまで通して読む。",
+      "articleHtml": "<p>macOS Dockの「カーソルに近いアイコンほど大きく、離れると小さく、連続的に膨らむ」あの挙動。ポートフォリオ・ランチャー・ツールバーで繰り返し求められる定番で、Magic UI / cult-ui / Aceternity の dock 系コンポーネントは軒並み<strong>たった一つの発想</strong>を共有している——<em>ポインタのX座標と各アイコン中心の距離を、サイズへ写像する</em>。見た目のインパクトのわりに原理は素朴で、仕組みを理解するのにうってつけの題材だ。</p>\n\n<h4>中核アルゴリズム（ライブラリ非依存）</h4>\n<p>① ドックで <code>pointermove</code> を購読しカーソルの <code>clientX</code> を保持。ドック外（<code>pointerleave</code>）では「無限遠」= 全アイコンが基準サイズに戻る状態にする。② 各アイコンの中心X <code>cx = rect.left + rect.width/2</code> とカーソルの差 <code>d</code> を取る。③ <code>|d|</code> を影響半径（例140〜150px）で正規化し、基準サイズ→最大サイズへ補間。半径外なら基準サイズ。④ 目標サイズへ<strong>バネ/慣性</strong>で寄せると、あの\"ぷるん\"とした質感が出る。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 185' xmlns='http://www.w3.org/2000/svg'>\n  <rect x='0' y='0' width='600' height='185' fill='#f6faff'/>\n  <g fill='#2563eb' opacity='0.85'>\n    <rect x='40'  y='112' width='36' height='36' rx='8'/>\n    <rect x='112' y='98'  width='50' height='50' rx='10'/>\n    <rect x='198' y='78'  width='70' height='70' rx='12'/>\n    <rect x='300' y='58'  width='90' height='90' rx='14'/>\n    <rect x='420' y='78'  width='70' height='70' rx='12'/>\n    <rect x='520' y='98'  width='50' height='50' rx='10'/>\n  </g>\n  <path d='M345 28 L345 50' stroke='#ef4444' stroke-width='2'/>\n  <circle cx='345' cy='24' r='6' fill='#ef4444'/>\n  <text x='300' y='175' font-size='12' fill='#334155' text-anchor='middle'>カーソルX(赤)を中心に |距離| → サイズへ連続写像（影響半径 ≈150px）</text>\n</svg><figcaption>図1：カーソル直下が最大、離れるほど基準サイズへ連続的に収束する。</figcaption></figure>\n\n<h4>Motion（旧Framer Motion）版の定石</h4>\n<p>パッケージは <code>motion</code> に、Reactインポートは <code>motion/react</code> に改称された（旧 <code>framer-motion</code> も当面動くが新規は <code>motion</code> 推奨）。ドックで <code>mouseX = useMotionValue(Infinity)</code> を持ち、各アイコンで <code>useTransform</code> により距離を導出、<code>useTransform(distance,[-150,0,150],[48,100,48])</code> で幅へ写像し、<code>useSpring(..., &#123;mass:0.1,stiffness:150,damping:12&#125;)</code> に通して幅へ渡す。<code>getBoundingClientRect</code> を <code>useTransform</code> 内で毎回読むのが肝で、レイアウト変化に追従する（Magic UIの既定は iconSize=40 / magnification=60 / distance=140）。</p>\n\n<h4>落とし穴 — widthかtransformか</h4>\n<p>最大の判断は<strong>幅アニメ＝レイアウト誘発（reflow）</strong>という点。本物のDockは幅を変えて隣を押し出すので <code>width</code> を動かすが、これはレイアウト→ペイントを走らせる。対して <code>transform: scale</code> は合成だけで安価だが隣を押さず重なり、テキストもボケる。<strong>「隣接を押す演出が要るか」で選ぶ</strong>のが要点だ。さらに：CSS <code>transition</code> 単体は <code>pointermove</code> ごとに再始動してカクつくので rAF か <code>useSpring</code> が要る／タッチでは <code>matchMedia('(hover:hover) and (pointer:fine)')</code> で無効化／<code>prefers-reduced-motion</code> で拡大停止／SSRは初期 <code>Infinity</code>（＝基準サイズ）にしてハイドレーション不整合を避ける。</p>\n\n<h4>App Routerでの組み込み・ひとこと</h4>\n<p>イベント・<code>useRef</code>・<code>useMotionValue</code> を使うのでドックは必ず <code>'use client'</code> の島に切り出し、ページ本体はRSCのまま保つ。ナビ用途なら各アイコンを <code>next/link</code>（prefetch）にし、現在ルートは <code>usePathname()</code> で判定。<strong>拡大は純粋に装飾</strong>——reduced-motionやタッチで切ってもランチャー/ナビとしての機能は一切損なわれない設計が理想だ。自分で試すならまずVanilla+rAFで距離→サイズの写像を体で理解してから、Motionに載せ替えると腹落ちが早い。</p>",
+      "sources": [
+        {
+          "title": "Magic UI – Dock",
+          "url": "https://magicui.design/docs/components/dock"
+        },
+        {
+          "title": "Motion for React（motion/react）",
+          "url": "https://motion.dev/react"
+        },
+        {
+          "title": "web.dev – Animations and performance",
+          "url": "https://web.dev/articles/animations-and-performance"
+        }
+      ]
+    },
+    {
+      "id": "2026-10-19-flutter",
+      "date": "2026-10-19",
+      "topic": "Flutter",
+      "title": "Flutter 3.50 beta 到来 — Dart 3.14 Augmentations/Wasm遅延/Impeller一本化と、物理アニメ・状態管理・計測の継続化",
+      "lede": "11月stable 3.50の最初のbetaが登場（Dart 3.14）。本番は3.47.7にpinしつつbetaでCI検証する局面。あわせてanimateWith・状態管理の選定基準・本番フレーム監視まで通読する。",
+      "articleHtml": "<p>今日の素材は「11月の stable 3.50 に向けた最初の beta」が主役。10/14に <strong>Flutter 3.50.0-0.1.pre / Dart 3.14.0</strong> が beta チャネルに乗り、現行安定は <code>3.47.7 / Dart 3.13.5</code> のまま据え置き。本番は3.47.7に pin しつつ、beta で3.50をCI検証する<strong>二本立て</strong>が安全という局面だ。</p>\n\n<h4>3.50 beta / Dart 3.14 の要点</h4>\n<p>3.50の確定トピックは、<strong>WebAssemblyの遅延ロードが experimental→stable 昇格</strong>、Androidの <strong>Impeller 一本化完了</strong>（legacy SkiaバックエンドをAndroid 10以降で引退）、<strong>Android 17 の day-zero 対応</strong>。そしてDart 3.14の目玉が <strong>Augmentations</strong>——既存クラスに後付けでメンバー・メソッド・コンストラクタを足す言語機能で、無期限ポーズ中のmacrosの実務代替として <code>freezed</code>/<code>json_serializable</code> のcodegen（<code>build_runner</code>+<code>source_gen</code>）を本体を汚さず注入する土台になる。SDK内蔵のMaterial/Cupertinoは3.50で正式deprecation予定なので、<code>dart fix --apply --code=migrate_design_widgets</code> と <code>flutter build web --wasm</code> を今のうちに緑にしておきたい。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg'>\n  <rect x='0' y='0' width='600' height='150' fill='#f3fbf5'/>\n  <line x1='60' y1='78' x2='540' y2='78' stroke='#9ca3af' stroke-width='2'/>\n  <g font-size='11' text-anchor='middle'>\n    <circle cx='150' cy='78' r='7' fill='#3fb950'/>\n    <text x='150' y='56' fill='#1a7f37'>stable 3.47.7</text>\n    <text x='150' y='102' fill='#334155'>Dart 3.13.5 / 本番pin</text>\n    <circle cx='340' cy='78' r='7' fill='#1a7f37'/>\n    <text x='340' y='56' fill='#1a7f37'>beta 3.50.0-0.1.pre</text>\n    <text x='340' y='102' fill='#334155'>Dart 3.14 / CI検証</text>\n    <circle cx='510' cy='78' r='9' fill='#2563eb'/>\n    <text x='510' y='56' fill='#2563eb'>stable 3.50（11月）</text>\n    <text x='510' y='102' fill='#334155'>Wasm遅延/Impeller一本化</text>\n  </g>\n</svg><figcaption>図1：3.47.7で本番を固定しつつ、beta 3.50を先取り検証する二本立て。</figcaption></figure>\n\n<h4>アニメーション — 物理駆動と局所再描画</h4>\n<p>物理ベースの起点は <code>controller.animateWith(simulation)</code>。<code>forward()</code> の代わりに <code>SpringSimulation</code>（<code>SpringDescription(mass, stiffness, damping)</code> で跳ね方と収束を決める）を渡すと、割り込み時も現在の速度を引き継いで自然に続く。再描画は <code>AnimatedBuilder</code> でアニメ値に依存する部分木だけを再構築し、不変の重い子は <code>child:</code> に退避してrebuildから除外するのが鉄則。暗黙補間で足りる一回きりの遷移は <code>AnimatedContainer</code>/<code>TweenAnimationBuilder</code> を優先し、物理・区間・反復が要る時だけexplicitに落とす。画面間の共有要素は両ルート同一 <code>tag</code> の <code>Hero</code> に任せる。</p>\n\n<h4>状態管理の選定とパフォーマンス</h4>\n<p>選定は要件で割り切る：監査性・再現性が要るfintech/healthcareは <strong>Bloc</strong>（eventログが監査証跡になり、event列の再生でバグ再現も可能）、プロバイダグラフが育つ長寿命アプリは <strong>Riverpod</strong>（未解決/循環依存をコンパイル時検出）、小規模・MVPは <strong>Provider</strong>、単一画面の一時状態は素の <code>setState</code>。最大の負債は方式の<strong>混在そのもの</strong>なので「核は堅く・飾りは軽く」でチームとして統一する。</p>\n\n<figure class='fig'><pre class='mermaid'>flowchart TD\n  Q[\"この状態の要件は?\"] --> A[\"監査性・再現性(fintech等)\"]\n  Q --> B[\"依存グラフが育つ長寿命アプリ\"]\n  Q --> C[\"小規模・MVP\"]\n  Q --> D[\"単一画面の一時状態\"]\n  A --> A2[\"Bloc\"]\n  B --> B2[\"Riverpod\"]\n  C --> C2[\"Provider\"]\n  D --> D2[\"setState\"]</pre><figcaption>図2：状態管理は要件で割り切り、混在を避けてチームで統一する。</figcaption></figure>\n\n<p>パフォーマンスは「計測の継続化」が今日の芯。本番は <code>SchedulerBinding.instance.addTimingsCallback</code> で16ms超フレームをログ化、CIには <code>flutter test --profile</code> を組み込みしきい値超でビルド失敗、端末別はFirebase/Sentry/Datadog RUMでセグメント監視する。プロファイルは必ずAOT release＋実機で取る（debugのJITは本番を反映しない）。過度な <code>buildWhen</code>/<code>.select()</code> は<strong>UIが静かに更新されなくなる</strong>罠があるので、DevToolsのTrack Widget Rebuildsで実問題を確認してから絞り、widgetテストを必ずセットで付けること。</p>",
+      "sources": [
+        {
+          "title": "Release 3.50 beta（flutter/flutter #194269）",
+          "url": "https://github.com/flutter/flutter/issues/194269"
+        },
+        {
+          "title": "Flutter State Management in 2026: Riverpod vs Bloc vs Provider（dev.to）",
+          "url": "https://dev.to/lycore/flutter-state-management-in-2026-riverpod-vs-bloc-vs-provider-in-production-2i53"
+        },
+        {
+          "title": "Flutter app performance optimization: what matters in production",
+          "url": "https://www.marka.net.ua/news/flutter-app-performance-optimization-what-matters-in-production/"
+        }
+      ]
+    },
     {
       "date": "2026-10-18",
       "topic": "Claude Code",
