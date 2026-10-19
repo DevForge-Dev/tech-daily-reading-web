@@ -1,0 +1,86 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>macOS風ドック・マグニフィケーション — 距離→サイズ写像という一つの発想と、widthかtransformかの判断 — デイリー技術深掘り 読み物</title><meta name="description" content="カーソルに近いアイコンほど膨らむDock挙動。主要UIライブラリが共有する中核アルゴリズムを分解し、Motion実装・reflow回避・App Router組み込みまで通して読む。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-19-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="macOS風ドック・マグニフィケーション — 距離→サイズ写像という一つの発想と、widthかtransformかの判断 — デイリー技術深掘り 読み物"><meta property="og:description" content="カーソルに近いアイコンほど膨らむDock挙動。主要UIライブラリが共有する中核アルゴリズムを分解し、Motion実装・reflow回避・App Router組み込みまで通して読む。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-19-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>macOS風ドック・マグニフィケーション — 距離→サイズ写像という一つの発想と、widthかtransformかの判断</h1> <p class="lede">カーソルに近いアイコンほど膨らむDock挙動。主要UIライブラリが共有する中核アルゴリズムを分解し、Motion実装・reflow回避・App Router組み込みまで通して読む。</p> <div class="meta"> <span>📅 2026年10月19日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="0"><p>macOS Dockの「カーソルに近いアイコンほど大きく、離れると小さく、連続的に膨らむ」あの挙動。ポートフォリオ・ランチャー・ツールバーで繰り返し求められる定番で、Magic UI / cult-ui / Aceternity の dock 系コンポーネントは軒並み<strong>たった一つの発想</strong>を共有している——<em>ポインタのX座標と各アイコン中心の距離を、サイズへ写像する</em>。見た目のインパクトのわりに原理は素朴で、仕組みを理解するのにうってつけの題材だ。</p>
+
+<h4 id="sec-1">中核アルゴリズム（ライブラリ非依存）</h4>
+<p>① ドックで <code>pointermove</code> を購読しカーソルの <code>clientX</code> を保持。ドック外（<code>pointerleave</code>）では「無限遠」= 全アイコンが基準サイズに戻る状態にする。② 各アイコンの中心X <code>cx = rect.left + rect.width/2</code> とカーソルの差 <code>d</code> を取る。③ <code>|d|</code> を影響半径（例140〜150px）で正規化し、基準サイズ→最大サイズへ補間。半径外なら基準サイズ。④ 目標サイズへ<strong>バネ/慣性</strong>で寄せると、あの"ぷるん"とした質感が出る。</p>
+
+<figure class='fig'><svg viewBox='0 0 600 185' xmlns='http://www.w3.org/2000/svg'>
+  <rect x='0' y='0' width='600' height='185' fill='#f6faff'></rect>
+  <g fill='#2563eb' opacity='0.85'>
+    <rect x='40'  y='112' width='36' height='36' rx='8'></rect>
+    <rect x='112' y='98'  width='50' height='50' rx='10'></rect>
+    <rect x='198' y='78'  width='70' height='70' rx='12'></rect>
+    <rect x='300' y='58'  width='90' height='90' rx='14'></rect>
+    <rect x='420' y='78'  width='70' height='70' rx='12'></rect>
+    <rect x='520' y='98'  width='50' height='50' rx='10'></rect>
+  </g>
+  <path d='M345 28 L345 50' stroke='#ef4444' stroke-width='2'></path>
+  <circle cx='345' cy='24' r='6' fill='#ef4444'></circle>
+  <text x='300' y='175' font-size='12' fill='#334155' text-anchor='middle'>カーソルX(赤)を中心に |距離| → サイズへ連続写像（影響半径 ≈150px）</text>
+</svg><figcaption>図1：カーソル直下が最大、離れるほど基準サイズへ連続的に収束する。</figcaption></figure>
+
+<h4 id="sec-2">Motion（旧Framer Motion）版の定石</h4>
+<p>パッケージは <code>motion</code> に、Reactインポートは <code>motion/react</code> に改称された（旧 <code>framer-motion</code> も当面動くが新規は <code>motion</code> 推奨）。ドックで <code>mouseX = useMotionValue(Infinity)</code> を持ち、各アイコンで <code>useTransform</code> により距離を導出、<code>useTransform(distance,[-150,0,150],[48,100,48])</code> で幅へ写像し、<code>useSpring(..., &#123;mass:0.1,stiffness:150,damping:12&#125;)</code> に通して幅へ渡す。<code>getBoundingClientRect</code> を <code>useTransform</code> 内で毎回読むのが肝で、レイアウト変化に追従する（Magic UIの既定は iconSize=40 / magnification=60 / distance=140）。</p>
+
+<h4 id="sec-3">落とし穴 — widthかtransformか</h4>
+<p>最大の判断は<strong>幅アニメ＝レイアウト誘発（reflow）</strong>という点。本物のDockは幅を変えて隣を押し出すので <code>width</code> を動かすが、これはレイアウト→ペイントを走らせる。対して <code>transform: scale</code> は合成だけで安価だが隣を押さず重なり、テキストもボケる。<strong>「隣接を押す演出が要るか」で選ぶ</strong>のが要点だ。さらに：CSS <code>transition</code> 単体は <code>pointermove</code> ごとに再始動してカクつくので rAF か <code>useSpring</code> が要る／タッチでは <code>matchMedia('(hover:hover) and (pointer:fine)')</code> で無効化／<code>prefers-reduced-motion</code> で拡大停止／SSRは初期 <code>Infinity</code>（＝基準サイズ）にしてハイドレーション不整合を避ける。</p>
+
+<h4 id="sec-4">App Routerでの組み込み・ひとこと</h4>
+<p>イベント・<code>useRef</code>・<code>useMotionValue</code> を使うのでドックは必ず <code>'use client'</code> の島に切り出し、ページ本体はRSCのまま保つ。ナビ用途なら各アイコンを <code>next/link</code>（prefetch）にし、現在ルートは <code>usePathname()</code> で判定。<strong>拡大は純粋に装飾</strong>——reduced-motionやタッチで切ってもランチャー/ナビとしての機能は一切損なわれない設計が理想だ。自分で試すならまずVanilla+rAFで距離→サイズの写像を体で理解してから、Motionに載せ替えると腹落ちが早い。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://magicui.design/docs/components/dock" target="_blank" rel="noopener noreferrer"> Magic UI – Dock </a> </li><li> <a href="https://motion.dev/react" target="_blank" rel="noopener noreferrer"> Motion for React（motion/react） </a> </li><li> <a href="https://web.dev/articles/animations-and-performance" target="_blank" rel="noopener noreferrer"> web.dev – Animations and performance </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 中核アルゴリズム（ライブラリ非依存） </a> </li><li> <a href="#sec-2" data-toc="sec-2"> Motion（旧Framer Motion）版の定石 </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 落とし穴 — widthかtransformか </a> </li><li> <a href="#sec-4" data-toc="sec-4"> App Routerでの組み込み・ひとこと </a> </li> </ul> <div class="reading-box"> <div>📅 2026-10-19</div> <div>⏱ 読了 約3分</div> <div>🏷 Next.js</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
