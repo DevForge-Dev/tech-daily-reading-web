@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-10-19T04:45:12.174Z",
+  "generatedAt": "2026-10-20T04:56:25.272Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,94 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-10-20-claude-code",
+      "date": "2026-10-20",
+      "topic": "Claude Code",
+      "title": "Code Review GA と v2.1.304 — PR自動レビューに「深度」と「組織一括」、判定の可観測性まで",
+      "lede": "レビューを速く、そして選べるように。Code ReviewのGA化、深度選択（Quick/Standard/Deep）、OTelによる判定の区別、mod権限の強化を一本で読む。",
+      "articleHtml": "<p>AIによるコードレビューが「試す機能」から「本番インフラ」へ移った週だった。Anthropicは<strong>2026年10月15日にClaude CodeのCode Reviewを一般提供(GA)</strong>に移行し、続く10/19のchangelog <code>v2.1.304</code>、10/15の <code>v2.1.301</code> で、速度・深度・組織規模・可観測性の各軸が一気に埋まった。単発のアップデートというより、PR自動レビューを「どう運用するか」を設計できる段階に来た、と読むのが正しい。</p>\n\n<h4>何が新しいか</h4>\n<p><strong>GA化</strong>の対象はClaude TeamとEnterprise。管理者がGitHubアプリを入れて対象リポジトリを選べば、以後は新規プルリクエストに対し開発者側の設定なしで自動レビューが走る。プレビュー期比で所要時間が<strong>約20分→6〜10分へ約3倍高速化</strong>し、指摘は「問題・発生条件・修正案」を数文で簡潔に示す形に改善された。</p>\n<p><code>v2.1.304</code> では、そのレビューに<strong>深度(Quick / Standard(既定) / Deep)をリポジトリ単位で選ぶ</strong>設定と、<strong>GitHub組織内の全リポジトリを一括対象にする</strong>オプションが加わった。mods APIではツール承認の <code>tool.check</code> に <code>decider:\"person\"</code>(権限ダイアログかホストのコールバックだけがaskを承認できる)と <code>e.isReadOnly</code> が追加。<code>/auto-mode-setup</code> がBedrock/Vertex/Foundryなど非既定構成でも動くようになり、約43件の不具合(<code>claude --worktree</code> の未確認ブランチ削除、headlessの <code>--max-turns</code> 超過など)も修正された。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 190' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n<rect x='0' y='0' width='600' height='190' fill='#fbfdfb'/>\n<rect x='14' y='14' width='182' height='162' rx='10' fill='#eef7f0' stroke='#3fb950'/>\n<rect x='209' y='14' width='182' height='162' rx='10' fill='#e7f3ea' stroke='#1a7f37' stroke-width='2'/>\n<rect x='404' y='14' width='182' height='162' rx='10' fill='#eef7f0' stroke='#3fb950'/>\n<text x='105' y='42' text-anchor='middle' font-size='15' font-weight='bold' fill='#1a7f37'>Quick</text>\n<text x='300' y='42' text-anchor='middle' font-size='15' font-weight='bold' fill='#1a7f37'>Standard（既定）</text>\n<text x='495' y='42' text-anchor='middle' font-size='15' font-weight='bold' fill='#1a7f37'>Deep</text>\n<text x='105' y='74' text-anchor='middle' font-size='12' fill='#24442c'>速い・浅い</text>\n<text x='300' y='74' text-anchor='middle' font-size='12' fill='#24442c'>速度と網羅の均衡</text>\n<text x='495' y='74' text-anchor='middle' font-size='12' fill='#24442c'>遅い・深い</text>\n<text x='105' y='104' text-anchor='middle' font-size='11' fill='#4b5563'>小さなPR</text>\n<text x='105' y='122' text-anchor='middle' font-size='11' fill='#4b5563'>依存の軽い修正</text>\n<text x='300' y='104' text-anchor='middle' font-size='11' fill='#4b5563'>日常の全PR</text>\n<text x='300' y='122' text-anchor='middle' font-size='11' fill='#4b5563'>組織一括の既定</text>\n<text x='495' y='104' text-anchor='middle' font-size='11' fill='#4b5563'>重要リポ</text>\n<text x='495' y='122' text-anchor='middle' font-size='11' fill='#4b5563'>セキュリティ変更</text>\n<text x='300' y='158' text-anchor='middle' font-size='11' fill='#1a7f37'>所要 約6〜10分（GAで約3倍高速化 / 旧 約20分）</text>\n</svg><figcaption>図1：Code Reviewの深度3段階 — リポジトリ単位で選び、組織全リポに一括適用できる。</figcaption></figure>\n\n<h4>判定の「出所」が追えるようになった</h4>\n<p>地味だが効くのが <code>v2.1.301</code> の可観測性。OpenTelemetryの <code>tool_decision</code> イベントに <code>classifier_verdict</code> / <code>permission_mode</code> / <code>classifier_category</code> が加わり、ツールの許可・拒否が<strong>「auto mode分類器の判定由来」なのか「権限ルール由来」なのか</strong>を分けて集計・監査できる(<code>OTEL_LOG_TOOL_DETAILS=1</code> でマッチした組込ルール名も記録)。無人運用のリトライ制御用に <code>CLAUDE_CODE_RETRY_WATCHDOG_MAX_USAGE_LIMIT_WAIT_MS</code> も追加された。</p>\n\n<figure class='fig'><pre class='mermaid'>flowchart TD\n  A[\"ツール呼び出し\"] --> B{\"auto mode分類器\"}\n  B -->|\"許可/拒否\"| C[\"classifier_verdict\"]\n  A --> D{\"権限ルール\"}\n  D -->|\"permission_mode\"| E[\"ルール由来の判定\"]\n  C --> F[\"tool_decision イベント\"]\n  E --> F\n  F --> G[\"監査: どちらで止まったかを区別\"]</pre><figcaption>図2：<code>tool_decision</code> で分類器由来とルール由来の判定を分けて観測できる。</figcaption></figure>\n\n<h4>実務での使いどころ・注意点</h4>\n<p>Enterpriseなら、まず組織全リポにStandardを一括適用して底上げし、認証やインフラに触る重要リポだけDeepに引き上げる運用が素直。無人CIで危険な書き込み系ツールを走らせるなら <code>decider:\"person\"</code> で人の承認を必須にできる。止まった理由はOTelダッシュボードで分類器/ルールのどちらかまで追える。注意点として、GAはTeam/Enterprise限定、Deepは当然遅くなる、そしてEnterprise対象組織は<strong>2027/1/15までに最低1万ドル分のクレジットを請求でき(請求後30日で失効)</strong>る点は見落としやすい。</p>\n\n<p><strong>ひとこと</strong>：Code Reviewは「速度 × 深度 × 組織規模」の三軸で調整できる本番機能になった。まずStandardで全体を回し、Deepは絞って使うのが費用対効果の勘所。</p>",
+      "sources": [
+        {
+          "title": "Claude Code 公式changelog",
+          "url": "https://code.claude.com/docs/en/changelog"
+        },
+        {
+          "title": "Code Review is now generally available（Anthropic）",
+          "url": "https://claude.com/resources/articles/code-review-is-now-generally-available"
+        },
+        {
+          "title": "Classmethod: Claude Code v2.1.301 updates",
+          "url": "https://dev.classmethod.jp/en/articles/20261016-cc-updates-v2-1-301/"
+        }
+      ]
+    },
+    {
+      "id": "2026-10-20-nextjs",
+      "date": "2026-10-20",
+      "topic": "Next.js",
+      "title": "<Suspense>ストリーミング設計 — 体感速度は「どこに境界を置くか」で決まる",
+      "lede": "loading.tsx一枚で満足しない。境界の切り方・動的アクセスの押し下げ・Cache Components相互作用・CLS対策までを総点検する。",
+      "articleHtml": "<p>App Routerの体感速度を決めるのは「遅いデータを待つ間、ユーザーに何を見せるか」だ。Next.jsはReactの <code>&lt;Suspense&gt;</code> を土台に<strong>ストリーミングSSR</strong>を無設定で提供する。静的な殻(シェル=レイアウト・ナビ・フォールバック)を即座に送り、データが解決したセクションから後追いでHTMLを差し込む。差し込みはJSバンドルやハイドレーションを待たないインラインスクリプトで走るため、重いデータが画面全体をブロックしなくなる。</p>\n\n<h4>何が重要か — 粒度がすべて</h4>\n<p>多くの人は <code>loading.tsx</code> を1枚置いて満足するが、それは<strong>ページ全体を1つの巨大スケルトンに変える最も粗い粒度</strong>でしかない。実務の質は「どこに境界を置くか」「動的アクセス(<code>cookies()</code>/<code>headers()</code>/<code>params</code>/<code>searchParams</code>/非キャッシュfetch)をどこまで押し下げるか」で決まる。さらにNext.js 16の<strong>Cache Components(<code>cacheComponents:true</code>)</strong>では、シェルがビルド時プリレンダーされ動的部分だけがストリームされるため、境界設計がそのまま「静的に出せる範囲」を決めてしまう。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n<rect x='0' y='0' width='600' height='210' fill='#fbfbfe'/>\n<text x='16' y='26' font-size='13' font-weight='bold' fill='#4f46e5'>粗い loading.tsx</text>\n<rect x='16' y='36' width='260' height='150' rx='8' fill='#ececfb' stroke='#a5a5f0' stroke-dasharray='4 3'/>\n<text x='146' y='115' text-anchor='middle' font-size='12' fill='#6b7280'>ページ全体が</text>\n<text x='146' y='135' text-anchor='middle' font-size='12' fill='#6b7280'>1枚のスケルトン</text>\n<text x='324' y='26' font-size='13' font-weight='bold' fill='#4f46e5'>手動 &lt;Suspense&gt;（推奨）</text>\n<rect x='324' y='36' width='260' height='150' rx='8' fill='#ffffff' stroke='#c7c7f5'/>\n<rect x='338' y='48' width='232' height='30' rx='5' fill='#e0e7ff'/>\n<text x='454' y='68' text-anchor='middle' font-size='11' fill='#3730a3'>静的シェル（見出し・LCP要素）即出</text>\n<rect x='338' y='86' width='232' height='42' rx='5' fill='#eef2ff' stroke='#6366f1' stroke-dasharray='4 3'/>\n<text x='454' y='112' text-anchor='middle' font-size='11' fill='#4338ca'>Suspense: 売上集計（後追い）</text>\n<rect x='338' y='134' width='232' height='42' rx='5' fill='#eef2ff' stroke='#6366f1' stroke-dasharray='4 3'/>\n<text x='454' y='160' text-anchor='middle' font-size='11' fill='#4338ca'>Suspense: 活動フィード（独立解決）</text>\n</svg><figcaption>図1：loading.tsxはページ単位。手動Suspenseは動的アクセスの近くに境界を切り、シェルを多く即出できる。</figcaption></figure>\n\n<h4>定石：動的アクセスは「押し下げる」</h4>\n<p><code>layout</code>/<code>page</code> の先頭で動的アクセスを <code>await</code> すると、その配下すべてが動的化しプリレンダーもブロックされる。定石は<strong>awaitせずにPromiseを開始し、それを必要とする子に渡す</strong>こと。子は <code>use()</code>(Client)や境界内で解く。これで必要な部分だけがサスペンドし、シェルは即出せる。</p>\n<pre><code>// awaitしない：Promiseを開始して子へ渡す\nconst cookieStore = cookies()\nreturn &lt;UserMenu cookiePromise={cookieStore} /&gt;\n// 子（'use client'）: const cookies = use(cookiePromise)</code></pre>\n\n<figure class='fig'><pre class='mermaid'>flowchart LR\n  A[\"リクエスト\"] --> B[\"シェルを即送信\"]\n  B --> C[\"境界フォールバック表示\"]\n  C --> D{\"子データ解決?\"}\n  D -->|\"解決\"| E[\"本体へ差し替え（JS待たず）\"]\n  D -->|\"未\"| C</pre><figcaption>図2：シェル即送り→フォールバック→解決したセクションから差し替え、というストリーミングの流れ。</figcaption></figure>\n\n<h4>使いどころ・落とし穴</h4>\n<p>ダッシュボードはセクション単位で <code>&lt;Suspense&gt;</code> を切り、遅いDB集計だけを後追いにする。<strong>LCP要素は境界の外(シェル)</strong>へ。遷移時に即フォールバックが欲しいセグメントだけ <code>loading.tsx</code> を置く(こちらはプリフェッチされる)。落とし穴は、親で1つ <code>await</code> を挟むとそこで全体がブロックしストリーミングの利点が消えること。<code>use()</code> に渡すPromiseはレンダー本体で新規生成しない(毎回新Promise=無限サスペンド)。ストリーム開始後はヘッダ送信済みで<strong>ステータスは常に200</strong>——本物の404は最初の <code>await</code>/境界の前に <code>notFound()</code> を呼ぶ。スケルトンは <code>min-height</code> で寸法を予約してCLSを0にし、<code>prefers-reduced-motion</code> ではシマーを止める。</p>\n\n<p><strong>ひとこと</strong>：境界は「動的アクセスの近く」に明示的に置く。loading.tsxは万能ではなく、最も粗い既定値だと割り切るのが設計の出発点。</p>",
+      "sources": [
+        {
+          "title": "Next.js Docs — Streaming",
+          "url": "https://nextjs.org/docs/app/guides/streaming"
+        },
+        {
+          "title": "Next.js Docs — loading.js",
+          "url": "https://nextjs.org/docs/app/api-reference/file-conventions/loading"
+        },
+        {
+          "title": "React — <Suspense>",
+          "url": "https://react.dev/reference/react/Suspense"
+        }
+      ]
+    },
+    {
+      "id": "2026-10-20-flutter",
+      "date": "2026-10-20",
+      "topic": "Flutter",
+      "title": "Flutter 3.50 stable直前の検証プレイブック — Wasm昇格・Impeller一本化・Dart 3.14 Augmentations",
+      "lede": "11月の3.50昇格を待たず、今betaでCIを緑に。破壊的変更の先回りと、ポーズ中のmacrosを代替する言語機能まで。",
+      "articleHtml": "<p>11月のstable 3.50を前に、Flutterは「今のうちに検証しておくべき破壊的変更」が出そろった。現況を固定すると、安定は <strong>3.47.7 / Dart 3.13.5</strong>(10/8 patch)、betaは <strong>3.50.0-0.1.pre / Dart 3.14.0</strong> で、これが11月stable 3.50へ昇格する最初のbetaビルド(ブランチ <code>flutter-3.50-candidate.0</code>)。昇格を待って慌てるのではなく、beta側でCIを緑にしておくのが今回の勘所だ。</p>\n\n<h4>3.50で確定している破壊的変更</h4>\n<p><strong>WebAssembly遅延ロードがexperimental→stableへ昇格</strong>、Androidは<strong>Impeller一本化が完了</strong>(legacy SkiaバックエンドをAndroid 10+で引退)、そして<strong>Android 17のday-zero対応</strong>。加えてSDK内蔵のMaterial/Cupertinoは3.50で正式deprecationとなり、<code>dart fix --apply --code=migrate_design_widgets</code> で <code>material_ui</code>/<code>cupertino_ui</code> 系へ移行する。本番チェックは <code>flutter build web --wasm</code> と <code>flutter build appbundle</code> を今のうちに緑にしておくこと。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n<rect x='0' y='0' width='600' height='150' fill='#f7fbff'/>\n<line x1='40' y1='70' x2='560' y2='70' stroke='#64b5f6' stroke-width='3'/>\n<circle cx='120' cy='70' r='8' fill='#1976d2'/>\n<circle cx='320' cy='70' r='8' fill='#42a5f5'/>\n<circle cx='500' cy='70' r='9' fill='#0d47a1'/>\n<text x='120' y='48' text-anchor='middle' font-size='12' font-weight='bold' fill='#0d47a1'>stable 3.47.7</text>\n<text x='120' y='96' text-anchor='middle' font-size='10' fill='#546e7a'>Dart 3.13.5（本番pin）</text>\n<text x='320' y='48' text-anchor='middle' font-size='12' font-weight='bold' fill='#1565c0'>beta 3.50.0-0.1.pre</text>\n<text x='320' y='96' text-anchor='middle' font-size='10' fill='#546e7a'>Dart 3.14（検証）</text>\n<text x='500' y='48' text-anchor='middle' font-size='12' font-weight='bold' fill='#0d47a1'>11月 stable 3.50</text>\n<text x='500' y='96' text-anchor='middle' font-size='10' fill='#546e7a'>昇格</text>\n<text x='300' y='128' text-anchor='middle' font-size='11' fill='#b71c1c'>破壊的変更: Wasm遅延ロード stable / Impeller一本化 / Android 17 / Material内蔵deprecation</text>\n</svg><figcaption>図1：バージョン現況と3.50で確定した破壊的変更。betaで先に割れる箇所を潰す。</figcaption></figure>\n\n<h4>本番は「二本立て」で回す</h4>\n<p>pubspec/CIで安定を <strong>3.47.7にpin</strong> しつつ、別ジョブで <code>flutter channel beta &amp;&amp; flutter upgrade</code> の3.50を回す。昇格前に壊れる箇所(Wasm/Impeller/Material分離)をbeta側で先に緑化しておけば、11月の昇格日に事故らない。</p>\n<pre><code># 別ジョブ（beta検証）\nflutter channel beta &amp;&amp; flutter upgrade\nflutter build web --wasm      # Wasm昇格を先取り検証\nflutter build appbundle       # Impeller一本化/Android 17</code></pre>\n\n<figure class='fig'><pre class='mermaid'>flowchart TD\n  A[\"単一コードベース\"] --> B[\"ジョブ1: stable 3.47.7 pin（本番保証）\"]\n  A --> C[\"ジョブ2: beta 3.50 upgrade\"]\n  C --> D[\"flutter build web --wasm\"]\n  C --> E[\"flutter build appbundle\"]\n  D --> F[\"昇格前に緑化\"]\n  E --> F</pre><figcaption>図2：安定をpinしつつbetaを別ジョブで緑化するCI二本立て。</figcaption></figure>\n\n<h4>開発体験と言語機能</h4>\n<p><strong>Widget Previewerが3.47でstableに昇格</strong>。ローカルビルドキャッシュで起動が速くなり、<code>@Preview</code> でウィジェットを隔離確認する開発ループが本採用ラインに乗った(VS Code/IntelliJ連携、プレビューの検索・フィルタがリアルタイム)。言語面では<strong>Dart 3.14のAugmentations</strong>(beta同梱)——既存クラスへ後付けでメンバー/メソッド/コンストラクタを足す機能で、無期限ポーズ中のmacrosの実務代替。<code>freezed</code>/<code>json_serializable</code> のcodegenが本体を汚さず注入する土台になる。</p>\n\n<p><strong>ひとこと</strong>：3.50は「待つ」より「今betaで検証する」リリース。Wasmビルドとappbundleを今日CIに足しておけば、昇格は非イベントになる。</p>",
+      "sources": [
+        {
+          "title": "Release 3.50 beta #194269（GitHub）",
+          "url": "https://github.com/flutter/flutter/issues/194269"
+        },
+        {
+          "title": "Flutter Versions（flutterreleases.com）",
+          "url": "https://flutterreleases.com/flutter-versions/"
+        },
+        {
+          "title": "What's new in the docs（Flutter）",
+          "url": "https://docs.flutter.dev/release/whats-new.html"
+        }
+      ]
+    },
+    {
+      "id": "2026-10-19-github-trending",
+      "date": "2026-10-19",
+      "topic": "GitHub Trending",
+      "title": "10/19の話題リポジトリ — オフライン万能変換・ローカル漫画翻訳・コードだけで作る映画",
+      "lede": "生成AI一色のトレンドの中で、「クラウドや生成モデルに全部は預けない」姿勢が共通する急上昇3本。",
+      "articleHtml": "<p>10/19にGitHubで急上昇したモメンタム枠3本は、偶然にも一つの傾向で貫かれていた——<strong>クラウドや巨大な生成モデルに丸ごと依存せず、ローカルやコードで完結させる</strong>という姿勢だ。オフラインのファイル変換、端末内で動くML漫画翻訳、動画生成モデルを使わない「コードだけの映画」。エージェント/スキル経済が飽和気味のトレンドに対する、題材の多様性としても面白い顔ぶれだった。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 220' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n<rect x='0' y='0' width='600' height='220' fill='#f6fdf8'/>\n<rect x='14' y='14' width='572' height='28' fill='#1a7f37'/>\n<text x='150' y='33' text-anchor='middle' font-size='12' font-weight='bold' fill='#fff'>リポジトリ</text>\n<text x='330' y='33' text-anchor='middle' font-size='12' font-weight='bold' fill='#fff'>解決したい課題</text>\n<text x='510' y='33' text-anchor='middle' font-size='12' font-weight='bold' fill='#fff'>提供する機能</text>\n<line x1='250' y1='14' x2='250' y2='206' stroke='#c8e6c9'/>\n<line x1='418' y1='14' x2='418' y2='206' stroke='#c8e6c9'/>\n<line x1='14' y1='70' x2='586' y2='70' stroke='#c8e6c9'/>\n<line x1='14' y1='138' x2='586' y2='138' stroke='#c8e6c9'/>\n<rect x='14' y='42' width='572' height='164' fill='none' stroke='#3fb950'/>\n<text x='22' y='58' font-size='11' font-weight='bold' fill='#1a7f37'>Filee</text>\n<text x='150' y='56' text-anchor='middle' font-size='9' fill='#374151'>変換に外部アップロードや</text>\n<text x='150' y='68' text-anchor='middle' font-size='9' fill='#374151'>重いアプリが必要</text>\n<text x='502' y='56' text-anchor='middle' font-size='9' fill='#374151'>180+形式をD&amp;Dで</text>\n<text x='502' y='68' text-anchor='middle' font-size='9' fill='#374151'>オフライン相互変換</text>\n<text x='22' y='110' font-size='11' font-weight='bold' fill='#1a7f37'>koharu</text>\n<text x='150' y='102' text-anchor='middle' font-size='9' fill='#374151'>漫画翻訳が検出/OCR/消去/</text>\n<text x='150' y='114' text-anchor='middle' font-size='9' fill='#374151'>訳配置の多工程で分断</text>\n<text x='502' y='102' text-anchor='middle' font-size='9' fill='#374151'>検出→OCR→インペイント</text>\n<text x='502' y='114' text-anchor='middle' font-size='9' fill='#374151'>→LLM翻訳を端末内で自動化</text>\n<text x='22' y='176' font-size='11' font-weight='bold' fill='#1a7f37'>opuscar</text>\n<text x='150' y='168' text-anchor='middle' font-size='9' fill='#374151'>動画生成は重く</text>\n<text x='150' y='180' text-anchor='middle' font-size='9' fill='#374151'>コスト/再現性に難</text>\n<text x='502' y='168' text-anchor='middle' font-size='9' fill='#374151'>canvas/WebGLでコードだけの</text>\n<text x='502' y='180' text-anchor='middle' font-size='9' fill='#374151'>短編映画（51スタイル）</text>\n</svg><figcaption>図1：急上昇3本の「解決したい課題」と「提供する機能」の対応。</figcaption></figure>\n\n<h4>KnifeLemon/Filee（C#・⭐約4.2k）</h4>\n<p><strong>解決したい課題</strong>：ファイル形式の変換は、オンラインサービスへのアップロードやOffice等の重いアプリに依存しがちで、機微なファイルを外部に出す不安と、都度の手間がつきまとう。<strong>提供する機能</strong>：キーを押しながらファイルをカーソル上の<strong>ドーナツ型メニューにドロップするだけで、180以上の形式をオフラインで相互変換</strong>する(画像/PDF/Word/Excel/PowerPoint/HWP/動画/音声/電子書籍/アーカイブ)。結果は元ファイルの隣に保存され、<code>filee</code> CLIとウォッチフォルダ変換も備える。<strong>なぜ今</strong>：前日実測1★だった同リポがTrendshift日次・週間に浮上し実測約4.2kへ爆発的に急伸。生成AI一色の中で非AI・ローカル完結という毛色の違いも効いた(C#/Avalonia・MIT)。</p>\n\n<h4>koharu-rs/koharu（Rust・⭐約6.4k）</h4>\n<p><strong>解決したい課題</strong>：漫画の翻訳は、吹き出しの検出・OCR・消去・訳文の再配置という多工程で、個別ツールの寄せ集めになりやすい。<strong>提供する機能</strong>：物体検出→OCR→インペインティング→LLM翻訳までを<strong>1本のRust製ローカルアプリに束ねて自動化</strong>。Vision/LLMは端末内実行が基本で、WebGPUキャンバスでの手動クリーンアップ、PSDレイヤー書き出し、CUDA/ROCm/Metal/Vulkanのハードウェアアクセラレーションにも対応する。<strong>なぜ今</strong>：今週のRust週間トレンド(This Week in Rust 10/12-18)で再浮上。言語(Rust)と題材の両面で多様性枠(MIT/Apache-2.0デュアル)。</p>\n\n<h4>lemomo-ai/lemo-opuscar（JS/Python・⭐約3.8k）</h4>\n<p><strong>解決したい課題</strong>：動画制作は重い生成モデルに依存し、コストと再現性の問題を抱える。<strong>提供する機能</strong>：動画生成モデルを使わず <strong>canvas/WebGLで「コードだけ」の短編映画を作る</strong>Claude Codeスキル。51種の映画スタイルそれぞれにスタイルプロンプトとデモ映画が付き、フレームごとにレンダリングしてスコアリング・ナレーションまで行う(歴代アカデミー作品賞98本をまとめた6分半のOPUSCAR 98など)。<strong>なぜ今</strong>：Trendshift日次上位に浮上。「動画モデル非依存のコード映画」という明確な新規軸で差別化(コード/ドキュメントMIT・デモ映像CC BY 4.0)。</p>\n\n<p><strong>ひとこと</strong>：自分が試すなら即効性があるのは <strong>Filee</strong>。日常のファイル変換をローカル完結にできれば、機微データを外に出さずに手数も減る。koharu/opuscarは「生成モデルに全部預けない作り方」の設計参照として眺めたい。</p>",
+      "sources": [
+        {
+          "title": "KnifeLemon/Filee",
+          "url": "https://github.com/KnifeLemon/Filee"
+        },
+        {
+          "title": "koharu-rs/koharu",
+          "url": "https://github.com/koharu-rs/koharu"
+        },
+        {
+          "title": "lemomo-ai/lemo-opuscar",
+          "url": "https://github.com/lemomo-ai/lemo-opuscar"
+        }
+      ]
+    },
     {
       "id": "2026-10-19-claude-code",
       "date": "2026-10-19",
