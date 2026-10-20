@@ -1,0 +1,98 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>10/19の話題リポジトリ — オフライン万能変換・ローカル漫画翻訳・コードだけで作る映画 — デイリー技術深掘り 読み物</title><meta name="description" content="生成AI一色のトレンドの中で、「クラウドや生成モデルに全部は預けない」姿勢が共通する急上昇3本。"><meta name="theme-color" content="#238636"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-19-github-trending/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="10/19の話題リポジトリ — オフライン万能変換・ローカル漫画翻訳・コードだけで作る映画 — デイリー技術深掘り 読み物"><meta property="og:description" content="生成AI一色のトレンドの中で、「クラウドや生成モデルに全部は預けない」姿勢が共通する急上昇3本。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-19-github-trending/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3fb950, #1a7f37)"> <span class="glyph" aria-hidden="true">★</span> <div class="kicker">GitHub Trending</div> <h1>10/19の話題リポジトリ — オフライン万能変換・ローカル漫画翻訳・コードだけで作る映画</h1> <p class="lede">生成AI一色のトレンドの中で、「クラウドや生成モデルに全部は預けない」姿勢が共通する急上昇3本。</p> <div class="meta"> <span>📅 2026年10月19日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#238636"> <div> <article class="prose" data-has-mermaid="0"><p>10/19にGitHubで急上昇したモメンタム枠3本は、偶然にも一つの傾向で貫かれていた——<strong>クラウドや巨大な生成モデルに丸ごと依存せず、ローカルやコードで完結させる</strong>という姿勢だ。オフラインのファイル変換、端末内で動くML漫画翻訳、動画生成モデルを使わない「コードだけの映画」。エージェント/スキル経済が飽和気味のトレンドに対する、題材の多様性としても面白い顔ぶれだった。</p>
+
+<figure class='fig'><svg viewBox='0 0 600 220' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+<rect x='0' y='0' width='600' height='220' fill='#f6fdf8'></rect>
+<rect x='14' y='14' width='572' height='28' fill='#1a7f37'></rect>
+<text x='150' y='33' text-anchor='middle' font-size='12' font-weight='bold' fill='#fff'>リポジトリ</text>
+<text x='330' y='33' text-anchor='middle' font-size='12' font-weight='bold' fill='#fff'>解決したい課題</text>
+<text x='510' y='33' text-anchor='middle' font-size='12' font-weight='bold' fill='#fff'>提供する機能</text>
+<line x1='250' y1='14' x2='250' y2='206' stroke='#c8e6c9'></line>
+<line x1='418' y1='14' x2='418' y2='206' stroke='#c8e6c9'></line>
+<line x1='14' y1='70' x2='586' y2='70' stroke='#c8e6c9'></line>
+<line x1='14' y1='138' x2='586' y2='138' stroke='#c8e6c9'></line>
+<rect x='14' y='42' width='572' height='164' fill='none' stroke='#3fb950'></rect>
+<text x='22' y='58' font-size='11' font-weight='bold' fill='#1a7f37'>Filee</text>
+<text x='150' y='56' text-anchor='middle' font-size='9' fill='#374151'>変換に外部アップロードや</text>
+<text x='150' y='68' text-anchor='middle' font-size='9' fill='#374151'>重いアプリが必要</text>
+<text x='502' y='56' text-anchor='middle' font-size='9' fill='#374151'>180+形式をD&amp;Dで</text>
+<text x='502' y='68' text-anchor='middle' font-size='9' fill='#374151'>オフライン相互変換</text>
+<text x='22' y='110' font-size='11' font-weight='bold' fill='#1a7f37'>koharu</text>
+<text x='150' y='102' text-anchor='middle' font-size='9' fill='#374151'>漫画翻訳が検出/OCR/消去/</text>
+<text x='150' y='114' text-anchor='middle' font-size='9' fill='#374151'>訳配置の多工程で分断</text>
+<text x='502' y='102' text-anchor='middle' font-size='9' fill='#374151'>検出→OCR→インペイント</text>
+<text x='502' y='114' text-anchor='middle' font-size='9' fill='#374151'>→LLM翻訳を端末内で自動化</text>
+<text x='22' y='176' font-size='11' font-weight='bold' fill='#1a7f37'>opuscar</text>
+<text x='150' y='168' text-anchor='middle' font-size='9' fill='#374151'>動画生成は重く</text>
+<text x='150' y='180' text-anchor='middle' font-size='9' fill='#374151'>コスト/再現性に難</text>
+<text x='502' y='168' text-anchor='middle' font-size='9' fill='#374151'>canvas/WebGLでコードだけの</text>
+<text x='502' y='180' text-anchor='middle' font-size='9' fill='#374151'>短編映画（51スタイル）</text>
+</svg><figcaption>図1：急上昇3本の「解決したい課題」と「提供する機能」の対応。</figcaption></figure>
+
+<h4 id="sec-1">KnifeLemon/Filee（C#・⭐約4.2k）</h4>
+<p><strong>解決したい課題</strong>：ファイル形式の変換は、オンラインサービスへのアップロードやOffice等の重いアプリに依存しがちで、機微なファイルを外部に出す不安と、都度の手間がつきまとう。<strong>提供する機能</strong>：キーを押しながらファイルをカーソル上の<strong>ドーナツ型メニューにドロップするだけで、180以上の形式をオフラインで相互変換</strong>する(画像/PDF/Word/Excel/PowerPoint/HWP/動画/音声/電子書籍/アーカイブ)。結果は元ファイルの隣に保存され、<code>filee</code> CLIとウォッチフォルダ変換も備える。<strong>なぜ今</strong>：前日実測1★だった同リポがTrendshift日次・週間に浮上し実測約4.2kへ爆発的に急伸。生成AI一色の中で非AI・ローカル完結という毛色の違いも効いた(C#/Avalonia・MIT)。</p>
+
+<h4 id="sec-2">koharu-rs/koharu（Rust・⭐約6.4k）</h4>
+<p><strong>解決したい課題</strong>：漫画の翻訳は、吹き出しの検出・OCR・消去・訳文の再配置という多工程で、個別ツールの寄せ集めになりやすい。<strong>提供する機能</strong>：物体検出→OCR→インペインティング→LLM翻訳までを<strong>1本のRust製ローカルアプリに束ねて自動化</strong>。Vision/LLMは端末内実行が基本で、WebGPUキャンバスでの手動クリーンアップ、PSDレイヤー書き出し、CUDA/ROCm/Metal/Vulkanのハードウェアアクセラレーションにも対応する。<strong>なぜ今</strong>：今週のRust週間トレンド(This Week in Rust 10/12-18)で再浮上。言語(Rust)と題材の両面で多様性枠(MIT/Apache-2.0デュアル)。</p>
+
+<h4 id="sec-3">lemomo-ai/lemo-opuscar（JS/Python・⭐約3.8k）</h4>
+<p><strong>解決したい課題</strong>：動画制作は重い生成モデルに依存し、コストと再現性の問題を抱える。<strong>提供する機能</strong>：動画生成モデルを使わず <strong>canvas/WebGLで「コードだけ」の短編映画を作る</strong>Claude Codeスキル。51種の映画スタイルそれぞれにスタイルプロンプトとデモ映画が付き、フレームごとにレンダリングしてスコアリング・ナレーションまで行う(歴代アカデミー作品賞98本をまとめた6分半のOPUSCAR 98など)。<strong>なぜ今</strong>：Trendshift日次上位に浮上。「動画モデル非依存のコード映画」という明確な新規軸で差別化(コード/ドキュメントMIT・デモ映像CC BY 4.0)。</p>
+
+<p><strong>ひとこと</strong>：自分が試すなら即効性があるのは <strong>Filee</strong>。日常のファイル変換をローカル完結にできれば、機微データを外に出さずに手数も減る。koharu/opuscarは「生成モデルに全部預けない作り方」の設計参照として眺めたい。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://github.com/KnifeLemon/Filee" target="_blank" rel="noopener noreferrer"> KnifeLemon/Filee </a> </li><li> <a href="https://github.com/koharu-rs/koharu" target="_blank" rel="noopener noreferrer"> koharu-rs/koharu </a> </li><li> <a href="https://github.com/lemomo-ai/lemo-opuscar" target="_blank" rel="noopener noreferrer"> lemomo-ai/lemo-opuscar </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> KnifeLemon/Filee（C#・⭐約4.2k） </a> </li><li> <a href="#sec-2" data-toc="sec-2"> koharu-rs/koharu（Rust・⭐約6.4k） </a> </li><li> <a href="#sec-3" data-toc="sec-3"> lemomo-ai/lemo-opuscar（JS/Python・⭐約3.8k） </a> </li> </ul> <div class="reading-box"> <div>📅 2026-10-19</div> <div>⏱ 読了 約3分</div> <div>🏷 GitHub Trending</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
