@@ -1,0 +1,119 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>数字のカウントアップを事故なく作る — 2026の本命はNumberFlow、純CSSからの4択を測る — デイリー技術深掘り 読み物</title><meta name="description" content="「0から回って増える数字」は定番ゆえ事故も定番。CLS・ノーJSで0・SR読み上げ・ロケール崩れ・reduced-motion無視。純CSS/react-countup/NumberFlow/自前rAFの4択を、SSRで最終値を描く一点で貫く。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-21-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="数字のカウントアップを事故なく作る — 2026の本命はNumberFlow、純CSSからの4択を測る — デイリー技術深掘り 読み物"><meta property="og:description" content="「0から回って増える数字」は定番ゆえ事故も定番。CLS・ノーJSで0・SR読み上げ・ロケール崩れ・reduced-motion無視。純CSS/react-countup/NumberFlow/自前rAFの4択を、SSRで最終値を描く一点で貫く。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-21-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>数字のカウントアップを事故なく作る — 2026の本命はNumberFlow、純CSSからの4択を測る</h1> <p class="lede">「0から回って増える数字」は定番ゆえ事故も定番。CLS・ノーJSで0・SR読み上げ・ロケール崩れ・reduced-motion無視。純CSS/react-countup/NumberFlow/自前rAFの4択を、SSRで最終値を描く一点で貫く。</p> <div class="meta"> <span>📅 2026年10月21日</span> <span>⏱ 約3分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="0"><p>ランディングの「導入<strong>12,000</strong>社」、ダッシュボードのKPI、刻々と動く価格や在庫——「数字が0から回って増える」演出は定番だが、素朴に書くと決まった事故を踏む。(1)桁幅が毎フレーム変わって<strong>ガタつく（CLS）</strong>、(2)SSR/ノーJSで<strong>0のまま見える</strong>、(3)スクリーンリーダーが毎フレーム読む／何も読まない、(4)カンマ・通貨・小数を手組みして崩す、(5)<code>prefers-reduced-motion</code>を無視して目が回る。2026年は手段が増えたぶん、「どの手段でもこの5点を最初から潰す」ことが本題になった。</p>
+
+<h4 id="sec-1">4つのアプローチと使い分け</h4>
+<figure class='fig'>
+<svg viewBox='0 0 600 230' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <rect x='0' y='0' width='600' height='230' fill='#f5f7ff'></rect>
+  <text x='16' y='24' font-size='13' font-weight='bold' fill='#3a46d6'>カウントアップ4択 — 依存・ロケール・変動値追従・SSR</text>
+  <g font-size='10'>
+    
+    <text x='24' y='52' fill='#5661e0' font-weight='bold'>手法</text>
+    <text x='150' y='52' fill='#5661e0' font-weight='bold'>依存</text>
+    <text x='235' y='52' fill='#5661e0' font-weight='bold'>ロケール/小数</text>
+    <text x='360' y='52' fill='#5661e0' font-weight='bold'>変動値追従</text>
+    <text x='470' y='52' fill='#5661e0' font-weight='bold'>SSRで最終値</text>
+    <line x1='16' y1='58' x2='584' y2='58' stroke='#c7cdf5'></line>
+    
+    <text x='24' y='82' fill='#24263a'>A 純CSS @property</text>
+    <text x='150' y='82' fill='#2f855a'>ゼロ</text>
+    <text x='235' y='82' fill='#b5421f'>✗ 整数のみ</text>
+    <text x='360' y='82' fill='#8a6d1a'>△</text>
+    <text x='470' y='82' fill='#2f855a'>◯(別テキスト)</text>
+    
+    <text x='24' y='108' fill='#24263a'>B react-countup</text>
+    <text x='150' y='108' fill='#8a6d1a'>1つ</text>
+    <text x='235' y='108' fill='#2f855a'>◯</text>
+    <text x='360' y='108' fill='#8a6d1a'>△ one-shot</text>
+    <text x='470' y='108' fill='#b5421f'>✗ 初期0</text>
+    
+    <rect x='16' y='118' width='568' height='26' fill='#e4e8ff'></rect>
+    <text x='24' y='136' fill='#3a46d6' font-weight='bold'>C NumberFlow ★本命</text>
+    <text x='150' y='136' fill='#2f855a'>ゼロ</text>
+    <text x='235' y='136' fill='#2f855a'>◎ Intl内蔵</text>
+    <text x='360' y='136' fill='#2f855a'>◎</text>
+    <text x='470' y='136' fill='#2f855a'>◎ 自動</text>
+    
+    <text x='24' y='162' fill='#24263a'>D 自前rAF / Motion</text>
+    <text x='150' y='162' fill='#2f855a'>ゼロ〜</text>
+    <text x='235' y='162' fill='#2f855a'>◯ Intl自前</text>
+    <text x='360' y='162' fill='#2f855a'>◯</text>
+    <text x='470' y='162' fill='#2f855a'>◯ 初期値に</text>
+  </g>
+  <text x='16' y='196' font-size='10' fill='#6b708f'>一度だけの装飾=A/B、刻々と変わる値・桁スロット・ロケール対応=C、挙動を握りたい=D。</text>
+  <text x='16' y='214' font-size='10' fill='#6b708f'>共通の必須: font-variant-numeric: tabular-nums（等幅数字）で桁幅を固定しCLSを殺す。</text>
+</svg>
+<figcaption>図1：4択の性格。変動値とロケールが要るなら NumberFlow が頭ひとつ抜ける。</figcaption>
+</figure>
+
+<p>本命の <strong>NumberFlow（<code>@number-flow/react</code>）</strong>は依存ゼロ・<code>Intl.NumberFormat</code>内蔵で、桁が縦にスロット回転（odometer）しながらカンマ区切り・通貨・compact記法を保ったまま滑らかに動く。<strong>値が変わるたび自動でトランジション</strong>するので、一度だけのカウントアップにも、価格や株価のライブ更新にも同じコンポーネントで対応できる。</p>
+
+<pre><code>'use client';
+import NumberFlow from '@number-flow/react';
+&lt;NumberFlow value={price} format={{ style:'currency', currency:'JPY' }} /&gt;
+&lt;NumberFlow value={users} format={{ notation:'compact' }} suffix="+" locales="ja-JP" /&gt;</code></pre>
+
+<h4 id="sec-2">Next.js(App Router)での組み込み</h4>
+<p>純CSS(A)は<code>'use client'</code>不要＝Server Componentのまま・hydrationゼロ・JS増ゼロで、トリガも<code>animation-timeline: view()</code>ならJS完全ゼロ。B/C/Dは<code>'use client'</code>の小島に隔離し、ページ本体とデータ取得はRSCのまま数値をpropsで流す。<strong>最重要はSSRで初期HTMLに「最終値」を描く</strong>こと。NumberFlowは<code>value</code>をSSRでフォーマット描画するので初期から正しい数字が出る（安全）。react-countupは初期に<code>start</code>（既定0）を描くので、ノーJS/SEOで0が見える点に注意。サーバーとクライアントで<strong>同じロケール</strong>のIntlを使わないとhydration mismatchになる。</p>
+
+<h4 id="sec-3">落とし穴</h4>
+<p>擬似要素<code>content: counter()</code>の数字は<strong>SRが読まずコピーもできない</strong>——本物のテキストで最終値をDOMに置く。自前Dは毎フレーム<code>setState</code>禁止（INP悪化）、<code>textContent</code>直書き＋IO<code>disconnect</code>で一度きり。発火はスクロールのたびに回らぬよう<code>scrollSpyOnce</code>やIO<code>once</code>で止める。</p>
+
+<p><strong>ひとこと</strong>：カウントアップは「動きが情報の本体ではない」。最終値さえ常にDOMにあれば、reduced-motionでも検索でも意味は通る。そこを守れば残りは演出の自由だ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://number-flow.barvian.me/" target="_blank" rel="noopener noreferrer"> NumberFlow 公式ドキュメント（React API） </a> </li><li> <a href="https://www.npmjs.com/package/react-countup" target="_blank" rel="noopener noreferrer"> react-countup（npm・props一覧） </a> </li><li> <a href="https://cruip.com/how-to-make-an-animated-number-counter-with-tailwind-css/" target="_blank" rel="noopener noreferrer"> Pure CSS counting number animation（Cruip） </a> </li><li> <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/@property" target="_blank" rel="noopener noreferrer"> MDN @property </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 4つのアプローチと使い分け </a> </li><li> <a href="#sec-2" data-toc="sec-2"> Next.js(App Router)での組み込み </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 落とし穴 </a> </li> </ul> <div class="reading-box"> <div>📅 2026-10-21</div> <div>⏱ 読了 約3分</div> <div>🏷 Next.js</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
