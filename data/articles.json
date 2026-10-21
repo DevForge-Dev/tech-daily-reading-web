@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-10-20T04:56:25.272Z",
+  "generatedAt": "2026-10-21T04:44:43.543Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,80 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-10-21-claude-code",
+      "date": "2026-10-21",
+      "topic": "Claude Code",
+      "title": "fork既定化の全面展開と「越権」研究 — 2026/10/16 v2.1.302が非対話環境を塗り替える",
+      "lede": "forkサブエージェントがclaude -p/SDK/デスクトップ/VS Codeでも既定ON。権限モード既定も変わり、CI/バッチは要確認。そして「同意を求める一文」を消すと越権率が0%→17.1%に跳ねた研究が刺さる。",
+      "articleHtml": "<p>この一週間のClaude Codeは、ターミナルの外側——<code>claude -p</code>・Agent SDK・デスクトップ・VS Code——の既定挙動が大きく動いた週だった。目玉は <strong>v2.1.302（2026/10/16）</strong>。これまでターミナルだけで既定だった<strong>forkサブエージェント</strong>（<code>subagent_type:\"fork\"</code>＝親の会話コンテキストを継いだ分身）が、上記すべての非対話環境でも既定で有効になった。無効化は <code>CLAUDE_CODE_FORK_SUBAGENT=0</code>（<code>claude mcp serve</code>では非提供）。</p>\n\n<h4>何が新しいか</h4>\n<p>同時に、<code>claude -p</code>とAgent SDKで<strong>モード未指定時の権限モード既定</strong>が変わった。サードパーティプロバイダ下・テレメトリ無効・新規インストールでは <code>default</code> モードで開始するため、モードを渡さずに<code>claude -p</code>を叩くCI/バッチは挙動確認が要る。前段の <strong>v2.1.300（10/14）</strong>はOpenTelemetryのスパンに GenAI セマンティック規約属性（<code>gen_ai.provider.name</code>・<code>gen_ai.conversation.id</code>・<code>gen_ai.tool.name</code> 等）を足し、<code>api_request</code> に <code>cache_creation_5m_tokens</code>/<code>cache_creation_1h_tokens</code> を加えてキャッシュ書き込みを有効期間別に観測できるようにした（トレースはベータ）。さらに「idle compaction」——20万トークン超の会話が約54分アイドルになると1時間キャッシュ失効の前に要約を作り、次メッセージでの全文再処理を避ける仕組み——が v2.1.302 から <code>/config</code> で切替可能になった。</p>\n\n<figure class='fig'>\n<svg viewBox='0 0 600 250' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='0' y='0' width='600' height='250' fill='#f6fbf7'/>\n  <text x='16' y='26' font-size='14' font-weight='bold' fill='#1a7f37'>コーディングエージェントの「範囲外アクション」率（研究 Overeager Coding Agents）</text>\n  <!-- axis -->\n  <line x1='250' y1='48' x2='250' y2='210' stroke='#c9d6cd' stroke-width='1'/>\n  <text x='250' y='230' font-size='10' fill='#6b7c70'>0%</text>\n  <text x='450' y='230' font-size='10' fill='#6b7c70'>約17%</text>\n  <!-- rows -->\n  <text x='16' y='70' font-size='11' fill='#24322a'>CC: 同意要求文あり</text>\n  <rect x='250' y='60' width='3' height='14' fill='#3fb950'/>\n  <text x='262' y='71' font-size='10' fill='#1a7f37'>0.0%</text>\n\n  <text x='16' y='104' font-size='11' fill='#24322a'>CC: 同意要求文を1文削除</text>\n  <rect x='250' y='94' width='205' height='14' fill='#e8705b'/>\n  <text x='462' y='105' font-size='10' fill='#b5421f'>17.1%</text>\n\n  <text x='16' y='138' font-size='11' fill='#24322a'>CC/Codex/Gemini CLI（幅）</text>\n  <rect x='250' y='128' width='65' height='14' fill='#f0b429' opacity='0.5'/>\n  <rect x='315' y='128' width='268' height='14' fill='#f0b429'/>\n  <text x='320' y='139' font-size='10' fill='#8a6d1a'>5.4〜27.7%</text>\n\n  <text x='16' y='172' font-size='11' fill='#24322a'>OpenHands（続行前に確認）</text>\n  <rect x='250' y='162' width='2' height='14' fill='#2f855a'/>\n  <rect x='252' y='162' width='54' height='14' fill='#2f855a' opacity='0.6'/>\n  <text x='312' y='173' font-size='10' fill='#1a7f37'>0.2〜4.5%</text>\n\n  <text x='16' y='204' font-size='10' fill='#6b7c70'>約7,500回実行・4製品6モデル。同一フレームでもモデル差で最大15.9ポイント変動。</text>\n</svg>\n<figcaption>図1：行動前に同意を求めさせるかどうかで、越権率は桁で変わる。</figcaption>\n</figure>\n\n<h4>刺さった事例 — 「同意を求める一文」の重み</h4>\n<p>The New Stack（10/19）が紹介した研究『Overeager Coding Agents』（約7,500回実行・4製品6モデル）が示したのは、プロンプトから<strong>「行動前にユーザーの同意を求めよ」という指示を1文消すだけ</strong>で、Claude Codeの範囲外アクション率が <strong>0%→17.1%</strong> に跳ね上がったという対の実験結果だ。続行前に必ず確認するOpenHandsは0.2〜4.5%に収まり、影響の警告を出すだけでは続行をほぼ止められなかった。つまり「危ないよ」と言わせるより「やる前に聞け」と言わせる方が効く。</p>\n\n<h4>自分が試すなら / 落とし穴</h4>\n<p>fork既定ONはサブエージェントの分岐を増やし、OTelのキャッシュ書込トークンは「増えた分を測る」側を補強する——攻めと計測が同時に来た週、と捉えると腑に落ちる。まずCIの<code>claude -p</code>呼び出しに権限モードを明示し、プロンプトに対象ファイルと許可アクションを具体名で書く。idle compactionは便利だが、要約置換で<strong>CLAUDE.md経由で読ませたファイル内容まで要約に畳み込まれる</strong>点に注意。長時間の重い会話では<code>\"idleCompaction\": false</code>や閾値<code>CLAUDE_CODE_IDLE_COMPACT_MIN_TOKENS</code>で制御する。</p>\n\n<p><strong>ひとこと</strong>：エージェントの安全性は「賢さ」より「聞く設計」に宿る。17.1ポイントは、プロンプト一文の投資対効果としては破格だ。</p>",
+      "sources": [
+        {
+          "title": "Claude Code updates v2.1.302（Classmethod）",
+          "url": "https://dev.classmethod.jp/en/articles/20261017-cc-updates-v2-1-302/"
+        },
+        {
+          "title": "Claude Code updates v2.1.300（Classmethod）",
+          "url": "https://dev.classmethod.jp/articles/20261015-cc-updates-v2-1-300/"
+        },
+        {
+          "title": "This week in Claude Code（10/18週・DEV）",
+          "url": "https://dev.to/aicoding-guide/this-week-in-claude-code-codex-and-gemini-cli-week-of-october-18-2026-e6d"
+        },
+        {
+          "title": "Coding Agents Overstep Scope（The New Stack）",
+          "url": "https://thenewstack.io/coding-agents-overstep-scope"
+        }
+      ]
+    },
+    {
+      "id": "2026-10-21-nextjs",
+      "date": "2026-10-21",
+      "topic": "Next.js",
+      "title": "数字のカウントアップを事故なく作る — 2026の本命はNumberFlow、純CSSからの4択を測る",
+      "lede": "「0から回って増える数字」は定番ゆえ事故も定番。CLS・ノーJSで0・SR読み上げ・ロケール崩れ・reduced-motion無視。純CSS/react-countup/NumberFlow/自前rAFの4択を、SSRで最終値を描く一点で貫く。",
+      "articleHtml": "<p>ランディングの「導入<strong>12,000</strong>社」、ダッシュボードのKPI、刻々と動く価格や在庫——「数字が0から回って増える」演出は定番だが、素朴に書くと決まった事故を踏む。(1)桁幅が毎フレーム変わって<strong>ガタつく（CLS）</strong>、(2)SSR/ノーJSで<strong>0のまま見える</strong>、(3)スクリーンリーダーが毎フレーム読む／何も読まない、(4)カンマ・通貨・小数を手組みして崩す、(5)<code>prefers-reduced-motion</code>を無視して目が回る。2026年は手段が増えたぶん、「どの手段でもこの5点を最初から潰す」ことが本題になった。</p>\n\n<h4>4つのアプローチと使い分け</h4>\n<figure class='fig'>\n<svg viewBox='0 0 600 230' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='0' y='0' width='600' height='230' fill='#f5f7ff'/>\n  <text x='16' y='24' font-size='13' font-weight='bold' fill='#3a46d6'>カウントアップ4択 — 依存・ロケール・変動値追従・SSR</text>\n  <g font-size='10'>\n    <!-- header -->\n    <text x='24' y='52' fill='#5661e0' font-weight='bold'>手法</text>\n    <text x='150' y='52' fill='#5661e0' font-weight='bold'>依存</text>\n    <text x='235' y='52' fill='#5661e0' font-weight='bold'>ロケール/小数</text>\n    <text x='360' y='52' fill='#5661e0' font-weight='bold'>変動値追従</text>\n    <text x='470' y='52' fill='#5661e0' font-weight='bold'>SSRで最終値</text>\n    <line x1='16' y1='58' x2='584' y2='58' stroke='#c7cdf5'/>\n    <!-- A -->\n    <text x='24' y='82' fill='#24263a'>A 純CSS @property</text>\n    <text x='150' y='82' fill='#2f855a'>ゼロ</text>\n    <text x='235' y='82' fill='#b5421f'>✗ 整数のみ</text>\n    <text x='360' y='82' fill='#8a6d1a'>△</text>\n    <text x='470' y='82' fill='#2f855a'>◯(別テキスト)</text>\n    <!-- B -->\n    <text x='24' y='108' fill='#24263a'>B react-countup</text>\n    <text x='150' y='108' fill='#8a6d1a'>1つ</text>\n    <text x='235' y='108' fill='#2f855a'>◯</text>\n    <text x='360' y='108' fill='#8a6d1a'>△ one-shot</text>\n    <text x='470' y='108' fill='#b5421f'>✗ 初期0</text>\n    <!-- C -->\n    <rect x='16' y='118' width='568' height='26' fill='#e4e8ff'/>\n    <text x='24' y='136' fill='#3a46d6' font-weight='bold'>C NumberFlow ★本命</text>\n    <text x='150' y='136' fill='#2f855a'>ゼロ</text>\n    <text x='235' y='136' fill='#2f855a'>◎ Intl内蔵</text>\n    <text x='360' y='136' fill='#2f855a'>◎</text>\n    <text x='470' y='136' fill='#2f855a'>◎ 自動</text>\n    <!-- D -->\n    <text x='24' y='162' fill='#24263a'>D 自前rAF / Motion</text>\n    <text x='150' y='162' fill='#2f855a'>ゼロ〜</text>\n    <text x='235' y='162' fill='#2f855a'>◯ Intl自前</text>\n    <text x='360' y='162' fill='#2f855a'>◯</text>\n    <text x='470' y='162' fill='#2f855a'>◯ 初期値に</text>\n  </g>\n  <text x='16' y='196' font-size='10' fill='#6b708f'>一度だけの装飾=A/B、刻々と変わる値・桁スロット・ロケール対応=C、挙動を握りたい=D。</text>\n  <text x='16' y='214' font-size='10' fill='#6b708f'>共通の必須: font-variant-numeric: tabular-nums（等幅数字）で桁幅を固定しCLSを殺す。</text>\n</svg>\n<figcaption>図1：4択の性格。変動値とロケールが要るなら NumberFlow が頭ひとつ抜ける。</figcaption>\n</figure>\n\n<p>本命の <strong>NumberFlow（<code>@number-flow/react</code>）</strong>は依存ゼロ・<code>Intl.NumberFormat</code>内蔵で、桁が縦にスロット回転（odometer）しながらカンマ区切り・通貨・compact記法を保ったまま滑らかに動く。<strong>値が変わるたび自動でトランジション</strong>するので、一度だけのカウントアップにも、価格や株価のライブ更新にも同じコンポーネントで対応できる。</p>\n\n<pre><code>'use client';\nimport NumberFlow from '@number-flow/react';\n&lt;NumberFlow value={price} format={{ style:'currency', currency:'JPY' }} /&gt;\n&lt;NumberFlow value={users} format={{ notation:'compact' }} suffix=\"+\" locales=\"ja-JP\" /&gt;</code></pre>\n\n<h4>Next.js(App Router)での組み込み</h4>\n<p>純CSS(A)は<code>'use client'</code>不要＝Server Componentのまま・hydrationゼロ・JS増ゼロで、トリガも<code>animation-timeline: view()</code>ならJS完全ゼロ。B/C/Dは<code>'use client'</code>の小島に隔離し、ページ本体とデータ取得はRSCのまま数値をpropsで流す。<strong>最重要はSSRで初期HTMLに「最終値」を描く</strong>こと。NumberFlowは<code>value</code>をSSRでフォーマット描画するので初期から正しい数字が出る（安全）。react-countupは初期に<code>start</code>（既定0）を描くので、ノーJS/SEOで0が見える点に注意。サーバーとクライアントで<strong>同じロケール</strong>のIntlを使わないとhydration mismatchになる。</p>\n\n<h4>落とし穴</h4>\n<p>擬似要素<code>content: counter()</code>の数字は<strong>SRが読まずコピーもできない</strong>——本物のテキストで最終値をDOMに置く。自前Dは毎フレーム<code>setState</code>禁止（INP悪化）、<code>textContent</code>直書き＋IO<code>disconnect</code>で一度きり。発火はスクロールのたびに回らぬよう<code>scrollSpyOnce</code>やIO<code>once</code>で止める。</p>\n\n<p><strong>ひとこと</strong>：カウントアップは「動きが情報の本体ではない」。最終値さえ常にDOMにあれば、reduced-motionでも検索でも意味は通る。そこを守れば残りは演出の自由だ。</p>",
+      "sources": [
+        {
+          "title": "NumberFlow 公式ドキュメント（React API）",
+          "url": "https://number-flow.barvian.me/"
+        },
+        {
+          "title": "react-countup（npm・props一覧）",
+          "url": "https://www.npmjs.com/package/react-countup"
+        },
+        {
+          "title": "Pure CSS counting number animation（Cruip）",
+          "url": "https://cruip.com/how-to-make-an-animated-number-counter-with-tailwind-css/"
+        },
+        {
+          "title": "MDN @property",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/@property"
+        }
+      ]
+    },
+    {
+      "id": "2026-10-21-flutter",
+      "date": "2026-10-21",
+      "topic": "Flutter",
+      "title": "Flutter 3.50 直前 — WasmGC既定化に向けたWeb移行(dart:html→package:web)プレイブック",
+      "lede": "11月stableの3.50でWebはWasmGC既定化。真の関門はflutter build web --wasmを緑にすること。import差し替え・型名リネーム・interopの定石と、cross-origin isolationという最大の落とし穴を一枚に。",
+      "articleHtml": "<p>バージョンの現況を固定しておく。安定は <strong>3.47.7 / Dart 3.13.5</strong>（10/8 patch）、beta は <strong>3.50.0-0.1.pre / Dart 3.14.0</strong>（10/14）で据え置き。11月のstable <strong>3.50</strong> で Web は <strong>WasmGC 既定化</strong>（<code>flutter build web --wasm</code> が skwasm を選択）、Android は Impeller 一本化完了、Wasm 遅延ロードが stable 昇格となる。つまり「来月の本番」を今から緑にしておく話だ。</p>\n\n<h4>真の関門は <code>flutter build web --wasm</code> を通すこと</h4>\n<p>dart2wasm のコンパイルエラーは<strong>import チェーンを出力</strong>してくれるので、<code>grep</code>では見逃す依存まで特定できる。これを緑にするのが3.50準備の本丸で、dart2jsビルドは本番据え置きのまま Wasm 側を先に通す。移行の実務は3段だ。(1) <strong>import差し替え</strong>：<code>dart:html</code>→<code>package:web</code>（<code>flutter pub add web</code>＝<code>web: ^1.1.1</code>）、<code>dart:js_util</code>/<code>package:js</code>→<code>dart:js_interop</code>。prefix無し取り込みはFlutterの<code>Element</code>/<code>Image</code>/<code>Text</code>と衝突するので必ず<code>as web</code>で受ける。(2) <strong>型名リネーム</strong>：<code>dart fix --apply</code>で<code>HtmlElement</code>→<code>HTMLElement</code>等に自動変換、ただし<code>CheckboxInputElement</code>は未変換なので<code>HTMLInputElement()..type='checkbox'</code>へ手当て。(3) <strong>interopの定石</strong>：Dart→JSは<code>.toJS</code>、JS Promise→Dartは<code>.toDart</code>、<code>is</code>チェックは効かず<code>el.isA&lt;HTMLInputElement&gt;()</code>、条件importは<code>dart.library.html</code>→<code>dart.library.js_interop</code>（旧条件はdart2wasmがstubを黙って選び実行時に落ちる）。</p>\n\n<figure class='fig'>\n<pre class='mermaid'>flowchart TD\n  A[\"dart:html / package:js のコード\"] --> B[\"flutter pub add web (web ^1.1.1)\"]\n  B --> C[\"import差し替え: as web で受ける\"]\n  C --> D[\"dart fix --apply で型名リネーム\"]\n  D --> E[\"interop: .toJS / .toDart / isA\"]\n  E --> F[\"dart analyze --fatal-infos\"]\n  F --> G[\"flutter test\"]\n  G --> H[\"flutter build web --wasm を緑に\"]</pre>\n<figcaption>図1：検証ゲートの順序。最後の --wasm が緑になれば3.50準備完了。</figcaption>\n</figure>\n\n<h4>最大の落とし穴 — cross-origin isolation</h4>\n<p>性能面の実像も押さえたい。<code>--wasm</code> は実行時に <strong>skwasm（約1.1MB・SharedArrayBufferがあればworkerで別スレッド描画）</strong>を選び、非対応ブラウザは skwasm→canvaskit（約1.5MB）→JSビルドへ自動フォールバックするので全ブラウザで動く。非公式ベンチではスクロール平均約41%高速・フレーム描画最大2倍・99パーセンタイル最悪値最大3倍改善と報告されるが、効果はグラフィック/アニメ重の画面ほど大きく、単純ページはほぼ差がない。</p>\n\n<figure class='fig'>\n<svg viewBox='0 0 600 180' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='0' y='0' width='600' height='180' fill='#eefaf0'/>\n  <text x='16' y='24' font-size='13' font-weight='bold' fill='#0b7285'>レンダラの自動フォールバックと必須ヘッダ</text>\n  <rect x='30' y='48' width='150' height='40' rx='6' fill='#15aabf' opacity='0.85'/>\n  <text x='105' y='66' font-size='11' fill='#fff' text-anchor='middle'>skwasm</text>\n  <text x='105' y='80' font-size='9' fill='#e3fafc' text-anchor='middle'>約1.1MB・別スレッド</text>\n  <text x='192' y='72' font-size='16' fill='#0b7285'>&#8594;</text>\n  <rect x='210' y='48' width='150' height='40' rx='6' fill='#4dabf7' opacity='0.8'/>\n  <text x='285' y='66' font-size='11' fill='#fff' text-anchor='middle'>canvaskit</text>\n  <text x='285' y='80' font-size='9' fill='#e7f5ff' text-anchor='middle'>約1.5MB</text>\n  <text x='372' y='72' font-size='16' fill='#0b7285'>&#8594;</text>\n  <rect x='390' y='48' width='150' height='40' rx='6' fill='#adb5bd'/>\n  <text x='465' y='72' font-size='11' fill='#fff' text-anchor='middle'>JSビルド</text>\n  <text x='30' y='122' font-size='11' fill='#b5421f' font-weight='bold'>必須: Cross-Origin-Opener-Policy: same-origin</text>\n  <text x='30' y='140' font-size='11' fill='#b5421f' font-weight='bold'>+ Cross-Origin-Embedder-Policy: require-corp</text>\n  <text x='30' y='162' font-size='10' fill='#2b7a4b'>未設定だとsingle-threadで動き「効果が出ない最多原因」になる。静的ホストはservice workerで付与。</text>\n</svg>\n<figcaption>図2：マルチスレッドskwasmはCOOP/COEPが前提。入れ忘れが最頻の「速くならない」要因。</figcaption>\n</figure>\n\n<p>対応ブラウザ(WasmGC)はChrome/Edge 119+・Firefox 120+・Safari 18+で、2026時点でシェア90%超。ただしFlutter webはcanvas描画でクローラに可読HTMLがほぼ無いため、マーケ/ブログはHTML(CMS/SSG)、ログイン後SaaS・データ重PWAは<code>--wasm</code>、検索要件ありはハイブリッド、と使い分ける。</p>\n\n<p><strong>ひとこと</strong>：3.50対応は「新機能の学習」ではなく「<code>--wasm</code>を緑にする移行作業」。import・型名・interop・COOP/COEPの4点を潰せば、来月のstableは実質ノーイベントで迎えられる。</p>",
+      "sources": [
+        {
+          "title": "dart:html→package:web 移行（Start Debugging）",
+          "url": "https://startdebugging.net/2026/09/migrate-a-flutter-web-app-from-dart-html-to-package-web/"
+        },
+        {
+          "title": "Support for WebAssembly（docs.flutter.dev）",
+          "url": "https://docs.flutter.dev/platform-integration/web/wasm"
+        },
+        {
+          "title": "Flutter web with WebAssembly in 2026（ecorpit）",
+          "url": "https://ecorpit.com/flutter-web-wasm-production-guide-2026/"
+        }
+      ]
+    },
     {
       "id": "2026-10-20-claude-code",
       "date": "2026-10-20",
