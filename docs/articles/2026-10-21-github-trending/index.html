@@ -1,0 +1,73 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>10/21の話題リポジトリ — DeepSeek公式の推論基盤・マクドMCPの段取りCLI・全デバイス常駐エージェント — デイリー技術深掘り 読み物</title><meta name="description" content="生成AI基盤から生活寄りのMCP活用、個人エージェントまで——「誰の何を解くか」が三者三様だった3本。"><meta name="theme-color" content="#238636"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-21-github-trending/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="10/21の話題リポジトリ — DeepSeek公式の推論基盤・マクドMCPの段取りCLI・全デバイス常駐エージェント — デイリー技術深掘り 読み物"><meta property="og:description" content="生成AI基盤から生活寄りのMCP活用、個人エージェントまで——「誰の何を解くか」が三者三様だった3本。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-21-github-trending/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3fb950, #1a7f37)"> <span class="glyph" aria-hidden="true">★</span> <div class="kicker">GitHub Trending</div> <h1>10/21の話題リポジトリ — DeepSeek公式の推論基盤・マクドMCPの段取りCLI・全デバイス常駐エージェント</h1> <p class="lede">生成AI基盤から生活寄りのMCP活用、個人エージェントまで——「誰の何を解くか」が三者三様だった3本。</p> <div class="meta"> <span>📅 2026年10月21日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#238636"> <div> <article class="prose" data-has-mermaid="0"><p>10/21 のモメンタム枠は、<strong>重量級の推論基盤・遊び心のあるMCP活用・端末常駐の個人エージェント</strong>という三者三様の並びになった。共通するのは「既存の不便を、誰に向けてどう解くか」がはっきりしている点だ。各リポジトリについて<strong>解決したい課題</strong>と<strong>提供する機能</strong>を見ていく。</p>
+
+<figure class='fig'><svg viewBox='0 0 620 212' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='10' y='10' width='600' height='194' rx='6' fill='none' stroke='#c7ccd4'></rect><rect x='10' y='10' width='600' height='32' fill='#eef1f5'></rect><line x1='170' y1='10' x2='170' y2='204' stroke='#d7dce3'></line><line x1='395' y1='10' x2='395' y2='204' stroke='#d7dce3'></line><line x1='10' y1='42' x2='610' y2='42' stroke='#c7ccd4'></line><line x1='10' y1='96' x2='610' y2='96' stroke='#eceff3'></line><line x1='10' y1='150' x2='610' y2='150' stroke='#eceff3'></line><text x='20' y='31' font-size='11' font-weight='bold' fill='#333'>リポジトリ</text><text x='180' y='31' font-size='11' font-weight='bold' fill='#333'>解決したい課題</text><text x='405' y='31' font-size='11' font-weight='bold' fill='#333'>提供する機能</text><text x='20' y='63' font-size='10.5' font-weight='bold' fill='#2f7d32'>DeepInfer</text><text x='20' y='80' font-size='9' fill='#888'>Python ⭐17.4k</text><text x='180' y='63' font-size='10' fill='#444'>本番LLM推論を安く速く</text><text x='180' y='80' font-size='10' fill='#444'>各社が内製で抱えがち</text><text x='405' y='63' font-size='10' fill='#444'>DeepSeek公式の大規模</text><text x='405' y='80' font-size='10' fill='#444'>推論基盤をOSS化(Apache-2.0)</text><text x='20' y='117' font-size='10.5' font-weight='bold' fill='#9a6b12'>mcd-party-planner</text><text x='20' y='134' font-size='9' fill='#888'>Python ⭐628</text><text x='180' y='117' font-size='10' fill='#444'>複数人の注文/パーティの</text><text x='180' y='134' font-size='10' fill='#444'>段取りが地味に面倒</text><text x='405' y='117' font-size='10' fill='#444'>マクドMCPで実価格の注文</text><text x='405' y='134' font-size='10' fill='#444'>予約/開催時刻提案するCLI</text><text x='20' y='171' font-size='10.5' font-weight='bold' fill='#b0532f'>nanoMuse</text><text x='20' y='188' font-size='9' fill='#888'>Swift ⭐2.0k</text><text x='180' y='171' font-size='10' fill='#444'>クラウド型は端末横断と</text><text x='180' y='188' font-size='10' fill='#444'>不可逆操作の確認が弱い</text><text x='405' y='171' font-size='10' fill='#444'>全デバイス常駐で操作実行</text><text x='405' y='188' font-size='10' fill='#444'>不可逆操作は事前確認</text></svg><figcaption>図1：3本の「解決したい課題 → 提供する機能」対応。重量級基盤・生活寄りMCP・常駐エージェントと層が違う。</figcaption></figure>
+
+<h4 id="sec-1">deepseek-ai/DeepInfer（Python・⭐約17.4k）</h4>
+<p><strong>解決したい課題</strong>：大規模LLMを本番で安く速く捌くのは依然難しく、推論スタックは各社が内製で抱え込みがち。<strong>提供する機能</strong>：DeepSeek が自社の本番サービスを支える<strong>高性能・大規模推論フレームワーク</strong>を公式org から OSS 公開した（Apache-2.0）。<strong>なぜ急上昇か</strong>：公開直後でコミット数わずか4ながら実測約17.4k——「DeepSeek が本番基盤を出した」という話題性で立ち上がりほぼ100%級の新星。各トラッカーで総スターが大きく乖離（シンオン11,223・別ルックアップ4,203・GitHub実測約17.4k）するため当日増加は推定扱いだが、勢いは本日筆頭格だ。</p>
+
+<h4 id="sec-2">zcbacxc/mcd-party-planner（Python・⭐約628）</h4>
+<p><strong>解決したい課題</strong>：複数人のファストフード注文やパーティ段取りは、価格計算・取りまとめ・タイミング調整が地味に面倒。<strong>提供する機能</strong>：McDonald&#39;s の MCP を使い、実価格でのグループ注文プランニング・テーマ付きパーティ予約（既定はドライラン）・開催タイミング提案までを行う <strong>Python CLI ＋ WorkBuddy スキル</strong>。標準ライブラリのみで依存が軽い（MIT）。<strong>なぜ急上昇か</strong>：「ファストフードのMCPでみんなの注文を段取りする」という発想のユニークさで、生成AI基盤一色のトレンドに生活寄りの多様性を差し込んだ（実測628に+約168＝率約27%）。</p>
+
+<h4 id="sec-3">nano-muse/nanoMuse（Swift・⭐約2.0k）</h4>
+<p><strong>解決したい課題</strong>：クラウド型エージェントは端末をまたいだ常時の操作や、不可逆操作の安全確認が弱い。<strong>提供する機能</strong>：スマホ・デスクトップ・ブラウザを横断して<strong>常駐</strong>し、各デバイス上で操作を実行、バックグラウンドで動き続け、<strong>不可逆な操作の前には確認を求める</strong>個人AIエージェント。<strong>なぜ急上昇か</strong>：「全デバイスに常駐して動く」切り口と安全設計、Swift という言語多様性で Swift トレンドに浮上（実測約2.0kに+約154＝率約8%、初回リリース2026-09-25・1,618コミットと実体あり）。GPL-3.0 系のため製品組み込みには注意。</p>
+
+<h4 id="sec-4">自分が試すなら</h4>
+<p>手を動かして効くのは <strong>DeepInfer</strong>——自前のDeepSeek推論を持つ構成ならベンチ対象になる（Claude API前提の構成では適合しないが、技術的な中身は見ておきたい）。nanoMuse は個人利用でエージェントの常駐UXを体験する価値があるが、ライセンス的に製品流用は避ける。mcd-party-planner は「実MCPをCLIから叩く」最小構成の読み物として眺めるのが面白い。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://github.com/deepseek-ai/DeepInfer" target="_blank" rel="noopener noreferrer"> deepseek-ai/DeepInfer </a> </li><li> <a href="https://github.com/zcbacxc/mcd-party-planner" target="_blank" rel="noopener noreferrer"> zcbacxc/mcd-party-planner </a> </li><li> <a href="https://github.com/nano-muse/nanoMuse" target="_blank" rel="noopener noreferrer"> nano-muse/nanoMuse </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> deepseek-ai/DeepInfer（Python・⭐約17.4k） </a> </li><li> <a href="#sec-2" data-toc="sec-2"> zcbacxc/mcd-party-planner（Python・⭐約628） </a> </li><li> <a href="#sec-3" data-toc="sec-3"> nano-muse/nanoMuse（Swift・⭐約2.0k） </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 自分が試すなら </a> </li> </ul> <div class="reading-box"> <div>📅 2026-10-21</div> <div>⏱ 読了 約3分</div> <div>🏷 GitHub Trending</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

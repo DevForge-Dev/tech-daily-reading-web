@@ -1,0 +1,81 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>v2.1.304/305 — Code Reviewに「深度」、worktreeの事故を塞ぎ、サンドボックスと非対話を締める — デイリー技術深掘り 読み物</title><meta name="description" content="3日連続リリースの芯は「レビューの深さを選べる」と「事故る経路を1つずつ潰す」。増やした自動化は規約でなくフックと権限で縛る。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-22-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="v2.1.304/305 — Code Reviewに「深度」、worktreeの事故を塞ぎ、サンドボックスと非対話を締める — デイリー技術深掘り 読み物"><meta property="og:description" content="3日連続リリースの芯は「レビューの深さを選べる」と「事故る経路を1つずつ潰す」。増やした自動化は規約でなくフックと権限で縛る。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-22-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>v2.1.304/305 — Code Reviewに「深度」、worktreeの事故を塞ぎ、サンドボックスと非対話を締める</h1> <p class="lede">3日連続リリースの芯は「レビューの深さを選べる」と「事故る経路を1つずつ潰す」。増やした自動化は規約でなくフックと権限で縛る。</p> <div class="meta"> <span>📅 2026年10月22日</span> <span>⏱ 約4分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="0"><p>Claude Code は10月中旬に小刻みなリリースを重ね、<strong>v2.1.303（10/18）→ v2.1.304（10/19）→ v2.1.305（10/20）</strong>と3日連続で更新された。中心テーマは「レビュー律速の時代に、レビューの<strong>深さを選べる</strong>ようにする」ことと、worktree・サンドボックス・非対話実行まわりの<strong>事故を塞ぐ安全強化</strong>だ。並行してAnthropic公式が制御手段の使い分けを整理した「Steering Claude Code」も読み直す価値がある。</p>
+
+<h4 id="sec-1">何が新しいか</h4>
+<p>v2.1.304 は76件の変更（新機能8・改善19・修正42・セキュリティ3・破壊的4）を含む大型版。目玉は <strong>Code Review の「レビューレベル」</strong>で、組織オーナーが <strong>Quick / Standard（既定） / Deep</strong> を選べ、リポジトリ単位でも設定できる。GitHub組織内の全リポジトリ（将来追加分を含む）を個別選択なしで一括対象にする管理設定も加わった。安全面では <code>rm -r</code> がマウントドライブやトップレベル（<code>/Volumes</code>・<code>/media</code>・WSLの<code>/mnt/c</code>）でも確認プロンプトを出すようになり、<code>claude --worktree</code> 終了時に HEAD detach や別ブランチだと worktree とブランチを<strong>無確認削除してコミットを失いうる不具合</strong>が修正された。翌日の v2.1.305 は、サンドボックスのLinuxコマンドに<strong>ユーザー名前空間（user namespace）生成を許可する設定</strong>と、<strong>非対話（unattended）モードのリトライ設定</strong>を追加している。</p>
+
+<figure class='fig'><svg viewBox='0 0 600 160' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><line x1='80' y1='46' x2='520' y2='46' stroke='#d8b45a' stroke-width='2'></line><circle cx='110' cy='46' r='6' fill='#d8b45a'></circle><circle cx='300' cy='46' r='9' fill='#c77d2e'></circle><circle cx='490' cy='46' r='6' fill='#d8b45a'></circle><text x='110' y='28' text-anchor='middle' font-size='12' font-weight='bold' fill='#7a5a10'>v2.1.303</text><text x='300' y='24' text-anchor='middle' font-size='13' font-weight='bold' fill='#9a4e12'>v2.1.304</text><text x='490' y='28' text-anchor='middle' font-size='12' font-weight='bold' fill='#7a5a10'>v2.1.305</text><text x='110' y='64' text-anchor='middle' font-size='10' fill='#888'>10/18</text><text x='300' y='64' text-anchor='middle' font-size='10' fill='#888'>10/19</text><text x='490' y='64' text-anchor='middle' font-size='10' fill='#888'>10/20</text><rect x='40' y='82' width='140' height='58' rx='6' fill='#fdf7e8' stroke='#e3c977'></rect><text x='110' y='104' text-anchor='middle' font-size='10.5' fill='#555'>信頼性向上の</text><text x='110' y='120' text-anchor='middle' font-size='10.5' fill='#555'>バグ修正中心</text><rect x='222' y='82' width='156' height='58' rx='6' fill='#fbeede' stroke='#d9a86a'></rect><text x='300' y='101' text-anchor='middle' font-size='10.5' fill='#5a3a1a'>レビューレベル追加</text><text x='300' y='117' text-anchor='middle' font-size='10.5' fill='#5a3a1a'>worktree / rm -r 安全化</text><rect x='420' y='82' width='140' height='58' rx='6' fill='#fdf7e8' stroke='#e3c977'></rect><text x='490' y='104' text-anchor='middle' font-size='10.5' fill='#555'>user namespace設定</text><text x='490' y='120' text-anchor='middle' font-size='10.5' fill='#555'>非対話リトライ</text></svg><figcaption>図1：3日連続リリース。304が最も大きく、305は非対話運用向けの調整。</figcaption></figure>
+
+<h4 id="sec-2">レビューレベルをどう使い分けるか</h4>
+<p>Quick は差分の明白な問題だけを素早く拾う軽量モード、Standard は既定のバランス型、Deep は時間をかけて設計・境界・セキュリティまで踏み込む。PRの性質で選ぶのが実務的で——依存更新やリネームのような低リスク差分は Quick、通常の機能追加は Standard、認証・課金・権限など壊れると痛い領域は Deep、という当て方になる。レビューがボトルネックになりやすい今、「全部を厚くレビュー」ではなく<strong>深度をリスクに合わせて配分</strong>できるのが効く。</p>
+
+<figure class='fig'><svg viewBox='0 0 600 206' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='16' y='16' width='182' height='176' rx='8' fill='#eef8ee' stroke='#8bc98b'></rect><text x='107' y='42' text-anchor='middle' font-size='14' font-weight='bold' fill='#2f7d32'>Quick</text><text x='30' y='74' font-size='11' fill='#555'>速さ</text><rect x='62' y='65' width='118' height='10' rx='5' fill='#dfeadf'></rect><rect x='62' y='65' width='106' height='10' rx='5' fill='#4caf50'></rect><text x='30' y='104' font-size='11' fill='#555'>深さ</text><rect x='62' y='95' width='118' height='10' rx='5' fill='#dfeadf'></rect><rect x='62' y='95' width='30' height='10' rx='5' fill='#4caf50'></rect><text x='107' y='142' text-anchor='middle' font-size='10.5' fill='#3a6b3a'>明白な問題を素早く</text><text x='107' y='162' text-anchor='middle' font-size='10.5' fill='#3a6b3a'>依存更新・リネーム向き</text><rect x='208' y='16' width='182' height='176' rx='8' fill='#fdf6e6' stroke='#e0bd6e'></rect><text x='299' y='42' text-anchor='middle' font-size='14' font-weight='bold' fill='#9a6b12'>Standard（既定）</text><text x='222' y='74' font-size='11' fill='#555'>速さ</text><rect x='254' y='65' width='118' height='10' rx='5' fill='#efe6cf'></rect><rect x='254' y='65' width='66' height='10' rx='5' fill='#e0a93a'></rect><text x='222' y='104' font-size='11' fill='#555'>深さ</text><rect x='254' y='95' width='118' height='10' rx='5' fill='#efe6cf'></rect><rect x='254' y='95' width='66' height='10' rx='5' fill='#e0a93a'></rect><text x='299' y='142' text-anchor='middle' font-size='10.5' fill='#7a5a1a'>バランス型の既定</text><text x='299' y='162' text-anchor='middle' font-size='10.5' fill='#7a5a1a'>通常の機能追加に</text><rect x='400' y='16' width='182' height='176' rx='8' fill='#fdeeee' stroke='#dd9191'></rect><text x='491' y='42' text-anchor='middle' font-size='14' font-weight='bold' fill='#b0322f'>Deep</text><text x='414' y='74' font-size='11' fill='#555'>速さ</text><rect x='446' y='65' width='118' height='10' rx='5' fill='#f0dada'></rect><rect x='446' y='65' width='30' height='10' rx='5' fill='#d9534f'></rect><text x='414' y='104' font-size='11' fill='#555'>深さ</text><rect x='446' y='95' width='118' height='10' rx='5' fill='#f0dada'></rect><rect x='446' y='95' width='106' height='10' rx='5' fill='#d9534f'></rect><text x='491' y='142' text-anchor='middle' font-size='10.5' fill='#8a2b28'>設計・境界・セキュリティ</text><text x='491' y='162' text-anchor='middle' font-size='10.5' fill='#8a2b28'>認証・課金・権限に</text></svg><figcaption>図2：レビューレベルの速さ/深さトレードオフと当て所。既定は Standard。</figcaption></figure>
+
+<h4 id="sec-3">「Steering Claude Code」の要点</h4>
+<p>公式ブログは CLAUDE.md・ルール・スキル・サブエージェント・フック・出力スタイル・システムプロンプト追記の7手段を、<strong>読み込みタイミング・コンテキストコスト・強制力</strong>で整理した。CLAUDE.md は常駐コストが高いのでビルドコマンドや規約に絞り200行以内に、手続き（デプロイ手順など）は呼び出し時に本体が読まれる<strong>スキル</strong>へ。サブエージェントは独立コンテキストで要約だけ返すので調査やログ解析の切り離し向き。重要なのは「<strong>絶対にするな系のルールはモデルが圧力やプロンプトインジェクションで従わないことがある</strong>」という指摘で、本当に止めたい操作は<strong>フックや権限</strong>に置き、組織全体の強制は managed settings が唯一の手段だとする。</p>
+
+<h4 id="sec-4">実務での使いどころ</h4>
+<p>自分なら、まずリポジトリ単位で Deep を「高リスクパスを含むPR」に、Standard を既定に設定して可観測性を上げる。非対話モードのリトライ設定は、CIやスケジュール実行でのツール検索失敗・一時的エラーの取りこぼしを減らせるので、unattended で回しているパイプラインから順に有効化していきたい。事例として、開発者が Claude Code でスマートTVの広告・ブロートを非rootで除去する試み（標準ランチャーを192MB→83MBに削減など）が話題だが、文鎮化例もあり自己責任——「エージェントに端末を触らせる」系はまさに Deep レビューとフック制御の出番だ。</p>
+
+<h4 id="sec-5">注意点</h4>
+<p>サンドボックスの user namespace 許可は<strong>ファイル保護を回避しうる</strong>ため、必要なコマンドに限定して有効化するのが前提。worktree 修正は過去バージョンでコミット喪失のリスクがあったので、worktree を日常的に使うなら 2.1.304 以降への更新を優先したい。レビューレベルはあくまで「深さの指定」で、Deep でも人間の最終確認を置き換えるものではない。</p>
+
+<h4 id="sec-6">ひとことまとめ</h4>
+<p>「レビューの深さを選べる」＋「事故る経路を1つずつ塞ぐ」の合わせ技。増やした自動化の分だけ、強制は規約でなく<strong>フックと権限</strong>に寄せる——が今週の芯だ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://dev.classmethod.jp/en/articles/20261020-cc-updates-v2-1-304/" target="_blank" rel="noopener noreferrer"> Claude Code updates v2.1.304（Classmethod） </a> </li><li> <a href="https://releasebot.io/updates/anthropic/claude-code" target="_blank" rel="noopener noreferrer"> Claude Code updates（Releasebot・v2.1.305） </a> </li><li> <a href="https://www.claude.com/blog/steering-claude-code-skills-hooks-rules-subagents-and-more" target="_blank" rel="noopener noreferrer"> Steering Claude Code（Anthropic公式ブログ） </a> </li><li> <a href="https://aiweekly.co/alerts/developers-use-claude-code-to-make-smart-tvs-dumb-again" target="_blank" rel="noopener noreferrer"> Developers use Claude Code to make smart TVs dumb again（AI Weekly/TechCrunch） </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 何が新しいか </a> </li><li> <a href="#sec-2" data-toc="sec-2"> レビューレベルをどう使い分けるか </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 「Steering Claude Code」の要点 </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 実務での使いどころ </a> </li><li> <a href="#sec-5" data-toc="sec-5"> 注意点 </a> </li><li> <a href="#sec-6" data-toc="sec-6"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-10-22</div> <div>⏱ 読了 約4分</div> <div>🏷 Claude Code</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
