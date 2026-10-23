@@ -1,0 +1,79 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>スクロール「速度」に反応する演出 — Motion useVelocity で慣性のあるUIを作る — デイリー技術深掘り 読み物</title><meta name="description" content="位置マッピングでは出せない「止めると歪みが戻る」「速いフリックで一瞬傾いてバネで収まる」手応えは、位置の時間微分=velocityが入力。CSSの animation-timeline: scroll() では原理的に作れない領域。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-23-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="スクロール「速度」に反応する演出 — Motion useVelocity で慣性のあるUIを作る — デイリー技術深掘り 読み物"><meta property="og:description" content="位置マッピングでは出せない「止めると歪みが戻る」「速いフリックで一瞬傾いてバネで収まる」手応えは、位置の時間微分=velocityが入力。CSSの animation-timeline: scroll() では原理的に作れない領域。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-23-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>スクロール「速度」に反応する演出 — Motion useVelocity で慣性のあるUIを作る</h1> <p class="lede">位置マッピングでは出せない「止めると歪みが戻る」「速いフリックで一瞬傾いてバネで収まる」手応えは、位置の時間微分=velocityが入力。CSSの animation-timeline: scroll() では原理的に作れない領域。</p> <div class="meta"> <span>📅 2026年10月23日</span> <span>⏱ 約3分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="1"><p>スクロール連動演出には2つの軸がある。ひとつは<strong>位置</strong>（<code>scrollY</code>/<code>scrollYProgress</code>）を線形マッピングする定番（パララックス・進捗バー・通過リビール）。もうひとつが本題の<strong>速度（velocity）</strong>に反応させる演出だ。アワード系やエディトリアル系で多用される「速くスクロールするほど文字が傾く／伸びる」「流れるマーキーが方向と速度で加減速・反転する」は、位置ではなく<strong>位置の時間微分＝速度</strong>を入力にしている。</p>
+
+<h4 id="sec-1">なぜ velocity が本質か</h4>
+<p>位置マッピングと決定的に違うのは、<strong>velocity は静止すると自然に0へ戻る</strong>点。だから「止めると歪みがゆっくり元に戻る」「速いフリックで一瞬大きく傾いてバネで収まる」という“慣性のある生き物”のような挙動になる。これはCSSの <code>animation-timeline: scroll()/view()</code>（位置駆動）では<strong>原理的に表現できない</strong>——CSSは位置を時間軸にマップするだけで速度を知らないからだ。ゆえに2026年現在もこの表現は<strong>JS（Motion）が本命</strong>で、<code>useVelocity</code> がその中核API。</p>
+
+<figure class='fig'><pre class='mermaid'>flowchart LR
+  A["useScroll → scrollY(px)"] --> B["useVelocity：速度 px/秒（毎フレーム微分）"]
+  B --> C["useSpring：バネで平滑化・ギザつき除去"]
+  C --> D["useTransform：±2000px/s → ±8deg(clamp)"]
+  D --> E["motion.div に skewY：再レンダー0"]</pre><figcaption>図1：データフロー。静止で velocity が0へ戻るので、歪みも自動で収まる。</figcaption></figure>
+
+<h4 id="sec-2">4つの肝</h4>
+<p>(1) <code>useVelocity</code> は任意のMotionValueの速度（1秒あたりの変化量）を返す派生値。(2) <code>useSpring</code>（<code>damping:50, stiffness:400</code>が出発点）でホイールの離散イベント由来のギザギザを吸収——これは<strong>ほぼ必須</strong>で、通さないと歪みがチラつく。(3) <code>useTransform</code> で速度の実レンジ（経験的に±1000〜±3000 px/s）を出力（傾き±8〜15deg等）へマップ。歪み系は <code>clamp:true</code>、マーキー倍率は符号を残すため <code>clamp:false</code>。(4) 値は <strong>render中に <code>.get()</code> で読まず</strong>、MotionValue のまま <code>style</code> に渡す（読むと購読が切れ再レンダーの原因）。マーキーの方向反転は <code>useAnimationFrame((t,delta)=>…)</code> の <code>delta</code> で移動量を正規化し（フレームレート非依存）、<code>wrap()</code> で継ぎ目レスにループさせる。</p>
+
+<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='0' y='0' width='600' height='200' fill='#fcfbf7'></rect><text x='160' y='24' text-anchor='middle' font-size='12' font-weight='bold' fill='#1f6feb'>位置駆動（CSS可）</text><text x='440' y='24' text-anchor='middle' font-size='12' font-weight='bold' fill='#c77d2e'>速度駆動（JS必須）</text><g stroke='#ccc'><line x1='40' y1='170' x2='300' y2='170'></line><line x1='40' y1='40' x2='40' y2='170'></line><line x1='320' y1='170' x2='570' y2='170'></line><line x1='320' y1='40' x2='320' y2='170'></line></g><polyline points='40,165 120,120 200,80 280,45' fill='none' stroke='#1f6feb' stroke-width='2.5'></polyline><text x='170' y='150' font-size='10' fill='#1f6feb'>スクロール量に比例・止めても保持</text><path d='M320,150 C360,150 370,60 400,60 C430,60 440,150 470,150 C500,150 500,150 570,150' fill='none' stroke='#c77d2e' stroke-width='2.5'></path><text x='400' y='48' font-size='10' fill='#c77d2e' text-anchor='middle'>フリックで山→静止で0へ減衰</text><circle cx='570' cy='150' r='3.5' fill='#c77d2e'></circle><text x='545' y='188' font-size='9' fill='#8a4a12'>静止＝歪み0</text></svg><figcaption>図2：位置は止めても値が残るが、速度は静止で0へ戻る。この「戻り」が慣性感の正体。</figcaption></figure>
+
+<h4 id="sec-3">Next.js（App Router）での組み込みと落とし穴</h4>
+<p>Motionのフックは <code>requestAnimationFrame</code>/DOM購読に依存するため <strong><code>'use client'</code> 必須</strong>。ただし演出は“島”に隔離し、中身は <strong>RSC を <code>children</code> で流し込む</strong>のでサーバーデータでもClient化は伝播しない。初期velocityは0なので歪み0の静止HTMLが出てhydration mismatchも起きず、キャッシュ／データ取得戦略にも無干渉。落とし穴は、<strong>実レンジがデバイス依存</strong>（ホイール/トラックパッド/iOS慣性で桁違い）なので <code>useMotionValueEvent</code> で実測してからレンジを決めること、<code>skew</code> は再描画を誘発しうるので対象を見出しや短いテキスト帯に限ること、そして<strong>前庭系への刺激が強いので <code>prefers-reduced-motion</code> で最優先に外す</strong>こと（結果＝テキスト内容は必ず残す／WCAG 2.3.3）。</p>
+
+<h4 id="sec-4">ひとことまとめ</h4>
+<p>「速度が本質的に要る要所だけ」<code>useVelocity</code> を使い、単純な位置リビールは CSS <code>view()</code> へ逃がすのが2026の落としどころ。静止で戻るバネ感はJSでしか出せない価値だ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://motion.dev/docs/react-use-scroll" target="_blank" rel="noopener noreferrer"> Motion 公式『useScroll』 </a> </li><li> <a href="https://motion.dev/docs/react-scroll-animations" target="_blank" rel="noopener noreferrer"> Motion 公式『React scroll animations』 </a> </li><li> <a href="https://motion.dev/tutorials/react-scroll-velocity-linked-offset" target="_blank" rel="noopener noreferrer"> Motion 公式『Scroll velocity（チュートリアル）』 </a> </li><li> <a href="https://magicui.design/docs/components/scroll-based-velocity" target="_blank" rel="noopener noreferrer"> Magic UI『Scroll Based Velocity』 </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> なぜ velocity が本質か </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 4つの肝 </a> </li><li> <a href="#sec-3" data-toc="sec-3"> Next.js（App Router）での組み込みと落とし穴 </a> </li><li> <a href="#sec-4" data-toc="sec-4"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-10-23</div> <div>⏱ 読了 約3分</div> <div>🏷 Next.js</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
