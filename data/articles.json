@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-10-22T04:50:44.250Z",
+  "generatedAt": "2026-10-23T04:49:07.577Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,76 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-10-23-claude-code",
+      "date": "2026-10-23",
+      "topic": "Claude Code",
+      "title": "v2.1.306→307→308 — 停止/承認を記録する safety_event と、26件の事故潰し",
+      "lede": "3日で3版。芯は「止めた・承認した・差し戻した」を各ツール呼び出し単位でOpenTelemetryに刻む可観測性と、スリープ/中断/キーチェーン由来の事故を1つずつ塞ぐ安定化。",
+      "articleHtml": "<p>レビュー律速の時代に自動化を増やすほど、「誰が・何を・<strong>なぜ止めたか</strong>」を後から追えることが効いてくる。Barclaysが2026年末までに開発者の半数をClaude Codeへ移すといった組織規模の導入が進む今、ガバナンスと可観測性は実務上の必須要件だ。10/21〜22にかけて <strong>v2.1.306 → 307 → 308</strong> と小刻みに更新され、その芯がまさにここにある。</p>\n\n<h4>何が新しいか — claude_code.safety_event（OpenTelemetry）</h4>\n<p>大型の <strong>v2.1.307（10/21）</strong> の目玉が新OTelイベント <code>claude_code.safety_event</code>。<strong>権限ルール・auto mode・セーフティチェック・フック・サンドボックス</strong>のいずれかがツール呼び出しを<strong>停止／承認要求／差し戻し</strong>したとき、その呼び出しごとに発火する。あわせて Code Review に <code>@claude review stop</code>（<code>off</code>/<code>pause</code>も）が入り、<code>always</code> 購読を新規レビューを起こさず終了できる。セルフホストランナーの checkout フックは既定30分でタイムアウト（<code>--checkout-hook-timeout-min</code>で調整）。<code>/claude-api api-version</code> で API を <code>2026-10-21</code> へ移行可能。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 220' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='0' y='0' width='600' height='220' fill='#fcfbf7'/><text x='300' y='22' text-anchor='middle' font-size='13' font-weight='bold' fill='#7a5a10'>どれか1つでも止めれば safety_event が発火</text><g font-size='11' fill='#5a4a2a'><rect x='24' y='40' width='120' height='26' rx='5' fill='#fdf3d8' stroke='#d8b45a'/><text x='84' y='57' text-anchor='middle'>権限ルール</text><rect x='24' y='74' width='120' height='26' rx='5' fill='#fdf3d8' stroke='#d8b45a'/><text x='84' y='91' text-anchor='middle'>auto mode</text><rect x='24' y='108' width='120' height='26' rx='5' fill='#fdf3d8' stroke='#d8b45a'/><text x='84' y='125' text-anchor='middle'>セーフティチェック</text><rect x='24' y='142' width='120' height='26' rx='5' fill='#fdf3d8' stroke='#d8b45a'/><text x='84' y='159' text-anchor='middle'>フック</text><rect x='24' y='176' width='120' height='26' rx='5' fill='#fdf3d8' stroke='#d8b45a'/><text x='84' y='193' text-anchor='middle'>サンドボックス</text></g><rect x='235' y='96' width='110' height='48' rx='6' fill='#fff' stroke='#c77d2e' stroke-width='2'/><text x='290' y='117' text-anchor='middle' font-size='11' fill='#8a4a12'>ツール呼び出し</text><text x='290' y='133' text-anchor='middle' font-size='10' fill='#8a4a12'>を評価</text><g stroke='#d8b45a' stroke-width='1.5' fill='none'><path d='M144 53 H200 V116 H233'/><path d='M144 87 H200'/><path d='M144 121 H233'/><path d='M144 155 H200 V120'/><path d='M144 189 H200 V120'/></g><g font-size='11'><rect x='410' y='60' width='160' height='26' rx='5' fill='#fdece0' stroke='#c77d2e'/><text x='490' y='77' text-anchor='middle' fill='#8a4a12'>停止 blocked</text><rect x='410' y='96' width='160' height='26' rx='5' fill='#fdece0' stroke='#c77d2e'/><text x='490' y='113' text-anchor='middle' fill='#8a4a12'>承認要求 approval</text><rect x='410' y='132' width='160' height='26' rx='5' fill='#fdece0' stroke='#c77d2e'/><text x='490' y='149' text-anchor='middle' fill='#8a4a12'>差し戻し rejected</text></g><path d='M345 120 H380 V73 H408 M380 120 H408 M380 120 V145 H408' stroke='#c77d2e' stroke-width='1.5' fill='none'/><text x='490' y='180' text-anchor='middle' font-size='10' fill='#a06a20'>→ 各ケースを OTel に1イベントずつ記録</text></svg><figcaption>図1：safety_event は「通った」呼び出しでは出ず、止めた経路だけを可観測化する。</figcaption></figure>\n\n<h4>前後の2版 — 地ならしと安定化</h4>\n<p><strong>v2.1.306（10/21）</strong>は2件の誤り修正。クラウドセッションで環境変数なしに起動した <code>claude -p</code> が誤って「Not logged in」と出る問題と、<strong>MCPツールを多数登録した環境でAPIエラーが「prompt is too long」と誤表示</strong>され不要なコンテキスト圧縮が走る問題を解消した。翌日の307は26件の修正を含み、キーチェーンロック中の認証失敗、スリープ復帰後のMCPタイムアウト固着、中断後のHTTPツール二重送信（読取/冪等のみ再送）、大きなツール結果での誤「Autocompact is thrashing」などを潰した。<strong>v2.1.308（10/22）</strong>はその後の安定化リリースで、目立つ新機能の記載はない。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 120' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='0' y='0' width='600' height='120' fill='#fcfbf7'/><line x1='70' y1='60' x2='530' y2='60' stroke='#d8b45a' stroke-width='2'/><circle cx='120' cy='60' r='7' fill='#d8b45a'/><circle cx='300' cy='60' r='11' fill='#c77d2e'/><circle cx='480' cy='60' r='7' fill='#d8b45a'/><g text-anchor='middle'><text x='120' y='40' font-size='12' font-weight='bold' fill='#7a5a10'>v2.1.306</text><text x='120' y='84' font-size='10' fill='#6a5a30'>10/21 誤表示2件修正</text><text x='300' y='34' font-size='13' font-weight='bold' fill='#8a4a12'>v2.1.307</text><text x='300' y='88' font-size='10' fill='#8a4a12'>10/21 safety_event+26件修正</text><text x='480' y='40' font-size='12' font-weight='bold' fill='#7a5a10'>v2.1.308</text><text x='480' y='84' font-size='10' fill='#6a5a30'>10/22 安定化</text></g></svg><figcaption>図2：10/21〜22の3連続リリース。307が機能の山で、前後は地ならしと仕上げ。</figcaption></figure>\n\n<h4>実務での使いどころ</h4>\n<p>SmartScopeの上級ベストプラクティスが言う通り「<strong>強制はCLAUDE.mdでなく権限／フックに置く</strong>」のが筋で、safety_event はその強制が<strong>実際にどこで効いているか</strong>をCollector経由でダッシュボード化できる。どの権限ルールやフックが開発を止めているかが数字で見えるので、締めすぎ・緩すぎの調整が勘から計測へ変わる。多数MCP環境の「prompt is too long」誤判定が消えた点も効く——以前これで圧縮が多発してMCPを削っていたなら、構成を戻して再評価する価値がある。</p>\n\n<h4>注意点とまとめ</h4>\n<p>safety_event は「止めた／承認要求した／差し戻した」呼び出しのみ発火し、素通りした呼び出しは出ない点に注意（＝通過率の分母は別途取る）。api-version の 2026-10-21 移行とセットで挙動を確認したい。ひとことで言えば今回の路線は<strong>「自動化を増やし、増やした分を測る」</strong>。止まった理由がテレメトリに残るのが最大の実利だ。</p>",
+      "sources": [
+        {
+          "title": "Claude Code changelog（code.claude.com）",
+          "url": "https://code.claude.com/docs/en/changelog"
+        },
+        {
+          "title": "Claude Code上級ベストプラクティス（SmartScope）",
+          "url": "https://smartscope.blog/en/generative-ai/claude/claude-code-best-practices-advanced-2026/"
+        },
+        {
+          "title": "Barclays Claude developer adoption 2026（Crypto Briefing）",
+          "url": "https://cryptobriefing.com/barclays-claude-developer-adoption-2026/"
+        }
+      ]
+    },
+    {
+      "id": "2026-10-23-nextjs",
+      "date": "2026-10-23",
+      "topic": "Next.js",
+      "title": "スクロール「速度」に反応する演出 — Motion useVelocity で慣性のあるUIを作る",
+      "lede": "位置マッピングでは出せない「止めると歪みが戻る」「速いフリックで一瞬傾いてバネで収まる」手応えは、位置の時間微分=velocityが入力。CSSの animation-timeline: scroll() では原理的に作れない領域。",
+      "articleHtml": "<p>スクロール連動演出には2つの軸がある。ひとつは<strong>位置</strong>（<code>scrollY</code>/<code>scrollYProgress</code>）を線形マッピングする定番（パララックス・進捗バー・通過リビール）。もうひとつが本題の<strong>速度（velocity）</strong>に反応させる演出だ。アワード系やエディトリアル系で多用される「速くスクロールするほど文字が傾く／伸びる」「流れるマーキーが方向と速度で加減速・反転する」は、位置ではなく<strong>位置の時間微分＝速度</strong>を入力にしている。</p>\n\n<h4>なぜ velocity が本質か</h4>\n<p>位置マッピングと決定的に違うのは、<strong>velocity は静止すると自然に0へ戻る</strong>点。だから「止めると歪みがゆっくり元に戻る」「速いフリックで一瞬大きく傾いてバネで収まる」という“慣性のある生き物”のような挙動になる。これはCSSの <code>animation-timeline: scroll()/view()</code>（位置駆動）では<strong>原理的に表現できない</strong>——CSSは位置を時間軸にマップするだけで速度を知らないからだ。ゆえに2026年現在もこの表現は<strong>JS（Motion）が本命</strong>で、<code>useVelocity</code> がその中核API。</p>\n\n<figure class='fig'><pre class='mermaid'>flowchart LR\n  A[\"useScroll → scrollY(px)\"] --> B[\"useVelocity：速度 px/秒（毎フレーム微分）\"]\n  B --> C[\"useSpring：バネで平滑化・ギザつき除去\"]\n  C --> D[\"useTransform：±2000px/s → ±8deg(clamp)\"]\n  D --> E[\"motion.div に skewY：再レンダー0\"]</pre><figcaption>図1：データフロー。静止で velocity が0へ戻るので、歪みも自動で収まる。</figcaption></figure>\n\n<h4>4つの肝</h4>\n<p>(1) <code>useVelocity</code> は任意のMotionValueの速度（1秒あたりの変化量）を返す派生値。(2) <code>useSpring</code>（<code>damping:50, stiffness:400</code>が出発点）でホイールの離散イベント由来のギザギザを吸収——これは<strong>ほぼ必須</strong>で、通さないと歪みがチラつく。(3) <code>useTransform</code> で速度の実レンジ（経験的に±1000〜±3000 px/s）を出力（傾き±8〜15deg等）へマップ。歪み系は <code>clamp:true</code>、マーキー倍率は符号を残すため <code>clamp:false</code>。(4) 値は <strong>render中に <code>.get()</code> で読まず</strong>、MotionValue のまま <code>style</code> に渡す（読むと購読が切れ再レンダーの原因）。マーキーの方向反転は <code>useAnimationFrame((t,delta)=>…)</code> の <code>delta</code> で移動量を正規化し（フレームレート非依存）、<code>wrap()</code> で継ぎ目レスにループさせる。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='0' y='0' width='600' height='200' fill='#fcfbf7'/><text x='160' y='24' text-anchor='middle' font-size='12' font-weight='bold' fill='#1f6feb'>位置駆動（CSS可）</text><text x='440' y='24' text-anchor='middle' font-size='12' font-weight='bold' fill='#c77d2e'>速度駆動（JS必須）</text><g stroke='#ccc'><line x1='40' y1='170' x2='300' y2='170'/><line x1='40' y1='40' x2='40' y2='170'/><line x1='320' y1='170' x2='570' y2='170'/><line x1='320' y1='40' x2='320' y2='170'/></g><polyline points='40,165 120,120 200,80 280,45' fill='none' stroke='#1f6feb' stroke-width='2.5'/><text x='170' y='150' font-size='10' fill='#1f6feb'>スクロール量に比例・止めても保持</text><path d='M320,150 C360,150 370,60 400,60 C430,60 440,150 470,150 C500,150 500,150 570,150' fill='none' stroke='#c77d2e' stroke-width='2.5'/><text x='400' y='48' font-size='10' fill='#c77d2e' text-anchor='middle'>フリックで山→静止で0へ減衰</text><circle cx='570' cy='150' r='3.5' fill='#c77d2e'/><text x='545' y='188' font-size='9' fill='#8a4a12'>静止＝歪み0</text></svg><figcaption>図2：位置は止めても値が残るが、速度は静止で0へ戻る。この「戻り」が慣性感の正体。</figcaption></figure>\n\n<h4>Next.js（App Router）での組み込みと落とし穴</h4>\n<p>Motionのフックは <code>requestAnimationFrame</code>/DOM購読に依存するため <strong><code>'use client'</code> 必須</strong>。ただし演出は“島”に隔離し、中身は <strong>RSC を <code>children</code> で流し込む</strong>のでサーバーデータでもClient化は伝播しない。初期velocityは0なので歪み0の静止HTMLが出てhydration mismatchも起きず、キャッシュ／データ取得戦略にも無干渉。落とし穴は、<strong>実レンジがデバイス依存</strong>（ホイール/トラックパッド/iOS慣性で桁違い）なので <code>useMotionValueEvent</code> で実測してからレンジを決めること、<code>skew</code> は再描画を誘発しうるので対象を見出しや短いテキスト帯に限ること、そして<strong>前庭系への刺激が強いので <code>prefers-reduced-motion</code> で最優先に外す</strong>こと（結果＝テキスト内容は必ず残す／WCAG 2.3.3）。</p>\n\n<h4>ひとことまとめ</h4>\n<p>「速度が本質的に要る要所だけ」<code>useVelocity</code> を使い、単純な位置リビールは CSS <code>view()</code> へ逃がすのが2026の落としどころ。静止で戻るバネ感はJSでしか出せない価値だ。</p>",
+      "sources": [
+        {
+          "title": "Motion 公式『useScroll』",
+          "url": "https://motion.dev/docs/react-use-scroll"
+        },
+        {
+          "title": "Motion 公式『React scroll animations』",
+          "url": "https://motion.dev/docs/react-scroll-animations"
+        },
+        {
+          "title": "Motion 公式『Scroll velocity（チュートリアル）』",
+          "url": "https://motion.dev/tutorials/react-scroll-velocity-linked-offset"
+        },
+        {
+          "title": "Magic UI『Scroll Based Velocity』",
+          "url": "https://magicui.design/docs/components/scroll-based-velocity"
+        }
+      ]
+    },
+    {
+      "id": "2026-10-23-flutter",
+      "date": "2026-10-23",
+      "topic": "Flutter",
+      "title": "状態管理を「アダプタ層」で隔離する — 2026のRiverpod3/BLoC/signals選定とベンチ",
+      "lede": "Widgetを抽象コントローラに依存させ、実体（Riverpod/BLoC/signals）を差し替え可能にする。乗り換えコストを下げる設計と、著者実測ベンチ・移行見積もりを総点検（現行 stable 3.47.7 前提）。",
+      "articleHtml": "<p>現行の安定版は <strong>3.47.7 / Dart 3.13.5</strong>（beta 3.50.0、11月 stable 待ち）。3.47 で Material/Cupertino が <code>material_ui</code>/<code>cupertino_ui</code> 1.0 として分離し <code>flutter_localizations</code> も切り離されるなど土台が動いた今、上物の<strong>状態管理をどう選び、どう乗り換え可能に保つか</strong>が改めて問われている。核になる設計は単純だ——Widget を<strong>抽象コントローラ（interface）に依存</strong>させ、実体を Riverpod notifier / BLoC / signal-backed service のどれかにする。乗り換え時は<strong>アダプタ層だけ</strong>差し替えればよく、UIは無改修で済む。</p>\n\n<figure class='fig'><pre class='mermaid'>flowchart TD\n  W[\"Widget（UI）\"] --> I[\"抽象コントローラ interface\"]\n  I --> R[\"Riverpod3 notifier\"]\n  I --> B[\"BLoC\"]\n  I --> S[\"signals service\"]\n  R --> X[\"乗り換え時はここだけ差し替え（UIは無改修）\"]\n  B --> X\n  S --> X</pre><figcaption>図1：アダプタ層でUIと状態管理実体を隔離する。Riverpodは設計を強制しないため、この隔離が効く。</figcaption></figure>\n\n<h4>2026の選定軸</h4>\n<p>判断は4軸。<strong>①チーム規模</strong>（1〜2人はどれでも可、3人以上は event/state/view を唯一強制する <strong>BLoC</strong>）、<strong>②非同期密度</strong>（auth/feed/chat/billingのCRUDは <strong>Riverpod 3</strong>、ローカル状態中心のツール/エディタ/ゲームは signals か BLoC）、<strong>③厳格さ</strong>、<strong>④1年以内の採用計画</strong>。推奨は、個人×Firebase/Supabase は Riverpod 3、小チームSaaS は BLoC、個人×リアクティブツールは signals。Riverpod 3 の実務差分として、<code>Provider</code>/<code>AsyncProvider</code>/<code>NotifierProvider</code> が <strong>build_runner 無し</strong>で使え、<strong>family 引数は位置・インライン型付け</strong>へ、<strong>autoDispose が既定</strong>に変わった。テストは <code>ProviderContainer</code> で任意providerをfakeにoverrideできる。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 230' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='0' y='0' width='600' height='230' fill='#fcfbf7'/><text x='300' y='20' text-anchor='middle' font-size='12' font-weight='bold' fill='#1a7f37'>著者実測ベンチ（Pixel 8 Pro・Flutter 3.32・500件スクロール）</text><g font-size='10' fill='#555'><text x='120' y='46'>フレーム時間（低いほど良い）</text></g><g><rect x='120' y='56' width='164' height='20' fill='#3fb950'/><text x='292' y='71' font-size='11' fill='#1a7f37'>signals 8.2ms</text><rect x='120' y='82' width='182' height='20' fill='#2f9e46'/><text x='310' y='97' font-size='11' fill='#1a7f37'>Riverpod3 9.1ms</text><rect x='120' y='108' width='228' height='20' fill='#b5863a'/><text x='356' y='123' font-size='11' fill='#8a5a12'>BLoC 11.4ms</text></g><text x='24' y='70' font-size='10' fill='#555'>UI</text><g font-size='10' fill='#555'><text x='120' y='150'>jank率 / 追加メモリ</text></g><g font-size='10'><text x='24' y='170' fill='#555'>jank</text><text x='120' y='170' fill='#1a7f37'>signals 0.3%</text><text x='250' y='170' fill='#1a7f37'>Riverpod3 0.8%</text><text x='400' y='170' fill='#8a5a12'>BLoC 2.1%</text><text x='24' y='194' fill='#555'>mem</text><text x='120' y='194' fill='#1a7f37'>+4.1MB</text><text x='250' y='194' fill='#1a7f37'>+6.8MB</text><text x='400' y='194' fill='#8a5a12'>+9.2MB</text></g><text x='120' y='220' font-size='9.5' fill='#a06a20'>※著者非公式テスト。「フラッグシップでは誤差、効くのは中位Android」と注記。</text></svg><figcaption>図2：生の性能順は signals＞Riverpod3＞BLoC だが差は小さく、選定は規模と規律で決めるのが筋。</figcaption></figure>\n\n<h4>移行見積もりと土台</h4>\n<p>目安として <strong>Provider→Riverpod3 は約1スプリント</strong>（ほぼ1:1）、<strong>BLoC→Riverpod3 は機能あたり約1スプリント</strong>（eventをAsyncNotifierのメソッドへ。BLoCの非同期グラフがボトルネック化したときだけ価値がある）、Riverpod↔signals は機械的だが小さな抽象層が要る。土台は <strong>feature-first＋go_router 17.x＋freezed3＋fvm pin</strong>、生成物（<code>*.f.freezed.dart</code>/<code>*.g.dart</code>）は手編集禁止で <code>analysis_options.yaml</code> から除外、monorepo の codegen は leaf から順次（並列は <code>AssetNotFoundException</code> の原因）。本番は 3.47.7 に pin しつつ別ジョブで beta 3.50 を検証する二本立てが基本線だ。</p>\n\n<h4>ひとことまとめ</h4>\n<p>性能差は中位Androidでしか効かない以上、状態管理は<strong>「速さ」より「規律と乗り換えやすさ」</strong>で選ぶ。抽象コントローラ1枚を挟むだけで、将来の判断ミスのコストが1スプリントに収まる——これが最大の保険だ。</p>",
+      "sources": [
+        {
+          "title": "Riverpod 3 vs Bloc vs Signals 2026（theflutterk.it）",
+          "url": "https://theflutterk.it.com/blog/flutter-riverpod-3-vs-bloc-vs-signals-2026"
+        },
+        {
+          "title": "Modern Flutter best practices 2026（dev.to）",
+          "url": "https://dev.to/hamberluo/modern-flutter-best-practices-for-2026-56o3"
+        },
+        {
+          "title": "What's new in Flutter 3.47（flutter.dev）",
+          "url": "https://flutter.dev/blog/whats-new-in-flutter-3-47"
+        }
+      ]
+    },
     {
       "date": "2026-10-22",
       "topic": "Claude Code",
