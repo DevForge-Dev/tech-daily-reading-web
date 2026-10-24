@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-10-23T04:49:07.577Z",
+  "generatedAt": "2026-10-24T04:49:41.682Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,98 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-10-24-claude-code",
+      "date": "2026-10-24",
+      "topic": "Claude Code",
+      "title": "v2.1.309 — `sed -i`に権限プロンプト、bypassで危険な`rm`を即時拒否、`/claude-api`がManaged Agentsのチームを構築",
+      "lede": "3日で小刻みパッチが続く2.1系の中でも一段大きい版。芯は破壊的操作の明示ゲート化と、サブエージェントをチーム編成する/claude-apiの進化。",
+      "articleHtml": "<p>2.1系は10月に入って権限・サンドボックス・MCP安定性まわりの小刻みパッチが連続していたが、10/22は <strong>v2.1.308→v2.1.309</strong> の2連続リリースで、後者がこの系列で一段大きい。公式changelog／サードパーティ追跡(havoptic)のいずれでも、本日2026/10/24(JST)時点で10/23・10/24付の新規版は確認できず、最新は <strong>v2.1.309(10/22)</strong> のままだ。芯は「破壊的操作を見えない自動実行から明示ゲートへ」と、サブエージェントをチーム編成する <code>/claude-api</code> の進化にある。</p>\n<figure class='fig'><svg viewBox='0 0 600 206' xmlns='http://www.w3.org/2000/svg' role='img' aria-label='v2.1.309 の権限/安全変更の新旧比較'>\n  <rect x='0' y='0' width='600' height='206' fill='#fff7ed' rx='8'/>\n  <text x='16' y='26' font-family='sans-serif' font-size='13' font-weight='700' fill='#9a3412'>v2.1.309 — 破壊的操作のゲート化（旧→新）</text>\n  <line x1='16' y1='38' x2='584' y2='38' stroke='#fdba74' stroke-width='1'/>\n  <text x='16' y='60' font-family='sans-serif' font-size='11' font-weight='700' fill='#7c2d12'>操作</text>\n  <text x='210' y='60' font-family='sans-serif' font-size='11' font-weight='700' fill='#7c2d12'>旧の挙動</text>\n  <text x='400' y='60' font-family='sans-serif' font-size='11' font-weight='700' fill='#7c2d12'>新の挙動(309)</text>\n  <g font-family='sans-serif' font-size='11' fill='#451a03'>\n    <text x='16' y='88'>sed -i</text><text x='210' y='88' fill='#92400e'>暗黙実行に近い</text><text x='400' y='88'>通常の権限プロンプト／rewind不可</text>\n    <text x='16' y='118'>ultrareview</text><text x='210' y='118' fill='#92400e'>そのまま実行</text><text x='400' y='118'>ワークスペース信頼を必須化</text>\n    <text x='16' y='148'>bypass下の rm/rmdir</text><text x='210' y='148' fill='#92400e'>プロンプトで通せた</text><text x='400' y='148'>危険なら即時拒否(書換を促す)</text>\n    <text x='16' y='178'>worktree の git</text><text x='210' y='178' fill='#92400e'>オンデマンド取得</text><text x='400' y='178'>部分クローンを事前取得</text>\n  </g>\n  <line x1='16' y1='96' x2='584' y2='96' stroke='#fed7aa' stroke-width='1'/>\n  <line x1='16' y1='126' x2='584' y2='126' stroke='#fed7aa' stroke-width='1'/>\n  <line x1='16' y1='156' x2='584' y2='156' stroke='#fed7aa' stroke-width='1'/>\n</svg><figcaption>図1：309の権限変更は「安全側デフォルトを一枚ずつ積む」方向で一貫している。</figcaption></figure>\n<p><strong>何が新しいか。</strong>①<code>sed -i</code> は他のBash編集と同様に通常の権限プロンプトを出して記述どおり実行するが、<code>/rewind</code> では復元されなくなった＝一括置換が「承認は要るが巻き戻せない」操作に。②<code>claude ultrareview</code> はワークスペース信頼を必須化（端末は確認、非対話は拒否。回避は <code>--trust-workspace</code> か <code>CLAUDE_CODE_DISABLE_ULTRAREVIEW_TRUST_CHECK=1</code>）。③Desktop/VS Codeのbypass権限モードでは危険な <code>rm</code>/<code>rmdir</code> をプロンプトせず即時拒否する＝「何でも通す」bypassでも、取り返しのつかない削除だけは別格に扱う。④worktree作成/再利用でgitのオンデマンド取得を停止。⑤同梱datavizにAPCAコントラスト指標と <code>apca(text,background)</code> 検証関数を追加。⑥<code>/claude-api</code> が <code>multiagent_20261001</code> 上でManaged Agentsのサブエージェント「チーム」を構築し、動的ワークフローが既定でON。改善8件・バグ修正62件（サンドボックスBashがサンドボックス外のシェル起動ファイルを実行しない等）。</p>\n<p><strong>実務での使いどころ。</strong>多数の定期タスクをbypass寄りで回す運用でも、<code>rm -rf</code> 相当の事故が構造的に止まるのは大きい。収集と分析を別コンテキストに分けるSubagent運用を、Managed Agents側でもチームとして組めるようになった点は、重い調査を安価モデルに逃がす設計をそのまま持ち込める。<strong>注意点：</strong><code>sed -i</code> は承認後は巻き戻せないので、重要ファイルは置換前にコミット済みにしておく。ultrareviewはCI/非対話で止まるため <code>--trust-workspace</code> の明示が要る。</p>\n<p>市場面では、Ramp指標(2026年8月)で法人の <strong>43.8%</strong> がAnthropicを購入しOpenAI(39.8%)を逆転したとの報道もあった（ただし「購入企業の割合」で売上シェアそのものではない点に留意）。<strong>ひとこと：</strong>「速さ」より「壊さない」を積む系列で、bypassでも消えない安全弁が入ったのが今日の芯。</p>",
+      "sources": [
+        {
+          "title": "Claude Code changelog（公式）",
+          "url": "https://code.claude.com/docs/en/changelog"
+        },
+        {
+          "title": "Claude Code releases 2026/10（havoptic）",
+          "url": "https://www.havoptic.com/releases/claude-code/2026/10"
+        },
+        {
+          "title": "Anthropic vs OpenAI 法人採用率（KuCoin/Ramp）",
+          "url": "https://www.kucoin.com/blog/anthropic-vs-openai-ramp-data-shows-claude-leading-us-enterprise-ai-market-share-at-43-8"
+        }
+      ]
+    },
+    {
+      "id": "2026-10-24-nextjs",
+      "date": "2026-10-24",
+      "topic": "Next.js",
+      "title": "next-themesでFOUCゼロのダークモード — SSR境界の埋め方（cookie事前解決 × light-dark() × Tailwind v4 @custom-variant）",
+      "lede": "「ダークモードを付ける」は装飾ではなくRSC/SSRとクライアント状態の境界設計問題。初回ペイント前にhtmlへテーマを載せる解は2つしかない。",
+      "articleHtml": "<p>「ダークモードを付ける」は定番だが、App Router(RSC+SSR)では固有の罠がある。保存済みの好み(localStorage/cookie)はサーバーのHTMLには載らないため、クライアントJSがロード・実行してテーマclassを付けるまで、ブラウザは既定(＝ライト)で描画する＝<strong>FOUC</strong>(一瞬ライトが見える)。つまりこれは見た目の飾りではなく、<strong>SSRとクライアント状態の境界をどう埋めるか</strong>という設計問題だ。2026年は(1)<code>light-dark()</code>/<code>color-scheme</code> が全エンジンBaseline化し「@media二重書き」が終わり、(2)Tailwind v4 がダーク対応を <code>tailwind.config.js</code> からCSS側 <code>@custom-variant</code> へ移したため、定石そのものが更新された。</p>\n<figure class='fig'><pre class='mermaid'>flowchart TD\n  A[\"保存済みの好み(localStorage/cookie)\"] --> B{\"初回ペイント前にhtmlへ付くか\"}\n  B -->|\"いいえ: useEffect/hydration後\"| C[\"FOUC: 一瞬ライト\"]\n  B -->|\"解1: head内inline script\"| D[\"paint前にlocalStorageを読み属性付与\"]\n  B -->|\"解2: server cookie\"| E[\"SSR時点でhtmlにclassを焼く\"]\n  D --> F[\"FOUCゼロ\"]\n  E --> F</pre><figcaption>図1：テーマ属性は初回ペイント前に同期的に付く必要がある。解は「paint前script」か「SSR cookie」の2つだけ。</figcaption></figure>\n<p><strong>next-themes方式(現行v0.3.0)。</strong><code>ThemeProvider</code> はclient componentで、<code>&lt;html suppressHydrationWarning&gt;</code> 直下(body内)に置く。<code>suppressHydrationWarning</code> が必須なのは、注入スクリプトがhydration前に <code>&lt;html&gt;</code> の属性を書き換えサーバーHTMLと食い違うため(1階層だけ抑止)。Tailwindを使うなら <code>attribute=\"class\"</code> で <code>&lt;html class=\"dark\"&gt;</code> を付けさせる。<code>disableTransitionOnChange</code> は切替中のtransitionを止め二次ちらつきを防ぐ。UIの太陽/月アイコンは、生の選択値 <code>theme</code>(systemのこともある)ではなく <strong><code>resolvedTheme</code></strong>(systemを実値に解決)で分岐する。トグルUIは必ずmountedパターン(未マウントは同寸スケルトン)で初回不一致を避ける。</p>\n<figure class='fig'><svg viewBox='0 0 600 180' xmlns='http://www.w3.org/2000/svg' role='img' aria-label='3つのダークモード実装方式の比較'>\n  <rect x='0' y='0' width='600' height='180' fill='#eef2ff' rx='8'/>\n  <text x='16' y='24' font-family='sans-serif' font-size='13' font-weight='700' fill='#3730a3'>3方式の比較</text>\n  <g font-family='sans-serif' font-size='11' font-weight='700' fill='#4338ca'>\n    <text x='160' y='48'>FOUC</text><text x='270' y='48'>JS不要</text><text x='380' y='48'>静的最適化</text><text x='500' y='48'>向き</text></g>\n  <g font-family='sans-serif' font-size='11' fill='#1e1b4b'>\n    <text x='16' y='80'>next-themes</text><text x='160' y='80'>消す(script)</text><text x='270' y='80'>×</text><text x='380' y='80'>○維持</text><text x='500' y='80'>汎用</text>\n    <text x='16' y='112'>cookie(RSC)</text><text x='160' y='112'>ゼロ</text><text x='270' y='112'>○</text><text x='380' y='112'>×動的化</text><text x='500' y='112'>管理画面</text>\n    <text x='16' y='144'>light-dark()</text><text x='160' y='144'>CSSのみ</text><text x='270' y='144'>○</text><text x='380' y='144'>○</text><text x='500' y='144'>トークン設計</text>\n  </g>\n  <line x1='16' y1='56' x2='584' y2='56' stroke='#c7d2fe'/><line x1='16' y1='88' x2='584' y2='88' stroke='#c7d2fe'/><line x1='16' y1='120' x2='584' y2='120' stroke='#c7d2fe'/>\n</svg><figcaption>図2：cookie方式はFOUCゼロでJS無効でも正しいが、cookies()でルートが動的化する点がトレードオフ。</figcaption></figure>\n<p><strong>Tailwind v4の変更。</strong>v3の <code>darkMode:'class'</code> は無効。<code>globals.css</code> に <code>@custom-variant dark (&amp;:where(.dark, .dark *));</code> を書く。<code>:where()</code> で包むのは詳細度を0に保ち、<code>dark:</code> が他指定を不意に上書きしないため。<strong>モダンCSS方式</strong>では <code>:root{color-scheme:light dark}</code> を宣言すると <code>light-dark(明,暗)</code> が使用中のcolor-schemeに応じた色を返す。最重要の勘所は <strong><code>light-dark()</code> は <code>prefers-color-scheme</code> ではなく <code>color-scheme</code> プロパティに従う</strong>こと＝要素に <code>color-scheme:dark</code> を設定すると配下を継承的に強制上書きでき、これがトグルの実装手段になる(Baseline: Chrome/Edge123・FF120・Safari17.5)。</p>\n<p><strong>使いどころ。</strong>テーマはCSS経由で効くので、ページ本体・データ取得・レイアウトはRSCのまま無改変でよく、clientにするのは <code>ThemeProvider</code> とトグルUIだけ。<strong>注意点：</strong>cookie方式はlocalStorageと二重管理せず「信頼の源」を一方に明確化する。<strong>ひとこと：</strong>どこでテーマを決めるか(paint前script か SSR cookie か)を先に決めれば、あとはTailwind v4のvariant一行で噛み合う。</p>",
+      "sources": [
+        {
+          "title": "next-themes（GitHub / pacocoursey）",
+          "url": "https://github.com/pacocoursey/next-themes"
+        },
+        {
+          "title": "web.dev — color-scheme と light-dark()",
+          "url": "https://web.dev/articles/light-dark"
+        },
+        {
+          "title": "Una Kravets — Modern CSS theming",
+          "url": "https://una.im/modern-css-theming"
+        }
+      ]
+    },
+    {
+      "id": "2026-10-24-flutter",
+      "date": "2026-10-24",
+      "topic": "Flutter",
+      "title": "サプライチェーン有事 — eMudhra中間CA失効とFlutter 3.47.8 hotfix（＋AnimatedList/go_router型安全/ListView遅延ビルドの定石）",
+      "lede": "今日の主役は新APIではなく信頼ストアの有事対応。stableは3.47.8へ。独自トラストストアを持つランタイム/CLI/コンテナが残存リスク。",
+      "articleHtml": "<p>今日の主役は新APIではなく<strong>「信頼ストアの有事対応」</strong>だ。10/17、研究者が8つのeMudhra中間CA(root=emSign ECC Root CA-G3、TLS6＋コード署名2)の秘密鍵を復元可能と報告。同日Chrome/Firefoxが中間CAをブロックし、10/18 eMudhra失効、10/19 Sectigoがクロス署名失効、10/20 Mozillaがroot緊急削除、<strong>Chromeのroot削除は10/27発効</strong>。ブラウザは保護済みだが、<strong>独自トラストストアを持つ言語ランタイム/CLI/コンテナが残存リスク</strong>になる。</p>\n<figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg' role='img' aria-label='eMudhra CA失効インシデントのタイムライン'>\n  <rect x='0' y='0' width='600' height='150' fill='#fef2f2' rx='8'/>\n  <text x='16' y='24' font-family='sans-serif' font-size='13' font-weight='700' fill='#991b1b'>eMudhra 中間CA 失効（2026-10）</text>\n  <line x1='40' y1='84' x2='560' y2='84' stroke='#fca5a5' stroke-width='3'/>\n  <g font-family='sans-serif' font-size='10' fill='#7f1d1d' text-anchor='middle'>\n    <circle cx='60' cy='84' r='5' fill='#dc2626'/><text x='60' y='70'>10/17</text><text x='60' y='108'>鍵漏洩報告</text>\n    <circle cx='170' cy='84' r='5' fill='#dc2626'/><text x='170' y='70'>10/18</text><text x='170' y='108'>eMudhra失効</text>\n    <circle cx='290' cy='84' r='5' fill='#dc2626'/><text x='290' y='70'>10/19</text><text x='290' y='108'>Sectigo失効</text>\n    <circle cx='400' cy='84' r='5' fill='#dc2626'/><text x='400' y='70'>10/20</text><text x='400' y='108'>Mozilla root削除</text>\n    <circle cx='540' cy='84' r='6' fill='#b91c1c'/><text x='540' y='70'>10/27</text><text x='540' y='108' font-weight='700'>Chrome root削除</text>\n  </g>\n</svg><figcaption>図1：ブラウザは順次保護済み。残るは独自トラストストアを持つランタイム/CLI/コンテナ。</figcaption></figure>\n<p><strong>Flutter側の対応＝3.47.8。</strong>公式what's-newの記載では <code>3.47.8</code> がcompromised eMudhra CA keysをブロック(勧告 <code>GHSA-frr6-h895-5pxp</code>)。stableは10/8の <code>3.47.7/Dart 3.13.5</code> からsecurity patch一段。CI/本番イメージは <code>ca-certificates</code> 更新＋SDKを3.47.8へ上げ、<code>flutter pub get</code> のadvisories取得やHTTPS依存がemSignにチェーンしないか点検する。チャネルはbeta <code>3.50.0-0.1.pre/Dart 3.14.0</code> 据え置き、11月のstable 3.50待ち(Web WasmGC既定・Android Impeller一本化・Wasm遅延ロードstable)は不変。本番は <strong>3.47.8 pin＋別ジョブでbeta</strong> の二本立てが安全だ。</p>\n<p><strong>今日の技法メモ（3点）。</strong></p>\n<p>① <strong>AnimatedList/SliverAnimatedList</strong>：<code>GlobalKey&lt;AnimatedListState&gt;</code> と、表示データを別持ちする <code>_items</code> を用意。builderが受け取る <code>animation</code>(0→1)で各行を <code>SizeTransition</code>/<code>FadeTransition</code> 等にラップするのが肝。挿入は「<code>_items.insert</code> → <code>insertItem</code>」、削除は<strong>先に値を退避</strong>してから <code>removeItem</code> に退避値を渡す(消えた後も最後の姿を描くため)。index同期は自分で守る(ズレると別行がアニメ)。スクロール同居は <code>SliverAnimatedList</code>。</p>\n<p>② <strong>go_router 型安全ルーティング</strong>：codegen(<code>@TypedGoRoute</code>＋<code>go_router_builder</code>＋<code>build_runner</code>)で <code>const OfferRoute(id:123).go(context)</code> と呼べ、文字列パスのタイプミスが消える。ネストタブは <code>StatefulShellRoute.indexedStack</code>、認証ガードは <code>redirect</code>＋<code>refreshListenable</code>(状態変化で再実行)。ルート追加後に <code>build_runner</code> を忘れると <code>.g.dart</code> がstale＝pre-commit/CIチェック推奨。</p>\n<p>③ <strong>ListView 遅延ビルド</strong>：<code>ListView(children:[...])</code> は全件を即時build(1,000件＝1,000 Widget常駐)。<code>ListView.builder</code> は可視範囲＋前後バッファだけbuildし再利用する。<code>cacheExtent</code>(既定約250px)でプリビルド量を、全行同高なら <code>itemExtent</code> でlayout計算を省ける。巨大データは全件ロードせずページング。</p>\n<p><strong>示唆／ひとこと：</strong>「ブラウザが守ってくれる」はFlutter/Dartランタイムには当てはまらない。今日はまずSDKを3.47.8へ、依存解決とコンテナCAを点検し、11月の3.50昇格前の緑化(<code>build web --wasm</code>/<code>appbundle</code>)を継続する。</p>",
+      "sources": [
+        {
+          "title": "What's new in the docs（docs.flutter.dev）",
+          "url": "https://docs.flutter.dev/release/whats-new"
+        },
+        {
+          "title": "eMudhra intermediate CA compromise（konfirmity）",
+          "url": "https://www.konfirmity.com/advisories/emudhra-intermediate-ca-compromise"
+        },
+        {
+          "title": "AnimatedList class（api.flutter.dev）",
+          "url": "https://api.flutter.dev/flutter/widgets/AnimatedList-class.html"
+        },
+        {
+          "title": "go_router（pub.dev）",
+          "url": "https://pub.dev/documentation/go_router/latest/"
+        }
+      ]
+    },
+    {
+      "id": "2026-10-23-github-trending",
+      "date": "2026-10-23",
+      "topic": "GitHub Trending",
+      "title": "10/23の話題リポジトリ — DeepSeek公式の前処理ライブラリ・AIゲームスタジオ・自前マシンのSparkレイクハウス",
+      "lede": "生成モデル/エージェント基盤一色のトレンドの中で、「部品化・総合化・自前化」と抽象度の違う3本が今日の急上昇を貫く。",
+      "articleHtml": "<p>生成モデル／エージェント基盤一色のトレンドの中で、今日の急上昇3本を貫くのは<strong>「抽象度の多様さ」</strong>だ。前処理の“部品化”、制作の“総合化”、計算の“自前化”——同じAI文脈でも立ち位置がきれいに分かれている。各リポジトリについて「解決したい課題」と「提供する機能」を押さえる。</p>\n<figure class='fig'><svg viewBox='0 0 600 196' xmlns='http://www.w3.org/2000/svg' role='img' aria-label='3リポジトリの課題と提供機能の対応表'>\n  <rect x='0' y='0' width='600' height='196' fill='#f0fdf4' rx='8'/>\n  <text x='16' y='24' font-family='sans-serif' font-size='13' font-weight='700' fill='#166534'>リポジトリ × 課題 / 提供機能</text>\n  <g font-family='sans-serif' font-size='11' font-weight='700' fill='#15803d'><text x='16' y='48'>repo</text><text x='180' y='48'>解決したい課題</text><text x='400' y='48'>提供する機能</text></g>\n  <line x1='16' y1='56' x2='584' y2='56' stroke='#bbf7d0'/>\n  <g font-family='sans-serif' font-size='10' fill='#14532d'>\n    <text x='16' y='84'>deepseek-recipe</text><text x='180' y='78'>API形式乱立で前処理を</text><text x='180' y='92'>各自再実装</text><text x='400' y='78'>形式⇄Conversation変換+</text><text x='400' y='92'>V4トークン化の部品</text>\n    <text x='16' y='128'>ohmygame</text><text x='180' y='122'>ゲーム制作の工程が</text><text x='180' y='136'>分断(設計/絵/3D/動画/code)</text><text x='400' y='122'>1キャンバスで生成→</text><text x='400' y='136'>プレビュー→公開</text>\n    <text x='16' y='172'>OLCF</text><text x='180' y='166'>レイクハウスがクラウド前提</text><text x='180' y='180'>=コスト/機微度</text><text x='400' y='166'>手元マシンをSpark化+</text><text x='400' y='180'>Fabric計算オフロード</text>\n  </g>\n  <line x1='16' y1='100' x2='584' y2='100' stroke='#bbf7d0'/><line x1='16' y1='144' x2='584' y2='144' stroke='#bbf7d0'/>\n</svg><figcaption>図1：3本は「部品化・総合化・自前化」と抽象度が三者三様。</figcaption></figure>\n<h4>deepseek-ai/deepseek-recipe（Rust/Python・⭐約2.2k）</h4>\n<p><strong>解決したい課題：</strong>Messages／Chat Completions／Responses と各社のAPI形式が乱立し、DeepSeek V4/V4.1向けのプロンプト整形・トークンID化・応答の逆変換を使う側が毎回再実装している低レイヤの手間。<strong>提供する機能：</strong>各API形式と共通のConversation形式を相互変換し、V4/V4.1向けプロンプト生成・トークン化・逆変換まで行うRustライブラリ＋Pythonバインディング。推論・ツール実行・HTTP転送は呼び出し側に委ね、“前処理だけ”を部品化した。<strong>なぜ急上昇：</strong>DeepSeek公式orgが自社の前処理パイプラインを切り出した新規性＝わずか4コミットで実測約2.2k(gh-trends週間&gt;3x Tier1)、MIT。</p>\n<h4>WhiteTowerAI/ohmygame（デスクトップ・⭐約931）</h4>\n<p><strong>解決したい課題：</strong>ゲーム制作は設計書・アート・3D・動画・コードと工程が分断され、個人が“1人スタジオ”として最後まで通すのが難しい。<strong>提供する機能：</strong>共有キャンバス上で設計書／アート／3D／動画／コードをAI生成し、ライブプレビュー→プレイテスト→共有リンク公開まで1アプリで回すmacOS/Windowsデスクトップ環境(ベータ)。40+プロバイダをBYOキーで利用、Apache-2.0。<strong>なぜ急上昇：</strong>10-09時点は約37★でfloor未達だったが本日約931へ急伸した“再評価”枠。</p>\n<h4>jddevtime/open-lakehouse-compute-fabric（Python・⭐約236）</h4>\n<p><strong>解決したい課題：</strong>データ基盤(レイクハウス/Spark)はクラウド前提でコストとデータ機微度が課題になり、手元マシンの遊休計算を束ねて使えない。<strong>提供する機能：</strong>手元の複数マシンをSparkクラスタ化し、ワークスペース／SQL／ノートブック／パイプラインをWebコンソール・REST・CLI・Python SDKで管理。Microsoft Fabricの計算拡張としてFabricノートブックのジョブをオンプレSparkへオフロードでき、MCPでカタログ問い合わせも可(Apache-2.0・0.1.0ベータ)。<strong>なぜ急上昇：</strong>gh-trends週間&gt;3xの🔥メイン枠に入った非AIデータ基盤の新星。</p>\n<p><strong>まとめ：</strong>エージェント一色の中で抽象度が三者三様なのが面白い。自分ならまず deepseek-recipe の Conversation 正規化を、複数モデルAPIを叩く自作ツールの共通前処理層として検証したい。</p>",
+      "sources": [
+        {
+          "title": "deepseek-ai/deepseek-recipe",
+          "url": "https://github.com/deepseek-ai/deepseek-recipe"
+        },
+        {
+          "title": "WhiteTowerAI/ohmygame",
+          "url": "https://github.com/WhiteTowerAI/ohmygame"
+        },
+        {
+          "title": "jddevtime/open-lakehouse-compute-fabric",
+          "url": "https://github.com/jddevtime/open-lakehouse-compute-fabric"
+        }
+      ]
+    },
     {
       "id": "2026-10-23-claude-code",
       "date": "2026-10-23",
