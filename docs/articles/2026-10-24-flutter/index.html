@@ -1,0 +1,77 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>サプライチェーン有事 — eMudhra中間CA失効とFlutter 3.47.8 hotfix（＋AnimatedList/go_router型安全/ListView遅延ビルドの定石） — デイリー技術深掘り 読み物</title><meta name="description" content="今日の主役は新APIではなく信頼ストアの有事対応。stableは3.47.8へ。独自トラストストアを持つランタイム/CLI/コンテナが残存リスク。"><meta name="theme-color" content="#0277bd"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-24-flutter/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="サプライチェーン有事 — eMudhra中間CA失効とFlutter 3.47.8 hotfix（＋AnimatedList/go_router型安全/ListView遅延ビルドの定石） — デイリー技術深掘り 読み物"><meta property="og:description" content="今日の主役は新APIではなく信頼ストアの有事対応。stableは3.47.8へ。独自トラストストアを持つランタイム/CLI/コンテナが残存リスク。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-24-flutter/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #29b6f6, #01579b)"> <span class="glyph" aria-hidden="true">◆</span> <div class="kicker">Flutter</div> <h1>サプライチェーン有事 — eMudhra中間CA失効とFlutter 3.47.8 hotfix（＋AnimatedList/go_router型安全/ListView遅延ビルドの定石）</h1> <p class="lede">今日の主役は新APIではなく信頼ストアの有事対応。stableは3.47.8へ。独自トラストストアを持つランタイム/CLI/コンテナが残存リスク。</p> <div class="meta"> <span>📅 2026年10月24日</span> <span>⏱ 約3分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#0277bd"> <div> <article class="prose" data-has-mermaid="0"><p>今日の主役は新APIではなく<strong>「信頼ストアの有事対応」</strong>だ。10/17、研究者が8つのeMudhra中間CA(root=emSign ECC Root CA-G3、TLS6＋コード署名2)の秘密鍵を復元可能と報告。同日Chrome/Firefoxが中間CAをブロックし、10/18 eMudhra失効、10/19 Sectigoがクロス署名失効、10/20 Mozillaがroot緊急削除、<strong>Chromeのroot削除は10/27発効</strong>。ブラウザは保護済みだが、<strong>独自トラストストアを持つ言語ランタイム/CLI/コンテナが残存リスク</strong>になる。</p>
+<figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg' role='img' aria-label='eMudhra CA失効インシデントのタイムライン'>
+  <rect x='0' y='0' width='600' height='150' fill='#fef2f2' rx='8'></rect>
+  <text x='16' y='24' font-family='sans-serif' font-size='13' font-weight='700' fill='#991b1b'>eMudhra 中間CA 失効（2026-10）</text>
+  <line x1='40' y1='84' x2='560' y2='84' stroke='#fca5a5' stroke-width='3'></line>
+  <g font-family='sans-serif' font-size='10' fill='#7f1d1d' text-anchor='middle'>
+    <circle cx='60' cy='84' r='5' fill='#dc2626'></circle><text x='60' y='70'>10/17</text><text x='60' y='108'>鍵漏洩報告</text>
+    <circle cx='170' cy='84' r='5' fill='#dc2626'></circle><text x='170' y='70'>10/18</text><text x='170' y='108'>eMudhra失効</text>
+    <circle cx='290' cy='84' r='5' fill='#dc2626'></circle><text x='290' y='70'>10/19</text><text x='290' y='108'>Sectigo失効</text>
+    <circle cx='400' cy='84' r='5' fill='#dc2626'></circle><text x='400' y='70'>10/20</text><text x='400' y='108'>Mozilla root削除</text>
+    <circle cx='540' cy='84' r='6' fill='#b91c1c'></circle><text x='540' y='70'>10/27</text><text x='540' y='108' font-weight='700'>Chrome root削除</text>
+  </g>
+</svg><figcaption>図1：ブラウザは順次保護済み。残るは独自トラストストアを持つランタイム/CLI/コンテナ。</figcaption></figure>
+<p><strong>Flutter側の対応＝3.47.8。</strong>公式what's-newの記載では <code>3.47.8</code> がcompromised eMudhra CA keysをブロック(勧告 <code>GHSA-frr6-h895-5pxp</code>)。stableは10/8の <code>3.47.7/Dart 3.13.5</code> からsecurity patch一段。CI/本番イメージは <code>ca-certificates</code> 更新＋SDKを3.47.8へ上げ、<code>flutter pub get</code> のadvisories取得やHTTPS依存がemSignにチェーンしないか点検する。チャネルはbeta <code>3.50.0-0.1.pre/Dart 3.14.0</code> 据え置き、11月のstable 3.50待ち(Web WasmGC既定・Android Impeller一本化・Wasm遅延ロードstable)は不変。本番は <strong>3.47.8 pin＋別ジョブでbeta</strong> の二本立てが安全だ。</p>
+<p><strong>今日の技法メモ（3点）。</strong></p>
+<p>① <strong>AnimatedList/SliverAnimatedList</strong>：<code>GlobalKey&lt;AnimatedListState&gt;</code> と、表示データを別持ちする <code>_items</code> を用意。builderが受け取る <code>animation</code>(0→1)で各行を <code>SizeTransition</code>/<code>FadeTransition</code> 等にラップするのが肝。挿入は「<code>_items.insert</code> → <code>insertItem</code>」、削除は<strong>先に値を退避</strong>してから <code>removeItem</code> に退避値を渡す(消えた後も最後の姿を描くため)。index同期は自分で守る(ズレると別行がアニメ)。スクロール同居は <code>SliverAnimatedList</code>。</p>
+<p>② <strong>go_router 型安全ルーティング</strong>：codegen(<code>@TypedGoRoute</code>＋<code>go_router_builder</code>＋<code>build_runner</code>)で <code>const OfferRoute(id:123).go(context)</code> と呼べ、文字列パスのタイプミスが消える。ネストタブは <code>StatefulShellRoute.indexedStack</code>、認証ガードは <code>redirect</code>＋<code>refreshListenable</code>(状態変化で再実行)。ルート追加後に <code>build_runner</code> を忘れると <code>.g.dart</code> がstale＝pre-commit/CIチェック推奨。</p>
+<p>③ <strong>ListView 遅延ビルド</strong>：<code>ListView(children:[...])</code> は全件を即時build(1,000件＝1,000 Widget常駐)。<code>ListView.builder</code> は可視範囲＋前後バッファだけbuildし再利用する。<code>cacheExtent</code>(既定約250px)でプリビルド量を、全行同高なら <code>itemExtent</code> でlayout計算を省ける。巨大データは全件ロードせずページング。</p>
+<p><strong>示唆／ひとこと：</strong>「ブラウザが守ってくれる」はFlutter/Dartランタイムには当てはまらない。今日はまずSDKを3.47.8へ、依存解決とコンテナCAを点検し、11月の3.50昇格前の緑化(<code>build web --wasm</code>/<code>appbundle</code>)を継続する。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://docs.flutter.dev/release/whats-new" target="_blank" rel="noopener noreferrer"> What&#39;s new in the docs（docs.flutter.dev） </a> </li><li> <a href="https://www.konfirmity.com/advisories/emudhra-intermediate-ca-compromise" target="_blank" rel="noopener noreferrer"> eMudhra intermediate CA compromise（konfirmity） </a> </li><li> <a href="https://api.flutter.dev/flutter/widgets/AnimatedList-class.html" target="_blank" rel="noopener noreferrer"> AnimatedList class（api.flutter.dev） </a> </li><li> <a href="https://pub.dev/documentation/go_router/latest/" target="_blank" rel="noopener noreferrer"> go_router（pub.dev） </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
