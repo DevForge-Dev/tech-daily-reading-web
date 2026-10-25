@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-10-24T04:49:41.682Z",
+  "generatedAt": "2026-10-25T04:47:00.244Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,100 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "date": "2026-10-25",
+      "topic": "Claude Code",
+      "title": "v2.1.310でMonitorを主要クラウドへ開放 — そして「フック/スキル/ルール/サブエージェント」の使い分け",
+      "lede": "小刻みパッチが続く2.1系はv2.1.310でMonitorをBedrock/Vertex/Foundryへ拡大。この日の読みどころは、指示を「いつ読まれ・圧縮に耐え・どれだけ文脈を食うか」で整理する公式の操縦術と、採用で初逆転した市場データだ。",
+      "articleHtml": "<p>2.1系は10月に入って権限・サンドボックス・MCP安定性まわりの小刻みパッチが続いてきた。本日2026/10/25(JST)時点の最新は <strong>v2.1.310（10/23）</strong> で、10/24・10/25付の新規版は確認できない。v2.1.310の芯はクラウド/エンタープライズ強化だ。<strong>MonitorツールとプラグインMonitorをAmazon Bedrock・Google Vertex・Microsoft Foundry、およびテレメトリ無効環境でも利用可能</strong>にし、これらの環境での長時間フォアグラウンドsleepもブロックする。クラウドセッションとリモートコントロールの可否を<strong>Enterpriseのカスタムロール権限</strong>として追加し、Ownerがロール単位で制御できる。改善6件・修正14件では、一部ゲートウェイが <code>effort-2025-11-24</code> ベータ値や会話途中のsystemメッセージを拒否してリクエストが失敗する問題（外して再試行）、<code>cleanupPeriodDays</code>を極端に大きくすると貼付画像など最近のファイルが消える問題、「Prompt is too long」後の圧縮がbase64/SVGを残しすぎて再失敗する問題を解消した。</p>\n<figure class='fig'><svg viewBox='0 0 600 250' xmlns='http://www.w3.org/2000/svg'>\n<rect x='0' y='0' width='600' height='250' fill='#eef7f0' rx='10'/>\n<rect x='8' y='8' width='584' height='234' fill='none' stroke='#3fb950' stroke-width='1.5' rx='8'/>\n<text x='20' y='30' font-family='sans-serif' font-size='13' font-weight='700' fill='#1a7f37'>手段</text>\n<text x='150' y='30' font-family='sans-serif' font-size='13' font-weight='700' fill='#1a7f37'>いつ読まれる</text>\n<text x='330' y='30' font-family='sans-serif' font-size='13' font-weight='700' fill='#1a7f37'>使いどころ</text>\n<line x1='16' y1='40' x2='584' y2='40' stroke='#3fb950' stroke-width='1'/>\n<text x='20' y='66' font-family='sans-serif' font-size='12' fill='#24292f'>CLAUDE.md</text>\n<text x='150' y='66' font-family='sans-serif' font-size='11' fill='#57606a'>毎回ロード</text>\n<text x='330' y='66' font-family='sans-serif' font-size='11' fill='#57606a'>常時保持の事実・200行以内</text>\n<text x='20' y='98' font-family='sans-serif' font-size='12' fill='#24292f'>フック</text>\n<text x='150' y='98' font-family='sans-serif' font-size='11' fill='#57606a'>ツール実行の前後</text>\n<text x='330' y='98' font-family='sans-serif' font-size='11' fill='#57606a'>毎回必ず・exit2で拒否(決定論)</text>\n<text x='20' y='130' font-family='sans-serif' font-size='12' fill='#24292f'>スキル</text>\n<text x='150' y='130' font-family='sans-serif' font-size='11' fill='#57606a'>呼び出し時のみ</text>\n<text x='330' y='130' font-family='sans-serif' font-size='11' fill='#57606a'>手順書・レビュー観点</text>\n<text x='20' y='162' font-family='sans-serif' font-size='12' fill='#24292f'>ルール(paths)</text>\n<text x='150' y='162' font-family='sans-serif' font-size='11' fill='#57606a'>該当ファイル編集時</text>\n<text x='330' y='162' font-family='sans-serif' font-size='11' fill='#57606a'>パス限定の制約 src/api/**</text>\n<text x='20' y='194' font-family='sans-serif' font-size='12' fill='#24292f'>サブエージェント</text>\n<text x='150' y='194' font-family='sans-serif' font-size='11' fill='#57606a'>委譲時</text>\n<text x='330' y='194' font-family='sans-serif' font-size='11' fill='#57606a'>重い調査・要約だけ本流へ</text>\n<line x1='16' y1='210' x2='584' y2='210' stroke='#d0d7de' stroke-width='1'/>\n<text x='20' y='230' font-family='sans-serif' font-size='10.5' fill='#1a7f37'>軸=いつ読込／圧縮に耐えるか／文脈消費量（Anthropic公式）</text>\n</svg><figcaption>図1：Claude Codeを「操縦」する5手段の使い分け</figcaption></figure>\n<p>この日の技術面の本命は、Anthropic公式ブログによる<strong>指示手段の使い分け</strong>だ。各手段を「いつ読み込まれるか／圧縮に耐えるか／文脈をどれだけ食うか」で整理する。<strong>毎回必ず実行したい処理</strong>（編集後のlint、特定コマンドのブロック）はCLAUDE.mdではなく<strong>フック</strong>へ——CLAUDE.mdは多くの場合従われるがフックは決定論的で、<code>PreToolUse</code>が終了コード2を返せばツール呼び出しを拒否できる。CLAUDE.mdは常時保持すべき事実（ビルド/構成/規約）に絞り<strong>200行以内</strong>でコードのようにレビューする。手順書やレビュー観点は<strong>スキル</strong>（呼び出し時のみ読込）、ファイル限定の制約は<code>paths:</code>付き<strong>ルール</strong>（例 <code>src/api/**</code>）、中間出力が大きい調査は<strong>サブエージェント</strong>（最終要約だけ戻す）に委譲する。PubNubの実践記事も、サブエージェントは単一責務・ツール権限最小化（<code>tools</code>省略時はMCP含む全継承に注意）・<code>SubagentStop</code>フックでの連鎖・フックのプロダクションコード化を説く。</p>\n<p>市場データも大きく動いた。Ramp指標（2026年5月）で<strong>Anthropic 34.4% &gt; OpenAI 32.3%</strong> と法人採用率が初逆転し、eWeekは主因をClaude Codeと分析。JetBrains 2026開発者調査では<strong>Claude Codeの職場採用39%</strong>がCopilot 21%を上回った（米国47%、週次利用は約90%）。Tygart Mediaの合成事例では、30人のエンジニア組織が90日で内部監査スコア19→41、生産性35%向上を報告し、CLAUDE.mdを<strong>各リポジトリ400行以内</strong>に保ったチームほどスキル呼び出し率が高かった（800行超は約40%低下）。</p>\n<figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg'>\n<rect x='0' y='0' width='600' height='150' fill='#eef7f0' rx='10'/>\n<text x='20' y='28' font-family='sans-serif' font-size='12' font-weight='700' fill='#1a7f37'>職場採用率（JetBrains 2026 開発者調査）</text>\n<text x='20' y='60' font-family='sans-serif' font-size='12' fill='#24292f'>Claude Code</text>\n<rect x='150' y='48' width='390' height='18' fill='#3fb950' rx='4'/>\n<text x='548' y='62' font-family='sans-serif' font-size='12' font-weight='700' fill='#1a7f37'>39%</text>\n<text x='20' y='98' font-family='sans-serif' font-size='12' fill='#24292f'>GitHub Copilot</text>\n<rect x='150' y='86' width='210' height='18' fill='#a6d8b4' rx='4'/>\n<text x='368' y='100' font-family='sans-serif' font-size='12' font-weight='700' fill='#57606a'>21%</text>\n<text x='20' y='134' font-family='sans-serif' font-size='10.5' fill='#57606a'>米国では47%。AIコーディングエージェントの週次利用は約90%。</text>\n</svg><figcaption>図2：採用でCopilotを逆転（Ramp指標でもAnthropic 34.4% &gt; OpenAI 32.3%）</figcaption></figure>\n<p><strong>自分が試すなら</strong>：まずCLAUDE.mdを棚卸しして200〜400行に圧縮し、「lint実行」「危険コマンド拒否」はフックへ移す。繰り返す手順はスキル化し、重いログ解析はサブエージェントに投げて本流の文脈を汚さない——この配分が採用事例の生産性差を生んでいる。</p>\n<p><strong>ひとこと</strong>：リリースは落ち着きフェーズだが、エコシステムの主役交代と「運用の作法」が固まりつつある転換点。</p>",
+      "sources": [
+        {
+          "title": "Claude Code 公式changelog",
+          "url": "https://code.claude.com/docs/en/changelog"
+        },
+        {
+          "title": "Steering Claude Code: skills, hooks, rules, subagents（Anthropic）",
+          "url": "https://www.claude.com/blog/steering-claude-code-skills-hooks-rules-subagents-and-more"
+        },
+        {
+          "title": "Best practices for Claude Code sub-agents（PubNub）",
+          "url": "https://www.pubnub.com/blog/best-practices-claude-code-sub-agents/"
+        },
+        {
+          "title": "Anthropic overtakes OpenAI in enterprise AI adoption（eWeek）",
+          "url": "https://www.eweek.com/fr/artificial-intelligence/anthropic-overtakes-openai-enterprise-ai-adoption-neuron/"
+        },
+        {
+          "title": "JetBrains 2026調査でClaude CodeがCopilotを上回る（36Kr報道）",
+          "url": "https://aiunderstanding.org/news/36kr-reports-claude-code-led-github-copilot-in-jetbrains-2026-developer-survey"
+        },
+        {
+          "title": "Claude Code本格導入の事例（Tygart Media）",
+          "url": "https://tygartmedia.com/claude-code-rollout-case-study/"
+        }
+      ],
+      "id": "2026-10-25-claude-code"
+    },
+    {
+      "date": "2026-10-25",
+      "topic": "Next.js",
+      "title": "スライドするアクティブ・インジケーター — 純CSS / JS計測 / layoutId / View Transitionsを用途で選ぶ",
+      "lede": "タブやナビの「ぬるっと動く下線・ピル」。2026は4つの作り方が出そろい、RSCのまま完結させるかReact状態と繋ぐかで正解が変わる。",
+      "articleHtml": "<p>タブ・ナビバー・セグメンテッドコントロールで、選択中を示す下線やピルが切替時に次の項目へスライドする演出は、Vercel・Linear・shadcnなどモダンUIに遍在し、見た目の高級感を一撃で上げる。だが素朴に作ると三重苦に陥る——(1) <code>left/width</code> アニメでレイアウト計算（リフロー）が走りカクつく、(2) SSRで初期位置が出せずハイドレーション後に飛ぶ、(3) キーボード/スクリーンリーダー対応や「タブ」対「ナビ」の意味論を落とす。2026はこれを解く4系統が出そろった。</p>\n<figure class='fig'><svg viewBox='0 0 600 230' xmlns='http://www.w3.org/2000/svg'>\n<rect x='0' y='0' width='600' height='230' fill='#f1f1f6' rx='10'/>\n<rect x='8' y='8' width='584' height='214' fill='none' stroke='#111' stroke-width='1.3' rx='8'/>\n<text x='18' y='30' font-family='sans-serif' font-size='12' font-weight='700' fill='#111'>方式</text>\n<text x='210' y='30' font-family='sans-serif' font-size='12' font-weight='700' fill='#111'>JS</text>\n<text x='270' y='30' font-family='sans-serif' font-size='12' font-weight='700' fill='#111'>React状態</text>\n<text x='370' y='30' font-family='sans-serif' font-size='12' font-weight='700' fill='#111'>SSR初期位置</text>\n<text x='500' y='30' font-family='sans-serif' font-size='12' font-weight='700' fill='#111'>主用途</text>\n<line x1='16' y1='40' x2='584' y2='40' stroke='#111' stroke-width='1'/>\n<text x='18' y='70' font-family='sans-serif' font-size='11.5' fill='#222'>純CSS :has()+radio</text>\n<text x='210' y='70' font-family='sans-serif' font-size='11.5' fill='#2a7'>不要</text>\n<text x='278' y='70' font-family='sans-serif' font-size='11.5' fill='#c33'>×</text>\n<text x='380' y='70' font-family='sans-serif' font-size='11.5' fill='#2a7'>◎静的</text>\n<text x='500' y='70' font-family='sans-serif' font-size='10.5' fill='#555'>局所の見た目UI</text>\n<text x='18' y='108' font-family='sans-serif' font-size='11.5' fill='#222'>JS計測+ARIAタブ</text>\n<text x='210' y='108' font-family='sans-serif' font-size='11.5' fill='#555'>要</text>\n<text x='278' y='108' font-family='sans-serif' font-size='11.5' fill='#2a7'>○</text>\n<text x='380' y='108' font-family='sans-serif' font-size='11.5' fill='#d80'>△埋込</text>\n<text x='500' y='108' font-family='sans-serif' font-size='10.5' fill='#555'>堅実な既定</text>\n<text x='18' y='146' font-family='sans-serif' font-size='11.5' fill='#222'>Motion layoutId</text>\n<text x='210' y='146' font-family='sans-serif' font-size='11.5' fill='#555'>要</text>\n<text x='278' y='146' font-family='sans-serif' font-size='11.5' fill='#2a7'>◎</text>\n<text x='380' y='146' font-family='sans-serif' font-size='11.5' fill='#2a7'>◎</text>\n<text x='500' y='146' font-family='sans-serif' font-size='10.5' fill='#555'>Reactタブ</text>\n<text x='18' y='184' font-family='sans-serif' font-size='11.5' fill='#222'>View Transitions</text>\n<text x='210' y='184' font-family='sans-serif' font-size='11.5' fill='#555'>要</text>\n<text x='278' y='184' font-family='sans-serif' font-size='11.5' fill='#2a7'>○</text>\n<text x='380' y='184' font-family='sans-serif' font-size='11.5' fill='#2a7'>◎</text>\n<text x='500' y='184' font-family='sans-serif' font-size='10.5' fill='#555'>状態/ルート遷移</text>\n<line x1='16' y1='198' x2='584' y2='198' stroke='#ccc' stroke-width='1'/>\n<text x='18' y='216' font-family='sans-serif' font-size='10' fill='#666'>動かすのは常にtransform。left/widthはリフロー誘発＝避ける。</text>\n</svg><figcaption>図1：4系統を用途で選び分ける</figcaption></figure>\n<p><strong>①純CSS（<code>:has()</code>+ラジオ）</strong>：トラック内にラジオを置き、<code>.seg:has(#opt2:checked){--i:1}</code> で絶対配置のピルを <code>transform:translateX(calc(var(--i)*100%))</code> で動かす。動かすのはtransformのみ＝コンポジタ合成で軽く、<code>'use client'</code>不要・ハイドレーションゼロでINP/CLS有利。ただしReactから選択値を読めず、等幅前提。<strong>②JS計測+ARIAタブ</strong>（堅実な既定）：アクティブの <code>offsetLeft/offsetWidth</code> をCSS変数に流す。<code>width</code>遷移はリフローを誘発するので<code>scaleX</code>近似、<strong><code>document.fonts.ready</code>後に再計測</strong>＋<code>ResizeObserver</code>で追従。W3C APGに沿い <code>role=tablist/tab/tabpanel</code> とロービングtabindex（←/→移動）。<strong>③Motion <code>layoutId</code></strong>：アクティブタブ内にだけインジケーターを描画すると、Motionが旧→新位置をFLIPでGPUアニメし、<code>borderRadius</code>も自動補正。<strong>④View Transitions</strong>：<code>view-transition-name</code>を付けDOM更新を <code>document.startViewTransition()</code> で包むと差分を自動補間。未対応環境は素の更新にフォールバック（PE）。</p>\n<p><strong>Next.js（App Router）での要点</strong>：ページ内タブ（パネル切替＝APGタブパターン）か、サイトナビ（URL遷移）かでa11yが分岐する。<strong>ナビはタブではない</strong>ので <code>&lt;nav&gt;</code> ＋ <code>&lt;Link&gt;</code> ＋ アクティブに <code>aria-current=\"page\"</code> とし、<code>role=\"tab\"</code> を付けない。計測・VT・<code>layoutId</code>はどれもDOM依存なので、<strong>インジケーターの小島だけ <code>'use client'</code></strong> にし、タブ中身はRSCを <code>children</code> で流す。アクティブ項目を初回レンダー時点で確定（ナビは <code>usePathname</code>、タブは初期props）させればSSRと初期位置が一致してチラつかない。<code>prefers-reduced-motion</code> は「状態切替は必ず成立させ、動きだけ止める」が共通方針（Motionは <code>MotionConfig reducedMotion=\"user\"</code>）。</p>\n<figure class='fig'><pre class='mermaid'>flowchart TD\n  A[\"Reactから選択値を読む?\"] -->|いいえ| B[\"純CSS :has()+radio（RSCのまま）\"]\n  A -->|はい| C[\"Motionを使える?\"]\n  C -->|はい| D[\"layoutId で共有レイアウトFLIP\"]\n  C -->|いいえ| E[\"JS計測 + ARIAタブ（既定）\"]</pre><figcaption>図2：どの方式を選ぶかの決定フロー</figcaption></figure>\n<p><strong>自分が試すなら</strong>：迷ったら②（堅実・React状態と繋がる）、RSCを保ちたい局所の見た目UIは①、Reactのタブ群は③の<code>layoutId</code>が最短。<strong>ひとこと</strong>：同じ見た目でも「タブ」と「ナビ」で意味論を分けるのが2026の作法。</p>",
+      "sources": [
+        {
+          "title": "W3C ARIA APG — Tabs Pattern",
+          "url": "https://www.w3.org/WAI/ARIA/apg/patterns/tabs/"
+        },
+        {
+          "title": "Motion — Layout animations / LayoutGroup",
+          "url": "https://motion.dev/docs/react-layout-group"
+        },
+        {
+          "title": "Motion — Accessibility（useReducedMotion / MotionConfig）",
+          "url": "https://motion.dev/docs/react-accessibility"
+        },
+        {
+          "title": "Creating smooth tab transitions with the View Transitions API",
+          "url": "https://dev.to/rodrigoantunes/creating-smooth-tab-transitions-with-the-view-transitions-api-2l4h"
+        },
+        {
+          "title": "Active link animation with Next.js + Motion（cruip）",
+          "url": "https://cruip.com/active-link-animation-with-tailwind-css-and-framer-motion/"
+        }
+      ],
+      "id": "2026-10-25-nextjs"
+    },
+    {
+      "date": "2026-10-25",
+      "topic": "Flutter",
+      "title": "AGP 9＋built-in Kotlinへ今すぐ移行 — Hero飛行・状態復元・アダプティブUIの要点も",
+      "lede": "stable 3.47.8のセキュリティ更新と、11月の3.50昇格を見据えたKotlin内蔵化が今日の軸。Hero / RestorationMixin / M3 window size classesの実務ポイントも押さえる。",
+      "articleHtml": "<p>stableは <strong>3.47.8</strong>。eMudhra中間CA失効に対応する<strong>セキュリティ更新</strong>（勧告 GHSA-frr6-h895-5pxp）で、10/8の3.47.7/Dart 3.13.5から一段上がった。betaは 3.50.0-0.1.pre / Dart 3.14.0 で、<strong>11月のstable 3.50昇格</strong>は不変。本番は3.47.8をpinしつつ別ジョブでbetaを検証するのが堅い。今この時期に緑化しておきたいのが <strong>AGP 9＋built-in Kotlin</strong> だ。AGP 9.0ではKotlin Gradle Plugin（KGP）の明示適用サポートが撤去され、FlutterがKotlinを内蔵管理する。<strong>Flutter 3.44がbuilt-in Kotlin無効のままAGP 9対応、有効化（<code>android.builtInKotlin=true</code>）は3.47以降</strong>。移行ツールが暫定で <code>android.builtInKotlin=false</code> と <code>android.newDsl=false</code> を自動追記する。</p>\n<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg'>\n<rect x='0' y='0' width='600' height='210' fill='#eaf4ef' rx='10'/>\n<text x='20' y='28' font-family='sans-serif' font-size='12' font-weight='700' fill='#0553b1'>AGP 9 ＋ built-in Kotlin への移行</text>\n<rect x='20' y='42' width='250' height='150' fill='#fff' stroke='#c33' stroke-width='1.3' rx='8'/>\n<text x='34' y='64' font-family='monospace' font-size='10.5' fill='#c33'>Before（削除する）</text>\n<text x='34' y='88' font-family='monospace' font-size='10' fill='#333'>plugins {</text>\n<text x='34' y='104' font-family='monospace' font-size='10' fill='#333'>  id(\"kotlin-android\")</text>\n<text x='34' y='120' font-family='monospace' font-size='10' fill='#333'>}</text>\n<text x='34' y='144' font-family='monospace' font-size='10' fill='#333'>android {</text>\n<text x='34' y='160' font-family='monospace' font-size='10' fill='#333'>  kotlinOptions {</text>\n<text x='34' y='176' font-family='monospace' font-size='10' fill='#333'>    jvmTarget = ... } }</text>\n<text x='284' y='122' font-family='sans-serif' font-size='22' fill='#1a7f37'>→</text>\n<rect x='312' y='42' width='268' height='150' fill='#fff' stroke='#1a7f37' stroke-width='1.3' rx='8'/>\n<text x='326' y='64' font-family='monospace' font-size='10.5' fill='#1a7f37'>After（トップレベルへ）</text>\n<text x='326' y='88' font-family='monospace' font-size='10' fill='#333'>kotlin {</text>\n<text x='326' y='104' font-family='monospace' font-size='10' fill='#333'>  compilerOptions {</text>\n<text x='326' y='120' font-family='monospace' font-size='10' fill='#333'>    jvmTarget = JVM_17 } }</text>\n<text x='326' y='148' font-family='monospace' font-size='10' fill='#0553b1'># gradle.properties</text>\n<text x='326' y='164' font-family='monospace' font-size='10' fill='#333'>android.builtInKotlin=true</text>\n<text x='326' y='180' font-family='monospace' font-size='9.5' fill='#777'>（前提: AGP 9＋依存移行済）</text>\n</svg><figcaption>図1：app build.gradle の移行（有効化は Flutter 3.47 以降）</figcaption></figure>\n<p><strong>移行手順（アプリ）</strong>：<code>android/app/build.gradle(.kts)</code> の <code>plugins{}</code> から <code>id(\"kotlin-android\")</code> を削除し、<code>android{}</code> 内の <code>kotlinOptions{ jvmTarget }</code> を削除 → トップレベルに <code>kotlin{ compilerOptions{ jvmTarget = JvmTarget.JVM_17 } }</code> を追加。全依存プラグインの移行を確認してから <code>gradle.properties</code> に <code>android.builtInKotlin=true</code> を設定し <code>flutter run</code> で検証する。未移行のFlutterプラグインがあると<strong>KGP非互換でビルド失敗</strong>（issue #181383）。KGPを使っていないアプリは移行不要で、<code>android.newDsl=false</code> だけでよい。</p>\n<p>アニメーションは <strong>Heroの飛行制御</strong>。飛行中の見た目は <code>flightShuttleBuilder(flightContext, animation, direction, fromHeroContext, toHeroContext)</code> で差し替え、<code>direction</code>（push/pop）で往復を出し分ける。円→矩形の<strong>ラジアルHero</strong>は、既定のコーナー補間だと比率が歪むため <code>createRectTween: (b,e) =&gt; MaterialRectCenterArcTween(begin:b, end:e)</code> で中心を弧補間する。iOSのスワイプバックに連動させるなら <code>Hero(transitionOnUserGestures: true)</code>。同一ルートに同じ <code>tag</code> が2つあるとassertで落ちるので、可変indexでなくID/モデルをtagにする。</p>\n<p><strong>OSキル後の状態復元</strong>は <code>RestorationMixin</code>。<code>MaterialApp</code> に <code>restorationScopeId</code> を定義し、<code>TextField</code>/<code>ScrollView</code> には <code>restorationId</code> を与えるだけで組込復元が有効。自作widgetは <code>restoreState(oldBucket, initialRestore)</code> 内で <code>registerForRestoration(prop, 'id')</code> する。対象はinstance state（未送信フォーム値・選択タブ等）で<strong>Android 1MB上限</strong>。開発者オプションの「アクティビティを保持しない」で破棄を再現して検証する。<strong>アダプティブUI</strong>は、窓全体のサイズは軽量な <code>MediaQuery.sizeOf(context)</code>、局所の制約は <code>LayoutBuilder</code> で測り、M3 window size classesで分岐する（&lt;600はbottom <code>NavigationBar</code>、600dp以上は <code>NavigationRail</code>）。<code>flutter_adaptive_scaffold</code> はdiscontinuedなので、素の <code>LayoutBuilder</code>＋<code>sizeOf</code>＋size classesで組むのが素直だ。</p>\n<figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg'>\n<rect x='0' y='0' width='600' height='150' fill='#eaf4ef' rx='10'/>\n<text x='20' y='26' font-family='sans-serif' font-size='12' font-weight='700' fill='#0553b1'>M3 window size classes（dp）とナビの出し分け</text>\n<rect x='20' y='42' width='120' height='34' fill='#cfe3ff' stroke='#0553b1' rx='4'/>\n<text x='80' y='63' font-family='sans-serif' font-size='10.5' fill='#0553b1' text-anchor='middle'>Compact &lt;600</text>\n<rect x='142' y='42' width='120' height='34' fill='#d7ecdd' stroke='#1a7f37' rx='4'/>\n<text x='202' y='63' font-family='sans-serif' font-size='10' fill='#1a7f37' text-anchor='middle'>Medium 600-839</text>\n<rect x='264' y='42' width='130' height='34' fill='#d7ecdd' stroke='#1a7f37' rx='4'/>\n<text x='329' y='63' font-family='sans-serif' font-size='10' fill='#1a7f37' text-anchor='middle'>Expanded 840-1199</text>\n<rect x='396' y='42' width='100' height='34' fill='#d7ecdd' stroke='#1a7f37' rx='4'/>\n<text x='446' y='63' font-family='sans-serif' font-size='9.5' fill='#1a7f37' text-anchor='middle'>Large 1200-1599</text>\n<rect x='498' y='42' width='82' height='34' fill='#d7ecdd' stroke='#1a7f37' rx='4'/>\n<text x='539' y='63' font-family='sans-serif' font-size='9' fill='#1a7f37' text-anchor='middle'>XL 1600+</text>\n<text x='80' y='104' font-family='sans-serif' font-size='11' fill='#24292f' text-anchor='middle'>NavigationBar</text>\n<text x='80' y='120' font-family='sans-serif' font-size='9.5' fill='#777' text-anchor='middle'>(bottom)</text>\n<text x='360' y='104' font-family='sans-serif' font-size='11' fill='#24292f' text-anchor='middle'>NavigationRail → extended / Drawer</text>\n<text x='360' y='120' font-family='sans-serif' font-size='9.5' fill='#777' text-anchor='middle'>判断は端末種別でなく利用可能なwindowサイズで</text>\n</svg><figcaption>図2：&lt;600dpはbottom bar、600dp以上はrail（MediaQuery.sizeOf で測る）</figcaption></figure>\n<p><strong>自分が試すなら</strong>：まずCIに3.47.8 pin＋beta検証ジョブを用意し、AGP 9移行とKotlin内蔵化を今のうちに通す。<strong>ひとこと</strong>：11月の3.50に向け「ビルド基盤の移行」が最優先、UIはHero/復元/サイズ分岐の定番を押さえておけば盤石。</p>",
+      "sources": [
+        {
+          "title": "Built-in Kotlin migration for app developers（docs.flutter.dev）",
+          "url": "https://docs.flutter.dev/release/breaking-changes/migrate-to-built-in-kotlin/for-app-developers"
+        },
+        {
+          "title": "Hero animations（docs.flutter.dev）",
+          "url": "https://docs.flutter.dev/ui/animations/hero-animations"
+        },
+        {
+          "title": "Restore state on Android（docs.flutter.dev）",
+          "url": "https://docs.flutter.dev/platform-integration/android/restore-state-android"
+        },
+        {
+          "title": "General approach to adaptive apps（docs.flutter.dev）",
+          "url": "https://docs.flutter.dev/ui/adaptive-responsive/general"
+        },
+        {
+          "title": "Window size classes（m3.material.io）",
+          "url": "https://m3.material.io/foundations/layout/applying-layout/window-size-classes"
+        }
+      ],
+      "id": "2026-10-25-flutter"
+    },
     {
       "id": "2026-10-24-claude-code",
       "date": "2026-10-24",
