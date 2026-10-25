@@ -1,0 +1,102 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>AGP 9＋built-in Kotlinへ今すぐ移行 — Hero飛行・状態復元・アダプティブUIの要点も — デイリー技術深掘り 読み物</title><meta name="description" content="stable 3.47.8のセキュリティ更新と、11月の3.50昇格を見据えたKotlin内蔵化が今日の軸。Hero / RestorationMixin / M3 window size classesの実務ポイントも押さえる。"><meta name="theme-color" content="#0277bd"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-25-flutter/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="AGP 9＋built-in Kotlinへ今すぐ移行 — Hero飛行・状態復元・アダプティブUIの要点も — デイリー技術深掘り 読み物"><meta property="og:description" content="stable 3.47.8のセキュリティ更新と、11月の3.50昇格を見据えたKotlin内蔵化が今日の軸。Hero / RestorationMixin / M3 window size classesの実務ポイントも押さえる。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-25-flutter/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #29b6f6, #01579b)"> <span class="glyph" aria-hidden="true">◆</span> <div class="kicker">Flutter</div> <h1>AGP 9＋built-in Kotlinへ今すぐ移行 — Hero飛行・状態復元・アダプティブUIの要点も</h1> <p class="lede">stable 3.47.8のセキュリティ更新と、11月の3.50昇格を見据えたKotlin内蔵化が今日の軸。Hero / RestorationMixin / M3 window size classesの実務ポイントも押さえる。</p> <div class="meta"> <span>📅 2026年10月25日</span> <span>⏱ 約5分</span> <span>🔗 出典 5 件</span> </div> </section> <div class="article-layout" style="--topic:#0277bd"> <div> <article class="prose" data-has-mermaid="0"><p>stableは <strong>3.47.8</strong>。eMudhra中間CA失効に対応する<strong>セキュリティ更新</strong>（勧告 GHSA-frr6-h895-5pxp）で、10/8の3.47.7/Dart 3.13.5から一段上がった。betaは 3.50.0-0.1.pre / Dart 3.14.0 で、<strong>11月のstable 3.50昇格</strong>は不変。本番は3.47.8をpinしつつ別ジョブでbetaを検証するのが堅い。今この時期に緑化しておきたいのが <strong>AGP 9＋built-in Kotlin</strong> だ。AGP 9.0ではKotlin Gradle Plugin（KGP）の明示適用サポートが撤去され、FlutterがKotlinを内蔵管理する。<strong>Flutter 3.44がbuilt-in Kotlin無効のままAGP 9対応、有効化（<code>android.builtInKotlin=true</code>）は3.47以降</strong>。移行ツールが暫定で <code>android.builtInKotlin=false</code> と <code>android.newDsl=false</code> を自動追記する。</p>
+<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg'>
+<rect x='0' y='0' width='600' height='210' fill='#eaf4ef' rx='10'></rect>
+<text x='20' y='28' font-family='sans-serif' font-size='12' font-weight='700' fill='#0553b1'>AGP 9 ＋ built-in Kotlin への移行</text>
+<rect x='20' y='42' width='250' height='150' fill='#fff' stroke='#c33' stroke-width='1.3' rx='8'></rect>
+<text x='34' y='64' font-family='monospace' font-size='10.5' fill='#c33'>Before（削除する）</text>
+<text x='34' y='88' font-family='monospace' font-size='10' fill='#333'>plugins {</text>
+<text x='34' y='104' font-family='monospace' font-size='10' fill='#333'>  id("kotlin-android")</text>
+<text x='34' y='120' font-family='monospace' font-size='10' fill='#333'>}</text>
+<text x='34' y='144' font-family='monospace' font-size='10' fill='#333'>android {</text>
+<text x='34' y='160' font-family='monospace' font-size='10' fill='#333'>  kotlinOptions {</text>
+<text x='34' y='176' font-family='monospace' font-size='10' fill='#333'>    jvmTarget = ... } }</text>
+<text x='284' y='122' font-family='sans-serif' font-size='22' fill='#1a7f37'>→</text>
+<rect x='312' y='42' width='268' height='150' fill='#fff' stroke='#1a7f37' stroke-width='1.3' rx='8'></rect>
+<text x='326' y='64' font-family='monospace' font-size='10.5' fill='#1a7f37'>After（トップレベルへ）</text>
+<text x='326' y='88' font-family='monospace' font-size='10' fill='#333'>kotlin {</text>
+<text x='326' y='104' font-family='monospace' font-size='10' fill='#333'>  compilerOptions {</text>
+<text x='326' y='120' font-family='monospace' font-size='10' fill='#333'>    jvmTarget = JVM_17 } }</text>
+<text x='326' y='148' font-family='monospace' font-size='10' fill='#0553b1'># gradle.properties</text>
+<text x='326' y='164' font-family='monospace' font-size='10' fill='#333'>android.builtInKotlin=true</text>
+<text x='326' y='180' font-family='monospace' font-size='9.5' fill='#777'>（前提: AGP 9＋依存移行済）</text>
+</svg><figcaption>図1：app build.gradle の移行（有効化は Flutter 3.47 以降）</figcaption></figure>
+<p><strong>移行手順（アプリ）</strong>：<code>android/app/build.gradle(.kts)</code> の <code>plugins{}</code> から <code>id("kotlin-android")</code> を削除し、<code>android{}</code> 内の <code>kotlinOptions{ jvmTarget }</code> を削除 → トップレベルに <code>kotlin{ compilerOptions{ jvmTarget = JvmTarget.JVM_17 } }</code> を追加。全依存プラグインの移行を確認してから <code>gradle.properties</code> に <code>android.builtInKotlin=true</code> を設定し <code>flutter run</code> で検証する。未移行のFlutterプラグインがあると<strong>KGP非互換でビルド失敗</strong>（issue #181383）。KGPを使っていないアプリは移行不要で、<code>android.newDsl=false</code> だけでよい。</p>
+<p>アニメーションは <strong>Heroの飛行制御</strong>。飛行中の見た目は <code>flightShuttleBuilder(flightContext, animation, direction, fromHeroContext, toHeroContext)</code> で差し替え、<code>direction</code>（push/pop）で往復を出し分ける。円→矩形の<strong>ラジアルHero</strong>は、既定のコーナー補間だと比率が歪むため <code>createRectTween: (b,e) =&gt; MaterialRectCenterArcTween(begin:b, end:e)</code> で中心を弧補間する。iOSのスワイプバックに連動させるなら <code>Hero(transitionOnUserGestures: true)</code>。同一ルートに同じ <code>tag</code> が2つあるとassertで落ちるので、可変indexでなくID/モデルをtagにする。</p>
+<p><strong>OSキル後の状態復元</strong>は <code>RestorationMixin</code>。<code>MaterialApp</code> に <code>restorationScopeId</code> を定義し、<code>TextField</code>/<code>ScrollView</code> には <code>restorationId</code> を与えるだけで組込復元が有効。自作widgetは <code>restoreState(oldBucket, initialRestore)</code> 内で <code>registerForRestoration(prop, 'id')</code> する。対象はinstance state（未送信フォーム値・選択タブ等）で<strong>Android 1MB上限</strong>。開発者オプションの「アクティビティを保持しない」で破棄を再現して検証する。<strong>アダプティブUI</strong>は、窓全体のサイズは軽量な <code>MediaQuery.sizeOf(context)</code>、局所の制約は <code>LayoutBuilder</code> で測り、M3 window size classesで分岐する（&lt;600はbottom <code>NavigationBar</code>、600dp以上は <code>NavigationRail</code>）。<code>flutter_adaptive_scaffold</code> はdiscontinuedなので、素の <code>LayoutBuilder</code>＋<code>sizeOf</code>＋size classesで組むのが素直だ。</p>
+<figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg'>
+<rect x='0' y='0' width='600' height='150' fill='#eaf4ef' rx='10'></rect>
+<text x='20' y='26' font-family='sans-serif' font-size='12' font-weight='700' fill='#0553b1'>M3 window size classes（dp）とナビの出し分け</text>
+<rect x='20' y='42' width='120' height='34' fill='#cfe3ff' stroke='#0553b1' rx='4'></rect>
+<text x='80' y='63' font-family='sans-serif' font-size='10.5' fill='#0553b1' text-anchor='middle'>Compact &lt;600</text>
+<rect x='142' y='42' width='120' height='34' fill='#d7ecdd' stroke='#1a7f37' rx='4'></rect>
+<text x='202' y='63' font-family='sans-serif' font-size='10' fill='#1a7f37' text-anchor='middle'>Medium 600-839</text>
+<rect x='264' y='42' width='130' height='34' fill='#d7ecdd' stroke='#1a7f37' rx='4'></rect>
+<text x='329' y='63' font-family='sans-serif' font-size='10' fill='#1a7f37' text-anchor='middle'>Expanded 840-1199</text>
+<rect x='396' y='42' width='100' height='34' fill='#d7ecdd' stroke='#1a7f37' rx='4'></rect>
+<text x='446' y='63' font-family='sans-serif' font-size='9.5' fill='#1a7f37' text-anchor='middle'>Large 1200-1599</text>
+<rect x='498' y='42' width='82' height='34' fill='#d7ecdd' stroke='#1a7f37' rx='4'></rect>
+<text x='539' y='63' font-family='sans-serif' font-size='9' fill='#1a7f37' text-anchor='middle'>XL 1600+</text>
+<text x='80' y='104' font-family='sans-serif' font-size='11' fill='#24292f' text-anchor='middle'>NavigationBar</text>
+<text x='80' y='120' font-family='sans-serif' font-size='9.5' fill='#777' text-anchor='middle'>(bottom)</text>
+<text x='360' y='104' font-family='sans-serif' font-size='11' fill='#24292f' text-anchor='middle'>NavigationRail → extended / Drawer</text>
+<text x='360' y='120' font-family='sans-serif' font-size='9.5' fill='#777' text-anchor='middle'>判断は端末種別でなく利用可能なwindowサイズで</text>
+</svg><figcaption>図2：&lt;600dpはbottom bar、600dp以上はrail（MediaQuery.sizeOf で測る）</figcaption></figure>
+<p><strong>自分が試すなら</strong>：まずCIに3.47.8 pin＋beta検証ジョブを用意し、AGP 9移行とKotlin内蔵化を今のうちに通す。<strong>ひとこと</strong>：11月の3.50に向け「ビルド基盤の移行」が最優先、UIはHero/復元/サイズ分岐の定番を押さえておけば盤石。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://docs.flutter.dev/release/breaking-changes/migrate-to-built-in-kotlin/for-app-developers" target="_blank" rel="noopener noreferrer"> Built-in Kotlin migration for app developers（docs.flutter.dev） </a> </li><li> <a href="https://docs.flutter.dev/ui/animations/hero-animations" target="_blank" rel="noopener noreferrer"> Hero animations（docs.flutter.dev） </a> </li><li> <a href="https://docs.flutter.dev/platform-integration/android/restore-state-android" target="_blank" rel="noopener noreferrer"> Restore state on Android（docs.flutter.dev） </a> </li><li> <a href="https://docs.flutter.dev/ui/adaptive-responsive/general" target="_blank" rel="noopener noreferrer"> General approach to adaptive apps（docs.flutter.dev） </a> </li><li> <a href="https://m3.material.io/foundations/layout/applying-layout/window-size-classes" target="_blank" rel="noopener noreferrer"> Window size classes（m3.material.io） </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

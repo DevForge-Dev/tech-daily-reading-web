@@ -1,0 +1,99 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>v2.1.310でMonitorを主要クラウドへ開放 — そして「フック/スキル/ルール/サブエージェント」の使い分け — デイリー技術深掘り 読み物</title><meta name="description" content="小刻みパッチが続く2.1系はv2.1.310でMonitorをBedrock/Vertex/Foundryへ拡大。この日の読みどころは、指示を「いつ読まれ・圧縮に耐え・どれだけ文脈を食うか」で整理する公式の操縦術と、採用で初逆転した市場データだ。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-25-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="v2.1.310でMonitorを主要クラウドへ開放 — そして「フック/スキル/ルール/サブエージェント」の使い分け — デイリー技術深掘り 読み物"><meta property="og:description" content="小刻みパッチが続く2.1系はv2.1.310でMonitorをBedrock/Vertex/Foundryへ拡大。この日の読みどころは、指示を「いつ読まれ・圧縮に耐え・どれだけ文脈を食うか」で整理する公式の操縦術と、採用で初逆転した市場データだ。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-25-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>v2.1.310でMonitorを主要クラウドへ開放 — そして「フック/スキル/ルール/サブエージェント」の使い分け</h1> <p class="lede">小刻みパッチが続く2.1系はv2.1.310でMonitorをBedrock/Vertex/Foundryへ拡大。この日の読みどころは、指示を「いつ読まれ・圧縮に耐え・どれだけ文脈を食うか」で整理する公式の操縦術と、採用で初逆転した市場データだ。</p> <div class="meta"> <span>📅 2026年10月25日</span> <span>⏱ 約4分</span> <span>🔗 出典 6 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="0"><p>2.1系は10月に入って権限・サンドボックス・MCP安定性まわりの小刻みパッチが続いてきた。本日2026/10/25(JST)時点の最新は <strong>v2.1.310（10/23）</strong> で、10/24・10/25付の新規版は確認できない。v2.1.310の芯はクラウド/エンタープライズ強化だ。<strong>MonitorツールとプラグインMonitorをAmazon Bedrock・Google Vertex・Microsoft Foundry、およびテレメトリ無効環境でも利用可能</strong>にし、これらの環境での長時間フォアグラウンドsleepもブロックする。クラウドセッションとリモートコントロールの可否を<strong>Enterpriseのカスタムロール権限</strong>として追加し、Ownerがロール単位で制御できる。改善6件・修正14件では、一部ゲートウェイが <code>effort-2025-11-24</code> ベータ値や会話途中のsystemメッセージを拒否してリクエストが失敗する問題（外して再試行）、<code>cleanupPeriodDays</code>を極端に大きくすると貼付画像など最近のファイルが消える問題、「Prompt is too long」後の圧縮がbase64/SVGを残しすぎて再失敗する問題を解消した。</p>
+<figure class='fig'><svg viewBox='0 0 600 250' xmlns='http://www.w3.org/2000/svg'>
+<rect x='0' y='0' width='600' height='250' fill='#eef7f0' rx='10'></rect>
+<rect x='8' y='8' width='584' height='234' fill='none' stroke='#3fb950' stroke-width='1.5' rx='8'></rect>
+<text x='20' y='30' font-family='sans-serif' font-size='13' font-weight='700' fill='#1a7f37'>手段</text>
+<text x='150' y='30' font-family='sans-serif' font-size='13' font-weight='700' fill='#1a7f37'>いつ読まれる</text>
+<text x='330' y='30' font-family='sans-serif' font-size='13' font-weight='700' fill='#1a7f37'>使いどころ</text>
+<line x1='16' y1='40' x2='584' y2='40' stroke='#3fb950' stroke-width='1'></line>
+<text x='20' y='66' font-family='sans-serif' font-size='12' fill='#24292f'>CLAUDE.md</text>
+<text x='150' y='66' font-family='sans-serif' font-size='11' fill='#57606a'>毎回ロード</text>
+<text x='330' y='66' font-family='sans-serif' font-size='11' fill='#57606a'>常時保持の事実・200行以内</text>
+<text x='20' y='98' font-family='sans-serif' font-size='12' fill='#24292f'>フック</text>
+<text x='150' y='98' font-family='sans-serif' font-size='11' fill='#57606a'>ツール実行の前後</text>
+<text x='330' y='98' font-family='sans-serif' font-size='11' fill='#57606a'>毎回必ず・exit2で拒否(決定論)</text>
+<text x='20' y='130' font-family='sans-serif' font-size='12' fill='#24292f'>スキル</text>
+<text x='150' y='130' font-family='sans-serif' font-size='11' fill='#57606a'>呼び出し時のみ</text>
+<text x='330' y='130' font-family='sans-serif' font-size='11' fill='#57606a'>手順書・レビュー観点</text>
+<text x='20' y='162' font-family='sans-serif' font-size='12' fill='#24292f'>ルール(paths)</text>
+<text x='150' y='162' font-family='sans-serif' font-size='11' fill='#57606a'>該当ファイル編集時</text>
+<text x='330' y='162' font-family='sans-serif' font-size='11' fill='#57606a'>パス限定の制約 src/api/**</text>
+<text x='20' y='194' font-family='sans-serif' font-size='12' fill='#24292f'>サブエージェント</text>
+<text x='150' y='194' font-family='sans-serif' font-size='11' fill='#57606a'>委譲時</text>
+<text x='330' y='194' font-family='sans-serif' font-size='11' fill='#57606a'>重い調査・要約だけ本流へ</text>
+<line x1='16' y1='210' x2='584' y2='210' stroke='#d0d7de' stroke-width='1'></line>
+<text x='20' y='230' font-family='sans-serif' font-size='10.5' fill='#1a7f37'>軸=いつ読込／圧縮に耐えるか／文脈消費量（Anthropic公式）</text>
+</svg><figcaption>図1：Claude Codeを「操縦」する5手段の使い分け</figcaption></figure>
+<p>この日の技術面の本命は、Anthropic公式ブログによる<strong>指示手段の使い分け</strong>だ。各手段を「いつ読み込まれるか／圧縮に耐えるか／文脈をどれだけ食うか」で整理する。<strong>毎回必ず実行したい処理</strong>（編集後のlint、特定コマンドのブロック）はCLAUDE.mdではなく<strong>フック</strong>へ——CLAUDE.mdは多くの場合従われるがフックは決定論的で、<code>PreToolUse</code>が終了コード2を返せばツール呼び出しを拒否できる。CLAUDE.mdは常時保持すべき事実（ビルド/構成/規約）に絞り<strong>200行以内</strong>でコードのようにレビューする。手順書やレビュー観点は<strong>スキル</strong>（呼び出し時のみ読込）、ファイル限定の制約は<code>paths:</code>付き<strong>ルール</strong>（例 <code>src/api/**</code>）、中間出力が大きい調査は<strong>サブエージェント</strong>（最終要約だけ戻す）に委譲する。PubNubの実践記事も、サブエージェントは単一責務・ツール権限最小化（<code>tools</code>省略時はMCP含む全継承に注意）・<code>SubagentStop</code>フックでの連鎖・フックのプロダクションコード化を説く。</p>
+<p>市場データも大きく動いた。Ramp指標（2026年5月）で<strong>Anthropic 34.4% &gt; OpenAI 32.3%</strong> と法人採用率が初逆転し、eWeekは主因をClaude Codeと分析。JetBrains 2026開発者調査では<strong>Claude Codeの職場採用39%</strong>がCopilot 21%を上回った（米国47%、週次利用は約90%）。Tygart Mediaの合成事例では、30人のエンジニア組織が90日で内部監査スコア19→41、生産性35%向上を報告し、CLAUDE.mdを<strong>各リポジトリ400行以内</strong>に保ったチームほどスキル呼び出し率が高かった（800行超は約40%低下）。</p>
+<figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg'>
+<rect x='0' y='0' width='600' height='150' fill='#eef7f0' rx='10'></rect>
+<text x='20' y='28' font-family='sans-serif' font-size='12' font-weight='700' fill='#1a7f37'>職場採用率（JetBrains 2026 開発者調査）</text>
+<text x='20' y='60' font-family='sans-serif' font-size='12' fill='#24292f'>Claude Code</text>
+<rect x='150' y='48' width='390' height='18' fill='#3fb950' rx='4'></rect>
+<text x='548' y='62' font-family='sans-serif' font-size='12' font-weight='700' fill='#1a7f37'>39%</text>
+<text x='20' y='98' font-family='sans-serif' font-size='12' fill='#24292f'>GitHub Copilot</text>
+<rect x='150' y='86' width='210' height='18' fill='#a6d8b4' rx='4'></rect>
+<text x='368' y='100' font-family='sans-serif' font-size='12' font-weight='700' fill='#57606a'>21%</text>
+<text x='20' y='134' font-family='sans-serif' font-size='10.5' fill='#57606a'>米国では47%。AIコーディングエージェントの週次利用は約90%。</text>
+</svg><figcaption>図2：採用でCopilotを逆転（Ramp指標でもAnthropic 34.4% &gt; OpenAI 32.3%）</figcaption></figure>
+<p><strong>自分が試すなら</strong>：まずCLAUDE.mdを棚卸しして200〜400行に圧縮し、「lint実行」「危険コマンド拒否」はフックへ移す。繰り返す手順はスキル化し、重いログ解析はサブエージェントに投げて本流の文脈を汚さない——この配分が採用事例の生産性差を生んでいる。</p>
+<p><strong>ひとこと</strong>：リリースは落ち着きフェーズだが、エコシステムの主役交代と「運用の作法」が固まりつつある転換点。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://code.claude.com/docs/en/changelog" target="_blank" rel="noopener noreferrer"> Claude Code 公式changelog </a> </li><li> <a href="https://www.claude.com/blog/steering-claude-code-skills-hooks-rules-subagents-and-more" target="_blank" rel="noopener noreferrer"> Steering Claude Code: skills, hooks, rules, subagents（Anthropic） </a> </li><li> <a href="https://www.pubnub.com/blog/best-practices-claude-code-sub-agents/" target="_blank" rel="noopener noreferrer"> Best practices for Claude Code sub-agents（PubNub） </a> </li><li> <a href="https://www.eweek.com/fr/artificial-intelligence/anthropic-overtakes-openai-enterprise-ai-adoption-neuron/" target="_blank" rel="noopener noreferrer"> Anthropic overtakes OpenAI in enterprise AI adoption（eWeek） </a> </li><li> <a href="https://aiunderstanding.org/news/36kr-reports-claude-code-led-github-copilot-in-jetbrains-2026-developer-survey" target="_blank" rel="noopener noreferrer"> JetBrains 2026調査でClaude CodeがCopilotを上回る（36Kr報道） </a> </li><li> <a href="https://tygartmedia.com/claude-code-rollout-case-study/" target="_blank" rel="noopener noreferrer"> Claude Code本格導入の事例（Tygart Media） </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

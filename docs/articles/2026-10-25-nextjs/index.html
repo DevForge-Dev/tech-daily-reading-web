@@ -1,0 +1,99 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>スライドするアクティブ・インジケーター — 純CSS / JS計測 / layoutId / View Transitionsを用途で選ぶ — デイリー技術深掘り 読み物</title><meta name="description" content="タブやナビの「ぬるっと動く下線・ピル」。2026は4つの作り方が出そろい、RSCのまま完結させるかReact状態と繋ぐかで正解が変わる。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-25-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="スライドするアクティブ・インジケーター — 純CSS / JS計測 / layoutId / View Transitionsを用途で選ぶ — デイリー技術深掘り 読み物"><meta property="og:description" content="タブやナビの「ぬるっと動く下線・ピル」。2026は4つの作り方が出そろい、RSCのまま完結させるかReact状態と繋ぐかで正解が変わる。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-25-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>スライドするアクティブ・インジケーター — 純CSS / JS計測 / layoutId / View Transitionsを用途で選ぶ</h1> <p class="lede">タブやナビの「ぬるっと動く下線・ピル」。2026は4つの作り方が出そろい、RSCのまま完結させるかReact状態と繋ぐかで正解が変わる。</p> <div class="meta"> <span>📅 2026年10月25日</span> <span>⏱ 約3分</span> <span>🔗 出典 5 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="1"><p>タブ・ナビバー・セグメンテッドコントロールで、選択中を示す下線やピルが切替時に次の項目へスライドする演出は、Vercel・Linear・shadcnなどモダンUIに遍在し、見た目の高級感を一撃で上げる。だが素朴に作ると三重苦に陥る——(1) <code>left/width</code> アニメでレイアウト計算（リフロー）が走りカクつく、(2) SSRで初期位置が出せずハイドレーション後に飛ぶ、(3) キーボード/スクリーンリーダー対応や「タブ」対「ナビ」の意味論を落とす。2026はこれを解く4系統が出そろった。</p>
+<figure class='fig'><svg viewBox='0 0 600 230' xmlns='http://www.w3.org/2000/svg'>
+<rect x='0' y='0' width='600' height='230' fill='#f1f1f6' rx='10'></rect>
+<rect x='8' y='8' width='584' height='214' fill='none' stroke='#111' stroke-width='1.3' rx='8'></rect>
+<text x='18' y='30' font-family='sans-serif' font-size='12' font-weight='700' fill='#111'>方式</text>
+<text x='210' y='30' font-family='sans-serif' font-size='12' font-weight='700' fill='#111'>JS</text>
+<text x='270' y='30' font-family='sans-serif' font-size='12' font-weight='700' fill='#111'>React状態</text>
+<text x='370' y='30' font-family='sans-serif' font-size='12' font-weight='700' fill='#111'>SSR初期位置</text>
+<text x='500' y='30' font-family='sans-serif' font-size='12' font-weight='700' fill='#111'>主用途</text>
+<line x1='16' y1='40' x2='584' y2='40' stroke='#111' stroke-width='1'></line>
+<text x='18' y='70' font-family='sans-serif' font-size='11.5' fill='#222'>純CSS :has()+radio</text>
+<text x='210' y='70' font-family='sans-serif' font-size='11.5' fill='#2a7'>不要</text>
+<text x='278' y='70' font-family='sans-serif' font-size='11.5' fill='#c33'>×</text>
+<text x='380' y='70' font-family='sans-serif' font-size='11.5' fill='#2a7'>◎静的</text>
+<text x='500' y='70' font-family='sans-serif' font-size='10.5' fill='#555'>局所の見た目UI</text>
+<text x='18' y='108' font-family='sans-serif' font-size='11.5' fill='#222'>JS計測+ARIAタブ</text>
+<text x='210' y='108' font-family='sans-serif' font-size='11.5' fill='#555'>要</text>
+<text x='278' y='108' font-family='sans-serif' font-size='11.5' fill='#2a7'>○</text>
+<text x='380' y='108' font-family='sans-serif' font-size='11.5' fill='#d80'>△埋込</text>
+<text x='500' y='108' font-family='sans-serif' font-size='10.5' fill='#555'>堅実な既定</text>
+<text x='18' y='146' font-family='sans-serif' font-size='11.5' fill='#222'>Motion layoutId</text>
+<text x='210' y='146' font-family='sans-serif' font-size='11.5' fill='#555'>要</text>
+<text x='278' y='146' font-family='sans-serif' font-size='11.5' fill='#2a7'>◎</text>
+<text x='380' y='146' font-family='sans-serif' font-size='11.5' fill='#2a7'>◎</text>
+<text x='500' y='146' font-family='sans-serif' font-size='10.5' fill='#555'>Reactタブ</text>
+<text x='18' y='184' font-family='sans-serif' font-size='11.5' fill='#222'>View Transitions</text>
+<text x='210' y='184' font-family='sans-serif' font-size='11.5' fill='#555'>要</text>
+<text x='278' y='184' font-family='sans-serif' font-size='11.5' fill='#2a7'>○</text>
+<text x='380' y='184' font-family='sans-serif' font-size='11.5' fill='#2a7'>◎</text>
+<text x='500' y='184' font-family='sans-serif' font-size='10.5' fill='#555'>状態/ルート遷移</text>
+<line x1='16' y1='198' x2='584' y2='198' stroke='#ccc' stroke-width='1'></line>
+<text x='18' y='216' font-family='sans-serif' font-size='10' fill='#666'>動かすのは常にtransform。left/widthはリフロー誘発＝避ける。</text>
+</svg><figcaption>図1：4系統を用途で選び分ける</figcaption></figure>
+<p><strong>①純CSS（<code>:has()</code>+ラジオ）</strong>：トラック内にラジオを置き、<code>.seg:has(#opt2:checked){--i:1}</code> で絶対配置のピルを <code>transform:translateX(calc(var(--i)*100%))</code> で動かす。動かすのはtransformのみ＝コンポジタ合成で軽く、<code>'use client'</code>不要・ハイドレーションゼロでINP/CLS有利。ただしReactから選択値を読めず、等幅前提。<strong>②JS計測+ARIAタブ</strong>（堅実な既定）：アクティブの <code>offsetLeft/offsetWidth</code> をCSS変数に流す。<code>width</code>遷移はリフローを誘発するので<code>scaleX</code>近似、<strong><code>document.fonts.ready</code>後に再計測</strong>＋<code>ResizeObserver</code>で追従。W3C APGに沿い <code>role=tablist/tab/tabpanel</code> とロービングtabindex（←/→移動）。<strong>③Motion <code>layoutId</code></strong>：アクティブタブ内にだけインジケーターを描画すると、Motionが旧→新位置をFLIPでGPUアニメし、<code>borderRadius</code>も自動補正。<strong>④View Transitions</strong>：<code>view-transition-name</code>を付けDOM更新を <code>document.startViewTransition()</code> で包むと差分を自動補間。未対応環境は素の更新にフォールバック（PE）。</p>
+<p><strong>Next.js（App Router）での要点</strong>：ページ内タブ（パネル切替＝APGタブパターン）か、サイトナビ（URL遷移）かでa11yが分岐する。<strong>ナビはタブではない</strong>ので <code>&lt;nav&gt;</code> ＋ <code>&lt;Link&gt;</code> ＋ アクティブに <code>aria-current="page"</code> とし、<code>role="tab"</code> を付けない。計測・VT・<code>layoutId</code>はどれもDOM依存なので、<strong>インジケーターの小島だけ <code>'use client'</code></strong> にし、タブ中身はRSCを <code>children</code> で流す。アクティブ項目を初回レンダー時点で確定（ナビは <code>usePathname</code>、タブは初期props）させればSSRと初期位置が一致してチラつかない。<code>prefers-reduced-motion</code> は「状態切替は必ず成立させ、動きだけ止める」が共通方針（Motionは <code>MotionConfig reducedMotion="user"</code>）。</p>
+<figure class='fig'><pre class='mermaid'>flowchart TD
+  A["Reactから選択値を読む?"] -->|いいえ| B["純CSS :has()+radio（RSCのまま）"]
+  A -->|はい| C["Motionを使える?"]
+  C -->|はい| D["layoutId で共有レイアウトFLIP"]
+  C -->|いいえ| E["JS計測 + ARIAタブ（既定）"]</pre><figcaption>図2：どの方式を選ぶかの決定フロー</figcaption></figure>
+<p><strong>自分が試すなら</strong>：迷ったら②（堅実・React状態と繋がる）、RSCを保ちたい局所の見た目UIは①、Reactのタブ群は③の<code>layoutId</code>が最短。<strong>ひとこと</strong>：同じ見た目でも「タブ」と「ナビ」で意味論を分けるのが2026の作法。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://www.w3.org/WAI/ARIA/apg/patterns/tabs/" target="_blank" rel="noopener noreferrer"> W3C ARIA APG — Tabs Pattern </a> </li><li> <a href="https://motion.dev/docs/react-layout-group" target="_blank" rel="noopener noreferrer"> Motion — Layout animations / LayoutGroup </a> </li><li> <a href="https://motion.dev/docs/react-accessibility" target="_blank" rel="noopener noreferrer"> Motion — Accessibility（useReducedMotion / MotionConfig） </a> </li><li> <a href="https://dev.to/rodrigoantunes/creating-smooth-tab-transitions-with-the-view-transitions-api-2l4h" target="_blank" rel="noopener noreferrer"> Creating smooth tab transitions with the View Transitions API </a> </li><li> <a href="https://cruip.com/active-link-animation-with-tailwind-css-and-framer-motion/" target="_blank" rel="noopener noreferrer"> Active link animation with Next.js + Motion（cruip） </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
