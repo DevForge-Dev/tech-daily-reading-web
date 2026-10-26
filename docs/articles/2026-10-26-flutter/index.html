@@ -1,0 +1,86 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Flutterデスクトップの到達点 — Impeller既定化・experimental multi-window・Widget Previews stable — デイリー技術深掘り 読み物</title><meta name="description" content="stable 3.47.8時点で、デスクトップはImpellerが既定（macOS=Metal／Win・Linux=Vulkan）になり、experimental multi-windowとWin/Linux flavor、Widget Previews stableが揃った。11月の3.50（Web WasmGC既定）前の“足場固め”の全体像。"><meta name="theme-color" content="#0277bd"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-26-flutter/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Flutterデスクトップの到達点 — Impeller既定化・experimental multi-window・Widget Previews stable — デイリー技術深掘り 読み物"><meta property="og:description" content="stable 3.47.8時点で、デスクトップはImpellerが既定（macOS=Metal／Win・Linux=Vulkan）になり、experimental multi-windowとWin/Linux flavor、Widget Previews stableが揃った。11月の3.50（Web WasmGC既定）前の“足場固め”の全体像。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-26-flutter/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #29b6f6, #01579b)"> <span class="glyph" aria-hidden="true">◆</span> <div class="kicker">Flutter</div> <h1>Flutterデスクトップの到達点 — Impeller既定化・experimental multi-window・Widget Previews stable</h1> <p class="lede">stable 3.47.8時点で、デスクトップはImpellerが既定（macOS=Metal／Win・Linux=Vulkan）になり、experimental multi-windowとWin/Linux flavor、Widget Previews stableが揃った。11月の3.50（Web WasmGC既定）前の“足場固め”の全体像。</p> <div class="meta"> <span>📅 2026年10月26日</span> <span>⏱ 約3分</span> <span>🔗 出典 5 件</span> </div> </section> <div class="article-layout" style="--topic:#0277bd"> <div> <article class="prose" data-has-mermaid="0"><p>現況のstableは <strong>3.47.8</strong>（eMudhra中間CA失効に対応するsecurity update・勧告 <code>GHSA-frr6-h895-5pxp</code>）。betaは <strong>3.50.0-0.1.pre / Dart 3.14.0</strong> 据え置きで、<strong>11月stableの3.50</strong>（Web WasmGC既定・Android Impeller一本化）という見通しは変わらない。本番は <strong>3.47.8をpin＋別ジョブでbeta</strong> を追う運用が無難だ。この日の主役は、ここ数リリースで揃ったデスクトップ基盤である。</p>
+
+<h4 id="sec-1">何が新しいか：デスクトップImpeller既定化</h4>
+<p>デスクトップのImpeller既定化が完了し、<strong>macOSはMetal、Windows・LinuxはVulkan</strong>（3.47〜）で描画する。macOSは <strong>Wide Gamut Color</strong> が既定になり、文字は <strong>SDF（Signed Distance Function）レンダリング</strong>（macOS/Linux/Windows）に。暫定的なopt-outはプラットフォーム別に用意されるが、いずれ撤去される前提だ。</p>
+
+<figure class='fig'><svg viewBox='0 0 600 180' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+<text x='20' y='26' font-size='13' font-weight='bold' fill='#123'>デスクトップ Impeller 既定バックエンドと暫定opt-out</text>
+<line x1='20' y1='40' x2='580' y2='40' stroke='#1a7f37' stroke-width='1.5'></line>
+<g font-size='11' fill='#123'>
+<text x='28' y='60' font-weight='bold'>プラットフォーム</text><text x='210' y='60' font-weight='bold'>既定バックエンド</text><text x='360' y='60' font-weight='bold'>暫定 opt-out</text>
+<text x='28' y='92'>macOS</text><text x='210' y='92' fill='#1a7f37'>Metal（+Wide Gamut）</text><text x='360' y='92' fill='#555'>Info.plist: FLTEnableImpeller=false</text>
+<text x='28' y='120'>Windows</text><text x='210' y='120' fill='#1a7f37'>Vulkan</text><text x='360' y='120' fill='#555'>set_impeller_switch(Disabled)</text>
+<text x='28' y='148'>Linux</text><text x='210' y='148' fill='#1a7f37'>Vulkan</text><text x='360' y='148' fill='#555'>fl_dart_project_set_enable_impeller(FALSE)</text>
+</g>
+<line x1='20' y1='70' x2='580' y2='70' stroke='#cde' stroke-width='1'></line>
+<line x1='20' y1='100' x2='580' y2='100' stroke='#cde' stroke-width='1'></line>
+<line x1='20' y1='128' x2='580' y2='128' stroke='#cde' stroke-width='1'></line>
+<text x='20' y='172' font-size='10' fill='#777'>文字はSDFレンダリング（3プラットフォーム共通）。opt-outはいずれ撤去。</text>
+</svg><figcaption>図1：macOSはMetal、Windows/LinuxはVulkan。opt-outは暫定。</figcaption></figure>
+
+<h4 id="sec-2">experimental multi-window と flavor</h4>
+<p>実験的だが <strong>Linux/Windowsでpopup window</strong> に対応し、新 <strong>sized-to-content API</strong> が内容にフィットする通常/ダイアログwindowを生成する。各コントローラの <strong><code>windowHandle</code></strong> がネイティブの <code>HWND</code>/<code>NSWindow</code>/<code>GtkWindow</code> を公開し、Windowsプラグインは <code>FlutterEngine::PostPlatformThreadTask</code> で処理をプラットフォームスレッドへ逃がせる。加えて <strong>Windows/Linuxのflavor対応</strong>（<code>flutter build windows --flavor flavor_a</code>）で、<code>pubspec.yaml</code> にflavor別アセットを書けるようになった。macOSは <code>flutter config --enable-macos-arm64-only</code> でARM64-onlyビルド、SwiftPMは上位100プラグイン中92が移行済み。</p>
+
+<h4 id="sec-3">Widget Previews stable と、この日の技法</h4>
+<p><strong>Widget Previews stable</strong> は <code>.widget_preview/</code> のプロジェクトキャッシュで起動を速くし、<code>PreviewThemeData</code> で階層的なテーマテストができる（要 iOS15/macOS12・Java17・compileSdk36）。実装面の小ネタも押さえておきたい。段階（stagger）アニメーションは <strong>controller1つ＋各Tweenの <code>Interval(begin,end)</code></strong> で“ずらし”を作るのが正体で、専用のdelayプロパティは無い——区間の隙間が遅延、接する区間が連続、同一区間の共有が同時進行になる。状態管理のRiverpodは <strong><code>@riverpod</code> コード生成</strong>で、戻り型（<code>T</code>/<code>Future&lt;T&gt;</code>/<code>Notifier</code>）がprovider種別を自動決定し、<code>family</code> は引数を足すだけに置き換わる。アプリサイズは <code>--analyze-size</code>＋App Size toolのtreemapで <strong>可視化してから削る</strong>。</p>
+
+<h4 id="sec-4">ひとことまとめ</h4>
+<p>Flutterデスクトップは「動く」から「本番で整う」段階へ。Impeller既定・multi-window・flavor・Widget Previewsが出揃った今、3.47.8をpinしつつ11月の3.50を試すのが現実解だ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://flutter.dev/blog/whats-new-in-flutter-3-47" target="_blank" rel="noopener noreferrer"> What&#39;s new in Flutter 3.47（flutter.dev） </a> </li><li> <a href="https://docs.flutter.dev/release/whats-new" target="_blank" rel="noopener noreferrer"> What&#39;s new in the docs（docs.flutter.dev） </a> </li><li> <a href="https://docs.flutter.dev/ui/animations/staggered-animations" target="_blank" rel="noopener noreferrer"> Staggered animations（docs.flutter.dev） </a> </li><li> <a href="https://codewithandrea.com/articles/flutter-riverpod-generator/" target="_blank" rel="noopener noreferrer"> Flutter Riverpod Generator（codewithandrea.com） </a> </li><li> <a href="https://docs.flutter.dev/perf/app-size" target="_blank" rel="noopener noreferrer"> Measuring your app&#39;s size（docs.flutter.dev） </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 何が新しいか：デスクトップImpeller既定化 </a> </li><li> <a href="#sec-2" data-toc="sec-2"> experimental multi-window と flavor </a> </li><li> <a href="#sec-3" data-toc="sec-3"> Widget Previews stable と、この日の技法 </a> </li><li> <a href="#sec-4" data-toc="sec-4"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-10-26</div> <div>⏱ 読了 約3分</div> <div>🏷 Flutter</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
