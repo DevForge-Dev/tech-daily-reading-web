@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-10-26T04:46:14.369Z",
+  "generatedAt": "2026-10-27T04:46:27.906Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,118 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "date": "2026-10-27",
+      "topic": "Claude Code",
+      "title": "10/27のClaude Code — 新規版は止まっても「自動モード×コンテキスト管理」が静かに成熟している",
+      "lede": "v2.1.310で止まった週。だが直近1ヶ月の更新を並べると、auto modeの既定化と長い会話の自動圧縮という“放っておいても安全に走り続ける”方向がはっきり見える。",
+      "articleHtml": "<p>10/27(JST)時点で公式changelogの最新は<strong>v2.1.310（10/23）</strong>のまま。10/24〜27の新規リリースは確認できない。だが「新しい版が無い日」こそ、直近1ヶ月で何が積み上がったかを読み直す好機だ。キーワードは<strong>auto mode（自動モード）</strong>と<strong>コンテキスト管理</strong>の2本で、どちらも「人が張り付かなくても安全に長く走る」方向を向いている。</p>\n\n<h4>何が積み上がったか</h4>\n<p>直近の目立つ更新はこう並ぶ。v2.1.299（10/14）で<strong>200Kトークン超の会話を約54分アイドルで自動圧縮</strong>（<code>idleCompaction:false</code>で無効化可）。v2.1.302（10/16）で圧縮に使うモデルを選ぶ<code>CLAUDE_CODE_AUTO_MODE_MODEL</code>と<code>/config</code>のアイドル圧縮設定が入り、フォーク・サブエージェントがターミナル外でも既定ONに。v2.1.304（10/19）で<code>/auto-mode-setup</code>というガイド付きセットアップが追加。v2.1.305（10/20）でLinuxサンドボックス向けに<code>sandbox.allowNestedUserNamespaces</code>（ファイル保護を弱めうるので慎重に）。そしてv2.1.310（10/23）はVS Codeの計画レビューで「フィードバックを送って計画を続行」ボタンが計画を誤承認する問題の修正や、prompt-too-long後の圧縮が密なテキスト（base64/SVG）を残しすぎる挙動の緩和を含む。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='0' y='0' width='600' height='150' fill='#fff7f3'/>\n  <line x1='40' y1='110' x2='570' y2='110' stroke='#d9896a' stroke-width='1.5'/>\n  <g font-size='11' fill='#7a4634'>\n    <circle cx='95' cy='110' r='4' fill='#d97757'/><text x='95' y='128' text-anchor='middle'>v2.1.299</text><text x='95' y='90' text-anchor='middle'>54分アイドル圧縮</text>\n    <circle cx='215' cy='110' r='4' fill='#d97757'/><text x='215' y='128' text-anchor='middle'>v2.1.302</text><text x='215' y='78' text-anchor='middle'>圧縮モデル選択</text><text x='215' y='92' text-anchor='middle'>fork既定ON</text>\n    <circle cx='335' cy='110' r='4' fill='#d97757'/><text x='335' y='128' text-anchor='middle'>v2.1.304</text><text x='335' y='90' text-anchor='middle'>/auto-mode-setup</text>\n    <circle cx='455' cy='110' r='4' fill='#d97757'/><text x='455' y='128' text-anchor='middle'>v2.1.305</text><text x='455' y='90' text-anchor='middle'>sandbox nested ns</text>\n    <circle cx='545' cy='110' r='5' fill='#b8502f'/><text x='545' y='128' text-anchor='middle'>v2.1.310</text><text x='545' y='90' text-anchor='middle'>圧縮/誤承認修正</text>\n  </g>\n  <text x='40' y='24' font-size='13' fill='#b8502f' font-weight='bold'>直近1ヶ月：auto mode × コンテキスト管理の整備</text>\n</svg><figcaption>図1：10/14〜10/23の主な更新。長い会話を自動で畳み、自動モードを整える流れ。</figcaption></figure>\n\n<h4>「操縦」の設計図 — 強制はフックへ</h4>\n<p>公式ブログ「Steering Claude Code」は、挙動を形づくる手段を<strong>「いつ読み込むか・コンテキストを食うか・強制力」</strong>の3軸で整理する。要点は、CLAUDE.mdは毎ターン読まれコンテキストを消費するので“常に知るべき事実”だけ（200行以内推奨）に絞ること。長い手順はスキル（名前と説明だけ先読み、呼び出し時に全文）、脇作業はサブエージェント（独自コンテキストで要約だけ返す）。そして<strong>ハードな禁止は指示文ではなくフック・権限・管理設定で行う</strong>——指示はプレッシャーやプロンプトインジェクションで破られうるからだ。この「強制はフックへ」という線引きは、auto modeが既定化していく今こそ効いてくる。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 185' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='11'>\n  <rect x='0' y='0' width='600' height='185' fill='#fff7f3'/>\n  <g fill='#7a4634'>\n    <rect x='20' y='24' width='560' height='26' fill='#f6ddcf' stroke='#d9896a'/>\n    <text x='30' y='41' font-weight='bold'>手段</text><text x='180' y='41' font-weight='bold'>読み込み時機</text><text x='340' y='41' font-weight='bold'>強制力</text><text x='430' y='41' font-weight='bold'>向く用途</text>\n    <rect x='20' y='50' width='560' height='30' fill='#fffdfb' stroke='#eccbbb'/>\n    <text x='30' y='69'>CLAUDE.md</text><text x='180' y='69'>常時（毎ターン）</text><text x='340' y='69'>弱</text><text x='430' y='69'>常に知るべき事実</text>\n    <rect x='20' y='80' width='560' height='30' fill='#fffdfb' stroke='#eccbbb'/>\n    <text x='30' y='99'>スキル</text><text x='180' y='99'>呼び出し時に全文</text><text x='340' y='99'>中</text><text x='430' y='99'>長い手順（デプロイ等）</text>\n    <rect x='20' y='110' width='560' height='30' fill='#fffdfb' stroke='#eccbbb'/>\n    <text x='30' y='129'>サブエージェント</text><text x='180' y='129'>独自コンテキスト</text><text x='340' y='129'>中</text><text x='430' y='129'>調査・監査の脇作業</text>\n    <rect x='20' y='140' width='560' height='30' fill='#fdeee6' stroke='#d9896a'/>\n    <text x='30' y='159' font-weight='bold'>フック/権限</text><text x='180' y='159'>イベント時</text><text x='340' y='159' font-weight='bold'>強（破れない）</text><text x='430' y='159'>危険操作のブロック</text>\n  </g>\n  <text x='20' y='16' font-size='12' fill='#b8502f' font-weight='bold'>操縦手段の使い分け（読み込み時機・強制力・用途）</text>\n</svg><figcaption>図2：下に行くほど強制力が上がる。禁止は指示文でなく最下段で。</figcaption></figure>\n\n<h4>実務での使いどころ・自分が試すなら</h4>\n<p>auto modeはPro/Max/Teamで既に既定（2026/8）で、1,053名テストでは<strong>有害操作の89%を検知</strong>（手動レビューは13.6%）という数字も出ている。自分が試すなら、まず<code>/auto-mode-setup</code>で入口を作り、<strong>絶対にやらせたくない操作（本番DBへの破壊的コマンド等）はCLAUDE.mdに書くのではなくdeny/フックで固める</strong>。長い会話は54分の自動圧縮に任せつつ、base64やSVGを貼る作業では圧縮が効きすぎないか様子を見る。</p>\n\n<h4>注意点・落とし穴</h4>\n<p><code>sandbox.allowNestedUserNamespaces</code>はサンドボックスの保護を弱めうるので、必要な環境だけで。市場シェアの「34.4%」「企業導入4倍」などはAnthropic全体の指標でClaude Code単体の寄与は切り分けられておらず、二次引用も多い——話のマクラにはいいが、根拠として引くのは控えめに。</p>\n\n<h4>ひとことまとめ</h4>\n<p>版が出ない日こそ、設計思想が見える。「長い会話は自動で畳む」「禁止はフックで固める」——放任と制御の線引きが、auto mode既定時代のClaude Codeの背骨だ。</p>",
+      "sources": [
+        {
+          "title": "Claude Code 公式changelog",
+          "url": "https://code.claude.com/docs/en/changelog"
+        },
+        {
+          "title": "Claude Code リリース追跡（havoptic, 2026/10）",
+          "url": "https://www.havoptic.com/releases/claude-code/2026/10"
+        },
+        {
+          "title": "Steering Claude Code（Anthropic公式ブログ）",
+          "url": "https://www.claude.com/blog/steering-claude-code-skills-hooks-rules-subagents-and-more"
+        },
+        {
+          "title": "サブエージェントの使い所と止め所（@IT）",
+          "url": "https://atmarkit.itmedia.co.jp/ait/spv/2606/04/news055.html"
+        },
+        {
+          "title": "auto modeをPro/Max/Team既定化（報道）",
+          "url": "https://q15tp4m.performancegolf.com/article/anthropic-to-default-claude-codes-auto-mode-for-pro-max-and-team-accounts-msm761fe"
+        }
+      ],
+      "id": "2026-10-27-claude-code"
+    },
+    {
+      "date": "2026-10-27",
+      "topic": "Next.js",
+      "title": "JSゼロで作るCover Flow — scroll-driven animations が3Dカルーセルを“CSSだけ”に変えた",
+      "lede": "iTunes由来のCover FlowはThree.jsの領域だった。animation-timeline: view() とscroll-snapで、scrollリスナー無し・コンポジタスレッド実行の3Dカルーセルが書ける。App Routerなら基本RSCのまま。",
+      "articleHtml": "<p>中央のカードが正面を向き、左右が奥へ傾く——iTunes/iPod由来の「Cover Flow」は長年、Three.jsや専用ライブラリ（数百KB）の世界だった。これが<strong>CSS Scroll-driven Animations（<code>animation-timeline: view()</code>）＋ <code>scroll-snap</code> ＋ CSS 3D transforms</strong>だけで書けるようになった。最大の価値は、<strong>JSの<code>scroll</code>リスナーがゼロ</strong>で、アニメーションが<strong>コンポジタスレッドで走りメインスレッドを塞がない</strong>こと。慣性スクロール・トラックパッド・キーボードはすべてネイティブ挙動のまま残る。</p>\n\n<h4>仕組み — スクロール進行度をタイムラインにする</h4>\n<p>コアのメンタルモデルはこうだ。横スクロールのリスト（<code>overflow-x:auto; scroll-snap-type:x mandatory</code>）を作り、各カードに<code>scroll-snap-align:center</code>で中央吸着させる。各カードに<strong>view progress timeline</strong>（<code>view-timeline-name</code> ＋ <code>view-timeline-axis:inline</code>）を宣言すると、「その要素が横スクロールポートに入り始め(0%)→中央(50%)→抜け切る(100%)」が0〜100%のタイムラインになる。あとは<code>@keyframes</code>を<code>animation-timeline</code>でそのタイムラインに束ねるだけ。時間ではなく<strong>スクロール位置で駆動</strong>される。3Dの肝は、親に<code>perspective</code>と<code>transform-style:preserve-3d</code>を置き、回転は<strong>カード中身の<code>&lt;img&gt;</code>に当てる</strong>こと——<code>&lt;li&gt;</code>自体をtransformするとボックス（＝スクロール幅）が変わってガタつく。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='0' y='0' width='600' height='210' fill='#f7f7f8'/>\n  <text x='20' y='22' font-size='12' fill='#111' font-weight='bold'>view()タイムラインで補間するカードの姿勢（&lt;img&gt;に適用）</text>\n  <g>\n    <rect x='60' y='70' width='55' height='80' fill='#dfe3ea' stroke='#9aa3b2' transform='skewY(18) translate(0,-20)'/>\n    <text x='78' y='185' font-size='11' fill='#444' text-anchor='middle'>0%</text>\n    <text x='78' y='60' font-size='10' fill='#667' text-anchor='middle'>rotateY(-45°)</text>\n    <text x='78' y='48' font-size='10' fill='#667' text-anchor='middle'>左から入る</text>\n\n    <rect x='200' y='66' width='55' height='84' fill='#e3e7ee' stroke='#9aa3b2' transform='skewY(10)'/>\n    <text x='227' y='185' font-size='11' fill='#444' text-anchor='middle'>35%</text>\n    <text x='227' y='52' font-size='10' fill='#667' text-anchor='middle'>rotateY(-45°)</text>\n\n    <rect x='300' y='52' width='78' height='104' fill='#c9d4ff' stroke='#4a63d6' stroke-width='2'/>\n    <text x='339' y='185' font-size='11' fill='#111' text-anchor='middle' font-weight='bold'>50%</text>\n    <text x='339' y='44' font-size='10' fill='#3146b5' text-anchor='middle'>rotateY(0) +translateZ</text>\n    <text x='339' y='32' font-size='10' fill='#3146b5' text-anchor='middle'>scale(1.5)・最前面</text>\n\n    <rect x='420' y='66' width='55' height='84' fill='#e3e7ee' stroke='#9aa3b2' transform='skewY(-10)'/>\n    <text x='447' y='185' font-size='11' fill='#444' text-anchor='middle'>65%</text>\n    <text x='447' y='52' font-size='10' fill='#667' text-anchor='middle'>rotateY(45°)</text>\n\n    <rect x='520' y='70' width='55' height='80' fill='#dfe3ea' stroke='#9aa3b2' transform='skewY(-18) translate(0,-20)'/>\n    <text x='545' y='185' font-size='11' fill='#444' text-anchor='middle'>100%</text>\n    <text x='545' y='52' font-size='10' fill='#667' text-anchor='middle'>右へ抜ける</text>\n  </g>\n</svg><figcaption>図1：0%→50%→100%の姿勢。中央(50%)だけ正面・手前・1.5倍で最前面に。</figcaption></figure>\n\n<h4>対応状況とプログレッシブエンハンスメント</h4>\n<p>2026年後半の現実はこうだ。<strong>Chromium系（Chrome/Edge 115+）とSafari 26</strong>は安定サポート。<strong>Firefoxは既定では未対応</strong>（フラグ段階）。だから<code>@supports (animation-timeline: view())</code>で3D演出を“上乗せ”し、無い環境では素の<code>scroll-snap</code>カルーセルとして成立させるのが必須。土台が機能するので「壊れはしない」のが、この設計の強みだ。</p>\n\n<figure class='fig'><pre class='mermaid'>flowchart TD\n  A[\"横scroll-snapリスト（土台）\"] --> B{\"@supports animation-timeline: view() ?\"}\n  B -->|\"対応 Chrome115+ / Safari26\"| C[\"3D Cover Flow を上乗せ\"]\n  B -->|\"未対応 Firefox既定\"| D[\"素のsnapカルーセルで成立\"]\n  C --> E{\"prefers-reduced-motion ?\"}\n  E -->|\"reduce\"| D\n  E -->|\"no-preference\"| C</pre><figcaption>図2：土台→@supports→reduced-motionの縮退フロー。常にフラットなカルーセルに落ちる。</figcaption></figure>\n\n<h4>App Routerでの組み込み・自分が試すなら</h4>\n<p>カバーフロー本体はCSSで完結するので<code>'use client'</code>は不要。<code>app/gallery/page.tsx</code>（Server Component）で画像リストを描画し、CSS Modulesでスタイルを当てるだけ。完全に静的化でき、ハイドレーション差分も出ない。<code>'use client'</code>を足すのは、矢印キーでの隣カード移動や<code>aria-live</code>での「中央＝◯◯」読み上げといった<strong>キーボード/アクセシビリティ層だけ</strong>に限定すると、JSペイロードが最小になる。自分が試すなら、メディアギャラリーや商品ショーケースのような“全カードが常に存在してスクロールする”用途が好適。<code>next/image</code>を使うなら中央カードがLCP候補になりうるので<code>sizes</code>を明示する。</p>\n\n<h4>注意点・落とし穴</h4>\n<p>①transformは必ずカード中身へ（<code>&lt;li&gt;</code>直接はスクロール幅が変動）。②<code>scale(1.5)</code>で中央が拡大する分、gap/paddingを確保しないと隣に被る。③<code>-webkit-box-reflect</code>（鏡面）はFirefox非対応＆描画コスト高——装飾扱いに。④奥行き回転＋ズームは酔いやすい。<code>prefers-reduced-motion: reduce</code>で3D演出を止め、中央吸着のフラットなカルーセルに縮退させる。</p>\n\n<h4>ひとことまとめ</h4>\n<p>「JSで毎フレーム計算」から「CSSにスクロール進行度を渡すだけ」へ。土台を素のsnapで組み、3Dを<code>@supports</code>で上乗せする二段構えが、2026年のカルーセルの作法だ。</p>",
+      "sources": [
+        {
+          "title": "Addy Osmani — Cover Flow with Modern CSS",
+          "url": "https://addyosmani.com/blog/coverflow/"
+        },
+        {
+          "title": "scroll-driven-animations.style — Cover Flow デモ",
+          "url": "https://scroll-driven-animations.style/demos/cover-flow/css/"
+        },
+        {
+          "title": "WebKit Blog — A guide to Scroll-driven Animations with just CSS",
+          "url": "https://webkit.org/blog/17101/a-guide-to-scroll-driven-animations-with-just-css/"
+        },
+        {
+          "title": "MDN — animation-timeline",
+          "url": "https://developer.mozilla.org/docs/Web/CSS/animation-timeline"
+        },
+        {
+          "title": "SitePoint — Scroll-Driven CSS in 2026: Carousels Without JavaScript",
+          "url": "https://www.sitepoint.com/scrolldriven-css-in-2026-building-carousels-without-javascript/"
+        }
+      ],
+      "id": "2026-10-27-nextjs"
+    },
+    {
+      "date": "2026-10-27",
+      "topic": "Flutter",
+      "title": "constとKeyはなぜ効くのか — ElementのcanUpdateを味方につけてrebuildを短絡する（11月3.50を前に）",
+      "lede": "stable 3.47.8（Dart 3.13.7・eMudhra CAブロックのセキュリティ更新）が出て、11月の3.50が射程に。足元で効くのは、const/Key/memoizationでElementの再利用を促し16.67msの予算を守る地味な技だ。",
+      "articleHtml": "<p>現況はstable <strong>3.47.8 / Dart 3.13.7（10/23）</strong>。これは侵害された<strong>eMudhra中間CA鍵をブロック</strong>するセキュリティ更新（勧告GHSA-frr6-h895-5pxp）で、本番はca-certificates更新＋3.47.8へpinが定石。betaは<strong>3.50.0-0.2.pre / Dart 3.14.0</strong>＝11月stable昇格の2本目で、<strong>Web WasmGC既定化</strong>・<strong>Android Impeller一本化</strong>・Wasm遅延ロードstable・Android17 day-zeroが確定事項。<code>material_ui</code>/<code>cupertino_ui</code>は11月に正式deprecation（移行は<code>dart fix --code=migrate_design_widgets</code>）。今のうちに<code>build web --wasm</code>と<code>appbundle</code>を緑にしておきたい。——その“足元を固める”流れで今日は、派手さは無いが効く<strong>rebuild短絡</strong>を深掘りする。</p>\n\n<h4>仕組み — canUpdate() が再利用の分かれ道</h4>\n<p>毎フレーム、frameworkは新しいwidgetツリーを既存の<strong>Element</strong>と突き合わせる。<code>canUpdate()</code>は<strong><code>runtimeType</code>と<code>key</code>を比較</strong>し、一致すればElementを再利用して<code>mount()</code>ではなく<code>update()</code>を呼ぶ。ここで<code>const</code>コンストラクタは<strong>正準インスタンス（canonical）</strong>を生むので、<code>identical()</code>で同一と分かった部分木は<strong>比較ごとスキップ</strong>＝rebuildを短絡できる。<code>Key</code>はリスト並べ替えで「どのElementがどのwidgetに対応するか」を安定させ、部分木の作り直しを防ぐ。</p>\n\n<figure class='fig'><pre class='mermaid'>flowchart TD\n  A[\"新widget vs 既存Element\"] --> B{\"canUpdate: runtimeType と key が一致?\"}\n  B -->|\"一致\"| C[\"Element再利用 → update()\"]\n  B -->|\"不一致\"| D[\"旧を破棄 → 新規mount()（高コスト）\"]\n  C --> E{\"const で identical?\"}\n  E -->|\"はい\"| F[\"部分木まるごとスキップ\"]\n  E -->|\"いいえ\"| G[\"子を再帰的に比較\"]</pre><figcaption>図1：const化とKey安定化が「再利用」側に倒す。mount()は作り直しで最も重い。</figcaption></figure>\n\n<h4>どれだけ効くか（実測・非公式）</h4>\n<p>数字で見ると効果は無視できない。12 widgetの商品カードで7つをconst化＋TextStyle 2つを<code>static final</code>退避で<strong>4.2ms→1.8ms（約57%減）</strong>。20スイッチの設定画面でラベルをconstの<code>_SettingLabel</code>に抽出して<strong>3.1ms→0.9ms</strong>（OnePlus 9）。極めつけは<code>Key</code>で、50件チャットの並べ替えが<strong>8〜12ms → <code>ValueKey(message.id)</code>で1ms未満</strong>。StatelessWidget単発rebuildはPixel6で約50〜200µs、ListViewタイル30個で1.5〜6ms——<strong>16.67msの予算</strong>に対して決して小さくない。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 220' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='11'>\n  <rect x='0' y='0' width='600' height='220' fill='#f3f9ff'/>\n  <text x='20' y='20' font-size='12' fill='#02569B' font-weight='bold'>rebuild時間：before（濃）→ after（淡）</text>\n  <line x1='150' y1='40' x2='150' y2='190' stroke='#9bb8d0'/>\n  <g>\n    <text x='140' y='64' text-anchor='end' fill='#334'>商品カード</text>\n    <rect x='150' y='52' width='252' height='14' fill='#02569B'/><text x='410' y='63' fill='#334'>4.2ms</text>\n    <rect x='150' y='70' width='108' height='14' fill='#7fb3dd'/><text x='266' y='81' fill='#334'>1.8ms（−57%）</text>\n    <text x='140' y='112' text-anchor='end' fill='#334'>設定20行</text>\n    <rect x='150' y='100' width='186' height='14' fill='#02569B'/><text x='344' y='111' fill='#334'>3.1ms</text>\n    <rect x='150' y='118' width='54' height='14' fill='#7fb3dd'/><text x='212' y='129' fill='#334'>0.9ms</text>\n    <text x='140' y='160' text-anchor='end' fill='#334'>50件並べ替え</text>\n    <rect x='150' y='148' width='300' height='14' fill='#02569B'/><text x='458' y='159' fill='#334'>8〜12ms</text>\n    <rect x='150' y='166' width='6' height='14' fill='#7fb3dd'/><text x='164' y='177' fill='#334'>&lt;1ms（ValueKey）</text>\n  </g>\n  <line x1='520' y1='40' x2='520' y2='190' stroke='#e06666' stroke-dasharray='4 3'/><text x='520' y='205' text-anchor='middle' font-size='10' fill='#c0392b'>16.67ms/フレーム予算</text>\n</svg><figcaption>図2：const/static final/ValueKeyの実測効果。並べ替えのKey効果が突出。</figcaption></figure>\n\n<h4>memoizationの型と使い分け</h4>\n<p>テーマ由来の<code>TextStyle</code>等は<strong><code>static final</code></strong>、不変モデル由来のwidgetは<code>late final</code>、重い部分木は<strong>const StatelessWidgetでラップして内側だけrebuild</strong>。使い分けの指針は「組み込み暗黙 > <code>TweenAnimationBuilder</code>（組み込みに無い単発プロパティ）> 明示アニメ（ループ）」と同じく、<strong>まず軽い手段から</strong>。</p>\n\n<h4>注意点・落とし穴</h4>\n<p><code>UniqueKey()</code>をbuild内で使うと毎回別Element化するので禁物。<code>Theme</code>/<code>MediaQuery</code>等のInheritedWidget依存をキャッシュすると値がstale化し、コールバックを抱えたキャッシュは古いクロージャを掴む。そして最重要——const化は<strong>勘でやらない</strong>。必ず<code>--profile</code>ビルドでDevToolsの<code>Widget.build</code>スパンと「Track Widget Rebuilds」を見て、カードやリストタイルのような<strong>高頻度rebuildパスを計測してから</strong>効かせる。</p>\n\n<h4>ひとことまとめ</h4>\n<p>constは「定数宣言」ではなく「Elementに“これは変わらない”と伝える最適化ヒント」。11月の3.50でレンダリング基盤が動く前に、canUpdateを味方につける癖をつけておきたい。</p>",
+      "sources": [
+        {
+          "title": "The StatelessWidget Rebuild Myth（omr.it.com）",
+          "url": "https://omr.it.com/blog/stateless-widget-memoization-flutter-rebuild-cost/"
+        },
+        {
+          "title": "Performance best practices（docs.flutter.dev）",
+          "url": "https://docs.flutter.dev/perf/best-practices"
+        },
+        {
+          "title": "Flutter Versions（flutterreleases.com）",
+          "url": "https://flutterreleases.com/flutter-versions/"
+        },
+        {
+          "title": "GHSA-frr6-h895-5pxp（eMudhra CAブロック）",
+          "url": "https://github.com/dart-lang/sdk/security/advisories/GHSA-frr6-h895-5pxp"
+        },
+        {
+          "title": "What's new in the docs（docs.flutter.dev）",
+          "url": "https://docs.flutter.dev/release/whats-new"
+        }
+      ],
+      "id": "2026-10-27-flutter"
+    },
+    {
+      "date": "2026-10-27",
+      "topic": "GitHub Trending",
+      "title": "10/27の話題リポジトリ — 大手3社が別角度から出した「AIコーディングの次」（自己進化IDE・録画からスキル化・spec敵対レビュー）",
+      "lede": "JetBrains・Microsoft・Googleが同じ日にトレンド上位に。共通する問いは「AIに書かせる前後をどう設計するか」——入口（IDE）・知見の資産化（録画）・品質の担保（spec）の3点を3社が分担した格好だ。",
+      "articleHtml": "<p>この日のGitHub Trendingは<strong>AIコーディング・ツール一色</strong>。中でも大手3社の新顔が別々の角度から急上昇したのが目を引く。共通するのは「LLMにコードを書かせること」自体ではなく、<strong>その前後——入口・知見の再利用・品質担保——をどう設計するか</strong>という問いだ。momentum枠の<strong>JetBrains/thinkrail</strong>、DevForge適合枠の<strong>microsoft/skill-recorder</strong>と<strong>google/elephant-goldfish-model</strong>を、「解決したい課題」と「提供する機能」の2点で読む。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='10.5'>\n  <rect x='0' y='0' width='600' height='210' fill='#f2fbf4'/>\n  <text x='16' y='18' font-size='12' fill='#1a7f37' font-weight='bold'>リポジトリ × 解決したい課題 / 提供する機能</text>\n  <g fill='#14532d'>\n    <rect x='16' y='26' width='568' height='24' fill='#d7f3df' stroke='#3fb950'/>\n    <text x='24' y='42' font-weight='bold'>リポジトリ</text><text x='180' y='42' font-weight='bold'>解決したい課題</text><text x='400' y='42' font-weight='bold'>提供する機能</text>\n    <rect x='16' y='50' width='568' height='50' fill='#ffffff' stroke='#bfe6c8'/>\n    <text x='24' y='70' font-weight='bold'>JetBrains/</text><text x='24' y='84' font-weight='bold'>thinkrail</text>\n    <text x='180' y='70'>IDEが使い手に合わず、</text><text x='180' y='84'>設定沼に時間を溶かす</text>\n    <text x='400' y='70'>piでバイブコーディング、</text><text x='400' y='84'>使い方に合わせIDEが自己調整</text>\n    <rect x='16' y='100' width='568' height='50' fill='#ffffff' stroke='#bfe6c8'/>\n    <text x='24' y='120' font-weight='bold'>microsoft/</text><text x='24' y='134' font-weight='bold'>skill-recorder</text>\n    <text x='180' y='120'>繰り返す画面操作が</text><text x='180' y='134'>属人化し資産にならない</text>\n    <text x='400' y='120'>作業を録画→意図＋手順に</text><text x='400' y='134'>再構成し再利用スキル化</text>\n    <rect x='16' y='150' width='568' height='50' fill='#ffffff' stroke='#bfe6c8'/>\n    <text x='24' y='170' font-weight='bold'>google/elephant-</text><text x='24' y='184' font-weight='bold'>goldfish-model</text>\n    <text x='180' y='170'>曖昧なspecのまま実装し、</text><text x='180' y='184'>手戻りと仕様漏れが出る</text>\n    <text x='400' y='170'>Elephantがspec起草、Goldfish</text><text x='400' y='184'>群が実装前に敵対的レビュー</text>\n  </g>\n</svg><figcaption>図：3本を「課題→機能」で一望。入口・資産化・品質担保の分担が見える。</figcaption></figure>\n\n<h4>JetBrains/thinkrail（TypeScript・⭐約2.8k）</h4>\n<p><strong>解決したい課題：</strong>既存IDEは多機能ゆえ設定と学習コストが重く、AIで速く書きたい開発者の体感に追いつかない。<strong>提供する機能：</strong>AIコーディングツール「pi」でバイブコーディングしつつ、<strong>使い方に合わせてIDE自身がUI/挙動を自己カスタマイズ</strong>する軽量な“実”IDE。JetBrains公式・Apache-2.0。<strong>なぜ今急上昇：</strong>本日+約1,156、実測約2,838★で<strong>率約41%＝当日トップ級</strong>。大型が居並ぶ中、総スターが小さいまま急伸した純モメンタムの新星で、「JetBrainsがバイブコーディング専用IDEを出した」こと自体が話題の軸。</p>\n\n<h4>microsoft/skill-recorder（TypeScript・⭐約5.2k）</h4>\n<p><strong>解決したい課題：</strong>STATUS更新・デプロイ手順・定型チェックのような繰り返し作業が頭の中にしか無く、他人・他PJへ移せない。<strong>提供する機能：</strong>画面上の作業セッションを録画し、<strong>GitHub Copilot SDKで「意図＋手順」として再構成</strong>、再利用可能なスキル/自動化に変える。録画はAnalyze実行までローカル保持＝機微データと相性良し。Microsoft公式・MIT。<strong>なぜ今急上昇：</strong>本日Qiita日報にFirst Timerとして+約257で初登場。「反復作業を録画からスキル化」という発想が、1人で多PJを横断する開発の資産化の起点になりうる。</p>\n\n<h4>google/elephant-goldfish-model（Python・⭐約1.7k）</h4>\n<p><strong>解決したい課題：</strong>specが曖昧なまま実装に入ると、仕様漏れや手戻りが後工程で噴出する。<strong>提供する機能：</strong>深い文脈を持つ<strong>「Elephant」がspecを起草</strong>し、文脈ゼロの独立サブエージェント<strong>「Goldfish」群が実装前にそのspecを敵対的にストレステスト</strong>する、スペック駆動開発プラグイン。Claude Code/Codex/Antigravity/Claude Cowork対応、<code>/egm-brainstorm→/egm-draft→/egm-review</code>のループ。Google公式・Apache-2.0。<strong>なぜ今急上昇：</strong>Trendshift日次New掲載のGoogle公式新顔。「書く前にspecを多段レビューで潰す」設計が、Yes-man禁止・設計正本運用といった規律志向に刺さっている。</p>\n\n<h4>自分が試すなら</h4>\n<p>3本は導入の重さが違う。最も軽いのは<strong>skill-recorder</strong>——個人の繰り返し作業を1本だけ録画→スキル化して効果を測る。設計規律を上げたいなら<strong>elephant-goldfish-model</strong>を1PJの新機能でdraft→reviewだけ試運転（Apache-2.0で業務利用も問題なし）。thinkrailはApache-2.0のモメンタム枠だが、自己進化IDEはまだ観察対象——本採用より“どんなUIが自己調整されるか”を眺める段階だ。</p>\n\n<h4>ひとことまとめ</h4>\n<p>「速く書く（thinkrail）」「知見を残す（skill-recorder）」「仕様を潰す（elephant-goldfish）」。AIに書かせる時代の勝負どころが、コード生成そのものから<strong>その前後の設計</strong>へ移っていることを、大手3社が同じ日に示した。</p>",
+      "sources": [
+        {
+          "title": "JetBrains/thinkrail",
+          "url": "https://github.com/JetBrains/thinkrail"
+        },
+        {
+          "title": "microsoft/skill-recorder",
+          "url": "https://github.com/microsoft/skill-recorder"
+        },
+        {
+          "title": "google/elephant-goldfish-model",
+          "url": "https://github.com/google/elephant-goldfish-model"
+        }
+      ],
+      "id": "2026-10-27-github-trending"
+    },
     {
       "date": "2026-10-26",
       "topic": "Claude Code",
