@@ -1,0 +1,100 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>constとKeyはなぜ効くのか — ElementのcanUpdateを味方につけてrebuildを短絡する（11月3.50を前に） — デイリー技術深掘り 読み物</title><meta name="description" content="stable 3.47.8（Dart 3.13.7・eMudhra CAブロックのセキュリティ更新）が出て、11月の3.50が射程に。足元で効くのは、const/Key/memoizationでElementの再利用を促し16.67msの予算を守る地味な技だ。"><meta name="theme-color" content="#0277bd"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-27-flutter/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="constとKeyはなぜ効くのか — ElementのcanUpdateを味方につけてrebuildを短絡する（11月3.50を前に） — デイリー技術深掘り 読み物"><meta property="og:description" content="stable 3.47.8（Dart 3.13.7・eMudhra CAブロックのセキュリティ更新）が出て、11月の3.50が射程に。足元で効くのは、const/Key/memoizationでElementの再利用を促し16.67msの予算を守る地味な技だ。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-27-flutter/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #29b6f6, #01579b)"> <span class="glyph" aria-hidden="true">◆</span> <div class="kicker">Flutter</div> <h1>constとKeyはなぜ効くのか — ElementのcanUpdateを味方につけてrebuildを短絡する（11月3.50を前に）</h1> <p class="lede">stable 3.47.8（Dart 3.13.7・eMudhra CAブロックのセキュリティ更新）が出て、11月の3.50が射程に。足元で効くのは、const/Key/memoizationでElementの再利用を促し16.67msの予算を守る地味な技だ。</p> <div class="meta"> <span>📅 2026年10月27日</span> <span>⏱ 約4分</span> <span>🔗 出典 5 件</span> </div> </section> <div class="article-layout" style="--topic:#0277bd"> <div> <article class="prose" data-has-mermaid="1"><p>現況はstable <strong>3.47.8 / Dart 3.13.7（10/23）</strong>。これは侵害された<strong>eMudhra中間CA鍵をブロック</strong>するセキュリティ更新（勧告GHSA-frr6-h895-5pxp）で、本番はca-certificates更新＋3.47.8へpinが定石。betaは<strong>3.50.0-0.2.pre / Dart 3.14.0</strong>＝11月stable昇格の2本目で、<strong>Web WasmGC既定化</strong>・<strong>Android Impeller一本化</strong>・Wasm遅延ロードstable・Android17 day-zeroが確定事項。<code>material_ui</code>/<code>cupertino_ui</code>は11月に正式deprecation（移行は<code>dart fix --code=migrate_design_widgets</code>）。今のうちに<code>build web --wasm</code>と<code>appbundle</code>を緑にしておきたい。——その“足元を固める”流れで今日は、派手さは無いが効く<strong>rebuild短絡</strong>を深掘りする。</p>
+
+<h4 id="sec-1">仕組み — canUpdate() が再利用の分かれ道</h4>
+<p>毎フレーム、frameworkは新しいwidgetツリーを既存の<strong>Element</strong>と突き合わせる。<code>canUpdate()</code>は<strong><code>runtimeType</code>と<code>key</code>を比較</strong>し、一致すればElementを再利用して<code>mount()</code>ではなく<code>update()</code>を呼ぶ。ここで<code>const</code>コンストラクタは<strong>正準インスタンス（canonical）</strong>を生むので、<code>identical()</code>で同一と分かった部分木は<strong>比較ごとスキップ</strong>＝rebuildを短絡できる。<code>Key</code>はリスト並べ替えで「どのElementがどのwidgetに対応するか」を安定させ、部分木の作り直しを防ぐ。</p>
+
+<figure class='fig'><pre class='mermaid'>flowchart TD
+  A["新widget vs 既存Element"] --> B{"canUpdate: runtimeType と key が一致?"}
+  B -->|"一致"| C["Element再利用 → update()"]
+  B -->|"不一致"| D["旧を破棄 → 新規mount()（高コスト）"]
+  C --> E{"const で identical?"}
+  E -->|"はい"| F["部分木まるごとスキップ"]
+  E -->|"いいえ"| G["子を再帰的に比較"]</pre><figcaption>図1：const化とKey安定化が「再利用」側に倒す。mount()は作り直しで最も重い。</figcaption></figure>
+
+<h4 id="sec-2">どれだけ効くか（実測・非公式）</h4>
+<p>数字で見ると効果は無視できない。12 widgetの商品カードで7つをconst化＋TextStyle 2つを<code>static final</code>退避で<strong>4.2ms→1.8ms（約57%減）</strong>。20スイッチの設定画面でラベルをconstの<code>_SettingLabel</code>に抽出して<strong>3.1ms→0.9ms</strong>（OnePlus 9）。極めつけは<code>Key</code>で、50件チャットの並べ替えが<strong>8〜12ms → <code>ValueKey(message.id)</code>で1ms未満</strong>。StatelessWidget単発rebuildはPixel6で約50〜200µs、ListViewタイル30個で1.5〜6ms——<strong>16.67msの予算</strong>に対して決して小さくない。</p>
+
+<figure class='fig'><svg viewBox='0 0 600 220' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='11'>
+  <rect x='0' y='0' width='600' height='220' fill='#f3f9ff'></rect>
+  <text x='20' y='20' font-size='12' fill='#02569B' font-weight='bold'>rebuild時間：before（濃）→ after（淡）</text>
+  <line x1='150' y1='40' x2='150' y2='190' stroke='#9bb8d0'></line>
+  <g>
+    <text x='140' y='64' text-anchor='end' fill='#334'>商品カード</text>
+    <rect x='150' y='52' width='252' height='14' fill='#02569B'></rect><text x='410' y='63' fill='#334'>4.2ms</text>
+    <rect x='150' y='70' width='108' height='14' fill='#7fb3dd'></rect><text x='266' y='81' fill='#334'>1.8ms（−57%）</text>
+    <text x='140' y='112' text-anchor='end' fill='#334'>設定20行</text>
+    <rect x='150' y='100' width='186' height='14' fill='#02569B'></rect><text x='344' y='111' fill='#334'>3.1ms</text>
+    <rect x='150' y='118' width='54' height='14' fill='#7fb3dd'></rect><text x='212' y='129' fill='#334'>0.9ms</text>
+    <text x='140' y='160' text-anchor='end' fill='#334'>50件並べ替え</text>
+    <rect x='150' y='148' width='300' height='14' fill='#02569B'></rect><text x='458' y='159' fill='#334'>8〜12ms</text>
+    <rect x='150' y='166' width='6' height='14' fill='#7fb3dd'></rect><text x='164' y='177' fill='#334'>&lt;1ms（ValueKey）</text>
+  </g>
+  <line x1='520' y1='40' x2='520' y2='190' stroke='#e06666' stroke-dasharray='4 3'></line><text x='520' y='205' text-anchor='middle' font-size='10' fill='#c0392b'>16.67ms/フレーム予算</text>
+</svg><figcaption>図2：const/static final/ValueKeyの実測効果。並べ替えのKey効果が突出。</figcaption></figure>
+
+<h4 id="sec-3">memoizationの型と使い分け</h4>
+<p>テーマ由来の<code>TextStyle</code>等は<strong><code>static final</code></strong>、不変モデル由来のwidgetは<code>late final</code>、重い部分木は<strong>const StatelessWidgetでラップして内側だけrebuild</strong>。使い分けの指針は「組み込み暗黙 > <code>TweenAnimationBuilder</code>（組み込みに無い単発プロパティ）> 明示アニメ（ループ）」と同じく、<strong>まず軽い手段から</strong>。</p>
+
+<h4 id="sec-4">注意点・落とし穴</h4>
+<p><code>UniqueKey()</code>をbuild内で使うと毎回別Element化するので禁物。<code>Theme</code>/<code>MediaQuery</code>等のInheritedWidget依存をキャッシュすると値がstale化し、コールバックを抱えたキャッシュは古いクロージャを掴む。そして最重要——const化は<strong>勘でやらない</strong>。必ず<code>--profile</code>ビルドでDevToolsの<code>Widget.build</code>スパンと「Track Widget Rebuilds」を見て、カードやリストタイルのような<strong>高頻度rebuildパスを計測してから</strong>効かせる。</p>
+
+<h4 id="sec-5">ひとことまとめ</h4>
+<p>constは「定数宣言」ではなく「Elementに“これは変わらない”と伝える最適化ヒント」。11月の3.50でレンダリング基盤が動く前に、canUpdateを味方につける癖をつけておきたい。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://omr.it.com/blog/stateless-widget-memoization-flutter-rebuild-cost/" target="_blank" rel="noopener noreferrer"> The StatelessWidget Rebuild Myth（omr.it.com） </a> </li><li> <a href="https://docs.flutter.dev/perf/best-practices" target="_blank" rel="noopener noreferrer"> Performance best practices（docs.flutter.dev） </a> </li><li> <a href="https://flutterreleases.com/flutter-versions/" target="_blank" rel="noopener noreferrer"> Flutter Versions（flutterreleases.com） </a> </li><li> <a href="https://github.com/dart-lang/sdk/security/advisories/GHSA-frr6-h895-5pxp" target="_blank" rel="noopener noreferrer"> GHSA-frr6-h895-5pxp（eMudhra CAブロック） </a> </li><li> <a href="https://docs.flutter.dev/release/whats-new" target="_blank" rel="noopener noreferrer"> What&#39;s new in the docs（docs.flutter.dev） </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 仕組み — canUpdate() が再利用の分かれ道 </a> </li><li> <a href="#sec-2" data-toc="sec-2"> どれだけ効くか（実測・非公式） </a> </li><li> <a href="#sec-3" data-toc="sec-3"> memoizationの型と使い分け </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 注意点・落とし穴 </a> </li><li> <a href="#sec-5" data-toc="sec-5"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-10-27</div> <div>⏱ 読了 約4分</div> <div>🏷 Flutter</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

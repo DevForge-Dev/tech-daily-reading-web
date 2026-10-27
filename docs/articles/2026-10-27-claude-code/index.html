@@ -1,0 +1,104 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>10/27のClaude Code — 新規版は止まっても「自動モード×コンテキスト管理」が静かに成熟している — デイリー技術深掘り 読み物</title><meta name="description" content="v2.1.310で止まった週。だが直近1ヶ月の更新を並べると、auto modeの既定化と長い会話の自動圧縮という“放っておいても安全に走り続ける”方向がはっきり見える。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-27-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="10/27のClaude Code — 新規版は止まっても「自動モード×コンテキスト管理」が静かに成熟している — デイリー技術深掘り 読み物"><meta property="og:description" content="v2.1.310で止まった週。だが直近1ヶ月の更新を並べると、auto modeの既定化と長い会話の自動圧縮という“放っておいても安全に走り続ける”方向がはっきり見える。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-27-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>10/27のClaude Code — 新規版は止まっても「自動モード×コンテキスト管理」が静かに成熟している</h1> <p class="lede">v2.1.310で止まった週。だが直近1ヶ月の更新を並べると、auto modeの既定化と長い会話の自動圧縮という“放っておいても安全に走り続ける”方向がはっきり見える。</p> <div class="meta"> <span>📅 2026年10月27日</span> <span>⏱ 約4分</span> <span>🔗 出典 5 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="0"><p>10/27(JST)時点で公式changelogの最新は<strong>v2.1.310（10/23）</strong>のまま。10/24〜27の新規リリースは確認できない。だが「新しい版が無い日」こそ、直近1ヶ月で何が積み上がったかを読み直す好機だ。キーワードは<strong>auto mode（自動モード）</strong>と<strong>コンテキスト管理</strong>の2本で、どちらも「人が張り付かなくても安全に長く走る」方向を向いている。</p>
+
+<h4 id="sec-1">何が積み上がったか</h4>
+<p>直近の目立つ更新はこう並ぶ。v2.1.299（10/14）で<strong>200Kトークン超の会話を約54分アイドルで自動圧縮</strong>（<code>idleCompaction:false</code>で無効化可）。v2.1.302（10/16）で圧縮に使うモデルを選ぶ<code>CLAUDE_CODE_AUTO_MODE_MODEL</code>と<code>/config</code>のアイドル圧縮設定が入り、フォーク・サブエージェントがターミナル外でも既定ONに。v2.1.304（10/19）で<code>/auto-mode-setup</code>というガイド付きセットアップが追加。v2.1.305（10/20）でLinuxサンドボックス向けに<code>sandbox.allowNestedUserNamespaces</code>（ファイル保護を弱めうるので慎重に）。そしてv2.1.310（10/23）はVS Codeの計画レビューで「フィードバックを送って計画を続行」ボタンが計画を誤承認する問題の修正や、prompt-too-long後の圧縮が密なテキスト（base64/SVG）を残しすぎる挙動の緩和を含む。</p>
+
+<figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <rect x='0' y='0' width='600' height='150' fill='#fff7f3'></rect>
+  <line x1='40' y1='110' x2='570' y2='110' stroke='#d9896a' stroke-width='1.5'></line>
+  <g font-size='11' fill='#7a4634'>
+    <circle cx='95' cy='110' r='4' fill='#d97757'></circle><text x='95' y='128' text-anchor='middle'>v2.1.299</text><text x='95' y='90' text-anchor='middle'>54分アイドル圧縮</text>
+    <circle cx='215' cy='110' r='4' fill='#d97757'></circle><text x='215' y='128' text-anchor='middle'>v2.1.302</text><text x='215' y='78' text-anchor='middle'>圧縮モデル選択</text><text x='215' y='92' text-anchor='middle'>fork既定ON</text>
+    <circle cx='335' cy='110' r='4' fill='#d97757'></circle><text x='335' y='128' text-anchor='middle'>v2.1.304</text><text x='335' y='90' text-anchor='middle'>/auto-mode-setup</text>
+    <circle cx='455' cy='110' r='4' fill='#d97757'></circle><text x='455' y='128' text-anchor='middle'>v2.1.305</text><text x='455' y='90' text-anchor='middle'>sandbox nested ns</text>
+    <circle cx='545' cy='110' r='5' fill='#b8502f'></circle><text x='545' y='128' text-anchor='middle'>v2.1.310</text><text x='545' y='90' text-anchor='middle'>圧縮/誤承認修正</text>
+  </g>
+  <text x='40' y='24' font-size='13' fill='#b8502f' font-weight='bold'>直近1ヶ月：auto mode × コンテキスト管理の整備</text>
+</svg><figcaption>図1：10/14〜10/23の主な更新。長い会話を自動で畳み、自動モードを整える流れ。</figcaption></figure>
+
+<h4 id="sec-2">「操縦」の設計図 — 強制はフックへ</h4>
+<p>公式ブログ「Steering Claude Code」は、挙動を形づくる手段を<strong>「いつ読み込むか・コンテキストを食うか・強制力」</strong>の3軸で整理する。要点は、CLAUDE.mdは毎ターン読まれコンテキストを消費するので“常に知るべき事実”だけ（200行以内推奨）に絞ること。長い手順はスキル（名前と説明だけ先読み、呼び出し時に全文）、脇作業はサブエージェント（独自コンテキストで要約だけ返す）。そして<strong>ハードな禁止は指示文ではなくフック・権限・管理設定で行う</strong>——指示はプレッシャーやプロンプトインジェクションで破られうるからだ。この「強制はフックへ」という線引きは、auto modeが既定化していく今こそ効いてくる。</p>
+
+<figure class='fig'><svg viewBox='0 0 600 185' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='11'>
+  <rect x='0' y='0' width='600' height='185' fill='#fff7f3'></rect>
+  <g fill='#7a4634'>
+    <rect x='20' y='24' width='560' height='26' fill='#f6ddcf' stroke='#d9896a'></rect>
+    <text x='30' y='41' font-weight='bold'>手段</text><text x='180' y='41' font-weight='bold'>読み込み時機</text><text x='340' y='41' font-weight='bold'>強制力</text><text x='430' y='41' font-weight='bold'>向く用途</text>
+    <rect x='20' y='50' width='560' height='30' fill='#fffdfb' stroke='#eccbbb'></rect>
+    <text x='30' y='69'>CLAUDE.md</text><text x='180' y='69'>常時（毎ターン）</text><text x='340' y='69'>弱</text><text x='430' y='69'>常に知るべき事実</text>
+    <rect x='20' y='80' width='560' height='30' fill='#fffdfb' stroke='#eccbbb'></rect>
+    <text x='30' y='99'>スキル</text><text x='180' y='99'>呼び出し時に全文</text><text x='340' y='99'>中</text><text x='430' y='99'>長い手順（デプロイ等）</text>
+    <rect x='20' y='110' width='560' height='30' fill='#fffdfb' stroke='#eccbbb'></rect>
+    <text x='30' y='129'>サブエージェント</text><text x='180' y='129'>独自コンテキスト</text><text x='340' y='129'>中</text><text x='430' y='129'>調査・監査の脇作業</text>
+    <rect x='20' y='140' width='560' height='30' fill='#fdeee6' stroke='#d9896a'></rect>
+    <text x='30' y='159' font-weight='bold'>フック/権限</text><text x='180' y='159'>イベント時</text><text x='340' y='159' font-weight='bold'>強（破れない）</text><text x='430' y='159'>危険操作のブロック</text>
+  </g>
+  <text x='20' y='16' font-size='12' fill='#b8502f' font-weight='bold'>操縦手段の使い分け（読み込み時機・強制力・用途）</text>
+</svg><figcaption>図2：下に行くほど強制力が上がる。禁止は指示文でなく最下段で。</figcaption></figure>
+
+<h4 id="sec-3">実務での使いどころ・自分が試すなら</h4>
+<p>auto modeはPro/Max/Teamで既に既定（2026/8）で、1,053名テストでは<strong>有害操作の89%を検知</strong>（手動レビューは13.6%）という数字も出ている。自分が試すなら、まず<code>/auto-mode-setup</code>で入口を作り、<strong>絶対にやらせたくない操作（本番DBへの破壊的コマンド等）はCLAUDE.mdに書くのではなくdeny/フックで固める</strong>。長い会話は54分の自動圧縮に任せつつ、base64やSVGを貼る作業では圧縮が効きすぎないか様子を見る。</p>
+
+<h4 id="sec-4">注意点・落とし穴</h4>
+<p><code>sandbox.allowNestedUserNamespaces</code>はサンドボックスの保護を弱めうるので、必要な環境だけで。市場シェアの「34.4%」「企業導入4倍」などはAnthropic全体の指標でClaude Code単体の寄与は切り分けられておらず、二次引用も多い——話のマクラにはいいが、根拠として引くのは控えめに。</p>
+
+<h4 id="sec-5">ひとことまとめ</h4>
+<p>版が出ない日こそ、設計思想が見える。「長い会話は自動で畳む」「禁止はフックで固める」——放任と制御の線引きが、auto mode既定時代のClaude Codeの背骨だ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://code.claude.com/docs/en/changelog" target="_blank" rel="noopener noreferrer"> Claude Code 公式changelog </a> </li><li> <a href="https://www.havoptic.com/releases/claude-code/2026/10" target="_blank" rel="noopener noreferrer"> Claude Code リリース追跡（havoptic, 2026/10） </a> </li><li> <a href="https://www.claude.com/blog/steering-claude-code-skills-hooks-rules-subagents-and-more" target="_blank" rel="noopener noreferrer"> Steering Claude Code（Anthropic公式ブログ） </a> </li><li> <a href="https://atmarkit.itmedia.co.jp/ait/spv/2606/04/news055.html" target="_blank" rel="noopener noreferrer"> サブエージェントの使い所と止め所（@IT） </a> </li><li> <a href="https://q15tp4m.performancegolf.com/article/anthropic-to-default-claude-codes-auto-mode-for-pro-max-and-team-accounts-msm761fe" target="_blank" rel="noopener noreferrer"> auto modeをPro/Max/Team既定化（報道） </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 何が積み上がったか </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 「操縦」の設計図 — 強制はフックへ </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 実務での使いどころ・自分が試すなら </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 注意点・落とし穴 </a> </li><li> <a href="#sec-5" data-toc="sec-5"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-10-27</div> <div>⏱ 読了 約4分</div> <div>🏷 Claude Code</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

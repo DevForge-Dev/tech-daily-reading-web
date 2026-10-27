@@ -1,0 +1,110 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>JSゼロで作るCover Flow — scroll-driven animations が3Dカルーセルを“CSSだけ”に変えた — デイリー技術深掘り 読み物</title><meta name="description" content="iTunes由来のCover FlowはThree.jsの領域だった。animation-timeline: view() とscroll-snapで、scrollリスナー無し・コンポジタスレッド実行の3Dカルーセルが書ける。App Routerなら基本RSCのまま。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-27-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="JSゼロで作るCover Flow — scroll-driven animations が3Dカルーセルを“CSSだけ”に変えた — デイリー技術深掘り 読み物"><meta property="og:description" content="iTunes由来のCover FlowはThree.jsの領域だった。animation-timeline: view() とscroll-snapで、scrollリスナー無し・コンポジタスレッド実行の3Dカルーセルが書ける。App Routerなら基本RSCのまま。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-27-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>JSゼロで作るCover Flow — scroll-driven animations が3Dカルーセルを“CSSだけ”に変えた</h1> <p class="lede">iTunes由来のCover FlowはThree.jsの領域だった。animation-timeline: view() とscroll-snapで、scrollリスナー無し・コンポジタスレッド実行の3Dカルーセルが書ける。App Routerなら基本RSCのまま。</p> <div class="meta"> <span>📅 2026年10月27日</span> <span>⏱ 約4分</span> <span>🔗 出典 5 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="1"><p>中央のカードが正面を向き、左右が奥へ傾く——iTunes/iPod由来の「Cover Flow」は長年、Three.jsや専用ライブラリ（数百KB）の世界だった。これが<strong>CSS Scroll-driven Animations（<code>animation-timeline: view()</code>）＋ <code>scroll-snap</code> ＋ CSS 3D transforms</strong>だけで書けるようになった。最大の価値は、<strong>JSの<code>scroll</code>リスナーがゼロ</strong>で、アニメーションが<strong>コンポジタスレッドで走りメインスレッドを塞がない</strong>こと。慣性スクロール・トラックパッド・キーボードはすべてネイティブ挙動のまま残る。</p>
+
+<h4 id="sec-1">仕組み — スクロール進行度をタイムラインにする</h4>
+<p>コアのメンタルモデルはこうだ。横スクロールのリスト（<code>overflow-x:auto; scroll-snap-type:x mandatory</code>）を作り、各カードに<code>scroll-snap-align:center</code>で中央吸着させる。各カードに<strong>view progress timeline</strong>（<code>view-timeline-name</code> ＋ <code>view-timeline-axis:inline</code>）を宣言すると、「その要素が横スクロールポートに入り始め(0%)→中央(50%)→抜け切る(100%)」が0〜100%のタイムラインになる。あとは<code>@keyframes</code>を<code>animation-timeline</code>でそのタイムラインに束ねるだけ。時間ではなく<strong>スクロール位置で駆動</strong>される。3Dの肝は、親に<code>perspective</code>と<code>transform-style:preserve-3d</code>を置き、回転は<strong>カード中身の<code>&lt;img&gt;</code>に当てる</strong>こと——<code>&lt;li&gt;</code>自体をtransformするとボックス（＝スクロール幅）が変わってガタつく。</p>
+
+<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <rect x='0' y='0' width='600' height='210' fill='#f7f7f8'></rect>
+  <text x='20' y='22' font-size='12' fill='#111' font-weight='bold'>view()タイムラインで補間するカードの姿勢（&lt;img&gt;に適用）</text>
+  <g>
+    <rect x='60' y='70' width='55' height='80' fill='#dfe3ea' stroke='#9aa3b2' transform='skewY(18) translate(0,-20)'></rect>
+    <text x='78' y='185' font-size='11' fill='#444' text-anchor='middle'>0%</text>
+    <text x='78' y='60' font-size='10' fill='#667' text-anchor='middle'>rotateY(-45°)</text>
+    <text x='78' y='48' font-size='10' fill='#667' text-anchor='middle'>左から入る</text>
+
+    <rect x='200' y='66' width='55' height='84' fill='#e3e7ee' stroke='#9aa3b2' transform='skewY(10)'></rect>
+    <text x='227' y='185' font-size='11' fill='#444' text-anchor='middle'>35%</text>
+    <text x='227' y='52' font-size='10' fill='#667' text-anchor='middle'>rotateY(-45°)</text>
+
+    <rect x='300' y='52' width='78' height='104' fill='#c9d4ff' stroke='#4a63d6' stroke-width='2'></rect>
+    <text x='339' y='185' font-size='11' fill='#111' text-anchor='middle' font-weight='bold'>50%</text>
+    <text x='339' y='44' font-size='10' fill='#3146b5' text-anchor='middle'>rotateY(0) +translateZ</text>
+    <text x='339' y='32' font-size='10' fill='#3146b5' text-anchor='middle'>scale(1.5)・最前面</text>
+
+    <rect x='420' y='66' width='55' height='84' fill='#e3e7ee' stroke='#9aa3b2' transform='skewY(-10)'></rect>
+    <text x='447' y='185' font-size='11' fill='#444' text-anchor='middle'>65%</text>
+    <text x='447' y='52' font-size='10' fill='#667' text-anchor='middle'>rotateY(45°)</text>
+
+    <rect x='520' y='70' width='55' height='80' fill='#dfe3ea' stroke='#9aa3b2' transform='skewY(-18) translate(0,-20)'></rect>
+    <text x='545' y='185' font-size='11' fill='#444' text-anchor='middle'>100%</text>
+    <text x='545' y='52' font-size='10' fill='#667' text-anchor='middle'>右へ抜ける</text>
+  </g>
+</svg><figcaption>図1：0%→50%→100%の姿勢。中央(50%)だけ正面・手前・1.5倍で最前面に。</figcaption></figure>
+
+<h4 id="sec-2">対応状況とプログレッシブエンハンスメント</h4>
+<p>2026年後半の現実はこうだ。<strong>Chromium系（Chrome/Edge 115+）とSafari 26</strong>は安定サポート。<strong>Firefoxは既定では未対応</strong>（フラグ段階）。だから<code>@supports (animation-timeline: view())</code>で3D演出を“上乗せ”し、無い環境では素の<code>scroll-snap</code>カルーセルとして成立させるのが必須。土台が機能するので「壊れはしない」のが、この設計の強みだ。</p>
+
+<figure class='fig'><pre class='mermaid'>flowchart TD
+  A["横scroll-snapリスト（土台）"] --> B{"@supports animation-timeline: view() ?"}
+  B -->|"対応 Chrome115+ / Safari26"| C["3D Cover Flow を上乗せ"]
+  B -->|"未対応 Firefox既定"| D["素のsnapカルーセルで成立"]
+  C --> E{"prefers-reduced-motion ?"}
+  E -->|"reduce"| D
+  E -->|"no-preference"| C</pre><figcaption>図2：土台→@supports→reduced-motionの縮退フロー。常にフラットなカルーセルに落ちる。</figcaption></figure>
+
+<h4 id="sec-3">App Routerでの組み込み・自分が試すなら</h4>
+<p>カバーフロー本体はCSSで完結するので<code>'use client'</code>は不要。<code>app/gallery/page.tsx</code>（Server Component）で画像リストを描画し、CSS Modulesでスタイルを当てるだけ。完全に静的化でき、ハイドレーション差分も出ない。<code>'use client'</code>を足すのは、矢印キーでの隣カード移動や<code>aria-live</code>での「中央＝◯◯」読み上げといった<strong>キーボード/アクセシビリティ層だけ</strong>に限定すると、JSペイロードが最小になる。自分が試すなら、メディアギャラリーや商品ショーケースのような“全カードが常に存在してスクロールする”用途が好適。<code>next/image</code>を使うなら中央カードがLCP候補になりうるので<code>sizes</code>を明示する。</p>
+
+<h4 id="sec-4">注意点・落とし穴</h4>
+<p>①transformは必ずカード中身へ（<code>&lt;li&gt;</code>直接はスクロール幅が変動）。②<code>scale(1.5)</code>で中央が拡大する分、gap/paddingを確保しないと隣に被る。③<code>-webkit-box-reflect</code>（鏡面）はFirefox非対応＆描画コスト高——装飾扱いに。④奥行き回転＋ズームは酔いやすい。<code>prefers-reduced-motion: reduce</code>で3D演出を止め、中央吸着のフラットなカルーセルに縮退させる。</p>
+
+<h4 id="sec-5">ひとことまとめ</h4>
+<p>「JSで毎フレーム計算」から「CSSにスクロール進行度を渡すだけ」へ。土台を素のsnapで組み、3Dを<code>@supports</code>で上乗せする二段構えが、2026年のカルーセルの作法だ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://addyosmani.com/blog/coverflow/" target="_blank" rel="noopener noreferrer"> Addy Osmani — Cover Flow with Modern CSS </a> </li><li> <a href="https://scroll-driven-animations.style/demos/cover-flow/css/" target="_blank" rel="noopener noreferrer"> scroll-driven-animations.style — Cover Flow デモ </a> </li><li> <a href="https://webkit.org/blog/17101/a-guide-to-scroll-driven-animations-with-just-css/" target="_blank" rel="noopener noreferrer"> WebKit Blog — A guide to Scroll-driven Animations with just CSS </a> </li><li> <a href="https://developer.mozilla.org/docs/Web/CSS/animation-timeline" target="_blank" rel="noopener noreferrer"> MDN — animation-timeline </a> </li><li> <a href="https://www.sitepoint.com/scrolldriven-css-in-2026-building-carousels-without-javascript/" target="_blank" rel="noopener noreferrer"> SitePoint — Scroll-Driven CSS in 2026: Carousels Without JavaScript </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 仕組み — スクロール進行度をタイムラインにする </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 対応状況とプログレッシブエンハンスメント </a> </li><li> <a href="#sec-3" data-toc="sec-3"> App Routerでの組み込み・自分が試すなら </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 注意点・落とし穴 </a> </li><li> <a href="#sec-5" data-toc="sec-5"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-10-27</div> <div>⏱ 読了 約4分</div> <div>🏷 Next.js</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
