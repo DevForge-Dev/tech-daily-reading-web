@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-10-27T04:46:27.906Z",
+  "generatedAt": "2026-10-28T04:47:36.303Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,118 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "date": "2026-10-28",
+      "topic": "Claude Code",
+      "title": "10/28のClaude Code — v2.1.311がまとめて効かせる「無人で安全に長く走る」地固め",
+      "lede": "self-hosted-runnerのアイドル保持やultrathinkのxhigh実行に加え、200K超での圧縮継続・CLAUDE.mdフリーズ解消・SubagentStop多重実行の修正。派手さより信頼性の週。",
+      "articleHtml": "<p>新しい版が途切れがちだった週に、<strong>v2.1.311（10/26）</strong>がまとめて効く更新を出した。昨日(10/27)の枠では「新規未確認」としていたが、実際にはこの版が出ていたので今日補足する。目玉は<strong>信頼性の底上げ</strong>と、長時間・無人運用を支える細部だ。</p>\n\n<h4>何が新しいか</h4>\n<p>機能面では、self-hosted-runner にアイドルセッションを保持する <code>--hold-idle-file</code> / <code>--max-hold-min</code>、VS Code 返信内コードブロックの構文ハイライト、ターミナルの <code>ultrathink</code> を API 経由で <strong>Opus 5.5 / Sonnet 5.5 / Haiku 5.5 / Fable 5.1 の xhigh effort</strong> で実行、Bedrock/Vertex/Foundry 等のモデル設定を downloads.claude.ai の<strong>署名ファイル</strong>から読み込み（<code>CLAUDE_CODE_MODEL_CATALOG=off</code> で無効化）。設定の <code>DISABLE_COMPACT</code> は「無効化専用」になり再有効化はできなくなった。</p>\n<p>そして効くのが信頼性修正だ。リクエストが<strong>200Kトークンを超えても「Usage credits required for 1M context」で止まらず、圧縮（compaction）して継続</strong>するように。CLAUDE.md に非常に長い箇条書きがあると起動時や読み書き後に固まる問題を解消。実行中サブエージェントごとに<strong>毎分約2回起きていた <code>SubagentStop</code> フックの多重実行を、終了時1回だけ</strong>に修正した。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 230' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='18' y='26' width='252' height='182' rx='12' fill='#fdf0ea' stroke='#d97757' stroke-width='2'/>\n  <text x='144' y='54' text-anchor='middle' font-size='15' font-weight='bold' fill='#9a3412'>知識レイヤー</text>\n  <text x='144' y='80' text-anchor='middle' font-size='12' fill='#1f2937'>CLAUDE.md / Skills</text>\n  <text x='144' y='118' text-anchor='middle' font-size='12' fill='#1f2937'>文脈として「読まれる」指示</text>\n  <text x='144' y='146' text-anchor='middle' font-size='12.5' font-weight='bold' fill='#b91c1c'>強制力なし（破られうる）</text>\n  <text x='144' y='182' text-anchor='middle' font-size='11' fill='#6b7280'>Skillsは会話に積載</text>\n  <rect x='330' y='26' width='252' height='182' rx='12' fill='#eaf1fd' stroke='#2563eb' stroke-width='2'/>\n  <text x='456' y='54' text-anchor='middle' font-size='15' font-weight='bold' fill='#1e40af'>実行制約レイヤー</text>\n  <text x='456' y='80' text-anchor='middle' font-size='12' fill='#1f2937'>permissions / Hooks</text>\n  <text x='456' y='118' text-anchor='middle' font-size='12' fill='#1f2937'>入力→判定→終了コードで介入</text>\n  <text x='456' y='146' text-anchor='middle' font-size='12.5' font-weight='bold' fill='#047857'>強制力あり（止められる）</text>\n  <text x='456' y='182' text-anchor='middle' font-size='11' fill='#6b7280'>常に守るルールはHookで</text>\n  <text x='300' y='124' text-anchor='middle' font-size='17' font-weight='bold' fill='#9ca3af'>vs</text>\n</svg><figcaption>図1：Claude Code運用の勘所——「知識（読まれる指示）」と「実行制約（強制力）」を分離する。</figcaption></figure>\n\n<h4>設計の勘所：知識と実行制約を分ける</h4>\n<p>同じ週、運用ベストプラクティス（SmartScope）と Skills/Subagents の使い分け（chudi.dev）の解説が出た。核心は<strong>「知識」と「実行制約」の分離</strong>。プロジェクト知識は CLAUDE.md や Skills に置くが、これらは<strong>読まれる指示であって強制力はない</strong>。禁止を本当に守らせたいなら、イベント入力・判定・終了コードの仕様に従う <strong>Hooks</strong> で担保する。Skills は本体会話のコンテキストに積まれ、Subagents は別ウィンドウで動いて要約だけ返す——大量読込は Subagent、見ながら進める反復は Skill、常に守るルールは Hook、という住み分けだ。</p>\n\n<h4>自分が試すなら</h4>\n<p>まず <code>DISABLE_COMPACT</code> を外して 200K 超の自動圧縮継続を体験し、CI の self-hosted-runner で <code>--max-hold-min</code> を使ってアイドル保持による立ち上がり短縮を測る。CLAUDE.md が長大なら、長い箇条書きを Skills へ切り出す良い機会でもある（フリーズ修正と合わせて体感が変わる）。</p>\n\n<h4>注意点</h4>\n<p>プラグインの公式化で入った「Mods」（JS/TS で実行経路に割り込む拡張）は、ツール呼び出し前に介入できる分<strong>新たな攻撃面</strong>でもある。本番コードと同じ目でレビューを。これは「proxy/middleware は認可境界ではない」（ヘッダ偽装の CVE-2025-29927）という Next.js 側の教訓とも通じる。</p>\n\n<h4>ひとことまとめ</h4>\n<p>派手な新機能より、<strong>「人が張り付かなくても安全に長く走る」</strong>方向の地固め。圧縮継続とフック修正は、まさに毎日無人で回すこの種のパイプラインに直接効く。</p>\n",
+      "sources": [
+        {
+          "title": "Claude Code 公式changelog",
+          "url": "https://code.claude.com/docs/en/changelog"
+        },
+        {
+          "title": "Claude Code リリース追跡（havoptic, 2026/10）",
+          "url": "https://www.havoptic.com/releases/claude-code/2026/10"
+        },
+        {
+          "title": "上級ベストプラクティス（SmartScope, 2026/10/13更新）",
+          "url": "https://smartscope.blog/generative-ai/claude/claude-code-best-practices-advanced-2026/"
+        },
+        {
+          "title": "SkillsとSubagentsの使い分け（chudi.dev）",
+          "url": "https://chudi.dev/blog/claude-code-skills-vs-subagents"
+        },
+        {
+          "title": "プラグイン公式化・Mods（Tech Insider）",
+          "url": "https://tech-insider.org/claude-code-plugins-official-mods-cloud-sessions-2026/"
+        }
+      ],
+      "id": "2026-10-28-claude-code"
+    },
+    {
+      "date": "2026-10-28",
+      "topic": "Next.js",
+      "title": "Next.js App Routerのレート制限 — 組み込みが無いServer Actions/Route Handlersを多層で守る",
+      "lede": "Upstash RatelimitとArcjet、3つのアルゴリズム、proxy.ts→アクション層の多層防御、そしてin-memoryという最大の罠まで。429の作法込みで実装の勘所を整理する。",
+      "articleHtml": "<p>Next.js の App Router には<strong>レート制限の組み込み機能が無い</strong>。Server Actions / Route Handlers はそのままだと誰でも無制限に叩けるため、総当たり・クレデンシャルスタッフィング・スクレイピング・DoS・従量課金の<strong>コスト爆発</strong>の入口になる。認証で「誰が何を」を固めても、<strong>「どれだけ叩けるか」を絞る層</strong>が無ければ守りは未完成だ。</p>\n\n<h4>2026年の定番と、まず選ぶアルゴリズム</h4>\n<p>定番は <strong>Upstash Ratelimit</strong>（<code>@upstash/ratelimit</code> + <code>@upstash/redis</code>）か、レート制限＋ボット検知＋Shield(WAF)を1つの <code>aj.protect()</code> に束ねる <strong>Arcjet</strong>。カウント方式は3種あり、用途で選ぶ。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 220' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='10' y='12' width='580' height='30' fill='#111827'/>\n  <line x1='100' y1='12' x2='100' y2='210' stroke='#d1d5db' stroke-width='1'/>\n  <line x1='265' y1='12' x2='265' y2='210' stroke='#d1d5db' stroke-width='1'/>\n  <line x1='430' y1='12' x2='430' y2='210' stroke='#d1d5db' stroke-width='1'/>\n  <line x1='10' y1='42' x2='590' y2='42' stroke='#9ca3af' stroke-width='1'/>\n  <line x1='10' y1='84' x2='590' y2='84' stroke='#e5e7eb' stroke-width='1'/>\n  <line x1='10' y1='126' x2='590' y2='126' stroke='#e5e7eb' stroke-width='1'/>\n  <line x1='10' y1='168' x2='590' y2='168' stroke='#e5e7eb' stroke-width='1'/>\n  <text x='182' y='32' text-anchor='middle' font-size='12.5' font-weight='bold' fill='#fff'>Fixed Window</text>\n  <text x='347' y='32' text-anchor='middle' font-size='12.5' font-weight='bold' fill='#fff'>Sliding Window</text>\n  <text x='510' y='32' text-anchor='middle' font-size='12.5' font-weight='bold' fill='#fff'>Token Bucket</text>\n  <text x='20' y='68' font-size='11.5' font-weight='bold' fill='#6b7280'>方式</text>\n  <text x='20' y='110' font-size='11.5' font-weight='bold' fill='#6b7280'>長所</text>\n  <text x='20' y='152' font-size='11.5' font-weight='bold' fill='#6b7280'>短所</text>\n  <text x='20' y='194' font-size='11.5' font-weight='bold' fill='#6b7280'>向く用途</text>\n  <text x='182' y='68' text-anchor='middle' font-size='11' fill='#1f2937'>窓ごとに単純カウント</text>\n  <text x='347' y='68' text-anchor='middle' font-size='11' fill='#1f2937'>前窓の残り重みを加味</text>\n  <text x='510' y='68' text-anchor='middle' font-size='11' fill='#1f2937'>消費＋定率で補充</text>\n  <text x='182' y='110' text-anchor='middle' font-size='11' fill='#047857'>軽量・単純</text>\n  <text x='347' y='110' text-anchor='middle' font-size='11' fill='#047857'>境界バースト抑制</text>\n  <text x='510' y='110' text-anchor='middle' font-size='11' fill='#047857'>バースト許容＋持続制限</text>\n  <text x='182' y='152' text-anchor='middle' font-size='11' fill='#b91c1c'>境界で2倍バースト</text>\n  <text x='347' y='152' text-anchor='middle' font-size='11' fill='#b91c1c'>やや重い</text>\n  <text x='510' y='152' text-anchor='middle' font-size='11' fill='#b91c1c'>設定が複雑</text>\n  <text x='182' y='194' text-anchor='middle' font-size='11' fill='#1e40af'>厳格なN回/分</text>\n  <text x='347' y='194' text-anchor='middle' font-size='11' fill='#1e40af'>汎用の第一候補</text>\n  <text x='510' y='194' text-anchor='middle' font-size='11' fill='#1e40af'>重い処理の重み付け</text>\n</svg><figcaption>図1：レート制限アルゴリズム3種の使い分け。迷ったら Sliding Window。</figcaption></figure>\n\n<h4>どこで・誰を数えるか</h4>\n<p>識別子は<strong>匿名ならIP、認証後はユーザーID</strong>（共有IP・IPローテーション対策）。ただし Next.js 15+ で <code>req.ip</code>/<code>req.geo</code> は廃止——Vercel は <code>ipAddress(request)</code>、他は <code>x-forwarded-for</code> の先頭エントリ（信頼できるプロキシ配下でのみ信用）。掛ける場所は多層で、<strong>proxy.ts（旧 middleware、最前段）で計算コストを節約しつつ、Route Handler / Server Action でも <code>limit()</code> を呼び直す</strong>のが鉄則だ。</p>\n\n<figure class='fig'><pre class='mermaid'>flowchart TD\n  C[\"クライアント\"] --> P[\"proxy.ts 最前段で429判定\"]\n  P -->|\"超過\"| R[\"429 + Retry-After\"]\n  P -->|\"許可\"| H[\"Route Handler / Server Action\"]\n  H -->|\"limit を再チェック\"| D[\"DAL / 本処理\"]\n  H -->|\"超過\"| R</pre><figcaption>図2：多層防御。proxy層は認可境界ではない（CVE-2025-29927）ので、データに近い層でも必ず呼び直す。</figcaption></figure>\n\n<p>Server Action は自動IP取得が無いので <code>headers()</code> から自分でIPを取り、アクション名で prefix して枠の食い合いを防ぐ。</p>\n<pre><code>\"use server\";\nconst ip = (await headers()).get(\"x-forwarded-for\")?.split(\",\")[0]?.trim() ?? \"anonymous\";\nconst { success } = await ratelimit.limit(`contact_${ip}`); // ← アクション別に分離\nif (!success) return { ok: false, message: \"送信が多すぎます。少し待って再試行を\" };</code></pre>\n\n<h4>落とし穴</h4>\n<p>最大の罠は<strong>in-memory ストア</strong>。サーバーレス/マルチインスタンスでは各インスタンスが別カウンタを持ち、実効上限が「上限×インスタンス数」に膨らんで機能しない。<strong>Upstash Redis 等の分散ストア（HTTP/RESTでEdge互換）が必須</strong>。超過時は <strong>429 + Retry-After</strong>（<code>reset</code>はUNIXミリ秒なので <code>Math.ceil((reset-Date.now())/1000)</code>）と <code>X-RateLimit-*</code> を返す。分析書き込みの <code>pending</code> は <code>waitUntil(pending)</code> / <code>after()</code> で背後完了させ、<code>new Map()</code> を <code>ephemeralCache</code> に渡してブロック済みIPの無駄なRedis往復を省く。クライアントは<strong>モジュールスコープで1回だけ生成</strong>して使い回す。</p>\n\n<h4>ひとことまとめ</h4>\n<p>「Redisを持ち細かく握りたいなら Upstash、ボット＋WAFまで一括なら Arcjet」。どちらでも<strong>①分散ストア必須 ②機微操作はエッジ層だけに頼らない ③429にRetry-After ④認証後はユーザーID</strong>が共通の作法。<code>next-safe-action</code> を使うなら <code>.use()</code> ミドルウェアで全アクションに横断適用でき、型付きエラー契約に乗せられる。</p>\n",
+      "sources": [
+        {
+          "title": "Upstash Ratelimit (TS) overview",
+          "url": "https://upstash.com/docs/redis/sdks/ratelimit-ts/overview"
+        },
+        {
+          "title": "upstash/ratelimit (GitHub)",
+          "url": "https://github.com/upstash/ratelimit"
+        },
+        {
+          "title": "Arcjet rate limiting algorithms",
+          "url": "https://docs.arcjet.com/rate-limiting/algorithms"
+        },
+        {
+          "title": "Arcjet Next.js reference",
+          "url": "https://docs.arcjet.com/reference/nextjs"
+        },
+        {
+          "title": "Next.js Security Best Practices 2026 (Authgear)",
+          "url": "https://www.authgear.com/post/nextjs-security-best-practices/"
+        }
+      ],
+      "id": "2026-10-28-nextjs"
+    },
+    {
+      "date": "2026-10-28",
+      "topic": "Flutter",
+      "title": "Dart 3.14のdot shorthands — 型名を落として書く（11月3.50を前にbeta先取り）",
+      "lede": "文脈型が分かる所で .center や .all(16) と書ける新言語機能。あわせてBlocのbloc_concurrencyで並行イベントのレース対策（sequential/droppable/restartable）も整理する。",
+      "articleHtml": "<p>11月の stable 3.50 を前に、<strong>Dart 3.14 の dot shorthands（ドット短縮）</strong>が beta に載った。深くネストした widget ツリーの型名ボイラープレートを削る言語機能で、現状は beta 3.50.0-0.2.pre 同梱（stable 3.47.8 / Dart 3.13.7 は未搭載）。本番は 3.47.8 を pin しつつ別CIジョブで beta を緑化、という従来の二枚看板運用のまま先取りできる。</p>\n\n<h4>何が変わるか</h4>\n<p>コンパイラが<strong>context type（期待される型）を確定できる場所</strong>なら、static メンバー・enum 値・コンストラクタ呼び出しの<strong>型名を省略して <code>.</code> から書ける</strong>。</p>\n<pre><code>// before\nContainer(\n  alignment: Alignment.center,\n  padding: const EdgeInsets.all(16.0),\n  child: Column(\n    mainAxisAlignment: MainAxisAlignment.center,\n    crossAxisAlignment: CrossAxisAlignment.start,\n  ),\n)\n// after（Dart 3.14）\nContainer(\n  alignment: .center,\n  padding: const .all(16.0),\n  child: Column(\n    mainAxisAlignment: .center,\n    crossAxisAlignment: .start,\n  ),\n)</code></pre>\n\n<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <text x='300' y='28' text-anchor='middle' font-size='13' font-weight='bold' fill='#374151'>型名を省略（文脈型が分かる所で）</text>\n  <g font-size='12.5'>\n  <text x='40' y='66' fill='#9ca3af'>Alignment.center</text>\n  <text x='40' y='104' fill='#9ca3af'>EdgeInsets.all(16.0)</text>\n  <text x='40' y='142' fill='#9ca3af'>MainAxisAlignment.center</text>\n  <text x='40' y='180' fill='#9ca3af'>FontWeight.bold</text>\n  <text x='300' y='66' text-anchor='middle' font-size='15' fill='#0ea5e9'>&#8594;</text>\n  <text x='300' y='104' text-anchor='middle' font-size='15' fill='#0ea5e9'>&#8594;</text>\n  <text x='300' y='142' text-anchor='middle' font-size='15' fill='#0ea5e9'>&#8594;</text>\n  <text x='300' y='180' text-anchor='middle' font-size='15' fill='#0ea5e9'>&#8594;</text>\n  <text x='360' y='66' font-weight='bold' fill='#047857'>.center</text>\n  <text x='360' y='104' font-weight='bold' fill='#047857'>const .all(16.0)</text>\n  <text x='360' y='142' font-weight='bold' fill='#047857'>.center</text>\n  <text x='360' y='180' font-weight='bold' fill='#047857'>.bold</text>\n  </g>\n</svg><figcaption>図1：enum・staticプロパティ・namedコンストラクタの型名が落ちる。無名コンストラクタは <code>.new</code>。</figcaption></figure>\n\n<p>対象は enum（<code>.spaceEvenly</code> 等）、static プロパティ（<code>FontWeight.bold</code> → <code>.bold</code>）、named コンストラクタ（<code>EdgeInsets.all()</code> → <code>.all()</code>）。多くのプロパティは基底型（例 <code>EdgeInsetsGeometry</code>）を受けるため、Flutter 側が基底クラスに redirecting constructor を足してサブクラスへ橋渡しする。注意は<strong>文脈型が不明な所では使えない</strong>こと（型推論が効く引数・初期化・return 位置が前提）。公開 API など型を明示したい箇所は従来表記も併用する。</p>\n\n<h4>同じ日のもう一つの実務ネタ：Bloc のイベント並行性</h4>\n<p>Bloc は v7.2.0 以降<strong>イベントが既定で並行（concurrent）処理</strong>。これが read-then-write を含むと<strong>レースコンディション</strong>の温床になる。<code>bloc_concurrency</code> の transformer を <code>on&lt;E&gt;</code> の named 引数 <code>transformer:</code> に渡すだけで制御できる。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 220' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <line x1='10' y1='52' x2='590' y2='52' stroke='#9ca3af' stroke-width='1'/>\n  <line x1='10' y1='94' x2='590' y2='94' stroke='#e5e7eb'/>\n  <line x1='10' y1='136' x2='590' y2='136' stroke='#e5e7eb'/>\n  <line x1='10' y1='178' x2='590' y2='178' stroke='#e5e7eb'/>\n  <line x1='200' y1='18' x2='200' y2='210' stroke='#d1d5db'/>\n  <text x='20' y='40' font-size='12.5' font-weight='bold' fill='#374151'>transformer</text>\n  <text x='215' y='40' font-size='12.5' font-weight='bold' fill='#374151'>挙動 → 向く用途</text>\n  <text x='20' y='80' font-size='12' font-weight='bold' fill='#6b7280'>concurrent（既定）</text>\n  <text x='215' y='80' font-size='11.5' fill='#1f2937'>同時進行・完了順不定 → 独立したI/O</text>\n  <text x='20' y='122' font-size='12' font-weight='bold' fill='#1e40af'>sequential</text>\n  <text x='215' y='122' font-size='11.5' fill='#1f2937'>FIFOで1件ずつ → 書き込み・累積</text>\n  <text x='20' y='164' font-size='12' font-weight='bold' fill='#b45309'>droppable</text>\n  <text x='215' y='164' font-size='11.5' fill='#1f2937'>処理中の後続を破棄 → 連打の単発送信</text>\n  <text x='20' y='206' font-size='12' font-weight='bold' fill='#047857'>restartable</text>\n  <text x='215' y='206' font-size='11.5' fill='#1f2937'>新着で古いのを中断 → 検索・最新入力</text>\n</svg><figcaption>図2：bloc_concurrency の4トランスフォーマ。残高加算の read-then-write は sequential に。</figcaption></figure>\n\n<p>勘所は<strong>書き込み/累積は sequential・冪等でない単発送信は droppable・検索/最新入力は restartable・独立I/Oは concurrent</strong>。残高 $100 への加算が2件来ても、sequential なら後勝ちで $40 を失わない。</p>\n\n<h4>ひとことまとめ</h4>\n<p>dot shorthands は「書く速さと読みやすさ」、bloc_concurrency は「正しさ」。前者は 3.50 を待たず beta CI で素振りし、後者は<strong>今日から既存 Bloc の <code>on&lt;E&gt;</code> を用途別に貼り替える</strong>だけで効く。<code>material_expressive 0.8.0</code>（spring モーション＋morphable shape）や <code>flutter_animate</code> の <code>.animate().fade().scale()</code> も、同じ「宣言的に効果を積む」潮流だ。</p>\n",
+      "sources": [
+        {
+          "title": "Dot shorthands in Flutter（docs.flutter.dev）",
+          "url": "https://docs.flutter.dev/ui/dot-shorthands"
+        },
+        {
+          "title": "Dot Shorthands（dart.dev）",
+          "url": "https://dart.dev/language/dot-shorthands"
+        },
+        {
+          "title": "Bloc Event Transformers（Very Good Ventures）",
+          "url": "https://engineering.verygood.ventures/development/state_management/bloc_event_transformers/"
+        },
+        {
+          "title": "bloc_concurrency（pub.dev）",
+          "url": "https://pub.dev/packages/bloc_concurrency"
+        },
+        {
+          "title": "material_expressive（pub.dev）",
+          "url": "https://pub.dev/packages/material_expressive"
+        }
+      ],
+      "id": "2026-10-28-flutter"
+    },
+    {
+      "date": "2026-10-28",
+      "topic": "GitHub Trending",
+      "title": "10/28の話題リポジトリ — Theoのエージェントスキル集・スマホLiDARで3D Web・Rust製インプレース解凍",
+      "lede": "AI一色の飽和局面を率で突き抜けた純モメンタム3本。共通点は「作者が毎日使う」具体性だった。",
+      "articleHtml": "<p>この日の GitHub Trending は「話題化済みの再掲」が極端に多い飽和局面（既出586件を除外）だった。その中で<strong>純・新規で急上昇した3本</strong>を取り上げる。共通点は、<strong>著名開発者が「自分が毎日使うもの」を出した</strong>こと、そして AI 一色のトレンドの中に視覚系・システム系という<strong>非AIの多様性</strong>が混じったことだ。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 230' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='10' y='12' width='580' height='30' fill='#1a7f37'/>\n  <text x='80' y='32' text-anchor='middle' font-size='12' font-weight='bold' fill='#fff'>リポジトリ</text>\n  <text x='270' y='32' text-anchor='middle' font-size='12' font-weight='bold' fill='#fff'>解決したい課題</text>\n  <text x='475' y='32' text-anchor='middle' font-size='12' font-weight='bold' fill='#fff'>提供する機能</text>\n  <line x1='155' y1='12' x2='155' y2='222' stroke='#d1d5db'/>\n  <line x1='388' y1='12' x2='388' y2='222' stroke='#d1d5db'/>\n  <line x1='10' y1='42' x2='590' y2='42' stroke='#9ca3af'/>\n  <line x1='10' y1='102' x2='590' y2='102' stroke='#e5e7eb'/>\n  <line x1='10' y1='162' x2='590' y2='162' stroke='#e5e7eb'/>\n  <text x='22' y='76' font-size='11.5' font-weight='bold' fill='#1f2937'>tstack</text>\n  <text x='22' y='92' font-size='10' fill='#6b7280'>Python ★約2.0k</text>\n  <text x='270' y='78' text-anchor='middle' font-size='11' fill='#b91c1c'>エージェント運用が属人化</text>\n  <text x='475' y='78' text-anchor='middle' font-size='11' fill='#1e40af'>PR一気通貫＋相互レビュー集</text>\n  <text x='22' y='136' font-size='11.5' font-weight='bold' fill='#1f2937'>3d-model-</text>\n  <text x='22' y='151' font-size='11.5' font-weight='bold' fill='#1f2937'>anything</text>\n  <text x='270' y='138' text-anchor='middle' font-size='11' fill='#b91c1c'>3D化の機材/共有が重い</text>\n  <text x='475' y='138' text-anchor='middle' font-size='11' fill='#1e40af'>LiDAR→編集可能なWeb 3D</text>\n  <text x='22' y='196' font-size='11.5' font-weight='bold' fill='#1f2937'>hatchzip</text>\n  <text x='22' y='212' font-size='10' fill='#6b7280'>Rust ★約2.2k</text>\n  <text x='270' y='198' text-anchor='middle' font-size='11' fill='#b91c1c'>展開に大容量・再実行の壁</text>\n  <text x='475' y='198' text-anchor='middle' font-size='11' fill='#1e40af'>多形式をインプレース展開</text>\n</svg><figcaption>図1：今日の3本を「解決したい課題 → 提供する機能」で一望する。</figcaption></figure>\n\n<h4>t3dotgg/tstack（Python・⭐約2.0k）</h4>\n<p><strong>解決したい課題：</strong>コーディングエージェント（Claude Code / Codex）を日常運用すると、PR処理やレビューの手順が属人的になり毎回組み直しになりがち。<strong>提供する機能：</strong>Theo（t3dotgg）が実際に毎日使うスキルを束ねたスキル集。PRのエンドツーエンド処理や<strong>マルチモデルによる相互レビュー</strong>をスキルとして配る。公開わずか4日で実測約1,989★・率約68%という当日トップ級の増加率で、著名開発者の“実運用セット公開”が拡散の軸になった（MIT）。</p>\n\n<h4>wesbos/3d-model-anything（Swift・⭐約2.2k）</h4>\n<p><strong>解決したい課題：</strong>部屋や物体の3D化は専用機材やソフトのハードルが高く、Webで気軽に共有・探索しづらい。<strong>提供する機能：</strong>iPhone の LiDAR と写真で部屋をスキャンし、<strong>編集可能な Three.js シーン</strong>へ再構成してブラウザで歩き回れるようにする。Web教育者 Wes Bos 製で、公開約7日で実測約2,210★/forks324。AI一色の中で数少ない<strong>コンシューマー/空間コンピューティング</strong>寄りの急上昇だ。</p>\n\n<h4>xevrion/hatchzip（Rust・⭐約2.2k）</h4>\n<p><strong>解決したい課題：</strong>巨大アーカイブの展開は、展開後と同じかそれ以上の空き容量を要求し、途中クラッシュでやり直しになりがち。<strong>提供する機能：</strong>ZIP/7z/RAR/tar・分割書庫を<strong>「その場で」インプレース展開</strong>し、展開後サイズ分の空きだけで済ませる。クラッシュセーフで Win/macOS/Linux 対応の GUI＋CLI。公開約7日で実測約2,171★（Apache-2.0）。AI一色の当日に希少な<strong>純・非AIシステムユーティリティ</strong>。</p>\n\n<h4>自分が試すなら</h4>\n<p>いちばん実益が近いのは <strong>tstack</strong>——このパイプライン自体が Claude Code 運用なので、PR一気通貫やマルチモデル相互レビューのスキル設計をそのまま参照できる。3d-model-anything は Three.js 可視化の実装参照、hatchzip は大容量ダウンロード後の展開運用に効く。いずれも著名開発者印で保守継続性が読みやすいのも採用のしやすさだ。</p>\n\n<h4>ひとことまとめ</h4>\n<p>飽和したトレンドを抜けたのは<strong>「作者が毎日使う」具体性</strong>。派手な新AIより、日々の手数を1つ減らす道具が率で勝った日だった。（適合枠では Rust製DBクライアント dbdelve、学習ハーネス learnharness、セルフホストPOS nodedr-restaurant-pos も初登場）</p>\n",
+      "sources": [
+        {
+          "title": "t3dotgg/tstack",
+          "url": "https://github.com/t3dotgg/tstack"
+        },
+        {
+          "title": "wesbos/3d-model-anything",
+          "url": "https://github.com/wesbos/3d-model-anything"
+        },
+        {
+          "title": "xevrion/hatchzip",
+          "url": "https://github.com/xevrion/hatchzip"
+        }
+      ],
+      "id": "2026-10-28-github-trending"
+    },
     {
       "date": "2026-10-27",
       "topic": "Claude Code",
