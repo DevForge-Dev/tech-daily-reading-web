@@ -1,0 +1,92 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>10/28のClaude Code — v2.1.311がまとめて効かせる「無人で安全に長く走る」地固め — デイリー技術深掘り 読み物</title><meta name="description" content="self-hosted-runnerのアイドル保持やultrathinkのxhigh実行に加え、200K超での圧縮継続・CLAUDE.mdフリーズ解消・SubagentStop多重実行の修正。派手さより信頼性の週。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-28-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="10/28のClaude Code — v2.1.311がまとめて効かせる「無人で安全に長く走る」地固め — デイリー技術深掘り 読み物"><meta property="og:description" content="self-hosted-runnerのアイドル保持やultrathinkのxhigh実行に加え、200K超での圧縮継続・CLAUDE.mdフリーズ解消・SubagentStop多重実行の修正。派手さより信頼性の週。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-28-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>10/28のClaude Code — v2.1.311がまとめて効かせる「無人で安全に長く走る」地固め</h1> <p class="lede">self-hosted-runnerのアイドル保持やultrathinkのxhigh実行に加え、200K超での圧縮継続・CLAUDE.mdフリーズ解消・SubagentStop多重実行の修正。派手さより信頼性の週。</p> <div class="meta"> <span>📅 2026年10月28日</span> <span>⏱ 約3分</span> <span>🔗 出典 5 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="0"><p>新しい版が途切れがちだった週に、<strong>v2.1.311（10/26）</strong>がまとめて効く更新を出した。昨日(10/27)の枠では「新規未確認」としていたが、実際にはこの版が出ていたので今日補足する。目玉は<strong>信頼性の底上げ</strong>と、長時間・無人運用を支える細部だ。</p>
+
+<h4 id="sec-1">何が新しいか</h4>
+<p>機能面では、self-hosted-runner にアイドルセッションを保持する <code>--hold-idle-file</code> / <code>--max-hold-min</code>、VS Code 返信内コードブロックの構文ハイライト、ターミナルの <code>ultrathink</code> を API 経由で <strong>Opus 5.5 / Sonnet 5.5 / Haiku 5.5 / Fable 5.1 の xhigh effort</strong> で実行、Bedrock/Vertex/Foundry 等のモデル設定を downloads.claude.ai の<strong>署名ファイル</strong>から読み込み（<code>CLAUDE_CODE_MODEL_CATALOG=off</code> で無効化）。設定の <code>DISABLE_COMPACT</code> は「無効化専用」になり再有効化はできなくなった。</p>
+<p>そして効くのが信頼性修正だ。リクエストが<strong>200Kトークンを超えても「Usage credits required for 1M context」で止まらず、圧縮（compaction）して継続</strong>するように。CLAUDE.md に非常に長い箇条書きがあると起動時や読み書き後に固まる問題を解消。実行中サブエージェントごとに<strong>毎分約2回起きていた <code>SubagentStop</code> フックの多重実行を、終了時1回だけ</strong>に修正した。</p>
+
+<figure class='fig'><svg viewBox='0 0 600 230' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <rect x='18' y='26' width='252' height='182' rx='12' fill='#fdf0ea' stroke='#d97757' stroke-width='2'></rect>
+  <text x='144' y='54' text-anchor='middle' font-size='15' font-weight='bold' fill='#9a3412'>知識レイヤー</text>
+  <text x='144' y='80' text-anchor='middle' font-size='12' fill='#1f2937'>CLAUDE.md / Skills</text>
+  <text x='144' y='118' text-anchor='middle' font-size='12' fill='#1f2937'>文脈として「読まれる」指示</text>
+  <text x='144' y='146' text-anchor='middle' font-size='12.5' font-weight='bold' fill='#b91c1c'>強制力なし（破られうる）</text>
+  <text x='144' y='182' text-anchor='middle' font-size='11' fill='#6b7280'>Skillsは会話に積載</text>
+  <rect x='330' y='26' width='252' height='182' rx='12' fill='#eaf1fd' stroke='#2563eb' stroke-width='2'></rect>
+  <text x='456' y='54' text-anchor='middle' font-size='15' font-weight='bold' fill='#1e40af'>実行制約レイヤー</text>
+  <text x='456' y='80' text-anchor='middle' font-size='12' fill='#1f2937'>permissions / Hooks</text>
+  <text x='456' y='118' text-anchor='middle' font-size='12' fill='#1f2937'>入力→判定→終了コードで介入</text>
+  <text x='456' y='146' text-anchor='middle' font-size='12.5' font-weight='bold' fill='#047857'>強制力あり（止められる）</text>
+  <text x='456' y='182' text-anchor='middle' font-size='11' fill='#6b7280'>常に守るルールはHookで</text>
+  <text x='300' y='124' text-anchor='middle' font-size='17' font-weight='bold' fill='#9ca3af'>vs</text>
+</svg><figcaption>図1：Claude Code運用の勘所——「知識（読まれる指示）」と「実行制約（強制力）」を分離する。</figcaption></figure>
+
+<h4 id="sec-2">設計の勘所：知識と実行制約を分ける</h4>
+<p>同じ週、運用ベストプラクティス（SmartScope）と Skills/Subagents の使い分け（chudi.dev）の解説が出た。核心は<strong>「知識」と「実行制約」の分離</strong>。プロジェクト知識は CLAUDE.md や Skills に置くが、これらは<strong>読まれる指示であって強制力はない</strong>。禁止を本当に守らせたいなら、イベント入力・判定・終了コードの仕様に従う <strong>Hooks</strong> で担保する。Skills は本体会話のコンテキストに積まれ、Subagents は別ウィンドウで動いて要約だけ返す——大量読込は Subagent、見ながら進める反復は Skill、常に守るルールは Hook、という住み分けだ。</p>
+
+<h4 id="sec-3">自分が試すなら</h4>
+<p>まず <code>DISABLE_COMPACT</code> を外して 200K 超の自動圧縮継続を体験し、CI の self-hosted-runner で <code>--max-hold-min</code> を使ってアイドル保持による立ち上がり短縮を測る。CLAUDE.md が長大なら、長い箇条書きを Skills へ切り出す良い機会でもある（フリーズ修正と合わせて体感が変わる）。</p>
+
+<h4 id="sec-4">注意点</h4>
+<p>プラグインの公式化で入った「Mods」（JS/TS で実行経路に割り込む拡張）は、ツール呼び出し前に介入できる分<strong>新たな攻撃面</strong>でもある。本番コードと同じ目でレビューを。これは「proxy/middleware は認可境界ではない」（ヘッダ偽装の CVE-2025-29927）という Next.js 側の教訓とも通じる。</p>
+
+<h4 id="sec-5">ひとことまとめ</h4>
+<p>派手な新機能より、<strong>「人が張り付かなくても安全に長く走る」</strong>方向の地固め。圧縮継続とフック修正は、まさに毎日無人で回すこの種のパイプラインに直接効く。</p>
+</article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://code.claude.com/docs/en/changelog" target="_blank" rel="noopener noreferrer"> Claude Code 公式changelog </a> </li><li> <a href="https://www.havoptic.com/releases/claude-code/2026/10" target="_blank" rel="noopener noreferrer"> Claude Code リリース追跡（havoptic, 2026/10） </a> </li><li> <a href="https://smartscope.blog/generative-ai/claude/claude-code-best-practices-advanced-2026/" target="_blank" rel="noopener noreferrer"> 上級ベストプラクティス（SmartScope, 2026/10/13更新） </a> </li><li> <a href="https://chudi.dev/blog/claude-code-skills-vs-subagents" target="_blank" rel="noopener noreferrer"> SkillsとSubagentsの使い分け（chudi.dev） </a> </li><li> <a href="https://tech-insider.org/claude-code-plugins-official-mods-cloud-sessions-2026/" target="_blank" rel="noopener noreferrer"> プラグイン公式化・Mods（Tech Insider） </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 何が新しいか </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 設計の勘所：知識と実行制約を分ける </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 自分が試すなら </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 注意点 </a> </li><li> <a href="#sec-5" data-toc="sec-5"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-10-28</div> <div>⏱ 読了 約3分</div> <div>🏷 Claude Code</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

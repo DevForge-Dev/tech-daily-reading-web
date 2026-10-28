@@ -1,0 +1,127 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Dart 3.14のdot shorthands — 型名を落として書く（11月3.50を前にbeta先取り） — デイリー技術深掘り 読み物</title><meta name="description" content="文脈型が分かる所で .center や .all(16) と書ける新言語機能。あわせてBlocのbloc_concurrencyで並行イベントのレース対策（sequential/droppable/restartable）も整理する。"><meta name="theme-color" content="#0277bd"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-28-flutter/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Dart 3.14のdot shorthands — 型名を落として書く（11月3.50を前にbeta先取り） — デイリー技術深掘り 読み物"><meta property="og:description" content="文脈型が分かる所で .center や .all(16) と書ける新言語機能。あわせてBlocのbloc_concurrencyで並行イベントのレース対策（sequential/droppable/restartable）も整理する。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-28-flutter/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #29b6f6, #01579b)"> <span class="glyph" aria-hidden="true">◆</span> <div class="kicker">Flutter</div> <h1>Dart 3.14のdot shorthands — 型名を落として書く（11月3.50を前にbeta先取り）</h1> <p class="lede">文脈型が分かる所で .center や .all(16) と書ける新言語機能。あわせてBlocのbloc_concurrencyで並行イベントのレース対策（sequential/droppable/restartable）も整理する。</p> <div class="meta"> <span>📅 2026年10月28日</span> <span>⏱ 約4分</span> <span>🔗 出典 5 件</span> </div> </section> <div class="article-layout" style="--topic:#0277bd"> <div> <article class="prose" data-has-mermaid="0"><p>11月の stable 3.50 を前に、<strong>Dart 3.14 の dot shorthands（ドット短縮）</strong>が beta に載った。深くネストした widget ツリーの型名ボイラープレートを削る言語機能で、現状は beta 3.50.0-0.2.pre 同梱（stable 3.47.8 / Dart 3.13.7 は未搭載）。本番は 3.47.8 を pin しつつ別CIジョブで beta を緑化、という従来の二枚看板運用のまま先取りできる。</p>
+
+<h4 id="sec-1">何が変わるか</h4>
+<p>コンパイラが<strong>context type（期待される型）を確定できる場所</strong>なら、static メンバー・enum 値・コンストラクタ呼び出しの<strong>型名を省略して <code>.</code> から書ける</strong>。</p>
+<pre><code>// before
+Container(
+  alignment: Alignment.center,
+  padding: const EdgeInsets.all(16.0),
+  child: Column(
+    mainAxisAlignment: MainAxisAlignment.center,
+    crossAxisAlignment: CrossAxisAlignment.start,
+  ),
+)
+// after（Dart 3.14）
+Container(
+  alignment: .center,
+  padding: const .all(16.0),
+  child: Column(
+    mainAxisAlignment: .center,
+    crossAxisAlignment: .start,
+  ),
+)</code></pre>
+
+<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <text x='300' y='28' text-anchor='middle' font-size='13' font-weight='bold' fill='#374151'>型名を省略（文脈型が分かる所で）</text>
+  <g font-size='12.5'>
+  <text x='40' y='66' fill='#9ca3af'>Alignment.center</text>
+  <text x='40' y='104' fill='#9ca3af'>EdgeInsets.all(16.0)</text>
+  <text x='40' y='142' fill='#9ca3af'>MainAxisAlignment.center</text>
+  <text x='40' y='180' fill='#9ca3af'>FontWeight.bold</text>
+  <text x='300' y='66' text-anchor='middle' font-size='15' fill='#0ea5e9'>&#8594;</text>
+  <text x='300' y='104' text-anchor='middle' font-size='15' fill='#0ea5e9'>&#8594;</text>
+  <text x='300' y='142' text-anchor='middle' font-size='15' fill='#0ea5e9'>&#8594;</text>
+  <text x='300' y='180' text-anchor='middle' font-size='15' fill='#0ea5e9'>&#8594;</text>
+  <text x='360' y='66' font-weight='bold' fill='#047857'>.center</text>
+  <text x='360' y='104' font-weight='bold' fill='#047857'>const .all(16.0)</text>
+  <text x='360' y='142' font-weight='bold' fill='#047857'>.center</text>
+  <text x='360' y='180' font-weight='bold' fill='#047857'>.bold</text>
+  </g>
+</svg><figcaption>図1：enum・staticプロパティ・namedコンストラクタの型名が落ちる。無名コンストラクタは <code>.new</code>。</figcaption></figure>
+
+<p>対象は enum（<code>.spaceEvenly</code> 等）、static プロパティ（<code>FontWeight.bold</code> → <code>.bold</code>）、named コンストラクタ（<code>EdgeInsets.all()</code> → <code>.all()</code>）。多くのプロパティは基底型（例 <code>EdgeInsetsGeometry</code>）を受けるため、Flutter 側が基底クラスに redirecting constructor を足してサブクラスへ橋渡しする。注意は<strong>文脈型が不明な所では使えない</strong>こと（型推論が効く引数・初期化・return 位置が前提）。公開 API など型を明示したい箇所は従来表記も併用する。</p>
+
+<h4 id="sec-2">同じ日のもう一つの実務ネタ：Bloc のイベント並行性</h4>
+<p>Bloc は v7.2.0 以降<strong>イベントが既定で並行（concurrent）処理</strong>。これが read-then-write を含むと<strong>レースコンディション</strong>の温床になる。<code>bloc_concurrency</code> の transformer を <code>on&lt;E&gt;</code> の named 引数 <code>transformer:</code> に渡すだけで制御できる。</p>
+
+<figure class='fig'><svg viewBox='0 0 600 220' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <line x1='10' y1='52' x2='590' y2='52' stroke='#9ca3af' stroke-width='1'></line>
+  <line x1='10' y1='94' x2='590' y2='94' stroke='#e5e7eb'></line>
+  <line x1='10' y1='136' x2='590' y2='136' stroke='#e5e7eb'></line>
+  <line x1='10' y1='178' x2='590' y2='178' stroke='#e5e7eb'></line>
+  <line x1='200' y1='18' x2='200' y2='210' stroke='#d1d5db'></line>
+  <text x='20' y='40' font-size='12.5' font-weight='bold' fill='#374151'>transformer</text>
+  <text x='215' y='40' font-size='12.5' font-weight='bold' fill='#374151'>挙動 → 向く用途</text>
+  <text x='20' y='80' font-size='12' font-weight='bold' fill='#6b7280'>concurrent（既定）</text>
+  <text x='215' y='80' font-size='11.5' fill='#1f2937'>同時進行・完了順不定 → 独立したI/O</text>
+  <text x='20' y='122' font-size='12' font-weight='bold' fill='#1e40af'>sequential</text>
+  <text x='215' y='122' font-size='11.5' fill='#1f2937'>FIFOで1件ずつ → 書き込み・累積</text>
+  <text x='20' y='164' font-size='12' font-weight='bold' fill='#b45309'>droppable</text>
+  <text x='215' y='164' font-size='11.5' fill='#1f2937'>処理中の後続を破棄 → 連打の単発送信</text>
+  <text x='20' y='206' font-size='12' font-weight='bold' fill='#047857'>restartable</text>
+  <text x='215' y='206' font-size='11.5' fill='#1f2937'>新着で古いのを中断 → 検索・最新入力</text>
+</svg><figcaption>図2：bloc_concurrency の4トランスフォーマ。残高加算の read-then-write は sequential に。</figcaption></figure>
+
+<p>勘所は<strong>書き込み/累積は sequential・冪等でない単発送信は droppable・検索/最新入力は restartable・独立I/Oは concurrent</strong>。残高 $100 への加算が2件来ても、sequential なら後勝ちで $40 を失わない。</p>
+
+<h4 id="sec-3">ひとことまとめ</h4>
+<p>dot shorthands は「書く速さと読みやすさ」、bloc_concurrency は「正しさ」。前者は 3.50 を待たず beta CI で素振りし、後者は<strong>今日から既存 Bloc の <code>on&lt;E&gt;</code> を用途別に貼り替える</strong>だけで効く。<code>material_expressive 0.8.0</code>（spring モーション＋morphable shape）や <code>flutter_animate</code> の <code>.animate().fade().scale()</code> も、同じ「宣言的に効果を積む」潮流だ。</p>
+</article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://docs.flutter.dev/ui/dot-shorthands" target="_blank" rel="noopener noreferrer"> Dot shorthands in Flutter（docs.flutter.dev） </a> </li><li> <a href="https://dart.dev/language/dot-shorthands" target="_blank" rel="noopener noreferrer"> Dot Shorthands（dart.dev） </a> </li><li> <a href="https://engineering.verygood.ventures/development/state_management/bloc_event_transformers/" target="_blank" rel="noopener noreferrer"> Bloc Event Transformers（Very Good Ventures） </a> </li><li> <a href="https://pub.dev/packages/bloc_concurrency" target="_blank" rel="noopener noreferrer"> bloc_concurrency（pub.dev） </a> </li><li> <a href="https://pub.dev/packages/material_expressive" target="_blank" rel="noopener noreferrer"> material_expressive（pub.dev） </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 何が変わるか </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 同じ日のもう一つの実務ネタ：Bloc のイベント並行性 </a> </li><li> <a href="#sec-3" data-toc="sec-3"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-10-28</div> <div>⏱ 読了 約4分</div> <div>🏷 Flutter</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

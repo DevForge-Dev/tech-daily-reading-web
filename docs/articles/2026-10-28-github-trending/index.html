@@ -1,0 +1,99 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>10/28の話題リポジトリ — Theoのエージェントスキル集・スマホLiDARで3D Web・Rust製インプレース解凍 — デイリー技術深掘り 読み物</title><meta name="description" content="AI一色の飽和局面を率で突き抜けた純モメンタム3本。共通点は「作者が毎日使う」具体性だった。"><meta name="theme-color" content="#238636"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-28-github-trending/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="10/28の話題リポジトリ — Theoのエージェントスキル集・スマホLiDARで3D Web・Rust製インプレース解凍 — デイリー技術深掘り 読み物"><meta property="og:description" content="AI一色の飽和局面を率で突き抜けた純モメンタム3本。共通点は「作者が毎日使う」具体性だった。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-28-github-trending/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3fb950, #1a7f37)"> <span class="glyph" aria-hidden="true">★</span> <div class="kicker">GitHub Trending</div> <h1>10/28の話題リポジトリ — Theoのエージェントスキル集・スマホLiDARで3D Web・Rust製インプレース解凍</h1> <p class="lede">AI一色の飽和局面を率で突き抜けた純モメンタム3本。共通点は「作者が毎日使う」具体性だった。</p> <div class="meta"> <span>📅 2026年10月28日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#238636"> <div> <article class="prose" data-has-mermaid="0"><p>この日の GitHub Trending は「話題化済みの再掲」が極端に多い飽和局面（既出586件を除外）だった。その中で<strong>純・新規で急上昇した3本</strong>を取り上げる。共通点は、<strong>著名開発者が「自分が毎日使うもの」を出した</strong>こと、そして AI 一色のトレンドの中に視覚系・システム系という<strong>非AIの多様性</strong>が混じったことだ。</p>
+
+<figure class='fig'><svg viewBox='0 0 600 230' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <rect x='10' y='12' width='580' height='30' fill='#1a7f37'></rect>
+  <text x='80' y='32' text-anchor='middle' font-size='12' font-weight='bold' fill='#fff'>リポジトリ</text>
+  <text x='270' y='32' text-anchor='middle' font-size='12' font-weight='bold' fill='#fff'>解決したい課題</text>
+  <text x='475' y='32' text-anchor='middle' font-size='12' font-weight='bold' fill='#fff'>提供する機能</text>
+  <line x1='155' y1='12' x2='155' y2='222' stroke='#d1d5db'></line>
+  <line x1='388' y1='12' x2='388' y2='222' stroke='#d1d5db'></line>
+  <line x1='10' y1='42' x2='590' y2='42' stroke='#9ca3af'></line>
+  <line x1='10' y1='102' x2='590' y2='102' stroke='#e5e7eb'></line>
+  <line x1='10' y1='162' x2='590' y2='162' stroke='#e5e7eb'></line>
+  <text x='22' y='76' font-size='11.5' font-weight='bold' fill='#1f2937'>tstack</text>
+  <text x='22' y='92' font-size='10' fill='#6b7280'>Python ★約2.0k</text>
+  <text x='270' y='78' text-anchor='middle' font-size='11' fill='#b91c1c'>エージェント運用が属人化</text>
+  <text x='475' y='78' text-anchor='middle' font-size='11' fill='#1e40af'>PR一気通貫＋相互レビュー集</text>
+  <text x='22' y='136' font-size='11.5' font-weight='bold' fill='#1f2937'>3d-model-</text>
+  <text x='22' y='151' font-size='11.5' font-weight='bold' fill='#1f2937'>anything</text>
+  <text x='270' y='138' text-anchor='middle' font-size='11' fill='#b91c1c'>3D化の機材/共有が重い</text>
+  <text x='475' y='138' text-anchor='middle' font-size='11' fill='#1e40af'>LiDAR→編集可能なWeb 3D</text>
+  <text x='22' y='196' font-size='11.5' font-weight='bold' fill='#1f2937'>hatchzip</text>
+  <text x='22' y='212' font-size='10' fill='#6b7280'>Rust ★約2.2k</text>
+  <text x='270' y='198' text-anchor='middle' font-size='11' fill='#b91c1c'>展開に大容量・再実行の壁</text>
+  <text x='475' y='198' text-anchor='middle' font-size='11' fill='#1e40af'>多形式をインプレース展開</text>
+</svg><figcaption>図1：今日の3本を「解決したい課題 → 提供する機能」で一望する。</figcaption></figure>
+
+<h4 id="sec-1">t3dotgg/tstack（Python・⭐約2.0k）</h4>
+<p><strong>解決したい課題：</strong>コーディングエージェント（Claude Code / Codex）を日常運用すると、PR処理やレビューの手順が属人的になり毎回組み直しになりがち。<strong>提供する機能：</strong>Theo（t3dotgg）が実際に毎日使うスキルを束ねたスキル集。PRのエンドツーエンド処理や<strong>マルチモデルによる相互レビュー</strong>をスキルとして配る。公開わずか4日で実測約1,989★・率約68%という当日トップ級の増加率で、著名開発者の“実運用セット公開”が拡散の軸になった（MIT）。</p>
+
+<h4 id="sec-2">wesbos/3d-model-anything（Swift・⭐約2.2k）</h4>
+<p><strong>解決したい課題：</strong>部屋や物体の3D化は専用機材やソフトのハードルが高く、Webで気軽に共有・探索しづらい。<strong>提供する機能：</strong>iPhone の LiDAR と写真で部屋をスキャンし、<strong>編集可能な Three.js シーン</strong>へ再構成してブラウザで歩き回れるようにする。Web教育者 Wes Bos 製で、公開約7日で実測約2,210★/forks324。AI一色の中で数少ない<strong>コンシューマー/空間コンピューティング</strong>寄りの急上昇だ。</p>
+
+<h4 id="sec-3">xevrion/hatchzip（Rust・⭐約2.2k）</h4>
+<p><strong>解決したい課題：</strong>巨大アーカイブの展開は、展開後と同じかそれ以上の空き容量を要求し、途中クラッシュでやり直しになりがち。<strong>提供する機能：</strong>ZIP/7z/RAR/tar・分割書庫を<strong>「その場で」インプレース展開</strong>し、展開後サイズ分の空きだけで済ませる。クラッシュセーフで Win/macOS/Linux 対応の GUI＋CLI。公開約7日で実測約2,171★（Apache-2.0）。AI一色の当日に希少な<strong>純・非AIシステムユーティリティ</strong>。</p>
+
+<h4 id="sec-4">自分が試すなら</h4>
+<p>いちばん実益が近いのは <strong>tstack</strong>——このパイプライン自体が Claude Code 運用なので、PR一気通貫やマルチモデル相互レビューのスキル設計をそのまま参照できる。3d-model-anything は Three.js 可視化の実装参照、hatchzip は大容量ダウンロード後の展開運用に効く。いずれも著名開発者印で保守継続性が読みやすいのも採用のしやすさだ。</p>
+
+<h4 id="sec-5">ひとことまとめ</h4>
+<p>飽和したトレンドを抜けたのは<strong>「作者が毎日使う」具体性</strong>。派手な新AIより、日々の手数を1つ減らす道具が率で勝った日だった。（適合枠では Rust製DBクライアント dbdelve、学習ハーネス learnharness、セルフホストPOS nodedr-restaurant-pos も初登場）</p>
+</article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://github.com/t3dotgg/tstack" target="_blank" rel="noopener noreferrer"> t3dotgg/tstack </a> </li><li> <a href="https://github.com/wesbos/3d-model-anything" target="_blank" rel="noopener noreferrer"> wesbos/3d-model-anything </a> </li><li> <a href="https://github.com/xevrion/hatchzip" target="_blank" rel="noopener noreferrer"> xevrion/hatchzip </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> t3dotgg/tstack（Python・⭐約2.0k） </a> </li><li> <a href="#sec-2" data-toc="sec-2"> wesbos/3d-model-anything（Swift・⭐約2.2k） </a> </li><li> <a href="#sec-3" data-toc="sec-3"> xevrion/hatchzip（Rust・⭐約2.2k） </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 自分が試すなら </a> </li><li> <a href="#sec-5" data-toc="sec-5"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-10-28</div> <div>⏱ 読了 約3分</div> <div>🏷 GitHub Trending</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
