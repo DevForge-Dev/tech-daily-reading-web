@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-10-28T04:47:36.303Z",
+  "generatedAt": "2026-10-29T04:45:02.745Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,114 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "date": "2026-10-29",
+      "topic": "Claude Code",
+      "title": "10/29のClaude Code — v2.1.312が固める「無人で安全に長く走る」地固めと、成熟したエコシステム",
+      "lede": "oidc.user_id_claimによる企業ID名寄せ、巨大CLAUDE.mdの先頭読み上書き修正、VS Code管理設定の取得漏れ修正。派手さより信頼性。あわせて拡張4機構の使い分けと採用統計(職場39%)を読む。",
+      "articleHtml": "<p>この日の焦点は最新版 <strong>v2.1.312</strong>（10/27公開、10/29 JST時点で最新。10/28の新規リリースは未確認）だ。いずれも「見ていなくても安全に、長く走らせる」ための地固めで、新機能の華やかさよりも<strong>運用の信頼性</strong>に寄った週である。</p>\n\n<p>追加されたのは2点。企業の認証基盤に合わせ、Claude appsゲートウェイで <code>sub</code> 以外のクレームからユーザーを識別できる <code>oidc.user_id_claim</code>（ID基盤に沿った名寄せが可能に）と、フルスクリーン表示でキューに積んだメッセージをクリックして送信する操作。修正は地味だが効く2件で、<strong>非常に大きいCLAUDE.mdやルールファイルを「先頭だけ読んだ状態で上書き」してしまう不具合</strong>と、VS Code拡張からサインインした後に managed settings が取得されない不具合が潰れた。長文ルールを運用する身には前者が特に重要だ。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='0' y='0' width='600' height='210' fill='#f6f8fa'/>\n  <text x='300' y='24' text-anchor='middle' font-size='13' font-weight='bold' fill='#1a7f37'>Claude Code 拡張4機構の使い分け</text>\n  <g>\n    <rect x='20' y='40' width='130' height='70' rx='8' fill='#eafbf0' stroke='#3fb950'/>\n    <text x='85' y='66' text-anchor='middle' font-size='12' font-weight='bold' fill='#1a7f37'>Skills / Subagents</text>\n    <text x='85' y='88' text-anchor='middle' font-size='11' fill='#333'>オンデマンド</text>\n    <text x='85' y='102' text-anchor='middle' font-size='11' fill='#333'>呼び出し・委譲</text>\n  </g>\n  <g>\n    <rect x='170' y='40' width='130' height='70' rx='8' fill='#fff4e5' stroke='#e8912d'/>\n    <text x='235' y='66' text-anchor='middle' font-size='12' font-weight='bold' fill='#b45309'>Hooks</text>\n    <text x='235' y='88' text-anchor='middle' font-size='11' fill='#333'>自動で強制</text>\n    <text x='235' y='102' text-anchor='middle' font-size='11' fill='#333'>ライフサイクル発火</text>\n  </g>\n  <g>\n    <rect x='320' y='40' width='130' height='70' rx='8' fill='#eef2ff' stroke='#6366f1'/>\n    <text x='385' y='66' text-anchor='middle' font-size='12' font-weight='bold' fill='#4338ca'>Plugins</text>\n    <text x='385' y='88' text-anchor='middle' font-size='11' fill='#333'>3つを束ねて</text>\n    <text x='385' y='102' text-anchor='middle' font-size='11' fill='#333'>共有・配布</text>\n  </g>\n  <g>\n    <rect x='470' y='40' width='110' height='70' rx='8' fill='#f0f0f0' stroke='#999'/>\n    <text x='525' y='66' text-anchor='middle' font-size='12' font-weight='bold' fill='#444'>Rules</text>\n    <text x='525' y='88' text-anchor='middle' font-size='11' fill='#333'>常時遵守</text>\n    <text x='525' y='102' text-anchor='middle' font-size='11' fill='#333'>の方針</text>\n  </g>\n  <text x='20' y='140' font-size='11' fill='#555'>原則①: 譲れないルール（.env読取ブロック・投稿前承認）は「プロンプト」でなく「Hook」に置く</text>\n  <text x='20' y='160' font-size='11' fill='#555'>原則②: データ収集（PR差分取得）と分析（品質判断）を分離し、レビューをAPIノイズで汚さない</text>\n  <text x='20' y='180' font-size='11' fill='#555'>原則③: 雑用（検索・取得）には安いモデル、推論には強いモデルを温存</text>\n  <text x='20' y='200' font-size='11' fill='#555'>目安: MCPは設定20〜30 / 有効10未満 / アクティブツール80未満。/mcp で状態確認</text>\n</svg><figcaption>図1：Skills・Subagents=オンデマンド、Hooks=自動強制、Plugins=梱包配布、Rules=常時遵守（Medium/timewell.jp より整理）</figcaption></figure>\n\n<p>補足として前日枠で未掲載だった <strong>v2.1.310</strong>（10/23〜25）も読んでおきたい。Monitorツール／プラグインMonitorが Amazon Bedrock・Google Vertex・Microsoft Foundry 経由でも使えるようになり（マルチプロバイダ対応）、Claude Enterprise のカスタムロールに「クラウドセッション」権限が加わった。さらに<strong>タイムアウトしたMCPツール呼び出しを同じ内容で再実行しないようClaudeに伝える</strong>変更が入っており、無人運用での暴発を抑える方向だ。</p>\n\n<p>技術記事側では、4拡張機構の実務的な使い分け（上図）が刺さる。要は「skill.md本体は短く保ち、例や雛形は別ファイルへ」「Subagentには狭い仕事を与え構造化した要約だけ返させる」。<code>hookify</code> プラグインを使えば <code>/hookify</code> で会話形式のままHookを作れる、並列作業は <code>/fork</code> やgit worktreeで競合を避ける、といった小ネタも効率に直結する。</p>\n\n<p>ニュースの目玉はJetBrains調査（15,000人超、5〜7月）で、<strong>Claude Codeを「職場で使う」開発者は39%</strong>（1月の18%から倍増）、主要ツール比率は夏期31%・米国では47%に達した。Copilotは21%（-8pt）、Codexは16%（+13pt）、Cursorは12%（-6pt）という勢力図だ。npm累計は約5.63億DL、GitHub約15万star。※39%は「利用率」でありシェアそのものではない点、Anthropic社内の「コミット約5倍」は因果の生産性向上を示すものではない点に注意したい。</p>\n\n<p><strong>自分が試すなら</strong>：巨大CLAUDE.mdの上書き修正が入ったので、まずローカルを v2.1.312 に上げ、長文ルールの編集が壊れないか確認。並行して「譲れないルールはHookへ」の原則で、<code>.env</code> 読取ブロックとコメント投稿前承認を会話形式の <code>hookify</code> で1本ずつ作ってみる。<strong>落とし穴</strong>はMCPの入れすぎ（有効10未満の目安を超えるとツール選択がぶれる）と、Subagentに広い仕事を渡してレビューがノイズまみれになること。</p>",
+      "sources": [
+        {
+          "title": "Claude Code changelog（公式）",
+          "url": "https://code.claude.com/docs/en/changelog"
+        },
+        {
+          "title": "Skills/Subagents/Hooks/Plugins 実践整理（Medium, S. Mishra）",
+          "url": "https://medium.com/@mishra.shashank35/claude-code-skills-subagents-hooks-and-plugins-a-practical-overview-572de7cedb20"
+        },
+        {
+          "title": "Claude Code 実践Tips（timewell.jp）",
+          "url": "https://timewell.jp/columns/claude-code-complete-guide"
+        },
+        {
+          "title": "Claude Code 統計まとめ（gradually.ai）",
+          "url": "https://www.gradually.ai/en/claude-code-statistics/"
+        }
+      ],
+      "id": "2026-10-29-claude-code"
+    },
+    {
+      "date": "2026-10-29",
+      "topic": "Next.js",
+      "title": "10/29のNext.js — FABスピードダイヤルが「ほぼ標準機能」で組める時代（Popover API + @starting-style）",
+      "lede": "丸い主ボタンから子アクションが扇状/縦列に飛び出す定番UI。2026はPopover API＋@starting-style＋transition-behavior:allow-discreteでトップレイヤー・外側クリック閉じ・enter/exitアニメが標準だけで組める。",
+      "articleHtml": "<p>画面右下に浮く丸い主ボタン（FAB）を押すと、2〜6個のアクションが縦列や扇状に、時間差（stagger）＋スプリングで飛び出す——Gmailや各種SaaSに遍在する「スピードダイヤル」。見た目の割に実装は軽いが、素朴に作ると<strong>アクセシビリティ（aria-expanded無し・フォーカス迷子・Escape非対応）を落とす</strong>、<code>display:none</code>絡みで開きアニメが走らない、祖先の<code>transform</code>で<code>position:fixed</code>が崩れる、といった罠に落ちやすい。</p>\n\n<p>何が新しいか。2026は <strong>Popover API ＋ <code>@starting-style</code> ＋ <code>transition-behavior:allow-discrete</code></strong>（いずれもBaselineで出揃った）で、「トップレイヤー投入・外側クリック閉じ・Escape閉じ・enter/exitアニメ」を<strong>ほぼ標準機能だけ</strong>で組めるようになった。Material Design 3 Expressive も従来の \"speed dial\" を公式に <strong>FAB menu</strong>（2〜6アクション＋クローズボタン）へ置き換えている。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 230' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='0' y='0' width='600' height='230' fill='#f7f9fc'/>\n  <text x='300' y='24' text-anchor='middle' font-size='13' font-weight='bold' fill='#0b63c4'>パターン選定：Disclosure（既定）か Menu か</text>\n  <rect x='25' y='40' width='260' height='165' rx='10' fill='#eef6ff' stroke='#3b82f6'/>\n  <text x='155' y='64' text-anchor='middle' font-size='12' font-weight='bold' fill='#1d4ed8'>Disclosure（推奨・既定）</text>\n  <text x='40' y='88' font-size='11' fill='#333'>・FABは button[aria-expanded] のトグル</text>\n  <text x='40' y='108' font-size='11' fill='#333'>・子はただのボタン/リンクの集まり</text>\n  <text x='40' y='128' font-size='11' fill='#333'>・Tab順で辿れSRに素直（W3C APG準拠）</text>\n  <text x='40' y='148' font-size='11' fill='#333'>・リンク遷移/単発操作ならこれ</text>\n  <text x='40' y='176' font-size='11' font-weight='bold' fill='#1a7f37'>→ 迷ったらこちら</text>\n  <rect x='315' y='40' width='260' height='165' rx='10' fill='#fff4f4' stroke='#e05252'/>\n  <text x='445' y='64' text-anchor='middle' font-size='12' font-weight='bold' fill='#b91c1c'>Menu（限定的）</text>\n  <text x='330' y='88' font-size='11' fill='#333'>・role=menu + menuitem + ロービングtabindex</text>\n  <text x='330' y='108' font-size='11' fill='#333'>・↑↓移動/Escape/端循環（MUI SpeedDial型）</text>\n  <text x='330' y='128' font-size='11' fill='#333'>・APGのmenuは「アプリメニュー」用</text>\n  <text x='330' y='148' font-size='11' fill='#333'>・リンク集に付けるとSRへ誤案内</text>\n  <text x='330' y='176' font-size='11' font-weight='bold' fill='#b91c1c'>→ 真にメニュー然の時だけ</text>\n</svg><figcaption>図1：既定はDisclosure。Menuロールはアプリケーションメニュー用で、リンク/アクション集への安易な付与はスクリーンリーダーに誤った案内をする（Adrian Roselli）</figcaption></figure>\n\n<p>仕組みの肝は「開きが動かない問題」の解消だ。<code>display:none</code>→表示やPopoverのトップレイヤー投入は通常トランジションが走らない。そこで <code>@starting-style</code> に初期値を書き、<code>transition</code> に <code>display</code> と <code>overlay</code> を <code>allow-discrete</code> 付きで列挙すると、enter/exit両方が補間され閉じアニメ中も要素が残る。</p>\n\n<pre><code>.dial{ opacity:0; transform:translateY(8px) scale(.96);\n  transition:opacity .25s, transform .25s,\n             overlay .25s allow-discrete, display .25s allow-discrete; }\n.dial:popover-open{ opacity:1; transform:none; }\n@starting-style{ .dial:popover-open{ opacity:0; transform:translateY(8px) scale(.96); } }\n/* 子の時間差 */\n.dial > button{ transition-delay:calc(var(--i) * 40ms); }</code></pre>\n\n<p>stagger（時間差）は各子に <code>transition-delay: calc(var(--i)*40ms)</code>、<strong>閉じる時は逆順</strong>にすると「吸い込まれる」自然さが出る。動かすのは <code>transform</code> と <code>opacity</code> のみ＝コンポジタ合成で軽く、<code>top/left/width</code> のアニメ（リフロー）は禁物。放射配置はCSS三角関数 <code>sin()/cos()</code>（Baseline）で角度θ・半径rに散らすが、<strong>DOM順＝論理順を保ち見た目だけtransformで散らす</strong>のが鉄則だ。</p>\n\n<p><strong>Next.js（App Router）での組み込み</strong>：<code>'use client'</code> は必須だが<strong>小さなクライアント島</strong>に留め、<code>&lt;Fab/&gt;</code> だけclientにして中身は <code>children</code> でRSCを流す。設置は <code>app/layout.tsx</code> に置けばルート遷移で再マウントされず「ナビの度に勝手に開く」チラ付きを防げる。<code>position:fixed</code> が崩れる最大の救済がPopover APIで、<strong>top-layerに投入されクリッピングも重なり順も自動で超越</strong>する（Popover非使用なら <code>createPortal(node, document.body)</code>）。初期状態はSSR/CSR共に「閉」固定にしてハイドレーション一致を守る。</p>\n\n<p><strong>自分が試すなら</strong>：まずDisclosure＋Popover APIの最小形で作り、遷移アクションは <code>&lt;Link prefetch&gt;</code>、サーバー変更は <code>&lt;form action={serverAction}&gt;</code> ＋ <code>useActionState</code> で繋ぐ。<strong>落とし穴</strong>は <code>prefers-reduced-motion:reduce</code> の未対応（translate/stagger/scaleを止めopacityのみに）とタッチ標的44×44px未満、そして祖先の <code>transform/filter/contain</code> がfixedの基準を奪う点。</p>",
+      "sources": [
+        {
+          "title": "MDN: @starting-style",
+          "url": "https://developer.mozilla.org/docs/Web/CSS/Reference/At-rules/@starting-style"
+        },
+        {
+          "title": "MDN: transition-behavior（allow-discrete）",
+          "url": "https://developer.mozilla.org/docs/Web/CSS/transition-behavior"
+        },
+        {
+          "title": "W3C WAI-ARIA APG: Disclosure パターン",
+          "url": "https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/"
+        },
+        {
+          "title": "Material Design 3: Floating Action Button",
+          "url": "https://m3.material.io/components/floating-action-button"
+        },
+        {
+          "title": "Adrian Roselli: Disclosure Widgets",
+          "url": "https://adrianroselli.com/2020/05/disclosure-widgets.html"
+        }
+      ],
+      "id": "2026-10-29-nextjs"
+    },
+    {
+      "date": "2026-10-29",
+      "topic": "Flutter",
+      "title": "10/29のFlutter — Dart 3.13 primary constructorsが本番解禁、shader/Riverpod3/raster cacheも総点検",
+      "lede": "クラスヘッダ1行でフィールド＋コンストラクタを宣言するprimary constructorsが現stableで今すぐ使える。あわせてフラグメントシェーダの実装作法、Riverpod 3.xの一本化、RepaintBoundaryの「焼きすぎ」計測を読む。",
+      "articleHtml": "<p>この日はリリース・アニメ・状態管理・パフォーマンスの4本立て。まず本番で今すぐ効くのが <strong>Dart 3.13 の primary constructors</strong> だ。Dart 3.13.0（2026-08-12）で正式化され、現stable <strong>Flutter 3.47.8 / Dart 3.13.7</strong> に載っている。beta限定の dot shorthands（3.14）と違い<strong>本番で使える</strong>のが大きい。クラス名直後の括弧に <code>final 型 名前</code> を並べるだけで、その場でフィールド化＋コンストラクタ生成——<code>this.</code> の繰り返しも初期化リストも要らない。</p>\n\n<pre><code>// 従来\nclass Temperature { final double celsius; Temperature(this.celsius); }\n// primary constructors（3.13）\nclass Temperature(final double celsius);\n// 呼び出しは従来どおり Temperature(21.5)\n\n// named / const / private\nclass Config({required final String host, final int port = 8080}){ }\nclass const Meters(final double value);   // const は class と名前の間\nclass Store(final Cache _cache);          // private は引数名に _</code></pre>\n\n<p>const は <code>class const Meters(...)</code> とclassと名前の間に置く点が独特で、<strong>widgetのconst正準化に効く</strong>ので移行時は維持したい。enumもヘッダ引数化でき、リダイレクト/factoryは本体に残し <code>new</code> ショートハンドで書く。移行を後押しする新lint（<code>use_declaring_parameters</code> 等）はあるが、<strong><code>dart fix</code> の自動変換は未提供</strong>で書き換えは手動だ。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='0' y='0' width='600' height='200' fill='#f5f8ff'/>\n  <text x='300' y='22' text-anchor='middle' font-size='13' font-weight='bold' fill='#0553b1'>raster cache：焼くと得か、照合コストで損か</text>\n  <rect x='30' y='40' width='150' height='48' rx='6' fill='#e3f2fd' stroke='#1976d2'/>\n  <text x='105' y='60' text-anchor='middle' font-size='11' font-weight='bold' fill='#0553b1'>UIスレッド</text>\n  <text x='105' y='78' text-anchor='middle' font-size='10' fill='#333'>widget→layerツリー生成</text>\n  <rect x='225' y='40' width='150' height='48' rx='6' fill='#fff3e0' stroke='#ef6c00'/>\n  <text x='300' y='60' text-anchor='middle' font-size='11' font-weight='bold' fill='#b45309'>raster cache</text>\n  <text x='300' y='78' text-anchor='middle' font-size='10' fill='#333'>layer identity+transformで照合</text>\n  <rect x='420' y='40' width='150' height='48' rx='6' fill='#e8f5e9' stroke='#2e7d32'/>\n  <text x='495' y='60' text-anchor='middle' font-size='11' font-weight='bold' fill='#1b5e20'>ラスタスレッド</text>\n  <text x='495' y='78' text-anchor='middle' font-size='10' fill='#333'>tessellate/シェーダ/GPU投入</text>\n  <line x1='180' y1='64' x2='223' y2='64' stroke='#888' stroke-width='2' marker-end='url(#ar)'/>\n  <line x1='375' y1='64' x2='418' y2='64' stroke='#888' stroke-width='2' marker-end='url(#ar)'/>\n  <defs><marker id='ar' markerWidth='8' markerHeight='8' refX='6' refY='3' orient='auto'><path d='M0,0 L6,3 L0,6 Z' fill='#888'/></marker></defs>\n  <text x='30' y='120' font-size='11' fill='#555'>キャッシュ対象: cacheable かつ同一transformで2回以上描画。未使用200ms/メモリ圧で失効</text>\n  <text x='30' y='142' font-size='11' fill='#b91c1c'>罠: 毎フレームtransformが変わる部分木はキャッシュしない（照合コスト > 素描コスト）</text>\n  <text x='30' y='164' font-size='11' fill='#1a7f37'>実測: 全画面CustomPaint囲いで340 miss/秒・+4.2ms/frame → 静的グリッドだけに移し11ms</text>\n  <text x='30' y='186' font-size='11' fill='#555'>1エントリ=幅×高×4byte（1080×2400全画面≒10.4MB）/ 50MB超で積極evict</text>\n</svg><figcaption>図1：RepaintBoundaryは「高頻度rebuild・安定・高コスト」な部分木だけに。アニメ中にmiss数がフレーム数と等しくなったら外す</figcaption></figure>\n\n<p><strong>フラグメントシェーダ</strong>は、<code>.frag</code>（頂点シェーダ非対応）を <code>pubspec.yaml</code> の <code>flutter: shaders:</code> に列挙→CLIがコンパイルしてアセット同梱。<code>FragmentProgram.fromAsset()</code> でロードし、<strong>FragmentShaderはフレーム間で使い回す</strong>（毎フレーム生成しない）。uniformは宣言順indexで <code>setFloat</code>／sampler2Dは <code>setImageSampler</code>（samplerはfloat indexを消費せず別カウント）、色は<strong>premultiplied alpha</strong>で0.0–1.0正規化。座標は <code>FlutterFragCoord().xy</code> を使い <code>gl_FragCoord</code> は避ける。widgetへは <code>flutter_shaders</code> の <code>AnimatedSampler</code> でchildをui.Imageに焼いて渡すのが定石だ。</p>\n\n<p><strong>Riverpod 3.x</strong>（最新3.4.3）は2.xからの大刷新で、<code>AutoDisposeNotifier</code>／<code>FamilyNotifier</code> を <code>Notifier</code> に統合、プロバイダ別Ref型も単一 <code>Ref</code> に統一。<code>StateProvider</code> 等は <code>legacy.dart</code> へ移動した。初期化失敗時の<strong>指数バックオフ自動リトライ</strong>（既定200ms→倍々→上限6.4秒）、<code>Ref.mounted</code> によるasyncギャップ後の生存確認が実務で効く。offline永続化（<code>persist()</code>／<code>riverpod_sqflite</code>）とmutations（<code>Mutation&lt;T&gt;</code>→<code>.run()</code>）はまだ実験的で、ライフサイクル変更が「見えにくい形で既存を壊す」警告がある点に注意。</p>\n\n<p><strong>自分が試すなら</strong>：新規のデータクラス/小widgetからprimary constructorsを手で導入しconst正準化を崩さないか確認。パフォーマンスは <code>debugPrintRasterCacheStatistics</code> でmiss数を数えてから <code>RepaintBoundary</code> を「静的グリッドだけ」に絞る。<strong>落とし穴</strong>はRepaintBoundaryの付けすぎ（照合コストで逆に遅くなる）とRiverpod実験機能の本番投入。</p>",
+      "sources": [
+        {
+          "title": "Announcing Dart 3.13（dart.dev）",
+          "url": "https://dart.dev/blog/announcing-dart-3-13"
+        },
+        {
+          "title": "Dart Primary Constructors（codewithandrea.com）",
+          "url": "https://codewithandrea.com/articles/dart-primary-constructors/"
+        },
+        {
+          "title": "Fragment shaders（docs.flutter.dev）",
+          "url": "https://docs.flutter.dev/ui/design/graphics/fragment-shaders"
+        },
+        {
+          "title": "What's new in Riverpod 3.0（riverpod.dev）",
+          "url": "https://riverpod.dev/docs/whats_new"
+        },
+        {
+          "title": "Flutter engine raster cache tuning（omr.it.com）",
+          "url": "https://omr.it.com/blog/flutter-engine-raster-cache-tuning/"
+        }
+      ],
+      "id": "2026-10-29-flutter"
+    },
+    {
+      "date": "2026-10-29",
+      "topic": "GitHub Trending",
+      "title": "10/29の話題リポジトリ — Uncle Bobの品質ゲート・汉化ポーズ集・自己端末スパイウェア点検",
+      "lede": "AIエージェント一色で飽和した当日トレンドの中、純・新規で急上昇した3本。著名人の「規律あるエージェント」、視覚系の多様性、防御的セキュリティという非AIの顔ぶれが揃った。",
+      "articleHtml": "<p>この日のトレンドは前日に続く<strong>飽和局面</strong>（既出592件を除外）。その中で純・新規として急上昇した3本を取り上げる。共通点は、AI開発ツール一色の潮流に対して<strong>「規律」「視覚」「防御的セキュリティ」という異なる方向</strong>の新星が同時に刺さったことだ。各リポジトリについて「解決したい課題」と「提供する機能」を明示する。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='10' y='12' width='580' height='28' fill='#1a7f37'/>\n  <text x='95' y='31' text-anchor='middle' font-size='11' font-weight='bold' fill='#fff'>リポジトリ</text>\n  <text x='300' y='31' text-anchor='middle' font-size='11' font-weight='bold' fill='#fff'>解決したい課題</text>\n  <text x='490' y='31' text-anchor='middle' font-size='11' font-weight='bold' fill='#fff'>提供する機能</text>\n  <rect x='10' y='40' width='580' height='54' fill='#f0fff4'/>\n  <text x='18' y='60' font-size='11' font-weight='bold' fill='#1a7f37'>unclebob/</text>\n  <text x='18' y='74' font-size='11' font-weight='bold' fill='#1a7f37'>ub-mode</text>\n  <text x='18' y='88' font-size='10' fill='#666'>⭐3.7k Skill</text>\n  <text x='195' y='56' text-anchor='middle' font-size='10' fill='#333'>エージェントが規律を</text>\n  <text x='195' y='70' text-anchor='middle' font-size='10' fill='#333'>守らず品質が崩れる</text>\n  <text x='195' y='84' text-anchor='middle' font-size='10' fill='#333'>（TDD無視・重複・放置）</text>\n  <text x='450' y='56' text-anchor='middle' font-size='10' fill='#333'>TDD→根本修正→refactorに</text>\n  <text x='450' y='70' text-anchor='middle' font-size='10' fill='#333'>決定論ゲート（CRAP&lt;10/</text>\n  <text x='450' y='84' text-anchor='middle' font-size='10' fill='#333'>重複&lt;0.8/ミューテーション）</text>\n  <rect x='10' y='96' width='580' height='54' fill='#fff8f0'/>\n  <text x='18' y='116' font-size='11' font-weight='bold' fill='#b45309'>anhao/ai-pose</text>\n  <text x='18' y='130' font-size='11' font-weight='bold' fill='#b45309'>-gallery-zh</text>\n  <text x='18' y='144' font-size='10' fill='#666'>⭐1.8k HTML</text>\n  <text x='195' y='112' text-anchor='middle' font-size='10' fill='#333'>AI画像生成のポーズ参照が</text>\n  <text x='195' y='126' text-anchor='middle' font-size='10' fill='#333'>英語で引きにくく</text>\n  <text x='195' y='140' text-anchor='middle' font-size='10' fill='#333'>環境構築も面倒</text>\n  <text x='450' y='112' text-anchor='middle' font-size='10' fill='#333'>1,439組/2,878枚を完全汉化</text>\n  <text x='450' y='126' text-anchor='middle' font-size='10' fill='#333'>依存ゼロの静的ページで</text>\n  <text x='450' y='140' text-anchor='middle' font-size='10' fill='#333'>即検索（NOASSERTION）</text>\n  <rect x='10' y='152' width='580' height='54' fill='#f0f4ff'/>\n  <text x='18' y='172' font-size='11' font-weight='bold' fill='#4338ca'>interplains/Zero</text>\n  <text x='18' y='186' font-size='11' font-weight='bold' fill='#4338ca'>-Breach-Toolkit</text>\n  <text x='18' y='200' font-size='10' fill='#666'>⭐2.7k Python</text>\n  <text x='195' y='168' text-anchor='middle' font-size='10' fill='#333'>民間製スパイウェアの感染を</text>\n  <text x='195' y='182' text-anchor='middle' font-size='10' fill='#333'>個人が自力で確かめられない</text>\n  <text x='450' y='168' text-anchor='middle' font-size='10' fill='#333'>既知痕跡をオフライン検査</text>\n  <text x='450' y='182' text-anchor='middle' font-size='10' fill='#333'>Win/mac/Linux・Android・</text>\n  <text x='450' y='196' text-anchor='middle' font-size='10' fill='#333'>iPhoneバックアップ対応</text>\n</svg><figcaption>図1：当日3本の「課題→機能」対応。Apache-2.0のPython防御ツール、汉化HTMLギャラリー、著名人発の品質ゲートSkill</figcaption></figure>\n\n<h4>unclebob/ub-mode（エージェントSkill・Markdown ・ ⭐約3.7k）</h4>\n<p><strong>解決したい課題</strong>：コーディングエージェントは放っておくと規律を失い、「まず動かす」で止まって重複やテスト不足を放置しがちだ。ub-modeはこの<strong>品質の崩れを人手のレビュー頼みにせず、決定論的に防ぐ</strong>ことを狙う。<strong>提供する機能</strong>：TDD→根本原因修正→リファクタの各フェーズに、Crapper（複雑度CRAP&lt;10）・Dryer（重複&lt;0.8）・Mutator（ミューテーションテストで生存ミュータントを殺す）という品質ゲートCLIを紐付け、小さく順序立てたコミットまで規律化するエージェントスキルだ。<strong>なぜ急上昇か</strong>：『Clean Code』の Robert C. Martin（Uncle Bob）が公開わずか4日（created 10-25）で実測3,711★/forks194、日次+約1,700＝率約46%と、飽和局面の当日トレンドを突き抜けた。</p>\n\n<h4>anhao/ai-pose-gallery-zh（HTML ・ ⭐約1.8k）</h4>\n<p><strong>解決したい課題</strong>：AI画像生成でポーズを指定したい時、参照画像が英語で引きにくく、ツールのセットアップも手間だった。<strong>提供する機能</strong>：1,439組・2,878枚のAIポーズ参照画像を完全に中国語化（汉化）し、<strong>依存ゼロの静的ページ</strong>でそのまま検索・引用できるギャラリーにした。<strong>なぜ急上昇か</strong>：公開2日（created 10-27）で実測1,842★/forks472、trendshift日次#3（+約286）。AI開発ツール一色の中で希少なビジュアル/クリエイティブ寄りの新星だ。ライセンスはNOASSERTIONのため、再利用時は各画像の権利確認が前提。</p>\n\n<h4>interplains/Zero-Breach-Toolkit（Python ・ ⭐約2.7k）</h4>\n<p><strong>解決したい課題</strong>：Pegasus等の民間製（マーセナリ）スパイウェアに自分の端末が侵されていないか、個人が自力で確かめる手段は乏しかった。<strong>提供する機能</strong>：既知スパイウェアの痕跡を<strong>オフラインで</strong>Windows/macOS/Linux・Android端末・iPhoneバックアップから検査する無料OSS（Apache-2.0）。AmnestyのMVT系に連なる<strong>攻撃用途ではない防御的フォレンジック</strong>だ。<strong>なぜ急上昇か</strong>：公開約4日（created 10-25）で実測2,703★/forks296、trendshift日次入り。AI一色のトレンドで希少なセキュリティ・プライバシー多様性枠として伸びた。</p>\n\n<p><strong>自分が試すなら</strong>：3本の中で開発に直結するのはub-mode。『まず動かす→次に正しくする』の各フェーズに決定論ゲート（CRAP/重複/ミューテーション）を紐付ける設計は、自前のstack-templateの品質ゲートやレビュー規律の参照にできる。Zero-Breach-Toolkitは手元端末のプライバシー点検として、ai-pose-gallery-zhは画像生成の作業効率化として、それぞれ単体で試す価値がある。</p>",
+      "sources": [
+        {
+          "title": "unclebob/ub-mode",
+          "url": "https://github.com/unclebob/ub-mode"
+        },
+        {
+          "title": "anhao/ai-pose-gallery-zh",
+          "url": "https://github.com/anhao/ai-pose-gallery-zh"
+        },
+        {
+          "title": "interplains/Zero-Breach-Toolkit",
+          "url": "https://github.com/interplains/Zero-Breach-Toolkit"
+        }
+      ],
+      "id": "2026-10-29-github-trending"
+    },
     {
       "date": "2026-10-28",
       "topic": "Claude Code",
