@@ -1,0 +1,96 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>10/29のNext.js — FABスピードダイヤルが「ほぼ標準機能」で組める時代（Popover API + @starting-style） — デイリー技術深掘り 読み物</title><meta name="description" content="丸い主ボタンから子アクションが扇状/縦列に飛び出す定番UI。2026はPopover API＋@starting-style＋transition-behavior:allow-discreteでトップレイヤー・外側クリック閉じ・enter/exitアニメが標準だけで組める。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-29-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="10/29のNext.js — FABスピードダイヤルが「ほぼ標準機能」で組める時代（Popover API + @starting-style） — デイリー技術深掘り 読み物"><meta property="og:description" content="丸い主ボタンから子アクションが扇状/縦列に飛び出す定番UI。2026はPopover API＋@starting-style＋transition-behavior:allow-discreteでトップレイヤー・外側クリック閉じ・enter/exitアニメが標準だけで組める。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-29-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>10/29のNext.js — FABスピードダイヤルが「ほぼ標準機能」で組める時代（Popover API + @starting-style）</h1> <p class="lede">丸い主ボタンから子アクションが扇状/縦列に飛び出す定番UI。2026はPopover API＋@starting-style＋transition-behavior:allow-discreteでトップレイヤー・外側クリック閉じ・enter/exitアニメが標準だけで組める。</p> <div class="meta"> <span>📅 2026年10月29日</span> <span>⏱ 約4分</span> <span>🔗 出典 5 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="0"><p>画面右下に浮く丸い主ボタン（FAB）を押すと、2〜6個のアクションが縦列や扇状に、時間差（stagger）＋スプリングで飛び出す——Gmailや各種SaaSに遍在する「スピードダイヤル」。見た目の割に実装は軽いが、素朴に作ると<strong>アクセシビリティ（aria-expanded無し・フォーカス迷子・Escape非対応）を落とす</strong>、<code>display:none</code>絡みで開きアニメが走らない、祖先の<code>transform</code>で<code>position:fixed</code>が崩れる、といった罠に落ちやすい。</p>
+
+<p>何が新しいか。2026は <strong>Popover API ＋ <code>@starting-style</code> ＋ <code>transition-behavior:allow-discrete</code></strong>（いずれもBaselineで出揃った）で、「トップレイヤー投入・外側クリック閉じ・Escape閉じ・enter/exitアニメ」を<strong>ほぼ標準機能だけ</strong>で組めるようになった。Material Design 3 Expressive も従来の "speed dial" を公式に <strong>FAB menu</strong>（2〜6アクション＋クローズボタン）へ置き換えている。</p>
+
+<figure class='fig'><svg viewBox='0 0 600 230' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <rect x='0' y='0' width='600' height='230' fill='#f7f9fc'></rect>
+  <text x='300' y='24' text-anchor='middle' font-size='13' font-weight='bold' fill='#0b63c4'>パターン選定：Disclosure（既定）か Menu か</text>
+  <rect x='25' y='40' width='260' height='165' rx='10' fill='#eef6ff' stroke='#3b82f6'></rect>
+  <text x='155' y='64' text-anchor='middle' font-size='12' font-weight='bold' fill='#1d4ed8'>Disclosure（推奨・既定）</text>
+  <text x='40' y='88' font-size='11' fill='#333'>・FABは button[aria-expanded] のトグル</text>
+  <text x='40' y='108' font-size='11' fill='#333'>・子はただのボタン/リンクの集まり</text>
+  <text x='40' y='128' font-size='11' fill='#333'>・Tab順で辿れSRに素直（W3C APG準拠）</text>
+  <text x='40' y='148' font-size='11' fill='#333'>・リンク遷移/単発操作ならこれ</text>
+  <text x='40' y='176' font-size='11' font-weight='bold' fill='#1a7f37'>→ 迷ったらこちら</text>
+  <rect x='315' y='40' width='260' height='165' rx='10' fill='#fff4f4' stroke='#e05252'></rect>
+  <text x='445' y='64' text-anchor='middle' font-size='12' font-weight='bold' fill='#b91c1c'>Menu（限定的）</text>
+  <text x='330' y='88' font-size='11' fill='#333'>・role=menu + menuitem + ロービングtabindex</text>
+  <text x='330' y='108' font-size='11' fill='#333'>・↑↓移動/Escape/端循環（MUI SpeedDial型）</text>
+  <text x='330' y='128' font-size='11' fill='#333'>・APGのmenuは「アプリメニュー」用</text>
+  <text x='330' y='148' font-size='11' fill='#333'>・リンク集に付けるとSRへ誤案内</text>
+  <text x='330' y='176' font-size='11' font-weight='bold' fill='#b91c1c'>→ 真にメニュー然の時だけ</text>
+</svg><figcaption>図1：既定はDisclosure。Menuロールはアプリケーションメニュー用で、リンク/アクション集への安易な付与はスクリーンリーダーに誤った案内をする（Adrian Roselli）</figcaption></figure>
+
+<p>仕組みの肝は「開きが動かない問題」の解消だ。<code>display:none</code>→表示やPopoverのトップレイヤー投入は通常トランジションが走らない。そこで <code>@starting-style</code> に初期値を書き、<code>transition</code> に <code>display</code> と <code>overlay</code> を <code>allow-discrete</code> 付きで列挙すると、enter/exit両方が補間され閉じアニメ中も要素が残る。</p>
+
+<pre><code>.dial{ opacity:0; transform:translateY(8px) scale(.96);
+  transition:opacity .25s, transform .25s,
+             overlay .25s allow-discrete, display .25s allow-discrete; }
+.dial:popover-open{ opacity:1; transform:none; }
+@starting-style{ .dial:popover-open{ opacity:0; transform:translateY(8px) scale(.96); } }
+/* 子の時間差 */
+.dial > button{ transition-delay:calc(var(--i) * 40ms); }</code></pre>
+
+<p>stagger（時間差）は各子に <code>transition-delay: calc(var(--i)*40ms)</code>、<strong>閉じる時は逆順</strong>にすると「吸い込まれる」自然さが出る。動かすのは <code>transform</code> と <code>opacity</code> のみ＝コンポジタ合成で軽く、<code>top/left/width</code> のアニメ（リフロー）は禁物。放射配置はCSS三角関数 <code>sin()/cos()</code>（Baseline）で角度θ・半径rに散らすが、<strong>DOM順＝論理順を保ち見た目だけtransformで散らす</strong>のが鉄則だ。</p>
+
+<p><strong>Next.js（App Router）での組み込み</strong>：<code>'use client'</code> は必須だが<strong>小さなクライアント島</strong>に留め、<code>&lt;Fab/&gt;</code> だけclientにして中身は <code>children</code> でRSCを流す。設置は <code>app/layout.tsx</code> に置けばルート遷移で再マウントされず「ナビの度に勝手に開く」チラ付きを防げる。<code>position:fixed</code> が崩れる最大の救済がPopover APIで、<strong>top-layerに投入されクリッピングも重なり順も自動で超越</strong>する（Popover非使用なら <code>createPortal(node, document.body)</code>）。初期状態はSSR/CSR共に「閉」固定にしてハイドレーション一致を守る。</p>
+
+<p><strong>自分が試すなら</strong>：まずDisclosure＋Popover APIの最小形で作り、遷移アクションは <code>&lt;Link prefetch&gt;</code>、サーバー変更は <code>&lt;form action={serverAction}&gt;</code> ＋ <code>useActionState</code> で繋ぐ。<strong>落とし穴</strong>は <code>prefers-reduced-motion:reduce</code> の未対応（translate/stagger/scaleを止めopacityのみに）とタッチ標的44×44px未満、そして祖先の <code>transform/filter/contain</code> がfixedの基準を奪う点。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://developer.mozilla.org/docs/Web/CSS/Reference/At-rules/@starting-style" target="_blank" rel="noopener noreferrer"> MDN: @starting-style </a> </li><li> <a href="https://developer.mozilla.org/docs/Web/CSS/transition-behavior" target="_blank" rel="noopener noreferrer"> MDN: transition-behavior（allow-discrete） </a> </li><li> <a href="https://www.w3.org/WAI/ARIA/apg/patterns/disclosure/" target="_blank" rel="noopener noreferrer"> W3C WAI-ARIA APG: Disclosure パターン </a> </li><li> <a href="https://m3.material.io/components/floating-action-button" target="_blank" rel="noopener noreferrer"> Material Design 3: Floating Action Button </a> </li><li> <a href="https://adrianroselli.com/2020/05/disclosure-widgets.html" target="_blank" rel="noopener noreferrer"> Adrian Roselli: Disclosure Widgets </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

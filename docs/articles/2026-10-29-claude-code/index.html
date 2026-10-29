@@ -1,0 +1,102 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>10/29のClaude Code — v2.1.312が固める「無人で安全に長く走る」地固めと、成熟したエコシステム — デイリー技術深掘り 読み物</title><meta name="description" content="oidc.user_id_claimによる企業ID名寄せ、巨大CLAUDE.mdの先頭読み上書き修正、VS Code管理設定の取得漏れ修正。派手さより信頼性。あわせて拡張4機構の使い分けと採用統計(職場39%)を読む。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-29-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="10/29のClaude Code — v2.1.312が固める「無人で安全に長く走る」地固めと、成熟したエコシステム — デイリー技術深掘り 読み物"><meta property="og:description" content="oidc.user_id_claimによる企業ID名寄せ、巨大CLAUDE.mdの先頭読み上書き修正、VS Code管理設定の取得漏れ修正。派手さより信頼性。あわせて拡張4機構の使い分けと採用統計(職場39%)を読む。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-29-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>10/29のClaude Code — v2.1.312が固める「無人で安全に長く走る」地固めと、成熟したエコシステム</h1> <p class="lede">oidc.user_id_claimによる企業ID名寄せ、巨大CLAUDE.mdの先頭読み上書き修正、VS Code管理設定の取得漏れ修正。派手さより信頼性。あわせて拡張4機構の使い分けと採用統計(職場39%)を読む。</p> <div class="meta"> <span>📅 2026年10月29日</span> <span>⏱ 約3分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="0"><p>この日の焦点は最新版 <strong>v2.1.312</strong>（10/27公開、10/29 JST時点で最新。10/28の新規リリースは未確認）だ。いずれも「見ていなくても安全に、長く走らせる」ための地固めで、新機能の華やかさよりも<strong>運用の信頼性</strong>に寄った週である。</p>
+
+<p>追加されたのは2点。企業の認証基盤に合わせ、Claude appsゲートウェイで <code>sub</code> 以外のクレームからユーザーを識別できる <code>oidc.user_id_claim</code>（ID基盤に沿った名寄せが可能に）と、フルスクリーン表示でキューに積んだメッセージをクリックして送信する操作。修正は地味だが効く2件で、<strong>非常に大きいCLAUDE.mdやルールファイルを「先頭だけ読んだ状態で上書き」してしまう不具合</strong>と、VS Code拡張からサインインした後に managed settings が取得されない不具合が潰れた。長文ルールを運用する身には前者が特に重要だ。</p>
+
+<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <rect x='0' y='0' width='600' height='210' fill='#f6f8fa'></rect>
+  <text x='300' y='24' text-anchor='middle' font-size='13' font-weight='bold' fill='#1a7f37'>Claude Code 拡張4機構の使い分け</text>
+  <g>
+    <rect x='20' y='40' width='130' height='70' rx='8' fill='#eafbf0' stroke='#3fb950'></rect>
+    <text x='85' y='66' text-anchor='middle' font-size='12' font-weight='bold' fill='#1a7f37'>Skills / Subagents</text>
+    <text x='85' y='88' text-anchor='middle' font-size='11' fill='#333'>オンデマンド</text>
+    <text x='85' y='102' text-anchor='middle' font-size='11' fill='#333'>呼び出し・委譲</text>
+  </g>
+  <g>
+    <rect x='170' y='40' width='130' height='70' rx='8' fill='#fff4e5' stroke='#e8912d'></rect>
+    <text x='235' y='66' text-anchor='middle' font-size='12' font-weight='bold' fill='#b45309'>Hooks</text>
+    <text x='235' y='88' text-anchor='middle' font-size='11' fill='#333'>自動で強制</text>
+    <text x='235' y='102' text-anchor='middle' font-size='11' fill='#333'>ライフサイクル発火</text>
+  </g>
+  <g>
+    <rect x='320' y='40' width='130' height='70' rx='8' fill='#eef2ff' stroke='#6366f1'></rect>
+    <text x='385' y='66' text-anchor='middle' font-size='12' font-weight='bold' fill='#4338ca'>Plugins</text>
+    <text x='385' y='88' text-anchor='middle' font-size='11' fill='#333'>3つを束ねて</text>
+    <text x='385' y='102' text-anchor='middle' font-size='11' fill='#333'>共有・配布</text>
+  </g>
+  <g>
+    <rect x='470' y='40' width='110' height='70' rx='8' fill='#f0f0f0' stroke='#999'></rect>
+    <text x='525' y='66' text-anchor='middle' font-size='12' font-weight='bold' fill='#444'>Rules</text>
+    <text x='525' y='88' text-anchor='middle' font-size='11' fill='#333'>常時遵守</text>
+    <text x='525' y='102' text-anchor='middle' font-size='11' fill='#333'>の方針</text>
+  </g>
+  <text x='20' y='140' font-size='11' fill='#555'>原則①: 譲れないルール（.env読取ブロック・投稿前承認）は「プロンプト」でなく「Hook」に置く</text>
+  <text x='20' y='160' font-size='11' fill='#555'>原則②: データ収集（PR差分取得）と分析（品質判断）を分離し、レビューをAPIノイズで汚さない</text>
+  <text x='20' y='180' font-size='11' fill='#555'>原則③: 雑用（検索・取得）には安いモデル、推論には強いモデルを温存</text>
+  <text x='20' y='200' font-size='11' fill='#555'>目安: MCPは設定20〜30 / 有効10未満 / アクティブツール80未満。/mcp で状態確認</text>
+</svg><figcaption>図1：Skills・Subagents=オンデマンド、Hooks=自動強制、Plugins=梱包配布、Rules=常時遵守（Medium/timewell.jp より整理）</figcaption></figure>
+
+<p>補足として前日枠で未掲載だった <strong>v2.1.310</strong>（10/23〜25）も読んでおきたい。Monitorツール／プラグインMonitorが Amazon Bedrock・Google Vertex・Microsoft Foundry 経由でも使えるようになり（マルチプロバイダ対応）、Claude Enterprise のカスタムロールに「クラウドセッション」権限が加わった。さらに<strong>タイムアウトしたMCPツール呼び出しを同じ内容で再実行しないようClaudeに伝える</strong>変更が入っており、無人運用での暴発を抑える方向だ。</p>
+
+<p>技術記事側では、4拡張機構の実務的な使い分け（上図）が刺さる。要は「skill.md本体は短く保ち、例や雛形は別ファイルへ」「Subagentには狭い仕事を与え構造化した要約だけ返させる」。<code>hookify</code> プラグインを使えば <code>/hookify</code> で会話形式のままHookを作れる、並列作業は <code>/fork</code> やgit worktreeで競合を避ける、といった小ネタも効率に直結する。</p>
+
+<p>ニュースの目玉はJetBrains調査（15,000人超、5〜7月）で、<strong>Claude Codeを「職場で使う」開発者は39%</strong>（1月の18%から倍増）、主要ツール比率は夏期31%・米国では47%に達した。Copilotは21%（-8pt）、Codexは16%（+13pt）、Cursorは12%（-6pt）という勢力図だ。npm累計は約5.63億DL、GitHub約15万star。※39%は「利用率」でありシェアそのものではない点、Anthropic社内の「コミット約5倍」は因果の生産性向上を示すものではない点に注意したい。</p>
+
+<p><strong>自分が試すなら</strong>：巨大CLAUDE.mdの上書き修正が入ったので、まずローカルを v2.1.312 に上げ、長文ルールの編集が壊れないか確認。並行して「譲れないルールはHookへ」の原則で、<code>.env</code> 読取ブロックとコメント投稿前承認を会話形式の <code>hookify</code> で1本ずつ作ってみる。<strong>落とし穴</strong>はMCPの入れすぎ（有効10未満の目安を超えるとツール選択がぶれる）と、Subagentに広い仕事を渡してレビューがノイズまみれになること。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://code.claude.com/docs/en/changelog" target="_blank" rel="noopener noreferrer"> Claude Code changelog（公式） </a> </li><li> <a href="https://medium.com/@mishra.shashank35/claude-code-skills-subagents-hooks-and-plugins-a-practical-overview-572de7cedb20" target="_blank" rel="noopener noreferrer"> Skills/Subagents/Hooks/Plugins 実践整理（Medium, S. Mishra） </a> </li><li> <a href="https://timewell.jp/columns/claude-code-complete-guide" target="_blank" rel="noopener noreferrer"> Claude Code 実践Tips（timewell.jp） </a> </li><li> <a href="https://www.gradually.ai/en/claude-code-statistics/" target="_blank" rel="noopener noreferrer"> Claude Code 統計まとめ（gradually.ai） </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
