@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-10-29T04:45:02.745Z",
+  "generatedAt": "2026-10-30T04:44:59.238Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -9,6 +9,107 @@
   ],
   "articles": [
     {
+      "id": "2026-10-30-claude-code",
+      "date": "2026-10-30",
+      "topic": "Claude Code",
+      "title": "10/30のClaude Code — 最新はv2.1.312のまま。『無人で安全に長く走る』地固めと、標準化へ動くエコシステム",
+      "lede": "新規リリースは未確認。クラウドルーチンのeffort指定、Hook同時24本制限、safety_eventテレメトリ廃止など運用の地固め。あわせて上級ベストプラクティスとAgent Skillsの財団寄贈を読む。",
+      "articleHtml": "<p>10/30(JST)時点でClaude Codeの最新は依然 <strong>v2.1.312</strong>(10/27公開)で、10/28〜30の新規リリースは確認できない。派手な新機能より<strong>運用の信頼性</strong>に寄った局面が続いており、「見ていなくても安全に、長く走らせる」ための地固めが主題だ。毎日無人で定期タスクを回す自分の使い方には、この地味な変更こそ効いてくる。</p>\n<p><strong>何が入ったか</strong>。v2.1.312の追加は2点——クラウドルーチン用モデルピッカーへの<strong>effortレベル指定</strong>と、クラウド設定スクリプト用の行番号付き+コピー可能なBashエディタ。変更は、プロンプト/エージェントHookの同時実行を<strong>セッション毎に最大24本へ制限</strong>、<code>claude_code.safety_event</code>(OpenTelemetry)の送出廃止、Bedrock/Vertex/Foundry/Mantleで<strong>未知のモデル名に短いシステムプロンプトを既定適用</strong>(<code>CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT=0</code>で従来に戻せる)。補足として前週のv2.1.311(10/26)では、端末の<code>ultrathink</code>がOpus5.5/Sonnet5.5/Haiku5.5/Fable5.1で<strong>xhigh実行</strong>に、<code>self-hosted-runner</code>に<code>--hold-idle-file</code>/<code>--max-hold-min</code>が加わり、モデルカタログを署名ファイルから取得するようになった。</p>\n<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='12' width='280' height='176' rx='10' fill='#fff7ed' stroke='#f59e0b' stroke-width='2'/><text x='150' y='40' text-anchor='middle' font-size='14' font-weight='bold' fill='#b45309'>CLAUDE.md ＝ 文脈(ガイド)</text><text x='28' y='74' font-size='12' fill='#78350f'>・共有の方針 / 規約を簡潔に</text><text x='28' y='100' font-size='12' fill='#78350f'>・強制境界ではない</text><text x='28' y='126' font-size='12' fill='#78350f'>・守られない前提で設計</text><text x='28' y='166' font-size='12' font-weight='bold' fill='#92400e'>→ 破れる“お願い”</text><rect x='310' y='12' width='280' height='176' rx='10' fill='#eff6ff' stroke='#3b82f6' stroke-width='2'/><text x='450' y='40' text-anchor='middle' font-size='14' font-weight='bold' fill='#1d4ed8'>Hook・権限 ＝ 強制</text><text x='328' y='74' font-size='12' fill='#1e3a8a'>・ツール実行を許可 / ブロック</text><text x='328' y='100' font-size='12' fill='#1e3a8a'>・まず検証1本から広げる</text><text x='328' y='126' font-size='12' fill='#1e3a8a'>・同時24本まで (v2.1.312)</text><text x='328' y='166' font-size='12' font-weight='bold' fill='#1e40af'>→ 破れない“境界”</text></svg><figcaption>図1：指針はCLAUDE.mdに、制御はHook/権限に——役割を分けるのが上級者の設計</figcaption></figure>\n<p><strong>噛み砕くと</strong>、SmartScopeの上級ベストプラクティス解説が整理した原則が実務の軸になる。まずテストや期待出力・視覚チェックなどの<strong>受け入れ基準を先に渡し、Claude自身に検証させる</strong>。共有の指針はCLAUDE.mdに簡潔に置き、ツール実行の制御は権限とHookに持たせる(CLAUDE.mdは文脈であって強制境界ではない=図1)。Hookはまず検証1本から始め、許可/ブロック両方の挙動を確かめてから範囲を広げる。Subagentには対象ファイル・問い・編集権限・返すべき証拠を明示し、不要な委譲は避ける。Simon Willison経由で紹介されたClaude Codeチームのレビュー術も同じ思想で、「人が読んだか」より「<strong>何が壊れ得るか/どの検査が捕まえるか</strong>」を問い、レビューを開発中に常時走らせる(スペルチェックのように)。</p>\n<p><strong>自分が試すなら</strong>、無人ルーチンのHookを24本上限の中で優先度順に整理し、ブロックしたい破壊的操作だけを強制側(Hook/権限)に寄せる。長時間走らせるクラウドタスクにはeffort指定で品質と費用のバランスを取る。<strong>注意点</strong>は、<code>safety_event</code>に依存した監視があれば差し替えが要ること、未知モデル名の短システムプロンプト既定化で挙動が変わり得ること、そして社内自己申告値(CC自体のコード約9割をClaudeが記述等)は外部監査がない点だ。</p>\n<p><strong>ひとこと</strong>。10/22にはAgent Skills標準がLinux Foundation傘下のAgentic AI Foundationへ寄贈され(累計約2.8億インストールの共通規約がベンダー中立に)、10/15にはコードレビューがTeam/EnterpriseでGAになった。足元の地固めとエコシステムの標準化が同時に進む——“静かだが重要”な一週間だ。</p>",
+      "sources": [
+        {
+          "title": "Claude Code changelog",
+          "url": "https://code.claude.com/docs/en/changelog"
+        },
+        {
+          "title": "Claude Code 上級ベストプラクティス(SmartScope)",
+          "url": "https://smartscope.blog/en/generative-ai/claude/claude-code-best-practices-advanced-2026/"
+        },
+        {
+          "title": "Claude Codeチームのコードレビュー術(Simon Willison)",
+          "url": "https://simonwillison.net/2026/Oct/16/code-review/"
+        },
+        {
+          "title": "Agent Skills寄贈(Simon Willison)",
+          "url": "https://simonwillison.net/2026/Oct/22/donating-agent-skills/"
+        }
+      ]
+    },
+    {
+      "id": "2026-10-30-nextjs",
+      "date": "2026-10-30",
+      "topic": "Next.js",
+      "title": "Next.js App RouterでtRPC v11 — RSCプリフェッチ×TanStack Query v5、そしてServer Actionsとの棲み分け",
+      "lede": "スキーマもコード生成もなしに型が流れるエンドツーエンド型安全RPC。v11はReact Query v5連携を刷新。『クライアントに渡す』prefetchと『サーバーで使う』createCallerの2つの呼び口を押さえる。",
+      "articleHtml": "<p><strong>なぜ今か</strong>。App Router時代は「RSC/Server Actionsがあるのに tRPC は要る？」が繰り返し議論される。tRPC は別途スキーマやOpenAPIを書かず、<code>appRouter</code>の型<code>AppRouter</code>をimportするだけで入力・出力・エラーまで補完が効く<strong>エンドツーエンド型安全RPC</strong>だ。<strong>v11は2025-03-21に正式リリース</strong>され、v10とほぼ後方互換。目玉はTanStack React Query v5連携の刷新、RSCプリフェッチ＋ハイドレーション、FormData/Blob等の非JSONボディ、SSEベースのSubscription(<code>httpSubscriptionLink</code>、WebSocketより推奨)あたりだ。</p>\n<p><strong>何が新しい/重要か</strong>。連携が2系統になった。旧来の<code>createTRPCReact</code>に加え、新しい<code>@trpc/tanstack-react-query</code>(<code>createTRPCOptionsProxy</code>/<code>createTRPCContext</code>)は「tRPCがReact Queryの<code>queryOptions</code>を生成し、<code>useQuery</code>/<code>useSuspenseQuery</code>/<code>useMutation</code>は素のTanStack Queryフックを使う」設計で、React Queryの全機能が素直に乗る。<strong>新規は新方式が推奨</strong>。TanStack Queryはv5必須だ。</p>\n<figure class='fig'><svg viewBox='0 0 600 232' xmlns='http://www.w3.org/2000/svg'><text x='300' y='22' text-anchor='middle' font-size='13' font-weight='bold' fill='#334155'>tRPC v11 × App Router：サーバーからの2つの呼び口</text><rect x='18' y='40' width='266' height='178' rx='10' fill='#ecfdf5' stroke='#10b981' stroke-width='2'/><text x='151' y='64' text-anchor='middle' font-size='12' font-weight='bold' fill='#047857'>A. prefetch → Hydrate</text><text x='34' y='90' font-size='11' fill='#065f46'>RSCで queryClient.prefetchQuery</text><text x='34' y='112' font-size='11' fill='#065f46'>trpc.x.queryOptions()</text><text x='34' y='134' font-size='11' fill='#065f46'>HydrationBoundary で受け渡し</text><text x='34' y='156' font-size='11' fill='#065f46'>client: useQuery がキャッシュに乗る</text><text x='34' y='196' font-size='11' font-weight='bold' fill='#047857'>→ クライアント表示・再検証向き</text><rect x='316' y='40' width='266' height='178' rx='10' fill='#eef2ff' stroke='#6366f1' stroke-width='2'/><text x='449' y='64' text-anchor='middle' font-size='12' font-weight='bold' fill='#4338ca'>B. createCaller 直呼び</text><text x='332' y='90' font-size='11' fill='#3730a3'>const r = await caller.hello(...)</text><text x='332' y='112' font-size='11' fill='#3730a3'>サーバーで関数として実行</text><text x='332' y='134' font-size='11' fill='#3730a3'>結果はキャッシュに乗らない</text><text x='332' y='156' font-size='11' fill='#3730a3'>HTTP層を通さない</text><text x='332' y='196' font-size='11' font-weight='bold' fill='#4338ca'>→ サーバーが値自体を使う向き</text></svg><figcaption>図1：同じtRPCでも「クライアントに渡す」か「サーバーが使う」かで呼び口が分かれる</figcaption></figure>\n<p><strong>仕組みと落とし穴</strong>。RSC対応の呼び口は図1の2つ。Aは<code>trpc.x.queryOptions()</code>をサーバーで<code>prefetchQuery</code>し、<code>HydrationBoundary</code>でクライアントのReact Queryキャッシュへ渡す。Bは<code>appRouter.createCaller(ctx)</code>でサーバーが直接<code>await caller.hello(...)</code>と関数呼び出しする——結果はキャッシュに入らないので「サーバーが値そのものを使う」ケース向けだ。落とし穴は多い:(1)<code>prefetchQuery</code>を<strong>awaitしない(void)</strong>とストリーミング、ただし<code>shouldDehydrateQuery</code>に<code>pending</code>を含める設定が必須。(2)<code>staleTime: 0</code>だとハイドレーション直後に即再フェッチするので30秒などへ。(3)QueryClientは<strong>サーバーは毎リクエスト新規・ブラウザは単一再利用</strong>(<code>cache(makeQueryClient)</code>で固定)。(4)superjson等のtransformerを入れるなら<strong>サーバー・HTTPリンク・dehydrate/hydrateの3箇所すべて</strong>に設定。(5)<code>trpc/server.tsx</code>には<code>import 'server-only'</code>を付けて漏洩防止。</p>\n<pre><code>// app/page.tsx (Server Component)\nconst qc = getQueryClient();\nvoid qc.prefetchQuery(trpc.hello.queryOptions({ text: 'world' })); // awaitしない=ストリーミング\nreturn &lt;HydrateClient&gt;&lt;ClientGreeting /&gt;&lt;/HydrateClient&gt;;</code></pre>\n<p><strong>Server Actionsとの棲み分け</strong>(2026時点)。フォーム送信・単発のサーバー副作用・プログレッシブエンハンスメントは<strong>Server Actions</strong>で十分。クライアント主導の取得/キャッシュ/楽観更新/無限スクロール/ポーリング/SSE購読、複数クライアント(Web＋モバイル)から叩く型付きAPIが欲しいときは<strong>tRPC＋React Query</strong>が光る。両者は排他でなく、RSCで初回データ・以降は tRPC/React Query という併用が現実的だ。<strong>自分が試すなら</strong>、まず<code>hello</code>procedure一本を新方式で通し、staleTimeとtransformerの3点設定でハイドレーション破綻が起きないかを確認してから本採用する。</p>",
+      "sources": [
+        {
+          "title": "tRPC Server Components(TanStack React Query)",
+          "url": "https://trpc.io/docs/client/tanstack-react-query/server-components"
+        },
+        {
+          "title": "Announcing tRPC v11",
+          "url": "https://trpc.io/blog/announcing-trpc-11"
+        },
+        {
+          "title": "tRPC Next.js 連携",
+          "url": "https://trpc.io/docs/client/nextjs"
+        },
+        {
+          "title": "tRPC vs Server Actions(caisy)",
+          "url": "https://caisy.io/blog/trpc-vs-server-actions"
+        }
+      ]
+    },
+    {
+      "id": "2026-10-30-flutter",
+      "date": "2026-10-30",
+      "topic": "Flutter",
+      "title": "11月の3.50へ逆算するFlutter — branch cutoffの読み方と、Android Impeller一本化でシェーダjankを構造的に消す",
+      "lede": "2026は年最低4本のstable。cutoffから次stableを逆算する。11月の3.50はWeb WasmGC既定・Android Impeller一本化が確定。あわせてflutter_hooksで消すアニメ定型と公式MVVMも押さえる。",
+      "articleHtml": "<p><strong>背景</strong>。2026のFlutter/Dartロードマップは年「最低4本」のstableと「12本」のbeta(ほぼ月1)を掲げる。これは床であって天井ではなく、四半期ごとにminorが+3進む(3.41→3.44→3.47→3.50)のが長年の運用だ。計画の肝は<strong>branch cutoff</strong>——3.50は<strong>10/6にbranch済み</strong>で、cutoffを過ぎてマージされたfixはその四半期stableに載らず次(約3か月後)待ちになる。自分のPRやアップグレードを「次のstableに間に合わせる」逆算に使える。現況はstable <strong>3.47.8 / Dart 3.13.7</strong>(10/23)、beta <strong>3.50.0-0.2.pre / Dart 3.14.0</strong>。</p>\n<p><strong>何が重要か</strong>。11月のstable 3.50の確定事項は不変で、<strong>Web WasmGC既定</strong>・<strong>Android Impeller一本化</strong>・<strong>Wasm遅延ロードstable</strong>・<strong>Android17 day-zero</strong>、そして<code>material_ui</code>/<code>cupertino_ui</code>の正式deprecationだ。中でも効くのがImpeller。Impellerはシェーダを<strong>ビルド時(AOT)にコンパイル</strong>して同梱するため、Skiaが実行時(JIT)にコンパイルして起こしていた「初めて出る要素で初回フレームが固まる shader jank」を<strong>構造的に解消</strong>する。</p>\n<figure class='fig'><svg viewBox='0 0 600 212' xmlns='http://www.w3.org/2000/svg'><text x='300' y='22' text-anchor='middle' font-size='13' font-weight='bold' fill='#334155'>Impeller のバックエンド（3.47で全既定化、3.50でAndroid一本化）</text><g font-size='12'><rect x='20' y='38' width='560' height='30' fill='#f1f5f9' stroke='#94a3b8'/><text x='34' y='58' font-weight='bold' fill='#334155'>プラットフォーム</text><text x='250' y='58' font-weight='bold' fill='#334155'>バックエンド</text><text x='420' y='58' font-weight='bold' fill='#334155'>備考</text><rect x='20' y='68' width='560' height='28' fill='#ecfeff' stroke='#94a3b8'/><text x='34' y='87' fill='#0f172a'>iOS / macOS</text><text x='250' y='87' fill='#0f766e'>Metal</text><text x='420' y='87' fill='#475569'>Skia廃止済み</text><rect x='20' y='96' width='560' height='28' fill='#fff' stroke='#94a3b8'/><text x='34' y='115' fill='#0f172a'>Android</text><text x='250' y='115' fill='#0f766e'>Vulkan</text><text x='420' y='115' fill='#475569'>非対応端末→GLESフォールバック</text><rect x='20' y='124' width='560' height='28' fill='#ecfeff' stroke='#94a3b8'/><text x='34' y='143' fill='#0f172a'>Windows / Linux</text><text x='250' y='143' fill='#0f766e'>Vulkan</text><text x='420' y='143' fill='#475569'>3.47で既定化完了</text><rect x='20' y='152' width='560' height='28' fill='#fff' stroke='#94a3b8'/><text x='34' y='171' fill='#0f172a'>Web</text><text x='250' y='171' fill='#0f766e'>CanvasKit / skwasm</text><text x='420' y='171' fill='#475569'>ImpellerはWebGPUでpreview</text></g><text x='300' y='200' text-anchor='middle' font-size='11' fill='#b45309'>shader jank対策が要るのは Skiaが残る Web・古いAndroid だけに収束</text></svg><figcaption>図1：AOTシェーダのImpellerへ一本化が進み、SkSLウォームアップ回避策は不要に</figcaption></figure>\n<p><strong>代償と注意</strong>。シェーダを前もって同梱するぶん<strong>バイナリが微増</strong>し、カスタム<code>.frag</code>とgoldenテストは移行時に<strong>視覚回帰テスト</strong>が要る(Impeller/Skiaで描画差が出得る)。Android 9以下はドライバ問題でGLESフォールバックなので、対象端末は性能低下を前提に<code>--profile</code>＋実機で計測する。逆に、Skia向けの<code>--cache-sksl</code>/<code>--bundle-sksl-path</code>ウォームアップはImpellerでは<strong>不要=削除してよい</strong>。</p>\n<p><strong>この日の他の収穫</strong>も実務的だ。アニメーションは<code>flutter_hooks</code>の<code>useAnimationController</code>が<code>StatefulWidget</code>＋<code>SingleTickerProviderStateMixin</code>＋<code>initState/dispose</code>の定型をbuild内の数行に畳む(vsyncはhookが供給、<strong>手動disposeは禁物</strong>)。開始は<code>useEffect(() { c.repeat(); return null; }, const []);</code>が定石。アーキテクチャは公式App ArchitectureガイドのMVVM——View/ViewModel/Repository/Serviceの4層で、Viewはロジックを持たず、<strong>Repositoryがある型の単一情報源</strong>、Serviceは状態を持たない最下層、と責務が明快だ。<strong>自分が試すなら</strong>本番を3.47.8にpinしつつ別CIで<code>flutter build web --wasm</code>と<code>appbundle</code>を今のうちに緑化しておく。</p>",
+      "sources": [
+        {
+          "title": "Flutter's 2026 Release Cadence(redlinesoft)",
+          "url": "https://blog.redlinesoft.net/posts/flutter-stable-releases-2026/"
+        },
+        {
+          "title": "Impeller rendering engine(docs.flutter.dev)",
+          "url": "https://docs.flutter.dev/perf/impeller"
+        },
+        {
+          "title": "Reduce AnimationController boilerplate(codewithandrea)",
+          "url": "https://codewithandrea.com/videos/reduce-animation-controller-boilerplate-flutter-hooks/"
+        },
+        {
+          "title": "App architecture guide(docs.flutter.dev)",
+          "url": "https://docs.flutter.dev/app-architecture/guide"
+        }
+      ]
+    },
+    {
+      "id": "2026-10-30-github-trending",
+      "date": "2026-10-30",
+      "topic": "GitHub Trending",
+      "title": "10/30の話題リポジトリ — 35B級をスマホで動かすEdge0・ボット毎にVMのOpenMausBot・RustネイティブIDEのopenidea",
+      "lede": "AI一色の飽和局面を純モメンタムで突き抜けた3本。『手元で重いモデルを動かす』『エージェントを隔離実行する』『重量級ツールをネイティブ化する』——いずれも“ローカルで速く・安全に”という共通の地面を踏む。",
+      "articleHtml": "<p>本日の急上昇はAI一色の飽和局面でも純モメンタムで突き抜けた3本。貫く傾向は明快で、<strong>「ローカルで・速く・隔離して動かす」</strong>——クラウド頼みからの揺り戻しが新規リポジトリの共通テーマになっている。それぞれ「どんな課題を解こうとしているか」と「何ができるか」を見ていく。</p>\n<figure class='fig'><svg viewBox='0 0 600 212' xmlns='http://www.w3.org/2000/svg'><text x='300' y='20' text-anchor='middle' font-size='13' font-weight='bold' fill='#334155'>今日の3本：解きたい課題 → 提供する機能</text><g font-size='11'><rect x='16' y='34' width='140' height='154' rx='8' fill='#f0fdf4' stroke='#22c55e' stroke-width='1.5'/><text x='86' y='54' text-anchor='middle' font-weight='bold' fill='#15803d'>Edge0</text><text x='86' y='70' text-anchor='middle' fill='#166534'>Python ⭐8.7k</text><text x='26' y='96' fill='#334155'>課題: 大型LLMは</text><text x='26' y='110' fill='#334155'>手元で重すぎる</text><text x='26' y='140' fill='#15803d'>機能: 35B MoEを</text><text x='26' y='154' fill='#15803d'>約2.5GB RAMで</text><text x='26' y='168' fill='#15803d'>実行(重み先読み)</text><rect x='166' y='34' width='140' height='154' rx='8' fill='#eff6ff' stroke='#3b82f6' stroke-width='1.5'/><text x='236' y='54' text-anchor='middle' font-weight='bold' fill='#1d4ed8'>OpenMausBot</text><text x='236' y='70' text-anchor='middle' fill='#1e40af'>TypeScript ⭐7.4k</text><text x='176' y='96' fill='#334155'>課題: 複数AI CLIの</text><text x='176' y='110' fill='#334155'>統合と安全実行</text><text x='176' y='140' fill='#1d4ed8'>機能: 1チャットに</text><text x='176' y='154' fill='#1d4ed8'>束ね、ボット毎に</text><text x='176' y='168' fill='#1d4ed8'>専用VMを割当</text><rect x='316' y='34' width='140' height='154' rx='8' fill='#faf5ff' stroke='#a855f7' stroke-width='1.5'/><text x='386' y='54' text-anchor='middle' font-weight='bold' fill='#7e22ce'>openidea</text><text x='386' y='70' text-anchor='middle' fill='#6b21a8'>TS/Rust ⭐1.0k</text><text x='326' y='96' fill='#334155'>課題: 重量級IDEは</text><text x='326' y='110' fill='#334155'>起動も動作も重い</text><text x='326' y='140' fill='#7e22ce'>機能: IntelliJ風を</text><text x='326' y='154' fill='#7e22ce'>Rustネイティブで</text><text x='326' y='168' fill='#7e22ce'>高速再現(60+言語)</text><rect x='466' y='34' width='118' height='154' rx='8' fill='#fef2f2' stroke='#f87171' stroke-width='1.5'/><text x='525' y='54' text-anchor='middle' font-weight='bold' fill='#b91c1c'>共通点</text><text x='476' y='84' fill='#7f1d1d'>ローカル実行</text><text x='476' y='108' fill='#7f1d1d'>省メモリ/隔離</text><text x='476' y='132' fill='#7f1d1d'>高速・省コスト</text><text x='476' y='156' fill='#7f1d1d'>“手元で完結”</text></g></svg><figcaption>図1：3本を貫くのは「クラウドに出さず手元で速く・安全に」という方向</figcaption></figure>\n<h4>Edge0-AI/Edge0（Python・⭐約8.7k）</h4>\n<p><strong>解決したい課題</strong>は「35Bクラスの大型モデルはノートPCやスマホには重すぎて載らない」こと。<strong>提供する機能</strong>は、重みをSSDからストリーミングし、学習済みルーターが次に必要な重みを1ステップ先読みでロードすることで、<strong>35B級MoEを約2.5GB RAM</strong>で動かすオンデバイス推論エンジン。Mac/iPhone/Android/Windows対応(Apache-2.0)。created 2026-09-08＝約52日で実測約8,720★/forks1,272(日平均約168)まで伸び、trendshift日次にも掲載。<strong>急上昇の理由</strong>は、省メモリ×マルチプラットフォームという旬テーマを“スマホで35B”という大胆な見出しで突いた点だ。</p>\n<h4>milind-soni/OpenMausBot（TypeScript・⭐約7.4k）</h4>\n<p><strong>解決したい課題</strong>は「Claude/Codex/Grokなど複数のAI系CLIを束ねつつ、エージェントが生成・実行するコードをどう安全に隔離するか」。<strong>提供する機能</strong>は、それらを1つのチャットアプリに統合し、<strong>各ボットに専用の仮想マシン(クラウドPC)を割り当てて</strong>作業させるOSSのGrok Bot代替(Apache-2.0)。<strong>急上昇の理由</strong>は、GitHub日報(Qiita 2026-10-30)で+約1,190・率約16%と当日のFirst Timer筆頭に躍り出たこと。ボット単位のVM隔離という設計が、エージェント実行の安全性という関心に刺さった。</p>\n<h4>l0ng-ai/openidea（TypeScript／ネイティブはRust・⭐約1.0k）</h4>\n<p><strong>解決したい課題</strong>は「高機能な重量級IDEは起動も動作も重い」こと。<strong>提供する機能</strong>は、IntelliJ IDEA風のキーマップ/ツールウィンドウ/Search Everywhereに、エディタ・補完・デバッガ・Git・ターミナル・DB/HTTPクライアントを統合し60+言語に対応した、<strong>Rustでネイティブ再構築した高速IDE</strong>(Apache-2.0)。<strong>急上昇の理由</strong>は、公開わずか9日で実測約1,030★(日平均約114・率高位)と伸び、「重量級IDEのネイティブ化」という新規性が拡散したこと。</p>\n<p><strong>自分が試すなら</strong>——まずEdge0を手元のMacで動かして“35Bが本当に2.5GBで回るか”を体感し、エージェントを多用する自分の運用にはOpenMausBotのVM隔離の思想を参考にする。openideaはまだ公開9日なので、常用より“Rustネイティブの体感速度”の偵察用に触るのが現実的だ。</p>",
+      "sources": [
+        {
+          "title": "Edge0-AI/Edge0",
+          "url": "https://github.com/Edge0-AI/Edge0"
+        },
+        {
+          "title": "milind-soni/OpenMausBot",
+          "url": "https://github.com/milind-soni/OpenMausBot"
+        },
+        {
+          "title": "l0ng-ai/openidea",
+          "url": "https://github.com/l0ng-ai/openidea"
+        }
+      ]
+    },
+    {
+      "id": "2026-10-29-claude-code",
       "date": "2026-10-29",
       "topic": "Claude Code",
       "title": "10/29のClaude Code — v2.1.312が固める「無人で安全に長く走る」地固めと、成熟したエコシステム",
@@ -31,10 +132,10 @@
           "title": "Claude Code 統計まとめ（gradually.ai）",
           "url": "https://www.gradually.ai/en/claude-code-statistics/"
         }
-      ],
-      "id": "2026-10-29-claude-code"
+      ]
     },
     {
+      "id": "2026-10-29-nextjs",
       "date": "2026-10-29",
       "topic": "Next.js",
       "title": "10/29のNext.js — FABスピードダイヤルが「ほぼ標準機能」で組める時代（Popover API + @starting-style）",
@@ -61,10 +162,10 @@
           "title": "Adrian Roselli: Disclosure Widgets",
           "url": "https://adrianroselli.com/2020/05/disclosure-widgets.html"
         }
-      ],
-      "id": "2026-10-29-nextjs"
+      ]
     },
     {
+      "id": "2026-10-29-flutter",
       "date": "2026-10-29",
       "topic": "Flutter",
       "title": "10/29のFlutter — Dart 3.13 primary constructorsが本番解禁、shader/Riverpod3/raster cacheも総点検",
@@ -91,10 +192,10 @@
           "title": "Flutter engine raster cache tuning（omr.it.com）",
           "url": "https://omr.it.com/blog/flutter-engine-raster-cache-tuning/"
         }
-      ],
-      "id": "2026-10-29-flutter"
+      ]
     },
     {
+      "id": "2026-10-29-github-trending",
       "date": "2026-10-29",
       "topic": "GitHub Trending",
       "title": "10/29の話題リポジトリ — Uncle Bobの品質ゲート・汉化ポーズ集・自己端末スパイウェア点検",
@@ -113,10 +214,10 @@
           "title": "interplains/Zero-Breach-Toolkit",
           "url": "https://github.com/interplains/Zero-Breach-Toolkit"
         }
-      ],
-      "id": "2026-10-29-github-trending"
+      ]
     },
     {
+      "id": "2026-10-28-claude-code",
       "date": "2026-10-28",
       "topic": "Claude Code",
       "title": "10/28のClaude Code — v2.1.311がまとめて効かせる「無人で安全に長く走る」地固め",
@@ -143,10 +244,10 @@
           "title": "プラグイン公式化・Mods（Tech Insider）",
           "url": "https://tech-insider.org/claude-code-plugins-official-mods-cloud-sessions-2026/"
         }
-      ],
-      "id": "2026-10-28-claude-code"
+      ]
     },
     {
+      "id": "2026-10-28-nextjs",
       "date": "2026-10-28",
       "topic": "Next.js",
       "title": "Next.js App Routerのレート制限 — 組み込みが無いServer Actions/Route Handlersを多層で守る",
@@ -173,10 +274,10 @@
           "title": "Next.js Security Best Practices 2026 (Authgear)",
           "url": "https://www.authgear.com/post/nextjs-security-best-practices/"
         }
-      ],
-      "id": "2026-10-28-nextjs"
+      ]
     },
     {
+      "id": "2026-10-28-flutter",
       "date": "2026-10-28",
       "topic": "Flutter",
       "title": "Dart 3.14のdot shorthands — 型名を落として書く（11月3.50を前にbeta先取り）",
@@ -203,10 +304,10 @@
           "title": "material_expressive（pub.dev）",
           "url": "https://pub.dev/packages/material_expressive"
         }
-      ],
-      "id": "2026-10-28-flutter"
+      ]
     },
     {
+      "id": "2026-10-28-github-trending",
       "date": "2026-10-28",
       "topic": "GitHub Trending",
       "title": "10/28の話題リポジトリ — Theoのエージェントスキル集・スマホLiDARで3D Web・Rust製インプレース解凍",
@@ -225,10 +326,10 @@
           "title": "xevrion/hatchzip",
           "url": "https://github.com/xevrion/hatchzip"
         }
-      ],
-      "id": "2026-10-28-github-trending"
+      ]
     },
     {
+      "id": "2026-10-27-claude-code",
       "date": "2026-10-27",
       "topic": "Claude Code",
       "title": "10/27のClaude Code — 新規版は止まっても「自動モード×コンテキスト管理」が静かに成熟している",
@@ -255,10 +356,10 @@
           "title": "auto modeをPro/Max/Team既定化（報道）",
           "url": "https://q15tp4m.performancegolf.com/article/anthropic-to-default-claude-codes-auto-mode-for-pro-max-and-team-accounts-msm761fe"
         }
-      ],
-      "id": "2026-10-27-claude-code"
+      ]
     },
     {
+      "id": "2026-10-27-nextjs",
       "date": "2026-10-27",
       "topic": "Next.js",
       "title": "JSゼロで作るCover Flow — scroll-driven animations が3Dカルーセルを“CSSだけ”に変えた",
@@ -285,10 +386,10 @@
           "title": "SitePoint — Scroll-Driven CSS in 2026: Carousels Without JavaScript",
           "url": "https://www.sitepoint.com/scrolldriven-css-in-2026-building-carousels-without-javascript/"
         }
-      ],
-      "id": "2026-10-27-nextjs"
+      ]
     },
     {
+      "id": "2026-10-27-flutter",
       "date": "2026-10-27",
       "topic": "Flutter",
       "title": "constとKeyはなぜ効くのか — ElementのcanUpdateを味方につけてrebuildを短絡する（11月3.50を前に）",
@@ -315,10 +416,10 @@
           "title": "What's new in the docs（docs.flutter.dev）",
           "url": "https://docs.flutter.dev/release/whats-new"
         }
-      ],
-      "id": "2026-10-27-flutter"
+      ]
     },
     {
+      "id": "2026-10-27-github-trending",
       "date": "2026-10-27",
       "topic": "GitHub Trending",
       "title": "10/27の話題リポジトリ — 大手3社が別角度から出した「AIコーディングの次」（自己進化IDE・録画からスキル化・spec敵対レビュー）",
@@ -337,10 +438,10 @@
           "title": "google/elephant-goldfish-model",
           "url": "https://github.com/google/elephant-goldfish-model"
         }
-      ],
-      "id": "2026-10-27-github-trending"
+      ]
     },
     {
+      "id": "2026-10-26-claude-code",
       "date": "2026-10-26",
       "topic": "Claude Code",
       "title": "10/26のClaude Code — 新規版なしでも効く「強制はフックへ」の設計術と、採用で初逆転した市場データ",
@@ -371,10 +472,10 @@
           "title": "Ramp指標でAnthropicが法人採用首位（KuCoin/Ramp）",
           "url": "https://www.kucoin.com/blog/anthropic-vs-openai-ramp-data-shows-claude-leading-us-enterprise-ai-market-share-at-43-8"
         }
-      ],
-      "id": "2026-10-26-claude-code"
+      ]
     },
     {
+      "id": "2026-10-26-nextjs",
       "date": "2026-10-26",
       "topic": "Next.js",
       "title": "Next.jsのRUM実装 — useReportWebVitalsで「ラボ値」から「フィールド値」へ",
@@ -401,10 +502,10 @@
           "title": "web.dev: Core Web Vitals",
           "url": "https://web.dev/articles/vitals"
         }
-      ],
-      "id": "2026-10-26-nextjs"
+      ]
     },
     {
+      "id": "2026-10-26-flutter",
       "date": "2026-10-26",
       "topic": "Flutter",
       "title": "Flutterデスクトップの到達点 — Impeller既定化・experimental multi-window・Widget Previews stable",
@@ -431,10 +532,10 @@
           "title": "Measuring your app's size（docs.flutter.dev）",
           "url": "https://docs.flutter.dev/perf/app-size"
         }
-      ],
-      "id": "2026-10-26-flutter"
+      ]
     },
     {
+      "id": "2026-10-25-claude-code",
       "date": "2026-10-25",
       "topic": "Claude Code",
       "title": "v2.1.310でMonitorを主要クラウドへ開放 — そして「フック/スキル/ルール/サブエージェント」の使い分け",
@@ -465,10 +566,10 @@
           "title": "Claude Code本格導入の事例（Tygart Media）",
           "url": "https://tygartmedia.com/claude-code-rollout-case-study/"
         }
-      ],
-      "id": "2026-10-25-claude-code"
+      ]
     },
     {
+      "id": "2026-10-25-nextjs",
       "date": "2026-10-25",
       "topic": "Next.js",
       "title": "スライドするアクティブ・インジケーター — 純CSS / JS計測 / layoutId / View Transitionsを用途で選ぶ",
@@ -495,10 +596,10 @@
           "title": "Active link animation with Next.js + Motion（cruip）",
           "url": "https://cruip.com/active-link-animation-with-tailwind-css-and-framer-motion/"
         }
-      ],
-      "id": "2026-10-25-nextjs"
+      ]
     },
     {
+      "id": "2026-10-25-flutter",
       "date": "2026-10-25",
       "topic": "Flutter",
       "title": "AGP 9＋built-in Kotlinへ今すぐ移行 — Hero飛行・状態復元・アダプティブUIの要点も",
@@ -525,8 +626,7 @@
           "title": "Window size classes（m3.material.io）",
           "url": "https://m3.material.io/foundations/layout/applying-layout/window-size-classes"
         }
-      ],
-      "id": "2026-10-25-flutter"
+      ]
     },
     {
       "id": "2026-10-24-claude-code",
@@ -691,6 +791,7 @@
       ]
     },
     {
+      "id": "2026-10-22-claude-code",
       "date": "2026-10-22",
       "topic": "Claude Code",
       "title": "v2.1.304/305 — Code Reviewに「深度」、worktreeの事故を塞ぎ、サンドボックスと非対話を締める",
@@ -713,10 +814,10 @@
           "title": "Developers use Claude Code to make smart TVs dumb again（AI Weekly/TechCrunch）",
           "url": "https://aiweekly.co/alerts/developers-use-claude-code-to-make-smart-tvs-dumb-again"
         }
-      ],
-      "id": "2026-10-22-claude-code"
+      ]
     },
     {
+      "id": "2026-10-22-nextjs",
       "date": "2026-10-22",
       "topic": "Next.js",
       "title": "App Router を Cloudflare Workers に載せる — OpenNext アダプタ @opennextjs/cloudflare の設計と落とし穴",
@@ -739,10 +840,10 @@
           "title": "Next.js 16 on Cloudflare Workers: what broke and what did not（DEV）",
           "url": "https://dev.to/neo_xia_3f4c019330af5fb9d/nextjs-16-on-cloudflare-workers-what-broke-and-what-didnt-5bka"
         }
-      ],
-      "id": "2026-10-22-nextjs"
+      ]
     },
     {
+      "id": "2026-10-22-flutter",
       "date": "2026-10-22",
       "topic": "Flutter",
       "title": "Flutter 3.50 直前のチャネル戦略 — Rive データバインディング・bloc_signals・leak_tracker",
@@ -765,10 +866,10 @@
           "title": "leak_tracker DETECT.md（dart.googlesource.com）",
           "url": "https://dart.googlesource.com/leak_tracker.git/+show/c71a905/doc/DETECT.md"
         }
-      ],
-      "id": "2026-10-22-flutter"
+      ]
     },
     {
+      "id": "2026-10-21-github-trending",
       "date": "2026-10-21",
       "topic": "GitHub Trending",
       "title": "10/21の話題リポジトリ — DeepSeek公式の推論基盤・マクドMCPの段取りCLI・全デバイス常駐エージェント",
@@ -787,8 +888,7 @@
           "title": "nano-muse/nanoMuse",
           "url": "https://github.com/nano-muse/nanoMuse"
         }
-      ],
-      "id": "2026-10-21-github-trending"
+      ]
     },
     {
       "id": "2026-10-21-claude-code",
@@ -1019,6 +1119,7 @@
       ]
     },
     {
+      "id": "2026-10-18-claude-code",
       "date": "2026-10-18",
       "topic": "Claude Code",
       "title": "Code Review GA と Idle圧縮、そして『コードは増えてもソフトは増えない』 — レビュー律速時代のClaude Code",
@@ -1037,10 +1138,10 @@
           "title": "Coding agents make more code, not more software（10/17）",
           "url": "https://redreamality.com/blog/coding-agent-more-code-not-more-software-2026/"
         }
-      ],
-      "id": "2026-10-18-claude-code"
+      ]
     },
     {
+      "id": "2026-10-18-nextjs",
       "date": "2026-10-18",
       "topic": "Next.js",
       "title": "App Routerでページ遷移に『退場』を出す — template.tsxの限界、FrozenRouterハック、そして公式ViewTransitionへ",
@@ -1063,10 +1164,10 @@
           "title": "Motion for React ドキュメント（AnimatePresence / useReducedMotion）",
           "url": "https://motion.dev/docs/react-animate-presence"
         }
-      ],
-      "id": "2026-10-18-nextjs"
+      ]
     },
     {
+      "id": "2026-10-18-flutter",
       "date": "2026-10-18",
       "topic": "Flutter",
       "title": "Dart 3.14 Augmentations と 3.50前の環境整備、Lottie実務投入、DIスペクトラム、jank切り分け",
@@ -1089,10 +1190,10 @@
           "title": "How to profile jank in a Flutter app with DevTools",
           "url": "https://startdebugging.net/2026/05/how-to-profile-jank-in-a-flutter-app-with-devtools/"
         }
-      ],
-      "id": "2026-10-18-flutter"
+      ]
     },
     {
+      "id": "2026-10-17-claude-code",
       "date": "2026-10-17",
       "topic": "Claude Code",
       "title": "Claude Code v2.1.302 — forkサブエージェント既定ONと、Vals AIが突きつけた「多エージェントは高くつく」",
@@ -1119,10 +1220,10 @@
           "title": "Ramp/Menlo: Claude leading US enterprise AI (KuCoin)",
           "url": "https://www.kucoin.com/blog/anthropic-vs-openai-ramp-data-shows-claude-leading-us-enterprise-ai-market-share-at-43-8"
         }
-      ],
-      "id": "2026-10-17-claude-code"
+      ]
     },
     {
+      "id": "2026-10-17-nextjs",
       "date": "2026-10-17",
       "topic": "Next.js",
       "title": "Flags SDK v4 — App Routerのフィーチャーフラグを「decideでサーバー評価＋precomputeで静的維持」",
@@ -1149,10 +1250,10 @@
           "title": "GitHub: vercel/flags",
           "url": "https://github.com/vercel/flags"
         }
-      ],
-      "id": "2026-10-17-nextjs"
+      ]
     },
     {
+      "id": "2026-10-17-flutter",
       "date": "2026-10-17",
       "topic": "Flutter",
       "title": "Flutter SDKスリム化と実務3題 — listen分離・オフラインファースト同期・800ms未満の起動",
@@ -1179,8 +1280,7 @@
           "title": "The Cold-Start Problem (omr.it.com)",
           "url": "https://omr.it.com/blog/lazy-widget-hydration-flutter-app-launch-under-800ms/"
         }
-      ],
-      "id": "2026-10-17-flutter"
+      ]
     },
     {
       "id": "2026-10-16-claude-code",
