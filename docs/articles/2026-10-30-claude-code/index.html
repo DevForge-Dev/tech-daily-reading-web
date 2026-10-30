@@ -1,0 +1,64 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>10/30のClaude Code — 最新はv2.1.312のまま。『無人で安全に長く走る』地固めと、標準化へ動くエコシステム — デイリー技術深掘り 読み物</title><meta name="description" content="新規リリースは未確認。クラウドルーチンのeffort指定、Hook同時24本制限、safety_eventテレメトリ廃止など運用の地固め。あわせて上級ベストプラクティスとAgent Skillsの財団寄贈を読む。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-30-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="10/30のClaude Code — 最新はv2.1.312のまま。『無人で安全に長く走る』地固めと、標準化へ動くエコシステム — デイリー技術深掘り 読み物"><meta property="og:description" content="新規リリースは未確認。クラウドルーチンのeffort指定、Hook同時24本制限、safety_eventテレメトリ廃止など運用の地固め。あわせて上級ベストプラクティスとAgent Skillsの財団寄贈を読む。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-30-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>10/30のClaude Code — 最新はv2.1.312のまま。『無人で安全に長く走る』地固めと、標準化へ動くエコシステム</h1> <p class="lede">新規リリースは未確認。クラウドルーチンのeffort指定、Hook同時24本制限、safety_eventテレメトリ廃止など運用の地固め。あわせて上級ベストプラクティスとAgent Skillsの財団寄贈を読む。</p> <div class="meta"> <span>📅 2026年10月30日</span> <span>⏱ 約3分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="0"><p>10/30(JST)時点でClaude Codeの最新は依然 <strong>v2.1.312</strong>(10/27公開)で、10/28〜30の新規リリースは確認できない。派手な新機能より<strong>運用の信頼性</strong>に寄った局面が続いており、「見ていなくても安全に、長く走らせる」ための地固めが主題だ。毎日無人で定期タスクを回す自分の使い方には、この地味な変更こそ効いてくる。</p>
+<p><strong>何が入ったか</strong>。v2.1.312の追加は2点——クラウドルーチン用モデルピッカーへの<strong>effortレベル指定</strong>と、クラウド設定スクリプト用の行番号付き+コピー可能なBashエディタ。変更は、プロンプト/エージェントHookの同時実行を<strong>セッション毎に最大24本へ制限</strong>、<code>claude_code.safety_event</code>(OpenTelemetry)の送出廃止、Bedrock/Vertex/Foundry/Mantleで<strong>未知のモデル名に短いシステムプロンプトを既定適用</strong>(<code>CLAUDE_CODE_SIMPLE_SYSTEM_PROMPT=0</code>で従来に戻せる)。補足として前週のv2.1.311(10/26)では、端末の<code>ultrathink</code>がOpus5.5/Sonnet5.5/Haiku5.5/Fable5.1で<strong>xhigh実行</strong>に、<code>self-hosted-runner</code>に<code>--hold-idle-file</code>/<code>--max-hold-min</code>が加わり、モデルカタログを署名ファイルから取得するようになった。</p>
+<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg'><rect x='10' y='12' width='280' height='176' rx='10' fill='#fff7ed' stroke='#f59e0b' stroke-width='2'></rect><text x='150' y='40' text-anchor='middle' font-size='14' font-weight='bold' fill='#b45309'>CLAUDE.md ＝ 文脈(ガイド)</text><text x='28' y='74' font-size='12' fill='#78350f'>・共有の方針 / 規約を簡潔に</text><text x='28' y='100' font-size='12' fill='#78350f'>・強制境界ではない</text><text x='28' y='126' font-size='12' fill='#78350f'>・守られない前提で設計</text><text x='28' y='166' font-size='12' font-weight='bold' fill='#92400e'>→ 破れる“お願い”</text><rect x='310' y='12' width='280' height='176' rx='10' fill='#eff6ff' stroke='#3b82f6' stroke-width='2'></rect><text x='450' y='40' text-anchor='middle' font-size='14' font-weight='bold' fill='#1d4ed8'>Hook・権限 ＝ 強制</text><text x='328' y='74' font-size='12' fill='#1e3a8a'>・ツール実行を許可 / ブロック</text><text x='328' y='100' font-size='12' fill='#1e3a8a'>・まず検証1本から広げる</text><text x='328' y='126' font-size='12' fill='#1e3a8a'>・同時24本まで (v2.1.312)</text><text x='328' y='166' font-size='12' font-weight='bold' fill='#1e40af'>→ 破れない“境界”</text></svg><figcaption>図1：指針はCLAUDE.mdに、制御はHook/権限に——役割を分けるのが上級者の設計</figcaption></figure>
+<p><strong>噛み砕くと</strong>、SmartScopeの上級ベストプラクティス解説が整理した原則が実務の軸になる。まずテストや期待出力・視覚チェックなどの<strong>受け入れ基準を先に渡し、Claude自身に検証させる</strong>。共有の指針はCLAUDE.mdに簡潔に置き、ツール実行の制御は権限とHookに持たせる(CLAUDE.mdは文脈であって強制境界ではない=図1)。Hookはまず検証1本から始め、許可/ブロック両方の挙動を確かめてから範囲を広げる。Subagentには対象ファイル・問い・編集権限・返すべき証拠を明示し、不要な委譲は避ける。Simon Willison経由で紹介されたClaude Codeチームのレビュー術も同じ思想で、「人が読んだか」より「<strong>何が壊れ得るか/どの検査が捕まえるか</strong>」を問い、レビューを開発中に常時走らせる(スペルチェックのように)。</p>
+<p><strong>自分が試すなら</strong>、無人ルーチンのHookを24本上限の中で優先度順に整理し、ブロックしたい破壊的操作だけを強制側(Hook/権限)に寄せる。長時間走らせるクラウドタスクにはeffort指定で品質と費用のバランスを取る。<strong>注意点</strong>は、<code>safety_event</code>に依存した監視があれば差し替えが要ること、未知モデル名の短システムプロンプト既定化で挙動が変わり得ること、そして社内自己申告値(CC自体のコード約9割をClaudeが記述等)は外部監査がない点だ。</p>
+<p><strong>ひとこと</strong>。10/22にはAgent Skills標準がLinux Foundation傘下のAgentic AI Foundationへ寄贈され(累計約2.8億インストールの共通規約がベンダー中立に)、10/15にはコードレビューがTeam/EnterpriseでGAになった。足元の地固めとエコシステムの標準化が同時に進む——“静かだが重要”な一週間だ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://code.claude.com/docs/en/changelog" target="_blank" rel="noopener noreferrer"> Claude Code changelog </a> </li><li> <a href="https://smartscope.blog/en/generative-ai/claude/claude-code-best-practices-advanced-2026/" target="_blank" rel="noopener noreferrer"> Claude Code 上級ベストプラクティス(SmartScope) </a> </li><li> <a href="https://simonwillison.net/2026/Oct/16/code-review/" target="_blank" rel="noopener noreferrer"> Claude Codeチームのコードレビュー術(Simon Willison) </a> </li><li> <a href="https://simonwillison.net/2026/Oct/22/donating-agent-skills/" target="_blank" rel="noopener noreferrer"> Agent Skills寄贈(Simon Willison) </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

@@ -1,0 +1,67 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>10/30の話題リポジトリ — 35B級をスマホで動かすEdge0・ボット毎にVMのOpenMausBot・RustネイティブIDEのopenidea — デイリー技術深掘り 読み物</title><meta name="description" content="AI一色の飽和局面を純モメンタムで突き抜けた3本。『手元で重いモデルを動かす』『エージェントを隔離実行する』『重量級ツールをネイティブ化する』——いずれも“ローカルで速く・安全に”という共通の地面を踏む。"><meta name="theme-color" content="#238636"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-30-github-trending/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="10/30の話題リポジトリ — 35B級をスマホで動かすEdge0・ボット毎にVMのOpenMausBot・RustネイティブIDEのopenidea — デイリー技術深掘り 読み物"><meta property="og:description" content="AI一色の飽和局面を純モメンタムで突き抜けた3本。『手元で重いモデルを動かす』『エージェントを隔離実行する』『重量級ツールをネイティブ化する』——いずれも“ローカルで速く・安全に”という共通の地面を踏む。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-30-github-trending/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3fb950, #1a7f37)"> <span class="glyph" aria-hidden="true">★</span> <div class="kicker">GitHub Trending</div> <h1>10/30の話題リポジトリ — 35B級をスマホで動かすEdge0・ボット毎にVMのOpenMausBot・RustネイティブIDEのopenidea</h1> <p class="lede">AI一色の飽和局面を純モメンタムで突き抜けた3本。『手元で重いモデルを動かす』『エージェントを隔離実行する』『重量級ツールをネイティブ化する』——いずれも“ローカルで速く・安全に”という共通の地面を踏む。</p> <div class="meta"> <span>📅 2026年10月30日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#238636"> <div> <article class="prose" data-has-mermaid="0"><p>本日の急上昇はAI一色の飽和局面でも純モメンタムで突き抜けた3本。貫く傾向は明快で、<strong>「ローカルで・速く・隔離して動かす」</strong>——クラウド頼みからの揺り戻しが新規リポジトリの共通テーマになっている。それぞれ「どんな課題を解こうとしているか」と「何ができるか」を見ていく。</p>
+<figure class='fig'><svg viewBox='0 0 600 212' xmlns='http://www.w3.org/2000/svg'><text x='300' y='20' text-anchor='middle' font-size='13' font-weight='bold' fill='#334155'>今日の3本：解きたい課題 → 提供する機能</text><g font-size='11'><rect x='16' y='34' width='140' height='154' rx='8' fill='#f0fdf4' stroke='#22c55e' stroke-width='1.5'></rect><text x='86' y='54' text-anchor='middle' font-weight='bold' fill='#15803d'>Edge0</text><text x='86' y='70' text-anchor='middle' fill='#166534'>Python ⭐8.7k</text><text x='26' y='96' fill='#334155'>課題: 大型LLMは</text><text x='26' y='110' fill='#334155'>手元で重すぎる</text><text x='26' y='140' fill='#15803d'>機能: 35B MoEを</text><text x='26' y='154' fill='#15803d'>約2.5GB RAMで</text><text x='26' y='168' fill='#15803d'>実行(重み先読み)</text><rect x='166' y='34' width='140' height='154' rx='8' fill='#eff6ff' stroke='#3b82f6' stroke-width='1.5'></rect><text x='236' y='54' text-anchor='middle' font-weight='bold' fill='#1d4ed8'>OpenMausBot</text><text x='236' y='70' text-anchor='middle' fill='#1e40af'>TypeScript ⭐7.4k</text><text x='176' y='96' fill='#334155'>課題: 複数AI CLIの</text><text x='176' y='110' fill='#334155'>統合と安全実行</text><text x='176' y='140' fill='#1d4ed8'>機能: 1チャットに</text><text x='176' y='154' fill='#1d4ed8'>束ね、ボット毎に</text><text x='176' y='168' fill='#1d4ed8'>専用VMを割当</text><rect x='316' y='34' width='140' height='154' rx='8' fill='#faf5ff' stroke='#a855f7' stroke-width='1.5'></rect><text x='386' y='54' text-anchor='middle' font-weight='bold' fill='#7e22ce'>openidea</text><text x='386' y='70' text-anchor='middle' fill='#6b21a8'>TS/Rust ⭐1.0k</text><text x='326' y='96' fill='#334155'>課題: 重量級IDEは</text><text x='326' y='110' fill='#334155'>起動も動作も重い</text><text x='326' y='140' fill='#7e22ce'>機能: IntelliJ風を</text><text x='326' y='154' fill='#7e22ce'>Rustネイティブで</text><text x='326' y='168' fill='#7e22ce'>高速再現(60+言語)</text><rect x='466' y='34' width='118' height='154' rx='8' fill='#fef2f2' stroke='#f87171' stroke-width='1.5'></rect><text x='525' y='54' text-anchor='middle' font-weight='bold' fill='#b91c1c'>共通点</text><text x='476' y='84' fill='#7f1d1d'>ローカル実行</text><text x='476' y='108' fill='#7f1d1d'>省メモリ/隔離</text><text x='476' y='132' fill='#7f1d1d'>高速・省コスト</text><text x='476' y='156' fill='#7f1d1d'>“手元で完結”</text></g></svg><figcaption>図1：3本を貫くのは「クラウドに出さず手元で速く・安全に」という方向</figcaption></figure>
+<h4 id="sec-1">Edge0-AI/Edge0（Python・⭐約8.7k）</h4>
+<p><strong>解決したい課題</strong>は「35Bクラスの大型モデルはノートPCやスマホには重すぎて載らない」こと。<strong>提供する機能</strong>は、重みをSSDからストリーミングし、学習済みルーターが次に必要な重みを1ステップ先読みでロードすることで、<strong>35B級MoEを約2.5GB RAM</strong>で動かすオンデバイス推論エンジン。Mac/iPhone/Android/Windows対応(Apache-2.0)。created 2026-09-08＝約52日で実測約8,720★/forks1,272(日平均約168)まで伸び、trendshift日次にも掲載。<strong>急上昇の理由</strong>は、省メモリ×マルチプラットフォームという旬テーマを“スマホで35B”という大胆な見出しで突いた点だ。</p>
+<h4 id="sec-2">milind-soni/OpenMausBot（TypeScript・⭐約7.4k）</h4>
+<p><strong>解決したい課題</strong>は「Claude/Codex/Grokなど複数のAI系CLIを束ねつつ、エージェントが生成・実行するコードをどう安全に隔離するか」。<strong>提供する機能</strong>は、それらを1つのチャットアプリに統合し、<strong>各ボットに専用の仮想マシン(クラウドPC)を割り当てて</strong>作業させるOSSのGrok Bot代替(Apache-2.0)。<strong>急上昇の理由</strong>は、GitHub日報(Qiita 2026-10-30)で+約1,190・率約16%と当日のFirst Timer筆頭に躍り出たこと。ボット単位のVM隔離という設計が、エージェント実行の安全性という関心に刺さった。</p>
+<h4 id="sec-3">l0ng-ai/openidea（TypeScript／ネイティブはRust・⭐約1.0k）</h4>
+<p><strong>解決したい課題</strong>は「高機能な重量級IDEは起動も動作も重い」こと。<strong>提供する機能</strong>は、IntelliJ IDEA風のキーマップ/ツールウィンドウ/Search Everywhereに、エディタ・補完・デバッガ・Git・ターミナル・DB/HTTPクライアントを統合し60+言語に対応した、<strong>Rustでネイティブ再構築した高速IDE</strong>(Apache-2.0)。<strong>急上昇の理由</strong>は、公開わずか9日で実測約1,030★(日平均約114・率高位)と伸び、「重量級IDEのネイティブ化」という新規性が拡散したこと。</p>
+<p><strong>自分が試すなら</strong>——まずEdge0を手元のMacで動かして“35Bが本当に2.5GBで回るか”を体感し、エージェントを多用する自分の運用にはOpenMausBotのVM隔離の思想を参考にする。openideaはまだ公開9日なので、常用より“Rustネイティブの体感速度”の偵察用に触るのが現実的だ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://github.com/Edge0-AI/Edge0" target="_blank" rel="noopener noreferrer"> Edge0-AI/Edge0 </a> </li><li> <a href="https://github.com/milind-soni/OpenMausBot" target="_blank" rel="noopener noreferrer"> milind-soni/OpenMausBot </a> </li><li> <a href="https://github.com/l0ng-ai/openidea" target="_blank" rel="noopener noreferrer"> l0ng-ai/openidea </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> Edge0-AI/Edge0（Python・⭐約8.7k） </a> </li><li> <a href="#sec-2" data-toc="sec-2"> milind-soni/OpenMausBot（TypeScript・⭐約7.4k） </a> </li><li> <a href="#sec-3" data-toc="sec-3"> l0ng-ai/openidea（TypeScript／ネイティブはRust・⭐約1.0k） </a> </li> </ul> <div class="reading-box"> <div>📅 2026-10-30</div> <div>⏱ 読了 約3分</div> <div>🏷 GitHub Trending</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

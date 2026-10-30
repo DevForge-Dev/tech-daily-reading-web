@@ -1,0 +1,67 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Next.js App RouterでtRPC v11 — RSCプリフェッチ×TanStack Query v5、そしてServer Actionsとの棲み分け — デイリー技術深掘り 読み物</title><meta name="description" content="スキーマもコード生成もなしに型が流れるエンドツーエンド型安全RPC。v11はReact Query v5連携を刷新。『クライアントに渡す』prefetchと『サーバーで使う』createCallerの2つの呼び口を押さえる。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-30-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Next.js App RouterでtRPC v11 — RSCプリフェッチ×TanStack Query v5、そしてServer Actionsとの棲み分け — デイリー技術深掘り 読み物"><meta property="og:description" content="スキーマもコード生成もなしに型が流れるエンドツーエンド型安全RPC。v11はReact Query v5連携を刷新。『クライアントに渡す』prefetchと『サーバーで使う』createCallerの2つの呼び口を押さえる。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-30-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>Next.js App RouterでtRPC v11 — RSCプリフェッチ×TanStack Query v5、そしてServer Actionsとの棲み分け</h1> <p class="lede">スキーマもコード生成もなしに型が流れるエンドツーエンド型安全RPC。v11はReact Query v5連携を刷新。『クライアントに渡す』prefetchと『サーバーで使う』createCallerの2つの呼び口を押さえる。</p> <div class="meta"> <span>📅 2026年10月30日</span> <span>⏱ 約4分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="0"><p><strong>なぜ今か</strong>。App Router時代は「RSC/Server Actionsがあるのに tRPC は要る？」が繰り返し議論される。tRPC は別途スキーマやOpenAPIを書かず、<code>appRouter</code>の型<code>AppRouter</code>をimportするだけで入力・出力・エラーまで補完が効く<strong>エンドツーエンド型安全RPC</strong>だ。<strong>v11は2025-03-21に正式リリース</strong>され、v10とほぼ後方互換。目玉はTanStack React Query v5連携の刷新、RSCプリフェッチ＋ハイドレーション、FormData/Blob等の非JSONボディ、SSEベースのSubscription(<code>httpSubscriptionLink</code>、WebSocketより推奨)あたりだ。</p>
+<p><strong>何が新しい/重要か</strong>。連携が2系統になった。旧来の<code>createTRPCReact</code>に加え、新しい<code>@trpc/tanstack-react-query</code>(<code>createTRPCOptionsProxy</code>/<code>createTRPCContext</code>)は「tRPCがReact Queryの<code>queryOptions</code>を生成し、<code>useQuery</code>/<code>useSuspenseQuery</code>/<code>useMutation</code>は素のTanStack Queryフックを使う」設計で、React Queryの全機能が素直に乗る。<strong>新規は新方式が推奨</strong>。TanStack Queryはv5必須だ。</p>
+<figure class='fig'><svg viewBox='0 0 600 232' xmlns='http://www.w3.org/2000/svg'><text x='300' y='22' text-anchor='middle' font-size='13' font-weight='bold' fill='#334155'>tRPC v11 × App Router：サーバーからの2つの呼び口</text><rect x='18' y='40' width='266' height='178' rx='10' fill='#ecfdf5' stroke='#10b981' stroke-width='2'></rect><text x='151' y='64' text-anchor='middle' font-size='12' font-weight='bold' fill='#047857'>A. prefetch → Hydrate</text><text x='34' y='90' font-size='11' fill='#065f46'>RSCで queryClient.prefetchQuery</text><text x='34' y='112' font-size='11' fill='#065f46'>trpc.x.queryOptions()</text><text x='34' y='134' font-size='11' fill='#065f46'>HydrationBoundary で受け渡し</text><text x='34' y='156' font-size='11' fill='#065f46'>client: useQuery がキャッシュに乗る</text><text x='34' y='196' font-size='11' font-weight='bold' fill='#047857'>→ クライアント表示・再検証向き</text><rect x='316' y='40' width='266' height='178' rx='10' fill='#eef2ff' stroke='#6366f1' stroke-width='2'></rect><text x='449' y='64' text-anchor='middle' font-size='12' font-weight='bold' fill='#4338ca'>B. createCaller 直呼び</text><text x='332' y='90' font-size='11' fill='#3730a3'>const r = await caller.hello(...)</text><text x='332' y='112' font-size='11' fill='#3730a3'>サーバーで関数として実行</text><text x='332' y='134' font-size='11' fill='#3730a3'>結果はキャッシュに乗らない</text><text x='332' y='156' font-size='11' fill='#3730a3'>HTTP層を通さない</text><text x='332' y='196' font-size='11' font-weight='bold' fill='#4338ca'>→ サーバーが値自体を使う向き</text></svg><figcaption>図1：同じtRPCでも「クライアントに渡す」か「サーバーが使う」かで呼び口が分かれる</figcaption></figure>
+<p><strong>仕組みと落とし穴</strong>。RSC対応の呼び口は図1の2つ。Aは<code>trpc.x.queryOptions()</code>をサーバーで<code>prefetchQuery</code>し、<code>HydrationBoundary</code>でクライアントのReact Queryキャッシュへ渡す。Bは<code>appRouter.createCaller(ctx)</code>でサーバーが直接<code>await caller.hello(...)</code>と関数呼び出しする——結果はキャッシュに入らないので「サーバーが値そのものを使う」ケース向けだ。落とし穴は多い:(1)<code>prefetchQuery</code>を<strong>awaitしない(void)</strong>とストリーミング、ただし<code>shouldDehydrateQuery</code>に<code>pending</code>を含める設定が必須。(2)<code>staleTime: 0</code>だとハイドレーション直後に即再フェッチするので30秒などへ。(3)QueryClientは<strong>サーバーは毎リクエスト新規・ブラウザは単一再利用</strong>(<code>cache(makeQueryClient)</code>で固定)。(4)superjson等のtransformerを入れるなら<strong>サーバー・HTTPリンク・dehydrate/hydrateの3箇所すべて</strong>に設定。(5)<code>trpc/server.tsx</code>には<code>import 'server-only'</code>を付けて漏洩防止。</p>
+<pre><code>// app/page.tsx (Server Component)
+const qc = getQueryClient();
+void qc.prefetchQuery(trpc.hello.queryOptions({ text: 'world' })); // awaitしない=ストリーミング
+return &lt;HydrateClient&gt;&lt;ClientGreeting /&gt;&lt;/HydrateClient&gt;;</code></pre>
+<p><strong>Server Actionsとの棲み分け</strong>(2026時点)。フォーム送信・単発のサーバー副作用・プログレッシブエンハンスメントは<strong>Server Actions</strong>で十分。クライアント主導の取得/キャッシュ/楽観更新/無限スクロール/ポーリング/SSE購読、複数クライアント(Web＋モバイル)から叩く型付きAPIが欲しいときは<strong>tRPC＋React Query</strong>が光る。両者は排他でなく、RSCで初回データ・以降は tRPC/React Query という併用が現実的だ。<strong>自分が試すなら</strong>、まず<code>hello</code>procedure一本を新方式で通し、staleTimeとtransformerの3点設定でハイドレーション破綻が起きないかを確認してから本採用する。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://trpc.io/docs/client/tanstack-react-query/server-components" target="_blank" rel="noopener noreferrer"> tRPC Server Components(TanStack React Query) </a> </li><li> <a href="https://trpc.io/blog/announcing-trpc-11" target="_blank" rel="noopener noreferrer"> Announcing tRPC v11 </a> </li><li> <a href="https://trpc.io/docs/client/nextjs" target="_blank" rel="noopener noreferrer"> tRPC Next.js 連携 </a> </li><li> <a href="https://caisy.io/blog/trpc-vs-server-actions" target="_blank" rel="noopener noreferrer"> tRPC vs Server Actions(caisy) </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
