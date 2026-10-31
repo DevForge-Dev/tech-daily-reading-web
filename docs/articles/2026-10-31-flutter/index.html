@@ -1,0 +1,64 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>10/31のFlutter — Androidの既定ページ遷移がPredictiveBackに。予測型バックの覗き見とPopScope移行、テスト尺破壊への備え — デイリー技術深掘り 読み物</title><meta name="description" content="stable 3.47.9 / beta 3.50.0-0.3.pre(10/29)。Androidの既定遷移がPredictiveBackPageTransitionsBuilderへ変わり遷移が300→450msに。WillPopScopeはPopScopeへ。あわせてVGVのFeature-First Clean ArchitectureとBackdropFilterの重さ対策も押さえる。"><meta name="theme-color" content="#0277bd"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-31-flutter/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="10/31のFlutter — Androidの既定ページ遷移がPredictiveBackに。予測型バックの覗き見とPopScope移行、テスト尺破壊への備え — デイリー技術深掘り 読み物"><meta property="og:description" content="stable 3.47.9 / beta 3.50.0-0.3.pre(10/29)。Androidの既定遷移がPredictiveBackPageTransitionsBuilderへ変わり遷移が300→450msに。WillPopScopeはPopScopeへ。あわせてVGVのFeature-First Clean ArchitectureとBackdropFilterの重さ対策も押さえる。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-10-31-flutter/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #29b6f6, #01579b)"> <span class="glyph" aria-hidden="true">◆</span> <div class="kicker">Flutter</div> <h1>10/31のFlutter — Androidの既定ページ遷移がPredictiveBackに。予測型バックの覗き見とPopScope移行、テスト尺破壊への備え</h1> <p class="lede">stable 3.47.9 / beta 3.50.0-0.3.pre(10/29)。Androidの既定遷移がPredictiveBackPageTransitionsBuilderへ変わり遷移が300→450msに。WillPopScopeはPopScopeへ。あわせてVGVのFeature-First Clean ArchitectureとBackdropFilterの重さ対策も押さえる。</p> <div class="meta"> <span>📅 2026年10月31日</span> <span>⏱ 約4分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#0277bd"> <div> <article class="prose" data-has-mermaid="0"><p><strong>背景</strong>。現況は stable <strong>3.47.9 / Dart 3.13.7</strong>、beta <strong>3.50.0-0.3.pre / Dart 3.14.0</strong>(ともに10/29更新)。3.50-candidate.0(10/6 cutoff済)の上で、11月のstable昇格前に承認済みcherry-pickを重ねる<strong>最終安定化フェーズ</strong>で、昇格直前の変更は新機能でなく回帰修正が主だ。11月の3.50確定事項(Web WasmGC既定・Android Impeller一本化・Wasm遅延ロードstable・Android17 day-zero・<code>material_ui</code>/<code>cupertino_ui</code>のdeprecation)は不変。本番は<strong>3.47.9にpin</strong>しつつ別CIでbeta 3.50系を緑化しておくのが定石だ。</p>
+<p><strong>何が重要か＝既定の戻る体験が変わった</strong>。Androidの既定ページ遷移が <code>ZoomPageTransitionsBuilder</code> から <strong><code>PredictiveBackPageTransitionsBuilder</code></strong> に変更済み(stable 3.38.0から)。予測型バック(predictive back)は、戻るジェスチャの<strong>途中で前の画面/アプリを“覗き見”</strong>し、そのまま離せば遷移確定・指を戻せばキャンセルして元に復帰する Android 機能で、遷移がジェスチャの進捗に連動して動く。有効化は <code>AndroidManifest.xml</code> の <code>&lt;application&gt;</code> に <code>android:enableOnBackInvokedCallback="true"</code>(Android13は要opt-in・14+は既定で有効)。ジェスチャが無い通常遷移では <code>FadeForwardsPageTransitionsBuilder</code> にフォールバックする。</p>
+<figure class='fig'><svg viewBox='0 0 600 196' xmlns='http://www.w3.org/2000/svg'><text x='300' y='20' text-anchor='middle' font-size='13' font-weight='bold' fill='#334155'>予測型バック：ジェスチャ進捗に連動し、離すかキャンセルできる</text><rect x='20' y='40' width='160' height='120' rx='8' fill='#eef2ff' stroke='#6366f1' stroke-width='1.5'></rect><text x='100' y='64' text-anchor='middle' font-size='12' font-weight='bold' fill='#4338ca'>1. ジェスチャ開始</text><text x='100' y='92' text-anchor='middle' font-size='11' fill='#3730a3'>現画面が縮み</text><text x='100' y='110' text-anchor='middle' font-size='11' fill='#3730a3'>背後の前画面を</text><text x='100' y='128' text-anchor='middle' font-size='11' fill='#3730a3'>“覗き見”</text><rect x='220' y='40' width='160' height='120' rx='8' fill='#ecfdf5' stroke='#22c55e' stroke-width='1.5'></rect><text x='300' y='64' text-anchor='middle' font-size='12' font-weight='bold' fill='#15803d'>2a. 離す</text><text x='300' y='92' text-anchor='middle' font-size='11' fill='#166534'>遷移を確定</text><text x='300' y='110' text-anchor='middle' font-size='11' fill='#166534'>前画面へpop</text><text x='300' y='136' text-anchor='middle' font-size='11' fill='#166534'>(300→450msへ増加)</text><rect x='420' y='40' width='160' height='120' rx='8' fill='#fef2f2' stroke='#f87171' stroke-width='1.5'></rect><text x='500' y='64' text-anchor='middle' font-size='12' font-weight='bold' fill='#b91c1c'>2b. キャンセル</text><text x='500' y='92' text-anchor='middle' font-size='11' fill='#7f1d1d'>指を戻す</text><text x='500' y='110' text-anchor='middle' font-size='11' fill='#7f1d1d'>元の画面へ復帰</text><path d='M180 100 L218 100' stroke='#94a3b8' stroke-width='1.5' marker-end='url(#b)'></path><path d='M180 118 Q200 150 418 130' fill='none' stroke='#94a3b8' stroke-width='1.5' marker-end='url(#b)'></path><defs><marker id='b' markerWidth='8' markerHeight='8' refX='6' refY='3' orient='auto'><path d='M0 0 L6 3 L0 6 Z' fill='#94a3b8'></path></marker></defs></svg><figcaption>図1：遷移がジェスチャ進捗に連動。離せば確定・戻せばキャンセルという“途中で引き返せる”戻る体験</figcaption></figure>
+<p><strong>仕組みと落とし穴</strong>。既定遷移が変わった結果、<strong>遷移時間が 300ms → 450ms に増加</strong>した。<code>tester.pump(const Duration(milliseconds: 300))</code> のように尺をハードコードしたwidgetテストが壊れ得る——対策は <code>TransitionDurationObserver</code> を <code>navigatorObservers</code> に挿し、<code>observer.pumpPastTransition(tester)</code> や <code>observer.transitionDuration ~/ 2</code> で<strong>尺非依存</strong>に書き換えること。戻る制御は <code>WillPopScope</code> が deprecated で <strong><code>PopScope</code></strong> へ移行する:<code>canPop: false</code> ＋ <code>onPopInvokedWithResult: (bool didPop, Object? result)</code> で確認ダイアログを挟むが、コールバックは<strong>成功pop後にも発火する</strong>ので <code>if (didPop) return;</code> ガードが必須、ダイアログ待ちの間にwidgetが破棄され得るので <code>context.mounted</code> チェックも要る。旧挙動に固定したければ <code>pageTransitionsTheme</code> で <code>ZoomPageTransitionsBuilder()</code> を明示指定する(ただし予測型バックは使えなくなる)。</p>
+<p><strong>この日の他の収穫</strong>。アーキテクチャは Very Good Ventures の <strong>Feature-First Clean Architecture</strong> が示唆に富む:機能ごとに <code>&lt;feature&gt;_domain</code>/<code>_data</code>/<code>_presentation</code> の3パッケージに分け、<strong>層をパッケージ境界にする</strong>ことで import違反を<strong>コンパイル時</strong>に弾く(domainは純Dart・presentationはdataに依存不可、機能跨ぎはdomainレベルだけ、Dart workspacesがリンク)。機能同士はルートをimportせず、Module widgetが型付きコールバックを公開しapp層が結線する。パフォーマンスでは <code>BackdropFilter</code> のぼかしが重い理由(背後キャンバスをキャプチャ→フィルタ→合成に <code>saveLayer</code> のオフスクリーンバッファが要り毎フレーム確保が走る)と、<strong>段階ぼかし</strong>(帯に分け <code>ClipRect</code>＋sigmaをindexで増やす、推奨8〜12ステップ・maxSigma15前後)という回避策が実務的だ。</p>
+<p><strong>自分が試すなら</strong>、まず既存アプリで予測型バックを有効化し、尺ハードコードのテストを <code>TransitionDurationObserver</code> ベースへ直す。<code>WillPopScope</code> が残っていれば <code>PopScope</code> へ機械的に移行し、<code>didPop</code> ガードと <code>context.mounted</code> を入れる。<strong>注意点</strong>は、段階ぼかしの <code>ClipRect</code> は“どこに描くか”を絞るだけで各帯のフィルタ処理量自体は必ずしも減らないこと、blur系は Impeller と Skia でキャッシュ挙動が変わるので必ず <code>--profile</code>＋DevToolsで実測してから詰めること。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://docs.flutter.dev/release/breaking-changes/default-android-page-transition" target="_blank" rel="noopener noreferrer"> Default Android page transition (docs.flutter.dev) </a> </li><li> <a href="https://docs.flutter.dev/platform-integration/android/predictive-back" target="_blank" rel="noopener noreferrer"> Add the predictive back gesture (docs.flutter.dev) </a> </li><li> <a href="https://verygood.ventures/blog/feature-first-clean-architecture" target="_blank" rel="noopener noreferrer"> Feature-First Clean Architecture (verygood.ventures) </a> </li><li> <a href="https://www.technetexperts.com/flutter-progressive-blur-fps-fix/" target="_blank" rel="noopener noreferrer"> The Progressive Blur Bottleneck in Flutter (technetexperts.com) </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
