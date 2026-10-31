@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-10-30T04:44:59.238Z",
+  "generatedAt": "2026-10-31T04:46:01.477Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,106 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-10-31-claude-code",
+      "date": "2026-10-31",
+      "topic": "Claude Code",
+      "title": "10/31のClaude Code — v2.1.314が『作業ディレクトリ外への書き込み』を全モードで拒否、サンドボックス/Hook強制の穴も塞ぐ",
+      "lede": "最新はv2.1.314(10/30)。blockWritesOutsideWorkingDirectoriesがbypassPermissionsでも外部書き込みを拒否。resume/continueのworktreeやMonitorのBashにも保護が及ぶ。あわせてS-1と企業向けROIツールも読む。",
+      "articleHtml": "<p><strong>背景・なぜ今これか</strong>。10/31(JST)時点でClaude Codeの最新は <strong>v2.1.314</strong>(10/30公開)で、10/31付の新規リリースは確認できない(v2.1.313はnpm未公開のため312の次が314、変更点は計119件)。派手な新機能より<strong>『見ていなくても安全に、長く走らせる』</strong>ための地固めが続く局面で、毎日無人で定期タスクを回す自分の運用には、この地味な一手こそ効いてくる。</p>\n<p><strong>何が新しい/重要か</strong>。目玉は権限設定 <code>permissions.blockWritesOutsideWorkingDirectories</code> だ。有効化すると Write/Edit/NotebookEdit が<strong>作業ディレクトリ</strong>(起動ディレクトリ・<code>--add-dir</code>追加・<code>additionalDirectories</code>)の外への書き込みを<strong>全権限モードで拒否</strong>する——<code>bypassPermissions</code>(全許可モード)であっても拒否される点が肝で、これまで「全許可＝何でも書ける」だった前提が覆る。あわせてサンドボックス/Hook強制の穴も修正され、<code>claude -p --resume</code>/<code>--continue</code> で入った worktree にもサンドボックス保護が及び、MonitorツールがBashを起動する際にも<strong>Bash一致Hookが発火</strong>する(ブロック・確認は可能、承認・書き換えは不可)。</p>\n<figure class='fig'><svg viewBox='0 0 600 206' xmlns='http://www.w3.org/2000/svg'><text x='300' y='20' text-anchor='middle' font-size='13' font-weight='bold' fill='#334155'>blockWritesOutsideWorkingDirectories ＝ 全モードで効く書き込み境界</text><rect x='18' y='36' width='300' height='150' rx='10' fill='#ecfdf5' stroke='#22c55e' stroke-width='2'/><text x='168' y='58' text-anchor='middle' font-size='12' font-weight='bold' fill='#15803d'>作業ディレクトリ(内側)</text><text x='34' y='82' font-size='11' fill='#166534'>起動dir / --add-dir / additionalDirectories</text><text x='34' y='108' font-size='11' fill='#166534'>Write ・ Edit ・ NotebookEdit</text><text x='34' y='150' font-size='13' font-weight='bold' fill='#15803d'>→ 許可（従来どおり）</text><rect x='330' y='36' width='252' height='150' rx='10' fill='#fef2f2' stroke='#ef4444' stroke-width='2'/><text x='456' y='58' text-anchor='middle' font-size='12' font-weight='bold' fill='#b91c1c'>外側への書き込み</text><text x='346' y='82' font-size='11' fill='#7f1d1d'>default / acceptEdits</text><text x='346' y='104' font-size='11' fill='#7f1d1d'>bypassPermissions でも…</text><text x='346' y='150' font-size='13' font-weight='bold' fill='#b91c1c'>→ 全部ブロック</text></svg><figcaption>図1：『全許可モードでも外は書けない』——境界を権限モードから切り離したのがv2.1.314の核</figcaption></figure>\n<p><strong>運用上の落とし穴</strong>も同梱された。破壊的変更として <code>claude -p</code> が起動失敗時に、従来の無言 exit 0 ではなく<strong>エラー表示＋exit code 1</strong>で終わるようになった(CIで握り潰していた箇所が顕在化し得る)。<code>--setting-sources</code>で除外した設定が部分的に適用される不具合は解消。さらにCowork(クラウド)自動モードでは、MCPツール呼び出しに対する<strong>Hookのallowが『回答なし』扱い</strong>になり、分類器か確認プロンプトが判断する——無人運転でHookのallowに依存していた設計は見直しが要る。他にVS Code/Desktopでの<strong>200K超会話のアイドル自動圧縮</strong>、ゲートウェイのIdPグループ・ルーティング(Bedrockに一致テキストを記録しない<code>guardrail_trace</code>)も追加された。</p>\n<p><strong>自分が試すなら</strong>、無人ルーチン用の設定に <code>blockWritesOutsideWorkingDirectories</code> を有効化し、出力先を作業ディレクトリ配下に揃える(この記事のように connected folder 配下へ書く運用はそのまま通る)。Cowork自動モードのHook allow依存を棚卸しし、本当に止めたい破壊的操作だけを deny/ask に寄せる。<code>claude -p</code> のexit code変更に合わせてCIの失敗検知も見直す。</p>\n<p><strong>ひとこと</strong>。ニュース面では、Anthropicが企業向けに『AI支出が何を生んだか』を可視化するレポートツール群を公開(10/28、Jellyfish調査でClaude系ツールが提出コード変更の約1/3を生成)、10/26にはSECへS-1を提出した(Claude Code利用の上位5%企業は月間支出が平均の約20倍、とIPO申請書に記載)。足元の『安全に長く走らせる』地固めと、事業としての拡大が同時に進む——ただし自己申告・報道ベースの数値は外部監査がない点は割り引いて読む。</p>",
+      "sources": [
+        {
+          "title": "Claude Code v2.1.314 updates (classmethod/DevelopersIO)",
+          "url": "https://dev.classmethod.jp/en/articles/20261030-cc-updates-v2-1-314/"
+        },
+        {
+          "title": "Claude Code changelog (gradually.ai)",
+          "url": "https://www.gradually.ai/en/changelogs/claude-code/"
+        },
+        {
+          "title": "Claude Code パワーユーザー Tips (Anthropic Support)",
+          "url": "https://support.claude.com/en/articles/14554000-claude-code-power-user-tips"
+        },
+        {
+          "title": "Anthropic's IPO filing (TechCrunch)",
+          "url": "https://techcrunch.com/2026/10/26/anthropics-ipo-filing-reveals-its-strategy-for-keeping-enterprise-customers-hooked/"
+        }
+      ]
+    },
+    {
+      "id": "2026-10-31-nextjs",
+      "date": "2026-10-31",
+      "topic": "Next.js",
+      "title": "10/31のNext.js — 依存ゼロのSVG+CSSで『液体ゲージ』、水位=値・波=生命感を継ぎ目なく両立する",
+      "lede": "バッテリーや達成率を水面のゆらぎで見せる液体ゲージ。水位(縦height)と波(横translateX)を分離合成し、width:200%+translateX(-50%)で継ぎ目のないループを作る。App Routerでは原則RSCのまま出せる。",
+      "articleHtml": "<p><strong>なぜ今か</strong>。容器の中で水位が上下し、水面がゆらゆら波打って進捗・残量・達成率を表す『液体ゲージ』。棒や円リングより“生きている”印象が強く、KPIダッシュボード・バッテリー/ストレージ残量・ロード画面で定番化している。D3時代の名作 Liquid Fill Gauge や echarts-liquidfill が原型だが、いまは<strong>依存ゼロの SVG + CSS</strong> で軽量・GPUフレンドリー・アクセシブルに作れるのが要点だ。</p>\n<p><strong>何が重要か＝2つの動きを分離する</strong>。液体ゲージは<strong>水位(縦)</strong>と<strong>波の横流れ(横)</strong>を別々に表現して合成すると破綻しない。水位は水本体の高さ＝値で、<code>height:calc(var(--level)*100%)</code> をCSS変数で与え <code>transition:height</code> で滑らかに動かす。波面は水の上端に薄い波パーツを乗せ <code>transform:translateX</code> で横に流す。2枚を逆方向・異速度で重ねると奥行き(パララックス)が出る。波形はサイン波を二次ベジェで近似でき、<code>M0 9 Q30 15 60 9 T120 9 T180 9 T240 9 L240 18 L0 18 Z</code> のように <code>Q</code> で山をひとつ描き以降 <code>T</code>(直前制御点の点対称反射)を連ねるだけで山→谷→山…が続く。</p>\n<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg'><text x='300' y='20' text-anchor='middle' font-size='13' font-weight='bold' fill='#334155'>継ぎ目なしループの核：width:200% を translateX(-50%)=1タイル分ずらす</text><rect x='40' y='40' width='240' height='110' rx='6' fill='#eff6ff' stroke='#3b82f6' stroke-width='1.5'/><text x='160' y='36' text-anchor='middle' font-size='10' fill='#64748b'>容器幅（表示される窓）</text><rect x='40' y='40' width='480' height='110' fill='none' stroke='#94a3b8' stroke-width='1' stroke-dasharray='4 3'/><path d='M40 95 Q70 72 100 95 T160 95 T220 95 T280 95 T340 95 T400 95 T460 95 T520 95' fill='none' stroke='#3b82f6' stroke-width='2'/><text x='400' y='36' text-anchor='middle' font-size='10' fill='#64748b'>svg幅 200%（2タイル＝周期2つ分）</text><path d='M165 165 L285 165' stroke='#ef4444' stroke-width='1.5' marker-end='url(#a)'/><defs><marker id='a' markerWidth='8' markerHeight='8' refX='6' refY='3' orient='auto'><path d='M0 0 L6 3 L0 6 Z' fill='#ef4444'/></marker></defs><text x='300' y='182' text-anchor='middle' font-size='11' fill='#b91c1c'>translateX(-50%) ＝ ちょうど容器1個分 → 移動後の波形が元と完全一致＝飛ばない</text></svg><figcaption>図1：移動量が半端だと1周ごとに“飛ぶ”——-50%(＝1タイル)ぴったりが継ぎ目を消す最大の勘所</figcaption></figure>\n<p><strong>仕組みと落とし穴</strong>。継ぎ目なしループは <code>svg{width:200%}</code>(容器2個分)に波を2タイル入れ、横移動を <code>translateX(-50%)</code>＝ちょうど1タイル＝容器1個分にすると、移動後の波形が元と完全一致して<strong>継ぎ目が出ない</strong>(図1)。移動量が半端だと1周ごとに一瞬“飛ぶ”のが最大の罠だ。他の罠も多い:(1)同一ページに複数置くと SVG内の <code>clipPath</code>/<code>gradient</code>/<code>filter</code> の<strong>id衝突</strong>で描画が壊れる→Reactは <code>useId()</code> で一意化。(2)<code>mask</code> は実装差があるので <code>-webkit-mask</code> 併記。(3)<code>@property --level</code> を <code>&lt;number&gt;</code> で登録すると変数そのものを滑らかに補間できる(未登録はカクつく)。(4)ボックスサイズを先に確保しCLSを防ぐ。</p>\n<p><strong>App Routerでの使いどころ</strong>。波の横流れは純CSSキーフレーム、水位はCSS変数(インラインstyle)で書けるので、値がサーバ確定(集計値・残量)なら<strong>RSCのまま</strong>出せる＝クライアントJSゼロでINP/LCPに有利。<code>role=\"meter\"</code>(静的な測定値)か <code>role=\"progressbar\"</code>(時間で進む)を使い分け、<code>aria-valuenow/min/max</code> と名前を付ける。0→目標値カウントアップやリアルタイム更新だけ小さな <code>'use client'</code> 島に隔離し、初期HTMLは最終水位を描いて hydration mismatch を避ける。<strong>自分が試すなら</strong>、まずRSCで静的な残量ゲージを一つ出し、<code>@property --level</code> とid一意化を入れてから、カウントアップ島を足す。</p>\n<p><strong>注意点</strong>。毎フレーム path の <code>d</code> をJSで書き換えると毎フレーム レイアウト/ペイントが走るので厳禁——動かすのは <code>transform:translateX</code> と <code>height</code> だけに留める。<code>prefers-reduced-motion:reduce</code> では横流れを止めて静かな水面にし、値は数字表示と <code>aria-valuenow</code> で伝える。<strong>ひとこと</strong>：液体ゲージは“部品は水＋波の2枚、違いはクリップの形だけ”で円・バッテリー・文字マスクへ量産できる。装飾の美しさの割に実装コストが低い、費用対効果の高い表現だ。</p>",
+      "sources": [
+        {
+          "title": "MDN: ARIA meter role",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/meter_role"
+        },
+        {
+          "title": "MDN: ARIA progressbar role",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/progressbar_role"
+        },
+        {
+          "title": "D3 Liquid Fill Gauge (Curtis Bratton)",
+          "url": "https://gist.github.com/brattonc/5e5ce9beee483220e2f6"
+        },
+        {
+          "title": "CSS @property (MDN)",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/@property"
+        }
+      ]
+    },
+    {
+      "id": "2026-10-31-flutter",
+      "date": "2026-10-31",
+      "topic": "Flutter",
+      "title": "10/31のFlutter — Androidの既定ページ遷移がPredictiveBackに。予測型バックの覗き見とPopScope移行、テスト尺破壊への備え",
+      "lede": "stable 3.47.9 / beta 3.50.0-0.3.pre(10/29)。Androidの既定遷移がPredictiveBackPageTransitionsBuilderへ変わり遷移が300→450msに。WillPopScopeはPopScopeへ。あわせてVGVのFeature-First Clean ArchitectureとBackdropFilterの重さ対策も押さえる。",
+      "articleHtml": "<p><strong>背景</strong>。現況は stable <strong>3.47.9 / Dart 3.13.7</strong>、beta <strong>3.50.0-0.3.pre / Dart 3.14.0</strong>(ともに10/29更新)。3.50-candidate.0(10/6 cutoff済)の上で、11月のstable昇格前に承認済みcherry-pickを重ねる<strong>最終安定化フェーズ</strong>で、昇格直前の変更は新機能でなく回帰修正が主だ。11月の3.50確定事項(Web WasmGC既定・Android Impeller一本化・Wasm遅延ロードstable・Android17 day-zero・<code>material_ui</code>/<code>cupertino_ui</code>のdeprecation)は不変。本番は<strong>3.47.9にpin</strong>しつつ別CIでbeta 3.50系を緑化しておくのが定石だ。</p>\n<p><strong>何が重要か＝既定の戻る体験が変わった</strong>。Androidの既定ページ遷移が <code>ZoomPageTransitionsBuilder</code> から <strong><code>PredictiveBackPageTransitionsBuilder</code></strong> に変更済み(stable 3.38.0から)。予測型バック(predictive back)は、戻るジェスチャの<strong>途中で前の画面/アプリを“覗き見”</strong>し、そのまま離せば遷移確定・指を戻せばキャンセルして元に復帰する Android 機能で、遷移がジェスチャの進捗に連動して動く。有効化は <code>AndroidManifest.xml</code> の <code>&lt;application&gt;</code> に <code>android:enableOnBackInvokedCallback=\"true\"</code>(Android13は要opt-in・14+は既定で有効)。ジェスチャが無い通常遷移では <code>FadeForwardsPageTransitionsBuilder</code> にフォールバックする。</p>\n<figure class='fig'><svg viewBox='0 0 600 196' xmlns='http://www.w3.org/2000/svg'><text x='300' y='20' text-anchor='middle' font-size='13' font-weight='bold' fill='#334155'>予測型バック：ジェスチャ進捗に連動し、離すかキャンセルできる</text><rect x='20' y='40' width='160' height='120' rx='8' fill='#eef2ff' stroke='#6366f1' stroke-width='1.5'/><text x='100' y='64' text-anchor='middle' font-size='12' font-weight='bold' fill='#4338ca'>1. ジェスチャ開始</text><text x='100' y='92' text-anchor='middle' font-size='11' fill='#3730a3'>現画面が縮み</text><text x='100' y='110' text-anchor='middle' font-size='11' fill='#3730a3'>背後の前画面を</text><text x='100' y='128' text-anchor='middle' font-size='11' fill='#3730a3'>“覗き見”</text><rect x='220' y='40' width='160' height='120' rx='8' fill='#ecfdf5' stroke='#22c55e' stroke-width='1.5'/><text x='300' y='64' text-anchor='middle' font-size='12' font-weight='bold' fill='#15803d'>2a. 離す</text><text x='300' y='92' text-anchor='middle' font-size='11' fill='#166534'>遷移を確定</text><text x='300' y='110' text-anchor='middle' font-size='11' fill='#166534'>前画面へpop</text><text x='300' y='136' text-anchor='middle' font-size='11' fill='#166534'>(300→450msへ増加)</text><rect x='420' y='40' width='160' height='120' rx='8' fill='#fef2f2' stroke='#f87171' stroke-width='1.5'/><text x='500' y='64' text-anchor='middle' font-size='12' font-weight='bold' fill='#b91c1c'>2b. キャンセル</text><text x='500' y='92' text-anchor='middle' font-size='11' fill='#7f1d1d'>指を戻す</text><text x='500' y='110' text-anchor='middle' font-size='11' fill='#7f1d1d'>元の画面へ復帰</text><path d='M180 100 L218 100' stroke='#94a3b8' stroke-width='1.5' marker-end='url(#b)'/><path d='M180 118 Q200 150 418 130' fill='none' stroke='#94a3b8' stroke-width='1.5' marker-end='url(#b)'/><defs><marker id='b' markerWidth='8' markerHeight='8' refX='6' refY='3' orient='auto'><path d='M0 0 L6 3 L0 6 Z' fill='#94a3b8'/></marker></defs></svg><figcaption>図1：遷移がジェスチャ進捗に連動。離せば確定・戻せばキャンセルという“途中で引き返せる”戻る体験</figcaption></figure>\n<p><strong>仕組みと落とし穴</strong>。既定遷移が変わった結果、<strong>遷移時間が 300ms → 450ms に増加</strong>した。<code>tester.pump(const Duration(milliseconds: 300))</code> のように尺をハードコードしたwidgetテストが壊れ得る——対策は <code>TransitionDurationObserver</code> を <code>navigatorObservers</code> に挿し、<code>observer.pumpPastTransition(tester)</code> や <code>observer.transitionDuration ~/ 2</code> で<strong>尺非依存</strong>に書き換えること。戻る制御は <code>WillPopScope</code> が deprecated で <strong><code>PopScope</code></strong> へ移行する:<code>canPop: false</code> ＋ <code>onPopInvokedWithResult: (bool didPop, Object? result)</code> で確認ダイアログを挟むが、コールバックは<strong>成功pop後にも発火する</strong>ので <code>if (didPop) return;</code> ガードが必須、ダイアログ待ちの間にwidgetが破棄され得るので <code>context.mounted</code> チェックも要る。旧挙動に固定したければ <code>pageTransitionsTheme</code> で <code>ZoomPageTransitionsBuilder()</code> を明示指定する(ただし予測型バックは使えなくなる)。</p>\n<p><strong>この日の他の収穫</strong>。アーキテクチャは Very Good Ventures の <strong>Feature-First Clean Architecture</strong> が示唆に富む:機能ごとに <code>&lt;feature&gt;_domain</code>/<code>_data</code>/<code>_presentation</code> の3パッケージに分け、<strong>層をパッケージ境界にする</strong>ことで import違反を<strong>コンパイル時</strong>に弾く(domainは純Dart・presentationはdataに依存不可、機能跨ぎはdomainレベルだけ、Dart workspacesがリンク)。機能同士はルートをimportせず、Module widgetが型付きコールバックを公開しapp層が結線する。パフォーマンスでは <code>BackdropFilter</code> のぼかしが重い理由(背後キャンバスをキャプチャ→フィルタ→合成に <code>saveLayer</code> のオフスクリーンバッファが要り毎フレーム確保が走る)と、<strong>段階ぼかし</strong>(帯に分け <code>ClipRect</code>＋sigmaをindexで増やす、推奨8〜12ステップ・maxSigma15前後)という回避策が実務的だ。</p>\n<p><strong>自分が試すなら</strong>、まず既存アプリで予測型バックを有効化し、尺ハードコードのテストを <code>TransitionDurationObserver</code> ベースへ直す。<code>WillPopScope</code> が残っていれば <code>PopScope</code> へ機械的に移行し、<code>didPop</code> ガードと <code>context.mounted</code> を入れる。<strong>注意点</strong>は、段階ぼかしの <code>ClipRect</code> は“どこに描くか”を絞るだけで各帯のフィルタ処理量自体は必ずしも減らないこと、blur系は Impeller と Skia でキャッシュ挙動が変わるので必ず <code>--profile</code>＋DevToolsで実測してから詰めること。</p>",
+      "sources": [
+        {
+          "title": "Default Android page transition (docs.flutter.dev)",
+          "url": "https://docs.flutter.dev/release/breaking-changes/default-android-page-transition"
+        },
+        {
+          "title": "Add the predictive back gesture (docs.flutter.dev)",
+          "url": "https://docs.flutter.dev/platform-integration/android/predictive-back"
+        },
+        {
+          "title": "Feature-First Clean Architecture (verygood.ventures)",
+          "url": "https://verygood.ventures/blog/feature-first-clean-architecture"
+        },
+        {
+          "title": "The Progressive Blur Bottleneck in Flutter (technetexperts.com)",
+          "url": "https://www.technetexperts.com/flutter-progressive-blur-fps-fix/"
+        }
+      ]
+    },
+    {
+      "id": "2026-10-31-github-trending",
+      "date": "2026-10-31",
+      "topic": "GitHub Trending",
+      "title": "10/31の話題リポジトリ — スマホ内で完結するAIエージェントMika・法律をgit履歴にするglobal-law・エージェントのコストを抑えるTokenEconomizer",
+      "lede": "AI飽和の当日トレンドを貫くのは“地に足のついた3方向”。端末内で完結するオンデバイスAI、AIを離れた発想の妙、そしてAI利用そのもののコストを削る——派手さより実用と意外性で選んだ3本。",
+      "articleHtml": "<p>本日の急上昇もAI一色の飽和局面だが、そこから選んだ3本は<strong>『端末内で完結するAI』『AIを離れた発想の妙』『AI利用のコストを削る』</strong>という異なる地面を踏む。それぞれ「どんな課題を解こうとしているか」と「何ができるか」を見ていく。</p>\n<figure class='fig'><svg viewBox='0 0 600 212' xmlns='http://www.w3.org/2000/svg'><text x='300' y='20' text-anchor='middle' font-size='13' font-weight='bold' fill='#334155'>今日の3本：解きたい課題 → 提供する機能</text><g font-size='11'><rect x='16' y='34' width='182' height='156' rx='8' fill='#f0fdf4' stroke='#22c55e' stroke-width='1.5'/><text x='107' y='54' text-anchor='middle' font-weight='bold' fill='#15803d'>wangzan101/Mika</text><text x='107' y='70' text-anchor='middle' fill='#166534'>Kotlin ⭐約1.2k</text><text x='26' y='96' fill='#334155'>課題: クラウドに出さず</text><text x='26' y='110' fill='#334155'>スマホで自動化したい</text><text x='26' y='140' fill='#15803d'>機能: 端末内で完結する</text><text x='26' y='154' fill='#15803d'>AIがApp操作/Web閲覧を</text><text x='26' y='168' fill='#15803d'>代行(オンデバイス)</text><rect x='208' y='34' width='182' height='156' rx='8' fill='#eff6ff' stroke='#3b82f6' stroke-width='1.5'/><text x='299' y='54' text-anchor='middle' font-weight='bold' fill='#1d4ed8'>lexifina/global-law</text><text x='299' y='70' text-anchor='middle' fill='#1e40af'>HTML ⭐約901</text><text x='218' y='96' fill='#334155'>課題: 法の変遷を体系</text><text x='218' y='110' fill='#334155'>的に辿れない</text><text x='218' y='140' fill='#1d4ed8'>機能: 各国法=サブモ</text><text x='218' y='154' fill='#1d4ed8'>ジュール, 1コミット=</text><text x='218' y='168' fill='#1d4ed8'>1法律の発効で版管理</text><rect x='400' y='34' width='184' height='156' rx='8' fill='#faf5ff' stroke='#a855f7' stroke-width='1.5'/><text x='492' y='54' text-anchor='middle' font-weight='bold' fill='#7e22ce'>ms/TokenEconomizer</text><text x='492' y='70' text-anchor='middle' fill='#6b21a8'>Python ⭐約1.9k</text><text x='410' y='96' fill='#334155'>課題: エージェントの</text><text x='410' y='110' fill='#334155'>トークン費が膨らむ</text><text x='410' y='140' fill='#7e22ce'>機能: 中身に触れず</text><text x='410' y='154' fill='#7e22ce'>経験駆動で無駄な</text><text x='410' y='168' fill='#7e22ce'>消費を抑制(公式)</text></g></svg><figcaption>図1：3本とも“AIの熱狂”への別々の応答——手元で完結／AIを離れる／コストを削る</figcaption></figure>\n<h4>wangzan101/Mika（Kotlin・⭐約1.2k）</h4>\n<p><strong>解決したい課題</strong>は「スマホの操作を自動化したいが、クラウドに個人データを出したくない」こと。<strong>提供する機能</strong>は、Android端末上で完結し、アプリ操作やWeb閲覧を代行してタスクを完遂する<strong>オンデバイスAIアシスタント</strong>(Kotlin・Apache-2.0)。データを端末外に出さないプライバシー設計が売りだ。<strong>急上昇の理由</strong>は、created 2026-10-29＝公開わずか約2日で実測約1,173★/forks192(日平均約580＝率高位)まで伸び、trendshift日次#22に載った当日モメンタム最上位級の新星であること。『スマホ内で完結するエージェントがApp/Webを横断操作する』というプライバシー×ローカル実行×モバイル自動化の旬テーマが拡散を押した。</p>\n<h4>lexifina/global-law（HTML・⭐約901）</h4>\n<p><strong>解決したい課題</strong>は「各国の法律の変遷を、統一された形で体系的に辿る手段がない」こと。<strong>提供する機能</strong>は、世界各国の法律を<strong>1つのgit履歴</strong>として表現するプロジェクトで、各国の法体系をサブモジュール、<strong>1つのコミットを『1つの法律の発効』</strong>として記録し、法の移り変わりを版管理で追えるようにする。<strong>急上昇の理由</strong>は、『国家の法律をgitのコミット履歴として扱う』発想の意外性と、AI一色の飽和局面で希少な<strong>非AI・法/公共ドメイン</strong>の題材性だ。公開約3日で実測約901★/forks71(日平均約300)、trendshift日次#10。ライセンスは NOASSERTION なので利用時は要確認。</p>\n<h4>microsoft/TokenEconomizer（Python・⭐約1.9k）</h4>\n<p><strong>解決したい課題</strong>は「コーディングエージェントのトークン消費(＝コスト)が読めず膨らむ」こと。<strong>提供する機能</strong>は、モデルの中身に手を入れず<strong>ブラックボックスのまま</strong>、過去の実行経験を手がかりに無駄なトークン消費を抑えるMicrosoft製のコスト制御ツール(Python・Apache-2.0)。<strong>急上昇の理由</strong>は、Microsoft公式かつ実体十分(created 2026-10-13＝約18日で実測約1,902★/forks115、trendshift日次#5)で、毎日多数のClaude定期タスクを回す運用に<strong>『経験駆動のブラックボックス・コスト制御』</strong>が直撃するから。文脈側を縮める token-optimizer 系とは別角度で、エージェント実行のコストを抑える補完関係にある。Apache-2.0で社内利用・組み込みも可。</p>\n<p><strong>自分が試すなら</strong>——まず TokenEconomizer を日々のClaude定期タスクに噛ませて“ブラックボックスでどれだけトークンが減るか”を実測し、効けば本採用する。Mika はオンデバイスAIの手触りを確かめる偵察用に、global-law は“バージョン管理を公共データに適用する”発想のストックとして眺めるのが現実的だ。いずれも派手なAIプロダクトではないが、<strong>熱狂の反作用として現れた実用・堅実の芽</strong>として記録しておきたい。</p>",
+      "sources": [
+        {
+          "title": "wangzan101/Mika",
+          "url": "https://github.com/wangzan101/Mika"
+        },
+        {
+          "title": "lexifina/global-law",
+          "url": "https://github.com/lexifina/global-law"
+        },
+        {
+          "title": "microsoft/TokenEconomizer",
+          "url": "https://github.com/microsoft/TokenEconomizer"
+        }
+      ]
+    },
     {
       "id": "2026-10-30-claude-code",
       "date": "2026-10-30",
