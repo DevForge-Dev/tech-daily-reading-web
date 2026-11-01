@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-10-31T04:46:01.477Z",
+  "generatedAt": "2026-11-01T04:49:47.152Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,102 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-11-01-claude-code",
+      "date": "2026-11-01",
+      "topic": "Claude Code",
+      "title": "11/1のClaude Code — サブエージェントの効率を一括指定するCLAUDE_CODE_SUBAGENT_EFFORT、Opus 4.8 Fast Modeを11/30廃止、v2.1.316のセキュリティ修正",
+      "lede": "最新はv2.1.316(10/31)。サブエージェントのeffortをセッションから継承せず一括指定する新環境変数、Opus 4.8 Fast Modeの11/30削除(Opus 5.5へ移行推奨)、--restrictedの作業ディレクトリ外アップロードの穴修正まで。",
+      "articleHtml": "<p><strong>背景・なぜ今これか</strong>。11/1(JST)時点のClaude Code最新は <strong>v2.1.316</strong>(10/31公開。v2.1.315は10/30にnpm公開のみでCHANGELOG記載なし)。派手な新機能より<strong>『無人で長く走らせる運用を、効率とコストの両面で締める』</strong>方向の地固めが続く局面で、毎日定期タスクを回す自分の運用にこそ効く更新だ。</p>\n<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg'><text x='300' y='20' text-anchor='middle' font-size='13' font-weight='bold' fill='#334155'>サブエージェント effort の優先順位（上ほど強い）</text><g font-size='11.5'><rect x='40' y='34' width='520' height='26' rx='6' fill='#eef2ff' stroke='#6366f1' stroke-width='1.2'/><text x='52' y='51' fill='#3730a3'>1. CLAUDE_CODE_EFFORT_LEVEL（最優先・全体を上書き）</text><rect x='40' y='66' width='520' height='26' rx='6' fill='#eef2ff' stroke='#6366f1' stroke-width='1.2'/><text x='52' y='83' fill='#3730a3'>2. 呼び出し時の effort 引数</text><rect x='40' y='98' width='520' height='26' rx='6' fill='#eef2ff' stroke='#6366f1' stroke-width='1.2'/><text x='52' y='115' fill='#3730a3'>3. エージェント定義内の effort</text><rect x='40' y='130' width='520' height='26' rx='6' fill='#fef3c7' stroke='#f59e0b' stroke-width='1.8'/><text x='52' y='147' font-weight='bold' fill='#92400e'>4. CLAUDE_CODE_SUBAGENT_EFFORT（★今回の新規）</text><rect x='40' y='162' width='520' height='26' rx='6' fill='#f1f5f9' stroke='#94a3b8' stroke-width='1.2'/><text x='52' y='179' fill='#475569'>5. セッションの effort（既定値）</text></g></svg><figcaption>図1：メインは高 effort・サブは低 effort——4をlowに置くだけでサブだけ省コストにできる</figcaption></figure>\n<p><strong>何が新しい/重要か</strong>。目玉は新環境変数 <code>CLAUDE_CODE_SUBAGENT_EFFORT</code>。より具体的な指定が無いとき、サブエージェントがセッションの effort を<strong>継承せず</strong>この値で動く——<strong>メインは高 effort・サブは低 effort</strong>という使い分けができる。効率の優先順位は上図の通り（<code>CLAUDE_CODE_EFFORT_LEVEL</code> ＞ 呼び出し時 <code>effort</code> ＞ 定義内 <code>effort</code> ＞ <code>CLAUDE_CODE_SUBAGENT_EFFORT</code> ＞ セッション effort）。もう一つの重要点は <strong>Opus 4.8 Fast Mode の廃止</strong>で、10/30付で非推奨・<strong>11/30に削除</strong>。以後 Fast Mode リクエストはエラーを返し、通常 Opus 4.8 へのフォールバックも無い——速度を保ちたいなら Opus 5.5 への移行が推奨される。</p>\n<p><strong>仕組み・そのほかの追加</strong>。<code>ultrathink</code> キーワードを無効化する <code>CLAUDE_CODE_DISABLE_ULTRATHINK</code>、相互認証のクロス証明書を保持する <code>CLAUDE_CODE_DISABLE_LOOPED_CROSS_CERT_DROP</code>、Claude apps ゲートウェイのプール予算 <code>pooled_budget</code>・全一致ポリシーを重ねる <code>managed.policy_mode: layered</code>・Bedrock 向け <code>guardrail.input_tagging</code> を追加。セキュリティ面では <code>--restricted</code> セッションで Read 許可が及ぶと<strong>作業ディレクトリ外のファイルをアップロードできた穴</strong>を修正し、ゲートウェイがリクエスト内の全モデルを検査、PowerShell フックのブロック漏れも塞いだ。</p>\n<p><strong>実務での使いどころ・落とし穴</strong>。自分の無人運用なら <code>CLAUDE_CODE_SUBAGENT_EFFORT=low</code> を既定に置き、重い判断を要するメインだけ高 effort にすれば<strong>トークンコストを素直に削れる</strong>。破壊的変更として、<strong>Team/Enterprise ではサーバ管理設定が承認プロンプト無しで適用</strong>されるようになった(検証失敗の保存済みコピーは拒否)点は要注意——管理者が設定を変えると自分の端末にも黙って反映される。Vertex/Bedrock では最新モデル未提供時にセッション途中でエラーにせず旧モデルへフォールバックするようになり、長時間バッチが途中で死ににくくなった。</p>\n<p><strong>ひとことまとめ</strong>。v2.1.316 は「サブエージェントの effort を個別に絞ってコスト最適化」「Fast Mode は 11/30 で終わり、速度は Opus 5.5 へ」「restricted の穴塞ぎ」の3点を押さえれば十分。無人運用者ほど <code>CLAUDE_CODE_SUBAGENT_EFFORT</code> と管理設定の無確認適用は今すぐ把握しておきたい。</p>",
+      "sources": [
+        {
+          "title": "Claude Code v2.1.316 updates (classmethod/DevelopersIO)",
+          "url": "https://dev.classmethod.jp/en/articles/20261031-cc-updates-v2-1-316/"
+        },
+        {
+          "title": "Claude Code v2.1.311〜316 リリースノートまとめ (Qiita/石村直樹)",
+          "url": "https://qiita.com/NaokiIshimura/items/7bacddded498225b9e46"
+        },
+        {
+          "title": "Claude Code 上級ベストプラクティス (SmartScope)",
+          "url": "https://smartscope.blog/en/generative-ai/claude/claude-code-best-practices-advanced-2026/"
+        },
+        {
+          "title": "Claude Code サブエージェント実践ガイド (Tembo)",
+          "url": "https://tembo.io/blog/claude-code-subagents"
+        }
+      ]
+    },
+    {
+      "id": "2026-11-01-nextjs",
+      "date": "2026-11-01",
+      "topic": "Next.js",
+      "title": "11/1のNext.js — styled-componentsがメンテナンスモードへ。RSC時代の“ゼロランタイムCSS”(Panda/vanilla-extract/StyleX)への移行",
+      "lede": "styled-componentsが公式にメンテナンスモード入り。レンダリング時注入はRSCに乗らず、新規App Routerの既定はビルド時に静的CSSへコンパイルするゼロランタイム型へ。3者の違いと選定の勘所を図解。",
+      "articleHtml": "<p><strong>背景・なぜ今これか</strong>。2025年、<code>styled-components</code> が公式に<strong>メンテナンスモード</strong>(新機能停止・重大修正のみ)へ移行した。作者 Max Stoiber 自身が区切りを宣言。理由は単純で、<strong>React Server Components(RSC)とランタイム CSS-in-JS の相性が本質的に悪い</strong>こと。「styled-components が悪い」話ではなく、<strong>レンダリング時に JS でスタイルを生成・注入する方式そのものが Server Component モデルに乗らない</strong>構造問題で、App Router 新規の既定が「ランタイム型」から<strong>ビルド時に静的 CSS へコンパイルする“ゼロランタイム”型</strong>へ移る潮目として注目に値する。</p>\n<figure class='fig'><svg viewBox='0 0 600 216' xmlns='http://www.w3.org/2000/svg'><text x='300' y='20' text-anchor='middle' font-size='13' font-weight='bold' fill='#334155'>ランタイム型 vs ゼロランタイム型（RSC適合）</text><g font-size='11'><rect x='16' y='34' width='272' height='168' rx='8' fill='#fef2f2' stroke='#ef4444' stroke-width='1.5'/><text x='152' y='54' text-anchor='middle' font-weight='bold' fill='#b91c1c'>ランタイム型</text><text x='152' y='70' text-anchor='middle' fill='#991b1b'>styled-components / Emotion</text><text x='30' y='98' fill='#334155'>・レンダリング時に JS でスタイル注入</text><text x='30' y='120' fill='#334155'>・'use client' 境界＋レジストリ必須</text><text x='30' y='142' fill='#334155'>・ツリーがクライアント化</text><text x='30' y='176' fill='#b91c1c'>→ RSC の利点(サーバ完結)を失う</text><rect x='312' y='34' width='272' height='168' rx='8' fill='#f0fdf4' stroke='#22c55e' stroke-width='1.5'/><text x='448' y='54' text-anchor='middle' font-weight='bold' fill='#15803d'>ゼロランタイム型</text><text x='448' y='70' text-anchor='middle' fill='#166534'>Panda / vanilla-extract / StyleX</text><text x='326' y='98' fill='#334155'>・ビルド時に静的 CSS へコンパイル</text><text x='326' y='120' fill='#334155'>・provider も注入レイヤも不要</text><text x='326' y='142' fill='#334155'>・アトミック CSS でスタイル量が最小</text><text x='326' y='176' fill='#15803d'>→ RSC で素通し('use client'不要)</text></g></svg><figcaption>図1：ランタイム注入はRSCモデルに乗らず、ビルド時解決なら Server Component のまま使える</figcaption></figure>\n<p><strong>なぜ RSC で苦しいか</strong>。styled-components / Emotion は<strong>レンダリング中にスタイルを集約し DOM へ注入</strong>する——クライアント実行前提の振る舞いで、原則ランタイムを持たない Server Component では直接成立しない。App Router でランタイム型を使うには必ず <code>'use client'</code> 境界＋スタイルレジストリ＋SSR 統合層が要り、その瞬間ツリーはクライアント化して RSC の利点(サーバ完結・JS 送信量削減)を失いやすい。React 18 のストリーミング SSR とは FOUC やハイドレーション不整合のリスクもある。React 19 のネイティブ <code>&lt;style&gt;</code> は改善だが<strong>ランタイム CSS-in-JS を“RSC ネイティブ”にはしない</strong>。</p>\n<p><strong>ゼロランタイム3者の違い(落とし穴込み)</strong>。<strong>vanilla-extract</strong> は <code>*.css.ts</code> に書きビルド時に静的 CSS へ(型安全・ランタイム0、CSS Modules に型を足した感覚)。<strong>Panda CSS</strong> は <code>css()</code>/<code>cva()</code> の書き味で<strong>静的アトミック CSS</strong> を出力、<code>strictTokens</code> で生 hex をコンパイルエラーにでき<strong>デザインシステムからの逸脱を型で止められる</strong>(ただし <code>[123px]</code> の角括弧任意値は型チェックを素通り)。<strong>StyleX</strong>(Meta 製)は <code>stylex.create()</code>＋<code>stylex.props()</code> で<strong>マージ順＝呼び出し箇所で勝敗が決まる</strong>決定的合成が売りで、大規模のスタイル漏れ対策に向く。3者共通で<strong>プロバイダもレンダリング時注入も不要だから RSC で動く</strong>。共通の落とし穴は<strong>実行時にしか決まらない動的値はアトミッククラスにできない</strong>こと(CSS 変数や <code>data-*</code> で逃がす)。</p>\n<figure class='fig'><pre class='mermaid'>flowchart TD\n  A[\"新規 App Router / RSC 中心?\"] -->|はい| B[\"何を優先する?\"]\n  A -->|いいえ・既存が安定| E[\"ランタイム型のまま据え置き\"]\n  B --> C[\"トークン逸脱を型で止める: Panda CSS\"]\n  B --> D[\"大規模のスタイル漏れを封じる: StyleX\"]\n  B --> F[\"素のCSSに型だけ欲しい: vanilla-extract\"]\n  B --> G[\"学習コストを払いたくない: CSS Modules / Tailwind\"]</pre><figcaption>図2：2026年のCSS戦略の選び方——移行は具体的な理由がある時だけ段階的に</figcaption></figure>\n<p><strong>実務の指針・ひとことまとめ</strong>。既存の安定コードや<strong>実行時データでのテーマ切替が本質</strong>なアプリはランタイム型のままで問題ない。移行は「RSC 採用」「計測可能なボトルネック」「大規模リライト中」など<strong>具体的な理由がある時だけ</strong>段階的に進める。新規の App Router 中心なら、トークン逸脱を型で止めたいなら Panda、大規模のスタイル漏れを封じたいなら StyleX、素の CSS に型だけ欲しいなら vanilla-extract、学習コストを避けたいなら CSS Modules か Tailwind——が 2026 年の現実的な勘所だ。</p>",
+      "sources": [
+        {
+          "title": "How to use CSS-in-JS libraries (Next.js 公式)",
+          "url": "https://nextjs.org/docs/app/guides/css-in-js"
+        },
+        {
+          "title": "Max Stoiber: styled-components メンテナンスモード宣言 (X)",
+          "url": "https://x.com/mxstbr/status/1908201327811059926"
+        },
+        {
+          "title": "The state of CSS-in-JS in 2026 (OpenReplay)",
+          "url": "https://blog.openreplay.com/state-css-in-js-2026/"
+        },
+        {
+          "title": "Panda CSS vs StyleX (OpenReplay)",
+          "url": "https://blog.openreplay.com/panda-css-vs-stylex/"
+        }
+      ]
+    },
+    {
+      "id": "2026-11-01-flutter",
+      "date": "2026-11-01",
+      "topic": "Flutter",
+      "title": "11/1のFlutter — Flutter 3.50 Web WasmGC既定を実測。skwasm/CanvasKit自動選択・対応ブラウザ行列・cross-origin isolationの罠",
+      "lede": "stable 3.47.9 / beta 3.50.0-0.3.pre(10/29)。--wasmはdart2wasm+skwasmとdart2js+CanvasKitを同時出力し全ブラウザで動く。Chromium=既定Wasm、Safari/FirefoxはallowList明示。COOP/COEP未設定だと速くならない。",
+      "articleHtml": "<p><strong>背景・なぜ今これか</strong>。現況は stable <strong>3.47.9 / Dart 3.13.7</strong>、beta <strong>3.50.0-0.3.pre / Dart 3.14.0</strong>(ともに 10/29)。11月 stable の 3.50 はまだ未公開だが、目玉の <strong>Web WasmGC 既定</strong>を昇格前に beta で実測できる段階だ。今回は概念でなく<strong>ビルド/配信の具体手順</strong>を押さえる。</p>\n<figure class='fig'><svg viewBox='0 0 600 196' xmlns='http://www.w3.org/2000/svg'><text x='300' y='20' text-anchor='middle' font-size='13' font-weight='bold' fill='#334155'>Flutter 3.50 Web Wasm 対応ブラウザ行列</text><g font-size='11'><rect x='16' y='32' width='568' height='26' fill='#e0f2fe' stroke='#38bdf8' stroke-width='1'/><text x='28' y='49' font-weight='bold' fill='#075985'>ブラウザ</text><text x='250' y='49' font-weight='bold' fill='#075985'>最低版</text><text x='360' y='49' font-weight='bold' fill='#075985'>--wasm の既定</text><rect x='16' y='58' width='568' height='34' fill='#f0fdf4' stroke='#22c55e' stroke-width='1'/><text x='28' y='79' fill='#334155'>Chromium(Chrome/Edge/Opera/Brave)</text><text x='250' y='79' fill='#334155'>137+</text><text x='360' y='79' font-weight='bold' fill='#15803d'>既定 Wasm（dart2wasm+skwasm）</text><rect x='16' y='92' width='568' height='34' fill='#fffbeb' stroke='#f59e0b' stroke-width='1'/><text x='28' y='113' fill='#334155'>WebKit（Safari macOS/iOS）</text><text x='250' y='113' fill='#334155'>26.2+</text><text x='360' y='113' fill='#92400e'>既定フォールバック / allowList明示で有効</text><rect x='16' y='126' width='568' height='34' fill='#fffbeb' stroke='#f59e0b' stroke-width='1'/><text x='28' y='147' fill='#334155'>Gecko（Firefox）</text><text x='250' y='147' fill='#334155'>147+</text><text x='360' y='147' fill='#92400e'>既定フォールバック / allowList明示で有効</text><text x='16' y='180' font-size='10.5' fill='#64748b'>各最低版未満は自動で dart2js＋CanvasKit に落ちる（全ブラウザで動く）</text></g></svg><figcaption>図1：--wasm は Wasm と CanvasKit を同時出力。Safari/Firefox は wasmAllowList 明示で Wasm を有効化</figcaption></figure>\n<p><strong>何が重要か——二系統の同時出力</strong>。<code>flutter build web --wasm</code> は <strong>dart2wasm＋skwasm</strong> を出すが、<strong>フォールバックの dart2js＋CanvasKit も同じ <code>build/web</code> に同時出力</strong>するので全ブラウザで動く。起動時に <code>flutter_bootstrap.js</code> が <strong>WasmGC・JS String Builtins・例外ハンドリング Phase4</strong> の3機能を判定し、<code>wasmAllowList</code> を見て Wasm 版を選ぶ(下図)。実行版の判定は <code>const bool.fromEnvironment('dart.tool.dart2wasm')</code>。</p>\n<figure class='fig'><pre class='mermaid'>flowchart TD\n  A[\"flutter_bootstrap.js の起動判定\"] --> B[\"WasmGC / JS String Builtins / 例外Phase4 に対応?\"]\n  B -->|対応 かつ wasmAllowList 許可| C[\"dart2wasm + skwasm で実行\"]\n  B -->|非対応 または 不許可| D[\"dart2js + CanvasKit にフォールバック\"]</pre><figcaption>図2：起動時に3機能とallowListを見て実行版を選ぶ——だから--wasmでも全ブラウザで動く</figcaption></figure>\n<p><strong>対応ブラウザ行列(3.50)</strong>。<strong>Chromium 137+</strong>(Chrome/Edge/Opera/Brave)は <code>--wasm</code> で<strong>既定 Wasm</strong>、<strong>WebKit(Safari)26.2+</strong> と <strong>Gecko(Firefox)147+</strong> は<strong>既定フォールバック</strong>で <code>wasmAllowList:{webkit:true}</code>／<code>{gecko:true}</code> を明示指定して有効化する。遅延ロードは既定オフ＝<code>--enable-wasm-deferred-loading</code>、レガシー web ライブラリ(<code>dart:html</code>/<code>dart:js</code> 等)は Wasm 非対応で <code>--no-deprecated-js-interop</code> によりコンパイル時に検出できる(無指定でも dry-run で非致命警告)。</p>\n<p><strong>実務での落とし穴</strong>。最大の罠は<strong>マルチスレッド描画に cross-origin isolation が必須</strong>な点。<code>Cross-Origin-Opener-Policy: same-origin</code>＋<code>Cross-Origin-Embedder-Policy: credentialless</code>(または <code>require-corp</code>)を配信側で設定しないと複数スレッドで動かず、<strong>「skwasm にしたのに速くならない」</strong>の典型原因になる。本番デバッグには <code>--source-maps</code> でシンボル化、<code>--no-strip-wasm</code> は関数名を残せるが<strong>バイナリ約47%肥大</strong>するので常用は避ける。</p>\n<p><strong>ひとことまとめ</strong>。3.50 Web Wasm は「<code>--wasm</code> は Wasm と CanvasKit を両方吐くので安全」「Safari/Firefox は allowList 明示で有効化」「COOP/COEP 未設定だと速くならない」の3点が実務の核。昇格前に beta でこの3点を配信環境ごと検証しておけば、stable 昇格日に慌てずに済む。</p>",
+      "sources": [
+        {
+          "title": "Support for WebAssembly (Wasm) (docs.flutter.dev)",
+          "url": "https://docs.flutter.dev/platform-integration/web/wasm"
+        },
+        {
+          "title": "Flutter Versions (flutterreleases.com)",
+          "url": "https://flutterreleases.com/flutter-versions/"
+        },
+        {
+          "title": "Wasm compatibility matrix for 3.50 (github.com)",
+          "url": "https://github.com/flutter/website/issues/13961"
+        }
+      ]
+    },
+    {
+      "id": "2026-11-01-github-trending",
+      "date": "2026-11-01",
+      "topic": "GitHub Trending",
+      "title": "11/1の話題リポジトリ — 鍵もクラウドも足さずに動くAI：hex・apfel・harvey",
+      "lede": "AI一色で新顔の少ない静かな日。拾えた3本を貫くのは「新しいクラウドAPIキーを足さずにAIを動かす」——端末内で完結する音声入力、Mac内蔵AIをCLIから、既存のClaude Code/Codexで回す自律エージェント。",
+      "articleHtml": "<p>本日はAI一色の飽和かつ新規first-timerの少ない静かな一日。そんな中で選んだ3本に共通するのは<strong>「新しいクラウドAPIキーを足さずにAIを動かす」</strong>という地面だ。端末内で完結する／Mac内蔵のAIを使う／手元のエージェントで回す——クラウドAPI前提への静かな揺り戻しとして、それぞれ「解決したい課題」と「提供する機能」を見ていく。</p>\n<figure class='fig'><svg viewBox='0 0 600 212' xmlns='http://www.w3.org/2000/svg'><text x='300' y='20' text-anchor='middle' font-size='13' font-weight='bold' fill='#334155'>今日の3本：解きたい課題 → 提供する機能</text><g font-size='11'><rect x='16' y='34' width='182' height='156' rx='8' fill='#f0fdf4' stroke='#22c55e' stroke-width='1.5'/><text x='107' y='54' text-anchor='middle' font-weight='bold' fill='#15803d'>anomalyco/hex</text><text x='107' y='70' text-anchor='middle' fill='#166534'>Rust ⭐約2.0k</text><text x='26' y='96' fill='#334155'>課題: 発話をクラウドに</text><text x='26' y='110' fill='#334155'>出さず音声入力したい</text><text x='26' y='140' fill='#15803d'>機能: 押す間だけ話し</text><text x='26' y='154' fill='#15803d'>任意アプリに貼る端末内</text><text x='26' y='168' fill='#15803d'>ディクテーション</text><rect x='208' y='34' width='182' height='156' rx='8' fill='#eff6ff' stroke='#3b82f6' stroke-width='1.5'/><text x='299' y='54' text-anchor='middle' font-weight='bold' fill='#1d4ed8'>Arthur-Ficial/apfel</text><text x='299' y='70' text-anchor='middle' fill='#1e40af'>Swift ⭐約6.5k</text><text x='218' y='96' fill='#334155'>課題: Mac内蔵AIを鍵</text><text x='218' y='110' fill='#334155'>なしでCLIから使いたい</text><text x='218' y='140' fill='#1d4ed8'>機能: Apple Intelli-</text><text x='218' y='154' fill='#1d4ed8'>genceをCLI/OpenAI互換</text><text x='218' y='168' fill='#1d4ed8'>サーバ/チャットに(鍵不要)</text><rect x='400' y='34' width='184' height='156' rx='8' fill='#faf5ff' stroke='#a855f7' stroke-width='1.5'/><text x='492' y='54' text-anchor='middle' font-weight='bold' fill='#7e22ce'>ethanplusai/harvey</text><text x='492' y='70' text-anchor='middle' fill='#6b21a8'>Python ⭐約3.7k</text><text x='410' y='96' fill='#334155'>課題: 専用API契約なし</text><text x='410' y='110' fill='#334155'>で営業を自動化したい</text><text x='410' y='140' fill='#7e22ce'>機能: Claude Code/</text><text x='410' y='154' fill='#7e22ce'>Codexで動く自律営業</text><text x='410' y='168' fill='#7e22ce'>エージェント</text></g></svg><figcaption>図1：3本とも“新しいクラウドAPIキー不要”——端末内で完結／既にあるAIを使う／手元のエージェントで回す</figcaption></figure>\n<h4>anomalyco/hex（Rust・⭐約2.0k）</h4>\n<p><strong>解決したい課題</strong>は「音声入力を使いたいが、発話をクラウドに送りたくない」こと。<strong>提供する機能</strong>は、<strong>ショートカットを押している間だけ話し、離すと任意のアプリに貼り付けられる</strong> macOS 向けのローカル完結型音声ディクテーション(Rust・MIT)。音声認識は<strong>端末内(オンデバイス)</strong>で動きクラウドに送らない。<strong>急上昇の理由</strong>は、created 2026-07-17 の新しめのリポが当日 <strong>+約289</strong>(実測約1,987★/forks124・増加率約14.5%＝当日計測組で最高位)まで伸びた点。AI一色の飽和局面で希少な<strong>生産性/アクセシビリティ×プライバシー(ローカル完結)</strong>の切り口が拡散を押した。Linux ベータも進行中。</p>\n<h4>Arthur-Ficial/apfel（Swift・⭐約6.5k）</h4>\n<p><strong>解決したい課題</strong>は「Mac に既にある無料の AI を、鍵も課金もなしにコマンドラインから使いたい」こと。<strong>提供する機能</strong>は、<strong>Mac 内蔵の Apple Intelligence を CLI ツール／OpenAI 互換サーバー／対話チャット</strong>として使えるようにする(Swift・MIT)。<strong>API 鍵不要</strong>で推論は<strong>完全オンデバイス</strong>。<strong>急上昇の理由</strong>は、trendshift 日次掲載の当日上位(実測約6,545★/forks251)で、クラウド API 前提の飽和局面に<strong>「既にある AI を鍵なしで、しかも OpenAI 互換で」</strong>という新規性を持ち込んだこと。Swift/Apple/オンデバイスという言語・プラットフォーム多様性枠も兼ねる。</p>\n<h4>ethanplusai/harvey（Python・⭐約3.7k）</h4>\n<p><strong>解決したい課題</strong>は「営業の発掘からクロージングまでの定型フローを、専用の AI API を契約せずに自動化したい」こと。<strong>提供する機能</strong>は、<strong>Claude Code/Codex 上で動く自律型 AI 営業エージェント</strong>で、見込み客の発掘→コールドメール作成→キャンペーン送信→返信対応→商談設定までを自動で回す(Python・MIT・API 鍵不要)。<strong>急上昇の理由</strong>は、当日 <strong>+約244</strong>(実測約3,707★/forks765・増加率約6.6%)のモメンタムに加え、<strong>「手元の Claude Code/Codex をそのままエージェント基盤にする」</strong>構成が、別途 API 契約なしに自律エージェントを立てたい層に刺さったから。MIT で社内利用・組み込みも可。</p>\n<p><strong>自分が試すなら</strong>——まず apfel を入れて Mac 内蔵 AI を OpenAI 互換サーバーとして立て、<strong>軽い要約や分類をローカルでさばけるか</strong>を実測する(鍵も課金もなしで効けば定番化)。hex はオンデバイス音声入力の手触りを確かめる偵察用に、harvey は<strong>「Claude Code をエージェント実行基盤にする」設計パターン</strong>のストックとして読むのが現実的だ。3本とも派手な新規プロダクトではなく、<strong>クラウドAPI前提への揺り戻しとして現れた“手元で動かすAI”の芽</strong>として記録しておきたい。</p>",
+      "sources": [
+        {
+          "title": "anomalyco/hex",
+          "url": "https://github.com/anomalyco/hex"
+        },
+        {
+          "title": "Arthur-Ficial/apfel",
+          "url": "https://github.com/Arthur-Ficial/apfel"
+        },
+        {
+          "title": "ethanplusai/harvey",
+          "url": "https://github.com/ethanplusai/harvey"
+        }
+      ]
+    },
     {
       "id": "2026-10-31-claude-code",
       "date": "2026-10-31",
