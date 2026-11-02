@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-11-01T04:49:47.152Z",
+  "generatedAt": "2026-11-02T04:45:42.615Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,106 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-11-02-claude-code",
+      "date": "2026-11-02",
+      "topic": "Claude Code",
+      "title": "11/2のClaude Code — サンドボックス機構 sandbox-runtime を Apache 2.0 で OSS化（CLI `srt`）、VM/コンテナ無しでOSレベルのファイル/ネットワーク制限",
+      "lede": "公式changelogは v2.1.316(10/31) から進まず。代わりに直近で表に出た地固め——sandbox-runtime のOSS化(10/24)、デスクトップ v3.6556.1 の sshHostCommands/権限モード端末別保存、プラグイン公式化とMods、そして『3語ステータス行がトークンの15〜20%を食う』という隠れコスト分析を束ねて読む。",
+      "articleHtml": "<p><strong>背景・なぜ今これか</strong>。11/2(JST)時点で公式changelogの最新は依然 <strong>v2.1.316</strong>(10/31) で、新バージョンは出ていない。そこで本日は『無人で長く走らせる自分の運用』に効く、直近に表へ出た地固めを束ねて読む。筆頭は、Claude Code のサンドボックス実装 <strong>sandbox-runtime</strong> が10/24に <strong>Apache-2.0</strong> で公開された件だ。</p>\n<figure class='fig'><svg viewBox='0 0 600 230' xmlns='http://www.w3.org/2000/svg'><text x='300' y='20' text-anchor='middle' font-size='13' font-weight='bold' fill='#334155'>srt の隔離方式（VM/コンテナ無し・OSの素の機能で縛る）</text><g font-size='11'><rect x='18' y='36' width='182' height='150' rx='8' fill='#faf5ff' stroke='#a855f7' stroke-width='1.5'/><text x='109' y='56' text-anchor='middle' font-weight='bold' fill='#7e22ce'>macOS</text><text x='28' y='80' fill='#334155'>Seatbelt プロファイル</text><text x='28' y='96' fill='#334155'>(sandbox-exec)</text><text x='28' y='120' fill='#6b21a8'>FS/ネット制限を</text><text x='28' y='136' fill='#6b21a8'>プロセスに適用</text><text x='28' y='160' fill='#16a34a'>安定</text><rect x='209' y='36' width='182' height='150' rx='8' fill='#f0fdf4' stroke='#22c55e' stroke-width='1.5'/><text x='300' y='56' text-anchor='middle' font-weight='bold' fill='#15803d'>Linux</text><text x='219' y='80' fill='#334155'>bubblewrap(root不要)</text><text x='219' y='96' fill='#334155'>+ ネット名前空間</text><text x='219' y='120' fill='#166534'>非特権で名前空間</text><text x='219' y='136' fill='#166534'>隔離</text><text x='219' y='160' fill='#16a34a'>安定</text><rect x='400' y='36' width='182' height='150' rx='8' fill='#fef2f2' stroke='#ef4444' stroke-width='1.5'/><text x='491' y='56' text-anchor='middle' font-weight='bold' fill='#b91c1c'>Windows</text><text x='410' y='80' fill='#334155'>WFP送信制御/制限</text><text x='410' y='96' fill='#334155'>トークン/NTFS ACL</text><text x='410' y='120' fill='#991b1b'>Schannel系が制御を</text><text x='410' y='136' fill='#991b1b'>回避する穴あり</text><text x='410' y='160' fill='#dc2626'>alpha</text></g><text x='300' y='208' text-anchor='middle' font-size='10.5' fill='#64748b'>許可リスト送信制御(ワイルドカード)・認証情報マスキング・AWS SigV4署名・Unixソケット許可</text></svg><figcaption>図1：同じ『OSレベルで縛る』でもOSごとに土台が違う——Windowsだけ既知の穴があり alpha</figcaption></figure>\n<p><strong>何が新しい/重要か</strong>。<code>@anthropic-ai/sandbox-runtime</code>(CLI名 <code>srt</code>、<code>npm install -g</code> で導入) は、VMやコンテナを立てずに<strong>ローカルプロセスへOSの標準機能だけでファイル/ネットワーク制限をかける</strong>。macOSは Seatbelt、Linuxはroot不要の bubblewrap＋ネット名前空間、Windowsはalpha(WFP送信制御・制限付きトークン・NTFS ACL＋<code>srt-win.exe</code>)。送信は<strong>許可リスト方式(ワイルドカードドメイン)</strong>で、環境変数・認証ファイルのマスキング、AWS SigV4署名、Unixソケット許可、実験的TLS終端まで備える。<code>.mcp.json</code> の <code>command</code> を <code>srt</code> に差し替えれば<strong>MCPサーバもそのまま包める</strong>のが実務的に効く。</p>\n<p><strong>仕組みのポイント</strong>。肝は『隔離＝重い仮想化』という前提を外し、各OSが元から持つサンドボックス機構を薄く叩くこと。だからVM起動のオーバーヘッド無しで、無人エージェントが暴れても<strong>作業ディレクトリ外や許可外ホストに手が届かない</strong>。位置づけは research preview で API/スキーマは変わり得る、とAnthropicは明言している。</p>\n<p><strong>周辺の地固め</strong>。デスクトップ v3.6556.1(10/22) は、自前コマンドの出力から接続先を得る <code>sshHostCommands</code>、iOSシミュレータのキー操作、そして<strong>権限モードを『この端末・各SSHホスト・各WSL』別に保存</strong>する変更を入れた。プラグインは公式化(v2.1.302)し、キュレーション集 <code>claude-plugins-official</code> と、JS/TSでエージェント挙動に割り込む<strong>「Mods」</strong>(破壊的シェルの遮断・PRタグ付け等を実行経路内で実装)が登場。クラウドセッションもPro/Maxへ広がった。</p>\n<p><strong>自分が試すなら・落とし穴</strong>。無人定期タスクを回す自分の運用では、まず <code>srt</code> で<strong>各スケジュールタスクを許可ドメイン＋作業ディレクトリに封じ込める</strong>のが現実的な一手だ。ただしWindowsは <code>curl.exe</code>/<code>Invoke-WebRequest</code>/.NET HttpClient/<code>winget</code> 等のSchannel系が送信制御を<strong>回避できる既知の穴</strong>があり、現状alpha。macOS/Linuxから先に導入するのが無難。併せて第三者分析(10/28)が指摘した『3語ステータス行(エージェント要約)の生成がトークンの<strong>15〜20%</strong>を食う』という隠れコストも頭に置き、進捗表示・自動圧縮・サブエージェント運用を見直すと効く(※個人検証ベースで数値は変動)。</p>\n<p><strong>ひとことまとめ</strong>。本日は『安全に・安く・手元で縛って走らせる』の地固め。<code>srt</code> でサンドボックス、権限モードは端末別に固定、Modsで危険操作に割り込み、ステータス行の隠れコストを意識——この4点が無人運用者の今日の収穫だ。</p>",
+      "sources": [
+        {
+          "title": "Anthropic's Claude Code sandbox (sandbox-runtime, srt) — techbytes",
+          "url": "https://techbytes.app/posts/anthropics-claude-code-sandbox-october-24-2026/"
+        },
+        {
+          "title": "Cowork/Code changelog (v3.6556.1) — Anthropic公式",
+          "url": "https://claude.com/docs/cowork/changelog"
+        },
+        {
+          "title": "Claude Code plugins official, Mods, cloud sessions — tech-insider",
+          "url": "https://tech-insider.org/claude-code-plugins-official-mods-cloud-sessions-2026/"
+        },
+        {
+          "title": "Claude Code's agent summary burns 15–20% of tokens — aiweekly",
+          "url": "https://aiweekly.co/alerts/claude-codes-agent-summary-burns-15-20-of-user-tokens-generating-3-word-status"
+        }
+      ]
+    },
+    {
+      "id": "2026-11-02-nextjs",
+      "date": "2026-11-02",
+      "topic": "Next.js",
+      "title": "回転グラデ枠・ボーダービームを『JSゼロ』で — `@property` の角度アニメ × `conic-gradient` × `mask-composite` で枠だけ・丸角対応・Server Componentのまま",
+      "lede": "SaaSのおすすめプラン強調で定番化した“光る枠/走るビーム”。ライブラリ版はクライアントコンポーネント化するが、`@property` で `<angle>` を補間しconicの開始角を回すだけなら、`'use client'` 不要・JSバンドル増ゼロ・ハイドレーションゼロ・CLS0で同じ見栄えが出る。",
+      "articleHtml": "<p><strong>背景・なぜ今これか</strong>。カードやCTAの<strong>枠に沿ってグラデが回転する／光の筋が1周する</strong>演出は、Magic UI・Aceternity・Motion UI の <code>&lt;BorderBeam&gt;</code> などで2025〜2026に定番化し、プライシングカードの『おすすめプラン』強調で大量にコピーされている。要点は、この流行りの核心が<strong>純CSSだけ</strong>で組め、しかもNext.jsでは<strong>Server Componentのまま</strong>実現できること。ライブラリ版は便利だが <code>'use client'</code> 化してJS/ハイドレーションを伴う。</p>\n<figure class='fig'><svg viewBox='0 0 600 250' xmlns='http://www.w3.org/2000/svg'><text x='300' y='20' text-anchor='middle' font-size='13' font-weight='bold' fill='#334155'>枠だけに塗る2方式</text><g font-size='11'><rect x='18' y='34' width='275' height='196' rx='8' fill='#fffbeb' stroke='#f59e0b' stroke-width='1.5'/><text x='155' y='54' text-anchor='middle' font-weight='bold' fill='#92400e'>方式A：背景レイヤー(最短)</text><text x='30' y='78' fill='#334155'>border:transparent + 2層背景</text><text x='30' y='94' fill='#334155'>padding-box(無地) / border-box</text><text x='30' y='110' fill='#334155'>(conicグラデ)</text><text x='30' y='136' fill='#b45309'>◯ 最短・行数が少ない</text><text x='30' y='160' fill='#b45309'>△ 丸角で角がにじむ/欠ける</text><text x='30' y='178' fill='#b45309'>△ 中身を透過できない</text><text x='30' y='204' fill='#92400e'>(background-originは背景色に効かず)</text><rect x='303' y='34' width='279' height='196' rx='8' fill='#eff6ff' stroke='#3b82f6' stroke-width='1.5'/><text x='442' y='54' text-anchor='middle' font-weight='bold' fill='#1d4ed8'>方式B：mask-composite(本命)</text><text x='315' y='78' fill='#334155'>::before にリングを隔離</text><text x='315' y='94' fill='#334155'>padding で厚み / conic 背景</text><text x='315' y='110' fill='#334155'>全体 − content-box を exclude</text><text x='315' y='136' fill='#1e40af'>◯ 丸角がクリーン</text><text x='315' y='160' fill='#1e40af'>◯ 中身を透過できる(ガラス風)</text><text x='315' y='178' fill='#1e40af'>◯ pointer-events:none でクリック透過</text><text x='315' y='204' fill='#1d4ed8'>(Safariは -webkit-mask-composite:xor 併記)</text></g></svg><figcaption>図1：最短の方式Aは丸角と透過で破綻しがち。丸角対応＋中身透過なら mask-composite の方式Bが本命</figcaption></figure>\n<p><strong>何が新しい/重要か</strong>。<code>conic-gradient(...)</code> は<strong>画像</strong>で補間できないため直接は滑らかに回せない。そこで『角度という<strong>補間できる型</strong>の変数を動かし、グラデはそれを読むだけ』にする。未登録の <code>--angle</code> は汎用型扱いでカクつくが、<code>@property</code> で <code>&lt;angle&gt;</code> として登録すると 0→360deg を滑らかに補間する。<strong>登録時の3つ(<code>syntax</code>・<code>inherits</code>・<code>initial-value</code>)は必須</strong>で、1つ欠けると <code>@property</code> 全体が無効になる。</p>\n<pre><code>@property --angle { syntax:\"&lt;angle&gt;\"; inherits:false; initial-value:0deg; }\n@keyframes spin { to { --angle: 360deg; } }\n.card::before {\n  content:\"\"; position:absolute; inset:0; border-radius:inherit; padding:2px;\n  background: conic-gradient(from var(--angle), #6ee7ff, #a855f7, #f472b6, #6ee7ff);\n  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);\n          mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);\n  -webkit-mask-composite: xor; mask-composite: exclude; pointer-events:none;\n}</code></pre>\n<p><strong>仕組みのポイント</strong>。2枚の不透明マスク(全体＋content-box)を <code>exclude</code> で差し引くと<strong>リング部分だけ可視</strong>になる＝丸角が破綻せず中身は透過のまま。『ボーダービーム』は全周グラデの代わりに<strong>狭い明るい弧＋大部分 transparent</strong> の conic にすれば光が枠を走り、<code>size</code>(弧の角度長)・<code>duration</code>(1周秒)・<code>thickness</code>(枠px)がそのまま対応する。発光は <code>::after</code> 複製＋<code>filter:blur()</code> で足す。</p>\n<p><strong>Next.js(App Router)での組み込み</strong>。純CSSなので <code>@property</code>・<code>@keyframes</code>・リングのスタイルは CSS Module か <code>globals.css</code> に置くだけで<strong>Server Componentのまま</strong>。動的な色/速度は<strong>サーバーからCSSカスタムプロパティをinline styleで渡す</strong>(<code>style={{'--beam-from': plan.color}}</code>)ので、データ駆動でも <code>'use client'</code> は要らない。SSRで出るのは静的な枠HTML、回すのはCSS側——だから<strong>ハイドレーションmismatch無し・JSバンドル増ゼロ・CLS0</strong>。ライブラリ版を使うなら <code>next/dynamic</code> で遅延読込するか、要所だけ純CSS島に置換を検討する。</p>\n<p><strong>落とし穴・自分が試すなら</strong>。<code>--angle</code> のアニメは <code>transform</code>/<code>opacity</code> と違い<strong>コンポジタ合成では済まず毎フレーム再ペイント</strong>(conic再計算)になる。小さなカード枠1個なら実害は小さいが、<strong>大量/大面積に同時適用すると重い</strong>——ビームは要所に絞り、<code>will-change</code> は乱用しない。アクセシビリティは『色だけで状態を伝えない』＋回転は <code>@media (prefers-reduced-motion: no-preference)</code> の中だけに置き、<strong>縮退時は <code>initial-value</code> の静的グラデ枠を残す</strong>のが作法。まずは本命の方式Bで、プライシングカードの『おすすめ』1枚だけに当てて手触りと塗り残しを確かめるのが現実的だ。</p>",
+      "sources": [
+        {
+          "title": "Ryan Mulligan「CSS @property and the New Style」",
+          "url": "https://ryanmulligan.dev/blog/css-property-new-style/"
+        },
+        {
+          "title": "CodeTV「Animated CSS gradient borders (no JavaScript)」",
+          "url": "https://codetv.dev/blog/animated-css-gradient-border"
+        },
+        {
+          "title": "Temani Afif「Border with gradient and radius (mask-composite)」",
+          "url": "https://dev.to/afif/border-with-gradient-and-radius-387f"
+        },
+        {
+          "title": "MDN @property",
+          "url": "https://developer.mozilla.org/docs/Web/CSS/@property"
+        },
+        {
+          "title": "Motion UI <BorderBeam>",
+          "url": "https://motion.dev/ui/components/border-beam"
+        }
+      ]
+    },
+    {
+      "id": "2026-11-02-flutter",
+      "date": "2026-11-02",
+      "topic": "Flutter",
+      "title": "SDK内蔵 `material.dart`/`cupertino.dart` の正式 deprecation が目前 — `material_ui`/`cupertino_ui` 独立パッケージへの import スワップ移行ガイド",
+      "lede": "stableは3.47.9、次期 stable 3.50 の確定事項の一つが『SDK内蔵のMaterial/Cupertinoを正式 deprecation し、独立パッケージ(1.0.0は公開済み)へ切り出す』こと。変わるのは原則 import 行だけ——クラス名は不変で、`dart fix` の自動移行と互換ブリッジ、localizations再配線まで押さえておく。",
+      "articleHtml": "<p><strong>背景・なぜ今これか</strong>。現況は stable <strong>3.47.9 / Dart 3.13.7</strong>、beta 3.50.0-0.3.pre(共に10/29)で、<strong>11月 stable 3.50 はまだ未公開</strong>。その3.50の確定事項の一つが、SDK内蔵の <code>material.dart</code> / <code>cupertino.dart</code> の<strong>正式 deprecation</strong>＝デザインライブラリを独立パッケージ <strong><code>material_ui</code> / <code>cupertino_ui</code></strong>(1.0.0は3.47でpub.dev公開済み、今からopt-in可)へ切り出す動きだ。毎日複数PJを横断する運用では、各アプリの import を機械的に差し替える『段取り』を今のうちに握っておきたい。</p>\n<figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg'><text x='300' y='20' text-anchor='middle' font-size='13' font-weight='bold' fill='#334155'>切り出しのタイムライン</text><line x1='40' y1='84' x2='560' y2='84' stroke='#94a3b8' stroke-width='2'/><g font-size='10.5'><circle cx='90' cy='84' r='7' fill='#0277bd'/><text x='90' y='64' text-anchor='middle' fill='#0277bd' font-weight='bold'>3.44</text><text x='90' y='108' text-anchor='middle' fill='#475569'>SDK内へ</text><text x='90' y='122' text-anchor='middle' fill='#475569'>の貢献凍結</text><circle cx='240' cy='84' r='7' fill='#0277bd'/><text x='240' y='64' text-anchor='middle' fill='#0277bd' font-weight='bold'>3.47</text><text x='240' y='108' text-anchor='middle' fill='#475569'>1.0.0 公開</text><text x='240' y='122' text-anchor='middle' fill='#475569'>(opt-in可)</text><circle cx='400' cy='84' r='9' fill='#e11d48'/><text x='400' y='60' text-anchor='middle' fill='#e11d48' font-weight='bold'>3.50(次期)</text><text x='400' y='108' text-anchor='middle' fill='#be123c'>内蔵版を正式</text><text x='400' y='122' text-anchor='middle' fill='#be123c'>deprecation</text><circle cx='540' cy='84' r='7' fill='#16a34a'/><text x='540' y='64' text-anchor='middle' fill='#16a34a' font-weight='bold'>以後</text><text x='540' y='108' text-anchor='middle' fill='#166534'>週次リリース</text><text x='540' y='122' text-anchor='middle' fill='#166534'>+ semver</text></g></svg><figcaption>図1：3.44で凍結→3.47で公開→3.50でdeprecation→以後パッケージは週次＋semverで進化</figcaption></figure>\n<p><strong>何が変わるか＝原則 import 行だけ</strong>。<code>package:flutter/material.dart</code> → <strong><code>package:material_ui/material_ui.dart</code></strong>、<code>package:flutter/cupertino.dart</code> → <strong><code>package:cupertino_ui/cupertino_ui.dart</code></strong>。<strong>クラス名・シンボル名は不変</strong>(1.0.0は凍結済みフレームワークコードと一致＝API再設計ではなくseamlessな移行が狙い)。ただし公開パッケージを移行すると、未更新のconsumerには<strong>破壊的変更＝メジャーバンプ</strong>扱いになる点は忘れないこと。</p>\n<pre><code>// before\nimport 'package:flutter/material.dart';\n// after\nimport 'package:material_ui/material_ui.dart';\n\n// 自動移行\ndart fix --apply --code=migrate_design_widgets\n// 依存が追記されない時は手動で\nflutter pub add material_ui   // 使う方だけ</code></pre>\n<p><strong>仕組み・localizations の再配線</strong>。<code>flutter_localizations</code> からデザイン系デリゲートが <strong>unbundle</strong> され、Material/Cupertinoのデリゲートと文字列は新パッケージ側へ移動する。これに伴い <code>localizationsDelegates</code> は、旧来の <code>GlobalCupertinoLocalizations.delegate</code> / <code>GlobalMaterialLocalizations.delegate</code> / <code>GlobalWidgetsLocalizations.delegate</code> の<strong>3行を <code>GlobalMaterialLocalizations.delegates</code> の1本に短縮</strong>できる(Cupertino/Widgetsのデリゲートも内包)。</p>\n<p><strong>互換ブリッジと限界</strong>。未移行の依存が legacy ライブラリを import し続ける場合、<code>MaterialApp.builder</code> で <strong><code>MaterialUiCompatibilityBridge(child: child!)</code></strong> をかぶせるとテーマ/localizationが木を下り、<code>Theme.of(context)</code> / <code>MaterialLocalizations.of(context)</code> を読む未移行の子が動く。ただし<strong>公開APIの型不一致は解決不能</strong>——<code>package:flutter</code> の <code>ColorScheme</code>/<code>TextTheme</code>/<code>FloatingActionButtonLocation</code> を <code>material_ui</code> 型の引数には渡せない。つまり<strong>APIが型で結合した依存は先に移行必須</strong>だ。</p>\n<p><strong>自分が試すなら・落とし穴</strong>。横断運用の現実解は『葉から順に』——型でAPI結合しているパッケージ(共有UIライブラリ等)を<strong>依存グラフの下流から先に</strong>移行し、アプリ側は <code>dart fix --apply --code=migrate_design_widgets</code> で import を一括書き換え→必要な方だけ <code>pub add</code>→再度 <code>dart fix</code> で lint整列、の順。移行途中のアプリは <code>MaterialUiCompatibilityBridge</code> で延命できるが、型不一致が出たら<strong>そのconsumerは延命不可＝先に上げる</strong>合図と捉える。3.50が降ってくる前に、まず1つのPJでドライランして差分の手触りを掴んでおくのが安全だ。</p>",
+      "sources": [
+        {
+          "title": "Migrate to standalone material_ui and cupertino_ui — docs.flutter.dev",
+          "url": "https://docs.flutter.dev/release/breaking-changes/material-ui-and-cupertino-ui"
+        },
+        {
+          "title": "material_ui — pub.dev",
+          "url": "https://pub.dev/packages/material_ui"
+        },
+        {
+          "title": "Flutter Versions — flutterreleases.com",
+          "url": "https://flutterreleases.com/flutter-versions/"
+        }
+      ]
+    },
+    {
+      "id": "2026-11-02-github-trending",
+      "date": "2026-11-02",
+      "topic": "GitHub Trending",
+      "title": "11/2の話題リポジトリ — AI飽和の中で伸びた『非AIの3本』：pixelfx・diy-llm・quiver-launcher",
+      "lede": "本日もトレンド上位は既出の大型AIプロダクトの反復が中心。その中で純粋に急上昇した3本を貫くのは“AIコアではない”こと——244種のピクセルエフェクト集、LLMをゼロから自作する教材、GitHub/GitLabリリースをストア化するランチャー。クリエイティブ・学習・開発者ユーティリティの多様性枠だ。",
+      "articleHtml": "<p>本日もGitHub Trendingの上位は既出の大型AIプロダクトの反復が中心で、新顔は乏しい。そんな飽和局面で<strong>純粋に“率”で急上昇した3本</strong>に共通するのは、どれも<strong>AIがコアではない</strong>こと——クリエイティブ(ピクセルエフェクト)、学習コンテンツ(LLM自作教材)、開発者ユーティリティ(リリース・ランチャー)という言語もジャンルもばらけた多様性枠だ。それぞれ『解決したい課題』と『提供する機能』で読む。</p>\n<figure class='fig'><svg viewBox='0 0 600 220' xmlns='http://www.w3.org/2000/svg'><text x='300' y='20' text-anchor='middle' font-size='13' font-weight='bold' fill='#334155'>今日の3本：解きたい課題 → 提供する機能</text><g font-size='11'><rect x='16' y='34' width='182' height='168' rx='8' fill='#f0fdf4' stroke='#22c55e' stroke-width='1.5'/><text x='107' y='54' text-anchor='middle' font-weight='bold' fill='#15803d'>patch-gg/pixelfx</text><text x='107' y='70' text-anchor='middle' fill='#166534'>JavaScript ⭐約2.5k</text><text x='26' y='96' fill='#334155'>課題: 演出の語彙を</text><text x='26' y='110' fill='#334155'>手早く使いたい</text><text x='26' y='142' fill='#15803d'>機能: 244種のピクセル</text><text x='26' y='156' fill='#15803d'>エフェクトをコード片で</text><text x='26' y='170' fill='#15803d'>＋自作用Claudeスキル</text><rect x='208' y='34' width='182' height='168' rx='8' fill='#fef3c7' stroke='#f59e0b' stroke-width='1.5'/><text x='299' y='54' text-anchor='middle' font-weight='bold' fill='#92400e'>datawhalechina/diy-llm</text><text x='299' y='70' text-anchor='middle' fill='#b45309'>Jupyter ⭐約2.6k</text><text x='218' y='96' fill='#334155'>課題: LLMの中身を</text><text x='218' y='110' fill='#334155'>一から理解したい</text><text x='218' y='142' fill='#92400e'>機能: 事前学習→Token</text><text x='218' y='156' fill='#92400e'>izer→Transformer→MoE</text><text x='218' y='170' fill='#92400e'>→推論→整合まで自作</text><rect x='400' y='34' width='184' height='168' rx='8' fill='#eff6ff' stroke='#3b82f6' stroke-width='1.5'/><text x='492' y='54' text-anchor='middle' font-weight='bold' fill='#1d4ed8'>tgeorgiadis/quiver-launcher</text><text x='492' y='70' text-anchor='middle' fill='#1e40af'>TypeScript ⭐約3.7k</text><text x='410' y='96' fill='#334155'>課題: GitHub配布物の</text><text x='410' y='110' fill='#334155'>導入/更新が面倒</text><text x='410' y='142' fill='#1d4ed8'>機能: リリースをストア化</text><text x='410' y='156' fill='#1d4ed8'>しDL/導入/起動/更新を</text><text x='410' y='170' fill='#1d4ed8'>一元管理するランチャー</text></g></svg><figcaption>図1：クリエイティブ／学習／開発者ユーティリティ——AI一色の中で“AIコアでない”多様性枠の3本</figcaption></figure>\n<h4>patch-gg/pixelfx（JavaScript・⭐約2.5k）</h4>\n<p><strong>解決したい課題</strong>は「ピクセルアートの演出(エフェクト)の語彙を、自分でゼロから書かずに手早く使いたい」こと。<strong>提供する機能</strong>は、<strong>244種のピクセルアート・エフェクトを小さなコード片として集めたライブラリ</strong>で、しかも<strong>自分でエフェクトを作るためのClaude Codeスキルを同梱</strong>する(JavaScript・MIT)。<strong>急上昇の理由</strong>は、created 2026-10-30＝<strong>公開わずか約3日で実測約2,525★/forks323</strong>(日平均約840★/日)に達した爆発的な新星で、当日もTrendshift日次の『New 2026』に掲載(+約100)。AI一色の飽和局面で希少な<strong>非AIコアのクリエイティブ/ビジュアル</strong>多様性枠だ。</p>\n<h4>datawhalechina/diy-llm（Jupyter Notebook・⭐約2.6k）</h4>\n<p><strong>解決したい課題</strong>は「LLMを“使う”だけでなく、仕組みを<strong>一から自作して理解したい</strong>」こと。<strong>提供する機能</strong>は、<strong>事前学習データ→Tokenizer→Transformer→MoE→分散学習→Scaling Laws→推論→アライメント</strong>までを一通りカバーする包括カリキュラム(Jupyter Notebook・中文教育系 datawhalechina)。<strong>急上昇の理由</strong>は、created 2025-11-24の教材リポが当日 git-homed 計測で <strong>+約235</strong>(実測約2,621★・増加率約9%＝当日計測組で最高率)と、日平均の約30倍のスパイクを見せた点。AIツールが一色の中で希少な<strong>『学習コンテンツ』ジャンル＋Jupyter言語</strong>の多様性枠(※ライセンス未設定＝コード流用は不可、学習用途は問題なし)。</p>\n<h4>tgeorgiadis/quiver-launcher（TypeScript・⭐約3.7k）</h4>\n<p><strong>解決したい課題</strong>は「GitHub/GitLabのリリースから配布されるアプリの、ダウンロード・インストール・更新管理がばらばらで面倒」なこと。<strong>提供する機能</strong>は、<strong>リリースを“ストア”のように扱い、DL/インストール/起動/更新を一元管理するモダンなランチャー</strong>(TypeScript)。<strong>急上昇の理由</strong>は、created 2026-06-18の非AI系新興リポが当日 git-homed 計測で <strong>+約101</strong>(実測約3,697★/forks114・増加率約2.7%・本日もpush)のモメンタムを持った点。AI飽和局面で希少な<strong>非AI・開発者ユーティリティ</strong>の多様性枠だ(ライセンスはNOASSERTION＝製品組み込みは要確認、個人/開発環境での利用は問題なし)。</p>\n<p><strong>自分が試すなら</strong>——即戦力は quiver-launcher で、普段GitHubリリースから入れている各種ツールの<strong>導入・更新の手間を一元化できるか</strong>を実測したい(個人利用なら即試せる)。pixelfx は演出の引き出しとして、作る側に回るなら同梱のClaude Codeスキルで自作エフェクトの素振りを。diy-llm は<strong>手を動かしてLLMの各層を一度は組んでおく</strong>学習ストックとして腰を据えて読むのが現実的だ。3本とも派手な新規プロダクトではないが、AI飽和の反動として現れた<strong>クリエイティブ・学習・実用の“手堅い芽”</strong>として記録しておきたい。</p>",
+      "sources": [
+        {
+          "title": "patch-gg/pixelfx",
+          "url": "https://github.com/patch-gg/pixelfx"
+        },
+        {
+          "title": "datawhalechina/diy-llm",
+          "url": "https://github.com/datawhalechina/diy-llm"
+        },
+        {
+          "title": "tgeorgiadis/quiver-launcher",
+          "url": "https://github.com/tgeorgiadis/quiver-launcher"
+        }
+      ]
+    },
     {
       "id": "2026-11-01-claude-code",
       "date": "2026-11-01",
