@@ -1,0 +1,72 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>11/3のClaude Code — Opus 4.8『fast mode』が10/30非推奨・11/30削除、作業ディレクトリ外の書込みを全モードで止める新設定、企業ゲートウェイの共有予算/レイヤードポリシー — デイリー技術深掘り 読み物</title><meta name="description" content="公式changelogはv2.1.316(10/31)で止まったまま。11月第1週(v2.1.312〜316)の実質的な変更と、企業ゲートウェイ運用・Agent SDKの新仕様をまとめて深掘りする。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-03-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="11/3のClaude Code — Opus 4.8『fast mode』が10/30非推奨・11/30削除、作業ディレクトリ外の書込みを全モードで止める新設定、企業ゲートウェイの共有予算/レイヤードポリシー — デイリー技術深掘り 読み物"><meta property="og:description" content="公式changelogはv2.1.316(10/31)で止まったまま。11月第1週(v2.1.312〜316)の実質的な変更と、企業ゲートウェイ運用・Agent SDKの新仕様をまとめて深掘りする。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-03-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>11/3のClaude Code — Opus 4.8『fast mode』が10/30非推奨・11/30削除、作業ディレクトリ外の書込みを全モードで止める新設定、企業ゲートウェイの共有予算/レイヤードポリシー</h1> <p class="lede">公式changelogはv2.1.316(10/31)で止まったまま。11月第1週(v2.1.312〜316)の実質的な変更と、企業ゲートウェイ運用・Agent SDKの新仕様をまとめて深掘りする。</p> <div class="meta"> <span>📅 2026年11月3日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="0"><p><strong>背景・なぜ今これか。</strong> 公式changelogの最新は依然 <strong>v2.1.316</strong>(10/31)で止まっているが、11月第1週は <strong>v2.1.312〜316</strong> の4リリースが出ており、無人で長時間走らせる自分の運用に直接効く変更が複数入った。読み飛ばすと痛い順に整理する。</p>
+<p><strong>何が変わったか。</strong> 最大の破壊的変更は <strong>Opus 4.8 の高速モード（fast mode）が2026-10-30付で非推奨</strong>となり、<strong>11-30に削除</strong>予定であること。削除後はフォールバックせず<strong>エラー</strong>になるため、速度重視の設定は <strong>Opus 5.5</strong> への移行が要る。あわせて v2.1.314 では、200Kトークン超の放置会話を自動要約する <strong>idle compaction</strong> が端末だけでなく VS Code / Claude Desktop のコードタブへ拡大し、v2.1.316 では <code>CLAUDE_CODE_DISABLE_ULTRATHINK</code>（ultrathink無効化）と <code>CLAUDE_CODE_SUBAGENT_EFFORT</code>（サブエージェント既定effort）が追加された。</p>
+<figure class='fig'><svg viewBox='0 0 600 160' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='0' y='0' width='600' height='160' fill='#fff8f3'></rect><line x1='120' y1='70' x2='480' y2='70' stroke='#d98b4a' stroke-width='3'></line><circle cx='120' cy='70' r='10' fill='#e8833a'></circle><circle cx='300' cy='70' r='10' fill='#c0392b'></circle><circle cx='480' cy='70' r='10' fill='#2a9d4a'></circle><text x='120' y='48' text-anchor='middle' font-size='13' fill='#333'>10/30</text><text x='120' y='100' text-anchor='middle' font-size='12' fill='#9a5a2a'>fast mode 非推奨</text><text x='300' y='48' text-anchor='middle' font-size='13' fill='#333'>11/30</text><text x='300' y='100' text-anchor='middle' font-size='12' fill='#c0392b'>削除＝以後エラー</text><text x='480' y='48' text-anchor='middle' font-size='13' fill='#333'>移行先</text><text x='480' y='100' text-anchor='middle' font-size='12' fill='#2a7d3a'>Opus 5.5 へ</text><text x='300' y='140' text-anchor='middle' font-size='11' fill='#777'>Opus 4.8 fast mode 非推奨→削除タイムライン</text></svg><figcaption>図1：Opus 4.8『fast mode』は10/30非推奨・11/30削除。速度維持はOpus 5.5へ早めに移行。</figcaption></figure>
+<p><strong>仕組み：作業ディレクトリ外の書込み禁止。</strong> v2.1.314 で追加された <code>permissions.blockWritesOutsideWorkingDirectories</code> は、Write/Edit/NotebookEdit を<strong>全権限モードで</strong>作業ディレクトリ外に書かせない設定で、既存の read 版と対になる。bypass 系で無人タスクを回すときの「想定外の場所への書込み」事故を物理的に止められる。</p>
+<pre><code>// .claude/settings.json
+{
+  "permissions": {
+    "blockWritesOutsideWorkingDirectories": true,
+    "blockReadsOutsideWorkingDirectories": true
+  }
+}</code></pre>
+<p><strong>実務での使いどころ。</strong> 企業ゲートウェイでClaude Codeを束ねる運用なら、各メンバー上限に加えグループ全体で共有する月次予算 <code>pooled_budget</code>、複数ポリシーを下位から上書きマージする <code>managed.policy_mode: layered</code>（既定は最初の一致のみ適用）、Bedrock側でプロンプトを自動タグ囲いする <code>guardrail.input_tagging</code> が効く。1人×多数定期タスク運用でも、書込み禁止＋サブエージェントeffort既定化は「暴走しても被害が出ない箱」を作る実用設定だ。</p>
+<p><strong>注意点。</strong> fast mode は削除後フォールバックしない＝放置設定が11/30に突然エラー化する。Team/Enterpriseではサーバ管理設定が<strong>承認プロンプト無し</strong>で適用される変更（v2.1.312）も入ったため、管理者ポリシーが黙って効く前提で自分の設定を書く。Agent SDK 側は省略時 <code>permissionMode</code> の既定がバージョンで変わるため明示指定が無難だ。</p>
+<p><strong>ひとことまとめ。</strong> 今週の自分向け実行項目は2つ——「11/30までにfast modeを捨ててOpus 5.5へ」「作業ディレクトリ外書込みを全モードで塞ぐ」。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://dev.to/aicoding-guide/this-week-in-claude-code-codex-and-gemini-cli-week-of-november-1-2026-15pn" target="_blank" rel="noopener noreferrer"> This Week in Claude Code（Week of Nov 1, 2026・dev.to） </a> </li><li> <a href="https://qiita.com/Sidejob/items/1b17bb4cc959b97cfcfb" target="_blank" rel="noopener noreferrer"> Qiita: v2.1.316で企業ゲートウェイ運用者が気にすべき4変更 </a> </li><li> <a href="https://www.developersdigest.tech/blog/claude-agent-sdk-whats-new-2026" target="_blank" rel="noopener noreferrer"> Claude Agent SDK の2026後半新機能（developersdigest） </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
