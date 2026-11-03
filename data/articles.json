@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-11-02T04:45:42.615Z",
+  "generatedAt": "2026-11-03T04:50:07.713Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,98 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-11-03-claude-code",
+      "date": "2026-11-03",
+      "topic": "Claude Code",
+      "title": "11/3のClaude Code — Opus 4.8『fast mode』が10/30非推奨・11/30削除、作業ディレクトリ外の書込みを全モードで止める新設定、企業ゲートウェイの共有予算/レイヤードポリシー",
+      "lede": "公式changelogはv2.1.316(10/31)で止まったまま。11月第1週(v2.1.312〜316)の実質的な変更と、企業ゲートウェイ運用・Agent SDKの新仕様をまとめて深掘りする。",
+      "articleHtml": "<p><strong>背景・なぜ今これか。</strong> 公式changelogの最新は依然 <strong>v2.1.316</strong>(10/31)で止まっているが、11月第1週は <strong>v2.1.312〜316</strong> の4リリースが出ており、無人で長時間走らせる自分の運用に直接効く変更が複数入った。読み飛ばすと痛い順に整理する。</p>\n<p><strong>何が変わったか。</strong> 最大の破壊的変更は <strong>Opus 4.8 の高速モード（fast mode）が2026-10-30付で非推奨</strong>となり、<strong>11-30に削除</strong>予定であること。削除後はフォールバックせず<strong>エラー</strong>になるため、速度重視の設定は <strong>Opus 5.5</strong> への移行が要る。あわせて v2.1.314 では、200Kトークン超の放置会話を自動要約する <strong>idle compaction</strong> が端末だけでなく VS Code / Claude Desktop のコードタブへ拡大し、v2.1.316 では <code>CLAUDE_CODE_DISABLE_ULTRATHINK</code>（ultrathink無効化）と <code>CLAUDE_CODE_SUBAGENT_EFFORT</code>（サブエージェント既定effort）が追加された。</p>\n<figure class='fig'><svg viewBox='0 0 600 160' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='0' y='0' width='600' height='160' fill='#fff8f3'/><line x1='120' y1='70' x2='480' y2='70' stroke='#d98b4a' stroke-width='3'/><circle cx='120' cy='70' r='10' fill='#e8833a'/><circle cx='300' cy='70' r='10' fill='#c0392b'/><circle cx='480' cy='70' r='10' fill='#2a9d4a'/><text x='120' y='48' text-anchor='middle' font-size='13' fill='#333'>10/30</text><text x='120' y='100' text-anchor='middle' font-size='12' fill='#9a5a2a'>fast mode 非推奨</text><text x='300' y='48' text-anchor='middle' font-size='13' fill='#333'>11/30</text><text x='300' y='100' text-anchor='middle' font-size='12' fill='#c0392b'>削除＝以後エラー</text><text x='480' y='48' text-anchor='middle' font-size='13' fill='#333'>移行先</text><text x='480' y='100' text-anchor='middle' font-size='12' fill='#2a7d3a'>Opus 5.5 へ</text><text x='300' y='140' text-anchor='middle' font-size='11' fill='#777'>Opus 4.8 fast mode 非推奨→削除タイムライン</text></svg><figcaption>図1：Opus 4.8『fast mode』は10/30非推奨・11/30削除。速度維持はOpus 5.5へ早めに移行。</figcaption></figure>\n<p><strong>仕組み：作業ディレクトリ外の書込み禁止。</strong> v2.1.314 で追加された <code>permissions.blockWritesOutsideWorkingDirectories</code> は、Write/Edit/NotebookEdit を<strong>全権限モードで</strong>作業ディレクトリ外に書かせない設定で、既存の read 版と対になる。bypass 系で無人タスクを回すときの「想定外の場所への書込み」事故を物理的に止められる。</p>\n<pre><code>// .claude/settings.json\n{\n  \"permissions\": {\n    \"blockWritesOutsideWorkingDirectories\": true,\n    \"blockReadsOutsideWorkingDirectories\": true\n  }\n}</code></pre>\n<p><strong>実務での使いどころ。</strong> 企業ゲートウェイでClaude Codeを束ねる運用なら、各メンバー上限に加えグループ全体で共有する月次予算 <code>pooled_budget</code>、複数ポリシーを下位から上書きマージする <code>managed.policy_mode: layered</code>（既定は最初の一致のみ適用）、Bedrock側でプロンプトを自動タグ囲いする <code>guardrail.input_tagging</code> が効く。1人×多数定期タスク運用でも、書込み禁止＋サブエージェントeffort既定化は「暴走しても被害が出ない箱」を作る実用設定だ。</p>\n<p><strong>注意点。</strong> fast mode は削除後フォールバックしない＝放置設定が11/30に突然エラー化する。Team/Enterpriseではサーバ管理設定が<strong>承認プロンプト無し</strong>で適用される変更（v2.1.312）も入ったため、管理者ポリシーが黙って効く前提で自分の設定を書く。Agent SDK 側は省略時 <code>permissionMode</code> の既定がバージョンで変わるため明示指定が無難だ。</p>\n<p><strong>ひとことまとめ。</strong> 今週の自分向け実行項目は2つ——「11/30までにfast modeを捨ててOpus 5.5へ」「作業ディレクトリ外書込みを全モードで塞ぐ」。</p>",
+      "sources": [
+        {
+          "title": "This Week in Claude Code（Week of Nov 1, 2026・dev.to）",
+          "url": "https://dev.to/aicoding-guide/this-week-in-claude-code-codex-and-gemini-cli-week-of-november-1-2026-15pn"
+        },
+        {
+          "title": "Qiita: v2.1.316で企業ゲートウェイ運用者が気にすべき4変更",
+          "url": "https://qiita.com/Sidejob/items/1b17bb4cc959b97cfcfb"
+        },
+        {
+          "title": "Claude Agent SDK の2026後半新機能（developersdigest）",
+          "url": "https://www.developersdigest.tech/blog/claude-agent-sdk-whats-new-2026"
+        }
+      ]
+    },
+    {
+      "id": "2026-11-03-nextjs",
+      "date": "2026-11-03",
+      "topic": "Next.js",
+      "title": "11/3のNext.js — Multi-Zonesで1ドメインを複数アプリに分割（App Router版）。assetPrefix＋rewrites、ゾーン間は素の<a>、@vercel/microfrontendsでプリフェッチ",
+      "lede": "巨大化したアプリをビルド時間・チーム独立・段階移行のために「ゾーン」へ割る公式マイクロフロントエンド手法。Next.js 15で不要になった設定と5つの落とし穴を整理する。",
+      "articleHtml": "<p><strong>背景・なぜ今これか。</strong> アプリが巨大化すると全ページ共通でビルド・同梱され、ビルドが遅く、ある画面でしか使わないコードまで全体に乗る。<strong>Multi-Zones</strong> は1つのドメイン配下を複数の独立したNext.jsアプリ（＝ゾーン）に割る公式のマイクロフロントエンド手法で、<code>/blog/*</code>はブログアプリ、<code>/dashboard/*</code>はダッシュボードアプリ…と「関連の薄いページ群」を別アプリへ切り出す。App Router版ドキュメントが整備され、2026年の実務選択肢として再注目されている。</p>\n<p><strong>何が新しい/重要か。</strong> 恩恵は3つ——ビルド時間とバンドルの肥大化対策、チーム/デプロイの独立（別リポ・別リリースサイクル）、ゾーンごとに別フレームワークや旧Pages Routerを選べる段階移行の受け皿。重要な更新として、古い記事にある「静的アセット用の追加rewriteが必須」は <strong>Next.js 15以降では不要</strong>になっている（旧情報のコピペは二重設定の元なので注意）。</p>\n<figure class='fig'><svg viewBox='0 0 600 230' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='0' y='0' width='600' height='230' fill='#f3f7fb'/><rect x='200' y='16' width='200' height='48' rx='8' fill='#dbeafe' stroke='#2563eb' stroke-width='1.5'/><text x='300' y='38' text-anchor='middle' font-size='12' fill='#1e3a8a'>example.com（窓口アプリ /*）</text><text x='300' y='55' text-anchor='middle' font-size='11' fill='#555'>rewrites で各パスを転送</text><line x1='300' y1='64' x2='110' y2='120' stroke='#2563eb' stroke-width='1.3'/><line x1='300' y1='64' x2='300' y2='120' stroke='#2563eb' stroke-width='1.3'/><line x1='300' y1='64' x2='490' y2='120' stroke='#2563eb' stroke-width='1.3'/><rect x='30' y='122' width='160' height='60' rx='8' fill='#fff' stroke='#2563eb' stroke-width='1.3'/><text x='110' y='146' text-anchor='middle' font-size='12' fill='#1e3a8a'>Blog ゾーン</text><text x='110' y='165' text-anchor='middle' font-size='11' fill='#555'>/blog/*・assetPrefix</text><rect x='220' y='122' width='160' height='60' rx='8' fill='#fff' stroke='#2563eb' stroke-width='1.3'/><text x='300' y='146' text-anchor='middle' font-size='12' fill='#1e3a8a'>Dashboard ゾーン</text><text x='300' y='165' text-anchor='middle' font-size='11' fill='#555'>/dashboard/*</text><rect x='410' y='122' width='160' height='60' rx='8' fill='#fff' stroke='#2563eb' stroke-width='1.3'/><text x='490' y='146' text-anchor='middle' font-size='12' fill='#1e3a8a'>既定アプリ</text><text x='490' y='165' text-anchor='middle' font-size='11' fill='#555'>残り全部 /*</text><text x='300' y='208' text-anchor='middle' font-size='11' fill='#777'>ゾーン内＝ソフト遷移（&lt;Link&gt;） / ゾーン間＝ハードナビ（素の&lt;a&gt;）</text></svg><figcaption>図1：1ドメインを窓口アプリ＋複数ゾーンへ分割。ゾーン間リンクは素の&lt;a&gt;を使う。</figcaption></figure>\n<p><strong>仕組み。</strong> 各ゾーンは普通のNext.jsアプリで、<code>next.config.js</code> に <code>assetPrefix</code> を設定するだけ。これでJS/CSS等が <code>/&lt;assetPrefix&gt;/_next/...</code> 配下に出て他ゾーンと衝突しない（最もパスをさばく既定アプリ <code>/*</code> は不要）。ドメイン全体を受ける窓口アプリが <code>rewrites</code> で各パスを対応ゾーンの<strong>本番ドメイン</strong>へ転送する。</p>\n<pre><code>// main/next.config.js — 窓口アプリ\nasync rewrites() {\n  return [\n    { source: '/blog',        destination: process.env.BLOG_DOMAIN + '/blog' },\n    { source: '/blog/:path+', destination: process.env.BLOG_DOMAIN + '/blog/:path+' },\n  ];\n}</code></pre>\n<p><strong>ゾーン間リンクはハードナビゲーション。</strong> 同一ゾーン内はソフトナビ（<code>&lt;Link&gt;</code>が効く）だが、別ゾーンへの遷移はフルリロードに近いハードナビになる。このため<strong>別ゾーンへのリンクは<code>&lt;Link&gt;</code>でなく素の<code>&lt;a&gt;</code>タグ</strong>を使う（<code>&lt;Link&gt;</code>はプリフェッチ＆ソフト遷移を狙うがゾーンまたぎでは成立しない）。設計指針は「よく一緒に遷移されるページは同じゾーンに置く」。Server Actionsを使うゾーンは各 <code>next.config.js</code> で <code>allowedOrigins</code> にユーザー向けドメインを明示しないとオリジン不一致で弾かれる。</p>\n<p><strong>自分が試すなら。</strong> 素のMulti-Zonesの弱点は「ゾーン間はプリフェッチできず体感が重い」こと。Vercel公式の <code>@vercel/microfrontends</code>（v0.14系）は <code>microfrontends.json</code> にアプリと担当パスを宣言し、窓口のrewriteを手書きせず解決、さらに<strong>ゾーン間プリフェッチ</strong>対応の強化版 <code>Link</code> を提供する。ただしVercel前提機能を含むため、セルフホスト時は素のMulti-Zonesに戻る判断も要る。</p>\n<p><strong>注意点・まとめ。</strong> 落とし穴は(1)旧版rewriteの二重設定、(2)ゾーン間での<code>&lt;Link&gt;</code>使用、(3)パス重複によるルーティング競合、(4)Server Actionsの<code>allowedOrigins</code>未設定、(5)共通ヘッダー/フッターの各ゾーン重複実装（共有パッケージ化しないとUIがズレる）。「配信の分割であってRSCやキャッシュ挙動は変えない」と割り切るのが使いこなしの肝だ。</p>",
+      "sources": [
+        {
+          "title": "Next.js 公式: multi-zones（App Router）",
+          "url": "https://nextjs.org/docs/app/guides/multi-zones"
+        },
+        {
+          "title": "vercel/next.js examples/with-zones",
+          "url": "https://github.com/vercel/next.js/tree/canary/examples/with-zones"
+        },
+        {
+          "title": "@vercel/microfrontends（npm）",
+          "url": "https://www.npmjs.com/package/@vercel/microfrontends"
+        }
+      ]
+    },
+    {
+      "id": "2026-11-03-flutter",
+      "date": "2026-11-03",
+      "topic": "Flutter",
+      "title": "11/3のFlutter — signals_flutter 7.1で『読んだ.valueだけ』を再描画する細粒度リアクティビティ（＋Dart 3.14で Isolate.runSync が消える注意）",
+      "lede": "Provider/Riverpodのプロバイダ単位rebuildに対し、値単位で再描画を絞るsignalsの3プリミティブを深掘り。あわせてDart 3.14 betaの同期Isolate撤回という実務注意も押さえる。",
+      "articleHtml": "<p><strong>背景・なぜ今これか。</strong> Provider/Riverpodは「プロバイダ単位」で再描画するため、1つの値変更が広めのwidget再構築を誘発しがち。SolidJS/Preact由来の <strong>signals</strong>（umbrella <code>signals</code> / Flutterは <code>signals_flutter</code>、current 7.1.0）は、読んだ <code>.value</code> を自動追跡し<strong>その値を読んだwidgetだけ</strong>をdirty化する細粒度リアクティビティで、<code>BuildContext</code>もcodegenも要らない。</p>\n<p><strong>3つのプリミティブ。</strong> <code>signal(0)</code>（書込可能・<code>.value</code>で読み書き）、<code>computed(() =&gt; count.value * 2)</code>（<strong>遅延＋memo化</strong>＝読まれた時だけ計算しキャッシュ）、<code>effect(() =&gt; print(count.value))</code>（読んだsignalを自動購読し変化で再実行、戻り値のdispose関数で解除）。依存は<strong>実行時に読んだものだけ</strong>登録される（pullベース＝書いた瞬間でなく次に読まれた時に再計算）。</p>\n<figure class='fig'><svg viewBox='0 0 600 220' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='0' y='0' width='600' height='220' fill='#f2faf5'/><text x='150' y='26' text-anchor='middle' font-size='13' fill='#333'>Provider / Riverpod</text><text x='450' y='26' text-anchor='middle' font-size='13' fill='#333'>signals</text><rect x='40' y='40' width='220' height='142' rx='8' fill='#ffecec' stroke='#e06666' stroke-width='1.5' stroke-dasharray='5 3'/><rect x='70' y='66' width='70' height='32' rx='5' fill='#fff' stroke='#e06666'/><rect x='160' y='66' width='70' height='32' rx='5' fill='#fff' stroke='#e06666'/><rect x='70' y='112' width='70' height='32' rx='5' fill='#fff' stroke='#e06666'/><rect x='160' y='112' width='70' height='32' rx='5' fill='#fff' stroke='#e06666'/><text x='150' y='170' text-anchor='middle' font-size='11' fill='#c0392b'>プロバイダ単位で広く再描画</text><rect x='340' y='40' width='220' height='142' rx='8' fill='#eafaf0' stroke='#57b894' stroke-width='1.5'/><rect x='370' y='66' width='70' height='32' rx='5' fill='#fff' stroke='#bcd'/><rect x='460' y='66' width='70' height='32' rx='5' fill='#2a9d6a' stroke='#2a9d6a'/><rect x='370' y='112' width='70' height='32' rx='5' fill='#fff' stroke='#bcd'/><rect x='460' y='112' width='70' height='32' rx='5' fill='#fff' stroke='#bcd'/><text x='450' y='170' text-anchor='middle' font-size='11' fill='#1f7a52'>.value を読んだwidgetだけ更新</text></svg><figcaption>図1：状態変更時の再描画範囲。signalsは読まれた値のwidgetだけを更新する。</figcaption></figure>\n<pre><code>final count = signal(0);\nfinal doubled = computed(() =&gt; count.value * 2);\n\n// Flutter接続：builder内で読んだsignalだけ再構築\nSignalBuilder(builder: (context) =&gt; Text(count.value.toString()))</code></pre>\n<p><strong>バッチと非追跡。</strong> <code>batch(() { a.value = 1; b.value = 2; })</code> で複数更新を1トランザクションにまとめ途中の再計算/再描画を抑制、<code>untracked(() =&gt; a.value)</code> や <code>signal.peek()</code> で依存登録せず値だけ覗ける（effect内で読みたいが購読したくない時）。旧 <code>Watch((context) =&gt; …)</code> は deprecated で、<code>SignalBuilder</code> への移行が推奨される。</p>\n<p><strong>勘所。</strong> rebuildを絞るため <code>SignalBuilder</code> は木の深い位置に置く（高位で全体を包むと利点が消える）。<code>computed</code> は副作用禁止の純粋関数、<code>effect</code> のdispose忘れはリーク源。既存資産とは <code>ValueNotifier</code>↔signal 変換で段階導入できる。</p>\n<p><strong>あわせて注意：Dart 3.14。</strong> beta（3.50系同梱）のDart 3.14では、3.13で実験的に入った<strong>同期Isolate API（<code>Isolate.runSync</code> 等）が撤回（unship）</strong>される。少し前に「今すぐ使える」と紹介された <code>runSync</code> は3.14で消えるので本番採用は見送りが無難。重い処理の退避は従来どおり <code>Isolate.run</code> / <code>compute</code>（ただしWebはisolate非対応でメインスレッド実行）に寄せる。新ツール <code>dart migrate</code> も入り、各依存のSDK制約下限を1マイナーずつ段階的に引き上げられる。</p>\n<p><strong>ひとことまとめ。</strong> 「再描画を値単位まで絞りたいならsignals」「Dart 3.14で<code>runSync</code>は消えるのでisolateは<code>Isolate.run</code>に寄せる」。</p>",
+      "sources": [
+        {
+          "title": "signals_flutter（dartsignals.dev）",
+          "url": "https://dartsignals.dev/packages/signals_flutter"
+        },
+        {
+          "title": "signals（pub.dev）",
+          "url": "https://pub.dev/packages/signals"
+        },
+        {
+          "title": "Dart SDK CHANGELOG（beta）",
+          "url": "https://chromium.googlesource.com/external/github.com/dart-lang/sdk/+/refs/heads/beta/CHANGELOG.md"
+        },
+        {
+          "title": "Concurrency and isolates（docs.flutter.dev）",
+          "url": "https://docs.flutter.dev/perf/isolates"
+        }
+      ]
+    },
+    {
+      "id": "2026-11-03-github-trending",
+      "date": "2026-11-03",
+      "topic": "GitHub Trending",
+      "title": "11/3の話題リポジトリ — AI飽和の中で光った『開発体験』の3本：blaze・reylo・dimensional-drawing",
+      "lede": "ツール飽和のAIトレンドの中で、ビルドを速くする・SQLを型で守る・UIを寸法図にする、開発現場に直結する3本。各リポジトリの「解決したい課題」と「提供する機能」を対で読む。",
+      "articleHtml": "<p><strong>導入。</strong> 本日のGitHub Trendingも大半はAIエージェント/スキル系と、移植・DRM解除等のグレー系で埋まる飽和局面だった。その中で純粋に「開発体験（DX）を速く・安全にする」実務直結の3本を拾う。ビルドを刻む <strong>blaze</strong>、SQLを型で守る <strong>reylo</strong>、UIを寸法図に落とす <strong>dimensional-drawing</strong>——いずれも作者の信頼性か完成度で伸びた、量産AIツールではない新星だ。</p>\n<figure class='fig'><svg viewBox='0 0 600 232' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'><rect x='0' y='0' width='600' height='232' fill='#f3fbf5'/><rect x='8' y='10' width='150' height='34' fill='#1a7f37'/><rect x='162' y='10' width='210' height='34' fill='#2ea043'/><rect x='376' y='10' width='216' height='34' fill='#3fb950'/><text x='83' y='32' text-anchor='middle' font-size='12' fill='#fff'>リポジトリ</text><text x='267' y='32' text-anchor='middle' font-size='12' fill='#fff'>解決したい課題</text><text x='484' y='32' text-anchor='middle' font-size='12' fill='#fff'>提供する機能</text><rect x='8' y='46' width='584' height='58' fill='#ffffff'/><rect x='8' y='106' width='584' height='58' fill='#eef7f0'/><rect x='8' y='166' width='584' height='58' fill='#ffffff'/><text x='83' y='79' text-anchor='middle' font-size='12' fill='#1a7f37'>blaze</text><text x='267' y='70' text-anchor='middle' font-size='11' fill='#333'>Rustのcargo/rustcが</text><text x='267' y='86' text-anchor='middle' font-size='11' fill='#333'>遅く編集ループが詰まる</text><text x='484' y='70' text-anchor='middle' font-size='11' fill='#333'>cargo置換でミリ秒再ビルド</text><text x='484' y='86' text-anchor='middle' font-size='11' fill='#333'>（cranelift JIT・最大92倍）</text><text x='83' y='139' text-anchor='middle' font-size='12' fill='#1a7f37'>reylo</text><text x='267' y='130' text-anchor='middle' font-size='11' fill='#333'>生SQLの戻り値型が</text><text x='267' y='146' text-anchor='middle' font-size='11' fill='#333'>TS側に伝わらない</text><text x='484' y='130' text-anchor='middle' font-size='11' fill='#333'>.sqlをcodegenゼロで</text><text x='484' y='146' text-anchor='middle' font-size='11' fill='#333'>型推論付きimport</text><text x='83' y='191' text-anchor='middle' font-size='10' fill='#1a7f37'>dimensional-</text><text x='83' y='205' text-anchor='middle' font-size='10' fill='#1a7f37'>drawing</text><text x='267' y='190' text-anchor='middle' font-size='11' fill='#333'>UIの余白/構造仕様が</text><text x='267' y='206' text-anchor='middle' font-size='11' fill='#333'>口頭・スクショ頼り</text><text x='484' y='190' text-anchor='middle' font-size='11' fill='#333'>数値ラベル付き寸法図を</text><text x='484' y='206' text-anchor='middle' font-size='11' fill='#333'>1枚で自動生成</text></svg><figcaption>図1：本日の3本「解決したい課題 → 提供する機能」対応表。</figcaption></figure>\n<h4>indexable-inc/blaze（Rust・⭐約1.9k）</h4>\n<p><strong>解決したい課題。</strong> Rustの <code>cargo</code>/<code>rustc</code> は型安全と引き換えにビルド/再ビルドが遅く、編集→確認のループが詰まる。<strong>提供する機能。</strong> <code>cargo</code> のドロップイン置換として <code>blaze</code> と打つだけで、cranelift JIT＋ホットリロードにより増分・ミリ秒単位で再ビルド（「最大92倍速」をうたう）。独自Rustツールチェーンを同梱し <code>curl | sh</code> 一発で導入でき、rustupの有無を問わない。公開約15日で実測約1,912★（日平均約127★/日）——AI一色の中で希少な、純DXの速さで拡散した。Apache-2.0。</p>\n<h4>colinhacks/reylo（Rust実装／TypeScript向け・⭐約1.5k）</h4>\n<p><strong>解決したい課題。</strong> 生SQLは書きやすい反面、戻り値の型がTS側に伝わらず、ORMやcodegenパイプラインを挟むとビルド/CIの段取りが増える。<strong>提供する機能。</strong> <code>.sql</code> ファイルをTypeScriptへ<strong>型推論付き・コード生成ゼロ</strong>で直接importでき、<code>select ...</code> の行型・パラメータ型が完全に型付けされる。Zod作者 colinhacks の新作（公開約13日・実測約1,475★）で、Supabase（PostgreSQL）×TS構成に直撃。コード生成を挟まない＝既存Turborepoの段取りを増やさず試験導入できる点が刺さった。MIT。</p>\n<h4>enesozturk/dimensional-drawing（HTML・⭐約1.7k）</h4>\n<p><strong>解決したい課題。</strong> UIコンポーネントの「余白・ギャップ・角丸・レイヤー・配置」といった構造仕様が口頭/スクショ頼りだと、誰かに渡しても同じUIを再現できない。<strong>提供する機能。</strong> コンポーネントを渡すと、Appleが各デバイスに公開する「dimensional drawing（寸法図）」のような<strong>数値ラベル付き技術図面</strong>を1枚返すAgent Skill。コピーや本文は意図的に除外し、テキストが変わっても図が崩れない。公開約11日・実測約1,745★。UI品質レビューや、標準UIアセット/デザイン規約の共有に効く。MIT。</p>\n<p><strong>自分が試すなら。</strong> 日々Rustを触るなら <code>blaze</code> をまず <code>curl | sh</code> で体験、Supabase×TSの型安全を詰めたいなら <code>reylo</code> をRLS多数テーブルの読み取りで試す。UIレビューの属人化を減らすなら <code>dimensional-drawing</code> をデザイン規約の共有フォーマットに。3本とも許容ライセンスで製品組み込みも可能だ。</p>",
+      "sources": [
+        {
+          "title": "indexable-inc/blaze",
+          "url": "https://github.com/indexable-inc/blaze"
+        },
+        {
+          "title": "colinhacks/reylo",
+          "url": "https://github.com/colinhacks/reylo"
+        },
+        {
+          "title": "enesozturk/dimensional-drawing",
+          "url": "https://github.com/enesozturk/dimensional-drawing"
+        }
+      ]
+    },
     {
       "id": "2026-11-02-claude-code",
       "date": "2026-11-02",
