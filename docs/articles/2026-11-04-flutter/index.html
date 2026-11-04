@@ -1,0 +1,107 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>11/4のFlutter — stable 3.50の公開手続きが始動（Dart 3.14初stable・WasmGC既定・Impeller一本化）、今いちばん採り入れたい animations 3.0 と freezed sealed union — デイリー技術深掘り 読み物</title><meta name="description" content="11/2にstable 3.50のrelease-tracker #195830が起票。昇格は最終段階だがArchive未到達。『今やること』と、昇格を待つ間に効く2つの技法を整理する。"><meta name="theme-color" content="#0277bd"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-04-flutter/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="11/4のFlutter — stable 3.50の公開手続きが始動（Dart 3.14初stable・WasmGC既定・Impeller一本化）、今いちばん採り入れたい animations 3.0 と freezed sealed union — デイリー技術深掘り 読み物"><meta property="og:description" content="11/2にstable 3.50のrelease-tracker #195830が起票。昇格は最終段階だがArchive未到達。『今やること』と、昇格を待つ間に効く2つの技法を整理する。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-04-flutter/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #29b6f6, #01579b)"> <span class="glyph" aria-hidden="true">◆</span> <div class="kicker">Flutter</div> <h1>11/4のFlutter — stable 3.50の公開手続きが始動（Dart 3.14初stable・WasmGC既定・Impeller一本化）、今いちばん採り入れたい animations 3.0 と freezed sealed union</h1> <p class="lede">11/2にstable 3.50のrelease-tracker #195830が起票。昇格は最終段階だがArchive未到達。『今やること』と、昇格を待つ間に効く2つの技法を整理する。</p> <div class="meta"> <span>📅 2026年11月4日</span> <span>⏱ 約4分</span> <span>🔗 出典 5 件</span> </div> </section> <div class="article-layout" style="--topic:#0277bd"> <div> <article class="prose" data-has-mermaid="1"><p><strong>背景・なぜ今これか。</strong> 11/2に<strong>stable 3.50.0 の release-tracker #195830</strong> が起票された（候補ブランチ <code>flutter-3.50-candidate.0</code>・tag <code>3.50.0</code>）。ただし<strong>チェックリストは全て未完</strong>（残りcherry-pickのマージ、engine hash pin、postsubmit検証、各所への告知が未着手）＝<strong>公開は最終段階だがまだArchiveには出ていない</strong>。現況のstableは依然 <strong>3.47.9 / Dart 3.13.7</strong>、beta は <strong>3.50.0-0.3.pre / Dart 3.14.0</strong>。</p>
+
+<p><strong>何が重要か：3.50で確定とされる変更。</strong> 最大の節目は <strong>Dart 3.14 が stable 初到達</strong>（dot shorthands、<code>dart migrate</code>、dart2wasm標準化が一般化）。加えて <strong>Web WasmGC 既定化</strong>（<code>build web --wasm</code>→skwasm）、<strong>Android Impeller 一本化</strong>（legacy Skia を Android10+ で引退）、<strong>Wasm遅延ロード stable</strong>、<strong>Android 17 day-zero対応</strong>、<code>material_ui</code>/<code>cupertino_ui</code> の正式deprecation（<code>dart fix --apply --code=migrate_design_widgets</code>）。</p>
+
+<figure class='fig'>
+<svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <rect x='0' y='0' width='600' height='150' fill='#ecfeff' stroke='#06b6d4' rx='8'></rect>
+  <text x='300' y='24' text-anchor='middle' font-size='13' font-weight='bold' fill='#155e75'>stable 3.50 への道のり（11/4時点）</text>
+  <line x1='40' y1='78' x2='560' y2='78' stroke='#67e8f9' stroke-width='3'></line>
+  <circle cx='90' cy='78' r='9' fill='#0891b2'></circle>
+  <text x='90' y='56' text-anchor='middle' font-size='10' fill='#155e75'>10/6 candidate.0</text>
+  <text x='90' y='104' text-anchor='middle' font-size='10' fill='#155e75'>cutoff</text>
+  <circle cx='250' cy='78' r='9' fill='#0891b2'></circle>
+  <text x='250' y='56' text-anchor='middle' font-size='10' fill='#155e75'>10/14→10/29</text>
+  <text x='250' y='104' text-anchor='middle' font-size='10' fill='#155e75'>beta 0.1→0.3.pre</text>
+  <circle cx='410' cy='78' r='11' fill='#f59e0b'></circle>
+  <text x='410' y='52' text-anchor='middle' font-size='10' font-weight='bold' fill='#b45309'>11/2 tracker #195830</text>
+  <text x='410' y='104' text-anchor='middle' font-size='10' fill='#b45309'>起票・チェックリスト未完</text>
+  <circle cx='540' cy='78' r='9' fill='none' stroke='#0891b2' stroke-width='2' stroke-dasharray='3 3'></circle>
+  <text x='540' y='56' text-anchor='middle' font-size='10' fill='#0e7490'>3.50.0</text>
+  <text x='540' y='104' text-anchor='middle' font-size='10' fill='#0e7490'>Archive公開(未)</text>
+  <text x='300' y='136' text-anchor='middle' font-size='10' fill='#155e75'>昇格直前は回帰修正が主。個別hashより『チャネル追従』が安全</text>
+</svg>
+<figcaption>図1：candidate.0→beta hotfix積み上げ→tracker起票、の最終段階。Archiveにはまだ出ていない。</figcaption>
+</figure>
+
+<p><strong>実務での使いどころ・自分が試すなら。</strong> 本番は <strong>3.47.9 を pin</strong> のまま、別ジョブで <strong>3.50 beta を緑化</strong>しておく——具体的には <code>build web --wasm</code> と <code>appbundle</code> を今のうちに通して、WasmGC既定化とImpeller一本化の地雷を事前に踏んでおく。stable公開後はrelease notesと <code>flutter upgrade</code> の差分を確認してから昇格する。</p>
+
+<p><strong>昇格を待つ間に効く技法①：animations 3.0.0。</strong> Material の4遷移（Container transform / Shared axis / Fade through / Fade）をwidget化した公式パッケージ。自前Heroや <code>AnimationController</code> を書かずに「意味に合った」遷移を宣言的に置ける。<strong>関係が強い（親子・ウィザード）→ SharedAxis</strong>、<strong>関係が薄い（ボトムナビの行き先）→ FadeThrough</strong>、<strong>カード/FABが画面へ膨らむ → OpenContainer</strong>、と<em>意味で選ぶ</em>のが勘所。<code>PageTransitionSwitcher</code> の子には必ず一意Keyを付ける（同一視でアニメしない）。</p>
+
+<p><strong>昇格を待つ間に効く技法②：freezed 3.2 の sealed union。</strong> 状態機械を <code>sealed class</code>＋factoryコンストラクタで表し、Dart 3 の switch 式で<strong>網羅性をコンパイラ強制</strong>させる。ケースを足して switch を直し忘れると警告が出る＝状態の取りこぼしが消える。BLoC/Cubit/Riverpod の state をこれにすると <code>emit</code> と <code>switch</code> が噛み合う。下図は認証状態の例。</p>
+
+<figure class='fig'>
+<pre class='mermaid'>flowchart TD
+  S["AuthState (sealed)"] --> A["signedOut()"]
+  S --> B["signingIn()"]
+  S --> C["signedIn(User user)"]
+  S --> D["failed(String reason)"]
+  A --> SW["switch 式で網羅分解"]
+  B --> SW
+  C --> SW
+  D --> SW
+  SW --> R["ケース追加で直し忘れると警告"]</pre>
+<figcaption>図2：1ケース=1サブクラス。switch 式が全ケースを要求するので状態の抜けが消える。</figcaption>
+</figure>
+
+<p><strong>注意点・落とし穴。</strong> ①<strong>Flutter GPU</strong>（<code>flutter_gpu</code>：DartとGLSLで自前レンダラを書く低レベルAPI）は <em>experimental</em> で <strong>API安定性の保証なし・master推奨</strong>。stableの業務アプリに今入れる技術ではなく、描画最適化の第一選択は依然 <code>const</code>/<code>RepaintBoundary</code>/raster cache/Impeller。②sealed union は <strong>record では表せない</strong>（名前付き型が要る）。局所・一時データはrecord、層をまたぐ／ログに出るドメインモデルはfreezed、と使い分ける。③生成物 <code>*.freezed.dart</code>/<code>*.g.dart</code> は手編集禁止（<code>build_runner watch -d</code>）。</p>
+
+<p><strong>ひとことまとめ。</strong> 3.50は「Dart 3.14＋Web/Androidの描画土台更新」という大きめの節目。<strong>pinのまま beta を緑化</strong>して備えつつ、待ち時間に animations 3.0 と freezed sealed union で遷移と状態を型に閉じ込めておくと、昇格がそのまま品質の底上げになる。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://github.com/flutter/flutter/issues/195830" target="_blank" rel="noopener noreferrer"> stable 3.50.0 release tracker #195830 (GitHub) </a> </li><li> <a href="https://github.com/flutter/flutter/issues/195428" target="_blank" rel="noopener noreferrer"> beta hotfix tracker #195428 (GitHub) </a> </li><li> <a href="https://blog.logrocket.com/introducing-flutters-new-animations-package" target="_blank" rel="noopener noreferrer"> Introducing Flutter&#39;s animations package (LogRocket) </a> </li><li> <a href="https://startdebugging.net/2026/05/dart-records-vs-freezed-classes/" target="_blank" rel="noopener noreferrer"> Dart records vs Freezed classes (startdebugging.net) </a> </li><li> <a href="https://flutter.googlesource.com/mirrors/engine/+/HEAD/docs/impeller/Flutter-GPU.md" target="_blank" rel="noopener noreferrer"> Flutter GPU (engine docs) </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

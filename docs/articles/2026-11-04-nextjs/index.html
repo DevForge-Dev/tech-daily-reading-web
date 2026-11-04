@@ -1,0 +1,112 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>11/4のNext.js — パタパタ時計で学ぶ『時刻mismatch』撲滅術：mounted-gate・絶対時刻props・ドリフトしない自己補正ループ — デイリー技術深掘り 読み物</title><meta name="description" content="空港のパタパタ式カウントダウンは装飾に見えて、App Routerで最頻出のハイドレーションmismatchを丸ごと内包する。きれいな3Dより『時刻をどこで読むか』が本題。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-04-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="11/4のNext.js — パタパタ時計で学ぶ『時刻mismatch』撲滅術：mounted-gate・絶対時刻props・ドリフトしない自己補正ループ — デイリー技術深掘り 読み物"><meta property="og:description" content="空港のパタパタ式カウントダウンは装飾に見えて、App Routerで最頻出のハイドレーションmismatchを丸ごと内包する。きれいな3Dより『時刻をどこで読むか』が本題。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-04-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>11/4のNext.js — パタパタ時計で学ぶ『時刻mismatch』撲滅術：mounted-gate・絶対時刻props・ドリフトしない自己補正ループ</h1> <p class="lede">空港のパタパタ式カウントダウンは装飾に見えて、App Routerで最頻出のハイドレーションmismatchを丸ごと内包する。きれいな3Dより『時刻をどこで読むか』が本題。</p> <div class="meta"> <span>📅 2026年11月4日</span> <span>⏱ 約4分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="0"><p><strong>背景・なぜ今これか。</strong> ローンチ／セール終了までの残り時間を、数字カードが折れて切り替わる split-flap（パタパタ式）で見せる定番UI。見た目は装飾だが、Next.js（App Router）では<strong>「サーバーが描いた残り時間」と「クライアントが描いた残り時間」は必ずズレる</strong>＝ハイドレーションmismatchの最頻出パターンそのもの。だから価値は3Dの美しさより <strong>(1)時刻をどこで読むか (2)ドリフトしない更新 (3)パタパタをSRに読ませない</strong> の設計にある。</p>
+
+<p><strong>何が新しい/重要か：3つの設計原則。</strong> ①<strong>target は絶対時刻（エポックms）をサーバーからpropsで渡す</strong>。レンダー内で <code>Date.now()+86400e3</code> と計算すると、キャッシュ/ISRされた時刻に固定されたりSSRとCSRで基準がズレる。②表示は毎tick <strong><code>remaining = target - Date.now()</code> で“再計算”</strong>する。<code>remaining--</code> のような減算カウンタは <code>setInterval</code> の遅延が累積して必ずドリフトする。③初回描画は<strong>mounted-gate</strong>でサーバーとクライアントを一致させる。</p>
+
+<p><strong>仕組み①：パタパタは4レイヤー＋2段階 rotateX。</strong> 1枚の数字カードを上下に割り、「静止2枚」＋「回るリーフ2枚」で構成する。前半は<em>古い値のまま上半分が倒れ</em>、中点で入れ替わり、後半で<em>新しい値の下半分が起き上がる</em>——これが split-flap の本質。親に <code>perspective</code>、リーフに <code>backface-visibility:hidden</code>（裏の数字の透け防止）、<code>transform</code>のみ＝GPU合成で依存ゼロ。</p>
+
+<figure class='fig'>
+<svg viewBox='0 0 600 230' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <rect x='0' y='0' width='600' height='230' fill='#eef2ff' stroke='#6366f1' rx='8'></rect>
+  <text x='300' y='24' text-anchor='middle' font-size='13' font-weight='bold' fill='#3730a3'>split-flap カードの4レイヤーと折りの2段階</text>
+  
+  <rect x='40' y='48' width='110' height='120' fill='#312e81' rx='8'></rect>
+  <line x1='40' y1='108' x2='150' y2='108' stroke='#a5b4fc' stroke-width='2'></line>
+  <text x='95' y='96' text-anchor='middle' font-size='40' font-weight='bold' fill='#e0e7ff'>7</text>
+  <text x='95' y='186' text-anchor='middle' font-size='10' fill='#3730a3'>upper=新値 / lower=旧値</text>
+  
+  <rect x='210' y='48' width='110' height='120' fill='#312e81' rx='8'></rect>
+  <line x1='210' y1='108' x2='320' y2='108' stroke='#a5b4fc' stroke-width='2'></line>
+  <path d='M210 108 L320 108 L320 84 L210 84 Z' fill='#4338ca'></path>
+  <text x='265' y='80' text-anchor='middle' font-size='11' fill='#c7d2fe'>旧値の上半分</text>
+  <text x='265' y='100' text-anchor='middle' font-size='11' fill='#c7d2fe'>が倒れる</text>
+  <text x='265' y='186' text-anchor='middle' font-size='10' fill='#3730a3'>前半 rotateX 0→-90 (ease-in)</text>
+  
+  <rect x='380' y='48' width='110' height='120' fill='#312e81' rx='8'></rect>
+  <line x1='380' y1='108' x2='490' y2='108' stroke='#a5b4fc' stroke-width='2'></line>
+  <path d='M380 108 L490 108 L490 140 L380 140 Z' fill='#4338ca'></path>
+  <text x='435' y='126' text-anchor='middle' font-size='11' fill='#c7d2fe'>新値の下半分</text>
+  <text x='435' y='186' text-anchor='middle' font-size='10' fill='#3730a3'>後半 rotateX 90→0 (ease-out)</text>
+  <text x='168' y='112' font-size='18' fill='#4f46e5'>→</text>
+  <text x='338' y='112' font-size='18' fill='#4f46e5'>→</text>
+  <text x='300' y='214' text-anchor='middle' font-size='10' fill='#4338ca'>値の確定は animationend 後（current=next）。先にめくれるバグを防ぐ</text>
+</svg>
+<figcaption>図1：上下分割＋リーフ2枚。前半は旧値が倒れ、中点で入れ替わり、後半で新値が起きる。</figcaption>
+</figure>
+
+<p><strong>仕組み②：mismatchとドリフトの潰し方。</strong> SSRとCSR初回は<strong>同じ安定プレースホルダ（全桁00）</strong>を描き、<code>useEffect</code>で <code>mounted=true</code> にしてから実時刻でtickを開始する。これで <code>mounted</code> がfalseの間はHTMLが完全一致し mismatch が出ない。さらに <code>setTimeout</code> を <code>1000 - (Date.now() % 1000)</code> で次の秒境界に貼り直す<strong>自己補正</strong>と、<code>visibilitychange</code> でタブ復帰時に即再計算を入れると、放置で狂った表示も一瞬で正される。</p>
+
+<pre><code>useEffect(() => {
+  setMounted(true);
+  const tick = () => {
+    setMs(target - Date.now());            // 毎回“再計算”＝ドリフト無し
+    t.current = setTimeout(tick, 1000 - (Date.now() % 1000)); // 自己補正
+  };
+  tick();
+  const onVis = () => document.visibilityState === "visible" && tick();
+  document.addEventListener("visibilitychange", onVis);
+  return () => { clearTimeout(t.current); document.removeEventListener("visibilitychange", onVis); };
+}, [target]);</code></pre>
+
+<p><strong>実務での使いどころ・自分が試すなら。</strong> ページ本体とデータ取得はRSCのまま、<strong>「カウントダウン島」1つだけ <code>'use client'</code></strong> にして <code>target</code>（固定イベント時刻のエポックms）をpropsで流す構成が基本。既製で済ますなら <code>@leenguyen/react-flip-clock-countdown</code>（<code>renderOnServer</code>／<code>stopOnHiddenVisibility</code>／<code>duration</code>）を使う。これらのpropはまさにSSRズレ・タブ非表示ズレ対策そのものなので、propの名前が設計の勘所をそのまま教えてくれる。</p>
+
+<p><strong>注意点・落とし穴。</strong> ①<strong>新しい値が先にめくれる</strong>：<code>current/next</code>を分け <code>animationend</code> で確定。②<strong>CLS/横揺れ</strong>：<code>font-variant-numeric: tabular-nums</code> とカード固定寸法。③<strong>SRが数字を連呼</strong>：視覚カードは <code>aria-hidden</code> にし、<code>role="timer" aria-live="polite"</code> の人間語ライブ領域（「残り2日 4時間」）を分単位で更新。④<code>prefers-reduced-motion: reduce</code> では折りを止めて値だけ差し替える（WCAG 2.3.3＝動きは止めても意味は残す）。</p>
+
+<p><strong>ひとことまとめ。</strong> パタパタの本体は純CSS。難所は3Dでなく「時刻の読み場所」。<strong>絶対時刻props＋毎tick再計算＋mounted-gate</strong>の3点を守れば、<code>Text content did not match</code> もドリフトも出ない。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://github.com/sleenguyen/react-flip-clock-countdown" target="_blank" rel="noopener noreferrer"> react-flip-clock-countdown (GitHub) </a> </li><li> <a href="https://oneuptime.com/blog/post/2026-01-24-fix-hydration-mismatch-errors-nextjs/view" target="_blank" rel="noopener noreferrer"> Fix hydration mismatch errors in Next.js (oneuptime) </a> </li><li> <a href="https://dev.to/work_hau_cb718f47075930f9/javascript-countdown-timers-why-setinterval-drifts-and-how-to-fix-it-26fe" target="_blank" rel="noopener noreferrer"> Why setInterval drifts and how to fix it (dev.to) </a> </li><li> <a href="https://developer.mozilla.org/en-US/docs/Web/API/Page_Visibility_API" target="_blank" rel="noopener noreferrer"> MDN: Page Visibility API </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

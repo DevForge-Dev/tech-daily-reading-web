@@ -1,0 +1,104 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>11/4の話題リポジトリ — AI一色の谷間で伸びた『非AI』3本：USB不要のLinux導入・LaTeXの花柄余白・欧州移住ハンドブック — デイリー技術深掘り 読み物</title><meta name="description" content="トレンド上位がAIツールで飽和するなか、純粋に伸びたのはどれも非AI。面倒を消すユーティリティ、尖った創作、出典付きの知識ベース——“人の手触り”で拡散した3本。"><meta name="theme-color" content="#238636"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-04-github-trending/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="11/4の話題リポジトリ — AI一色の谷間で伸びた『非AI』3本：USB不要のLinux導入・LaTeXの花柄余白・欧州移住ハンドブック — デイリー技術深掘り 読み物"><meta property="og:description" content="トレンド上位がAIツールで飽和するなか、純粋に伸びたのはどれも非AI。面倒を消すユーティリティ、尖った創作、出典付きの知識ベース——“人の手触り”で拡散した3本。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-04-github-trending/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3fb950, #1a7f37)"> <span class="glyph" aria-hidden="true">★</span> <div class="kicker">GitHub Trending</div> <h1>11/4の話題リポジトリ — AI一色の谷間で伸びた『非AI』3本：USB不要のLinux導入・LaTeXの花柄余白・欧州移住ハンドブック</h1> <p class="lede">トレンド上位がAIツールで飽和するなか、純粋に伸びたのはどれも非AI。面倒を消すユーティリティ、尖った創作、出典付きの知識ベース——“人の手触り”で拡散した3本。</p> <div class="meta"> <span>📅 2026年11月4日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#238636"> <div> <article class="prose" data-has-mermaid="0"><p>本日もトレンドはAIツールで飽和していたが、<strong>純粋な急上昇（モメンタム枠）で上位に食い込んだのは3本とも非AI</strong>だった。システムユーティリティ・ジェネラティブアート・知識ベースと畑は違うが、共通点は「AIの便利さではなく<em>人の具体的な面倒／好奇心／意思決定</em>を正面から解いた」こと。各リポジトリについて〈解決したい課題〉と〈提供する機能〉を分けて見る。</p>
+
+<figure class='fig'>
+<svg viewBox='0 0 600 220' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <rect x='0' y='0' width='600' height='220' fill='#f0fdf4' stroke='#22c55e' rx='8'></rect>
+  <text x='300' y='24' text-anchor='middle' font-size='13' font-weight='bold' fill='#166534'>今日の3本：解決したい課題 × 提供する機能</text>
+  <line x1='150' y1='38' x2='150' y2='210' stroke='#86efac'></line>
+  <line x1='375' y1='38' x2='375' y2='210' stroke='#86efac'></line>
+  <text x='70' y='52' text-anchor='middle' font-size='11' font-weight='bold' fill='#15803d'>repo</text>
+  <text x='262' y='52' text-anchor='middle' font-size='11' font-weight='bold' fill='#15803d'>解決したい課題</text>
+  <text x='487' y='52' text-anchor='middle' font-size='11' font-weight='bold' fill='#15803d'>提供する機能</text>
+  <line x1='20' y1='60' x2='580' y2='60' stroke='#bbf7d0'></line>
+  <text x='70' y='82' text-anchor='middle' font-size='11' font-weight='bold' fill='#166534'>hop</text>
+  <text x='70' y='97' text-anchor='middle' font-size='9' fill='#15803d'>PowerShell</text>
+  <text x='160' y='80' font-size='10' fill='#14532d'>USB作成/事前準備が面倒で</text>
+  <text x='160' y='94' font-size='10' fill='#14532d'>Linux導入のハードルが高い</text>
+  <text x='385' y='80' font-size='10' fill='#14532d'>Winの隣にドラッグ指定+1click</text>
+  <text x='385' y='94' font-size='10' fill='#14532d'>でLinux導入(ISO検証つき)</text>
+  <line x1='20' y1='110' x2='580' y2='110' stroke='#bbf7d0'></line>
+  <text x='70' y='132' text-anchor='middle' font-size='11' font-weight='bold' fill='#166534'>florilegium</text>
+  <text x='70' y='147' text-anchor='middle' font-size='9' fill='#15803d'>Lua</text>
+  <text x='160' y='130' font-size='10' fill='#14532d'>LaTeXで凝った装飾余白を</text>
+  <text x='160' y='144' font-size='10' fill='#14532d'>作るのが難しい</text>
+  <text x='385' y='130' font-size='10' fill='#14532d'>デルフト風の青い花柄余白を</text>
+  <text x='385' y='144' font-size='10' fill='#14532d'>毎回違う模様で手続き的生成</text>
+  <line x1='20' y1='160' x2='580' y2='160' stroke='#bbf7d0'></line>
+  <text x='70' y='182' text-anchor='middle' font-size='11' font-weight='bold' fill='#166534'>RUN</text>
+  <text x='70' y='197' text-anchor='middle' font-size='9' fill='#15803d'>Markdown</text>
+  <text x='160' y='180' font-size='10' fill='#14532d'>海外移住のルート選択が</text>
+  <text x='160' y='194' font-size='10' fill='#14532d'>複雑で情報が散在</text>
+  <text x='385' y='180' font-size='10' fill='#14532d'>欧州36か国110ルートを</text>
+  <text x='385' y='194' font-size='10' fill='#14532d'>出典380超付きで体系化</text>
+</svg>
+<figcaption>図1：3本の「解決したい課題」と「提供する機能」の対応。どれもAIではなく具体的な面倒を解く。</figcaption>
+</figure>
+
+<h4 id="sec-1">Arjun-Ingole/hop（PowerShell・⭐約1.5k）</h4>
+<p><strong>解決したい課題。</strong> Windowsの隣にLinuxを入れたいが、USBメモリの用意・ブートメディア作成・パーティション操作といった<em>事前準備の面倒</em>が初心者の壁になっている。<strong>提供する機能。</strong> 入れたいディストリ・ドライブ・割り当て容量を<strong>ドラッグで決めてボタン1つ</strong>でインストールする単体Windowsアプリ。USB不要で、ISOは各プロジェクトの<strong>公式サーバーから取得しチェックサムを検証</strong>する堅実設計（野良バイナリに頼らない）。<strong>なぜ今急上昇か。</strong> 公開約4日で実測約1,452★（日平均約350★/日）。AI飽和の谷間で希少な、純粋な「面倒ごとを消すDX」が刺さった。MIT。</p>
+
+<h4 id="sec-2">kevinraymond/florilegium（Lua・⭐約1.4k）</h4>
+<p><strong>解決したい課題。</strong> 「LaTeXでこの花の余白はどう作るのか」というRedditの質問が発端で、組版で凝った装飾を手で描くのは難しいという<em>創作上の壁</em>。<strong>提供する機能。</strong> LuaLaTeX向けに、デルフト陶器のような<strong>青い花柄のページ余白を手続き的に（毎回違う模様で）描き出す</strong>パッケージ。プレイグラウンド・CI・OpenSSF Scorecard同梱で完成度が高い。<strong>なぜ今急上昇か。</strong> 公開約5日で実測約1,406★（日平均約303★/日）。「手続き的ジェネラティブアート×組版」という尖った創作ドメインの多様性枠として拡散。MIT。</p>
+
+<h4 id="sec-3">BryceYuuu/RUN（Markdown・⭐約3.0k）</h4>
+<p><strong>解決したい課題。</strong> 海外移住は「どのルートを選ぶか」の判断が複雑で、各国の制度情報も散在している。<strong>提供する機能。</strong> 欧州36か国・110の移民ルートを、デジタルノマド／技術移民／EUブルーカード／起業・自雇／投資居留の軸で、<strong>380超の出典付き</strong>に整理した実務ハンドブック（『RUN・润』）。意思決定ガイドから各国制度詳細まで一気通貫。中英二言語・CC-BY-SA-4.0。<strong>なぜ今急上昇か。</strong> 公開約6日で実測約3,002★（日平均約547★/日）＝当日計測組で最高率級。出典リンク付きの<strong>網羅性</strong>が評価された、非AI・知識ドメインの多様性枠。</p>
+
+<p><strong>まとめ・自分が試すなら。</strong> 3本に共通するのは「AIを使わずとも、具体的な面倒／好奇心／意思決定を丁寧に解けば今でも伸びる」という事実。開発に直接効くのは hop（検証付きISO取得という<em>堅実なDX設計</em>の手本）と RUN（<em>出典を必ず紐づける</em>知識ベースの作法）——どちらも自分のドキュメント運用やツール設計の“誠実さ”の参考になる。florilegium は息抜きに眺めたい一本。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://github.com/Arjun-Ingole/hop" target="_blank" rel="noopener noreferrer"> Arjun-Ingole/hop </a> </li><li> <a href="https://github.com/kevinraymond/florilegium" target="_blank" rel="noopener noreferrer"> kevinraymond/florilegium </a> </li><li> <a href="https://github.com/BryceYuuu/RUN" target="_blank" rel="noopener noreferrer"> BryceYuuu/RUN </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> Arjun-Ingole/hop（PowerShell・⭐約1.5k） </a> </li><li> <a href="#sec-2" data-toc="sec-2"> kevinraymond/florilegium（Lua・⭐約1.4k） </a> </li><li> <a href="#sec-3" data-toc="sec-3"> BryceYuuu/RUN（Markdown・⭐約3.0k） </a> </li> </ul> <div class="reading-box"> <div>📅 2026-11-04</div> <div>⏱ 読了 約3分</div> <div>🏷 GitHub Trending</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
