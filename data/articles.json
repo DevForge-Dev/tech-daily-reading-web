@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-11-03T04:50:07.713Z",
+  "generatedAt": "2026-11-04T04:45:47.290Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,110 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-11-04-claude-code",
+      "date": "2026-11-04",
+      "topic": "Claude Code",
+      "title": "11/4のClaude Code — v2.1.317でモデル別effortとRead全文返却、企業ゲートウェイにコストレポートAPI、Stripeが1,370人へ全社展開",
+      "lede": "別モデルで動くサブエージェントのeffortの決まり方が変わり、Readは『未変更スタブ』を廃止して常に全文を返す。無人長時間運用に効く挙動変更を仕組みから押さえる。",
+      "articleHtml": "<p><strong>背景・なぜ今これか。</strong> 11/4時点の公式最新は <strong>v2.1.317</strong>（11/2公開・計87変更）。中身は派手な新機能でなく「複数モデル・長時間・企業運用」で踏みやすい挙動を静かに直すもので、まさに自分のように無人でサブエージェントを回す使い方に直撃する。読み飛ばすと痛い順に整理する。</p>\n\n<p><strong>何が変わったか①：別モデルのeffortの決まり方。</strong> 本会話と<strong>違うモデル</strong>で動くサブエージェント／チームメイトは、これまで「セッションのeffort」を引き継いでいたが、v2.1.317からは<strong>そのモデルに保存されたeffort</strong>を使い、未保存なら<strong>セッションではなく『そのモデルの既定』</strong>で動くようになった。既定の目安は下図の通り。意図せぬ高effort（＝高コスト）や、逆に低effortで雑になる事故を防ぐには、モデル別に <code>modelSettings</code> で明示保存するのが正解。</p>\n\n<figure class='fig'>\n<svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='0' y='0' width='600' height='210' fill='#fff7ed' stroke='#fb923c' rx='8'/>\n  <text x='300' y='26' text-anchor='middle' font-size='13' font-weight='bold' fill='#9a3412'>別モデルのサブエージェント／チームメイトの effort 解決順</text>\n  <rect x='20' y='44' width='170' height='44' fill='#ffedd5' stroke='#fb923c' rx='6'/>\n  <text x='105' y='64' text-anchor='middle' font-size='11' fill='#7c2d12'>①そのモデルに</text>\n  <text x='105' y='79' text-anchor='middle' font-size='11' fill='#7c2d12'>保存effortがある?</text>\n  <text x='218' y='60' font-size='11' fill='#16a34a'>あり→</text>\n  <rect x='255' y='44' width='140' height='44' fill='#dcfce7' stroke='#16a34a' rx='6'/>\n  <text x='325' y='70' text-anchor='middle' font-size='11' fill='#166534'>その値を使用</text>\n  <text x='105' y='108' text-anchor='middle' font-size='11' fill='#b91c1c'>なし↓（セッション値は使わない）</text>\n  <rect x='20' y='120' width='560' height='74' fill='#fffbeb' stroke='#f59e0b' rx='6'/>\n  <text x='300' y='138' text-anchor='middle' font-size='11' font-weight='bold' fill='#92400e'>②そのモデルの既定へフォールバック</text>\n  <text x='150' y='162' text-anchor='middle' font-size='11' fill='#78350f'>Opus5.5 / Sonnet5.5 / Haiku5.5</text>\n  <text x='150' y='180' text-anchor='middle' font-size='12' font-weight='bold' fill='#1d4ed8'>medium</text>\n  <text x='340' y='162' text-anchor='middle' font-size='11' fill='#78350f'>effort対応モデル</text>\n  <text x='340' y='180' text-anchor='middle' font-size='12' font-weight='bold' fill='#1d4ed8'>high</text>\n  <text x='500' y='162' text-anchor='middle' font-size='11' fill='#78350f'>Opus 4.7</text>\n  <text x='500' y='180' text-anchor='middle' font-size='12' font-weight='bold' fill='#1d4ed8'>xhigh</text>\n</svg>\n<figcaption>図1：別モデルで走る下請けの effort は「保存値→無ければモデル既定」の順。セッションのeffortは引き継がれない。</figcaption>\n</figure>\n\n<p><strong>何が変わったか②：Readの『未変更』スタブ廃止。</strong> 旧来は、前回Read以降ファイルが変わっていなければ本文を省いたスタブを返していた。v2.1.317は<strong>これを廃止し、未変更でも毎回全文を返す</strong>。正確さは上がる一方、同じファイルを何度も読む長時間タスクでは<strong>コンテキスト消費が増える</strong>。ループやサブエージェントで巨大ファイルを繰り返し触る設計は、対象を絞る／必要箇所だけ読む運用に見直したい。</p>\n\n<p><strong>企業ゲートウェイ／セキュリティ。</strong> 管理APIに<strong>コストレポート</strong> <code>GET /v1/organizations/analytics/cost</code> が入り、支出を<strong>開発者別・日別・IdPグループ別</strong>に集計できる。IdPグループは日次記録＋<code>admin.identity_retention_days</code>で保持日数を指定、OpenTelemetry属性（plan／seat_type／provider／custom_base_url）も追加。地味に効くのがセキュリティで、<strong>Web／シェルがアカウントのメールアドレスを送信する前に確認</strong>を求め、<code>/schedule</code>は新規クラウドタスクに<strong>要求していないコネクタ</strong>が付くと（削除手順付きで）警告する。Agent SDKのフックは <code>onFailure:block</code> で失敗時にアクションを遮断できる。</p>\n\n<p><strong>実務での使いどころ・自分が試すなら。</strong> ①サブエージェントを別モデルで回している定期タスクは、まず <code>modelSettings</code> に各モデルのeffortを明示保存してコストと品質を固定する。②長時間ループは「同一ファイルの再Read」を減らす前提で組み直す（Read全文化の影響を受けにくくする）。③企業運用なら <code>/v1/organizations/analytics/cost</code> を日次で引いてエージェント運用費を可視化する。</p>\n\n<p><strong>注意点・落とし穴。</strong> 「セッションでhighにしたのに下請けがmediumで動く」のは仕様変更の結果＝バグではない。保存effort未設定が原因なので設定で解決する。Read全文化は便利だが、無自覚だと長時間タスクのコンテキスト枯渇を早める点に注意。<code>CLAUDE_CODE_DISABLE_NESTED_SESSION_ID=1</code> は自己ホストrunnerで <code>claude -p</code> のネストセッションID挙動を旧来に戻す退避弁。</p>\n\n<p><strong>事例の読みどころ。</strong> Stripeは<strong>1,370人</strong>のエンジニアにClaude Codeを全社展開。肝は「署名済み企業バイナリ＋ルール／トークン／認証を事前設定した<strong>ゼロ構成プリインストール</strong>」で、npm依存のセキュリティ懸念を2〜3か月かけて潰した点。約1万行の<strong>Scala→Java移行を4日</strong>（手作業なら約10人週想定）で完了したのが象徴的だが、彼らが繰り返し強調するのは「エージェントを<em>文脈を要する新人</em>として扱う教育（研修・ツール内ヒント・有効プロンプト共有）はツール導入と同等に重要」という運用論。あわせて11/3、BairesDevがAnthropicの<strong>Claude Partner Network</strong>（2026年初期1億ドル投資の企業導入支援）に参加した。</p>\n\n<p><strong>ひとことまとめ。</strong> v2.1.317は「複数モデル運用の暗黙の前提」を一度ご破算にする更新。<code>modelSettings</code>でeffortを固定し、長時間ループのRead設計を見直すだけで、無人運用の事故とコストは目に見えて減る。</p>",
+      "sources": [
+        {
+          "title": "classmethod: Claude Code v2.1.317 の変更点",
+          "url": "https://dev.classmethod.jp/en/articles/20261103-cc-updates-v2-1-317/"
+        },
+        {
+          "title": "gradually.ai: Claude Code changelog",
+          "url": "https://www.gradually.ai/en/changelogs/claude-code/"
+        },
+        {
+          "title": "Anthropic 顧客事例: Stripe",
+          "url": "https://claude.com/customers/stripe"
+        },
+        {
+          "title": "Manila Times/GlobeNewswire: BairesDev joins Claude Partner Network",
+          "url": "https://www.manilatimes.net/2026/11/03/tmt-newswire/globenewswire/bairesdev-joins-anthropics-claude-partner-network-as-enterprises-push-ai-into-production/2460597"
+        }
+      ]
+    },
+    {
+      "id": "2026-11-04-nextjs",
+      "date": "2026-11-04",
+      "topic": "Next.js",
+      "title": "11/4のNext.js — パタパタ時計で学ぶ『時刻mismatch』撲滅術：mounted-gate・絶対時刻props・ドリフトしない自己補正ループ",
+      "lede": "空港のパタパタ式カウントダウンは装飾に見えて、App Routerで最頻出のハイドレーションmismatchを丸ごと内包する。きれいな3Dより『時刻をどこで読むか』が本題。",
+      "articleHtml": "<p><strong>背景・なぜ今これか。</strong> ローンチ／セール終了までの残り時間を、数字カードが折れて切り替わる split-flap（パタパタ式）で見せる定番UI。見た目は装飾だが、Next.js（App Router）では<strong>「サーバーが描いた残り時間」と「クライアントが描いた残り時間」は必ずズレる</strong>＝ハイドレーションmismatchの最頻出パターンそのもの。だから価値は3Dの美しさより <strong>(1)時刻をどこで読むか (2)ドリフトしない更新 (3)パタパタをSRに読ませない</strong> の設計にある。</p>\n\n<p><strong>何が新しい/重要か：3つの設計原則。</strong> ①<strong>target は絶対時刻（エポックms）をサーバーからpropsで渡す</strong>。レンダー内で <code>Date.now()+86400e3</code> と計算すると、キャッシュ/ISRされた時刻に固定されたりSSRとCSRで基準がズレる。②表示は毎tick <strong><code>remaining = target - Date.now()</code> で“再計算”</strong>する。<code>remaining--</code> のような減算カウンタは <code>setInterval</code> の遅延が累積して必ずドリフトする。③初回描画は<strong>mounted-gate</strong>でサーバーとクライアントを一致させる。</p>\n\n<p><strong>仕組み①：パタパタは4レイヤー＋2段階 rotateX。</strong> 1枚の数字カードを上下に割り、「静止2枚」＋「回るリーフ2枚」で構成する。前半は<em>古い値のまま上半分が倒れ</em>、中点で入れ替わり、後半で<em>新しい値の下半分が起き上がる</em>——これが split-flap の本質。親に <code>perspective</code>、リーフに <code>backface-visibility:hidden</code>（裏の数字の透け防止）、<code>transform</code>のみ＝GPU合成で依存ゼロ。</p>\n\n<figure class='fig'>\n<svg viewBox='0 0 600 230' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='0' y='0' width='600' height='230' fill='#eef2ff' stroke='#6366f1' rx='8'/>\n  <text x='300' y='24' text-anchor='middle' font-size='13' font-weight='bold' fill='#3730a3'>split-flap カードの4レイヤーと折りの2段階</text>\n  <!-- static card -->\n  <rect x='40' y='48' width='110' height='120' fill='#312e81' rx='8'/>\n  <line x1='40' y1='108' x2='150' y2='108' stroke='#a5b4fc' stroke-width='2'/>\n  <text x='95' y='96' text-anchor='middle' font-size='40' font-weight='bold' fill='#e0e7ff'>7</text>\n  <text x='95' y='186' text-anchor='middle' font-size='10' fill='#3730a3'>upper=新値 / lower=旧値</text>\n  <!-- phase1 -->\n  <rect x='210' y='48' width='110' height='120' fill='#312e81' rx='8'/>\n  <line x1='210' y1='108' x2='320' y2='108' stroke='#a5b4fc' stroke-width='2'/>\n  <path d='M210 108 L320 108 L320 84 L210 84 Z' fill='#4338ca'/>\n  <text x='265' y='80' text-anchor='middle' font-size='11' fill='#c7d2fe'>旧値の上半分</text>\n  <text x='265' y='100' text-anchor='middle' font-size='11' fill='#c7d2fe'>が倒れる</text>\n  <text x='265' y='186' text-anchor='middle' font-size='10' fill='#3730a3'>前半 rotateX 0→-90 (ease-in)</text>\n  <!-- phase2 -->\n  <rect x='380' y='48' width='110' height='120' fill='#312e81' rx='8'/>\n  <line x1='380' y1='108' x2='490' y2='108' stroke='#a5b4fc' stroke-width='2'/>\n  <path d='M380 108 L490 108 L490 140 L380 140 Z' fill='#4338ca'/>\n  <text x='435' y='126' text-anchor='middle' font-size='11' fill='#c7d2fe'>新値の下半分</text>\n  <text x='435' y='186' text-anchor='middle' font-size='10' fill='#3730a3'>後半 rotateX 90→0 (ease-out)</text>\n  <text x='168' y='112' font-size='18' fill='#4f46e5'>→</text>\n  <text x='338' y='112' font-size='18' fill='#4f46e5'>→</text>\n  <text x='300' y='214' text-anchor='middle' font-size='10' fill='#4338ca'>値の確定は animationend 後（current=next）。先にめくれるバグを防ぐ</text>\n</svg>\n<figcaption>図1：上下分割＋リーフ2枚。前半は旧値が倒れ、中点で入れ替わり、後半で新値が起きる。</figcaption>\n</figure>\n\n<p><strong>仕組み②：mismatchとドリフトの潰し方。</strong> SSRとCSR初回は<strong>同じ安定プレースホルダ（全桁00）</strong>を描き、<code>useEffect</code>で <code>mounted=true</code> にしてから実時刻でtickを開始する。これで <code>mounted</code> がfalseの間はHTMLが完全一致し mismatch が出ない。さらに <code>setTimeout</code> を <code>1000 - (Date.now() % 1000)</code> で次の秒境界に貼り直す<strong>自己補正</strong>と、<code>visibilitychange</code> でタブ復帰時に即再計算を入れると、放置で狂った表示も一瞬で正される。</p>\n\n<pre><code>useEffect(() => {\n  setMounted(true);\n  const tick = () => {\n    setMs(target - Date.now());            // 毎回“再計算”＝ドリフト無し\n    t.current = setTimeout(tick, 1000 - (Date.now() % 1000)); // 自己補正\n  };\n  tick();\n  const onVis = () => document.visibilityState === \"visible\" && tick();\n  document.addEventListener(\"visibilitychange\", onVis);\n  return () => { clearTimeout(t.current); document.removeEventListener(\"visibilitychange\", onVis); };\n}, [target]);</code></pre>\n\n<p><strong>実務での使いどころ・自分が試すなら。</strong> ページ本体とデータ取得はRSCのまま、<strong>「カウントダウン島」1つだけ <code>'use client'</code></strong> にして <code>target</code>（固定イベント時刻のエポックms）をpropsで流す構成が基本。既製で済ますなら <code>@leenguyen/react-flip-clock-countdown</code>（<code>renderOnServer</code>／<code>stopOnHiddenVisibility</code>／<code>duration</code>）を使う。これらのpropはまさにSSRズレ・タブ非表示ズレ対策そのものなので、propの名前が設計の勘所をそのまま教えてくれる。</p>\n\n<p><strong>注意点・落とし穴。</strong> ①<strong>新しい値が先にめくれる</strong>：<code>current/next</code>を分け <code>animationend</code> で確定。②<strong>CLS/横揺れ</strong>：<code>font-variant-numeric: tabular-nums</code> とカード固定寸法。③<strong>SRが数字を連呼</strong>：視覚カードは <code>aria-hidden</code> にし、<code>role=\"timer\" aria-live=\"polite\"</code> の人間語ライブ領域（「残り2日 4時間」）を分単位で更新。④<code>prefers-reduced-motion: reduce</code> では折りを止めて値だけ差し替える（WCAG 2.3.3＝動きは止めても意味は残す）。</p>\n\n<p><strong>ひとことまとめ。</strong> パタパタの本体は純CSS。難所は3Dでなく「時刻の読み場所」。<strong>絶対時刻props＋毎tick再計算＋mounted-gate</strong>の3点を守れば、<code>Text content did not match</code> もドリフトも出ない。</p>",
+      "sources": [
+        {
+          "title": "react-flip-clock-countdown (GitHub)",
+          "url": "https://github.com/sleenguyen/react-flip-clock-countdown"
+        },
+        {
+          "title": "Fix hydration mismatch errors in Next.js (oneuptime)",
+          "url": "https://oneuptime.com/blog/post/2026-01-24-fix-hydration-mismatch-errors-nextjs/view"
+        },
+        {
+          "title": "Why setInterval drifts and how to fix it (dev.to)",
+          "url": "https://dev.to/work_hau_cb718f47075930f9/javascript-countdown-timers-why-setinterval-drifts-and-how-to-fix-it-26fe"
+        },
+        {
+          "title": "MDN: Page Visibility API",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/Page_Visibility_API"
+        }
+      ]
+    },
+    {
+      "id": "2026-11-04-flutter",
+      "date": "2026-11-04",
+      "topic": "Flutter",
+      "title": "11/4のFlutter — stable 3.50の公開手続きが始動（Dart 3.14初stable・WasmGC既定・Impeller一本化）、今いちばん採り入れたい animations 3.0 と freezed sealed union",
+      "lede": "11/2にstable 3.50のrelease-tracker #195830が起票。昇格は最終段階だがArchive未到達。『今やること』と、昇格を待つ間に効く2つの技法を整理する。",
+      "articleHtml": "<p><strong>背景・なぜ今これか。</strong> 11/2に<strong>stable 3.50.0 の release-tracker #195830</strong> が起票された（候補ブランチ <code>flutter-3.50-candidate.0</code>・tag <code>3.50.0</code>）。ただし<strong>チェックリストは全て未完</strong>（残りcherry-pickのマージ、engine hash pin、postsubmit検証、各所への告知が未着手）＝<strong>公開は最終段階だがまだArchiveには出ていない</strong>。現況のstableは依然 <strong>3.47.9 / Dart 3.13.7</strong>、beta は <strong>3.50.0-0.3.pre / Dart 3.14.0</strong>。</p>\n\n<p><strong>何が重要か：3.50で確定とされる変更。</strong> 最大の節目は <strong>Dart 3.14 が stable 初到達</strong>（dot shorthands、<code>dart migrate</code>、dart2wasm標準化が一般化）。加えて <strong>Web WasmGC 既定化</strong>（<code>build web --wasm</code>→skwasm）、<strong>Android Impeller 一本化</strong>（legacy Skia を Android10+ で引退）、<strong>Wasm遅延ロード stable</strong>、<strong>Android 17 day-zero対応</strong>、<code>material_ui</code>/<code>cupertino_ui</code> の正式deprecation（<code>dart fix --apply --code=migrate_design_widgets</code>）。</p>\n\n<figure class='fig'>\n<svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='0' y='0' width='600' height='150' fill='#ecfeff' stroke='#06b6d4' rx='8'/>\n  <text x='300' y='24' text-anchor='middle' font-size='13' font-weight='bold' fill='#155e75'>stable 3.50 への道のり（11/4時点）</text>\n  <line x1='40' y1='78' x2='560' y2='78' stroke='#67e8f9' stroke-width='3'/>\n  <circle cx='90' cy='78' r='9' fill='#0891b2'/>\n  <text x='90' y='56' text-anchor='middle' font-size='10' fill='#155e75'>10/6 candidate.0</text>\n  <text x='90' y='104' text-anchor='middle' font-size='10' fill='#155e75'>cutoff</text>\n  <circle cx='250' cy='78' r='9' fill='#0891b2'/>\n  <text x='250' y='56' text-anchor='middle' font-size='10' fill='#155e75'>10/14→10/29</text>\n  <text x='250' y='104' text-anchor='middle' font-size='10' fill='#155e75'>beta 0.1→0.3.pre</text>\n  <circle cx='410' cy='78' r='11' fill='#f59e0b'/>\n  <text x='410' y='52' text-anchor='middle' font-size='10' font-weight='bold' fill='#b45309'>11/2 tracker #195830</text>\n  <text x='410' y='104' text-anchor='middle' font-size='10' fill='#b45309'>起票・チェックリスト未完</text>\n  <circle cx='540' cy='78' r='9' fill='none' stroke='#0891b2' stroke-width='2' stroke-dasharray='3 3'/>\n  <text x='540' y='56' text-anchor='middle' font-size='10' fill='#0e7490'>3.50.0</text>\n  <text x='540' y='104' text-anchor='middle' font-size='10' fill='#0e7490'>Archive公開(未)</text>\n  <text x='300' y='136' text-anchor='middle' font-size='10' fill='#155e75'>昇格直前は回帰修正が主。個別hashより『チャネル追従』が安全</text>\n</svg>\n<figcaption>図1：candidate.0→beta hotfix積み上げ→tracker起票、の最終段階。Archiveにはまだ出ていない。</figcaption>\n</figure>\n\n<p><strong>実務での使いどころ・自分が試すなら。</strong> 本番は <strong>3.47.9 を pin</strong> のまま、別ジョブで <strong>3.50 beta を緑化</strong>しておく——具体的には <code>build web --wasm</code> と <code>appbundle</code> を今のうちに通して、WasmGC既定化とImpeller一本化の地雷を事前に踏んでおく。stable公開後はrelease notesと <code>flutter upgrade</code> の差分を確認してから昇格する。</p>\n\n<p><strong>昇格を待つ間に効く技法①：animations 3.0.0。</strong> Material の4遷移（Container transform / Shared axis / Fade through / Fade）をwidget化した公式パッケージ。自前Heroや <code>AnimationController</code> を書かずに「意味に合った」遷移を宣言的に置ける。<strong>関係が強い（親子・ウィザード）→ SharedAxis</strong>、<strong>関係が薄い（ボトムナビの行き先）→ FadeThrough</strong>、<strong>カード/FABが画面へ膨らむ → OpenContainer</strong>、と<em>意味で選ぶ</em>のが勘所。<code>PageTransitionSwitcher</code> の子には必ず一意Keyを付ける（同一視でアニメしない）。</p>\n\n<p><strong>昇格を待つ間に効く技法②：freezed 3.2 の sealed union。</strong> 状態機械を <code>sealed class</code>＋factoryコンストラクタで表し、Dart 3 の switch 式で<strong>網羅性をコンパイラ強制</strong>させる。ケースを足して switch を直し忘れると警告が出る＝状態の取りこぼしが消える。BLoC/Cubit/Riverpod の state をこれにすると <code>emit</code> と <code>switch</code> が噛み合う。下図は認証状態の例。</p>\n\n<figure class='fig'>\n<pre class='mermaid'>flowchart TD\n  S[\"AuthState (sealed)\"] --> A[\"signedOut()\"]\n  S --> B[\"signingIn()\"]\n  S --> C[\"signedIn(User user)\"]\n  S --> D[\"failed(String reason)\"]\n  A --> SW[\"switch 式で網羅分解\"]\n  B --> SW\n  C --> SW\n  D --> SW\n  SW --> R[\"ケース追加で直し忘れると警告\"]</pre>\n<figcaption>図2：1ケース=1サブクラス。switch 式が全ケースを要求するので状態の抜けが消える。</figcaption>\n</figure>\n\n<p><strong>注意点・落とし穴。</strong> ①<strong>Flutter GPU</strong>（<code>flutter_gpu</code>：DartとGLSLで自前レンダラを書く低レベルAPI）は <em>experimental</em> で <strong>API安定性の保証なし・master推奨</strong>。stableの業務アプリに今入れる技術ではなく、描画最適化の第一選択は依然 <code>const</code>/<code>RepaintBoundary</code>/raster cache/Impeller。②sealed union は <strong>record では表せない</strong>（名前付き型が要る）。局所・一時データはrecord、層をまたぐ／ログに出るドメインモデルはfreezed、と使い分ける。③生成物 <code>*.freezed.dart</code>/<code>*.g.dart</code> は手編集禁止（<code>build_runner watch -d</code>）。</p>\n\n<p><strong>ひとことまとめ。</strong> 3.50は「Dart 3.14＋Web/Androidの描画土台更新」という大きめの節目。<strong>pinのまま beta を緑化</strong>して備えつつ、待ち時間に animations 3.0 と freezed sealed union で遷移と状態を型に閉じ込めておくと、昇格がそのまま品質の底上げになる。</p>",
+      "sources": [
+        {
+          "title": "stable 3.50.0 release tracker #195830 (GitHub)",
+          "url": "https://github.com/flutter/flutter/issues/195830"
+        },
+        {
+          "title": "beta hotfix tracker #195428 (GitHub)",
+          "url": "https://github.com/flutter/flutter/issues/195428"
+        },
+        {
+          "title": "Introducing Flutter's animations package (LogRocket)",
+          "url": "https://blog.logrocket.com/introducing-flutters-new-animations-package"
+        },
+        {
+          "title": "Dart records vs Freezed classes (startdebugging.net)",
+          "url": "https://startdebugging.net/2026/05/dart-records-vs-freezed-classes/"
+        },
+        {
+          "title": "Flutter GPU (engine docs)",
+          "url": "https://flutter.googlesource.com/mirrors/engine/+/HEAD/docs/impeller/Flutter-GPU.md"
+        }
+      ]
+    },
+    {
+      "id": "2026-11-04-github-trending",
+      "date": "2026-11-04",
+      "topic": "GitHub Trending",
+      "title": "11/4の話題リポジトリ — AI一色の谷間で伸びた『非AI』3本：USB不要のLinux導入・LaTeXの花柄余白・欧州移住ハンドブック",
+      "lede": "トレンド上位がAIツールで飽和するなか、純粋に伸びたのはどれも非AI。面倒を消すユーティリティ、尖った創作、出典付きの知識ベース——“人の手触り”で拡散した3本。",
+      "articleHtml": "<p>本日もトレンドはAIツールで飽和していたが、<strong>純粋な急上昇（モメンタム枠）で上位に食い込んだのは3本とも非AI</strong>だった。システムユーティリティ・ジェネラティブアート・知識ベースと畑は違うが、共通点は「AIの便利さではなく<em>人の具体的な面倒／好奇心／意思決定</em>を正面から解いた」こと。各リポジトリについて〈解決したい課題〉と〈提供する機能〉を分けて見る。</p>\n\n<figure class='fig'>\n<svg viewBox='0 0 600 220' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='0' y='0' width='600' height='220' fill='#f0fdf4' stroke='#22c55e' rx='8'/>\n  <text x='300' y='24' text-anchor='middle' font-size='13' font-weight='bold' fill='#166534'>今日の3本：解決したい課題 × 提供する機能</text>\n  <line x1='150' y1='38' x2='150' y2='210' stroke='#86efac'/>\n  <line x1='375' y1='38' x2='375' y2='210' stroke='#86efac'/>\n  <text x='70' y='52' text-anchor='middle' font-size='11' font-weight='bold' fill='#15803d'>repo</text>\n  <text x='262' y='52' text-anchor='middle' font-size='11' font-weight='bold' fill='#15803d'>解決したい課題</text>\n  <text x='487' y='52' text-anchor='middle' font-size='11' font-weight='bold' fill='#15803d'>提供する機能</text>\n  <line x1='20' y1='60' x2='580' y2='60' stroke='#bbf7d0'/>\n  <text x='70' y='82' text-anchor='middle' font-size='11' font-weight='bold' fill='#166534'>hop</text>\n  <text x='70' y='97' text-anchor='middle' font-size='9' fill='#15803d'>PowerShell</text>\n  <text x='160' y='80' font-size='10' fill='#14532d'>USB作成/事前準備が面倒で</text>\n  <text x='160' y='94' font-size='10' fill='#14532d'>Linux導入のハードルが高い</text>\n  <text x='385' y='80' font-size='10' fill='#14532d'>Winの隣にドラッグ指定+1click</text>\n  <text x='385' y='94' font-size='10' fill='#14532d'>でLinux導入(ISO検証つき)</text>\n  <line x1='20' y1='110' x2='580' y2='110' stroke='#bbf7d0'/>\n  <text x='70' y='132' text-anchor='middle' font-size='11' font-weight='bold' fill='#166534'>florilegium</text>\n  <text x='70' y='147' text-anchor='middle' font-size='9' fill='#15803d'>Lua</text>\n  <text x='160' y='130' font-size='10' fill='#14532d'>LaTeXで凝った装飾余白を</text>\n  <text x='160' y='144' font-size='10' fill='#14532d'>作るのが難しい</text>\n  <text x='385' y='130' font-size='10' fill='#14532d'>デルフト風の青い花柄余白を</text>\n  <text x='385' y='144' font-size='10' fill='#14532d'>毎回違う模様で手続き的生成</text>\n  <line x1='20' y1='160' x2='580' y2='160' stroke='#bbf7d0'/>\n  <text x='70' y='182' text-anchor='middle' font-size='11' font-weight='bold' fill='#166534'>RUN</text>\n  <text x='70' y='197' text-anchor='middle' font-size='9' fill='#15803d'>Markdown</text>\n  <text x='160' y='180' font-size='10' fill='#14532d'>海外移住のルート選択が</text>\n  <text x='160' y='194' font-size='10' fill='#14532d'>複雑で情報が散在</text>\n  <text x='385' y='180' font-size='10' fill='#14532d'>欧州36か国110ルートを</text>\n  <text x='385' y='194' font-size='10' fill='#14532d'>出典380超付きで体系化</text>\n</svg>\n<figcaption>図1：3本の「解決したい課題」と「提供する機能」の対応。どれもAIではなく具体的な面倒を解く。</figcaption>\n</figure>\n\n<h4>Arjun-Ingole/hop（PowerShell・⭐約1.5k）</h4>\n<p><strong>解決したい課題。</strong> Windowsの隣にLinuxを入れたいが、USBメモリの用意・ブートメディア作成・パーティション操作といった<em>事前準備の面倒</em>が初心者の壁になっている。<strong>提供する機能。</strong> 入れたいディストリ・ドライブ・割り当て容量を<strong>ドラッグで決めてボタン1つ</strong>でインストールする単体Windowsアプリ。USB不要で、ISOは各プロジェクトの<strong>公式サーバーから取得しチェックサムを検証</strong>する堅実設計（野良バイナリに頼らない）。<strong>なぜ今急上昇か。</strong> 公開約4日で実測約1,452★（日平均約350★/日）。AI飽和の谷間で希少な、純粋な「面倒ごとを消すDX」が刺さった。MIT。</p>\n\n<h4>kevinraymond/florilegium（Lua・⭐約1.4k）</h4>\n<p><strong>解決したい課題。</strong> 「LaTeXでこの花の余白はどう作るのか」というRedditの質問が発端で、組版で凝った装飾を手で描くのは難しいという<em>創作上の壁</em>。<strong>提供する機能。</strong> LuaLaTeX向けに、デルフト陶器のような<strong>青い花柄のページ余白を手続き的に（毎回違う模様で）描き出す</strong>パッケージ。プレイグラウンド・CI・OpenSSF Scorecard同梱で完成度が高い。<strong>なぜ今急上昇か。</strong> 公開約5日で実測約1,406★（日平均約303★/日）。「手続き的ジェネラティブアート×組版」という尖った創作ドメインの多様性枠として拡散。MIT。</p>\n\n<h4>BryceYuuu/RUN（Markdown・⭐約3.0k）</h4>\n<p><strong>解決したい課題。</strong> 海外移住は「どのルートを選ぶか」の判断が複雑で、各国の制度情報も散在している。<strong>提供する機能。</strong> 欧州36か国・110の移民ルートを、デジタルノマド／技術移民／EUブルーカード／起業・自雇／投資居留の軸で、<strong>380超の出典付き</strong>に整理した実務ハンドブック（『RUN・润』）。意思決定ガイドから各国制度詳細まで一気通貫。中英二言語・CC-BY-SA-4.0。<strong>なぜ今急上昇か。</strong> 公開約6日で実測約3,002★（日平均約547★/日）＝当日計測組で最高率級。出典リンク付きの<strong>網羅性</strong>が評価された、非AI・知識ドメインの多様性枠。</p>\n\n<p><strong>まとめ・自分が試すなら。</strong> 3本に共通するのは「AIを使わずとも、具体的な面倒／好奇心／意思決定を丁寧に解けば今でも伸びる」という事実。開発に直接効くのは hop（検証付きISO取得という<em>堅実なDX設計</em>の手本）と RUN（<em>出典を必ず紐づける</em>知識ベースの作法）——どちらも自分のドキュメント運用やツール設計の“誠実さ”の参考になる。florilegium は息抜きに眺めたい一本。</p>",
+      "sources": [
+        {
+          "title": "Arjun-Ingole/hop",
+          "url": "https://github.com/Arjun-Ingole/hop"
+        },
+        {
+          "title": "kevinraymond/florilegium",
+          "url": "https://github.com/kevinraymond/florilegium"
+        },
+        {
+          "title": "BryceYuuu/RUN",
+          "url": "https://github.com/BryceYuuu/RUN"
+        }
+      ]
+    },
     {
       "id": "2026-11-03-claude-code",
       "date": "2026-11-03",
