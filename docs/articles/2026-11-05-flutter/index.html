@@ -1,0 +1,109 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>11/5のFlutter — Widget Previewer（&#39;flutter widget-preview start&#39;＋@Preview）が stable 3.47 で正式化：実機ビルドなしのUI反復 — デイリー技術深掘り 読み物</title><meta name="description" content="アプリ全体を実機/エミュで起動せず、widget をブラウザ上に並べて即確認。デザイン反復を高速化する公式プレビュー環境が安定版に。使い方と制約、そして足踏み中の3.50事情まで。"><meta name="theme-color" content="#0277bd"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-05-flutter/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="11/5のFlutter — Widget Previewer（'flutter widget-preview start'＋@Preview）が stable 3.47 で正式化：実機ビルドなしのUI反復 — デイリー技術深掘り 読み物"><meta property="og:description" content="アプリ全体を実機/エミュで起動せず、widget をブラウザ上に並べて即確認。デザイン反復を高速化する公式プレビュー環境が安定版に。使い方と制約、そして足踏み中の3.50事情まで。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-05-flutter/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #29b6f6, #01579b)"> <span class="glyph" aria-hidden="true">◆</span> <div class="kicker">Flutter</div> <h1>11/5のFlutter — Widget Previewer（&#39;flutter widget-preview start&#39;＋@Preview）が stable 3.47 で正式化：実機ビルドなしのUI反復</h1> <p class="lede">アプリ全体を実機/エミュで起動せず、widget をブラウザ上に並べて即確認。デザイン反復を高速化する公式プレビュー環境が安定版に。使い方と制約、そして足踏み中の3.50事情まで。</p> <div class="meta"> <span>📅 2026年11月5日</span> <span>⏱ 約4分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#0277bd"> <div> <article class="prose" data-has-mermaid="0"><p><strong>背景・なぜ今これか。</strong> Flutter <strong>3.47 で stable 入り</strong>したのが Widget Previewer。狙いは明快で、<strong>アプリ全体を実機/エミュで起動せず</strong>、widget をブラウザ上の専用環境に並べて即確認し、デザインの反復を高速化することだ（DCM によれば 3.35 で experimental 初登場、3.38 で IDE 連携）。SwiftUI の Preview や Storybook に近い発想が、ついに公式で安定提供された。</p>
+
+<p><strong>使い方。</strong> <code>import 'package:flutter/widget_previews.dart';</code> して <strong>@Preview(...)</strong> を付ける。対象は①トップレベル関数（Widget/WidgetBuilderを返す）②クラスの static メソッド③必須引数なしの public な Widget コンストラクタ/factory。最小例は <code>@Preview(name: 'My Sample') Widget sample() =&gt; const Text('Hello');</code>。起動はプロジェクト直下で <strong><code>flutter widget-preview start</code></strong>（ローカルサーバ＋ブラウザのリアルタイム環境・保存で自動更新）、AndroidStudio/VSCode は「Flutter Widget Preview」タブで自動起動する。</p>
+
+<figure class='fig'>
+<svg viewBox='0 0 600 220' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <rect x='0' y='0' width='600' height='220' fill='#eef2ff' stroke='#6366f1' rx='8'></rect>
+  <text x='300' y='24' text-anchor='middle' font-size='13' font-weight='bold' fill='#3730a3'>UI反復ループ：従来 vs Widget Previewer</text>
+  <text x='28' y='58' font-size='11' font-weight='bold' fill='#b91c1c'>従来（遅い）</text>
+  <rect x='28' y='68' width='120' height='40' fill='#fef2f2' stroke='#f87171' rx='6'></rect>
+  <text x='88' y='92' text-anchor='middle' font-size='9' fill='#7f1d1d'>コード変更</text>
+  <rect x='168' y='68' width='120' height='40' fill='#fef2f2' stroke='#f87171' rx='6'></rect>
+  <text x='228' y='86' text-anchor='middle' font-size='9' fill='#7f1d1d'>実機/エミュを</text>
+  <text x='228' y='99' text-anchor='middle' font-size='9' fill='#7f1d1d'>起動</text>
+  <rect x='308' y='68' width='130' height='40' fill='#fef2f2' stroke='#f87171' rx='6'></rect>
+  <text x='373' y='86' text-anchor='middle' font-size='9' fill='#7f1d1d'>画面まで</text>
+  <text x='373' y='99' text-anchor='middle' font-size='9' fill='#7f1d1d'>操作して到達</text>
+  <rect x='458' y='68' width='114' height='40' fill='#fef2f2' stroke='#f87171' rx='6'></rect>
+  <text x='515' y='92' text-anchor='middle' font-size='9' fill='#7f1d1d'>やっと確認</text>
+  <path d='M150 88 L166 88' stroke='#94a3b8' stroke-width='1.5'></path>
+  <path d='M290 88 L306 88' stroke='#94a3b8' stroke-width='1.5'></path>
+  <path d='M440 88 L456 88' stroke='#94a3b8' stroke-width='1.5'></path>
+  <text x='28' y='146' font-size='11' font-weight='bold' fill='#15803d'>Previewer（速い）</text>
+  <rect x='28' y='156' width='120' height='44' fill='#f0fdf4' stroke='#4ade80' rx='6'></rect>
+  <text x='88' y='174' text-anchor='middle' font-size='9' fill='#14532d'>@Preview を</text>
+  <text x='88' y='187' text-anchor='middle' font-size='9' fill='#14532d'>付与</text>
+  <rect x='168' y='156' width='140' height='44' fill='#f0fdf4' stroke='#4ade80' rx='6'></rect>
+  <text x='238' y='174' text-anchor='middle' font-size='9' fill='#14532d'>widget-preview</text>
+  <text x='238' y='187' text-anchor='middle' font-size='9' fill='#14532d'>start</text>
+  <rect x='328' y='156' width='130' height='44' fill='#f0fdf4' stroke='#4ade80' rx='6'></rect>
+  <text x='393' y='174' text-anchor='middle' font-size='9' fill='#14532d'>ブラウザで</text>
+  <text x='393' y='187' text-anchor='middle' font-size='9' fill='#14532d'>一覧プレビュー</text>
+  <rect x='478' y='156' width='94' height='44' fill='#dcfce7' stroke='#22c55e' rx='6'></rect>
+  <text x='525' y='174' text-anchor='middle' font-size='9' fill='#14532d'>保存で</text>
+  <text x='525' y='187' text-anchor='middle' font-size='9' fill='#14532d'>自動更新</text>
+  <path d='M150 178 L166 178' stroke='#94a3b8' stroke-width='1.5'></path>
+  <path d='M310 178 L326 178' stroke='#94a3b8' stroke-width='1.5'></path>
+  <path d='M460 178 L476 178' stroke='#94a3b8' stroke-width='1.5'></path>
+</svg>
+<figcaption>図1：実機ビルド待ちの往復が、保存→自動更新の即時ループに置き換わる。</figcaption>
+</figure>
+
+<p><strong>カスタマイズ。</strong> 引数で <code>name</code>/<code>group</code>（UIでグルーピング）/<code>size</code>（疑似サイズ、例 Size(375,667)）/<code>textScaleFactor</code>/<code>wrapper</code>（ScaffoldやInheritedWidgetを注入）/<code>theme</code>/<code>brightness</code>（light/dark）/<code>localizations</code> を渡せる。<strong>1関数に複数 @Preview 可</strong>——同じ widget を light/dark の2枚並べる、といった使い方ができる。</p>
+
+<p><strong>制約（落とし穴）。</strong> annotation に渡すコールバックは<strong>public かつ const</strong>（インラインのクロージャ不可→トップレベル関数か static メソッドに）。previewer は <strong>Flutter Web でビルド</strong>されるため <strong>ネイティブプラグイン・dart:io・dart:ffi は不可</strong>（呼ぶと throw）。アセットは <code>packages/&lt;pkg&gt;/assets/...</code> のパッケージ相対。ビルドキャッシュはプロジェクト直下 <code>.widget_preview/</code>。IDE は同時1プロジェクトのみ。</p>
+
+<p><strong>現況（3.50 は足踏み）。</strong> stable は依然 <strong>3.47.9 / Dart 3.13.7</strong>（10/29）、beta 3.50.0-0.3.pre で据え置き。<strong>11月 stable 3.50 は 11/5 時点も未公開</strong>で、release-tracker #195830 は 11/2 起票のまま open・チェックリスト全未完（cherry-pick マージや Archive 反映が未着手）＝最終ゲートで止まっている。来週あたりの 3.50 を見据えつつ、Previewer は 3.47 で今すぐ試せる。</p>
+
+<p><strong>あわせて（本日の実務メモ）。</strong> 素材には他に、Hero のカスタム（<code>flightShuttleBuilder</code> で両ルートの見た目ジャンプを吸収、<code>createRectTween</code> に <code>MaterialRectArcTween</code> で弧を描く軌道）、go_router 17.x（<code>context.go</code>/<code>push</code>・global <code>redirect</code>+<code>refreshListenable</code>・<code>StatefulShellRoute.indexedStack</code>・型安全ルート）、ListView 性能（<code>shrinkWrap:true</code> の罠＝遅延生成が死ぬので <code>CustomScrollView</code>+<code>SliverList.builder</code> で平坦化、固定高は <code>itemExtent</code>/<code>prototypeItem</code>）も。いずれも「今日の仕事ですぐ効く」定番。</p>
+
+<p><strong>ひとことまとめ。</strong> UIの試行錯誤を「実機ビルド待ち」から解放する一手。@Preview を1つ書いて <code>flutter widget-preview start</code>——まずこの往復を体に入れると反復速度が変わる。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://docs.flutter.dev/tools/widget-previewer" target="_blank" rel="noopener noreferrer"> Widget Previewer (docs.flutter.dev) </a> </li><li> <a href="https://dcm.dev/blog/2025/12/15/flutter-widget-previewer/" target="_blank" rel="noopener noreferrer"> Flutter Widget Previewer (DCM) </a> </li><li> <a href="https://github.com/flutter/flutter/issues/195830" target="_blank" rel="noopener noreferrer"> stable 3.50.0 release tracker #195830 (GitHub) </a> </li><li> <a href="https://pub.dev/packages/go_router" target="_blank" rel="noopener noreferrer"> go_router (pub.dev) </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

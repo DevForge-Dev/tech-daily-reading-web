@@ -1,0 +1,108 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>11/5のClaude Code — v2.1.318が無人運用の地雷を潰す：サインイン期限の可視化・共有ホーム保全・背景サブエージェント3分背景化 — デイリー技術深掘り 読み物</title><meta name="description" content="派手な新機能はないが、複数モデル×長時間×共有環境で踏む落とし穴を静かに修正。毎日スケジュールでエージェントを回す使い方にこそ効く挙動変更を、仕組みから読む。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-05-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="11/5のClaude Code — v2.1.318が無人運用の地雷を潰す：サインイン期限の可視化・共有ホーム保全・背景サブエージェント3分背景化 — デイリー技術深掘り 読み物"><meta property="og:description" content="派手な新機能はないが、複数モデル×長時間×共有環境で踏む落とし穴を静かに修正。毎日スケジュールでエージェントを回す使い方にこそ効く挙動変更を、仕組みから読む。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-05-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>11/5のClaude Code — v2.1.318が無人運用の地雷を潰す：サインイン期限の可視化・共有ホーム保全・背景サブエージェント3分背景化</h1> <p class="lede">派手な新機能はないが、複数モデル×長時間×共有環境で踏む落とし穴を静かに修正。毎日スケジュールでエージェントを回す使い方にこそ効く挙動変更を、仕組みから読む。</p> <div class="meta"> <span>📅 2026年11月5日</span> <span>⏱ 約3分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="0"><p><strong>背景・なぜ今これか。</strong> 11/5時点の公式最新は <strong>v2.1.318</strong>（11/3公開）。昨日扱った v2.1.317 より新しい。中身は目を引く新機能ではなく、<strong>「複数モデル・長時間・共有環境」で静かに踏む事故</strong>を潰す修正群だ。まさに自分のように無人スケジュールでサブエージェントを回す使い方に直撃するので、読み飛ばすと痛い順に整理する。</p>
+
+<p><strong>何が重要か①：サインイン期限の可視化。</strong> 保存済み claude.ai サインインの有効期限が表に出た。<code>claude auth status</code> が <code>loginExpiresAt</code> を、<code>claude -p</code> の JSON 結果が <code>credential_expires_at</code> を返し、<strong>期限の10日前から stderr に1行の警告</strong>を出す。無人運用で一番怖い「気づいたら認証切れでジョブが全部落ちていた」を、事前に検知できるフックができたということ。</p>
+
+<p><strong>何が重要か②：共有ネットワークホーム（NFS等）の設定保全。</strong> <code>~/.claude.json</code>・設定・ログインが削除／空化／古いコピーに置換される、空き容量が尽きるとログインが空ファイル化する、<code>/logout</code> や <code>claude mcp remove</code> が失敗を黙殺する——といった事故を多数修正。<code>claude mcp add</code>/<code>remove</code> は<strong>ロックを取得してから書き込む</strong>よう直した。複数PCで同一ホームを共有する環境ほど効く。</p>
+
+<figure class='fig'>
+<svg viewBox='0 0 600 252' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <rect x='0' y='0' width='600' height='252' fill='#fff7ed' stroke='#f97316' rx='8'></rect>
+  <text x='300' y='24' text-anchor='middle' font-size='13' font-weight='bold' fill='#9a3412'>v2.1.318 の主な挙動変更</text>
+  <line x1='190' y1='34' x2='190' y2='244' stroke='#fed7aa'></line>
+  <line x1='380' y1='34' x2='380' y2='244' stroke='#fed7aa'></line>
+  <text x='100' y='50' text-anchor='middle' font-size='11' font-weight='bold' fill='#c2410c'>項目</text>
+  <text x='285' y='50' text-anchor='middle' font-size='11' font-weight='bold' fill='#c2410c'>従来</text>
+  <text x='490' y='50' text-anchor='middle' font-size='11' font-weight='bold' fill='#c2410c'>v2.1.318</text>
+  <line x1='18' y1='58' x2='582' y2='58' stroke='#fdba74'></line>
+  <text x='100' y='84' text-anchor='middle' font-size='10' font-weight='bold' fill='#7c2d12'>サインイン期限</text>
+  <text x='200' y='84' font-size='9' fill='#431407'>不可視</text>
+  <text x='390' y='80' font-size='9' fill='#431407'>auth statusに表示</text>
+  <text x='390' y='93' font-size='9' fill='#431407'>10日前からstderr警告</text>
+  <line x1='18' y1='104' x2='582' y2='104' stroke='#ffedd5'></line>
+  <text x='100' y='130' text-anchor='middle' font-size='10' font-weight='bold' fill='#7c2d12'>共有ホーム設定</text>
+  <text x='200' y='126' font-size='9' fill='#431407'>削除/空化/置換で</text>
+  <text x='200' y='139' font-size='9' fill='#431407'>破損し得る</text>
+  <text x='390' y='126' font-size='9' fill='#431407'>ロック取得後に書込</text>
+  <text x='390' y='139' font-size='9' fill='#431407'>復元手順も改善</text>
+  <line x1='18' y1='150' x2='582' y2='150' stroke='#ffedd5'></line>
+  <text x='100' y='176' text-anchor='middle' font-size='10' font-weight='bold' fill='#7c2d12'>背景サブエージェント</text>
+  <text x='200' y='172' font-size='9' fill='#431407'>待機中に</text>
+  <text x='200' y='185' font-size='9' fill='#431407'>キャッシュ失効</text>
+  <text x='390' y='172' font-size='9' fill='#431407'>3分でシェルを背景化</text>
+  <text x='390' y='185' font-size='9' fill='#431407'>キャッシュを維持</text>
+  <line x1='18' y1='196' x2='582' y2='196' stroke='#ffedd5'></line>
+  <text x='100' y='222' text-anchor='middle' font-size='10' font-weight='bold' fill='#7c2d12'>deniedMcpServers</text>
+  <text x='200' y='222' font-size='9' fill='#431407'>名前一致のみ遮断</text>
+  <text x='390' y='218' font-size='9' fill='#431407'>URL一致で提供サーバ</text>
+  <text x='390' y='231' font-size='9' fill='#431407'>/コネクタも遮断</text>
+</svg>
+<figcaption>図1：v2.1.318 の主要な挙動変更。無人・共有・多モデル運用に効く4点。</figcaption>
+</figure>
+
+<p><strong>何が重要か③：挙動の最適化いろいろ。</strong> 背景サブエージェントは全プロバイダで<strong>3分後に実行中シェルコマンドを背景へ回し、待機中にプロンプトキャッシュが失効しないように</strong>した（長時間ジョブのコスト悪化を防ぐ）。<code>deniedMcpServers</code> の URL 指定が、上流URLの一致する Anthropic 提供サーバやクラウド/自己ホスト runner のコネクタも遮断するよう拡張。IDE 端末内で起動した Claude Code は<strong>IDE拡張を自動インストール/更新しなくなった</strong>。mod の <code>$.model.fork</code> に <code>effort</code> が付き、軽い脇作業をセッションのeffortと無関係に <code>low</code> で走らせられる。クラウドは「リポジトリ無し」起動が可能に。</p>
+
+<p><strong>実務での使いどころ。</strong> 毎日スケジュールで回すなら、まず <code>claude auth status</code> の <code>loginExpiresAt</code> を監視対象に入れて期限切れを先回りする。クラウド実行では「リポジトリ無し起動」で調査系の軽いタスクをコード無しに回せる。長時間サブエージェントを多用するなら、3分背景化でキャッシュが保たれる前提でプロンプト設計を見直すと無駄な再送が減る。</p>
+
+<p><strong>ニュースも一言。</strong> Morph の比較（11/2再検証）では Terminal-Bench 4.0 で <strong>Claude Code+Opus5.5 が 64.85%</strong>、Codex+GPT-6.1 Sol が 58.18%。文脈窓は双方約100万トークンでほぼ互角だが、API単価は GPT-6.1 Sol（$2/$10）が Opus5.5（$4/$20）より安い。別件で The Next Web は「Claude Code がゲーム再現作業を拒否する」との開発者報告（GitHub Issue #106167、受託の正規案件まで止まる例）を伝えるが、<strong>Anthropicは変更を公式アナウンスしておらず未確認</strong>。</p>
+
+<p><strong>注意点。</strong> v2.1.318 の詳細は gradually.ai（公式CHANGELOG由来）と公式changelog準拠。ベンチ数値はベンダー（Morph）の主張で独立検証ではない。ゲーム拒否は開発者報告ベース。</p>
+
+<p><strong>ひとことまとめ。</strong> 「新機能ゼロでも読む価値のある回」。無人・共有・多モデルで回す人ほど、期限可視化とホーム保全と3分背景化の3点だけは押さえておくと事故が減る。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://www.gradually.ai/en/changelogs/claude-code/" target="_blank" rel="noopener noreferrer"> Claude Code CHANGELOG (gradually.ai) </a> </li><li> <a href="https://code.claude.com/docs/en/changelog" target="_blank" rel="noopener noreferrer"> Claude Code changelog (公式) </a> </li><li> <a href="https://www.morphllm.com/comparisons/codex-vs-claude-code" target="_blank" rel="noopener noreferrer"> Codex vs Claude Code (Morph) </a> </li><li> <a href="https://thenextweb.com/news/claude-code-game-recreation-refusals-developers" target="_blank" rel="noopener noreferrer"> Claude Code game-recreation refusals (The Next Web) </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
