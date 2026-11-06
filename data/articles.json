@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-11-05T04:49:00.668Z",
+  "generatedAt": "2026-11-06T04:46:18.756Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,110 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-11-06-claude-code",
+      "date": "2026-11-06",
+      "topic": "Claude Code",
+      "title": "11/6のClaude Code — 静かな日こそ操縦系の整備：7レイヤーの層分けと、fast mode廃止まで残り約3週間",
+      "lede": "新リリースの乏しい日に、CLAUDE.md・hooks・skillsの役割分離を見直す。7時間自律の楽天事例が裏付ける。",
+      "articleHtml": "<p>11/6は公式に動きが乏しく、最新は11/3の <strong>v2.1.318</strong> のまま（11/4〜11/6の新規リリースは未確認・公式docsはv2.1.311止まりで集計サイトが先行）。こういう\"静かな日\"こそ、ツールの<strong>操縦系</strong>を見直す好機だ。BestHubが公式ガイダンスを「挙動を制御する7つの仕組み」として整理した（11/4更新・公式資料の二次要約）。</p>\n<p>核心は、7つを<strong>「いつ読み込まれるか」「トークンコスト」</strong>の軸で層分けすること。<strong>常時</strong>読まれる <code>CLAUDE.md</code> は短く（200行未満、モノレポは <code>claudeMdExcludes</code> で無関係ファイルを除外）、\"絶対に守らせたい\"制御は <code>hooks</code>／権限へ、手順は <code>skills</code> へ逃がす——という役割分離が勘所になる。</p>\n<figure class='fig'><svg viewBox='0 0 600 312' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='0' y='0' width='600' height='312' fill='#fff8f2'/>\n  <text x='12' y='22' font-size='14' font-weight='bold' fill='#b45309'>Claude Code 操縦の7レイヤー（読み込み時機 × コスト）</text>\n  <rect x='12' y='34' width='230' height='24' fill='#fde7cf'/><text x='20' y='51' font-size='12' font-weight='bold' fill='#7c2d12'>仕組み</text>\n  <rect x='242' y='34' width='346' height='24' fill='#fde7cf'/><text x='250' y='51' font-size='12' font-weight='bold' fill='#7c2d12'>読み込み時機 / コストと使いどころ</text>\n  <g font-size='11.5' fill='#1f2937'>\n  <rect x='12' y='58' width='230' height='32' fill='#fff' stroke='#f0c99a'/><text x='20' y='78'>① CLAUDE.md（root/sub）</text><rect x='242' y='58' width='346' height='32' fill='#fff' stroke='#f0c99a'/><text x='250' y='78'>常時読込＝高コスト。200行未満に圧縮</text>\n  <rect x='12' y='90' width='230' height='32' fill='#fff' stroke='#f0c99a'/><text x='20' y='110'>② rules（パス限定）</text><rect x='242' y='90' width='346' height='32' fill='#fff' stroke='#f0c99a'/><text x='250' y='110'>ファイル単位の制約。該当パスでのみ効く</text>\n  <rect x='12' y='122' width='230' height='32' fill='#fff' stroke='#f0c99a'/><text x='20' y='142'>③ skills</text><rect x='242' y='122' width='346' height='32' fill='#fff' stroke='#f0c99a'/><text x='250' y='142'>手順書。必要時に読まれる＝CLAUDE.mdの退避先</text>\n  <rect x='12' y='154' width='230' height='32' fill='#fff' stroke='#f0c99a'/><text x='20' y='174'>④ subagents</text><rect x='242' y='154' width='346' height='32' fill='#fff' stroke='#f0c99a'/><text x='250' y='174'>別コンテキストで調査。明確な戻り条件を与える</text>\n  <rect x='12' y='186' width='230' height='32' fill='#fff7ed' stroke='#f0c99a'/><text x='20' y='206' font-weight='bold'>⑤ hooks（PreToolUse）</text><rect x='242' y='186' width='346' height='32' fill='#fff7ed' stroke='#f0c99a'/><text x='250' y='206'>危険コマンド遮断・編集後Prettier＝物理的に強制</text>\n  <rect x='12' y='218' width='230' height='32' fill='#fff' stroke='#f0c99a'/><text x='20' y='238'>⑥ output styles</text><rect x='242' y='218' width='346' height='32' fill='#fff' stroke='#f0c99a'/><text x='250' y='238'>.claude/output-styles/ に配置</text>\n  <rect x='12' y='250' width='230' height='32' fill='#fff' stroke='#f0c99a'/><text x='20' y='270'>⑦ 追記 system prompt</text><rect x='242' y='250' width='346' height='32' fill='#fff' stroke='#f0c99a'/><text x='250' y='270'>最終的な上書き的指示</text>\n  </g>\n  <text x='12' y='300' font-size='10.5' fill='#9a3412'>原則: 常時コストの高い①は短く / 絶対則は⑤hook・権限へ / 手順は③skillへ</text>\n</svg><figcaption>図1：Claude Codeの挙動を決める7つの仕組みを「読み込み時機×コスト」で層分け。</figcaption></figure>\n<p>SmartScopeの文脈管理Tips（10/13更新）も同じ思想だ。<strong>検証可能な受け入れ基準</strong>（テスト・期待出力）を先に渡す、<code>subagent</code>には明確な<strong>戻り条件</strong>を与える、<code>/compact</code>は保持指示付きで、<code>/clear</code>の前に未解決事項を書き出す。文脈を\"縮める前に守る\"のがコツ。</p>\n<p>実務での使いどころははっきりしている。10プロジェクト横断のような運用なら、各リポジトリの <code>CLAUDE.md</code> を棚卸しして200行へ圧縮し、共通手順はskill化、\"本番ブランチへ直pushしない\"のような不変則はhookで物理的に遮断する——これだけで取りこぼしと事故が減る。</p>\n<p>あわせて<strong>期限の実務注意</strong>：Opus 4.8の\"fast mode\"は10/30非推奨・<strong>11/30廃止予定</strong>で、本日時点で残り約3週間（24日）。fast mode依存のCI/スクリプトは速度維持のため <strong>Opus 5.5</strong> への移行確認を急ぎたい。</p>\n<p>なぜ今これが効くのか、という裏付けも出ている。Anthropic公式の楽天事例は、約<strong>7時間の自律セッション</strong>で1,250万行のvLLMコードベースに活性ベクトル抽出を実装し参照実装と<strong>数値精度99.9%</strong>一致、新機能のTime-to-Marketを24営業日→5日（<strong>79%短縮</strong>）、さらに1タスクを<strong>24並列</strong>に分割する\"アンビエントエージェント\"を構築中、と報告する。長時間の自律運用は、上の層分けされた制御があってこそ破綻しない。</p>\n<p><strong>注意点</strong>：BestHubは公式資料の二次要約で一部未照合、Goldman Sachsがトレーダーから Claude Code を撤収したとの報道（11/2）は集約見出しベースで一次ソース未確認。鵜呑みにせず一次情報で確認したい。</p>\n<p><strong>ひとことまとめ</strong>：静かな日は操縦系のメンテ日。CLAUDE.mdを短く、hookで不変則を固め、skillへ手順を逃がす——この三手が自律運用の土台になる。</p>",
+      "sources": [
+        {
+          "title": "Claude Code CHANGELOG (gradually.ai)",
+          "url": "https://www.gradually.ai/en/changelogs/claude-code/"
+        },
+        {
+          "title": "BestHub — Mastering Claude Code: Skills/Hooks/Subagents (official guidance)",
+          "url": "https://www.besthub.dev/articles/mastering-claude-code-skills-hooks-subagents-and-more-official-guidance-b0f6368f48d6"
+        },
+        {
+          "title": "SmartScope — Claude Code Best Practices (Advanced)",
+          "url": "https://smartscope.blog/en/generative-ai/claude/claude-code-best-practices-advanced-2026/"
+        },
+        {
+          "title": "Anthropic 公式事例 — 楽天",
+          "url": "https://claude.com/ja/customers/rakuten"
+        }
+      ]
+    },
+    {
+      "id": "2026-11-06-nextjs",
+      "date": "2026-11-06",
+      "topic": "Next.js",
+      "title": "11/6のNext.js — Material リップルをApp Routerで正しく：座標起点・被覆半径・確実な破棄・RSC島化",
+      "lede": "波紋は見た目でなく実装の正しさ。CSS-onlyとJSの島の使い分け、落とし穴とprefers-reduced-motionまで。",
+      "articleHtml": "<p>ボタンを押した\"その場所\"から円が広がって消えるMaterial Designの<strong>リップル（波紋）</strong>は、どこを押したかを身体的に確認させる定番のタッチフィードバックだ。<code>:active</code>の色変化だけより「触れた感」が段違いで、ボタン/リスト/カード/FABなど\"押せる面\"全般に効き、モバイル〜PWAの体感品質に直結する。</p>\n<p>ポイントは見た目ではなく<strong>実装の正しさ</strong>に集約される。(1)起点をポインタ座標に合わせる、(2)要素全体を必ず覆う半径にする、(3)連打で重なる複数リップルを確実に破棄する、(4) <code>transform/opacity</code> だけでアニメする、(5)本物の <code>&lt;button&gt;</code> に乗せ <code>prefers-reduced-motion</code> で無効化できる——この5点だ。</p>\n<figure class='fig'><svg viewBox='0 0 600 212' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='0' y='0' width='600' height='212' fill='#f2f8ff'/>\n  <text x='12' y='22' font-size='14' font-weight='bold' fill='#1d4ed8'>方式A（CSS-only）と 方式B（JS/React）の使い分け</text>\n  <rect x='12' y='32' width='180' height='26' fill='#dbeafe'/><text x='20' y='50' font-size='12' font-weight='bold' fill='#1e3a8a'>観点</text>\n  <rect x='192' y='32' width='198' height='26' fill='#dbeafe'/><text x='200' y='50' font-size='12' font-weight='bold' fill='#1e3a8a'>方式A: CSS-only</text>\n  <rect x='390' y='32' width='198' height='26' fill='#dbeafe'/><text x='398' y='50' font-size='12' font-weight='bold' fill='#1e3a8a'>方式B: JS/React</text>\n  <g font-size='11.5' fill='#1f2937'>\n  <rect x='12' y='58' width='180' height='28' fill='#fff' stroke='#bcd3f5'/><text x='20' y='76'>波紋の起点</text><rect x='192' y='58' width='198' height='28' fill='#fff' stroke='#bcd3f5'/><text x='200' y='76'>中央固定</text><rect x='390' y='58' width='198' height='28' fill='#eff6ff' stroke='#bcd3f5'/><text x='398' y='76'>クリック座標</text>\n  <rect x='12' y='86' width='180' height='28' fill='#fff' stroke='#bcd3f5'/><text x='20' y='104'>複数同時（連打）</text><rect x='192' y='86' width='198' height='28' fill='#fff' stroke='#bcd3f5'/><text x='200' y='104'>単一のみ</text><rect x='390' y='86' width='198' height='28' fill='#eff6ff' stroke='#bcd3f5'/><text x='398' y='104'>複数OK（state配列）</text>\n  <rect x='12' y='114' width='180' height='28' fill='#fff' stroke='#bcd3f5'/><text x='20' y='132'>use client</text><rect x='192' y='114' width='198' height='28' fill='#eff6ff' stroke='#bcd3f5'/><text x='200' y='132'>不要（RSCのまま）</text><rect x='390' y='114' width='198' height='28' fill='#fff' stroke='#bcd3f5'/><text x='398' y='132'>ボタンの殻だけ島化</text>\n  <rect x='12' y='142' width='180' height='28' fill='#fff' stroke='#bcd3f5'/><text x='20' y='160'>hydrationコスト</text><rect x='192' y='142' width='198' height='28' fill='#eff6ff' stroke='#bcd3f5'/><text x='200' y='160'>ゼロ</text><rect x='390' y='142' width='198' height='28' fill='#fff' stroke='#bcd3f5'/><text x='398' y='160'>小（島のみ）</text>\n  <rect x='12' y='170' width='180' height='28' fill='#fff' stroke='#bcd3f5'/><text x='20' y='188'>向いた用途</text><rect x='192' y='170' width='198' height='28' fill='#fff' stroke='#bcd3f5'/><text x='200' y='188'>軽い触感の既定</text><rect x='390' y='170' width='198' height='28' fill='#fff' stroke='#bcd3f5'/><text x='398' y='188'>座標起点が要るCTA</text>\n  </g>\n</svg><figcaption>図1：まずCSS-onlyを既定にし、座標起点が必要な箇所だけJS方式の島に切り出す。</figcaption></figure>\n<p>仕組みの核は半径計算にある。クリック点から4隅への最大距離を半径にすれば、隅をタップしても反対隅まで確実に届く。</p>\n<pre><code>size = Math.max(\n  hypot(x, y), hypot(w-x, y),\n  hypot(x, h-y), hypot(w-x, h-y)\n) * 2;  // Math.max(w,h) の中央固定だと隅タップで\"欠けた波紋\"になる</code></pre>\n<p>方式Bのライフサイクルはこうだ。<code>onPointerDown</code> で座標とサイズを算出し、絶対配置の <code>span</code> を <code>state</code> に積む。<code>@keyframes</code> で <code>scale(0)→scale(1)</code> ＋ <code>opacity</code> を落とし、<code>onAnimationEnd</code> でその波紋を <code>state</code> から除去する——これでDOMリークしない。</p>\n<figure class='fig'><pre class='mermaid'>flowchart LR\n  A[\"onPointerDown\"] --> B[\"4隅最大距離で半径算出\"]\n  B --> C[\"setState で span を配列に追加\"]\n  C --> D[\"@keyframes: scale+opacity\"]\n  D --> E[\"onAnimationEnd\"]\n  E --> F[\"filter で state から除去 = リーク無し\"]</pre><figcaption>図2：押下から破棄までを宣言的に閉じる。setTimeout手動管理より漏れにくい。</figcaption></figure>\n<p>App Routerでの組み込みは素直だ。方式Bは<strong>ボタンの殻だけ <code>'use client'</code> の小島</strong>に隔離し、ページ本体・データ取得・一覧の <code>map</code> は<strong>RSCのまま</strong> <code>children</code> を流し込むだけ。<code>ripples</code> の初期値を空配列にすればSSRは波紋ゼロのボタンを描画しクライアント初回と完全一致＝<strong>hydration mismatch無し</strong>。波紋はJS到達後のクリックで初めて現れる純粋なプログレッシブエンハンスメントで、JS前でもボタンはPOSTでき、Server Actions / <code>useFormStatus</code> とも同居する。</p>\n<p><strong>落とし穴</strong>：<code>onClick</code>（離した時に発火＝遅い／キーボード擬似clickは座標無しで左上に出る）ではなく <code>onPointerDown</code>（押下即時）＋キーボードは中央起点に分岐する。<code>overflow:hidden</code> / <code>border-radius:inherit</code> 忘れで角丸からはみ出す。ripple層の <code>pointer-events:none</code> 忘れで次のクリックを食う。<code>width/height</code> をアニメすると毎フレームreflow＝初期サイズ固定で <code>transform:scale()</code> だけ動かす。<code>&lt;div&gt;</code> でなく必ず <code>&lt;button&gt;</code>。</p>\n<p><strong>アクセシビリティ</strong>：リップルは装飾（意味はラベル/状態が担う）なので <code>prefers-reduced-motion: reduce</code> では波紋を出さず（WCAG 2.3.3）、代わりに <code>:active</code>/<code>:focus-visible</code> の色変化でフィードバックは残す。JS側でも <code>matchMedia</code> を見て波紋のstate追加自体をスキップすれば無駄なDOMも作らない。</p>\n<p><strong>試すなら</strong>：まずCSS-onlyを\"軽い触感\"の既定に入れ、座標起点が要る主要CTAだけ方式Bの島に。デザインシステムにMUIを使っているなら <code>Button</code> が内部でrippleを持つのでそれで足りる。</p>\n<p><strong>ひとことまとめ</strong>：座標起点・被覆半径・確実な破棄・transform限定の4点を外さなければリップルは軽い。RSCは殻だけ島化し、本体はServerのまま。</p>",
+      "sources": [
+        {
+          "title": "MDN — Pointer events",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/Pointer_events"
+        },
+        {
+          "title": "MDN — Element.getBoundingClientRect()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect"
+        },
+        {
+          "title": "LogRocket — Designing ripple effect UI feedback",
+          "url": "https://blog.logrocket.com/designing-ripple-effect-ui-feedback/"
+        },
+        {
+          "title": "web.dev — prefers-reduced-motion",
+          "url": "https://web.dev/articles/prefers-reduced-motion"
+        }
+      ]
+    },
+    {
+      "id": "2026-11-06-flutter",
+      "date": "2026-11-06",
+      "topic": "Flutter",
+      "title": "11/6のFlutter — 3.50 stableの昇格が再始動、待機中はflutter_bloc 9.1.1の4ウィジェットを固める",
+      "lede": "beta 0.4.preでpreが再進。合間にBlocBuilder/Listener/Selectorとread/watch/selectを整理し土台を作る。",
+      "articleHtml": "<p>なぜ今これが話題か——<strong>beta 3.50.0-0.4.pre</strong> が11/4に到着し、約6日ぶりにpreが進んだ＝<strong>3.50 stableの昇格作業が再始動</strong>した。stableは依然 <strong>3.47.9（Dart 3.13.7）</strong> 据え置きで、release-tracker #195830は11/2起票のままopen・未公開。3.50が出れば <strong>Dart 3.14がstable初到達</strong>し、Web WasmGC既定化・Android Impeller一本化・<code>material_ui</code>/<code>cupertino_ui</code> の正式deprecationが一般化する。</p>\n<p>実務の構えは明快だ。本番は <strong>3.47.9 をpin</strong> のまま、別ジョブで <strong>0.4.pre を緑化</strong>（<code>build web --wasm</code> と <code>appbundle</code> を今のうちに通す）。preが再び動き出した＝stable公開は近い可能性があり、昇格直前は個別hashより<strong>チャネル追従</strong>が安全。</p>\n<p>この待機期間に足場を固めるなら、状態管理の定番 <strong>flutter_bloc 9.1.1</strong> のウィジェット使い分けを押さえておきたい。最小は <code>Cubit</code>（公開メソッド内で <code>emit(新state)</code>）、イベント駆動が要るときに <code>Bloc</code> へ昇格（<code>on&lt;E&gt;</code> は <code>bloc_concurrency</code> の <code>sequential/droppable/restartable/concurrent</code> を <code>transformer</code> に取り、同型イベントの並行性を制御できる）。肝はUI側の4ウィジェットの役割分担だ。</p>\n<figure class='fig'><svg viewBox='0 0 600 236' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='0' y='0' width='600' height='236' fill='#eefaf4'/>\n  <text x='12' y='22' font-size='14' font-weight='bold' fill='#047857'>flutter_bloc 9.1.1 — どのウィジェットを使う？</text>\n  <rect x='12' y='32' width='150' height='26' fill='#cdeede'/><text x='18' y='50' font-size='12' font-weight='bold' fill='#065f46'>ウィジェット</text>\n  <rect x='162' y='32' width='240' height='26' fill='#cdeede'/><text x='168' y='50' font-size='12' font-weight='bold' fill='#065f46'>役割</text>\n  <rect x='402' y='32' width='186' height='26' fill='#cdeede'/><text x='408' y='50' font-size='12' font-weight='bold' fill='#065f46'>間引き / 注意</text>\n  <g font-size='11' fill='#1f2937'>\n  <rect x='12' y='58' width='150' height='32' fill='#fff' stroke='#b6e3cd'/><text x='18' y='78'>BlocBuilder</text><rect x='162' y='58' width='240' height='32' fill='#fff' stroke='#b6e3cd'/><text x='168' y='78'>stateに応じてUIを再描画</text><rect x='402' y='58' width='186' height='32' fill='#fff' stroke='#b6e3cd'/><text x='408' y='78'>buildWhen で間引き</text>\n  <rect x='12' y='90' width='150' height='32' fill='#fff' stroke='#b6e3cd'/><text x='18' y='110'>BlocListener</text><rect x='162' y='90' width='240' height='32' fill='#fff' stroke='#b6e3cd'/><text x='168' y='110'>副作用=SnackBar/遷移/ダイアログ</text><rect x='402' y='90' width='186' height='32' fill='#fff' stroke='#b6e3cd'/><text x='408' y='110'>初期stateでは呼ばれない</text>\n  <rect x='12' y='122' width='150' height='32' fill='#fff' stroke='#b6e3cd'/><text x='18' y='142'>BlocConsumer</text><rect x='162' y='122' width='240' height='32' fill='#fff' stroke='#b6e3cd'/><text x='168' y='142'>描画＋副作用の両方</text><rect x='402' y='122' width='186' height='32' fill='#fff' stroke='#b6e3cd'/><text x='408' y='142'>両方要るときだけ</text>\n  <rect x='12' y='154' width='150' height='32' fill='#f0fdf7' stroke='#b6e3cd'/><text x='18' y='174'>BlocSelector</text><rect x='162' y='154' width='240' height='32' fill='#f0fdf7' stroke='#b6e3cd'/><text x='168' y='174'>派生値だけ再描画</text><rect x='402' y='154' width='186' height='32' fill='#f0fdf7' stroke='#b6e3cd'/><text x='408' y='174'>戻り値は不変値（List/Mapは不可）</text>\n  </g>\n  <rect x='12' y='192' width='576' height='32' fill='#dcfce7' stroke='#86efac'/>\n  <text x='20' y='212' font-size='11' fill='#065f46'>購読: read=1回読み(ハンドラ) / watch=変化ごとrebuild / select=派生値だけ購読（BlocSelector相当）</text>\n</svg><figcaption>図1：描画はBuilder、副作用はListener、派生値はSelector。context.read/watch/selectと対で覚える。</figcaption></figure>\n<p>stateは <code>Equatable</code> で値等価にして無駄なrebuildを抑え、Repositoryは <code>RepositoryProvider</code> をbloc群の上に置き <code>context.read&lt;Repo&gt;()</code> で注入する（bloc同士を直接stream購読せず、共有はrepository経由にする）のが定石だ。</p>\n<p><strong>試すなら</strong>——アニメは <strong>Rive 0.14</strong> でランタイムがDart→C++（<code>rive_native</code>）に刷新された点に注意。世のtutorialの多くは0.14未満で<strong>そのままではコンパイル不可</strong>だ。<code>RiveAnimation.asset</code>→<code>RiveWidget</code>、<code>StateMachineController.fromArtboard</code>→<code>RiveWidgetController</code>、<code>SMIBool/SMITrigger/SMINumber</code>→<code>stateMachine.boolean/trigger/number</code> に置き換わり、<code>main()</code> で <code>await RiveNative.init()</code> が要る。メモリ点検は <strong>leak_tracker</strong>：<code>not-disposed</code>（dispose漏れ）/<code>not-GCed</code>（参照を断て）/<code>GCed-late</code> の3種を、<code>testWidgetsWithLeakTracking</code> でテスト失敗として検出し、DevTools &gt; Memory &gt; Leaks で詳細を見る。真因（culprit）を直せば巻き添え（victim）は自然に消える。</p>\n<p><strong>注意点</strong>：3.50は\"近い可能性\"だが未公開＝<code>flutter upgrade</code> 差分とrelease notesを見てから昇格すること。Riveはdocs内でも版表記が <code>^0.14.11</code>/<code>^0.15.0-dev</code> と不統一なので、pin前にpub.devで安定版を確認。leak_trackerはWeb非対応・公式docは現在\"建設中\"。</p>\n<p><strong>ひとことまとめ</strong>：本番はpin維持で3.50を緑化待機。合間に、Blocの4ウィジェット＋<code>read/watch/select</code> の使い分けという\"土台\"を固めるのが9.1.1でも最良の投資だ。</p>",
+      "sources": [
+        {
+          "title": "Flutter Versions (flutterreleases.com)",
+          "url": "https://flutterreleases.com/flutter-versions/"
+        },
+        {
+          "title": "stable 3.50.0 release tracker #195830 (GitHub)",
+          "url": "https://github.com/flutter/flutter/issues/195830"
+        },
+        {
+          "title": "flutter_bloc (pub.dev)",
+          "url": "https://pub.dev/packages/flutter_bloc"
+        },
+        {
+          "title": "Rive Flutter migration guide",
+          "url": "https://rive.app/docs/runtimes/flutter/migration-guide"
+        },
+        {
+          "title": "leak_tracker_flutter_testing (pub.dev)",
+          "url": "https://pub.dev/packages/leak_tracker_flutter_testing"
+        }
+      ]
+    },
+    {
+      "id": "2026-11-06-github-trending",
+      "date": "2026-11-06",
+      "topic": "GitHub Trending",
+      "title": "11/6の話題リポジトリ — CLIエージェント自走・Androidプライバシー監査・会議リアルタイム通訳の3本",
+      "lede": "AI飽和の谷間で、実務の面倒を自動化・透明化する地に足のついた3本（TypeScript/Kotlin/Swift）。",
+      "articleHtml": "<p>本日もGitHubはAI一色の飽和局面。その谷間で、増加率でも実体でも尖った<strong>3本</strong>を言語横断（TypeScript / Kotlin / Swift）で拾った。3本を貫くのは、派手な\"生成\"ではなく<strong>実務の面倒を自動化・透明化する地に足のついた道具</strong>であること。各リポジトリについて「解決したい課題」と「提供する機能」を押さえる。</p>\n<figure class='fig'><svg viewBox='0 0 620 212' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='0' y='0' width='620' height='212' fill='#f1fcf4'/>\n  <text x='12' y='22' font-size='14' font-weight='bold' fill='#1a7f37'>11/6の3本 — 解決したい課題 → 提供する機能</text>\n  <rect x='12' y='32' width='150' height='26' fill='#d4f3dd'/><text x='18' y='50' font-size='11.5' font-weight='bold' fill='#14532d'>リポジトリ</text>\n  <rect x='162' y='32' width='228' height='26' fill='#d4f3dd'/><text x='168' y='50' font-size='11.5' font-weight='bold' fill='#14532d'>解決したい課題</text>\n  <rect x='390' y='32' width='218' height='26' fill='#d4f3dd'/><text x='396' y='50' font-size='11.5' font-weight='bold' fill='#14532d'>提供する機能</text>\n  <g font-size='10.8' fill='#1f2937'>\n  <rect x='12' y='58' width='150' height='48' fill='#fff' stroke='#addebc'/><text x='18' y='78' font-weight='bold'>agent-autoloop</text><text x='18' y='95' fill='#3fb950'>TS ・ ⭐3.2k</text>\n  <rect x='162' y='58' width='228' height='48' fill='#fff' stroke='#addebc'/><text x='168' y='76'>CLIエージェントの指示往復が重く</text><text x='168' y='92'>多PJ横断で取りこぼし・観測性不足</text>\n  <rect x='390' y='58' width='218' height='48' fill='#f0fdf4' stroke='#addebc'/><text x='396' y='76'>背後で自走する常駐ループ。迷う所</text><text x='396' y='92'>だけカードで人間に決裁を仰ぐ</text>\n  <rect x='12' y='106' width='150' height='48' fill='#fff' stroke='#addebc'/><text x='18' y='126' font-weight='bold'>NOIR</text><text x='18' y='143' fill='#3fb950'>Kotlin ・ ⭐2.5k</text>\n  <rect x='162' y='106' width='228' height='48' fill='#fff' stroke='#addebc'/><text x='168' y='124'>Androidアプリの権限・通信先・</text><text x='168' y='140'>データの流れが利用者に見えない</text>\n  <rect x='390' y='106' width='218' height='48' fill='#f0fdf4' stroke='#addebc'/><text x='396' y='124'>adb経由で静的解析しあぶり出し、</text><text x='396' y='140'>可逆的な対処まで提示</text>\n  <rect x='12' y='154' width='150' height='48' fill='#fff' stroke='#addebc'/><text x='18' y='174' font-weight='bold'>cicada</text><text x='18' y='191' fill='#3fb950'>Swift ・ ⭐1.5k</text>\n  <rect x='162' y='154' width='228' height='48' fill='#fff' stroke='#addebc'/><text x='168' y='172'>会議/配信で言語の壁・聞き逃し・</text><text x='168' y='188'>議事録作成が同時に発生し面倒</text>\n  <rect x='390' y='154' width='218' height='48' fill='#f0fdf4' stroke='#addebc'/><text x='396' y='172'>リアルタイム字幕＋同時通訳＋AI</text><text x='396' y='188'>議事録を一体化（4OS・無料OSS）</text>\n  </g>\n</svg><figcaption>図1：3本の「なぜ存在するか（課題）」と「何ができるか（機能）」の対応。</figcaption></figure>\n<h4>KKKKhazix/agent-autoloop（TypeScript・⭐約3.2k）</h4>\n<p><strong>解決したい課題</strong>：コマンドラインのAIエージェントは「人が指示→待つ→次を指示」の往復が重く、1人で複数プロジェクトを横断すると取りこぼしや観測性不足が起きやすい。<strong>提供する機能</strong>：エージェントを<strong>背後で常駐</strong>させ、自分でタスクを拾い最後まで追う\"オートループ\"。普段は邪魔せず、<strong>判断に迷う所だけカードを出して人間に決裁を仰ぐ</strong>。MCP / Claude Code / Codex対応・自己ホスト・MIT。<strong>なぜ今急上昇か</strong>：created 2026-11-03＝公開約3日で実測約3,219★/forks594（日平均約1,073★＝当日計測組で<strong>最高率33%</strong>の筆頭）。\"提案ゲート＋人間決裁\"という設計が、無人暴走を嫌う運用者に刺さった。</p>\n<h4>Verlintas/NOIR（Kotlin・⭐約2.5k）</h4>\n<p><strong>解決したい課題</strong>：Androidアプリが裏で何の権限を使い、どの端点へデータを送っているかは利用者から見えない。広告除去系のdebloatは\"消す\"だけで、データの<strong>流れ</strong>を示さない。<strong>提供する機能</strong>：PCから<strong>adb経由</strong>で各アプリの権限・通信先・データフローを<strong>静的解析</strong>してあぶり出し、ロールバック可能な対処まで提示する。プライバシー・フォレンジック寄り・Kotlin Multiplatform・MIT。<strong>なぜ今急上昇か</strong>：created 2026-10-31＝公開約6日で実測約2,451★/forks223（日平均約408★・率約16.7%）。単なる除去ツールでない防御的セキュリティの新規性で拡散した。</p>\n<h4>wquguru/cicada（Swift・⭐約1.5k）</h4>\n<p><strong>解決したい課題</strong>：会議やライブ配信では言語の壁・聞き逃し・議事録作成の手間が同時に発生し、別々のツールを掛け持ちするのが煩わしい。<strong>提供する機能</strong>：任意の会議/配信に<strong>リアルタイム字幕・同時通訳・AI議事録</strong>を付ける無料OSS（知了 Cicada）。メニューバー常駐で音声認識＋翻訳＋要約を一体化し、Mac/Windows/Linux/Androidを横断。Swift/SwiftUI・Apache-2.0。<strong>なぜ今急上昇か</strong>：created 2026-11-01＝公開約5日で実測約1,478★/forks266（日平均約295★・率約20%）。4OS横断かつ無料という実用性が拡散理由。</p>\n<p><strong>まとめ（自分が試すなら）</strong>：10プロジェクト横断の日次運用に最も効くのは <strong>agent-autoloop</strong>——\"迷う所だけ決裁\"の設計が「提案→承認」「Yes-man禁止」の運用原則と一致する。<strong>NOIR</strong> は手持ちAndroid端末の権限棚卸しに一度回す価値があり、<strong>cicada</strong> は海外カンファ視聴や議事録の即戦力。いずれもMIT/Apache-2.0で利用に問題はない。</p>",
+      "sources": [
+        {
+          "title": "KKKKhazix/agent-autoloop",
+          "url": "https://github.com/KKKKhazix/agent-autoloop"
+        },
+        {
+          "title": "Verlintas/NOIR",
+          "url": "https://github.com/Verlintas/NOIR"
+        },
+        {
+          "title": "wquguru/cicada",
+          "url": "https://github.com/wquguru/cicada"
+        }
+      ]
+    },
     {
       "id": "2026-11-05-claude-code",
       "date": "2026-11-05",
