@@ -1,0 +1,82 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>11/6のClaude Code — 静かな日こそ操縦系の整備：7レイヤーの層分けと、fast mode廃止まで残り約3週間 — デイリー技術深掘り 読み物</title><meta name="description" content="新リリースの乏しい日に、CLAUDE.md・hooks・skillsの役割分離を見直す。7時間自律の楽天事例が裏付ける。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-06-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="11/6のClaude Code — 静かな日こそ操縦系の整備：7レイヤーの層分けと、fast mode廃止まで残り約3週間 — デイリー技術深掘り 読み物"><meta property="og:description" content="新リリースの乏しい日に、CLAUDE.md・hooks・skillsの役割分離を見直す。7時間自律の楽天事例が裏付ける。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-06-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>11/6のClaude Code — 静かな日こそ操縦系の整備：7レイヤーの層分けと、fast mode廃止まで残り約3週間</h1> <p class="lede">新リリースの乏しい日に、CLAUDE.md・hooks・skillsの役割分離を見直す。7時間自律の楽天事例が裏付ける。</p> <div class="meta"> <span>📅 2026年11月6日</span> <span>⏱ 約3分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="0"><p>11/6は公式に動きが乏しく、最新は11/3の <strong>v2.1.318</strong> のまま（11/4〜11/6の新規リリースは未確認・公式docsはv2.1.311止まりで集計サイトが先行）。こういう"静かな日"こそ、ツールの<strong>操縦系</strong>を見直す好機だ。BestHubが公式ガイダンスを「挙動を制御する7つの仕組み」として整理した（11/4更新・公式資料の二次要約）。</p>
+<p>核心は、7つを<strong>「いつ読み込まれるか」「トークンコスト」</strong>の軸で層分けすること。<strong>常時</strong>読まれる <code>CLAUDE.md</code> は短く（200行未満、モノレポは <code>claudeMdExcludes</code> で無関係ファイルを除外）、"絶対に守らせたい"制御は <code>hooks</code>／権限へ、手順は <code>skills</code> へ逃がす——という役割分離が勘所になる。</p>
+<figure class='fig'><svg viewBox='0 0 600 312' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <rect x='0' y='0' width='600' height='312' fill='#fff8f2'></rect>
+  <text x='12' y='22' font-size='14' font-weight='bold' fill='#b45309'>Claude Code 操縦の7レイヤー（読み込み時機 × コスト）</text>
+  <rect x='12' y='34' width='230' height='24' fill='#fde7cf'></rect><text x='20' y='51' font-size='12' font-weight='bold' fill='#7c2d12'>仕組み</text>
+  <rect x='242' y='34' width='346' height='24' fill='#fde7cf'></rect><text x='250' y='51' font-size='12' font-weight='bold' fill='#7c2d12'>読み込み時機 / コストと使いどころ</text>
+  <g font-size='11.5' fill='#1f2937'>
+  <rect x='12' y='58' width='230' height='32' fill='#fff' stroke='#f0c99a'></rect><text x='20' y='78'>① CLAUDE.md（root/sub）</text><rect x='242' y='58' width='346' height='32' fill='#fff' stroke='#f0c99a'></rect><text x='250' y='78'>常時読込＝高コスト。200行未満に圧縮</text>
+  <rect x='12' y='90' width='230' height='32' fill='#fff' stroke='#f0c99a'></rect><text x='20' y='110'>② rules（パス限定）</text><rect x='242' y='90' width='346' height='32' fill='#fff' stroke='#f0c99a'></rect><text x='250' y='110'>ファイル単位の制約。該当パスでのみ効く</text>
+  <rect x='12' y='122' width='230' height='32' fill='#fff' stroke='#f0c99a'></rect><text x='20' y='142'>③ skills</text><rect x='242' y='122' width='346' height='32' fill='#fff' stroke='#f0c99a'></rect><text x='250' y='142'>手順書。必要時に読まれる＝CLAUDE.mdの退避先</text>
+  <rect x='12' y='154' width='230' height='32' fill='#fff' stroke='#f0c99a'></rect><text x='20' y='174'>④ subagents</text><rect x='242' y='154' width='346' height='32' fill='#fff' stroke='#f0c99a'></rect><text x='250' y='174'>別コンテキストで調査。明確な戻り条件を与える</text>
+  <rect x='12' y='186' width='230' height='32' fill='#fff7ed' stroke='#f0c99a'></rect><text x='20' y='206' font-weight='bold'>⑤ hooks（PreToolUse）</text><rect x='242' y='186' width='346' height='32' fill='#fff7ed' stroke='#f0c99a'></rect><text x='250' y='206'>危険コマンド遮断・編集後Prettier＝物理的に強制</text>
+  <rect x='12' y='218' width='230' height='32' fill='#fff' stroke='#f0c99a'></rect><text x='20' y='238'>⑥ output styles</text><rect x='242' y='218' width='346' height='32' fill='#fff' stroke='#f0c99a'></rect><text x='250' y='238'>.claude/output-styles/ に配置</text>
+  <rect x='12' y='250' width='230' height='32' fill='#fff' stroke='#f0c99a'></rect><text x='20' y='270'>⑦ 追記 system prompt</text><rect x='242' y='250' width='346' height='32' fill='#fff' stroke='#f0c99a'></rect><text x='250' y='270'>最終的な上書き的指示</text>
+  </g>
+  <text x='12' y='300' font-size='10.5' fill='#9a3412'>原則: 常時コストの高い①は短く / 絶対則は⑤hook・権限へ / 手順は③skillへ</text>
+</svg><figcaption>図1：Claude Codeの挙動を決める7つの仕組みを「読み込み時機×コスト」で層分け。</figcaption></figure>
+<p>SmartScopeの文脈管理Tips（10/13更新）も同じ思想だ。<strong>検証可能な受け入れ基準</strong>（テスト・期待出力）を先に渡す、<code>subagent</code>には明確な<strong>戻り条件</strong>を与える、<code>/compact</code>は保持指示付きで、<code>/clear</code>の前に未解決事項を書き出す。文脈を"縮める前に守る"のがコツ。</p>
+<p>実務での使いどころははっきりしている。10プロジェクト横断のような運用なら、各リポジトリの <code>CLAUDE.md</code> を棚卸しして200行へ圧縮し、共通手順はskill化、"本番ブランチへ直pushしない"のような不変則はhookで物理的に遮断する——これだけで取りこぼしと事故が減る。</p>
+<p>あわせて<strong>期限の実務注意</strong>：Opus 4.8の"fast mode"は10/30非推奨・<strong>11/30廃止予定</strong>で、本日時点で残り約3週間（24日）。fast mode依存のCI/スクリプトは速度維持のため <strong>Opus 5.5</strong> への移行確認を急ぎたい。</p>
+<p>なぜ今これが効くのか、という裏付けも出ている。Anthropic公式の楽天事例は、約<strong>7時間の自律セッション</strong>で1,250万行のvLLMコードベースに活性ベクトル抽出を実装し参照実装と<strong>数値精度99.9%</strong>一致、新機能のTime-to-Marketを24営業日→5日（<strong>79%短縮</strong>）、さらに1タスクを<strong>24並列</strong>に分割する"アンビエントエージェント"を構築中、と報告する。長時間の自律運用は、上の層分けされた制御があってこそ破綻しない。</p>
+<p><strong>注意点</strong>：BestHubは公式資料の二次要約で一部未照合、Goldman Sachsがトレーダーから Claude Code を撤収したとの報道（11/2）は集約見出しベースで一次ソース未確認。鵜呑みにせず一次情報で確認したい。</p>
+<p><strong>ひとことまとめ</strong>：静かな日は操縦系のメンテ日。CLAUDE.mdを短く、hookで不変則を固め、skillへ手順を逃がす——この三手が自律運用の土台になる。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://www.gradually.ai/en/changelogs/claude-code/" target="_blank" rel="noopener noreferrer"> Claude Code CHANGELOG (gradually.ai) </a> </li><li> <a href="https://www.besthub.dev/articles/mastering-claude-code-skills-hooks-subagents-and-more-official-guidance-b0f6368f48d6" target="_blank" rel="noopener noreferrer"> BestHub — Mastering Claude Code: Skills/Hooks/Subagents (official guidance) </a> </li><li> <a href="https://smartscope.blog/en/generative-ai/claude/claude-code-best-practices-advanced-2026/" target="_blank" rel="noopener noreferrer"> SmartScope — Claude Code Best Practices (Advanced) </a> </li><li> <a href="https://claude.com/ja/customers/rakuten" target="_blank" rel="noopener noreferrer"> Anthropic 公式事例 — 楽天 </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

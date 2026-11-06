@@ -1,0 +1,84 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>11/6の話題リポジトリ — CLIエージェント自走・Androidプライバシー監査・会議リアルタイム通訳の3本 — デイリー技術深掘り 読み物</title><meta name="description" content="AI飽和の谷間で、実務の面倒を自動化・透明化する地に足のついた3本（TypeScript/Kotlin/Swift）。"><meta name="theme-color" content="#238636"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-06-github-trending/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="11/6の話題リポジトリ — CLIエージェント自走・Androidプライバシー監査・会議リアルタイム通訳の3本 — デイリー技術深掘り 読み物"><meta property="og:description" content="AI飽和の谷間で、実務の面倒を自動化・透明化する地に足のついた3本（TypeScript/Kotlin/Swift）。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-06-github-trending/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3fb950, #1a7f37)"> <span class="glyph" aria-hidden="true">★</span> <div class="kicker">GitHub Trending</div> <h1>11/6の話題リポジトリ — CLIエージェント自走・Androidプライバシー監査・会議リアルタイム通訳の3本</h1> <p class="lede">AI飽和の谷間で、実務の面倒を自動化・透明化する地に足のついた3本（TypeScript/Kotlin/Swift）。</p> <div class="meta"> <span>📅 2026年11月6日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#238636"> <div> <article class="prose" data-has-mermaid="0"><p>本日もGitHubはAI一色の飽和局面。その谷間で、増加率でも実体でも尖った<strong>3本</strong>を言語横断（TypeScript / Kotlin / Swift）で拾った。3本を貫くのは、派手な"生成"ではなく<strong>実務の面倒を自動化・透明化する地に足のついた道具</strong>であること。各リポジトリについて「解決したい課題」と「提供する機能」を押さえる。</p>
+<figure class='fig'><svg viewBox='0 0 620 212' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <rect x='0' y='0' width='620' height='212' fill='#f1fcf4'></rect>
+  <text x='12' y='22' font-size='14' font-weight='bold' fill='#1a7f37'>11/6の3本 — 解決したい課題 → 提供する機能</text>
+  <rect x='12' y='32' width='150' height='26' fill='#d4f3dd'></rect><text x='18' y='50' font-size='11.5' font-weight='bold' fill='#14532d'>リポジトリ</text>
+  <rect x='162' y='32' width='228' height='26' fill='#d4f3dd'></rect><text x='168' y='50' font-size='11.5' font-weight='bold' fill='#14532d'>解決したい課題</text>
+  <rect x='390' y='32' width='218' height='26' fill='#d4f3dd'></rect><text x='396' y='50' font-size='11.5' font-weight='bold' fill='#14532d'>提供する機能</text>
+  <g font-size='10.8' fill='#1f2937'>
+  <rect x='12' y='58' width='150' height='48' fill='#fff' stroke='#addebc'></rect><text x='18' y='78' font-weight='bold'>agent-autoloop</text><text x='18' y='95' fill='#3fb950'>TS ・ ⭐3.2k</text>
+  <rect x='162' y='58' width='228' height='48' fill='#fff' stroke='#addebc'></rect><text x='168' y='76'>CLIエージェントの指示往復が重く</text><text x='168' y='92'>多PJ横断で取りこぼし・観測性不足</text>
+  <rect x='390' y='58' width='218' height='48' fill='#f0fdf4' stroke='#addebc'></rect><text x='396' y='76'>背後で自走する常駐ループ。迷う所</text><text x='396' y='92'>だけカードで人間に決裁を仰ぐ</text>
+  <rect x='12' y='106' width='150' height='48' fill='#fff' stroke='#addebc'></rect><text x='18' y='126' font-weight='bold'>NOIR</text><text x='18' y='143' fill='#3fb950'>Kotlin ・ ⭐2.5k</text>
+  <rect x='162' y='106' width='228' height='48' fill='#fff' stroke='#addebc'></rect><text x='168' y='124'>Androidアプリの権限・通信先・</text><text x='168' y='140'>データの流れが利用者に見えない</text>
+  <rect x='390' y='106' width='218' height='48' fill='#f0fdf4' stroke='#addebc'></rect><text x='396' y='124'>adb経由で静的解析しあぶり出し、</text><text x='396' y='140'>可逆的な対処まで提示</text>
+  <rect x='12' y='154' width='150' height='48' fill='#fff' stroke='#addebc'></rect><text x='18' y='174' font-weight='bold'>cicada</text><text x='18' y='191' fill='#3fb950'>Swift ・ ⭐1.5k</text>
+  <rect x='162' y='154' width='228' height='48' fill='#fff' stroke='#addebc'></rect><text x='168' y='172'>会議/配信で言語の壁・聞き逃し・</text><text x='168' y='188'>議事録作成が同時に発生し面倒</text>
+  <rect x='390' y='154' width='218' height='48' fill='#f0fdf4' stroke='#addebc'></rect><text x='396' y='172'>リアルタイム字幕＋同時通訳＋AI</text><text x='396' y='188'>議事録を一体化（4OS・無料OSS）</text>
+  </g>
+</svg><figcaption>図1：3本の「なぜ存在するか（課題）」と「何ができるか（機能）」の対応。</figcaption></figure>
+<h4 id="sec-1">KKKKhazix/agent-autoloop（TypeScript・⭐約3.2k）</h4>
+<p><strong>解決したい課題</strong>：コマンドラインのAIエージェントは「人が指示→待つ→次を指示」の往復が重く、1人で複数プロジェクトを横断すると取りこぼしや観測性不足が起きやすい。<strong>提供する機能</strong>：エージェントを<strong>背後で常駐</strong>させ、自分でタスクを拾い最後まで追う"オートループ"。普段は邪魔せず、<strong>判断に迷う所だけカードを出して人間に決裁を仰ぐ</strong>。MCP / Claude Code / Codex対応・自己ホスト・MIT。<strong>なぜ今急上昇か</strong>：created 2026-11-03＝公開約3日で実測約3,219★/forks594（日平均約1,073★＝当日計測組で<strong>最高率33%</strong>の筆頭）。"提案ゲート＋人間決裁"という設計が、無人暴走を嫌う運用者に刺さった。</p>
+<h4 id="sec-2">Verlintas/NOIR（Kotlin・⭐約2.5k）</h4>
+<p><strong>解決したい課題</strong>：Androidアプリが裏で何の権限を使い、どの端点へデータを送っているかは利用者から見えない。広告除去系のdebloatは"消す"だけで、データの<strong>流れ</strong>を示さない。<strong>提供する機能</strong>：PCから<strong>adb経由</strong>で各アプリの権限・通信先・データフローを<strong>静的解析</strong>してあぶり出し、ロールバック可能な対処まで提示する。プライバシー・フォレンジック寄り・Kotlin Multiplatform・MIT。<strong>なぜ今急上昇か</strong>：created 2026-10-31＝公開約6日で実測約2,451★/forks223（日平均約408★・率約16.7%）。単なる除去ツールでない防御的セキュリティの新規性で拡散した。</p>
+<h4 id="sec-3">wquguru/cicada（Swift・⭐約1.5k）</h4>
+<p><strong>解決したい課題</strong>：会議やライブ配信では言語の壁・聞き逃し・議事録作成の手間が同時に発生し、別々のツールを掛け持ちするのが煩わしい。<strong>提供する機能</strong>：任意の会議/配信に<strong>リアルタイム字幕・同時通訳・AI議事録</strong>を付ける無料OSS（知了 Cicada）。メニューバー常駐で音声認識＋翻訳＋要約を一体化し、Mac/Windows/Linux/Androidを横断。Swift/SwiftUI・Apache-2.0。<strong>なぜ今急上昇か</strong>：created 2026-11-01＝公開約5日で実測約1,478★/forks266（日平均約295★・率約20%）。4OS横断かつ無料という実用性が拡散理由。</p>
+<p><strong>まとめ（自分が試すなら）</strong>：10プロジェクト横断の日次運用に最も効くのは <strong>agent-autoloop</strong>——"迷う所だけ決裁"の設計が「提案→承認」「Yes-man禁止」の運用原則と一致する。<strong>NOIR</strong> は手持ちAndroid端末の権限棚卸しに一度回す価値があり、<strong>cicada</strong> は海外カンファ視聴や議事録の即戦力。いずれもMIT/Apache-2.0で利用に問題はない。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://github.com/KKKKhazix/agent-autoloop" target="_blank" rel="noopener noreferrer"> KKKKhazix/agent-autoloop </a> </li><li> <a href="https://github.com/Verlintas/NOIR" target="_blank" rel="noopener noreferrer"> Verlintas/NOIR </a> </li><li> <a href="https://github.com/wquguru/cicada" target="_blank" rel="noopener noreferrer"> wquguru/cicada </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> KKKKhazix/agent-autoloop（TypeScript・⭐約3.2k） </a> </li><li> <a href="#sec-2" data-toc="sec-2"> Verlintas/NOIR（Kotlin・⭐約2.5k） </a> </li><li> <a href="#sec-3" data-toc="sec-3"> wquguru/cicada（Swift・⭐約1.5k） </a> </li> </ul> <div class="reading-box"> <div>📅 2026-11-06</div> <div>⏱ 読了 約3分</div> <div>🏷 GitHub Trending</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

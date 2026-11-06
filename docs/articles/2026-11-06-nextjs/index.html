@@ -1,0 +1,91 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>11/6のNext.js — Material リップルをApp Routerで正しく：座標起点・被覆半径・確実な破棄・RSC島化 — デイリー技術深掘り 読み物</title><meta name="description" content="波紋は見た目でなく実装の正しさ。CSS-onlyとJSの島の使い分け、落とし穴とprefers-reduced-motionまで。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-06-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="11/6のNext.js — Material リップルをApp Routerで正しく：座標起点・被覆半径・確実な破棄・RSC島化 — デイリー技術深掘り 読み物"><meta property="og:description" content="波紋は見た目でなく実装の正しさ。CSS-onlyとJSの島の使い分け、落とし穴とprefers-reduced-motionまで。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-06-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>11/6のNext.js — Material リップルをApp Routerで正しく：座標起点・被覆半径・確実な破棄・RSC島化</h1> <p class="lede">波紋は見た目でなく実装の正しさ。CSS-onlyとJSの島の使い分け、落とし穴とprefers-reduced-motionまで。</p> <div class="meta"> <span>📅 2026年11月6日</span> <span>⏱ 約4分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="1"><p>ボタンを押した"その場所"から円が広がって消えるMaterial Designの<strong>リップル（波紋）</strong>は、どこを押したかを身体的に確認させる定番のタッチフィードバックだ。<code>:active</code>の色変化だけより「触れた感」が段違いで、ボタン/リスト/カード/FABなど"押せる面"全般に効き、モバイル〜PWAの体感品質に直結する。</p>
+<p>ポイントは見た目ではなく<strong>実装の正しさ</strong>に集約される。(1)起点をポインタ座標に合わせる、(2)要素全体を必ず覆う半径にする、(3)連打で重なる複数リップルを確実に破棄する、(4) <code>transform/opacity</code> だけでアニメする、(5)本物の <code>&lt;button&gt;</code> に乗せ <code>prefers-reduced-motion</code> で無効化できる——この5点だ。</p>
+<figure class='fig'><svg viewBox='0 0 600 212' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <rect x='0' y='0' width='600' height='212' fill='#f2f8ff'></rect>
+  <text x='12' y='22' font-size='14' font-weight='bold' fill='#1d4ed8'>方式A（CSS-only）と 方式B（JS/React）の使い分け</text>
+  <rect x='12' y='32' width='180' height='26' fill='#dbeafe'></rect><text x='20' y='50' font-size='12' font-weight='bold' fill='#1e3a8a'>観点</text>
+  <rect x='192' y='32' width='198' height='26' fill='#dbeafe'></rect><text x='200' y='50' font-size='12' font-weight='bold' fill='#1e3a8a'>方式A: CSS-only</text>
+  <rect x='390' y='32' width='198' height='26' fill='#dbeafe'></rect><text x='398' y='50' font-size='12' font-weight='bold' fill='#1e3a8a'>方式B: JS/React</text>
+  <g font-size='11.5' fill='#1f2937'>
+  <rect x='12' y='58' width='180' height='28' fill='#fff' stroke='#bcd3f5'></rect><text x='20' y='76'>波紋の起点</text><rect x='192' y='58' width='198' height='28' fill='#fff' stroke='#bcd3f5'></rect><text x='200' y='76'>中央固定</text><rect x='390' y='58' width='198' height='28' fill='#eff6ff' stroke='#bcd3f5'></rect><text x='398' y='76'>クリック座標</text>
+  <rect x='12' y='86' width='180' height='28' fill='#fff' stroke='#bcd3f5'></rect><text x='20' y='104'>複数同時（連打）</text><rect x='192' y='86' width='198' height='28' fill='#fff' stroke='#bcd3f5'></rect><text x='200' y='104'>単一のみ</text><rect x='390' y='86' width='198' height='28' fill='#eff6ff' stroke='#bcd3f5'></rect><text x='398' y='104'>複数OK（state配列）</text>
+  <rect x='12' y='114' width='180' height='28' fill='#fff' stroke='#bcd3f5'></rect><text x='20' y='132'>use client</text><rect x='192' y='114' width='198' height='28' fill='#eff6ff' stroke='#bcd3f5'></rect><text x='200' y='132'>不要（RSCのまま）</text><rect x='390' y='114' width='198' height='28' fill='#fff' stroke='#bcd3f5'></rect><text x='398' y='132'>ボタンの殻だけ島化</text>
+  <rect x='12' y='142' width='180' height='28' fill='#fff' stroke='#bcd3f5'></rect><text x='20' y='160'>hydrationコスト</text><rect x='192' y='142' width='198' height='28' fill='#eff6ff' stroke='#bcd3f5'></rect><text x='200' y='160'>ゼロ</text><rect x='390' y='142' width='198' height='28' fill='#fff' stroke='#bcd3f5'></rect><text x='398' y='160'>小（島のみ）</text>
+  <rect x='12' y='170' width='180' height='28' fill='#fff' stroke='#bcd3f5'></rect><text x='20' y='188'>向いた用途</text><rect x='192' y='170' width='198' height='28' fill='#fff' stroke='#bcd3f5'></rect><text x='200' y='188'>軽い触感の既定</text><rect x='390' y='170' width='198' height='28' fill='#fff' stroke='#bcd3f5'></rect><text x='398' y='188'>座標起点が要るCTA</text>
+  </g>
+</svg><figcaption>図1：まずCSS-onlyを既定にし、座標起点が必要な箇所だけJS方式の島に切り出す。</figcaption></figure>
+<p>仕組みの核は半径計算にある。クリック点から4隅への最大距離を半径にすれば、隅をタップしても反対隅まで確実に届く。</p>
+<pre><code>size = Math.max(
+  hypot(x, y), hypot(w-x, y),
+  hypot(x, h-y), hypot(w-x, h-y)
+) * 2;  // Math.max(w,h) の中央固定だと隅タップで"欠けた波紋"になる</code></pre>
+<p>方式Bのライフサイクルはこうだ。<code>onPointerDown</code> で座標とサイズを算出し、絶対配置の <code>span</code> を <code>state</code> に積む。<code>@keyframes</code> で <code>scale(0)→scale(1)</code> ＋ <code>opacity</code> を落とし、<code>onAnimationEnd</code> でその波紋を <code>state</code> から除去する——これでDOMリークしない。</p>
+<figure class='fig'><pre class='mermaid'>flowchart LR
+  A["onPointerDown"] --> B["4隅最大距離で半径算出"]
+  B --> C["setState で span を配列に追加"]
+  C --> D["@keyframes: scale+opacity"]
+  D --> E["onAnimationEnd"]
+  E --> F["filter で state から除去 = リーク無し"]</pre><figcaption>図2：押下から破棄までを宣言的に閉じる。setTimeout手動管理より漏れにくい。</figcaption></figure>
+<p>App Routerでの組み込みは素直だ。方式Bは<strong>ボタンの殻だけ <code>'use client'</code> の小島</strong>に隔離し、ページ本体・データ取得・一覧の <code>map</code> は<strong>RSCのまま</strong> <code>children</code> を流し込むだけ。<code>ripples</code> の初期値を空配列にすればSSRは波紋ゼロのボタンを描画しクライアント初回と完全一致＝<strong>hydration mismatch無し</strong>。波紋はJS到達後のクリックで初めて現れる純粋なプログレッシブエンハンスメントで、JS前でもボタンはPOSTでき、Server Actions / <code>useFormStatus</code> とも同居する。</p>
+<p><strong>落とし穴</strong>：<code>onClick</code>（離した時に発火＝遅い／キーボード擬似clickは座標無しで左上に出る）ではなく <code>onPointerDown</code>（押下即時）＋キーボードは中央起点に分岐する。<code>overflow:hidden</code> / <code>border-radius:inherit</code> 忘れで角丸からはみ出す。ripple層の <code>pointer-events:none</code> 忘れで次のクリックを食う。<code>width/height</code> をアニメすると毎フレームreflow＝初期サイズ固定で <code>transform:scale()</code> だけ動かす。<code>&lt;div&gt;</code> でなく必ず <code>&lt;button&gt;</code>。</p>
+<p><strong>アクセシビリティ</strong>：リップルは装飾（意味はラベル/状態が担う）なので <code>prefers-reduced-motion: reduce</code> では波紋を出さず（WCAG 2.3.3）、代わりに <code>:active</code>/<code>:focus-visible</code> の色変化でフィードバックは残す。JS側でも <code>matchMedia</code> を見て波紋のstate追加自体をスキップすれば無駄なDOMも作らない。</p>
+<p><strong>試すなら</strong>：まずCSS-onlyを"軽い触感"の既定に入れ、座標起点が要る主要CTAだけ方式Bの島に。デザインシステムにMUIを使っているなら <code>Button</code> が内部でrippleを持つのでそれで足りる。</p>
+<p><strong>ひとことまとめ</strong>：座標起点・被覆半径・確実な破棄・transform限定の4点を外さなければリップルは軽い。RSCは殻だけ島化し、本体はServerのまま。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://developer.mozilla.org/en-US/docs/Web/API/Pointer_events" target="_blank" rel="noopener noreferrer"> MDN — Pointer events </a> </li><li> <a href="https://developer.mozilla.org/en-US/docs/Web/API/Element/getBoundingClientRect" target="_blank" rel="noopener noreferrer"> MDN — Element.getBoundingClientRect() </a> </li><li> <a href="https://blog.logrocket.com/designing-ripple-effect-ui-feedback/" target="_blank" rel="noopener noreferrer"> LogRocket — Designing ripple effect UI feedback </a> </li><li> <a href="https://web.dev/articles/prefers-reduced-motion" target="_blank" rel="noopener noreferrer"> web.dev — prefers-reduced-motion </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
