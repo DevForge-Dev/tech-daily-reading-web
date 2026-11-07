@@ -1,0 +1,83 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>11/7の話題リポジトリ — AI飽和の谷間で“非AI・軽量・ローカル”3本(player/kiri/rune) — デイリー技術深掘り 読み物</title><meta name="description" content="生成AIではなく、ブラウザ/ネイティブで軽く動く道具が急上昇。重量依存・Docker/Electron疲れへの揺り戻しが共通テーマ。"><meta name="theme-color" content="#238636"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-07-github-trending/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="11/7の話題リポジトリ — AI飽和の谷間で“非AI・軽量・ローカル”3本(player/kiri/rune) — デイリー技術深掘り 読み物"><meta property="og:description" content="生成AIではなく、ブラウザ/ネイティブで軽く動く道具が急上昇。重量依存・Docker/Electron疲れへの揺り戻しが共通テーマ。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-07-github-trending/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3fb950, #1a7f37)"> <span class="glyph" aria-hidden="true">★</span> <div class="kicker">GitHub Trending</div> <h1>11/7の話題リポジトリ — AI飽和の谷間で“非AI・軽量・ローカル”3本(player/kiri/rune)</h1> <p class="lede">生成AIではなく、ブラウザ/ネイティブで軽く動く道具が急上昇。重量依存・Docker/Electron疲れへの揺り戻しが共通テーマ。</p> <div class="meta"> <span>📅 2026年11月7日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#238636"> <div> <article class="prose" data-has-mermaid="0"><p>本日も GitHub は AI 一色の飽和局面。その谷間で急上昇した<strong>3本</strong>は、偶然そろって「生成 AI ではなく、ローカル/ネイティブで軽量に動く道具」だった。重い依存・クラウド前提・Electron/Docker 疲れへの<strong>揺り戻し</strong>が共通テーマ。各リポジトリの「解決したい課題」と「提供する機能」を押さえる。</p>
+<figure class='fig'><svg viewBox='0 0 620 212' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <rect x='0' y='0' width='620' height='212' fill='#f1fcf4'></rect>
+  <text x='12' y='22' font-size='14' font-weight='bold' fill='#1a7f37'>11/7の3本 — 解決したい課題 → 提供する機能</text>
+  <rect x='12' y='32' width='150' height='26' fill='#d4f3dd'></rect><text x='18' y='50' font-size='11.5' font-weight='bold' fill='#14532d'>リポジトリ</text>
+  <rect x='162' y='32' width='228' height='26' fill='#d4f3dd'></rect><text x='168' y='50' font-size='11.5' font-weight='bold' fill='#14532d'>解決したい課題</text>
+  <rect x='390' y='32' width='218' height='26' fill='#d4f3dd'></rect><text x='396' y='50' font-size='11.5' font-weight='bold' fill='#14532d'>提供する機能</text>
+  <rect x='12' y='58' width='150' height='48' fill='#ffffff' stroke='#bbe6c9'></rect><text x='18' y='78' font-size='11' font-weight='bold' fill='#166534'>player</text><text x='18' y='96' font-size='10' fill='#3f6b4e'>TS ⭐949</text>
+  <rect x='162' y='58' width='228' height='48' fill='#ffffff' stroke='#bbe6c9'></rect><text x='168' y='78' font-size='10.5' fill='#14532d'>アバター再生の重い依存</text><text x='168' y='94' font-size='10.5' fill='#14532d'>・配信ツール疲れ</text>
+  <rect x='390' y='58' width='218' height='48' fill='#ffffff' stroke='#bbe6c9'></rect><text x='396' y='78' font-size='10.5' fill='#14532d'>WebGL2単体で2.5D再生</text><text x='396' y='94' font-size='10.5' fill='#14532d'>リップシンク+表情追跡</text>
+  <rect x='12' y='106' width='150' height='48' fill='#f7fdf9' stroke='#bbe6c9'></rect><text x='18' y='126' font-size='11' font-weight='bold' fill='#166534'>kiri</text><text x='18' y='144' font-size='10' fill='#3f6b4e'>Rust ⭐545</text>
+  <rect x='162' y='106' width='228' height='48' fill='#f7fdf9' stroke='#bbe6c9'></rect><text x='168' y='126' font-size='10.5' fill='#14532d'>重量デーモン依存の</text><text x='168' y='142' font-size='10.5' fill='#14532d'>コンテナ実行の重さ</text>
+  <rect x='390' y='106' width='218' height='48' fill='#f7fdf9' stroke='#bbe6c9'></rect><text x='396' y='126' font-size='10.5' fill='#14532d'>軽量・高速な</text><text x='396' y='142' font-size='10.5' fill='#14532d'>クロスPFコンテナ実行</text>
+  <rect x='12' y='154' width='150' height='48' fill='#ffffff' stroke='#bbe6c9'></rect><text x='18' y='174' font-size='11' font-weight='bold' fill='#166534'>rune</text><text x='18' y='192' font-size='10' fill='#3f6b4e'>Rust ⭐2.5k</text>
+  <rect x='162' y='154' width='228' height='48' fill='#ffffff' stroke='#bbe6c9'></rect><text x='168' y='174' font-size='10.5' fill='#14532d'>Electron/WebView前提の</text><text x='168' y='190' font-size='10.5' fill='#14532d'>重いデスクトップGUI</text>
+  <rect x='390' y='154' width='218' height='48' fill='#ffffff' stroke='#bbe6c9'></rect><text x='396' y='174' font-size='10.5' fill='#14532d'>WebView非依存の</text><text x='396' y='190' font-size='10.5' fill='#14532d'>ネイティブ描画UI(Rust)</text>
+</svg><figcaption>図1：3本に共通するのは「クラウド/重量依存を外し手元で軽く動かす」志向。</figcaption></figure>
+<h4 id="sec-1">livliv-dev/player（TypeScript・⭐約949）</h4>
+<p><strong>解決したい課題</strong>：VTuber/配信アバターを動かすのに、重いネイティブアプリや多数の依存を入れるのが面倒という“ツール疲れ”。<strong>提供する機能</strong>：WebGL2 だけで動く軽量な 2.5D キャラクター・プレイヤー。VRM/PNGTuber に対応し、リップシンクと Web カメラのフェイストラッキングを<strong>ブラウザ単体・ローカル</strong>で実行する。AI 生成ではなく“再生エンジン”である点が新規で、公開約3日で約949★/forks100（日平均約316★/日・当日計測組で最高率の約33%）。Apache-2.0。</p>
+<h4 id="sec-2">libracoder/kiri（Rust・⭐約545）</h4>
+<p><strong>解決したい課題</strong>：Docker Desktop など重量級デーモンに依存するコンテナ実行の重さ・遅さ。<strong>提供する機能</strong>：macOS/Windows/Linux で動く、小さく高速なコンテナ・ランタイム。重いデーモンなしで軽量にコンテナを起動できる。AI 飽和局面では希少な<strong>純・非AI のシステム/DX 新星</strong>で、公開約5日で約545★/forks43（日平均約109★/日・率約20%）。Apache-2.0。</p>
+<h4 id="sec-3">anomalyco/rune（Rust・⭐約2.5k）</h4>
+<p><strong>解決したい課題</strong>：デスクトップ GUI が Electron/WebView 前提になり、バンドルが重く起動も遅いこと。<strong>提供する機能</strong>：WebView やバンドルランタイムに依存せず<strong>ネイティブに描画</strong>する Rust 製 UI フレームワーク。公開約16日で約2,460★/forks58（日平均約154★/日）と総スター・日平均ともモメンタム上位、本日も push・open issues 63 で活発に開発中。MIT。</p>
+<h4 id="sec-4">まとめ：自分が試すなら</h4>
+<p>いま一番“効く”のは <strong>kiri</strong>——Docker Desktop 依存を減らせれば CI/ローカル双方のコストに直結する。アバター UI を Web に載せたい実験には player、本気のネイティブ・デスクトップを狙うなら rune を watch。3本に共通するのは「クラウド/重量依存を外し、手元で軽く動かす」志向で、生成 AI 疲れの反動としてしばらく続きそうだ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://github.com/livliv-dev/player" target="_blank" rel="noopener noreferrer"> livliv-dev/player </a> </li><li> <a href="https://github.com/libracoder/kiri" target="_blank" rel="noopener noreferrer"> libracoder/kiri </a> </li><li> <a href="https://github.com/anomalyco/rune" target="_blank" rel="noopener noreferrer"> anomalyco/rune </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> livliv-dev/player（TypeScript・⭐約949） </a> </li><li> <a href="#sec-2" data-toc="sec-2"> libracoder/kiri（Rust・⭐約545） </a> </li><li> <a href="#sec-3" data-toc="sec-3"> anomalyco/rune（Rust・⭐約2.5k） </a> </li><li> <a href="#sec-4" data-toc="sec-4"> まとめ：自分が試すなら </a> </li> </ul> <div class="reading-box"> <div>📅 2026-11-07</div> <div>⏱ 読了 約3分</div> <div>🏷 GitHub Trending</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

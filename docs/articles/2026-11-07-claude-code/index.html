@@ -1,0 +1,90 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>11/7のClaude Code — 静かな週末は“止める仕組み”を締める：ゲームガード緩和とhooks GA — デイリー技術深掘り 読み物</title><meta name="description" content="新リリースなし(v2.1.318のまま)の日こそガードレール整備。ゲーム複製ガードの過剰発動緩和と、pre-tool-call hooks のGA/security centerを噛み砕く。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-07-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="11/7のClaude Code — 静かな週末は“止める仕組み”を締める：ゲームガード緩和とhooks GA — デイリー技術深掘り 読み物"><meta property="og:description" content="新リリースなし(v2.1.318のまま)の日こそガードレール整備。ゲーム複製ガードの過剰発動緩和と、pre-tool-call hooks のGA/security centerを噛み砕く。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-07-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>11/7のClaude Code — 静かな週末は“止める仕組み”を締める：ゲームガード緩和とhooks GA</h1> <p class="lede">新リリースなし(v2.1.318のまま)の日こそガードレール整備。ゲーム複製ガードの過剰発動緩和と、pre-tool-call hooks のGA/security centerを噛み砕く。</p> <div class="meta"> <span>📅 2026年11月7日</span> <span>⏱ 約4分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="1"><p>11/7(土)は週末で公式の動きが乏しく、Claude Code の最新は11/3公開の <strong>v2.1.318</strong> のまま（11/4〜11/7の新規リリースは未確認・公式docsはv2.1.311止まりで集計サイトgradually.aiが約2週間先行）。こういう静かな日は新機能を追うより、エージェントの「ガードレールと操縦系」を見直すのに向く。今日はその観点で2つの実務トピックを噛み砕く。</p>
+<h4 id="sec-1">1. ゲーム複製ガードの過剰発動を v2.1.317 で緩和</h4>
+<p>Anthropic は既存ゲームの“そっくり複製”を避けさせるルールを Opus 5.5 のプロンプトに入れていたが、ユーザーが単に「どんな挙動か」を説明する目的でゲーム名を出しただけでも発動し、正当な開発作業まで止めていた。テクニカルスタッフの Addy Osmani 氏は X で「このルールを 2.1.317 で更新した」と説明（Tom's Hardware 11/5 報道）。更新後は、ジャンルを指定すればそのジャンルの<strong>オリジナル</strong>を生成し、原作の“コピー”を求められた場合は<strong>類似の別物</strong>を提案する挙動になった。有用性と、開発者の作品を守ることの両立を狙った調整だ。</p>
+<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <rect x='0' y='0' width='600' height='200' fill='#fef6f0'></rect>
+  <text x='14' y='24' font-size='14' font-weight='bold' fill='#9a3412'>ゲーム複製ガード：v2.1.317 の前後</text>
+  <rect x='14' y='40' width='270' height='142' rx='8' fill='#fde8e8' stroke='#f3b4b4'></rect>
+  <text x='28' y='62' font-size='12' font-weight='bold' fill='#b91c1c'>Before（過剰発動）</text>
+  <text x='28' y='86' font-size='11' fill='#7f1d1d'>「○○みたいな挙動を説明して」</text>
+  <text x='28' y='106' font-size='11' fill='#7f1d1d'>→ ゲーム名が出ただけで発動</text>
+  <text x='28' y='126' font-size='11' fill='#7f1d1d'>→ 正当な開発作業までブロック</text>
+  <text x='28' y='162' font-size='20' fill='#b91c1c'>✕ 止まる</text>
+  <rect x='316' y='40' width='270' height='142' rx='8' fill='#e7f7ec' stroke='#9ae0b0'></rect>
+  <text x='330' y='62' font-size='12' font-weight='bold' fill='#15803d'>After（v2.1.317）</text>
+  <text x='330' y='86' font-size='11' fill='#14532d'>ジャンル指定 → オリジナル生成</text>
+  <text x='330' y='106' font-size='11' fill='#14532d'>コピー要求 → 類似の別物を提案</text>
+  <text x='330' y='126' font-size='11' fill='#14532d'>説明目的の言及は通す</text>
+  <text x='330' y='162' font-size='20' fill='#15803d'>✓ 進む</text>
+</svg><figcaption>図1：挙動説明での言及まで止めていた過剰ブロックを緩和。</figcaption></figure>
+<h4 id="sec-2">2. Enterprise セキュリティ更新 — hooks の GA と security center(beta)</h4>
+<p>11/5 の Claude Enterprise 更新（DEV Community の日次集約、出所は Anthropic リリースノート・一次未照合）では、<strong>prompt hooks / pre-tool-call hooks が一般提供(GA)</strong> になった。プロンプトや“実行前の”ツール呼び出しを、対応するセキュリティベンダーへ送って検査できる。さらに beta で、chat・Cowork・Claude Code の設定を Anthropic 推奨値と突き合わせる <strong>security center</strong>（同ページは「ガイダンスであり適合証明ではない」と明記）、Admin API ではメンバーを全端末から一括サインアウトするエンドポイントが加わった。</p>
+<figure class='fig'><pre class='mermaid'>flowchart LR
+  A["プロンプト / ツール呼び出し"] --> B["prompt hook / pre-tool-call hook"]
+  B --> C["対応セキュリティベンダーへ送信・検査"]
+  C --> D{"安全か"}
+  D -->|Yes| E["実行を許可"]
+  D -->|No| F["実行前にブロック"]</pre><figcaption>図2：実行「前」に割り込むのが肝。事後ログと違い危険操作を未然に止める。</figcaption></figure>
+<h4 id="sec-3">仕組みのポイントと運用</h4>
+<p>pre-tool-call hook の肝は「ツールが実行される前」に割り込む点。従来の事後ログと違い、危険なコマンドやデータ送信を<strong>実行前に止められる</strong>。OrangeBot.AI の実践記（Shen Huang 氏）も同じ思想で、安全な read 系だけ allowlist し破壊系は手動承認に残す運用を勧める。CLAUDE.md は実行できる命令形で短く保ち（例「コミット前に必ず npm run verify、失敗したらコミットしない」）、重要ルールは上部へ。文脈管理は<strong>タスク切替=/clear、同一タスク継続=/compact（70〜75%で）</strong>と使い分ける。</p>
+<h4 id="sec-4">自分が試すなら・注意点</h4>
+<p>まず <code>claude --help</code> で現行の auto 権限モードを確認し <code>--dangerously-skip-permissions</code> を卒業、次に PreToolUse フックで <code>gh pr comment</code> など外部へ出る操作の前に確認を1つ挟んで挙動を掴む。チーム運用なら security center(beta) で3面の設定ドリフトを一度棚卸しするのが低コストで効く。ただし今日の Enterprise/ゲームガード情報は一次未照合の二次ソースを含み、flag 名や既定値も変動するので導入前に公式 docs で裏取りを。Meta によるマルチエージェント・オーケストレーション新興 Conductor の買収（11/20 クラウド停止）は、“束ねる層”を大手が取り込む市場動向として頭の隅に。</p>
+<p><strong>ひとこと</strong>：静かな週末は、新機能ではなく“止める仕組み”を一段カチッと締める日。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://www.gradually.ai/en/changelogs/claude-code/" target="_blank" rel="noopener noreferrer"> gradually.ai — Claude Code changelog </a> </li><li> <a href="https://www.tomshardware.com/tech-industry/artificial-intelligence/anthropic-loosens-game-restrictions-claude-will-now-offer-to-build-original-game-in-same-genre-if-asked-to-copy" target="_blank" rel="noopener noreferrer"> Tom&#39;s Hardware — Anthropic loosens game restrictions </a> </li><li> <a href="https://orangebot.ai/blog/claude-code-best-practices-2026" target="_blank" rel="noopener noreferrer"> OrangeBot.AI — Claude Code Best Practices 2026 </a> </li><li> <a href="https://dev.to/hiroki-ii-ai/ai-daily-digest-november-6-2026-openai-ships-gpt-6-cyber-meta-buys-conductor-anthropic-locks-1jij" target="_blank" rel="noopener noreferrer"> DEV Community — AI Daily Digest (Nov 6 2026) </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 1. ゲーム複製ガードの過剰発動を v2.1.317 で緩和 </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 2. Enterprise セキュリティ更新 — hooks の GA と security center(beta) </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 仕組みのポイントと運用 </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 自分が試すなら・注意点 </a> </li> </ul> <div class="reading-box"> <div>📅 2026-11-07</div> <div>⏱ 読了 約4分</div> <div>🏷 Claude Code</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
