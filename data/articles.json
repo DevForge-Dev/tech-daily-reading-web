@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-11-06T04:46:18.756Z",
+  "generatedAt": "2026-11-07T04:47:34.742Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,102 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-11-07-claude-code",
+      "date": "2026-11-07",
+      "topic": "Claude Code",
+      "title": "11/7のClaude Code — 静かな週末は“止める仕組み”を締める：ゲームガード緩和とhooks GA",
+      "lede": "新リリースなし(v2.1.318のまま)の日こそガードレール整備。ゲーム複製ガードの過剰発動緩和と、pre-tool-call hooks のGA/security centerを噛み砕く。",
+      "articleHtml": "<p>11/7(土)は週末で公式の動きが乏しく、Claude Code の最新は11/3公開の <strong>v2.1.318</strong> のまま（11/4〜11/7の新規リリースは未確認・公式docsはv2.1.311止まりで集計サイトgradually.aiが約2週間先行）。こういう静かな日は新機能を追うより、エージェントの「ガードレールと操縦系」を見直すのに向く。今日はその観点で2つの実務トピックを噛み砕く。</p>\n<h4>1. ゲーム複製ガードの過剰発動を v2.1.317 で緩和</h4>\n<p>Anthropic は既存ゲームの“そっくり複製”を避けさせるルールを Opus 5.5 のプロンプトに入れていたが、ユーザーが単に「どんな挙動か」を説明する目的でゲーム名を出しただけでも発動し、正当な開発作業まで止めていた。テクニカルスタッフの Addy Osmani 氏は X で「このルールを 2.1.317 で更新した」と説明（Tom's Hardware 11/5 報道）。更新後は、ジャンルを指定すればそのジャンルの<strong>オリジナル</strong>を生成し、原作の“コピー”を求められた場合は<strong>類似の別物</strong>を提案する挙動になった。有用性と、開発者の作品を守ることの両立を狙った調整だ。</p>\n<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='0' y='0' width='600' height='200' fill='#fef6f0'/>\n  <text x='14' y='24' font-size='14' font-weight='bold' fill='#9a3412'>ゲーム複製ガード：v2.1.317 の前後</text>\n  <rect x='14' y='40' width='270' height='142' rx='8' fill='#fde8e8' stroke='#f3b4b4'/>\n  <text x='28' y='62' font-size='12' font-weight='bold' fill='#b91c1c'>Before（過剰発動）</text>\n  <text x='28' y='86' font-size='11' fill='#7f1d1d'>「○○みたいな挙動を説明して」</text>\n  <text x='28' y='106' font-size='11' fill='#7f1d1d'>→ ゲーム名が出ただけで発動</text>\n  <text x='28' y='126' font-size='11' fill='#7f1d1d'>→ 正当な開発作業までブロック</text>\n  <text x='28' y='162' font-size='20' fill='#b91c1c'>✕ 止まる</text>\n  <rect x='316' y='40' width='270' height='142' rx='8' fill='#e7f7ec' stroke='#9ae0b0'/>\n  <text x='330' y='62' font-size='12' font-weight='bold' fill='#15803d'>After（v2.1.317）</text>\n  <text x='330' y='86' font-size='11' fill='#14532d'>ジャンル指定 → オリジナル生成</text>\n  <text x='330' y='106' font-size='11' fill='#14532d'>コピー要求 → 類似の別物を提案</text>\n  <text x='330' y='126' font-size='11' fill='#14532d'>説明目的の言及は通す</text>\n  <text x='330' y='162' font-size='20' fill='#15803d'>✓ 進む</text>\n</svg><figcaption>図1：挙動説明での言及まで止めていた過剰ブロックを緩和。</figcaption></figure>\n<h4>2. Enterprise セキュリティ更新 — hooks の GA と security center(beta)</h4>\n<p>11/5 の Claude Enterprise 更新（DEV Community の日次集約、出所は Anthropic リリースノート・一次未照合）では、<strong>prompt hooks / pre-tool-call hooks が一般提供(GA)</strong> になった。プロンプトや“実行前の”ツール呼び出しを、対応するセキュリティベンダーへ送って検査できる。さらに beta で、chat・Cowork・Claude Code の設定を Anthropic 推奨値と突き合わせる <strong>security center</strong>（同ページは「ガイダンスであり適合証明ではない」と明記）、Admin API ではメンバーを全端末から一括サインアウトするエンドポイントが加わった。</p>\n<figure class='fig'><pre class='mermaid'>flowchart LR\n  A[\"プロンプト / ツール呼び出し\"] --> B[\"prompt hook / pre-tool-call hook\"]\n  B --> C[\"対応セキュリティベンダーへ送信・検査\"]\n  C --> D{\"安全か\"}\n  D -->|Yes| E[\"実行を許可\"]\n  D -->|No| F[\"実行前にブロック\"]</pre><figcaption>図2：実行「前」に割り込むのが肝。事後ログと違い危険操作を未然に止める。</figcaption></figure>\n<h4>仕組みのポイントと運用</h4>\n<p>pre-tool-call hook の肝は「ツールが実行される前」に割り込む点。従来の事後ログと違い、危険なコマンドやデータ送信を<strong>実行前に止められる</strong>。OrangeBot.AI の実践記（Shen Huang 氏）も同じ思想で、安全な read 系だけ allowlist し破壊系は手動承認に残す運用を勧める。CLAUDE.md は実行できる命令形で短く保ち（例「コミット前に必ず npm run verify、失敗したらコミットしない」）、重要ルールは上部へ。文脈管理は<strong>タスク切替=/clear、同一タスク継続=/compact（70〜75%で）</strong>と使い分ける。</p>\n<h4>自分が試すなら・注意点</h4>\n<p>まず <code>claude --help</code> で現行の auto 権限モードを確認し <code>--dangerously-skip-permissions</code> を卒業、次に PreToolUse フックで <code>gh pr comment</code> など外部へ出る操作の前に確認を1つ挟んで挙動を掴む。チーム運用なら security center(beta) で3面の設定ドリフトを一度棚卸しするのが低コストで効く。ただし今日の Enterprise/ゲームガード情報は一次未照合の二次ソースを含み、flag 名や既定値も変動するので導入前に公式 docs で裏取りを。Meta によるマルチエージェント・オーケストレーション新興 Conductor の買収（11/20 クラウド停止）は、“束ねる層”を大手が取り込む市場動向として頭の隅に。</p>\n<p><strong>ひとこと</strong>：静かな週末は、新機能ではなく“止める仕組み”を一段カチッと締める日。</p>",
+      "sources": [
+        {
+          "title": "gradually.ai — Claude Code changelog",
+          "url": "https://www.gradually.ai/en/changelogs/claude-code/"
+        },
+        {
+          "title": "Tom's Hardware — Anthropic loosens game restrictions",
+          "url": "https://www.tomshardware.com/tech-industry/artificial-intelligence/anthropic-loosens-game-restrictions-claude-will-now-offer-to-build-original-game-in-same-genre-if-asked-to-copy"
+        },
+        {
+          "title": "OrangeBot.AI — Claude Code Best Practices 2026",
+          "url": "https://orangebot.ai/blog/claude-code-best-practices-2026"
+        },
+        {
+          "title": "DEV Community — AI Daily Digest (Nov 6 2026)",
+          "url": "https://dev.to/hiroki-ii-ai/ai-daily-digest-november-6-2026-openai-ships-gpt-6-cyber-meta-buys-conductor-anthropic-locks-1jij"
+        }
+      ]
+    },
+    {
+      "id": "2026-11-07-nextjs",
+      "date": "2026-11-07",
+      "topic": "Next.js",
+      "title": "並列ルート×インターセプトルートで“URL付きモーダル”を作る — (.)/(..)規約とdefault.tsxの罠",
+      "lede": "クリックはモーダル、直URL/リロードは実ページ。クライアント状態なしで共有・SEO・リロード耐性を満たすApp Routerの定番と3大落とし穴。",
+      "articleHtml": "<p>App Router の<strong>並列ルート（@folder スロット）</strong>と<strong>インターセプトルート（(.)/(..) 規約）</strong>を組み合わせると、「一覧でサムネをクリック→詳細がモーダルで被さる。でも URL は /photo/123 に変わり、直接開く/リロードすると“フルページ”で開く」という Instagram/Dribbble 風の挙動を、<strong>クライアント状態管理なし</strong>で作れる。useState で開閉するだけのモーダルと違い、URL で共有・ブックマーク・SEO 可能／リロードで文脈を失わない／ブラウザ戻るで閉じ進むで再度開く、を標準で満たす。Next.js 13.3 から安定し、16 系でも挙動変更はない。</p>\n<h4>仕組み：到達経路で描き分ける</h4>\n<p>肝は「どう到達したか」で出し分ける点。リンククリック（ソフトナビゲーション）なら URL をマスクして現在のレイアウト内にモーダルを被せる。直接 URL・リロード・外部リンク（ハード遷移）なら、インターセプトせず本来のフルページ（app/photo/[id]/page.tsx）を描く。これは仕様であり正しい設計で、クローラやリンクプレビュー Bot も実ページを取得できる＝共有性と SEO を両立する。</p>\n<figure class='fig'><svg viewBox='0 0 600 212' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='0' y='0' width='600' height='212' fill='#f3f6ff'/>\n  <text x='14' y='24' font-size='14' font-weight='bold' fill='#1e3a8a'>同じ /photo/123 でも到達経路で描き分け</text>\n  <rect x='14' y='38' width='272' height='160' rx='8' fill='#e6edff' stroke='#b7c6f5'/>\n  <text x='28' y='62' font-size='12' font-weight='bold' fill='#1d4ed8'>ソフト遷移（クリック）</text>\n  <text x='28' y='86' font-size='11' fill='#1e3a8a'>一覧の上に (.)photo を</text>\n  <text x='28' y='104' font-size='11' fill='#1e3a8a'>モーダルで被せる</text>\n  <text x='28' y='128' font-size='11' fill='#1e3a8a'>URL は /photo/123</text>\n  <rect x='40' y='146' width='214' height='40' rx='6' fill='#ffffff' stroke='#1d4ed8'/>\n  <text x='58' y='171' font-size='12' fill='#1d4ed8'>■ モーダル（背景に一覧）</text>\n  <rect x='314' y='38' width='272' height='160' rx='8' fill='#eef2f7' stroke='#cbd5e1'/>\n  <text x='328' y='62' font-size='12' font-weight='bold' fill='#334155'>ハード遷移（直URL/リロード）</text>\n  <text x='328' y='86' font-size='11' fill='#334155'>インターセプトせず</text>\n  <text x='328' y='104' font-size='11' fill='#334155'>photo/[id]/page.tsx</text>\n  <text x='328' y='128' font-size='11' fill='#334155'>＝実ページ（SEO/共有可）</text>\n  <rect x='340' y='146' width='214' height='40' rx='6' fill='#ffffff' stroke='#334155'/>\n  <text x='360' y='171' font-size='12' fill='#334155'>□ フルページ</text>\n</svg><figcaption>図1：ソフト=モーダル、ハード=フルページ。Bot は実ページを取得できる。</figcaption></figure>\n<h4>フォルダ構成と“3大落とし穴”</h4>\n<p>@modal スロットを用意し、親レイアウトで {children} の隣に {modal} を置く。忘れがちな3点：(1) <code>@modal/default.tsx</code> を置かないと<strong>ページ全体が404</strong>になる（スロット1つの欠落が全体を落とす）。(2) <code>(..)</code> の段数はファイル階層ではなく“ルートセグメント”基準で数え、<strong>@slot フォルダはセグメントに数えない</strong>——公式 nextgram 例では @modal/(.)photo のように (.) を使う。(3) 直接 /photo/123 を開いた訪問者は履歴がなく <code>router.back()</code> が効かないので、実 href を持つ閉じるリンクと <code>@modal/page.tsx</code>（return null）を併設する。</p>\n<figure class='fig'><pre class='mermaid'>flowchart TD\n  L[\"app/layout.tsx が children と modal を受取る\"] --> C[\"app/page.tsx 一覧\"]\n  L --> M[\"app/@modal スロット（URLに出ない）\"]\n  M --> D[\"default.tsx は null（無いと全体404）\"]\n  M --> I[\"(.)photo 詳細 = Modal殻 + PhotoDetail\"]\n  L --> F[\"app/photo 配下 フルページ（実ページ）\"]</pre><figcaption>図2：@modal スロットと実ページの二重化。殻だけ Client、中身は Server。</figcaption></figure>\n<h4>RSC を汚さないコツ</h4>\n<p><code>'use client'</code> が要るのは useRouter と onClick を持つ<strong>モーダルの殻だけ</strong>。詳細コンテンツ（PhotoDetail）は Server Component のまま children として渡せ、データ取得もサーバーで完結する。インターセプト側とフルページで同じ PhotoDetail を使い回し、React.cache で二重フェッチを避ける。なお「スロットを role で出し分ける」のは<strong>認可ではない</strong>——両スロットともサーバーで実行され出力はレスポンスに含まれるので、認可は各 page か DAL で必ず行う。</p>\n<h4>いつ使う / 使わない</h4>\n<p>コンテンツが固有 URL に値する（商品・写真・投稿・ログイン）で、共有・SEO・リロード耐性が要るなら使う。確認ダイアログや設定パネルのような“使い捨て UI”で URL 不要なら、スロット+インターセプト+default.tsx のコストに見合わず、useState の boolean モーダルの方が簡単。自分が試すなら公式 nextgram を clone して (.) の段数感覚を手で掴むのが最短だ。</p>",
+      "sources": [
+        {
+          "title": "Next.js Docs — Intercepting Routes",
+          "url": "https://nextjs.org/docs/app/api-reference/file-conventions/intercepting-routes"
+        },
+        {
+          "title": "Next.js Docs — Parallel Routes",
+          "url": "https://nextjs.org/docs/app/api-reference/file-conventions/parallel-routes"
+        },
+        {
+          "title": "nextjs/nextgram (公式サンプル)",
+          "url": "https://github.com/nextjs/nextgram"
+        }
+      ]
+    },
+    {
+      "id": "2026-11-07-flutter",
+      "date": "2026-11-07",
+      "topic": "Flutter",
+      "title": "3.50 stable 待ちの間に掘るStaggeredアニメ — 1本のcontrollerをIntervalで分割する",
+      "lede": "stable 3.50は11/7も未公開(#195830 open)。待ちの間に、1本のAnimationControllerをIntervalで時差駆動する技法を図解＋Riverpod3.0/DevToolsも。",
+      "articleHtml": "<p>まず現況：stable は <strong>3.47.9 / Dart 3.13.7</strong>、beta は <strong>3.50.0-0.4.pre / Dart 3.14.0</strong>（11/4）で、11/7 時点でも <strong>3.50 stable は未公開</strong>。release-tracker #195830 は open のままでコメントなし、Dart Hash 欄もプレースホルダのままと、昇格の最終ゲートで足踏みが続く。3.50 の確定内容は Web WasmGC 既定・Android Impeller 一本化・Android 17 day-zero・material_ui/cupertino_ui の正式 deprecation。本番は 3.47.9 を pin しつつ、別ジョブで 0.4.pre を緑化（build web --wasm と appbundle）しておくのが安全。今日は“待ちの間”に手を動かせる技法として <strong>Staggered（時差）アニメーション</strong>を掘る。</p>\n<h4>1本のコントローラを Interval で分割する</h4>\n<p>staggered は「順次、または一部重なる」複数アニメを<strong>1つの AnimationController</strong> で駆動する考え方。controller の値は実時間（例 2000ms）に関係なく常に 0.0→1.0 を進み、プロパティごとに作った Tween が<strong>タイムライン上の自分の Interval でだけ</strong>動く。公式例では opacity=0.0–0.100 / width=0.125–0.250 / height・padding=0.250–0.375 / borderRadius=0.375–0.500 / color=0.500–0.750 と割り当て、<strong>最後の 25% は何も動かさない</strong>。範囲を重ねれば同時進行、空ければ「何も動かない隙間」になり、順次 vs 重畳を Interval の範囲だけで表現できる。</p>\n<figure class='fig'><svg viewBox='0 0 600 230' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='0' y='0' width='600' height='230' fill='#eef7f7'/>\n  <text x='14' y='24' font-size='14' font-weight='bold' fill='#0f766e'>1本の controller（0.0→1.0）を Interval で分割</text>\n  <line x1='60' y1='204' x2='560' y2='204' stroke='#94a3b8'/>\n  <text x='54' y='220' font-size='10' fill='#475569'>0.0</text>\n  <text x='300' y='220' font-size='10' fill='#475569'>0.5</text>\n  <text x='548' y='220' font-size='10' fill='#475569'>1.0</text>\n  <rect x='60' y='42' width='50' height='18' rx='4' fill='#5eead4'/><text x='116' y='56' font-size='11' fill='#134e4a'>opacity 0.0–0.10</text>\n  <rect x='122' y='68' width='63' height='18' rx='4' fill='#2dd4bf'/><text x='191' y='82' font-size='11' fill='#134e4a'>width 0.125–0.25</text>\n  <rect x='185' y='94' width='63' height='18' rx='4' fill='#14b8a6'/><text x='254' y='108' font-size='11' fill='#134e4a'>height/padding 0.25–0.375</text>\n  <rect x='248' y='120' width='63' height='18' rx='4' fill='#0d9488'/><text x='317' y='134' font-size='11' fill='#134e4a'>borderRadius 0.375–0.50</text>\n  <rect x='310' y='146' width='125' height='18' rx='4' fill='#0f766e'/><text x='440' y='160' font-size='11' fill='#134e4a'>color 0.50–0.75</text>\n  <rect x='435' y='172' width='125' height='18' rx='4' fill='#cbd5e1'/><text x='438' y='186' font-size='10' fill='#475569'>0.75–1.0 は静止</text>\n</svg><figcaption>図1：各プロパティは自分の Interval でだけ動く。重ねれば同時、空ければ隙間。</figcaption></figure>\n<h4>型と駆動</h4>\n<p>各プロパティは <code>Tween&lt;T&gt;(begin:, end:).animate(CurvedAnimation(parent: controller, curve: Interval(0.125, 0.25, curve: Curves.ease)))</code>。double 以外も同じで、EdgeInsetsTween・BorderRadiusTween・ColorTween が使える。State に <code>SingleTickerProviderStateMixin</code> を付け、<code>AnimationController(duration: Duration(milliseconds: 2000), vsync: this)</code> を作り dispose で破棄。駆動は <code>await controller.forward().orCancel</code> →（必要なら）<code>reverse().orCancel</code>、再入防止に <code>if (controller.isAnimating) return;</code>。表示は <code>AnimatedBuilder</code> 内で各 value を読む（opacity 単体なら FadeTransition で child の再描画を避けると軽い）。カーブのデバッグは main() で <code>timeDilation = 10;</code>。</p>\n<h4>合わせて押さえたい2つ</h4>\n<p><strong>Riverpod 3.0 ＋ codegen</strong>：3.0 で Ref が統一され（旧 UserRef 等は廃止）、codegen の provider は <strong>autoDispose 既定</strong>。残したいものだけ <code>@Riverpod(keepAlive: true)</code>。runtime(3.3.2) と generator(4.x) は<strong>ロックステップ</strong>で上げる（3.x runtime に 2.x generator だとコンパイル不可）。<strong>DevTools Performance view</strong>：計測は必ず profile ビルドで（debug は未最適化 JIT で実機を反映しない）。frames chart は UI/raster の2本バーで 16ms 超過フレームを赤表示（シェーダコンパイルは濃い赤）。Enhance tracing の Track Builds/Layouts/Paints や Render Clip/Opacity を個別 off にして raster time が下がれば、そこが jank 元と特定できる。</p>\n<h4>自分が試すなら</h4>\n<p>まず公式の staggered サンプルを写経し、Interval の範囲を重ねたり空けたりして“隙間”の効果を体感する。次に timeDilation=10 でカーブを目視確認。アプリ全体の滑らかさは profile ビルド＋frames chart で赤フレームを拾い、不要な saveLayer・重なり opacity・clip/影を疑う、の順が定石だ。</p>",
+      "sources": [
+        {
+          "title": "Staggered animations — docs.flutter.dev",
+          "url": "https://docs.flutter.dev/ui/animations/staggered-animations"
+        },
+        {
+          "title": "stable 3.50.0 release tracker #195830",
+          "url": "https://github.com/flutter/flutter/issues/195830"
+        },
+        {
+          "title": "Notifier/AsyncNotifier with Riverpod Generator — codewithandrea",
+          "url": "https://codewithandrea.com/articles/flutter-riverpod-async-notifier/"
+        },
+        {
+          "title": "Use the Performance view — docs.flutter.dev",
+          "url": "https://docs.flutter.dev/tools/devtools/performance"
+        }
+      ]
+    },
+    {
+      "id": "2026-11-07-github-trending",
+      "date": "2026-11-07",
+      "topic": "GitHub Trending",
+      "title": "11/7の話題リポジトリ — AI飽和の谷間で“非AI・軽量・ローカル”3本(player/kiri/rune)",
+      "lede": "生成AIではなく、ブラウザ/ネイティブで軽く動く道具が急上昇。重量依存・Docker/Electron疲れへの揺り戻しが共通テーマ。",
+      "articleHtml": "<p>本日も GitHub は AI 一色の飽和局面。その谷間で急上昇した<strong>3本</strong>は、偶然そろって「生成 AI ではなく、ローカル/ネイティブで軽量に動く道具」だった。重い依存・クラウド前提・Electron/Docker 疲れへの<strong>揺り戻し</strong>が共通テーマ。各リポジトリの「解決したい課題」と「提供する機能」を押さえる。</p>\n<figure class='fig'><svg viewBox='0 0 620 212' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='0' y='0' width='620' height='212' fill='#f1fcf4'/>\n  <text x='12' y='22' font-size='14' font-weight='bold' fill='#1a7f37'>11/7の3本 — 解決したい課題 → 提供する機能</text>\n  <rect x='12' y='32' width='150' height='26' fill='#d4f3dd'/><text x='18' y='50' font-size='11.5' font-weight='bold' fill='#14532d'>リポジトリ</text>\n  <rect x='162' y='32' width='228' height='26' fill='#d4f3dd'/><text x='168' y='50' font-size='11.5' font-weight='bold' fill='#14532d'>解決したい課題</text>\n  <rect x='390' y='32' width='218' height='26' fill='#d4f3dd'/><text x='396' y='50' font-size='11.5' font-weight='bold' fill='#14532d'>提供する機能</text>\n  <rect x='12' y='58' width='150' height='48' fill='#ffffff' stroke='#bbe6c9'/><text x='18' y='78' font-size='11' font-weight='bold' fill='#166534'>player</text><text x='18' y='96' font-size='10' fill='#3f6b4e'>TS ⭐949</text>\n  <rect x='162' y='58' width='228' height='48' fill='#ffffff' stroke='#bbe6c9'/><text x='168' y='78' font-size='10.5' fill='#14532d'>アバター再生の重い依存</text><text x='168' y='94' font-size='10.5' fill='#14532d'>・配信ツール疲れ</text>\n  <rect x='390' y='58' width='218' height='48' fill='#ffffff' stroke='#bbe6c9'/><text x='396' y='78' font-size='10.5' fill='#14532d'>WebGL2単体で2.5D再生</text><text x='396' y='94' font-size='10.5' fill='#14532d'>リップシンク+表情追跡</text>\n  <rect x='12' y='106' width='150' height='48' fill='#f7fdf9' stroke='#bbe6c9'/><text x='18' y='126' font-size='11' font-weight='bold' fill='#166534'>kiri</text><text x='18' y='144' font-size='10' fill='#3f6b4e'>Rust ⭐545</text>\n  <rect x='162' y='106' width='228' height='48' fill='#f7fdf9' stroke='#bbe6c9'/><text x='168' y='126' font-size='10.5' fill='#14532d'>重量デーモン依存の</text><text x='168' y='142' font-size='10.5' fill='#14532d'>コンテナ実行の重さ</text>\n  <rect x='390' y='106' width='218' height='48' fill='#f7fdf9' stroke='#bbe6c9'/><text x='396' y='126' font-size='10.5' fill='#14532d'>軽量・高速な</text><text x='396' y='142' font-size='10.5' fill='#14532d'>クロスPFコンテナ実行</text>\n  <rect x='12' y='154' width='150' height='48' fill='#ffffff' stroke='#bbe6c9'/><text x='18' y='174' font-size='11' font-weight='bold' fill='#166534'>rune</text><text x='18' y='192' font-size='10' fill='#3f6b4e'>Rust ⭐2.5k</text>\n  <rect x='162' y='154' width='228' height='48' fill='#ffffff' stroke='#bbe6c9'/><text x='168' y='174' font-size='10.5' fill='#14532d'>Electron/WebView前提の</text><text x='168' y='190' font-size='10.5' fill='#14532d'>重いデスクトップGUI</text>\n  <rect x='390' y='154' width='218' height='48' fill='#ffffff' stroke='#bbe6c9'/><text x='396' y='174' font-size='10.5' fill='#14532d'>WebView非依存の</text><text x='396' y='190' font-size='10.5' fill='#14532d'>ネイティブ描画UI(Rust)</text>\n</svg><figcaption>図1：3本に共通するのは「クラウド/重量依存を外し手元で軽く動かす」志向。</figcaption></figure>\n<h4>livliv-dev/player（TypeScript・⭐約949）</h4>\n<p><strong>解決したい課題</strong>：VTuber/配信アバターを動かすのに、重いネイティブアプリや多数の依存を入れるのが面倒という“ツール疲れ”。<strong>提供する機能</strong>：WebGL2 だけで動く軽量な 2.5D キャラクター・プレイヤー。VRM/PNGTuber に対応し、リップシンクと Web カメラのフェイストラッキングを<strong>ブラウザ単体・ローカル</strong>で実行する。AI 生成ではなく“再生エンジン”である点が新規で、公開約3日で約949★/forks100（日平均約316★/日・当日計測組で最高率の約33%）。Apache-2.0。</p>\n<h4>libracoder/kiri（Rust・⭐約545）</h4>\n<p><strong>解決したい課題</strong>：Docker Desktop など重量級デーモンに依存するコンテナ実行の重さ・遅さ。<strong>提供する機能</strong>：macOS/Windows/Linux で動く、小さく高速なコンテナ・ランタイム。重いデーモンなしで軽量にコンテナを起動できる。AI 飽和局面では希少な<strong>純・非AI のシステム/DX 新星</strong>で、公開約5日で約545★/forks43（日平均約109★/日・率約20%）。Apache-2.0。</p>\n<h4>anomalyco/rune（Rust・⭐約2.5k）</h4>\n<p><strong>解決したい課題</strong>：デスクトップ GUI が Electron/WebView 前提になり、バンドルが重く起動も遅いこと。<strong>提供する機能</strong>：WebView やバンドルランタイムに依存せず<strong>ネイティブに描画</strong>する Rust 製 UI フレームワーク。公開約16日で約2,460★/forks58（日平均約154★/日）と総スター・日平均ともモメンタム上位、本日も push・open issues 63 で活発に開発中。MIT。</p>\n<h4>まとめ：自分が試すなら</h4>\n<p>いま一番“効く”のは <strong>kiri</strong>——Docker Desktop 依存を減らせれば CI/ローカル双方のコストに直結する。アバター UI を Web に載せたい実験には player、本気のネイティブ・デスクトップを狙うなら rune を watch。3本に共通するのは「クラウド/重量依存を外し、手元で軽く動かす」志向で、生成 AI 疲れの反動としてしばらく続きそうだ。</p>",
+      "sources": [
+        {
+          "title": "livliv-dev/player",
+          "url": "https://github.com/livliv-dev/player"
+        },
+        {
+          "title": "libracoder/kiri",
+          "url": "https://github.com/libracoder/kiri"
+        },
+        {
+          "title": "anomalyco/rune",
+          "url": "https://github.com/anomalyco/rune"
+        }
+      ]
+    },
     {
       "id": "2026-11-06-claude-code",
       "date": "2026-11-06",
