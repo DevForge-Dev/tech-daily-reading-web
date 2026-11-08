@@ -1,0 +1,86 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>11/8の話題リポジトリ — AI飽和の中で光る“非AIの新星”（衛星Wi-Fi・エージェント3D・C製ネイティブUI） — デイリー技術深掘り 読み物</title><meta name="description" content="AI一色のトレンドで逆に目立つ、非AI・多言語の3本。satmux(Python)/vork(Rust)/CUI(C)を課題→機能で読む。"><meta name="theme-color" content="#238636"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-08-github-trending/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="11/8の話題リポジトリ — AI飽和の中で光る“非AIの新星”（衛星Wi-Fi・エージェント3D・C製ネイティブUI） — デイリー技術深掘り 読み物"><meta property="og:description" content="AI一色のトレンドで逆に目立つ、非AI・多言語の3本。satmux(Python)/vork(Rust)/CUI(C)を課題→機能で読む。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-08-github-trending/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3fb950, #1a7f37)"> <span class="glyph" aria-hidden="true">★</span> <div class="kicker">GitHub Trending</div> <h1>11/8の話題リポジトリ — AI飽和の中で光る“非AIの新星”（衛星Wi-Fi・エージェント3D・C製ネイティブUI）</h1> <p class="lede">AI一色のトレンドで逆に目立つ、非AI・多言語の3本。satmux(Python)/vork(Rust)/CUI(C)を課題→機能で読む。</p> <div class="meta"> <span>📅 2026年11月8日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#238636"> <div> <article class="prose" data-has-mermaid="0"><p>本日のトレンドも AI 一色の飽和局面。増加率上位はほぼ既出・グレー系で占められる中、既出652件とグレーを除外した純・新規を GitHub Search API で洗い出し、総スター・言語・作成日・ライセンスを実測検証して選んだ6本から、言語とレイヤーの振れ幅が効く3本を取り上げる。貫くのは<strong>「AI 生成が飽和するほど、非AI・多言語・ネイティブ/インフラ寄りの新星が逆に目立つ」</strong>という今日の傾向だ（当日の星増加はソース乖離が大きく、created 日・実測総スター・日平均で代替評価）。</p>
+<figure class='fig'><svg viewBox='0 0 600 212' xmlns='http://www.w3.org/2000/svg'>
+<rect x='0' y='0' width='600' height='212' rx='8' fill='#eafaf0' stroke='#3fb950'></rect>
+<text x='14' y='26' font-family='sans-serif' font-size='13' font-weight='700' fill='#1a7f37'>3本の「解決したい課題 → 提供する機能」</text>
+<line x1='150' y1='38' x2='150' y2='204' stroke='#bfe6cb'></line>
+<line x1='150' y1='96' x2='588' y2='96' stroke='#d6efdd'></line>
+<line x1='150' y1='150' x2='588' y2='150' stroke='#d6efdd'></line>
+<text x='14' y='64' font-family='monospace' font-size='11.5' font-weight='700' fill='#166534'>satmux</text>
+<text x='14' y='80' font-family='sans-serif' font-size='9.5' fill='#3f6b4a'>Python 283★超</text>
+<text x='160' y='58' font-family='sans-serif' font-size='11' fill='#1f3d2a'>課題：機内/衛星Wi-Fiの高RTT・ロスで遅い</text>
+<text x='160' y='78' font-family='sans-serif' font-size='11' fill='#1f3d2a'>機能：暖機BBR＋TCP多重化＋1-RTT＋zlibの高速化プロキシ</text>
+<text x='14' y='120' font-family='monospace' font-size='11.5' font-weight='700' fill='#166534'>vork</text>
+<text x='14' y='136' font-family='sans-serif' font-size='9.5' fill='#3f6b4a'>Rust 856★</text>
+<text x='160' y='114' font-family='sans-serif' font-size='11' fill='#1f3d2a'>課題：エージェントがGUIなしに3D/VFXを描けない</text>
+<text x='160' y='134' font-family='sans-serif' font-size='11' fill='#1f3d2a'>機能：Metal/レイトレのヘッドレス描画エンジン（生成でなく描画）</text>
+<text x='14' y='176' font-family='monospace' font-size='11.5' font-weight='700' fill='#166534'>CUI</text>
+<text x='14' y='190' font-family='sans-serif' font-size='9.5' fill='#3f6b4a'>C 283★</text>
+<text x='160' y='170' font-family='sans-serif' font-size='11' fill='#1f3d2a'>課題：Electron/WebView前提のUIが重い</text>
+<text x='160' y='190' font-family='sans-serif' font-size='11' fill='#1f3d2a'>機能：C製ネイティブUI部品 約150種＋スプリング・依存ゼロ</text>
+</svg><figcaption>図1：3本のリポジトリ×（課題／提供機能）</figcaption></figure>
+<h4 id="sec-1">Th0rgal/satmux（Python・⭐約356）</h4>
+<p><strong>解決したい課題：</strong>機内や GEO 衛星の Wi-Fi は RTT が極端に高くパケットロスも多いため、素の TCP では遅く詰まりやすい。<strong>提供する機能：</strong>暖機済み BBR による TCP 多重化＋1-RTT の Ground-TLS＋zlib 圧縮で、この高遅延環境を高速化するプロキシ。依存ゼロ・MIT。created 2026-11-07＝公開約1日で実測約356★/forks18（日平均約356★/日）と当日モメンタム筆頭で、AI 飽和のなか希少な純・非AIネットワーク最適化という新鮮さが拡散の理由。</p>
+<h4 id="sec-2">voyager-so/vork（Rust・⭐約856）</h4>
+<p><strong>解決したい課題：</strong>画像/動画の生成モデルは溢れているが、エージェントが GUI なしに 3D/VFX を“描画”する基盤は乏しい。<strong>提供する機能：</strong>Metal／レイトレーシングで動くヘッドレスな 3D/VFX レンダリング・エンジン（リサーチプレビュー）。生成モデルではなく「エージェントが叩く描画エンジン」という設計が差別化点。公開約3日で実測約856★/forks55（日平均約285★/日・率約33%）。ライセンス未設定（NOASSERTION）のため製品組み込み時は要確認。</p>
+<h4 id="sec-3">yappologistic/CUI（C・⭐約283）</h4>
+<p><strong>解決したい課題：</strong>Electron/WebView 前提の UI 開発が重く、ネイティブ・依存ゼロを求める層の不満。<strong>提供する機能：</strong>C 言語向けのネイティブ UI コンポーネント約150種で、スプリング・モーションと完全なキーボード操作に対応し Win/mac/Linux で依存ゼロに動く。公開約3日で実測約283★/forks10（日平均約94★/日・率約33%・fork率4%＝star-farm 懸念なし）。昨日の rune（Rust）とは別言語・別レイヤーの同系トレンドで、希少な C 言語枠。</p>
+<h4 id="sec-4">まとめ：自分が試すなら</h4>
+<p>手元で一番効くのは <strong>satmux</strong>——出先の貧弱回線での作業がそのまま速くなる実用性がある。3D エージェント基盤に興味があるなら <strong>vork</strong> を眺めるが、ライセンス未設定なので評価用に留める。CUI は「ネイティブ回帰」の温度感を測る指標として面白い。いずれも非AIという点が今日の見どころ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://github.com/Th0rgal/satmux" target="_blank" rel="noopener noreferrer"> Th0rgal/satmux </a> </li><li> <a href="https://github.com/voyager-so/vork" target="_blank" rel="noopener noreferrer"> voyager-so/vork </a> </li><li> <a href="https://github.com/yappologistic/CUI" target="_blank" rel="noopener noreferrer"> yappologistic/CUI </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> Th0rgal/satmux（Python・⭐約356） </a> </li><li> <a href="#sec-2" data-toc="sec-2"> voyager-so/vork（Rust・⭐約856） </a> </li><li> <a href="#sec-3" data-toc="sec-3"> yappologistic/CUI（C・⭐約283） </a> </li><li> <a href="#sec-4" data-toc="sec-4"> まとめ：自分が試すなら </a> </li> </ul> <div class="reading-box"> <div>📅 2026-11-08</div> <div>⏱ 読了 約3分</div> <div>🏷 GitHub Trending</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
