@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-11-07T04:47:34.742Z",
+  "generatedAt": "2026-11-08T04:47:54.930Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,102 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-11-08-claude-code",
+      "date": "2026-11-08",
+      "topic": "Claude Code",
+      "title": "Claude Code v2.1.319 — autoの静かな調整と“聞かずに拒否する”新設定",
+      "lede": "v2.1.319でauto挙動・ターミナルMCPタスク・denyInsteadOfPrompting・フラグ無効化を追加。直近317/318の実務変更も整理。",
+      "articleHtml": "<p>Claude Code の最新は 11/6 公開の <strong>v2.1.319</strong> に更新された（前日まで最新だった 11/3 の v2.1.318 の次）。相変わらず公式 docs の変更履歴は遅延気味で、集計サイト gradually.ai が 11/7 に公式ソース（GitHub の CHANGELOG.md）と照合済みと表示して先行している状態だ。一次（GitHub リリースタグ）はこの digest では未照合なので、断定ではなく「集計サイト先行の確度」で読むのがよい。</p>\n<h4>v2.1.319 で入った4点</h4>\n<p>目立つのは、<strong>テレメトリやフィーチャーフラグが無効な環境での auto モードの挙動調整</strong>、<strong>ターミナルからの MCP タスク</strong>、そしてプロンプトを出さずに拒否する新設定 <code>permissions.denyInsteadOfPrompting</code>、フィーチャーフラグ全体を殺す <code>CLAUDE_CODE_DISABLE_FEATURE_FLAGS</code> の追加。特に後半2つは CI やエンタープライズのロックダウン運用に効く。確認ダイアログを出さず問答無用で deny に倒せるので、無人実行で「許可待ちで止まる／うっかり許可される」の両方を潰せる。フラグ無効化は、環境ごとの挙動差を消して再現性を上げたいときの逃げ道になる。</p>\n<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg'>\n<rect x='0' y='0' width='600' height='210' rx='8' fill='#fff6ed' stroke='#e8a365'/>\n<text x='16' y='30' font-family='sans-serif' font-size='14' font-weight='700' fill='#b45309'>直近3バージョンの効きどころ（すべて11/3〜11/6）</text>\n<line x1='150' y1='44' x2='150' y2='196' stroke='#e8c9a8'/>\n<text x='16' y='70' font-family='monospace' font-size='13' font-weight='700' fill='#9a3412'>v2.1.319</text>\n<text x='16' y='88' font-family='sans-serif' font-size='10' fill='#a16207'>11/6</text>\n<text x='162' y='66' font-family='sans-serif' font-size='11.5' fill='#3f3f46'>auto挙動の調整（テレメトリ/フラグ無効時）・</text>\n<text x='162' y='82' font-family='sans-serif' font-size='11.5' fill='#3f3f46'>ターミナルMCPタスク・denyInsteadOfPrompting・</text>\n<text x='162' y='98' font-family='sans-serif' font-size='11.5' fill='#3f3f46'>DISABLE_FEATURE_FLAGS</text>\n<line x1='150' y1='112' x2='588' y2='112' stroke='#f0e0cd'/>\n<text x='16' y='134' font-family='monospace' font-size='13' font-weight='700' fill='#9a3412'>v2.1.318</text>\n<text x='16' y='152' font-family='sans-serif' font-size='10' fill='#a16207'>11/3</text>\n<text x='162' y='136' font-family='sans-serif' font-size='11.5' fill='#3f3f46'>auth status に loginExpiresAt・mantle で</text>\n<text x='162' y='152' font-family='sans-serif' font-size='11.5' fill='#3f3f46'>assume_role・--continue の履歴欠落バグ修正</text>\n<line x1='150' y1='166' x2='588' y2='166' stroke='#f0e0cd'/>\n<text x='16' y='186' font-family='monospace' font-size='13' font-weight='700' fill='#9a3412'>v2.1.317</text>\n<text x='162' y='184' font-family='sans-serif' font-size='11.5' fill='#3f3f46'>/schedule が未要求コネクタを警告・送信前にメール確認・フック onFailure:block</text>\n</svg><figcaption>図1：v2.1.317→318→319 の運用に効く変更</figcaption></figure>\n<h4>直近317/318も運用に効く</h4>\n<p>手前の2バージョン（いずれも11/3）も地味に重要だ。<strong>v2.1.318</strong> は <code>claude auth status</code> にログイン有効期限 <code>loginExpiresAt</code> が出るようになり、gateway の mantle upstream で <code>assume_role</code> に対応、<code>--continue</code> が会話履歴を取り落とす不具合が直った。<strong>v2.1.317</strong> は <code>/schedule</code> がユーザーの要求していないコネクタを警告し、web・shell 系ツールがアカウントのメールアドレスを外部送信する前に確認を挟むようになり、Agent SDK のフックで onFailure:block（失敗時にブロック）が使えるようになった。</p>\n<h4>自分が試すなら</h4>\n<p>まず <code>claude auth status</code> で <code>loginExpiresAt</code> を確認して、無人スケジュール実行の最中にトークンが切れないか見ておく。次に無人系のプロファイルだけ <code>permissions.denyInsteadOfPrompting</code> を有効化し、危険操作は確認ではなく拒否に倒す。フックは onFailure:block で検証フックを1つ入れ、許可1件・拒否1件を確認してから広げる——今日の技術記事（SmartScope）の勘所とも一致する。</p>\n<h4>注意点</h4>\n<p>新リリースの確認が<strong>単一の集計サイト依拠</strong>で、公式 docs も一次のリリースタグも未照合という点は割り引いて読む。バージョン番号を手で追うより<strong>チャネル追従</strong>で差分を取り込む方が事故が少ない。</p>\n<h4>ひとことまとめ</h4>\n<p>319 は派手さより「無人・企業運用の締め付け」を一段進めた回。denyInsteadOfPrompting とフラグ無効化は、スケジュール実行で止まらず・暴れない運用の実弾になる。</p>",
+      "sources": [
+        {
+          "title": "gradually.ai — Claude Code changelog",
+          "url": "https://www.gradually.ai/en/changelogs/claude-code/"
+        },
+        {
+          "title": "SmartScope — Best Practices 2026",
+          "url": "https://smartscope.blog/en/generative-ai/claude/claude-code-best-practices-advanced-2026/"
+        },
+        {
+          "title": "BestHub — 7 practical tips",
+          "url": "https://www.besthub.dev/articles/7-practical-tips-to-master-claude-code-and-skip-two-years-of-mistakes-2ebe7f82b009"
+        }
+      ]
+    },
+    {
+      "id": "2026-11-08-nextjs",
+      "date": "2026-11-08",
+      "topic": "Next.js",
+      "title": "シャイニー/シマーテキスト — AIの「考え中…」をJSゼロのCSSだけで",
+      "lede": "処理中テキストを光の帯が横切る表現。半透明下地＋background-clip:text＋横スクロールで、Server Componentにそのまま置ける。",
+      "articleHtml": "<p>LLM/AI プロダクトの普及で、「Thinking…」「Generating…」といった<strong>処理中テキストの上を淡い光の帯がゆっくり横切る</strong>表現（shiny / shimmer text）が定番になった。箱をちらつかせるスケルトンシマーと役割が違い、こちらは<strong>可読なテキストそのものを“生きている”状態に見せる</strong>。止まっていないことを非侵襲的に伝えられるのが強みだ。</p>\n<h4>何が嬉しいか</h4>\n<p>第一に<strong>純粋 CSS だけで実装でき追加 JS がゼロ</strong>——App Router の Server Component や <code>loading.tsx</code> のフォールバックにそのまま置ける。第二に <code>background-clip: text</code> が Baseline（widely available）になり、プレフィックス前提から脱却しつつある。ReactBits・Vercel AI Elements・MVPBlocks が軒並み採用し事実上の共通言語になった（ただし AI Elements は shadcn/ui へ統合され 2026/11 末で非推奨予定なので依存しすぎない）。</p>\n<h4>仕組み</h4>\n<p>核は「<strong>半透明のテキスト色</strong>＋<strong>帯状グラデーションを背景にして <code>background-clip: text</code> でグリフ内だけに描く</strong>＋<strong>背景を横スクロール</strong>」の3点。文字色を半透明グレーにし、両端が透明・中央が明るい帯グラデを背景に敷き、グリフ形にクリップする。背景は半透明文字の“下”に残るので、帯が来た位置だけ明るく透けて光が走って見える。<code>background-size: 200% 100%</code> で引き伸ばし、<code>@keyframes</code> で <code>background-position</code> を動かすと帯が流れる。</p>\n<figure class='fig'><svg viewBox='0 0 600 190' xmlns='http://www.w3.org/2000/svg'>\n<rect x='0' y='0' width='600' height='190' rx='8' fill='#eef6ff' stroke='#79b8f3'/>\n<text x='16' y='28' font-family='sans-serif' font-size='13' font-weight='700' fill='#1d4ed8'>光が走る仕組み（3層）</text>\n<rect x='30' y='46' width='540' height='34' rx='6' fill='#dbe9fb'/>\n<text x='40' y='68' font-family='sans-serif' font-size='12' fill='#1e3a8a'>① color：半透明グレー（下地として残る＝常に読める）</text>\n<rect x='30' y='88' width='540' height='34' rx='6' fill='#cfe0f7'/>\n<text x='40' y='110' font-family='sans-serif' font-size='12' fill='#1e3a8a'>② 背景：帯グラデをbackground-clip:textでグリフ内に限定</text>\n<rect x='30' y='130' width='540' height='40' rx='6' fill='#bcd4f2'/>\n<text x='40' y='148' font-family='sans-serif' font-size='12' fill='#1e3a8a'>③ background-size:200%をpositionで横移動＝帯が流れる</text>\n<text x='40' y='164' font-family='sans-serif' font-size='10.5' fill='#3b5b9a'>reduce時はno-preference側で動かさない設計＝静止で可読を担保</text>\n</svg><figcaption>図1：半透明下地＋帯グラデ＋横スクロールの重なり</figcaption></figure>\n<h4>ReactBits 流儀：可読性を落とさない</h4>\n<p>ポイントは <code>-webkit-text-fill-color: transparent</code> を<strong>使わない</strong>こと。透明塗りにすると帯が無い位置で文字が消える。代わりに<strong>テキスト色のアルファ</strong>で下地を透かせば、常に読めたまま帯だけが明るく走る。</p>\n<pre><code>.shimmer-text{\n  display:inline-block;\n  color:color-mix(in oklab, currentColor 45%, transparent);\n  background-image:linear-gradient(110deg,transparent 40%,\n    color-mix(in oklab,currentColor 90%,white) 50%,transparent 60%);\n  background-size:200% 100%; background-position:100% 0;\n  background-clip:text; -webkit-background-clip:text;\n}\n@media (prefers-reduced-motion:no-preference){\n  .shimmer-text{animation:text-shimmer 2.4s linear infinite}\n}\n@keyframes text-shimmer{to{background-position:-100% 0}}</code></pre>\n<h4>App Router での置き方・落とし穴</h4>\n<p>シマー自体は CSS のみなので <code>'use client'</code> 不要。<code>loading.tsx</code> に role=status / aria-live=polite を付けた <code>&lt;p class=\"shimmer-text\"&gt;</code> を置けば JS ゼロのストリーミング用プレースホルダになる。「処理中だけ出す」制御が要るときだけ親を Client にして <code>useFormStatus</code> の <code>pending</code> で出し分ける。落とし穴は、<code>display:inline</code> だと帯が行で分断されること（<code>inline-block</code> 必須）、Safari 向けに <code>-webkit-background-clip</code> を併記すること、そして<strong>無限ループは WCAG 2.2.2 の対象</strong>——<code>prefers-reduced-motion</code> を尊重し既定を静止に。</p>\n<h4>ひとことまとめ</h4>\n<p>JS を1行も増やさず「処理中」を上品に伝えられる。鍵は透明塗りではなくアルファで下地を残す ReactBits 流儀と、reduce 時に静止する安全側の書き方。</p>",
+      "sources": [
+        {
+          "title": "MDN: background-clip",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/background-clip"
+        },
+        {
+          "title": "MDN: @property",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/@property"
+        },
+        {
+          "title": "Vercel AI Elements — Shimmer",
+          "url": "https://elements.ai-sdk.dev/components/shimmer"
+        },
+        {
+          "title": "WCAG 2.2.2 Pause, Stop, Hide",
+          "url": "https://www.w3.org/WAI/WCAG22/Understanding/pause-stop-hide.html"
+        }
+      ]
+    },
+    {
+      "id": "2026-11-08-flutter",
+      "date": "2026-11-08",
+      "topic": "Flutter",
+      "title": "AnimatedList — 項目の出入りをアニメで見せる（データListとの手動同期が肝）",
+      "lede": "3.50 stable 待ちの間に。insertItem/removeItemでリストの挿入・削除を演出。削除は順序とkey固定が事故らない型。",
+      "articleHtml": "<p>現況から：stable は <strong>3.47.9 / Dart 3.13.7</strong>、beta は <strong>3.50.0-0.4.pre / Dart 3.14.0</strong>（11/4）で、11/8 時点でも <strong>3.50 stable は未公開</strong>。11/4 の 0.4.pre 以降 新しい pre が出ず実質4日の据え置き、release-tracker #195830 は open のまま人間のコメントなし、Dart Hash 欄もプレースホルダ——昇格の最終ゲートで足踏みが続く。本番は 3.47.9 を pin しつつ 0.4.pre を別ジョブで緑化しておくのが安全。今日は“待ちの間”に効く UI 技法、<strong>AnimatedList</strong> を掘る。</p>\n<h4>項目の出入りをアニメで見せる</h4>\n<p><code>ListView.builder</code> は件数変化を黙って差し替えるだけで、追加・削除を演出しない。<strong>AnimatedList</strong>（スリバー版 <code>SliverAnimatedList</code>、グリッドは <code>AnimatedGrid</code>）は挿入・削除を明示的にアニメさせる。大原則は<strong>バッキングのデータ List と AnimatedList を手動で同期</strong>すること。データを足す/消すのと<strong>同時に</strong> state の <code>insertItem</code>/<code>removeItem</code> を呼ぶ。</p>\n<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg'>\n<rect x='0' y='0' width='600' height='200' rx='8' fill='#eefaf1' stroke='#58c489'/>\n<text x='16' y='28' font-family='sans-serif' font-size='13' font-weight='700' fill='#15803d'>削除の正しい順序（index ずれを避ける）</text>\n<rect x='24' y='48' width='150' height='48' rx='6' fill='#d7f3e1'/>\n<text x='34' y='70' font-family='sans-serif' font-size='11.5' fill='#14532d'>① データ List から</text>\n<text x='34' y='86' font-family='sans-serif' font-size='11.5' fill='#14532d'>該当要素を除去</text>\n<path d='M174 72 L214 72' stroke='#15803d' stroke-width='2' marker-end='url(#a)'/>\n<rect x='216' y='48' width='168' height='48' rx='6' fill='#d7f3e1'/>\n<text x='226' y='70' font-family='sans-serif' font-size='11.5' fill='#14532d'>② その index を removeItem</text>\n<text x='226' y='86' font-family='sans-serif' font-size='11.5' fill='#14532d'>に渡す（退場ビルダ付き）</text>\n<path d='M384 72 L424 72' stroke='#15803d' stroke-width='2' marker-end='url(#a)'/>\n<rect x='426' y='48' width='150' height='48' rx='6' fill='#d7f3e1'/>\n<text x='436' y='70' font-family='sans-serif' font-size='11.5' fill='#14532d'>③ builder が</text>\n<text x='436' y='86' font-family='sans-serif' font-size='11.5' fill='#14532d'>Size+Fade で畳む</text>\n<text x='24' y='128' font-family='sans-serif' font-size='11.5' fill='#166534'>複数同時削除は index ずれ回避のため「後ろ（大きい index）から」処理する。</text>\n<text x='24' y='150' font-family='sans-serif' font-size='11.5' fill='#166534'>itemBuilder は (context, index, Animation&lt;double&gt;)：受けた animation を</text>\n<text x='24' y='168' font-family='sans-serif' font-size='11.5' fill='#166534'>SizeTransition/FadeTransition に通して出現。key は GlobalKey を固定で使い回す。</text>\n<defs><marker id='a' markerWidth='8' markerHeight='8' refX='6' refY='3' orient='auto'><path d='M0 0 L6 3 L0 6 Z' fill='#15803d'/></marker></defs>\n</svg><figcaption>図1：AnimatedList の削除フローと注意点</figcaption></figure>\n<p>操作は <code>final _listKey = GlobalKey&lt;AnimatedListState&gt;();</code> 経由。<strong>削除の肝</strong>は、消した項目がもうデータに無いため、<code>removeItem</code> の <code>builder:(context, animation)</code> に「消える最中に描く中身」（削除前 widget を <code>SizeTransition</code>＋<code>FadeTransition</code> で畳む退場専用ビルダ）を渡すこと。比較的新しい <code>AnimatedList.separated</code> なら <code>separatorBuilder</code>／<code>removedSeparatorBuilder</code> で区切り線もアニメ対応になる。</p>\n<h4>あわせて：keepAlive と offline-first</h4>\n<p>遅延 viewport（<code>ListView.builder</code>/<code>PageView</code>/<code>TabBarView</code>）は画面外の子を dispose するので、スクロール位置や入力が消える。子の State に <code>AutomaticKeepAliveClientMixin</code> を付け <code>wantKeepAlive=&gt;true</code>＋<code>build</code> 冒頭で <code>super.build(context)</code> を呼べば維持できるが、<strong>全項目に付けると遅延リストの省メモリ効果が消える</strong>ので「失うと困る子だけ」に絞る。アーキテクチャ面では、ローカル DB を single source of truth にし UI は <code>Stream</code> 購読、書き込みは outbox にキューして復帰時に flush する offline-first が定石だ。</p>\n<h4>ひとことまとめ</h4>\n<p>AnimatedList は「データとリストの二重管理」を受け入れる代わりに出入りを演出できる。削除は“先にデータ除去→index を removeItem→退場ビルダで畳む”の順序、key は固定、が事故らない型。</p>",
+      "sources": [
+        {
+          "title": "AnimatedList class (api.flutter.dev)",
+          "url": "https://api.flutter.dev/flutter/widgets/AnimatedList-class.html"
+        },
+        {
+          "title": "AnimatedList.separated",
+          "url": "https://api.flutter.dev/flutter/widgets/AnimatedList/AnimatedList.separated.html"
+        },
+        {
+          "title": "AutomaticKeepAliveClientMixin",
+          "url": "https://api.flutter.dev/flutter/widgets/AutomaticKeepAliveClientMixin-mixin.html"
+        },
+        {
+          "title": "Flutter Versions (flutterreleases.com)",
+          "url": "https://flutterreleases.com/flutter-versions/"
+        }
+      ]
+    },
+    {
+      "id": "2026-11-08-github-trending",
+      "date": "2026-11-08",
+      "topic": "GitHub Trending",
+      "title": "11/8の話題リポジトリ — AI飽和の中で光る“非AIの新星”（衛星Wi-Fi・エージェント3D・C製ネイティブUI）",
+      "lede": "AI一色のトレンドで逆に目立つ、非AI・多言語の3本。satmux(Python)/vork(Rust)/CUI(C)を課題→機能で読む。",
+      "articleHtml": "<p>本日のトレンドも AI 一色の飽和局面。増加率上位はほぼ既出・グレー系で占められる中、既出652件とグレーを除外した純・新規を GitHub Search API で洗い出し、総スター・言語・作成日・ライセンスを実測検証して選んだ6本から、言語とレイヤーの振れ幅が効く3本を取り上げる。貫くのは<strong>「AI 生成が飽和するほど、非AI・多言語・ネイティブ/インフラ寄りの新星が逆に目立つ」</strong>という今日の傾向だ（当日の星増加はソース乖離が大きく、created 日・実測総スター・日平均で代替評価）。</p>\n<figure class='fig'><svg viewBox='0 0 600 212' xmlns='http://www.w3.org/2000/svg'>\n<rect x='0' y='0' width='600' height='212' rx='8' fill='#eafaf0' stroke='#3fb950'/>\n<text x='14' y='26' font-family='sans-serif' font-size='13' font-weight='700' fill='#1a7f37'>3本の「解決したい課題 → 提供する機能」</text>\n<line x1='150' y1='38' x2='150' y2='204' stroke='#bfe6cb'/>\n<line x1='150' y1='96' x2='588' y2='96' stroke='#d6efdd'/>\n<line x1='150' y1='150' x2='588' y2='150' stroke='#d6efdd'/>\n<text x='14' y='64' font-family='monospace' font-size='11.5' font-weight='700' fill='#166534'>satmux</text>\n<text x='14' y='80' font-family='sans-serif' font-size='9.5' fill='#3f6b4a'>Python 283★超</text>\n<text x='160' y='58' font-family='sans-serif' font-size='11' fill='#1f3d2a'>課題：機内/衛星Wi-Fiの高RTT・ロスで遅い</text>\n<text x='160' y='78' font-family='sans-serif' font-size='11' fill='#1f3d2a'>機能：暖機BBR＋TCP多重化＋1-RTT＋zlibの高速化プロキシ</text>\n<text x='14' y='120' font-family='monospace' font-size='11.5' font-weight='700' fill='#166534'>vork</text>\n<text x='14' y='136' font-family='sans-serif' font-size='9.5' fill='#3f6b4a'>Rust 856★</text>\n<text x='160' y='114' font-family='sans-serif' font-size='11' fill='#1f3d2a'>課題：エージェントがGUIなしに3D/VFXを描けない</text>\n<text x='160' y='134' font-family='sans-serif' font-size='11' fill='#1f3d2a'>機能：Metal/レイトレのヘッドレス描画エンジン（生成でなく描画）</text>\n<text x='14' y='176' font-family='monospace' font-size='11.5' font-weight='700' fill='#166534'>CUI</text>\n<text x='14' y='190' font-family='sans-serif' font-size='9.5' fill='#3f6b4a'>C 283★</text>\n<text x='160' y='170' font-family='sans-serif' font-size='11' fill='#1f3d2a'>課題：Electron/WebView前提のUIが重い</text>\n<text x='160' y='190' font-family='sans-serif' font-size='11' fill='#1f3d2a'>機能：C製ネイティブUI部品 約150種＋スプリング・依存ゼロ</text>\n</svg><figcaption>図1：3本のリポジトリ×（課題／提供機能）</figcaption></figure>\n<h4>Th0rgal/satmux（Python・⭐約356）</h4>\n<p><strong>解決したい課題：</strong>機内や GEO 衛星の Wi-Fi は RTT が極端に高くパケットロスも多いため、素の TCP では遅く詰まりやすい。<strong>提供する機能：</strong>暖機済み BBR による TCP 多重化＋1-RTT の Ground-TLS＋zlib 圧縮で、この高遅延環境を高速化するプロキシ。依存ゼロ・MIT。created 2026-11-07＝公開約1日で実測約356★/forks18（日平均約356★/日）と当日モメンタム筆頭で、AI 飽和のなか希少な純・非AIネットワーク最適化という新鮮さが拡散の理由。</p>\n<h4>voyager-so/vork（Rust・⭐約856）</h4>\n<p><strong>解決したい課題：</strong>画像/動画の生成モデルは溢れているが、エージェントが GUI なしに 3D/VFX を“描画”する基盤は乏しい。<strong>提供する機能：</strong>Metal／レイトレーシングで動くヘッドレスな 3D/VFX レンダリング・エンジン（リサーチプレビュー）。生成モデルではなく「エージェントが叩く描画エンジン」という設計が差別化点。公開約3日で実測約856★/forks55（日平均約285★/日・率約33%）。ライセンス未設定（NOASSERTION）のため製品組み込み時は要確認。</p>\n<h4>yappologistic/CUI（C・⭐約283）</h4>\n<p><strong>解決したい課題：</strong>Electron/WebView 前提の UI 開発が重く、ネイティブ・依存ゼロを求める層の不満。<strong>提供する機能：</strong>C 言語向けのネイティブ UI コンポーネント約150種で、スプリング・モーションと完全なキーボード操作に対応し Win/mac/Linux で依存ゼロに動く。公開約3日で実測約283★/forks10（日平均約94★/日・率約33%・fork率4%＝star-farm 懸念なし）。昨日の rune（Rust）とは別言語・別レイヤーの同系トレンドで、希少な C 言語枠。</p>\n<h4>まとめ：自分が試すなら</h4>\n<p>手元で一番効くのは <strong>satmux</strong>——出先の貧弱回線での作業がそのまま速くなる実用性がある。3D エージェント基盤に興味があるなら <strong>vork</strong> を眺めるが、ライセンス未設定なので評価用に留める。CUI は「ネイティブ回帰」の温度感を測る指標として面白い。いずれも非AIという点が今日の見どころ。</p>",
+      "sources": [
+        {
+          "title": "Th0rgal/satmux",
+          "url": "https://github.com/Th0rgal/satmux"
+        },
+        {
+          "title": "voyager-so/vork",
+          "url": "https://github.com/voyager-so/vork"
+        },
+        {
+          "title": "yappologistic/CUI",
+          "url": "https://github.com/yappologistic/CUI"
+        }
+      ]
+    },
     {
       "id": "2026-11-07-claude-code",
       "date": "2026-11-07",
