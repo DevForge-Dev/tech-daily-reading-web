@@ -1,0 +1,75 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Stripe決済をApp Routerで — 署名検証はreq.text()、履行の真実はWebhook — デイリー技術深掘り 読み物</title><meta name="description" content="App Router特有の決済ハマリは2つ。Webhookは生ボディが要る／履行はsuccess_urlでなくWebhookで。冪等性まで含めて型にする。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-09-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Stripe決済をApp Routerで — 署名検証はreq.text()、履行の真実はWebhook — デイリー技術深掘り 読み物"><meta property="og:description" content="App Router特有の決済ハマリは2つ。Webhookは生ボディが要る／履行はsuccess_urlでなくWebhookで。冪等性まで含めて型にする。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-09-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>Stripe決済をApp Routerで — 署名検証はreq.text()、履行の真実はWebhook</h1> <p class="lede">App Router特有の決済ハマリは2つ。Webhookは生ボディが要る／履行はsuccess_urlでなくWebhookで。冪等性まで含めて型にする。</p> <div class="meta"> <span>📅 2026年11月9日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="1"><p>SaaS/EC を作れば必ず通る決済。Stripe は 2026 でもデファクトだが、<strong>App Router 特有のハマりどころが2つ</strong>ある。どちらも「ローカルでは動くのに本番で課金されない／署名エラー地獄」に直結するので、最初に型を押さえておきたい。</p>
+<h4 id="sec-1">落とし穴①：Webhook は生ボディが要る</h4>
+<p>署名検証は<strong>受信したバイト列そのもの</strong>に対して行う。<code>req.json()</code> で一度パースすると列が変わり<strong>検証が必ず失敗</strong>する。App Router の Route Handler では <code>const body = await req.text()</code> で生ボディを直接取れる（Pages Router の <code>bodyParser:false</code> 設定は<strong>不要＝App Router では消える定番ハマり</strong>）。検証は <code>stripe.webhooks.constructEvent(body, sig, secret)</code>、失敗は 400 を返す。Edge ランタイムは Node crypto が無いので <code>await stripe.webhooks.constructEventAsync(body, sig, secret, undefined, Stripe.createSubtleCryptoProvider())</code>（Web Crypto 版）を使う。</p>
+<h4 id="sec-2">落とし穴②：履行の“真実”は success_url ではなく Webhook</h4>
+<p>成功ページ URL は未払いのユーザーでも直接叩けるため、<strong>在庫確定・権限付与・メール送信といった履行は必ず <code>checkout.session.completed</code> Webhook で行う</strong>。success_url は表示だけに使う。Checkout 自体は Server Action で価格をサーバー確定 → <code>sessions.create</code> → <code>redirect(session.url)</code> の数行で済む（<code>redirect()</code> は内部で例外を投げるので <strong>try/catch の外</strong>で呼ぶ）。金額・通貨はクライアント送信値を信じず、<code>price</code> ID か DB でサーバーが決める。</p>
+<figure class='fig'><pre class='mermaid'>flowchart TD
+  A["購入ボタン"] --> B["Server Action: 価格をサーバー確定 → sessions.create"]
+  B --> C["Stripe ホスト決済ページ"]
+  C --> D["success_url に戻る（表示だけ・履行しない）"]
+  C --> E["Webhook POST: checkout.session.completed"]
+  E --> F["Route Handler: req.text() で署名検証"]
+  F --> G["冪等チェック: event.id が既処理なら即 2xx"]
+  G --> H["履行: DB更新・権限付与・revalidateTag → 2xx"]</pre><figcaption>図1：hosted Checkout の全体フロー（履行は Webhook 側だけで行う）</figcaption></figure>
+<h4 id="sec-3">冪等性を忘れない</h4>
+<p>Stripe は 2xx を受け取るまで<strong>最大72時間・指数バックオフでリトライ</strong>＝同一イベントが複数回届く前提だ。<code>event.id</code> を一意制約付きで記録し、既処理ならスキップする。署名 OK なら<strong>なるべく早く 2xx</strong> を返し、重い履行は <code>after()</code> やジョブキューへ逃がして応答をブロックしない。握り潰して 200 を返すとイベントは永久に失われるので、確実に失敗してリトライさせたい時だけ 5xx を返す。Webhook は公開エンドポイント＝<strong>署名検証が唯一の認証</strong>で、proxy 側の認可には頼れない点も要注意。</p>
+<h4 id="sec-4">ひとことまとめ</h4>
+<p>「生ボディで署名検証」「履行は Webhook だけ」「event.id で冪等」。この3点を型にすれば、App Router の決済は数十行で安全に組める。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://docs.stripe.com/webhooks/signature" target="_blank" rel="noopener noreferrer"> Stripe — Webhook 署名検証 (constructEvent/Async) </a> </li><li> <a href="https://docs.stripe.com/webhooks/best-practices" target="_blank" rel="noopener noreferrer"> Stripe — Webhook のベストプラクティス（冪等・リトライ） </a> </li><li> <a href="https://docs.stripe.com/checkout/quickstart" target="_blank" rel="noopener noreferrer"> Stripe — Checkout クイックスタート </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 落とし穴①：Webhook は生ボディが要る </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 落とし穴②：履行の“真実”は success_url ではなく Webhook </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 冪等性を忘れない </a> </li><li> <a href="#sec-4" data-toc="sec-4"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-11-09</div> <div>⏱ 読了 約3分</div> <div>🏷 Next.js</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

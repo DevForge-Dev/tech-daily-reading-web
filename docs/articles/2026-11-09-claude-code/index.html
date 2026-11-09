@@ -1,0 +1,89 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>静かな週末のClaude Code — v2.1.319の運用要点と、skills→hooks→subagentsの使い分け — デイリー技術深掘り 読み物</title><meta name="description" content="週末に新リリースは無く最新は11/6のv2.1.319のまま。/loopの終了挙動やtrust-workspaceといった“止める仕組み”と、3レイヤー拡張の順序を整理する。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-09-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="静かな週末のClaude Code — v2.1.319の運用要点と、skills→hooks→subagentsの使い分け — デイリー技術深掘り 読み物"><meta property="og:description" content="週末に新リリースは無く最新は11/6のv2.1.319のまま。/loopの終了挙動やtrust-workspaceといった“止める仕組み”と、3レイヤー拡張の順序を整理する。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-09-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>静かな週末のClaude Code — v2.1.319の運用要点と、skills→hooks→subagentsの使い分け</h1> <p class="lede">週末に新リリースは無く最新は11/6のv2.1.319のまま。/loopの終了挙動やtrust-workspaceといった“止める仕組み”と、3レイヤー拡張の順序を整理する。</p> <div class="meta"> <span>📅 2026年11月9日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="0"><p>週末（11/7〜9早朝）に確定した新リリースは無く、Claude Code の最新は引き続き <strong>11/6 公開の v2.1.319</strong>（集計サイト gradually.ai が 11/8 に公式 CHANGELOG と照合済みと表示。一次は未照合）。新機能が乏しい日なので、ここでは v2.1.319 で入った<strong>運用に効く変更</strong>と、周辺記事で整理された <code>skills / hooks / subagents</code> の使い分けを読み物として再構成する。</p>
+<h4 id="sec-1">v2.1.319 の運用ポイント</h4>
+<p>自己ペースの <code>/loop</code> は1ターンが終わると<strong>自動で再スケジュールせず終了</strong>するよう変わった（従来どおり回し続けたいなら <code>CLAUDE_CODE_LOOP_KEEPALIVE=1</code>）。セルフホストランナー向けに <code>--trust-workspace false</code> が、リポジトリ設定由来の <strong>hooks・skills もまとめて無効化</strong>するようになった。セキュリティ面では worktree 作成時のサンドボックス脱出を塞ぎ、Bash の権限判定（環境変数プレフィックスでの回避の修正・広い deny が個別 ask を上書き）も強化。エンタープライズ運用者は、Claude Desktop が <strong>11/10 に会話保持期間（chatSessionRetentionDays）の挙動を変更予定</strong>（gateway 起動時警告で予告）な点も要確認だ。</p>
+<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg'>
+<rect x='0' y='0' width='600' height='210' rx='8' fill='#fff7ed' stroke='#fb923c'></rect>
+<text x='16' y='26' font-family='sans-serif' font-size='13' font-weight='700' fill='#c2410c'>3レイヤーの使い分け（まず skills → 強制に hooks → 隔離に subagents）</text>
+<text x='24' y='50' font-family='sans-serif' font-size='11' font-weight='700' fill='#9a3412'>レイヤー</text>
+<text x='160' y='50' font-family='sans-serif' font-size='11' font-weight='700' fill='#9a3412'>役割</text>
+<text x='380' y='50' font-family='sans-serif' font-size='11' font-weight='700' fill='#9a3412'>使いどころ</text>
+<rect x='16' y='58' width='568' height='44' rx='6' fill='#ffedd5'></rect>
+<text x='24' y='84' font-family='monospace' font-size='12' font-weight='700' fill='#7c2d12'>skills</text>
+<text x='160' y='78' font-family='sans-serif' font-size='10.5' fill='#7c2d12'>呼び出し時だけロードの再利用プロンプト</text>
+<text x='160' y='94' font-family='sans-serif' font-size='9.5' fill='#9a3412'>CLAUDE.md と違い常駐しない＝使うまで無コスト</text>
+<text x='380' y='84' font-family='sans-serif' font-size='10.5' fill='#7c2d12'>まず最初に。長い手順をここへ</text>
+<rect x='16' y='106' width='568' height='44' rx='6' fill='#fed7aa'></rect>
+<text x='24' y='132' font-family='monospace' font-size='12' font-weight='700' fill='#7c2d12'>hooks</text>
+<text x='160' y='126' font-family='sans-serif' font-size='10.5' fill='#7c2d12'>イベントで発火する決定論的スクリプト</text>
+<text x='160' y='142' font-family='sans-serif' font-size='9.5' fill='#9a3412'>PreToolUse が主要なセキュリティ関門</text>
+<text x='380' y='132' font-family='sans-serif' font-size='10.5' fill='#7c2d12'>rm * を止める等“強制”が要る所</text>
+<rect x='16' y='154' width='568' height='46' rx='6' fill='#fdba74'></rect>
+<text x='24' y='182' font-family='monospace' font-size='12' font-weight='700' fill='#7c2d12'>subagents</text>
+<text x='160' y='176' font-family='sans-serif' font-size='10.5' fill='#7c2d12'>独自コンテキストの隔離ワーカー</text>
+<text x='160' y='192' font-family='sans-serif' font-size='9.5' fill='#9a3412'>親の skill を継承しない（skills: で事前ロード）</text>
+<text x='380' y='182' font-family='sans-serif' font-size='10.5' fill='#7c2d12'>並列作業・文脈隔離が要る時</text>
+</svg><figcaption>図1：skills / hooks / subagents の役割と使いどころ</figcaption></figure>
+<h4 id="sec-2">3レイヤーの使い分け</h4>
+<p>DEV/ofox.ai の完全ガイド（2026-11-07更新）が示す結論は明快だ。<strong>まず skills から始め</strong>、決定論的な強制が要る所に <strong>hooks</strong> を足し、並列作業や文脈隔離が要る時に <strong>subagents</strong> を使う。skills の本体は<strong>呼び出し時だけロード</strong>され、常駐する CLAUDE.md と違って「使うまで無コスト」。hooks は <code>PreToolUse</code> を“主要なセキュリティ関門”と位置づけ、<code>matcher: Bash</code> ＋条件で <code>rm *</code> を止めたり、<code>PostToolUse</code> で編集後に linter を走らせる。subagent は<strong>親の skill を継承しない</strong>ので、必要なら <code>skills:</code> で事前ロードする（※ガイドは hook 発火点の数え方などに食い違いがあり、コピー前に要検証）。</p>
+<h4 id="sec-3">現場での効き所</h4>
+<p>事例面では、GoDaddy が Claude Code を<strong>全エンジニア2,000人</strong>に Amazon Bedrock 経由で展開しスプリントを約半減（二次報道・測定基準は不明）、PwC×Anthropic は3万人訓練と全社展開を進める（5月付でやや旧聞）。規模の数字は割り引くとして、<strong>skills/hooks は自分・プロジェクト用、plugins はチーム横断の共有用</strong>という線引きは実務の指針になる。</p>
+<h4 id="sec-4">ひとことまとめ</h4>
+<p>更新が静かな日は“止める仕組み”を締め直す好機。<code>/loop</code> の終了挙動と <code>--trust-workspace</code> を押さえ、skills→hooks→subagents の順で拡張を組むのが堅い。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://www.gradually.ai/en/changelogs/claude-code/" target="_blank" rel="noopener noreferrer"> gradually.ai — Claude Code changelog </a> </li><li> <a href="https://dev.to/owen_fox/claude-code-hooks-subagents-and-skills-complete-guide-hjm" target="_blank" rel="noopener noreferrer"> DEV/ofox.ai — Hooks, Subagents, and Skills 完全ガイド </a> </li><li> <a href="https://aiproductivity.ai/news/godaddy-cuts-sprint-times-half-claude-code-2000-developers/" target="_blank" rel="noopener noreferrer"> aiproductivity.ai — GoDaddy cuts sprint times in half </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> v2.1.319 の運用ポイント </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 3レイヤーの使い分け </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 現場での効き所 </a> </li><li> <a href="#sec-4" data-toc="sec-4"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-11-09</div> <div>⏱ 読了 約3分</div> <div>🏷 Claude Code</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
