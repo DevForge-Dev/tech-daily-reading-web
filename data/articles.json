@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-11-08T04:47:54.930Z",
+  "generatedAt": "2026-11-09T04:48:33.947Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,94 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-11-09-claude-code",
+      "date": "2026-11-09",
+      "topic": "Claude Code",
+      "title": "静かな週末のClaude Code — v2.1.319の運用要点と、skills→hooks→subagentsの使い分け",
+      "lede": "週末に新リリースは無く最新は11/6のv2.1.319のまま。/loopの終了挙動やtrust-workspaceといった“止める仕組み”と、3レイヤー拡張の順序を整理する。",
+      "articleHtml": "<p>週末（11/7〜9早朝）に確定した新リリースは無く、Claude Code の最新は引き続き <strong>11/6 公開の v2.1.319</strong>（集計サイト gradually.ai が 11/8 に公式 CHANGELOG と照合済みと表示。一次は未照合）。新機能が乏しい日なので、ここでは v2.1.319 で入った<strong>運用に効く変更</strong>と、周辺記事で整理された <code>skills / hooks / subagents</code> の使い分けを読み物として再構成する。</p>\n<h4>v2.1.319 の運用ポイント</h4>\n<p>自己ペースの <code>/loop</code> は1ターンが終わると<strong>自動で再スケジュールせず終了</strong>するよう変わった（従来どおり回し続けたいなら <code>CLAUDE_CODE_LOOP_KEEPALIVE=1</code>）。セルフホストランナー向けに <code>--trust-workspace false</code> が、リポジトリ設定由来の <strong>hooks・skills もまとめて無効化</strong>するようになった。セキュリティ面では worktree 作成時のサンドボックス脱出を塞ぎ、Bash の権限判定（環境変数プレフィックスでの回避の修正・広い deny が個別 ask を上書き）も強化。エンタープライズ運用者は、Claude Desktop が <strong>11/10 に会話保持期間（chatSessionRetentionDays）の挙動を変更予定</strong>（gateway 起動時警告で予告）な点も要確認だ。</p>\n<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg'>\n<rect x='0' y='0' width='600' height='210' rx='8' fill='#fff7ed' stroke='#fb923c'/>\n<text x='16' y='26' font-family='sans-serif' font-size='13' font-weight='700' fill='#c2410c'>3レイヤーの使い分け（まず skills → 強制に hooks → 隔離に subagents）</text>\n<text x='24' y='50' font-family='sans-serif' font-size='11' font-weight='700' fill='#9a3412'>レイヤー</text>\n<text x='160' y='50' font-family='sans-serif' font-size='11' font-weight='700' fill='#9a3412'>役割</text>\n<text x='380' y='50' font-family='sans-serif' font-size='11' font-weight='700' fill='#9a3412'>使いどころ</text>\n<rect x='16' y='58' width='568' height='44' rx='6' fill='#ffedd5'/>\n<text x='24' y='84' font-family='monospace' font-size='12' font-weight='700' fill='#7c2d12'>skills</text>\n<text x='160' y='78' font-family='sans-serif' font-size='10.5' fill='#7c2d12'>呼び出し時だけロードの再利用プロンプト</text>\n<text x='160' y='94' font-family='sans-serif' font-size='9.5' fill='#9a3412'>CLAUDE.md と違い常駐しない＝使うまで無コスト</text>\n<text x='380' y='84' font-family='sans-serif' font-size='10.5' fill='#7c2d12'>まず最初に。長い手順をここへ</text>\n<rect x='16' y='106' width='568' height='44' rx='6' fill='#fed7aa'/>\n<text x='24' y='132' font-family='monospace' font-size='12' font-weight='700' fill='#7c2d12'>hooks</text>\n<text x='160' y='126' font-family='sans-serif' font-size='10.5' fill='#7c2d12'>イベントで発火する決定論的スクリプト</text>\n<text x='160' y='142' font-family='sans-serif' font-size='9.5' fill='#9a3412'>PreToolUse が主要なセキュリティ関門</text>\n<text x='380' y='132' font-family='sans-serif' font-size='10.5' fill='#7c2d12'>rm * を止める等“強制”が要る所</text>\n<rect x='16' y='154' width='568' height='46' rx='6' fill='#fdba74'/>\n<text x='24' y='182' font-family='monospace' font-size='12' font-weight='700' fill='#7c2d12'>subagents</text>\n<text x='160' y='176' font-family='sans-serif' font-size='10.5' fill='#7c2d12'>独自コンテキストの隔離ワーカー</text>\n<text x='160' y='192' font-family='sans-serif' font-size='9.5' fill='#9a3412'>親の skill を継承しない（skills: で事前ロード）</text>\n<text x='380' y='182' font-family='sans-serif' font-size='10.5' fill='#7c2d12'>並列作業・文脈隔離が要る時</text>\n</svg><figcaption>図1：skills / hooks / subagents の役割と使いどころ</figcaption></figure>\n<h4>3レイヤーの使い分け</h4>\n<p>DEV/ofox.ai の完全ガイド（2026-11-07更新）が示す結論は明快だ。<strong>まず skills から始め</strong>、決定論的な強制が要る所に <strong>hooks</strong> を足し、並列作業や文脈隔離が要る時に <strong>subagents</strong> を使う。skills の本体は<strong>呼び出し時だけロード</strong>され、常駐する CLAUDE.md と違って「使うまで無コスト」。hooks は <code>PreToolUse</code> を“主要なセキュリティ関門”と位置づけ、<code>matcher: Bash</code> ＋条件で <code>rm *</code> を止めたり、<code>PostToolUse</code> で編集後に linter を走らせる。subagent は<strong>親の skill を継承しない</strong>ので、必要なら <code>skills:</code> で事前ロードする（※ガイドは hook 発火点の数え方などに食い違いがあり、コピー前に要検証）。</p>\n<h4>現場での効き所</h4>\n<p>事例面では、GoDaddy が Claude Code を<strong>全エンジニア2,000人</strong>に Amazon Bedrock 経由で展開しスプリントを約半減（二次報道・測定基準は不明）、PwC×Anthropic は3万人訓練と全社展開を進める（5月付でやや旧聞）。規模の数字は割り引くとして、<strong>skills/hooks は自分・プロジェクト用、plugins はチーム横断の共有用</strong>という線引きは実務の指針になる。</p>\n<h4>ひとことまとめ</h4>\n<p>更新が静かな日は“止める仕組み”を締め直す好機。<code>/loop</code> の終了挙動と <code>--trust-workspace</code> を押さえ、skills→hooks→subagents の順で拡張を組むのが堅い。</p>",
+      "sources": [
+        {
+          "title": "gradually.ai — Claude Code changelog",
+          "url": "https://www.gradually.ai/en/changelogs/claude-code/"
+        },
+        {
+          "title": "DEV/ofox.ai — Hooks, Subagents, and Skills 完全ガイド",
+          "url": "https://dev.to/owen_fox/claude-code-hooks-subagents-and-skills-complete-guide-hjm"
+        },
+        {
+          "title": "aiproductivity.ai — GoDaddy cuts sprint times in half",
+          "url": "https://aiproductivity.ai/news/godaddy-cuts-sprint-times-half-claude-code-2000-developers/"
+        }
+      ]
+    },
+    {
+      "id": "2026-11-09-nextjs",
+      "date": "2026-11-09",
+      "topic": "Next.js",
+      "title": "Stripe決済をApp Routerで — 署名検証はreq.text()、履行の真実はWebhook",
+      "lede": "App Router特有の決済ハマリは2つ。Webhookは生ボディが要る／履行はsuccess_urlでなくWebhookで。冪等性まで含めて型にする。",
+      "articleHtml": "<p>SaaS/EC を作れば必ず通る決済。Stripe は 2026 でもデファクトだが、<strong>App Router 特有のハマりどころが2つ</strong>ある。どちらも「ローカルでは動くのに本番で課金されない／署名エラー地獄」に直結するので、最初に型を押さえておきたい。</p>\n<h4>落とし穴①：Webhook は生ボディが要る</h4>\n<p>署名検証は<strong>受信したバイト列そのもの</strong>に対して行う。<code>req.json()</code> で一度パースすると列が変わり<strong>検証が必ず失敗</strong>する。App Router の Route Handler では <code>const body = await req.text()</code> で生ボディを直接取れる（Pages Router の <code>bodyParser:false</code> 設定は<strong>不要＝App Router では消える定番ハマり</strong>）。検証は <code>stripe.webhooks.constructEvent(body, sig, secret)</code>、失敗は 400 を返す。Edge ランタイムは Node crypto が無いので <code>await stripe.webhooks.constructEventAsync(body, sig, secret, undefined, Stripe.createSubtleCryptoProvider())</code>（Web Crypto 版）を使う。</p>\n<h4>落とし穴②：履行の“真実”は success_url ではなく Webhook</h4>\n<p>成功ページ URL は未払いのユーザーでも直接叩けるため、<strong>在庫確定・権限付与・メール送信といった履行は必ず <code>checkout.session.completed</code> Webhook で行う</strong>。success_url は表示だけに使う。Checkout 自体は Server Action で価格をサーバー確定 → <code>sessions.create</code> → <code>redirect(session.url)</code> の数行で済む（<code>redirect()</code> は内部で例外を投げるので <strong>try/catch の外</strong>で呼ぶ）。金額・通貨はクライアント送信値を信じず、<code>price</code> ID か DB でサーバーが決める。</p>\n<figure class='fig'><pre class='mermaid'>flowchart TD\n  A[\"購入ボタン\"] --> B[\"Server Action: 価格をサーバー確定 → sessions.create\"]\n  B --> C[\"Stripe ホスト決済ページ\"]\n  C --> D[\"success_url に戻る（表示だけ・履行しない）\"]\n  C --> E[\"Webhook POST: checkout.session.completed\"]\n  E --> F[\"Route Handler: req.text() で署名検証\"]\n  F --> G[\"冪等チェック: event.id が既処理なら即 2xx\"]\n  G --> H[\"履行: DB更新・権限付与・revalidateTag → 2xx\"]</pre><figcaption>図1：hosted Checkout の全体フロー（履行は Webhook 側だけで行う）</figcaption></figure>\n<h4>冪等性を忘れない</h4>\n<p>Stripe は 2xx を受け取るまで<strong>最大72時間・指数バックオフでリトライ</strong>＝同一イベントが複数回届く前提だ。<code>event.id</code> を一意制約付きで記録し、既処理ならスキップする。署名 OK なら<strong>なるべく早く 2xx</strong> を返し、重い履行は <code>after()</code> やジョブキューへ逃がして応答をブロックしない。握り潰して 200 を返すとイベントは永久に失われるので、確実に失敗してリトライさせたい時だけ 5xx を返す。Webhook は公開エンドポイント＝<strong>署名検証が唯一の認証</strong>で、proxy 側の認可には頼れない点も要注意。</p>\n<h4>ひとことまとめ</h4>\n<p>「生ボディで署名検証」「履行は Webhook だけ」「event.id で冪等」。この3点を型にすれば、App Router の決済は数十行で安全に組める。</p>",
+      "sources": [
+        {
+          "title": "Stripe — Webhook 署名検証 (constructEvent/Async)",
+          "url": "https://docs.stripe.com/webhooks/signature"
+        },
+        {
+          "title": "Stripe — Webhook のベストプラクティス（冪等・リトライ）",
+          "url": "https://docs.stripe.com/webhooks/best-practices"
+        },
+        {
+          "title": "Stripe — Checkout クイックスタート",
+          "url": "https://docs.stripe.com/checkout/quickstart"
+        }
+      ]
+    },
+    {
+      "id": "2026-11-09-flutter",
+      "date": "2026-11-09",
+      "topic": "Flutter",
+      "title": "setStateで全部作り直さない — ValueListenableBuilderで変わる1点だけrebuild",
+      "lede": "カウンタ1個の更新でScaffoldごと作り直すのを止める。ValueNotifierの“==通知”とchild:退避を押さえ、変わる最小の部分木だけを外科的にrebuildする。",
+      "articleHtml": "<p>Flutter の <code>State</code> で <code>setState</code> を呼ぶと、その <code>build()</code> 全体が再実行される。カウンタ1個の更新でも Scaffold ごと作り直す——これが積もるとジャンクになる。狙いは<strong>「変わる最小の部分木だけ」rebuild</strong> することだ。道具は、値付きなら <code>ValueListenableBuilder&lt;T&gt;</code>、任意の <code>Listenable</code> なら <code>ListenableBuilder</code>。（なお stable 3.50 は 11/9 時点でも未公開＝昇格ゲートで足踏み継続。本番は 3.47.9 pin が無難。）</p>\n<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg'>\n<rect x='0' y='0' width='600' height='210' rx='8' fill='#eff6ff' stroke='#60a5fa'/>\n<text x='16' y='26' font-family='sans-serif' font-size='13' font-weight='700' fill='#1d4ed8'>rebuild 範囲：setState（全部）と ValueListenableBuilder（1点）</text>\n<text x='150' y='50' font-family='sans-serif' font-size='11' font-weight='700' text-anchor='middle' fill='#b91c1c'>setState → build() 全体</text>\n<rect x='90' y='60' width='120' height='24' rx='5' fill='#fecaca' stroke='#ef4444'/>\n<text x='150' y='76' font-family='sans-serif' font-size='10' text-anchor='middle' fill='#7f1d1d'>Scaffold</text>\n<rect x='40' y='96' width='95' height='24' rx='5' fill='#fecaca' stroke='#ef4444'/>\n<text x='87' y='112' font-family='sans-serif' font-size='9.5' text-anchor='middle' fill='#7f1d1d'>重い静的部分</text>\n<rect x='165' y='96' width='95' height='24' rx='5' fill='#fecaca' stroke='#ef4444'/>\n<text x='212' y='112' font-family='sans-serif' font-size='9.5' text-anchor='middle' fill='#7f1d1d'>AppBar</text>\n<rect x='100' y='132' width='100' height='24' rx='5' fill='#fca5a5' stroke='#ef4444'/>\n<text x='150' y='148' font-family='sans-serif' font-size='9.5' text-anchor='middle' fill='#7f1d1d'>Text(値)</text>\n<text x='150' y='178' font-family='sans-serif' font-size='10' text-anchor='middle' fill='#b91c1c'>赤＝すべて rebuild</text>\n<line x1='300' y1='44' x2='300' y2='186' stroke='#cbd5e1' stroke-dasharray='4 4'/>\n<text x='450' y='50' font-family='sans-serif' font-size='11' font-weight='700' text-anchor='middle' fill='#15803d'>ValueListenableBuilder → builderだけ</text>\n<rect x='390' y='60' width='120' height='24' rx='5' fill='#e2e8f0' stroke='#94a3b8'/>\n<text x='450' y='76' font-family='sans-serif' font-size='10' text-anchor='middle' fill='#475569'>Scaffold</text>\n<rect x='340' y='96' width='95' height='24' rx='5' fill='#e2e8f0' stroke='#94a3b8'/>\n<text x='387' y='112' font-family='sans-serif' font-size='9.5' text-anchor='middle' fill='#475569'>child: 退避</text>\n<rect x='465' y='96' width='95' height='24' rx='5' fill='#e2e8f0' stroke='#94a3b8'/>\n<text x='512' y='112' font-family='sans-serif' font-size='9.5' text-anchor='middle' fill='#475569'>AppBar</text>\n<rect x='400' y='132' width='100' height='24' rx='5' fill='#bbf7d0' stroke='#22c55e'/>\n<text x='450' y='148' font-family='sans-serif' font-size='9.5' text-anchor='middle' fill='#14532d'>Text(値)</text>\n<text x='450' y='178' font-family='sans-serif' font-size='10' text-anchor='middle' fill='#15803d'>緑だけ rebuild・灰は不変</text>\n</svg><figcaption>図1：setState は build() 全体を、ValueListenableBuilder は builder サブツリーだけを再実行</figcaption></figure>\n<h4>ValueListenableBuilder：値が来るビルダー</h4>\n<p><code>valueListenable</code> に <code>ValueNotifier&lt;T&gt;</code> を渡すと、値が変わった時に <strong>builder サブツリーだけ</strong>が再実行される（周囲は不変）。builder は <code>(context, value, child)</code> で <code>value</code> を受け取るので、<code>Text('$value')</code> をここだけで組む。公式サンプルも「Scaffold 全体に setState する代わりに」この形を使う。</p>\n<h4>ValueNotifier の“通知は == 比較”という肝</h4>\n<p><code>ValueNotifier</code> は単一の値を持つ ChangeNotifier で、<strong>新値が旧値と <code>==</code> なら通知しない</strong>。だから <code>List</code>/<code>Map</code> を中身だけ in-place で変更しても<strong>参照が同じで通知されない</strong>——<code>value = [...old, x]</code> のように<strong>新しい参照を代入</strong>する。可変データは ValueNotifier でなく ChangeNotifier を継承して手動 <code>notifyListeners()</code>。どちらも <code>dispose()</code> 必須だ。</p>\n<h4>ListenableBuilder と child: 退避</h4>\n<p>値が要らず notify だけ受けたいなら <code>ListenableBuilder</code>（builder に value は渡らない）。Animation を聴くなら可読性で <code>AnimatedBuilder</code> が推奨（実装は同一）。両者とも <code>child:</code> に<strong>「値に依存しない重い静的サブツリー」を一度だけ構築</strong>して渡し、rebuild のたびに作り直さないのが定石。共有モデルを「アスペクト」で分割し必要な依存だけ rebuild したいなら <code>InheritedModel&lt;T&gt;</code>（MediaQuery がこの実装）も手だ。</p>\n<h4>ひとことまとめ</h4>\n<p>局所の1値は <code>ValueNotifier</code>＋<code>ValueListenableBuilder</code>、複数値・派生は <code>ChangeNotifier</code>＋<code>ListenableBuilder</code>。<code>==</code> 通知と <code>child:</code> 退避を押さえれば、setState の無駄 rebuild はかなり削れる。</p>",
+      "sources": [
+        {
+          "title": "ValueListenableBuilder class (api.flutter.dev)",
+          "url": "https://api.flutter.dev/flutter/widgets/ValueListenableBuilder-class.html"
+        },
+        {
+          "title": "ListenableBuilder class (api.flutter.dev)",
+          "url": "https://api.flutter.dev/flutter/widgets/ListenableBuilder-class.html"
+        },
+        {
+          "title": "ValueNotifier class (api.flutter.dev)",
+          "url": "https://api.flutter.dev/flutter/foundation/ValueNotifier-class.html"
+        }
+      ]
+    },
+    {
+      "id": "2026-11-09-github-trending",
+      "date": "2026-11-09",
+      "topic": "GitHub Trending",
+      "title": "11/9の話題リポジトリ — スマホ操作エージェント・声のシンセ・プラグイン音楽プレイヤー",
+      "lede": "AI飽和の局面で急上昇した3本を貫くのは、流行のど真ん中をあえて外す姿勢——人間が最終承認／学習でなくDSP／ネイティブ＋拡張。",
+      "articleHtml": "<p>本日の GitHub Trending は相変わらず AI 一色の飽和局面。その中で増加率上位に食い込んだ純・新規の3本を貫くのは、流行の“ど真ん中”をあえて外す姿勢だ。全自動エージェントに<strong>人間の承認</strong>を挟み、生成 AI でなく<strong>DSP</strong>で声を作り、Electron でなく<strong>ネイティブ＋プラグイン</strong>で音楽を鳴らす。それぞれが「解きたい課題」と「提供する機能」を明快に持つ。</p>\n<figure class='fig'><svg viewBox='0 0 600 232' xmlns='http://www.w3.org/2000/svg'>\n<rect x='0' y='0' width='600' height='232' rx='8' fill='#f0fdf4' stroke='#4ade80'/>\n<text x='16' y='26' font-family='sans-serif' font-size='13' font-weight='700' fill='#15803d'>今日の3本：解きたい課題 → 提供する機能</text>\n<text x='95' y='50' font-family='sans-serif' font-size='11' font-weight='700' text-anchor='middle' fill='#166534'>リポジトリ</text>\n<text x='290' y='50' font-family='sans-serif' font-size='11' font-weight='700' text-anchor='middle' fill='#166534'>解きたい課題</text>\n<text x='480' y='50' font-family='sans-serif' font-size='11' font-weight='700' text-anchor='middle' fill='#166534'>提供する機能</text>\n<rect x='16' y='58' width='568' height='52' rx='6' fill='#dcfce7'/>\n<text x='24' y='80' font-family='monospace' font-size='11' font-weight='700' fill='#14532d'>pinky</text>\n<text x='24' y='96' font-family='sans-serif' font-size='9' fill='#166534'>Go ⭐765</text>\n<text x='200' y='80' font-family='sans-serif' font-size='9.5' fill='#14532d'>スマホ操作を AI に任せたいが</text>\n<text x='200' y='96' font-family='sans-serif' font-size='9.5' fill='#14532d'>全自動は誤操作が怖い</text>\n<text x='390' y='80' font-family='sans-serif' font-size='9.5' fill='#14532d'>要所だけ人間が承認する</text>\n<text x='390' y='96' font-family='sans-serif' font-size='9.5' fill='#14532d'>human-in-the-loop 操作</text>\n<rect x='16' y='114' width='568' height='52' rx='6' fill='#bbf7d0'/>\n<text x='24' y='136' font-family='monospace' font-size='11' font-weight='700' fill='#14532d'>chimera</text>\n<text x='24' y='152' font-family='sans-serif' font-size='9' fill='#166534'>Rust ⭐593</text>\n<text x='200' y='136' font-family='sans-serif' font-size='9.5' fill='#14532d'>AI音声生成が飽和し、どれも</text>\n<text x='200' y='152' font-family='sans-serif' font-size='9.5' fill='#14532d'>学習モデル依存に偏る</text>\n<text x='390' y='136' font-family='sans-serif' font-size='9.5' fill='#14532d'>DSPで歌/発話/ビートボックス</text>\n<text x='390' y='152' font-family='sans-serif' font-size='9.5' fill='#14532d'>をWebで即試せる“楽器”</text>\n<rect x='16' y='170' width='568' height='52' rx='6' fill='#86efac'/>\n<text x='24' y='192' font-family='monospace' font-size='11' font-weight='700' fill='#14532d'>mygo-music</text>\n<text x='24' y='208' font-family='sans-serif' font-size='9' fill='#166534'>Go ⭐967</text>\n<text x='200' y='192' font-family='sans-serif' font-size='9.5' fill='#14532d'>音楽プレイヤーはElectronで</text>\n<text x='200' y='208' font-family='sans-serif' font-size='9.5' fill='#14532d'>重く機能も固定されがち</text>\n<text x='390' y='192' font-family='sans-serif' font-size='9.5' fill='#14532d'>プラグインで拡張できる</text>\n<text x='390' y='208' font-family='sans-serif' font-size='9.5' fill='#14532d'>ネイティブ音楽プレイヤー</text>\n</svg><figcaption>図1：3本の「解きたい課題」と「提供する機能」の対応</figcaption></figure>\n<h4>DIYgod/pinky（Go・⭐765）</h4>\n<p><strong>解決したい課題：</strong>AI エージェントにスマホ操作を任せたいが、全自動は誤操作・暴走が怖い。<strong>提供する機能：</strong>AI がスマホを操作しつつ、<strong>要所だけ人間が承認する human-in-the-loop 型</strong>のスマホ操作エージェント。RSSHub/Follow で知られる DIYgod 作の信頼感もあり、公開約2日で765★（日平均約338★/日）と当日最高率級。全自動化への警戒とちょうど噛み合って支持を集めた。Apache-2.0。</p>\n<h4>jamesondh/chimera-vocal-synth（Rust・⭐593）</h4>\n<p><strong>解決したい課題：</strong>AI 音声生成は飽和し、どれも「学習モデルに喋らせる」方向へ偏っている。<strong>提供する機能：</strong>歌う・話す・ビートボックスまでこなす<strong>オープンソースのボーカル・シンセサイザー</strong>を、ブラウザで即試せる形で提供。学習モデルではなく <strong>DSP で声を合成する“楽器”</strong>という位置づけが新鮮で、Rust 実装＋Web デモで拡散した（公開約3日で593★）。MIT。</p>\n<h4>egoist/mygo-music（Go・⭐967）</h4>\n<p><strong>解決したい課題：</strong>デスクトップ音楽プレイヤーは Electron 的に重く、機能も固定されがち。<strong>提供する機能：</strong><strong>プラグインで自由に拡張できるネイティブな音楽プレイヤー</strong>。vite 系 OSS で知られる egoist 作で、open issues 72 と活発に開発中（公開約4日で967★）。「Electron 疲れ」への回答の一つとして支持を集めた。AGPL-3.0（製品組み込み時は要確認）。</p>\n<h4>まとめ：自分が試すなら</h4>\n<p>DevForge 的に一番効くのは <strong>pinky の human-in-the-loop 設計</strong>——エージェント運用で「どこを人間に戻すか」の実装例として読む価値がある。音を扱うなら chimera の DSP アプローチ、デスクトップ UX の参考なら mygo のプラグイン境界が面白い。</p>",
+      "sources": [
+        {
+          "title": "DIYgod/pinky",
+          "url": "https://github.com/DIYgod/pinky"
+        },
+        {
+          "title": "jamesondh/chimera-vocal-synth",
+          "url": "https://github.com/jamesondh/chimera-vocal-synth"
+        },
+        {
+          "title": "egoist/mygo-music",
+          "url": "https://github.com/egoist/mygo-music"
+        }
+      ]
+    },
     {
       "id": "2026-11-08-claude-code",
       "date": "2026-11-08",
