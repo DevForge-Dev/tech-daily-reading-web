@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-11-09T04:48:33.947Z",
+  "generatedAt": "2026-11-10T04:47:12.461Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,94 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "date": "2026-11-10",
+      "topic": "Claude Code",
+      "title": "Claude Code v2.1.321 — モデル別名の再割り当てと、cp/mvまで広げた書き込み保護",
+      "lede": "best→opus・fable→Fable 5.2 の別名変更に加え、cp/mv の書き込み先にも deny と保護ファイル確認を適用。派手さはないが権限判定を一段固める回。",
+      "articleHtml": "<p>前日まで最新だった <strong>v2.1.319</strong> に続き、<strong>v2.1.321</strong> が 11/9 付の変更追跡 issue（melodic-software/claude-code-plugins #14843、bot 起票）で確認できた。範囲は 2.1.321 単独で、要点を言い換えで示す<strong>二次情報</strong>（一次の CHANGELOG 本文は本セッション未照合）。それでも中身は「静かだが運用に効く」回で、読みどころは<strong>モデル別名の再割り当て</strong>と<strong>権限判定の底上げ</strong>の二つだ。</p>\n<figure class='fig'><svg viewBox='0 0 600 196' xmlns='http://www.w3.org/2000/svg'>\n<rect x='0' y='0' width='600' height='196' rx='8' fill='#fff7ed' stroke='#fb923c'/>\n<text x='16' y='26' font-family='sans-serif' font-size='13' font-weight='700' fill='#c2410c'>v2.1.321：モデル別名の解決先が変わる</text>\n<text x='40' y='52' font-family='sans-serif' font-size='11' font-weight='700' fill='#9a3412'>別名（指定）</text>\n<text x='330' y='52' font-family='sans-serif' font-size='11' font-weight='700' fill='#9a3412'>解決先（実モデル）</text>\n<rect x='24' y='62' width='552' height='40' rx='6' fill='#ffedd5'/>\n<text x='40' y='87' font-family='monospace' font-size='13' font-weight='700' fill='#7c2d12'>best</text>\n<text x='150' y='87' font-family='sans-serif' font-size='13' fill='#7c2d12'>&#8594;</text>\n<text x='330' y='87' font-family='sans-serif' font-size='12' fill='#7c2d12'><tspan font-family='monospace' font-weight='700'>opus</tspan> と同一に解決</text>\n<rect x='24' y='108' width='552' height='40' rx='6' fill='#ffedd5'/>\n<text x='40' y='133' font-family='monospace' font-size='13' font-weight='700' fill='#7c2d12'>fable</text>\n<text x='150' y='133' font-family='sans-serif' font-size='13' fill='#7c2d12'>&#8594;</text>\n<text x='330' y='133' font-family='sans-serif' font-size='12' fill='#7c2d12'><tspan font-weight='700'>Fable 5.2</tspan> を指す</text>\n<text x='24' y='174' font-family='sans-serif' font-size='10.5' fill='#9a3412'>※別名でモデルを固定している設定・CI は、解決先が変わる前提で見直す</text>\n</svg><figcaption>図1：別名 best / fable の再割り当て（#14843 の言い換えに基づく・一次未照合）</figcaption></figure>\n<h4>何が変わったか</h4>\n<p>まずモデル別名。<code>best</code> が <code>opus</code> と<strong>同じモデルに解決</strong>され、<code>fable</code> は <strong>Fable 5.2</strong> を指すようになった。運用系では、managed な marketplace の take-over で退避された保存データが <code>cleanupPeriodDays</code> の間だけ保持され、<code>claude plugin restore-set-aside</code> で<strong>復元</strong>できる。1,000 文字を超える background コマンドは通知や TaskStop 結果で<strong>先頭と末尾だけ</strong>表示に短縮。クラウドセッションのサービス中断後に、バックグラウンドエージェントを“ユーザーが停止した”と<strong>誤報告する不具合</strong>も直った。</p>\n<h4>権限・セキュリティの底上げ</h4>\n<p>今回いちばん効くのはファイル操作の保護拡張だ。<code>cp</code>/<code>mv</code> が書き込む<strong>先のファイル</strong>にも deny ルールと保護ファイル確認プロンプトが及ぶようになり、パス指定の <code>cp</code>/<code>mv</code> も対象に入った。「読み取りは許すが特定ファイルへの上書きは拒否」といったルールが、コピー・移動の<strong>宛先</strong>でも守られる。加えて、サンドボックス外で読み取り専用の Bash が<strong>無確認で走る不具合</strong>を修正。mods まわりは、Claude が書いた mod を auto/bypass モードで無確認有効化でき、mod の <code>$.tool.call</code>/<code>$.mcp.call</code> は ask を省略する（ただし <strong>deny ルールと組織ポリシーは引き続き適用</strong>）。<code>~/.claude/plugins</code> 配下の <code>.claude/skills</code> は、そのディレクトリ上で作業するとき自動ロードしなくなった。</p>\n<h4>試すなら・注意点</h4>\n<p>別名運用をしているなら、CI やエイリアス設定で <code>best</code>/<code>fable</code> の<strong>実解決先</strong>を一度確認しておくとよい。cp/mv 保護は、既存の deny ルールが宛先で“急に”効き始めるので、バッチ処理が確認待ちで止まる場合がある点に注意。なお本稿は #14843 の言い換えに基づく二次情報で、一次リリースノートは未照合——挙動は公式 CHANGELOG で裏取りしてから本番適用したい。<strong>ひとこと</strong>：派手な新機能より、“宛先ファイルまで守る”“別名の解決を揃える”という地味な整合性の底上げが中心。エージェントに広い権限を与えるほど効いてくる回だ。</p>",
+      "sources": [
+        {
+          "title": "melodic-software/claude-code-plugins #14843（変更追跡・自動issue）",
+          "url": "https://github.com/melodic-software/claude-code-plugins/issues/14843"
+        },
+        {
+          "title": "Claude Code release notes（公式）",
+          "url": "https://docs.anthropic.com/en/release-notes/claude-code"
+        },
+        {
+          "title": "Morph — Claude Code Plugins and Marketplaces (2026)",
+          "url": "https://www.morphllm.com/claude-code-marketplace"
+        }
+      ],
+      "id": "2026-11-10-claude-code"
+    },
+    {
+      "date": "2026-11-10",
+      "topic": "Next.js",
+      "title": "グーイ(gooey)メニュー — feGaussianBlur×feColorMatrixだけでJSゼロの“溶ける”UI",
+      "lede": "ぼかし→アルファのしきい値化で、近づいた要素が水銀のように融合。SVGフィルタ2プリミティブだけで成立する仕組みと、App Routerでの安全な置き方。",
+      "articleHtml": "<p>「グーイ（gooey）効果」は、近づいた複数の要素が水銀やスライムのように<strong>ぬるっと融合</strong>し、離れると糸を引いて分離する粘液的なアニメーション。FAB メニューやナビの選択インジケータ、ローダーで“有機的で生きている”質感を出す定番技法だ。10 年選手の技だが、<code>@property</code> や View Transitions と組み合わせる今風のマイクロインタラクションとして再評価されている。注目点は、<strong>SVG フィルタ 2 プリミティブ（<code>feGaussianBlur</code> + <code>feColorMatrix</code>）だけで JS 計算ゼロ</strong>で成立すること。メタボール（距離場）を数値計算せず、「ぼかし → アルファのコントラスト強調」という画像処理の合わせ技で“しきい値を越えた所だけ固まる”性質を作る。</p>\n<figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg'>\n<rect x='0' y='0' width='600' height='150' rx='8' fill='#eff6ff' stroke='#60a5fa'/>\n<text x='16' y='26' font-family='sans-serif' font-size='13' font-weight='700' fill='#1d4ed8'>goo フィルタのパイプライン（JS 計算ゼロ）</text>\n<rect x='16' y='52' width='120' height='56' rx='6' fill='#dbeafe' stroke='#93c5fd'/>\n<text x='76' y='76' font-family='sans-serif' font-size='10.5' text-anchor='middle' fill='#1e3a8a'>SourceGraphic</text>\n<text x='76' y='93' font-family='sans-serif' font-size='9.5' text-anchor='middle' fill='#1e40af'>子ボタン群</text>\n<text x='146' y='84' font-family='sans-serif' font-size='16' fill='#1d4ed8'>&#8594;</text>\n<rect x='166' y='52' width='120' height='56' rx='6' fill='#cfe0f7' stroke='#93c5fd'/>\n<text x='226' y='73' font-family='monospace' font-size='10' text-anchor='middle' fill='#1e3a8a'>feGaussianBlur</text>\n<text x='226' y='90' font-family='sans-serif' font-size='9.5' text-anchor='middle' fill='#1e40af'>ぼかす＝縁が重なる</text>\n<text x='296' y='84' font-family='sans-serif' font-size='16' fill='#1d4ed8'>&#8594;</text>\n<rect x='316' y='52' width='120' height='56' rx='6' fill='#bcd4f2' stroke='#93c5fd'/>\n<text x='376' y='73' font-family='monospace' font-size='10' text-anchor='middle' fill='#1e3a8a'>feColorMatrix</text>\n<text x='376' y='90' font-family='sans-serif' font-size='9.5' text-anchor='middle' fill='#1e40af'>アルファをしきい値化</text>\n<text x='446' y='84' font-family='sans-serif' font-size='16' fill='#1d4ed8'>&#8594;</text>\n<rect x='466' y='52' width='118' height='56' rx='6' fill='#a9c8ef' stroke='#93c5fd'/>\n<text x='525' y='73' font-family='monospace' font-size='10' text-anchor='middle' fill='#1e3a8a'>feComposite</text>\n<text x='525' y='90' font-family='sans-serif' font-size='9.5' text-anchor='middle' fill='#1e40af'>元を上に合成</text>\n<text x='16' y='134' font-family='sans-serif' font-size='10.5' fill='#1e40af'>重なった所だけが一つの塊に融合し、アイコンはボケずシャープなまま残る＝これが goo</text>\n</svg><figcaption>図1：ぼかし→しきい値化→元合成の3段で“溶け”だけを作る</figcaption></figure>\n<h4>仕組み（コアは3プリミティブ）</h4>\n<p><strong>&#9312; <code>feGaussianBlur</code></strong>（<code>stdDeviation=10</code>）で子要素をぼかすと、近接要素のハロー同士が重なり境界に半透明のグラデーションができる。<strong>&#9313; <code>feColorMatrix</code></strong> でアルファ行だけを <code>0 0 0 19 -9</code> にすると、出力アルファ &#8776; <code>19&#215;A &#8722; 9</code>——つまり <strong>A が約 0.47 未満で透明、以上で一気に不透明</strong>に振り切れる擬似しきい値になり、重なった所だけが一つの塊に融合する（これが“goo”）。<strong>&#9314; <code>feComposite operator=atop</code></strong> で、ぼけた塊の上に元のシャープなアイコン/文字を合成し直す——これでアイコンはボケず、背後の“溶け”だけがグーイに見える。乗数 19 を上げると縁がシャープに、加算を負に深めるとしきい値が上がって“細る”。</p>\n<h4>Next.js（App Router）での置き方</h4>\n<p>フィルタ定義の <code>&lt;filter id=\"goo\"&gt;</code> は<strong>ただのマークアップ</strong>なので <strong>Server Component のまま</strong> SSR でき、<code>app/layout.tsx</code> に<strong>1 回だけ</strong>置くのが安全（id 重複回避＆全ページ参照可）。開閉トグルやポインタ追従など<strong>動く部分だけ</strong> <code>'use client'</code> 島に切り出す。子ボタンの展開は普通の <code>transform</code> で行い、<strong>フィルタは“見た目の溶け”だけ担当</strong>——座標計算は通常の UI ロジックに任せる分業がきれいだ。</p>\n<pre><code>// feColorMatrix（アルファ行だけコントラスト強調＝擬似しきい値）\nvalues=\"1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 19 -9\"</code></pre>\n<h4>落とし穴</h4>\n<p><strong>Firefox</strong> では <code>filter: url(#goo)</code> の裸フラグメントが効かないことがあり、<code>url(\"#goo\")</code> か同一ドキュメント絶対参照（<code>url(${location.pathname}${location.search}#goo)</code> を <code>useEffect</code> 内で生成）で回避する。SVG フィルタは適用領域を<strong>毎フレーム再ラスタライズ</strong>して重いので、<strong>小さなメニュー領域のコンテナだけ</strong>に限定し、動く子に <code>will-change: transform</code> を。<code>feComposite atop</code> を省くとアイコンまでボケる。同じ <code>id=\"goo\"</code> の<strong>多重定義は参照が壊れる</strong>ので定義はルートで 1 回。そして <code>prefers-reduced-motion</code> では <code>filter:none</code> ＋項目を静的な縦並びにフォールバックし、goo 演出を唯一の状態伝達にしない。<strong>ひとこと</strong>：JS ゼロで“質感”を足せる費用対効果の高い技。ただし広い領域に掛けると一気に重くなるので、「溶かすのはメニューの中だけ」を徹底するのが実務のコツ。</p>",
+      "sources": [
+        {
+          "title": "Codrops — Creative Gooey Effects（原典）",
+          "url": "https://tympanus.net/codrops/2015/03/10/creative-gooey-effects/"
+        },
+        {
+          "title": "MDN — feColorMatrix（type=\"matrix\"・アルファ行）",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/SVG/Element/feColorMatrix"
+        },
+        {
+          "title": "MDN — CSS filter: url()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/filter"
+        }
+      ],
+      "id": "2026-11-10-nextjs"
+    },
+    {
+      "date": "2026-11-10",
+      "topic": "Flutter",
+      "title": "Flutter 3.50は最終ゲートで足踏み — 待つ間に効くTweenAnimationBuilderとRepaintBoundary",
+      "lede": "stableは3.47.9のまま、beta 3.50.0-0.4.preが据え置き6日目。昇格待ちの今こそ、Controller不要の暗黙アニメと再描画の封じ込めを手に馴染ませる。",
+      "articleHtml": "<p>リリース面はこう着が続く。stable チャネルは依然 <strong>3.47 系（公開タグ最新 <code>3.47.9</code>）</strong>、beta は <code>flutter-3.50-candidate.0</code> に乗りつつ <strong><code>3.50.0-0.4.pre</code>（11/4）で据え置き 6 日目</strong>——新 pre も stable 3.50 も 11/10 時点で未公開だ。release tracker #195830 は 11/2 起票のまま<strong>コメント数ゼロ</strong>（動いているのは bot の相互参照だけ）で、11/9 に購読者は増えたが作業は進んでいない。<strong>最終ゲートで足踏み</strong>の構図は起票以来そのまま。実務は本番を <strong>3.47.9 に pin</strong> 継続が安全で、別ジョブで beta を緑化して 3.50 の確定内容（<strong>WasmGC 既定・Android Impeller 一本化・<code>material_ui</code>/<code>cupertino_ui</code> の正式 deprecation</strong>・出れば Dart 3.14）を先取り検証しておくとよい。昇格待ちの今は、派手な新機能より“手に馴染ませておくと効く”標準部品を 2 つ。</p>\n<figure class='fig'><svg viewBox='0 0 600 180' xmlns='http://www.w3.org/2000/svg'>\n<rect x='0' y='0' width='600' height='180' rx='8' fill='#ecfdf5' stroke='#34d399'/>\n<text x='16' y='26' font-family='sans-serif' font-size='13' font-weight='700' fill='#047857'>RepaintBoundary：再描画の伝播を1レイヤで止める</text>\n<rect x='30' y='44' width='250' height='120' rx='7' fill='#fee2e2' stroke='#f87171' stroke-dasharray='4 3'/>\n<text x='155' y='62' font-family='sans-serif' font-size='10.5' text-anchor='middle' fill='#b91c1c'>境界なし＝親まで再描画が伝播</text>\n<rect x='48' y='74' width='100' height='34' rx='5' fill='#fecaca'/>\n<text x='98' y='95' font-family='sans-serif' font-size='10' text-anchor='middle' fill='#7f1d1d'>重い静的リスト</text>\n<rect x='162' y='74' width='100' height='34' rx='5' fill='#fca5a5'/>\n<text x='212' y='95' font-family='sans-serif' font-size='10' text-anchor='middle' fill='#7f1d1d'>アニメ（毎フレーム）</text>\n<text x='155' y='132' font-family='sans-serif' font-size='9.5' text-anchor='middle' fill='#b91c1c'>隣も巻き込んで描き直し</text>\n<rect x='320' y='44' width='250' height='120' rx='7' fill='#d1fae5' stroke='#10b981'/>\n<text x='445' y='62' font-family='sans-serif' font-size='10.5' text-anchor='middle' fill='#047857'>アニメだけ RepaintBoundary で包む</text>\n<rect x='338' y='74' width='100' height='34' rx='5' fill='#a7f3d0'/>\n<text x='388' y='95' font-family='sans-serif' font-size='10' text-anchor='middle' fill='#065f46'>静的リスト（再描画なし）</text>\n<rect x='452' y='70' width='100' height='42' rx='5' fill='#6ee7b7' stroke='#059669' stroke-width='2'/>\n<text x='502' y='88' font-family='sans-serif' font-size='9.5' text-anchor='middle' fill='#065f46'>別 display list</text>\n<text x='502' y='102' font-family='sans-serif' font-size='9.5' text-anchor='middle' fill='#065f46'>＝ここだけ再描画</text>\n<text x='445' y='132' font-family='sans-serif' font-size='9.5' text-anchor='middle' fill='#047857'>外側は巻き込まれない</text>\n</svg><figcaption>図1：変化する小領域と静的な広域の境界に1枚入れるのが効く</figcaption></figure>\n<h4>TweenAnimationBuilder — Controller 無しで差分アニメ</h4>\n<p><code>ImplicitlyAnimatedWidget</code> のサブクラスで、公式いわく「<strong>animated 版 widget が存在しない任意のプロパティ</strong>を目標値まで animate する」のに便利。<code>AnimationController</code> を自分で持たずに、角度・係数・<code>double</code>・<code>Color</code> などを動かせる。肝は<strong>「新しい <code>end</code> を持つ tween を渡すと、現在値から新 <code>end</code> へ自動で差分アニメが走る」</strong>こと——状態変数を更新して rebuild するだけでよい。注意は、この widget が<strong>渡した tween の所有権を取得して内部で mutate する</strong>点で、渡した後の tween にアクセスしたりインスタンス変数に保持してはいけない。<code>begin</code> は初回のみ有効だ。</p>\n<pre><code>TweenAnimationBuilder&lt;double&gt;(\n  tween: Tween(begin: 0, end: score.toDouble()), // score が変わると自動補間\n  duration: const Duration(milliseconds: 400),\n  curve: Curves.easeOut,\n  builder: (_, v, __) =&gt; Text(v.toInt().toString()), // タップで 10&#8594;42 をカウントアップ\n)</code></pre>\n<h4>RepaintBoundary — 再描画を1レイヤで封じ込める</h4>\n<p>「子に対して<strong>別個の display list（専用 Layer）</strong>を作る widget」。再描画は最も近い祖先の repaint boundary まで伝播し、その内側を全部描き直す——だから<strong>常時アニメするスピナーやカウンタを包む</strong>と、外側の静的なリストやヘッダが巻き込まれなくなる。逆に「頻繁に変わるツリーの中の重く静的なサブツリー」を包めば、エンジンが一度ラスタライズしてキャッシュし高速化することもある。どこが無駄に再描画されているかは <code>debugRepaintRainbowEnabled = true</code> で<strong>枠色がチカチカする領域</strong>として観測できる。ただし Layer 追加は合成コスト・メモリがタダではないので、<strong>実測して効く境界に 1 枚だけ</strong>が鉄則だ。</p>\n<p>設計の土台としては、公式の App Architecture 推奨（UI 層＝View＋ViewModel／データ層＝Repository＋Service、MVVM で“widget を dumb に”、単方向データフロー、DI は <code>provider</code>、ルーティングは <code>go_router</code>）が引き続き基準線。<strong>ひとこと</strong>：バージョンが止まっている時間は、標準部品の手札を増やす好機だ。</p>",
+      "sources": [
+        {
+          "title": "Flutter 3.50.0 release tracker #195830（GitHub）",
+          "url": "https://github.com/flutter/flutter/issues/195830"
+        },
+        {
+          "title": "TweenAnimationBuilder class（api.flutter.dev）",
+          "url": "https://api.flutter.dev/flutter/widgets/TweenAnimationBuilder-class.html"
+        },
+        {
+          "title": "RepaintBoundary class（api.flutter.dev）",
+          "url": "https://api.flutter.dev/flutter/widgets/RepaintBoundary-class.html"
+        }
+      ],
+      "id": "2026-11-10-flutter"
+    },
+    {
+      "date": "2026-11-10",
+      "topic": "GitHub Trending",
+      "title": "11/10の話題リポジトリ — スマホ操作エージェント・COWフォルダ隔離・自分のCCセッションでローカル微調整",
+      "lede": "AI飽和の中、3本を貫くのは「エージェントに実務をどこまで安全に任せるか」。操作・隔離・自前モデル化の道具が同日に急上昇。",
+      "articleHtml": "<p>本日もトレンドは AI 一色だが、グレーや既出を除いた純・新規で光った 3 本を貫くのは<strong>「エージェントに実務をどこまで安全に任せるか」</strong>という一本の線だ。実機スマホを<strong>操作</strong>させる、作らせたコードを元フォルダから<strong>隔離</strong>する、そして自分の作業ログで<strong>自前モデル</strong>に写し取る——“任せる”の前後を固める道具が同日に急上昇した。</p>\n<figure class='fig'><svg viewBox='0 0 600 232' xmlns='http://www.w3.org/2000/svg'>\n<rect x='0' y='0' width='600' height='232' rx='8' fill='#f0fdf4' stroke='#4ade80'/>\n<text x='16' y='26' font-family='sans-serif' font-size='13' font-weight='700' fill='#15803d'>今日の3本：解きたい課題 → 提供する機能</text>\n<text x='90' y='50' font-family='sans-serif' font-size='11' font-weight='700' text-anchor='middle' fill='#166534'>リポジトリ</text>\n<text x='290' y='50' font-family='sans-serif' font-size='11' font-weight='700' text-anchor='middle' fill='#166534'>解きたい課題</text>\n<text x='480' y='50' font-family='sans-serif' font-size='11' font-weight='700' text-anchor='middle' fill='#166534'>提供する機能</text>\n<rect x='16' y='58' width='568' height='52' rx='6' fill='#dcfce7'/>\n<text x='24' y='80' font-family='monospace' font-size='11' font-weight='700' fill='#14532d'>phoneuse</text>\n<text x='24' y='97' font-family='sans-serif' font-size='9' fill='#166534'>Python &#9733;534</text>\n<text x='200' y='88' font-family='sans-serif' font-size='9.5' text-anchor='middle' fill='#14532d'>スマホ自動操作は脱獄/</text>\n<text x='200' y='101' font-family='sans-serif' font-size='9.5' text-anchor='middle' fill='#14532d'>開発者登録が要る領域</text>\n<text x='480' y='88' font-family='sans-serif' font-size='9.5' text-anchor='middle' fill='#14532d'>AirPlay取込＋PCをBT</text>\n<text x='480' y='101' font-family='sans-serif' font-size='9.5' text-anchor='middle' fill='#14532d'>入力化・CLI/MCP操作</text>\n<rect x='16' y='116' width='568' height='52' rx='6' fill='#dcfce7'/>\n<text x='24' y='138' font-family='monospace' font-size='11' font-weight='700' fill='#14532d'>ovnfs</text>\n<text x='24' y='155' font-family='sans-serif' font-size='9' fill='#166534'>Go &#9733;205</text>\n<text x='200' y='146' font-family='sans-serif' font-size='9.5' text-anchor='middle' fill='#14532d'>エージェントが元フォルダ</text>\n<text x='200' y='159' font-family='sans-serif' font-size='9.5' text-anchor='middle' fill='#14532d'>を汚す/機微データに触れる</text>\n<text x='480' y='146' font-family='sans-serif' font-size='9.5' text-anchor='middle' fill='#14532d'>COW隔離ビュー＋diff</text>\n<text x='480' y='159' font-family='sans-serif' font-size='9.5' text-anchor='middle' fill='#14532d'>レビュー→3-wayマージ</text>\n<rect x='16' y='174' width='568' height='52' rx='6' fill='#dcfce7'/>\n<text x='24' y='196' font-family='monospace' font-size='11' font-weight='700' fill='#14532d'>tinker-ai-skill</text>\n<text x='24' y='213' font-family='sans-serif' font-size='9' fill='#166534'>Python &#9733;288</text>\n<text x='200' y='204' font-family='sans-serif' font-size='9.5' text-anchor='middle' fill='#14532d'>エージェントのトークン</text>\n<text x='200' y='217' font-family='sans-serif' font-size='9.5' text-anchor='middle' fill='#14532d'>コストが積み上がる</text>\n<text x='480' y='204' font-family='sans-serif' font-size='9.5' text-anchor='middle' fill='#14532d'>自分のCCセッションで</text>\n<text x='480' y='217' font-family='sans-serif' font-size='9.5' text-anchor='middle' fill='#14532d'>ローカル微調整→GGUF</text>\n</svg><figcaption>図1：3本を「解きたい課題 → 提供する機能」で一望（★は公開直後の実測値）</figcaption></figure>\n<h4>lxe/phoneuse（Python・&#9733;534）</h4>\n<p><strong>解決したい課題</strong>：スマホの自動操作は従来、脱獄や開発者登録、専用 SDK が要る“割れ物”寄りの領域だった。<strong>提供する機能</strong>：改造していない iPhone を、画面は <strong>AirPlay で Linux PC に取り込み</strong>、操作は <strong>PC を Bluetooth のマウス/キーボードに化けさせて返す</strong>——脱獄も開発者登録も不要でタップ/入力を送れる。ミラー窓を手で触ってもよいし、<strong>CLI や MCP 経由でエージェントに操作させる</strong>こともできる。公開約 3 日で 534★（本人も“技術デモ”と明記）。全自動化志向と噛み合って急上昇した。</p>\n<h4>stencil-hq/ovnfs（Go・&#9733;205）</h4>\n<p><strong>解決したい課題</strong>：エージェントにコードを書かせると、元フォルダを汚す・機微データに触れるリスクがある一方、VM まるごとの隔離は重い。<strong>提供する機能</strong>：任意のフォルダ（git でなくても可）を<strong>コピーせず copy-on-write の隔離ビュー</strong>として開かせ、<strong>diff でレビュー → 3-way でマージ</strong>できる。1 つのデーモンが各チェックアウトを macOS=NFSv3 / Linux=FUSE / Windows=SMB の単一マウント配下に提供し、root も重いカーネル拡張も不要。スナップショット/フォーク/別マシンへのアタッチも可能で、使い捨て VM とは別角度（COW フォルダ）で補完する。公開約 5 日で 205★。</p>\n<h4>drost-ai/tinker-ai-skill（Python・&#9733;288）</h4>\n<p><strong>解決したい課題</strong>：エージェントのトークンコストは積み上がるが、自分の“作法”を写したローカルモデルがあれば削減余地がある。<strong>提供する機能</strong>：自分のコーディングエージェントの<strong>セッション（Claude Code 等）を教師データ</strong>にして、Thinking Machines の <strong>Tinker で学習 → マージ → llama.cpp 用 GGUF を出力</strong>するまでを Agent Skill 化。「直近 3 か月の Claude Code セッションで Qwen3 系を微調整して」と言うだけで、<strong>課金が発生する手前で止まる</strong>設計。Claude Code/Codex/OpenCode 対応で、公開約 3 日で 288★。</p>\n<p><strong>自分が試すなら</strong>：すぐ効くのは <strong>ovnfs</strong>——エージェント作業の“元フォルダを汚さない隔離”は今日から入れられる。phoneuse は手元の実機があれば MCP 連携で遊べる技術デモ。tinker-ai-skill はコスト最適化の将来枠として、まず GGUF 出力までの手触りを確認する順がよさそうだ。（★数は公開直後の実測値で、確定の当日増加ではない点に留意）</p>",
+      "sources": [
+        {
+          "title": "lxe/phoneuse",
+          "url": "https://github.com/lxe/phoneuse"
+        },
+        {
+          "title": "stencil-hq/ovnfs",
+          "url": "https://github.com/stencil-hq/ovnfs"
+        },
+        {
+          "title": "drost-ai/tinker-ai-skill",
+          "url": "https://github.com/drost-ai/tinker-ai-skill"
+        }
+      ],
+      "id": "2026-11-10-github-trending"
+    },
     {
       "id": "2026-11-09-claude-code",
       "date": "2026-11-09",
