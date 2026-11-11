@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-11-10T04:47:12.461Z",
+  "generatedAt": "2026-11-11T04:48:06.795Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,94 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "date": "2026-11-11",
+      "topic": "Claude Code",
+      "title": "Claude Code — Vertexでfast mode対応、MCP呼び出しの背景化と権限の締め直し",
+      "lede": "v2.1.322はVertexのfast mode対応という小粒。だが読みどころは直近v2.1.319の「MCPのバックグラウンド化」「denyInsteadOfPrompting」「auto modeの検証不能時ask/deny」で、権限と待ち時間の設計が一段固まった。",
+      "articleHtml": "<p>11/11時点の最新は <strong>v2.1.322</strong>（11/10付）。変更は実質1件で、<strong>Vertex（Google Cloud）上で fast mode（高速モード）</strong>が global/us/eu の各リージョンで使えるようになり、Vertex 側が拒否すれば標準速度へ自動フォールバックする。※Havoptic 版ページ＋変更追跡 issue #14951 の二次情報で、一次 CHANGELOG は未照合。公式 fast-mode ドキュメントは依然 Vertex/Agent Platform を\"非対応\"と記載しており、機能と表記が一時的にズレている点も指摘されている。</p>\n<p>ただし\"読み物\"としての本題は、直近 <strong>v2.1.319</strong>（11/6）で入った権限・実行まわりの3点だ。</p>\n<figure class='fig'><svg viewBox='0 0 600 232' xmlns='http://www.w3.org/2000/svg'>\n<rect x='0' y='0' width='600' height='232' rx='8' fill='#fff7ed' stroke='#fb923c'/>\n<text x='16' y='26' font-family='sans-serif' font-size='13' font-weight='700' fill='#c2410c'>v2.1.319：待たせない・止めない・緩めない</text>\n<rect x='24' y='40' width='552' height='50' rx='6' fill='#ffedd5'/>\n<text x='36' y='62' font-family='monospace' font-size='11.5' font-weight='700' fill='#7c2d12'>MCPタスクの背景化</text>\n<text x='36' y='81' font-family='sans-serif' font-size='11' fill='#9a3412'>重いMCP呼び出しを待たず別作業→完了時に結果をClaudeへ報告</text>\n<rect x='24' y='96' width='552' height='50' rx='6' fill='#ffedd5'/>\n<text x='36' y='118' font-family='monospace' font-size='11.5' font-weight='700' fill='#7c2d12'>denyInsteadOfPrompting</text>\n<text x='36' y='137' font-family='sans-serif' font-size='11' fill='#9a3412'>確認待ちのツール呼び出しを\"拒否\"にしてターン継続（無人実行向け）</text>\n<rect x='24' y='152' width='552' height='50' rx='6' fill='#ffedd5'/>\n<text x='36' y='174' font-family='monospace' font-size='11.5' font-weight='700' fill='#7c2d12'>auto mode の判定整理</text>\n<text x='36' y='193' font-family='sans-serif' font-size='11' fill='#9a3412'>検証不能な呼び出しは ask/deny（内蔵維持は AUTO_MODE_SERVER=0）</text>\n<text x='24' y='222' font-family='sans-serif' font-size='10.5' fill='#9a3412'>※worktreeのサンドボックス回避・環境変数プレフィックスのBash権限バイパスも修正</text>\n</svg><figcaption>図1：v2.1.319 の権限・実行まわり3変更</figcaption></figure>\n<p>① <strong>MCP ツール呼び出しのバックグラウンドタスク化</strong>——呼び出しをターミナルで即バックグラウンドに移し、完了時に結果を Claude へ報告する。長い MCP を待つ間に手を止めずに済む。待機挙動へ戻すには <code>CLAUDE_CODE_DISABLE_MCP_TASK_BACKGROUND</code>、完全無効化は <code>CLAUDE_CODE_DISABLE_MCP_TASKS=1</code>。</p>\n<p>② <strong><code>permissions.denyInsteadOfPrompting</code></strong>——これまで\"確認待ち\"で止まっていた呼び出しを、<strong>プロンプトを出さず拒否してターンを継続</strong>する設定（ターミナル/subagent/teammate で有効）。無人実行で「人の承認待ちのまま固まる」事故を避けられる。</p>\n<p>③ <strong>auto mode の判定整理</strong>——安全判定はサーバ側チェックに依存するため、テレメトリ無効や LLM ゲートウェイ下では判定が届かず、<strong>検証できない呼び出しは ask または deny</strong> に倒れる。内蔵分類器を使い続けたいなら <code>CLAUDE_CODE_AUTO_MODE_SERVER=0</code>（Bedrock/Vertex/Foundry は従来通り）。</p>\n<p><strong>自分が試すなら</strong>：無人の定期タスクに <code>denyInsteadOfPrompting</code> を入れて\"承認待ちハング\"を潰し、重い MCP を使うワークフローで背景タスク化の効きを <code>/context</code> 込みで確認する。<strong>落とし穴</strong>：ゲートウェイ経由だと auto mode が意図せず ask/deny に倒れるので、挙動が変わったらまず <code>CLAUDE_CODE_AUTO_MODE_SERVER</code> を疑う。<strong>まとめ</strong>：派手さは無いが「待たせない・止めない・緩めない」の三方向で運用が一段固まった回だ。</p>",
+      "sources": [
+        {
+          "title": "Claude Code v2.1.322 (Havoptic)",
+          "url": "https://www.havoptic.com/r/claude-code-2.1.322"
+        },
+        {
+          "title": "v2.1.319 解説 (labmemo)",
+          "url": "https://labmemo.com/claude-code-v2-1-319-auto-mode-gateway-mcp-task-2026-11/"
+        },
+        {
+          "title": "Best Practices: Hooks/Subagents/Context (SmartScope)",
+          "url": "https://smartscope.blog/en/generative-ai/claude/claude-code-best-practices-advanced-2026/"
+        }
+      ],
+      "id": "2026-11-11-claude-code"
+    },
+    {
+      "date": "2026-11-11",
+      "topic": "Next.js",
+      "title": "Next.js — useLinkStatusでリンク単位のペンディングUI（15.3+）",
+      "lede": "クリックから画面が変わるまでの\"空白\"を、リンクごとの小さなインジケータで埋めるクライアントフック。prefetch無効のリンクやloading.jsの無い動的ルートが主戦場。",
+      "articleHtml": "<p><strong>背景</strong>：App Router の <code>&lt;Link&gt;</code> をクリックしても、Next.js はまず RSC ペイロード（<code>?_rsc=</code>）を取りに行き、それが届くまで <code>loading.js</code> フォールバックすら表示しない。プリフェッチ済みなら一瞬だが、<strong>prefetch 無効・プリフェッチ進行中・loading.js の無い動的ルート</strong>では\"固まった？\"という空白が生まれる。</p>\n<figure class='fig'><svg viewBox='0 0 600 180' xmlns='http://www.w3.org/2000/svg'>\n<rect x='0' y='0' width='600' height='180' rx='8' fill='#eff6ff' stroke='#60a5fa'/>\n<text x='16' y='26' font-family='sans-serif' font-size='13' font-weight='700' fill='#1d4ed8'>クリック後の\"空白\"を pending で埋める</text>\n<line x1='40' y1='96' x2='560' y2='96' stroke='#93c5fd' stroke-width='2'/>\n<circle cx='70' cy='96' r='7' fill='#1d4ed8'/>\n<text x='52' y='128' font-family='sans-serif' font-size='11' fill='#1e3a8a'>クリック</text>\n<rect x='150' y='84' width='250' height='24' rx='6' fill='#bfdbfe'/>\n<text x='172' y='101' font-family='sans-serif' font-size='11' font-weight='700' fill='#1e3a8a'>RSC取得中＝従来は無反応の空白</text>\n<circle cx='470' cy='96' r='7' fill='#1d4ed8'/>\n<text x='430' y='128' font-family='sans-serif' font-size='11' fill='#1e3a8a'>画面切替</text>\n<rect x='150' y='56' width='250' height='22' rx='11' fill='#1d4ed8'/>\n<text x='196' y='71' font-family='monospace' font-size='10.5' font-weight='700' fill='#ffffff'>pending = true</text>\n<text x='40' y='162' font-family='sans-serif' font-size='10.5' fill='#1e3a8a'>※プリフェッチ済みなら pending 段階はスキップ＝prefetch=false で最も有用</text>\n</svg><figcaption>図1：遷移タイムラインと useLinkStatus の pending 区間</figcaption></figure>\n<p><strong>何が新しいか</strong>：<code>useLinkStatus</code>（Next.js <strong>15.3.0</strong>）は、React の <code>useFormStatus</code> を踏襲したクライアントフック。<code>&lt;Link&gt;</code> の<strong>子孫</strong>コンポーネントに置くだけで、そのリンクの遷移中かを <code>pending</code> ブール値で受け取れる。API は <code>const { pending } = useLinkStatus()</code> の一行だけ・引数なし。同じ 15.3 では遷移を横取りできる <code>onNavigate</code> も入った。</p>\n<p><strong>仕組みと勘所</strong>：<code>import { useLinkStatus } from 'next/link'</code>（<code>'use client'</code> 必須）。必ず <code>&lt;Link&gt;</code> の子孫に置く——外や兄弟では効かない。<strong>プリフェッチ済みなら pending 段階はスキップ</strong>されるので <code>prefetch={false}</code> のときに最も有用。連打時は最後に押したリンクの pending だけが出る。Pages Router では常に <code>false</code> を返す。</p>\n<p><strong>二つの落とし穴</strong>：(1) インジケータを条件付きで DOM 出し入れすると<strong>レイアウトシフト（CLS）</strong>が出る→常に描画し、サイズ固定で <code>opacity</code>/<code>visibility</code> だけ切り替える。(2) 速い遷移で一瞬光ってチラつく→<strong>初期を透明にし <code>animation-delay: 100ms</code></strong> を与え、100ms を超えたときだけ見せる（CSS だけで解決・JS デバウンス不要）。</p>\n<p><strong>使いどころ・まとめ</strong>：あくまで\"遅い遷移の応急処置\"で、根本は <code>loading.js</code> とプリフェッチで instant navigation を狙うこと。自分で入れるなら <code>prefetch={false}</code> のナビ項目と <code>loading.js</code> の無い動的ルートに1個ずつ。<code>prefers-reduced-motion</code> での無限アニメ停止も添える。</p>",
+      "sources": [
+        {
+          "title": "useLinkStatus (Next.js Docs)",
+          "url": "https://nextjs.org/docs/app/api-reference/functions/use-link-status"
+        },
+        {
+          "title": "Next.js 15.3 Blog",
+          "url": "https://nextjs.org/blog/next-15-3"
+        },
+        {
+          "title": "Linking and Navigating (Next.js Docs)",
+          "url": "https://nextjs.org/docs/app/building-your-application/routing/linking-and-navigating"
+        }
+      ],
+      "id": "2026-11-11-nextjs"
+    },
+    {
+      "date": "2026-11-11",
+      "topic": "Flutter",
+      "title": "Flutter — プロセス終了をまたいでUI状態を復元するState Restoration（3.50はなお足踏み）",
+      "lede": "stable 3.50は11/11も未公開で昇格ゲートは7日据え置き。新機能待ちの谷間こそ、OSのkillに耐えるState Restorationで足回りを固める好機。",
+      "articleHtml": "<p><strong>背景</strong>：stable 3.50 は 11/11 時点でも未公開、beta <code>3.50.0-0.4.pre</code> は 11/4 以来7日据え置き、release-tracker #195830 は 11/2 起票以来\"人の動き\"ゼロ（Dart hash 欄はプレースホルダのまま）。本番は <code>3.47.9</code> を pin し続けるのが安全だ。この新機能待ちの谷間こそ、OS の kill に耐える <strong>State Restoration</strong> で足回りを固める好機として掘り下げる。</p>\n<p><strong>何の問題を解くか</strong>：OS はバックグラウンドのアプリをいつでも kill する。保存が無ければ復帰時は\"ゼロから起動\"。しかも <strong>Android の instance state は 1MB 上限</strong>で、超えると <code>TransactionTooLargeException</code> でネイティブ側がクラッシュする。</p>\n<figure class='fig'><svg viewBox='0 0 600 212' xmlns='http://www.w3.org/2000/svg'>\n<rect x='0' y='0' width='600' height='212' rx='8' fill='#ecfdf5' stroke='#34d399'/>\n<text x='16' y='26' font-family='sans-serif' font-size='13' font-weight='700' fill='#047857'>有効化は3段＋往復するのは RestorableProperty</text>\n<rect x='24' y='42' width='170' height='44' rx='6' fill='#d1fae5'/>\n<text x='34' y='62' font-family='sans-serif' font-size='11' font-weight='700' fill='#065f46'>① restorationScopeId</text>\n<text x='34' y='79' font-family='sans-serif' font-size='10' fill='#047857'>App に定義＝自動ON</text>\n<rect x='215' y='42' width='170' height='44' rx='6' fill='#d1fae5'/>\n<text x='225' y='62' font-family='sans-serif' font-size='11' font-weight='700' fill='#065f46'>② restorationId</text>\n<text x='225' y='79' font-family='sans-serif' font-size='10' fill='#047857'>TextField等に付与</text>\n<rect x='406' y='42' width='170' height='44' rx='6' fill='#d1fae5'/>\n<text x='416' y='62' font-family='sans-serif' font-size='11' font-weight='700' fill='#065f46'>③ RestorationMixin</text>\n<text x='416' y='79' font-family='sans-serif' font-size='10' fill='#047857'>カスタムwidget用</text>\n<rect x='24' y='104' width='160' height='40' rx='6' fill='#a7f3d0'/>\n<text x='40' y='128' font-family='monospace' font-size='11' font-weight='700' fill='#065f46'>RestorableInt</text>\n<text x='196' y='129' font-family='sans-serif' font-size='15' fill='#047857'>&#8596;</text>\n<rect x='214' y='104' width='170' height='40' rx='6' fill='#a7f3d0'/>\n<text x='230' y='128' font-family='monospace' font-size='10.5' font-weight='700' fill='#065f46'>RestorationBucket</text>\n<text x='396' y='129' font-family='sans-serif' font-size='15' fill='#047857'>&#8596;</text>\n<rect x='414' y='104' width='162' height='40' rx='6' fill='#a7f3d0'/>\n<text x='430' y='128' font-family='sans-serif' font-size='11' font-weight='700' fill='#065f46'>OS保存領域</text>\n<text x='24' y='170' font-family='sans-serif' font-size='10.5' fill='#047857'>toPrimitives()/fromPrimitives() で往復、変化時に notifyListeners()、dispose 必須。</text>\n<text x='24' y='192' font-family='sans-serif' font-size='10.5' fill='#047857'>Navigator は push&#8594;restorablePush / pushNamed&#8594;restorablePushNamed に置換。</text>\n</svg><figcaption>図1：3段の有効化と、プロパティ↔bucket↔OS の往復</figcaption></figure>\n<p><strong>仕組み</strong>：① <code>MaterialApp</code> 等に <code>restorationScopeId</code> を定義すると <code>RootRestorationScope</code> が注入され復元が自動 ON。② <code>TextField</code>/<code>ScrollView</code> 等に <code>restorationId</code> を付けると組込の復元が効く。③ カスタム widget は <code>RestorationMixin</code> を混ぜ、<code>restorationId</code> getter と <code>restoreState()</code> を実装し、その中で <code>registerForRestoration(property, id)</code> を呼ぶ。<code>restoreState</code> は <code>initState</code> 直後と新データ到着時に呼ばれる。</p>\n<p>状態は素のフィールドでなく <strong><code>RestorableInt</code>/<code>String</code>/<code>Bool</code> 等の <code>RestorableProperty</code></strong> で保持し、<code>toPrimitives()</code>/<code>fromPrimitives()</code> で往復、値が変われば <code>notifyListeners()</code> で保存を促す。<strong>全 property は <code>State.dispose</code> で dispose 必須</strong>。遷移自体も残すなら Navigator を <code>restorablePush</code>/<code>restorablePushNamed</code> に置換する。</p>\n<p><strong>自分が試すなら・落とし穴</strong>：端末を「バックグラウンドで state を保存しない」設定にしてプロセス終了からの復元を検証し、<strong>終わったら必ず元へ戻す</strong>。復元対象は\"UI の見た目の状態\"に絞り、<strong>ネットワーク由来のデータは復元でなく再取得</strong>——これは 1MB 制約にも素直に合う。<strong>まとめ</strong>：3.50 待ちで手が空くいまこそ、落ちても戻るアプリへ足回りを底上げしておきたい。</p>",
+      "sources": [
+        {
+          "title": "RestorationMixin (api.flutter.dev)",
+          "url": "https://api.flutter.dev/flutter/widgets/RestorationMixin-mixin.html"
+        },
+        {
+          "title": "RestorableProperty (api.flutter.dev)",
+          "url": "https://api.flutter.dev/flutter/widgets/RestorableProperty-class.html"
+        },
+        {
+          "title": "Restore state on Android (docs.flutter.dev)",
+          "url": "https://docs.flutter.dev/platform-integration/android/restore-state-android"
+        }
+      ],
+      "id": "2026-11-11-flutter"
+    },
+    {
+      "date": "2026-11-11",
+      "topic": "GitHub Trending",
+      "title": "11/11の話題リポジトリ — GPU内部を覗くhtop・Xの見逃し推文を回収・セルフホスト統合",
+      "lede": "AI一色の飽和局面で急上昇したのは、フロンティアAIではなく\"自分の手元の環境を見える化・取り戻す・束ねる\"オーナーシップ系3本。",
+      "articleHtml": "<p>本日の急上昇枠は、大規模AIそのものではなく<strong>「自分の手元の環境を見る・取り戻す・まとめる」道具</strong>に票が集まった。3本とも作成から数日〜1週間の新星で、増加\"率\"が高い。各リポジトリを「解決したい課題」「提供する機能」で押さえる。</p>\n<figure class='fig'><svg viewBox='0 0 600 236' xmlns='http://www.w3.org/2000/svg'>\n<rect x='0' y='0' width='600' height='236' rx='8' fill='#f0fdf4' stroke='#3fb950'/>\n<text x='16' y='26' font-family='sans-serif' font-size='13' font-weight='700' fill='#1a7f37'>リポジトリ × 解決したい課題 / 提供する機能</text>\n<line x1='210' y1='38' x2='210' y2='224' stroke='#86efac' stroke-width='1'/>\n<line x1='405' y1='38' x2='405' y2='224' stroke='#86efac' stroke-width='1'/>\n<text x='24' y='54' font-family='sans-serif' font-size='10.5' font-weight='700' fill='#166534'>リポジトリ</text>\n<text x='218' y='54' font-family='sans-serif' font-size='10.5' font-weight='700' fill='#166534'>解決したい課題</text>\n<text x='413' y='54' font-family='sans-serif' font-size='10.5' font-weight='700' fill='#166534'>提供する機能</text>\n<rect x='24' y='64' width='552' height='52' rx='6' fill='#dcfce7'/>\n<text x='34' y='86' font-family='monospace' font-size='10.5' font-weight='700' fill='#14532d'>gputaskman</text>\n<text x='34' y='103' font-family='sans-serif' font-size='9.5' fill='#166534'>Python ⭐1.7k</text>\n<text x='218' y='93' font-family='sans-serif' font-size='9.8' fill='#166534'>VRAM 15GBの\"中身\"が</text>\n<text x='218' y='107' font-family='sans-serif' font-size='9.8' fill='#166534'>nvidia-smiで分からない</text>\n<text x='413' y='93' font-family='sans-serif' font-size='9.8' fill='#166534'>GPU版htop：モデル/KV</text>\n<text x='413' y='107' font-family='sans-serif' font-size='9.8' fill='#166534'>キャッシュ内訳まで可視化</text>\n<rect x='24' y='122' width='552' height='52' rx='6' fill='#dcfce7'/>\n<text x='34' y='144' font-family='monospace' font-size='10.5' font-weight='700' fill='#14532d'>rewind-for-x</text>\n<text x='34' y='161' font-family='sans-serif' font-size='9.5' fill='#166534'>JS ⭐353</text>\n<text x='218' y='151' font-family='sans-serif' font-size='9.8' fill='#166534'>Xで流れた\"見た\"推文が</text>\n<text x='218' y='165' font-family='sans-serif' font-size='9.8' fill='#166534'>二度と探せない</text>\n<text x='413' y='151' font-family='sans-serif' font-size='9.8' fill='#166534'>露出推文をローカル記録し</text>\n<text x='413' y='165' font-family='sans-serif' font-size='9.8' fill='#166534'>検索/フィルタで見返す拡張</text>\n<rect x='24' y='180' width='552' height='52' rx='6' fill='#dcfce7'/>\n<text x='34' y='202' font-family='monospace' font-size='10.5' font-weight='700' fill='#14532d'>HolyArrs</text>\n<text x='34' y='219' font-family='sans-serif' font-size='9.5' fill='#166534'>Go ⭐560</text>\n<text x='218' y='209' font-family='sans-serif' font-size='9.8' fill='#166534'>Plex/Jellyfin+各*Arrを</text>\n<text x='218' y='223' font-family='sans-serif' font-size='9.8' fill='#166534'>個別に立てて繋ぐ手間</text>\n<text x='413' y='209' font-family='sans-serif' font-size='9.8' fill='#166534'>収集〜再生を単一自己ホスト</text>\n<text x='413' y='223' font-family='sans-serif' font-size='9.8' fill='#166534'>アプリに統合（Docker前提）</text>\n</svg><figcaption>図1：本日の3本——課題と機能の対応</figcaption></figure>\n<h4>shanselman/gputaskman（Python・⭐1.7k）</h4>\n<p><strong>解決したい課題</strong>：「GPUメモリが15GB使用中——何に？ モデル重み？ KVキャッシュ？ ブラウザ？」が普通の <code>nvidia-smi</code> では分からない。<strong>提供する機能</strong>：GPU版の htop。プロセス別 VRAM/エンジン稼働に加え、<strong>ロード済みモデルや LLM の KV キャッシュ内訳まで可視化</strong>するターミナルUI（Win+NVIDIA/AMD・Linux/WSL・Apple Silicon、スコープはローカルGPU）。Scott Hanselman 作・MIT。<strong>なぜ今</strong>：公開約8日で1,654★・pushアクティブ。ローカル推論に踏み込むなら観測の手当てに直結する。</p>\n<h4>yetone/rewind-for-x（JavaScript・⭐353）</h4>\n<p><strong>解決したい課題</strong>：X(Twitter)のタイムラインで一度スクロールして流れた\"見たはず\"の推文が二度と探せない。<strong>提供する機能</strong>：画面に半分以上露出した推文だけを<strong>作者/本文/画像/引用/RT元/リンク付きでローカル記録</strong>し、あとから一覧・キーワード検索・メディア種別フィルタで見返せる Chrome 拡張（<code>Alt+Shift+R</code> で即起動、広告やプロフィールは非記録）。<strong>なぜ今</strong>：公開約2日で353★の当日最高率級。avante.nvim で知られる yetone 作・MIT。</p>\n<h4>HolyArrs/HolyArrs（Go・⭐560）</h4>\n<p><strong>解決したい課題</strong>：Plex/Jellyfin と各種 *Arr（Sonarr/Radarr系）を個別に立てて繋ぐセルフホスト運用の手間。<strong>提供する機能</strong>：番組・映画・音楽の収集〜再生を<strong>単一の自己ホストアプリに統合</strong>したオールインワン・メディアスタック（Docker/homelab前提）。<strong>なぜ今</strong>：公開約2日で560★、9言語READMEで国際拡散、open issues 76 と初期から活発。Go・<strong>AGPL-3.0</strong>＝自己ホスト/個人利用は問題ないが製品組み込みは要注意。</p>\n<p><strong>まとめ</strong>：3本を貫くのは\"フロンティアAIの外側で、自分の資源（GPU・タイムライン・メディア）を自分の手に取り戻す\"志向。自分が一つ試すなら、ローカル推論の可視化に直結する <strong>gputaskman</strong> から。</p>",
+      "sources": [
+        {
+          "title": "shanselman/gputaskman",
+          "url": "https://github.com/shanselman/gputaskman"
+        },
+        {
+          "title": "yetone/rewind-for-x",
+          "url": "https://github.com/yetone/rewind-for-x"
+        },
+        {
+          "title": "HolyArrs/HolyArrs",
+          "url": "https://github.com/HolyArrs/HolyArrs"
+        }
+      ],
+      "id": "2026-11-11-github-trending"
+    },
     {
       "date": "2026-11-10",
       "topic": "Claude Code",
