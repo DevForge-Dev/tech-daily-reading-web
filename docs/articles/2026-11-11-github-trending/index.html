@@ -1,0 +1,96 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>11/11の話題リポジトリ — GPU内部を覗くhtop・Xの見逃し推文を回収・セルフホスト統合 — デイリー技術深掘り 読み物</title><meta name="description" content="AI一色の飽和局面で急上昇したのは、フロンティアAIではなく&#34;自分の手元の環境を見える化・取り戻す・束ねる&#34;オーナーシップ系3本。"><meta name="theme-color" content="#238636"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-11-github-trending/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="11/11の話題リポジトリ — GPU内部を覗くhtop・Xの見逃し推文を回収・セルフホスト統合 — デイリー技術深掘り 読み物"><meta property="og:description" content="AI一色の飽和局面で急上昇したのは、フロンティアAIではなく&#34;自分の手元の環境を見える化・取り戻す・束ねる&#34;オーナーシップ系3本。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-11-github-trending/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3fb950, #1a7f37)"> <span class="glyph" aria-hidden="true">★</span> <div class="kicker">GitHub Trending</div> <h1>11/11の話題リポジトリ — GPU内部を覗くhtop・Xの見逃し推文を回収・セルフホスト統合</h1> <p class="lede">AI一色の飽和局面で急上昇したのは、フロンティアAIではなく&quot;自分の手元の環境を見える化・取り戻す・束ねる&quot;オーナーシップ系3本。</p> <div class="meta"> <span>📅 2026年11月11日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#238636"> <div> <article class="prose" data-has-mermaid="0"><p>本日の急上昇枠は、大規模AIそのものではなく<strong>「自分の手元の環境を見る・取り戻す・まとめる」道具</strong>に票が集まった。3本とも作成から数日〜1週間の新星で、増加"率"が高い。各リポジトリを「解決したい課題」「提供する機能」で押さえる。</p>
+<figure class='fig'><svg viewBox='0 0 600 236' xmlns='http://www.w3.org/2000/svg'>
+<rect x='0' y='0' width='600' height='236' rx='8' fill='#f0fdf4' stroke='#3fb950'></rect>
+<text x='16' y='26' font-family='sans-serif' font-size='13' font-weight='700' fill='#1a7f37'>リポジトリ × 解決したい課題 / 提供する機能</text>
+<line x1='210' y1='38' x2='210' y2='224' stroke='#86efac' stroke-width='1'></line>
+<line x1='405' y1='38' x2='405' y2='224' stroke='#86efac' stroke-width='1'></line>
+<text x='24' y='54' font-family='sans-serif' font-size='10.5' font-weight='700' fill='#166534'>リポジトリ</text>
+<text x='218' y='54' font-family='sans-serif' font-size='10.5' font-weight='700' fill='#166534'>解決したい課題</text>
+<text x='413' y='54' font-family='sans-serif' font-size='10.5' font-weight='700' fill='#166534'>提供する機能</text>
+<rect x='24' y='64' width='552' height='52' rx='6' fill='#dcfce7'></rect>
+<text x='34' y='86' font-family='monospace' font-size='10.5' font-weight='700' fill='#14532d'>gputaskman</text>
+<text x='34' y='103' font-family='sans-serif' font-size='9.5' fill='#166534'>Python ⭐1.7k</text>
+<text x='218' y='93' font-family='sans-serif' font-size='9.8' fill='#166534'>VRAM 15GBの"中身"が</text>
+<text x='218' y='107' font-family='sans-serif' font-size='9.8' fill='#166534'>nvidia-smiで分からない</text>
+<text x='413' y='93' font-family='sans-serif' font-size='9.8' fill='#166534'>GPU版htop：モデル/KV</text>
+<text x='413' y='107' font-family='sans-serif' font-size='9.8' fill='#166534'>キャッシュ内訳まで可視化</text>
+<rect x='24' y='122' width='552' height='52' rx='6' fill='#dcfce7'></rect>
+<text x='34' y='144' font-family='monospace' font-size='10.5' font-weight='700' fill='#14532d'>rewind-for-x</text>
+<text x='34' y='161' font-family='sans-serif' font-size='9.5' fill='#166534'>JS ⭐353</text>
+<text x='218' y='151' font-family='sans-serif' font-size='9.8' fill='#166534'>Xで流れた"見た"推文が</text>
+<text x='218' y='165' font-family='sans-serif' font-size='9.8' fill='#166534'>二度と探せない</text>
+<text x='413' y='151' font-family='sans-serif' font-size='9.8' fill='#166534'>露出推文をローカル記録し</text>
+<text x='413' y='165' font-family='sans-serif' font-size='9.8' fill='#166534'>検索/フィルタで見返す拡張</text>
+<rect x='24' y='180' width='552' height='52' rx='6' fill='#dcfce7'></rect>
+<text x='34' y='202' font-family='monospace' font-size='10.5' font-weight='700' fill='#14532d'>HolyArrs</text>
+<text x='34' y='219' font-family='sans-serif' font-size='9.5' fill='#166534'>Go ⭐560</text>
+<text x='218' y='209' font-family='sans-serif' font-size='9.8' fill='#166534'>Plex/Jellyfin+各*Arrを</text>
+<text x='218' y='223' font-family='sans-serif' font-size='9.8' fill='#166534'>個別に立てて繋ぐ手間</text>
+<text x='413' y='209' font-family='sans-serif' font-size='9.8' fill='#166534'>収集〜再生を単一自己ホスト</text>
+<text x='413' y='223' font-family='sans-serif' font-size='9.8' fill='#166534'>アプリに統合（Docker前提）</text>
+</svg><figcaption>図1：本日の3本——課題と機能の対応</figcaption></figure>
+<h4 id="sec-1">shanselman/gputaskman（Python・⭐1.7k）</h4>
+<p><strong>解決したい課題</strong>：「GPUメモリが15GB使用中——何に？ モデル重み？ KVキャッシュ？ ブラウザ？」が普通の <code>nvidia-smi</code> では分からない。<strong>提供する機能</strong>：GPU版の htop。プロセス別 VRAM/エンジン稼働に加え、<strong>ロード済みモデルや LLM の KV キャッシュ内訳まで可視化</strong>するターミナルUI（Win+NVIDIA/AMD・Linux/WSL・Apple Silicon、スコープはローカルGPU）。Scott Hanselman 作・MIT。<strong>なぜ今</strong>：公開約8日で1,654★・pushアクティブ。ローカル推論に踏み込むなら観測の手当てに直結する。</p>
+<h4 id="sec-2">yetone/rewind-for-x（JavaScript・⭐353）</h4>
+<p><strong>解決したい課題</strong>：X(Twitter)のタイムラインで一度スクロールして流れた"見たはず"の推文が二度と探せない。<strong>提供する機能</strong>：画面に半分以上露出した推文だけを<strong>作者/本文/画像/引用/RT元/リンク付きでローカル記録</strong>し、あとから一覧・キーワード検索・メディア種別フィルタで見返せる Chrome 拡張（<code>Alt+Shift+R</code> で即起動、広告やプロフィールは非記録）。<strong>なぜ今</strong>：公開約2日で353★の当日最高率級。avante.nvim で知られる yetone 作・MIT。</p>
+<h4 id="sec-3">HolyArrs/HolyArrs（Go・⭐560）</h4>
+<p><strong>解決したい課題</strong>：Plex/Jellyfin と各種 *Arr（Sonarr/Radarr系）を個別に立てて繋ぐセルフホスト運用の手間。<strong>提供する機能</strong>：番組・映画・音楽の収集〜再生を<strong>単一の自己ホストアプリに統合</strong>したオールインワン・メディアスタック（Docker/homelab前提）。<strong>なぜ今</strong>：公開約2日で560★、9言語READMEで国際拡散、open issues 76 と初期から活発。Go・<strong>AGPL-3.0</strong>＝自己ホスト/個人利用は問題ないが製品組み込みは要注意。</p>
+<p><strong>まとめ</strong>：3本を貫くのは"フロンティアAIの外側で、自分の資源（GPU・タイムライン・メディア）を自分の手に取り戻す"志向。自分が一つ試すなら、ローカル推論の可視化に直結する <strong>gputaskman</strong> から。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://github.com/shanselman/gputaskman" target="_blank" rel="noopener noreferrer"> shanselman/gputaskman </a> </li><li> <a href="https://github.com/yetone/rewind-for-x" target="_blank" rel="noopener noreferrer"> yetone/rewind-for-x </a> </li><li> <a href="https://github.com/HolyArrs/HolyArrs" target="_blank" rel="noopener noreferrer"> HolyArrs/HolyArrs </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> shanselman/gputaskman（Python・⭐1.7k） </a> </li><li> <a href="#sec-2" data-toc="sec-2"> yetone/rewind-for-x（JavaScript・⭐353） </a> </li><li> <a href="#sec-3" data-toc="sec-3"> HolyArrs/HolyArrs（Go・⭐560） </a> </li> </ul> <div class="reading-box"> <div>📅 2026-11-11</div> <div>⏱ 読了 約3分</div> <div>🏷 GitHub Trending</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

@@ -1,0 +1,86 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Flutter — プロセス終了をまたいでUI状態を復元するState Restoration（3.50はなお足踏み） — デイリー技術深掘り 読み物</title><meta name="description" content="stable 3.50は11/11も未公開で昇格ゲートは7日据え置き。新機能待ちの谷間こそ、OSのkillに耐えるState Restorationで足回りを固める好機。"><meta name="theme-color" content="#0277bd"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-11-flutter/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Flutter — プロセス終了をまたいでUI状態を復元するState Restoration（3.50はなお足踏み） — デイリー技術深掘り 読み物"><meta property="og:description" content="stable 3.50は11/11も未公開で昇格ゲートは7日据え置き。新機能待ちの谷間こそ、OSのkillに耐えるState Restorationで足回りを固める好機。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-11-flutter/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #29b6f6, #01579b)"> <span class="glyph" aria-hidden="true">◆</span> <div class="kicker">Flutter</div> <h1>Flutter — プロセス終了をまたいでUI状態を復元するState Restoration（3.50はなお足踏み）</h1> <p class="lede">stable 3.50は11/11も未公開で昇格ゲートは7日据え置き。新機能待ちの谷間こそ、OSのkillに耐えるState Restorationで足回りを固める好機。</p> <div class="meta"> <span>📅 2026年11月11日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#0277bd"> <div> <article class="prose" data-has-mermaid="0"><p><strong>背景</strong>：stable 3.50 は 11/11 時点でも未公開、beta <code>3.50.0-0.4.pre</code> は 11/4 以来7日据え置き、release-tracker #195830 は 11/2 起票以来"人の動き"ゼロ（Dart hash 欄はプレースホルダのまま）。本番は <code>3.47.9</code> を pin し続けるのが安全だ。この新機能待ちの谷間こそ、OS の kill に耐える <strong>State Restoration</strong> で足回りを固める好機として掘り下げる。</p>
+<p><strong>何の問題を解くか</strong>：OS はバックグラウンドのアプリをいつでも kill する。保存が無ければ復帰時は"ゼロから起動"。しかも <strong>Android の instance state は 1MB 上限</strong>で、超えると <code>TransactionTooLargeException</code> でネイティブ側がクラッシュする。</p>
+<figure class='fig'><svg viewBox='0 0 600 212' xmlns='http://www.w3.org/2000/svg'>
+<rect x='0' y='0' width='600' height='212' rx='8' fill='#ecfdf5' stroke='#34d399'></rect>
+<text x='16' y='26' font-family='sans-serif' font-size='13' font-weight='700' fill='#047857'>有効化は3段＋往復するのは RestorableProperty</text>
+<rect x='24' y='42' width='170' height='44' rx='6' fill='#d1fae5'></rect>
+<text x='34' y='62' font-family='sans-serif' font-size='11' font-weight='700' fill='#065f46'>① restorationScopeId</text>
+<text x='34' y='79' font-family='sans-serif' font-size='10' fill='#047857'>App に定義＝自動ON</text>
+<rect x='215' y='42' width='170' height='44' rx='6' fill='#d1fae5'></rect>
+<text x='225' y='62' font-family='sans-serif' font-size='11' font-weight='700' fill='#065f46'>② restorationId</text>
+<text x='225' y='79' font-family='sans-serif' font-size='10' fill='#047857'>TextField等に付与</text>
+<rect x='406' y='42' width='170' height='44' rx='6' fill='#d1fae5'></rect>
+<text x='416' y='62' font-family='sans-serif' font-size='11' font-weight='700' fill='#065f46'>③ RestorationMixin</text>
+<text x='416' y='79' font-family='sans-serif' font-size='10' fill='#047857'>カスタムwidget用</text>
+<rect x='24' y='104' width='160' height='40' rx='6' fill='#a7f3d0'></rect>
+<text x='40' y='128' font-family='monospace' font-size='11' font-weight='700' fill='#065f46'>RestorableInt</text>
+<text x='196' y='129' font-family='sans-serif' font-size='15' fill='#047857'>&#8596;</text>
+<rect x='214' y='104' width='170' height='40' rx='6' fill='#a7f3d0'></rect>
+<text x='230' y='128' font-family='monospace' font-size='10.5' font-weight='700' fill='#065f46'>RestorationBucket</text>
+<text x='396' y='129' font-family='sans-serif' font-size='15' fill='#047857'>&#8596;</text>
+<rect x='414' y='104' width='162' height='40' rx='6' fill='#a7f3d0'></rect>
+<text x='430' y='128' font-family='sans-serif' font-size='11' font-weight='700' fill='#065f46'>OS保存領域</text>
+<text x='24' y='170' font-family='sans-serif' font-size='10.5' fill='#047857'>toPrimitives()/fromPrimitives() で往復、変化時に notifyListeners()、dispose 必須。</text>
+<text x='24' y='192' font-family='sans-serif' font-size='10.5' fill='#047857'>Navigator は push&#8594;restorablePush / pushNamed&#8594;restorablePushNamed に置換。</text>
+</svg><figcaption>図1：3段の有効化と、プロパティ↔bucket↔OS の往復</figcaption></figure>
+<p><strong>仕組み</strong>：① <code>MaterialApp</code> 等に <code>restorationScopeId</code> を定義すると <code>RootRestorationScope</code> が注入され復元が自動 ON。② <code>TextField</code>/<code>ScrollView</code> 等に <code>restorationId</code> を付けると組込の復元が効く。③ カスタム widget は <code>RestorationMixin</code> を混ぜ、<code>restorationId</code> getter と <code>restoreState()</code> を実装し、その中で <code>registerForRestoration(property, id)</code> を呼ぶ。<code>restoreState</code> は <code>initState</code> 直後と新データ到着時に呼ばれる。</p>
+<p>状態は素のフィールドでなく <strong><code>RestorableInt</code>/<code>String</code>/<code>Bool</code> 等の <code>RestorableProperty</code></strong> で保持し、<code>toPrimitives()</code>/<code>fromPrimitives()</code> で往復、値が変われば <code>notifyListeners()</code> で保存を促す。<strong>全 property は <code>State.dispose</code> で dispose 必須</strong>。遷移自体も残すなら Navigator を <code>restorablePush</code>/<code>restorablePushNamed</code> に置換する。</p>
+<p><strong>自分が試すなら・落とし穴</strong>：端末を「バックグラウンドで state を保存しない」設定にしてプロセス終了からの復元を検証し、<strong>終わったら必ず元へ戻す</strong>。復元対象は"UI の見た目の状態"に絞り、<strong>ネットワーク由来のデータは復元でなく再取得</strong>——これは 1MB 制約にも素直に合う。<strong>まとめ</strong>：3.50 待ちで手が空くいまこそ、落ちても戻るアプリへ足回りを底上げしておきたい。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://api.flutter.dev/flutter/widgets/RestorationMixin-mixin.html" target="_blank" rel="noopener noreferrer"> RestorationMixin (api.flutter.dev) </a> </li><li> <a href="https://api.flutter.dev/flutter/widgets/RestorableProperty-class.html" target="_blank" rel="noopener noreferrer"> RestorableProperty (api.flutter.dev) </a> </li><li> <a href="https://docs.flutter.dev/platform-integration/android/restore-state-android" target="_blank" rel="noopener noreferrer"> Restore state on Android (docs.flutter.dev) </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
