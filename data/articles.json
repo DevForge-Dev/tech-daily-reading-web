@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-11-11T04:48:06.795Z",
+  "generatedAt": "2026-11-12T04:44:54.695Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,94 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "date": "2026-11-12",
+      "topic": "Claude Code",
+      "title": "Claude Code — v2.1.321でFable 5.2が既定に（値下げ）、cp/mvの保護強化とプラグインskills非ロード",
+      "lede": "小粒リリースに見えて中身は世代交代。既定Fableが5.2（$8/$40・1M据え置き）へ、cp/mvの宛先ディレクトリにもdeny適用、mod自動有効化と.claude/skills非ロードの破壊的変更が同居する。",
+      "articleHtml": "<p>Claude Code は 11/9 に <strong>v2.1.321</strong> をリリースし、11/12 時点でその詳報が出そろった。小粒な機能追加のリリースに見えて、中身は「既定モデルの世代交代（＋値下げ）」「権限・サンドボックスの締め直し」「プラグイン/mod 周りの破壊的変更」と、日々の運用に効く変更がまとまっている。※価格・ベンチ数値は classmethod（英語・機械翻訳）等の二次情報で、一次 CHANGELOG はこのセッション時点で v2.1.311 までしか反映されていない点に注意。</p>\n<p>最大の目玉は <strong>Claude Fable 5.2</strong>（<code>claude-fable-5-2</code>）が既定の Fable モデルになったこと。コンテキストは 1M（100万トークン）を維持したまま、価格が <strong>入力 $8 / 出力 $40 per Mtok・キャッシュ読取 $0.20</strong> へ下がった。旧 Fable 5.1（$10 / $50、$0.25）より素直に安い。記事は「約20%安・最大30%高速」とするが、この数字自体は未検証。</p>\n<figure class='fig'><svg viewBox='0 0 600 190' xmlns='http://www.w3.org/2000/svg'>\n<rect x='0' y='0' width='600' height='190' rx='8' fill='#fff7ed' stroke='#fb923c'/>\n<text x='16' y='26' font-family='sans-serif' font-size='13' font-weight='700' fill='#c2410c'>Fable 5.1 → 5.2：コンテキスト1Mのまま値下げ（per Mtok）</text>\n<text x='300' y='58' font-family='sans-serif' font-size='11.5' font-weight='700' fill='#9a3412'>Fable 5.1（旧）</text>\n<text x='450' y='58' font-family='sans-serif' font-size='11.5' font-weight='700' fill='#065f46'>Fable 5.2（既定）</text>\n<text x='24' y='86' font-family='sans-serif' font-size='11.5' fill='#7c2d12'>入力</text>\n<text x='300' y='86' font-family='monospace' font-size='12' fill='#9a3412'>$10</text>\n<text x='450' y='86' font-family='monospace' font-size='12' font-weight='700' fill='#047857'>$8</text>\n<text x='24' y='112' font-family='sans-serif' font-size='11.5' fill='#7c2d12'>出力</text>\n<text x='300' y='112' font-family='monospace' font-size='12' fill='#9a3412'>$50</text>\n<text x='450' y='112' font-family='monospace' font-size='12' font-weight='700' fill='#047857'>$40</text>\n<text x='24' y='138' font-family='sans-serif' font-size='11.5' fill='#7c2d12'>キャッシュ読取</text>\n<text x='300' y='138' font-family='monospace' font-size='12' fill='#9a3412'>$0.25</text>\n<text x='450' y='138' font-family='monospace' font-size='12' font-weight='700' fill='#047857'>$0.20</text>\n<line x1='24' y1='94' x2='576' y2='94' stroke='#fed7aa'/>\n<line x1='24' y1='120' x2='576' y2='120' stroke='#fed7aa'/>\n<text x='24' y='168' font-family='sans-serif' font-size='10.5' fill='#9a3412'>コンテキストは双方 1M。記事の「20%安・30%高速」は未検証の二次情報。</text>\n</svg><figcaption>図1：既定 Fable モデルの価格差（1M コンテキストは据え置き）</figcaption></figure>\n<p>仕組み・運用面で見るべきは<strong>権限とサンドボックスのセキュリティ修正</strong>だ。(1) <code>cp</code>/<code>mv</code> の宛先にディレクトリを指定して書き込まれるファイルにも、これまで素通りだった deny ルールと保護ファイル確認が効くようになった（<code>/bin/cp</code> のようにフルパス指定しても同じパス検査の対象）。(2) MCP サーバのリダイレクト時にリフレッシュトークン等の秘密が別ホストへ漏れる不具合を修正。(3) 読み取り専用 Bash がサンドボックス外で確認なしに走るケース、権限判定が誤ったフォルダ基準になるケースも修正。無人・自動運用で Claude にコマンドを任せるほど効いてくる守りの変更だ。</p>\n<p>いっぽうで<strong>破壊的変更</strong>は、黙って挙動が変わる類なので把握が必要：保存済みの Fable 5.1 選択は自動的に <code>fable</code> へ移行、Claude が作成した mod は auto/bypass モードでは<strong>確認なしに有効化</strong>されるようになり、<code>~/.claude/plugins</code> 配下の <code>.claude/skills</code> は<strong>読み込まれなくなった</strong>。プラグインでスキルを配っている場合、スキルが突然消えたように見えるので要確認。</p>\n<p>あわせて公式の「Claude Code パワーユーザーのヒント」も読みどころ。最重要#1は<strong>“検証”</strong>＝Claude に自分の作業を確かめる手段（フロントエンドなら Chrome 拡張、変更後の <code>/simplify</code> 等）を渡すこと。ほかに <code>claude --worktree</code> で 3〜5 並列、<code>/effort</code> は low〜max（複雑作業は xhigh）、<code>claude -p --bare</code> は約10倍速く起動（代わりに CLAUDE.md・設定・MCP を自動ロードしない）、<code>/loop</code>・<code>/schedule</code> での定期実行。</p>\n<p><strong>自分が試すなら</strong>：まず既定モデルが 5.2 になった前提でコスト感を測り直す。次に無人ループ（<code>/loop</code>/<code>/schedule</code>）を回しているなら、今回の deny/サンドボックス強化が自分のワークフローを壊していないか一度流して確認。プラグインでスキルを配布しているプロジェクトは、<code>.claude/skills</code> 非ロード化の影響を今日中にチェックしておきたい。</p>\n<p><strong>ひとことまとめ</strong>：「既定モデルが安く速くなった」話より、<strong>無人運用の安全弁が一段締まった</strong>ことと<strong>プラグイン/mod の黙示的挙動変更</strong>が本題。恩恵と副作用が同居するので、自動化している人ほど一読の価値あり。</p>",
+      "sources": [
+        {
+          "title": "v2.1.321 解説（classmethod・英/機械翻訳）",
+          "url": "https://dev.classmethod.jp/en/articles/20261110-cc-updates-v2-1-321/"
+        },
+        {
+          "title": "v2.1.321 変更追跡（Releasebot）",
+          "url": "https://releasebot.io/updates/anthropic/claude-code"
+        },
+        {
+          "title": "Claude Code パワーユーザーのヒント（公式・日本語）",
+          "url": "https://support.claude.com/ja/articles/14554000-claude-code-power-user-tips"
+        }
+      ],
+      "id": "2026-11-12-claude-code"
+    },
+    {
+      "date": "2026-11-12",
+      "topic": "Next.js",
+      "title": "Next.js — @propertyで動かすCSSオーロラ背景、重い所だけWebGL（Paper Shaders）",
+      "lede": "全画面の滲む背景は純CSS主軸で十分。@propertyで色を補間し、動かすのはtransform:translateだけ＝GPU合成。Server Componentのまま・JS増ゼロ・CLS 0で出せる。",
+      "articleHtml": "<p>Vercel / Linear / Stripe / Supabase 系の LP で定番化した、画面いっぱいにゆっくり滲み動く<strong>オーロラ／メッシュ・グラデーション</strong>のアンビエント背景。2025〜2026 で「ヒーローに静かに動く色の層を敷く」のがトレンド化し、ReactBits・Inspira UI・Paper Shaders などがこぞってコンポーネント化している。枠に光を回す「ボーダービーム」や文字の上を走る「シマーテキスト」とは違い、本テーマは<strong>面（全画面背景）を低速で滲ませる</strong>のが主眼だ。</p>\n<p>技術の核は 2 本立て。基本は<strong>純CSS</strong>＝複数の <code>radial-gradient</code> ブロブを重ね、<code>@property</code> 登録した角度/位置/色を低速アニメする（JS ゼロ・Server Component のまま）。粒状ノイズや流体歪みが要るときだけ <strong>WebGL</strong>（Paper Shaders 等）へ逃がす。「まず CSS、足りなければ WebGL」という判断軸を持つのが実務の肝になる。</p>\n<figure class='fig'><pre class='mermaid'>flowchart TD\n  A[\"全画面の動く背景が欲しい\"] --> B{\"粒状ノイズ/流体歪み/光の屈折が要る?\"}\n  B -- \"いいえ(大半)\" --> C[\"純CSS: radial-gradient + @property\"]\n  C --> D[\"Server Componentのまま / JS増ゼロ / CLS 0\"]\n  B -- \"はい\" --> E[\"WebGL: Paper Shaders\"]\n  E --> F[\"use client島 + next/dynamic ssr:false / 版固定\"]</pre><figcaption>図1：まずCSS、足りなければWebGLへ逃がす判断フロー</figcaption></figure>\n<p>なぜ <code>@property</code> が要るのか。素の CSS カスタムプロパティは型が無く、ブラウザからは「画像（トークン文字列）」としてしか見えないため、グラデーション内の値はトランジション/アニメで<strong>補間されずカクつく</strong>。<code>@property</code> で <code>syntax</code> を与えて型登録すると、その値が補間可能な数値/角度/色になり、グラデが読んでも滑らかに動く。必須記述子は <code>syntax</code> と <code>inherits</code> の 2 つで、どちらか欠けるとルール全体が無効になる。<code>@property</code> は 2024-07-09 に Baseline Newly available（3 大エンジン対応）で、非対応時も <code>initial-value</code> の静止グラデが残り自然劣化する。</p>\n<p>本テーマ最重要の<strong>パフォーマンス設計</strong>。大面積＋低速ゆえ「気づかぬうちにペイントが毎フレーム走る」のが最大の罠だ。<code>background-position</code> やグラデの色停止、<code>@property</code> の角度・位置を動かすのは<strong>毎フレーム“ペイント”</strong>（コンポジタ合成ではない）で、全画面だと面積が巨大。いちばん軽いのは、色ブロブを個別要素にして <code>transform: translate()</code> だけで動かす方式＝<strong>GPU コンポジタ合成</strong>で再ペイントを避ける。<code>filter: blur()</code> は毎フレーム再計算すると重いので、ぼかした見た目は <code>radial-gradient</code> のソフトなストップで“焼き込み”、要素は translate だけにする。</p>\n<figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg'>\n<rect x='0' y='0' width='600' height='150' rx='8' fill='#eef2ff' stroke='#818cf8'/>\n<text x='16' y='26' font-family='sans-serif' font-size='13' font-weight='700' fill='#4338ca'>同じ見た目でも“動かす対象”でコストが段違い</text>\n<rect x='24' y='42' width='264' height='88' rx='6' fill='#e0e7ff'/>\n<text x='36' y='64' font-family='sans-serif' font-size='11.5' font-weight='700' fill='#b91c1c'>✗ 重い：毎フレーム ペイント</text>\n<text x='36' y='86' font-family='monospace' font-size='10.5' fill='#3730a3'>background-position / 色停止</text>\n<text x='36' y='104' font-family='monospace' font-size='10.5' fill='#3730a3'>@property の位置・角度を全画面で</text>\n<text x='36' y='122' font-family='sans-serif' font-size='10.5' fill='#6d28d9'>大面積ペイントで低速端末がカクつく</text>\n<rect x='312' y='42' width='264' height='88' rx='6' fill='#dcfce7'/>\n<text x='324' y='64' font-family='sans-serif' font-size='11.5' font-weight='700' fill='#047857'>✓ 軽い：GPU合成</text>\n<text x='324' y='86' font-family='monospace' font-size='10.5' fill='#065f46'>transform: translate() のみ</text>\n<text x='324' y='104' font-family='sans-serif' font-size='10.5' fill='#065f46'>ぼかしは radial-gradient で焼き込み</text>\n<text x='324' y='122' font-family='sans-serif' font-size='10.5' fill='#065f46'>will-change は動く要素だけに限定</text>\n</svg><figcaption>図2：ペイント方式 vs コンポジタ合成（全画面で効く）</figcaption></figure>\n<p>Next.js（App Router）では、<strong>純CSS 版は <code>'use client'</code> 不要で Server Component のまま</strong>。<code>@property</code> とレイヤーの CSS を <code>globals.css</code> に置き、全画面背景要素を <code>layout.tsx</code> に 1 つ差すだけで、ハイドレーション mismatch なし・JS バンドル増ゼロ・CLS 0。WebGL 版だけ <code>next/dynamic(..., {ssr:false})</code> の小島に隔離する（Server Component に <code>ssr:false</code> 直書きはビルドエラーなのでラッパ 1 枚）。Paper Shaders は 0.0.x で破壊的変更が入るため<strong>バージョン固定必須</strong>。アニメ付与は <code>@media (prefers-reduced-motion: no-preference)</code> の中だけに置き、縮退時は静的グラデを残すのが安全だ。</p>\n<pre><code>@property --h { syntax: \"&lt;angle&gt;\"; inherits: false; initial-value: 0deg; }\n.aurora .blob {        /* translateだけ動かす＝GPU合成で軽い */\n  background: radial-gradient(circle, oklch(72% .22 var(--h) / .55) 0%, transparent 70%);\n  mix-blend-mode: screen;\n}\n@media (prefers-reduced-motion: no-preference){\n  .aurora .blob { animation: drift 26s ease-in-out infinite alternate; }\n}</code></pre>\n<p><strong>ひとことまとめ</strong>：オーロラ背景は「<code>@property</code> で色を補間、動かすのは translate だけ」で純CSS・Server Component のまま高品質に出せる。WebGL は粒状感が本当に要るときの最後の手段に取っておく。</p>",
+      "sources": [
+        {
+          "title": "@property が Baseline Newly available（web.dev）",
+          "url": "https://web.dev/blog/at-property-baseline"
+        },
+        {
+          "title": "@property（MDN）",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/@property"
+        },
+        {
+          "title": "Paper Shaders vanilla quickstart",
+          "url": "https://www.mintlify.com/paper-design/shaders/quickstart-vanilla"
+        }
+      ],
+      "id": "2026-11-12-nextjs"
+    },
+    {
+      "date": "2026-11-12",
+      "topic": "Flutter",
+      "title": "Flutter — 3.50.0 stable到達（Dart 3.14）、material_ui分離の正式deprecationとAGP 9.1.1必須",
+      "lede": "0.5.preを挟まず3.50.0 stableへ直行、Dart 3.14が初到達。目玉APIより読みどころは移行コスト＝material_ui/cupertino_ui分離のdeprecationと最低AGP 9.1.1。",
+      "articleHtml": "<p>11/11（JST 12 日未明）、<strong>Flutter 3.50.0 stable</strong> がついにリリースされた。release-tracker #195830 が 11/2 の起票以来「人の動きゼロ」で停滞していたが、11/11 に <code>eyebrowsoffire</code> の「Flutter 3.50.0 released.」コメントでクローズ、ほぼ同時刻に公式サイトの whats-new PR #14038 も merged。<strong>Dart は 3.13.7 → 3.14.0 が stable 初到達</strong>で、beta <code>3.50.0-0.4.pre</code> から 0.5.pre を挟まず stable へ直行した。開発ラインは既に <code>flutter-3.51-candidate.0</code> へ進んでいる。</p>\n<figure class='fig'><svg viewBox='0 0 600 196' xmlns='http://www.w3.org/2000/svg'>\n<rect x='0' y='0' width='600' height='196' rx='8' fill='#ecfdf5' stroke='#34d399'/>\n<text x='16' y='26' font-family='sans-serif' font-size='13' font-weight='700' fill='#047857'>3.50.0 の要点（Dart 3.14）</text>\n<text x='24' y='52' font-family='sans-serif' font-size='11.5' font-weight='700' fill='#065f46'>新API・改善</text>\n<text x='34' y='74' font-family='sans-serif' font-size='10.5' fill='#047857'>SliverClipRect / SliverClipRRect</text>\n<text x='34' y='92' font-family='sans-serif' font-size='10.5' fill='#047857'>ListView.separated に itemExtentBuilder</text>\n<text x='34' y='110' font-family='sans-serif' font-size='10.5' fill='#047857'>showDialog に barrierBuilder</text>\n<text x='34' y='128' font-family='sans-serif' font-size='10.5' fill='#047857'>MediaQuery が reduceMotion 対応</text>\n<text x='34' y='146' font-family='sans-serif' font-size='10.5' fill='#047857'>ScrollPhysics.shouldUpdate でリアクティブ化</text>\n<line x1='300' y1='40' x2='300' y2='180' stroke='#a7f3d0'/>\n<text x='312' y='52' font-family='sans-serif' font-size='11.5' font-weight='700' fill='#b45309'>破壊的・環境</text>\n<text x='322' y='74' font-family='sans-serif' font-size='10.5' fill='#b45309'>最低 AGP を 9.1.1 へ引上げ</text>\n<text x='322' y='92' font-family='sans-serif' font-size='10.5' fill='#b45309'>material_ui / cupertino_ui 分離を deprecation</text>\n<text x='322' y='110' font-family='sans-serif' font-size='10.5' fill='#b45309'>Android17: libflutter.so の ReLinker 停止</text>\n<text x='322' y='128' font-family='sans-serif' font-size='10.5' fill='#b45309'>RegularWindow*→Window* / CpuArch.x64</text>\n<text x='322' y='146' font-family='sans-serif' font-size='10.5' fill='#b45309'>ignoreSemantics 系パラメータ削除</text>\n<text x='24' y='176' font-family='sans-serif' font-size='10' fill='#065f46'>Web: WASM deferred loading 追加 / WasmGC は opt-in＋Firefox&lt;147 ガード</text>\n</svg><figcaption>図1：3.50.0 の新API（左）と破壊的・環境変更（右）</figcaption></figure>\n<p>実務でいちばん効くのは <strong>material_ui / cupertino_ui 分離の正式 deprecation</strong>（#192957/#192954）と <strong>最低 AGP 9.1.1</strong>（#193813）だ。アップグレードは <code>flutter channel stable</code> → <code>flutter upgrade</code> → まず <code>flutter analyze</code> の順。デザインライブラリの deprecation 警告が大量に出るので、移行ガイドに沿って <code>material_ui</code>/<code>cupertino_ui</code> の import へ寄せる（CI は一時的に当該 deprecation を ignore する運用も可）。AGP 9.1.1 未満のプロジェクトは Android ビルドが通らないので、Gradle/AGP を先に上げておくこと。なお「WasmGC 既定」「Android Impeller 一本化」はノート本文に明示行が確認できず、従来の“確定”表現は要補正。</p>\n<p>今日の技法メモとして、アニメ描画の最効率ルートも押さえておきたい。<code>CustomPainter</code> は <code>repaint:</code> に <code>Listenable</code>（＝<code>AnimationController</code>）を渡すと、ペインタ自身が通知を購読して<strong>アニメの tick ごとに paint だけ再実行</strong>し、build/layout フェーズを丸ごと飛ばす。<code>AnimatedBuilder</code>+<code>setState</code> で木を作り直すより軽い。ペインタがフィールドを持たないなら <code>shouldRepaint</code> は <code>false</code> を返してよい。</p>\n<figure class='fig'><pre class='mermaid'>flowchart LR\n  A[\"AnimationController (Listenable)\"] --> B[\"CustomPainter(repaint: controller)\"]\n  B --> C[\"RenderCustomPaint が購読\"]\n  C --> D[\"tickごとに paint だけ再実行\"]\n  D --> E[\"build / layout を回避 = 軽い\"]</pre><figcaption>図2：repaintにControllerを渡す＝paintだけ回す最効率ルート</figcaption></figure>\n<p><strong>自分が試すなら</strong>：pin 運用のプロジェクトを 3.50.0 基準に更新し、まず analyze で deprecation の量を把握。重いアニメ画面があれば <code>CustomPainter(repaint: controller)</code> へ置き換えて raster スレッドを DevTools Performance で実測する。Impeller の既定状況はドキュメントが 3.47 基準のままなので、実機は profile ビルドで確かめるのが確実だ。</p>\n<p><strong>ひとことまとめ</strong>：3.50.0＝Dart 3.14 到達の節目。目玉機能より「material_ui 分離 deprecation」「AGP 9.1.1 必須」という<strong>移行コスト</strong>が本題で、上げる前に analyze と AGP 確認を済ませておくのが安全。</p>",
+      "sources": [
+        {
+          "title": "Flutter 3.50.0 release notes（docs.flutter.dev）",
+          "url": "https://docs.flutter.dev/release/release-notes/release-notes-3.50.0"
+        },
+        {
+          "title": "Migrate to standalone material_ui and cupertino_ui packages",
+          "url": "https://docs.flutter.dev/release/breaking-changes/material-ui-and-cupertino-ui"
+        },
+        {
+          "title": "CustomPainter class（api.flutter.dev）",
+          "url": "https://api.flutter.dev/flutter/rendering/CustomPainter-class.html"
+        }
+      ],
+      "id": "2026-11-12-flutter"
+    },
+    {
+      "date": "2026-11-12",
+      "topic": "GitHub Trending",
+      "title": "11/12の話題リポジトリ — 身体性ロボ・純RustのDLマネージャ・Jane Streetのagent skills",
+      "lede": "AI一色の飽和局面で伸びたのは、あえて非LLM/非生成系の3本。乱立していた何かを素直な実装で一本化する姿勢が共通する。",
+      "articleHtml": "<p>今日の 3 本を貫くのは「AI 一色の飽和局面で、あえて<strong>非 LLM／非生成系</strong>の新星を拾う」という視点。身体性ロボティクス、純 Rust のシステムアプリ、そして AI エージェントの“中身”を標準化するスキル集——ジャンルはバラバラだが、いずれも「今まで面倒／危うかったことを、素直な実装で解く」点で共通している。</p>\n<figure class='fig'><svg viewBox='0 0 600 206' xmlns='http://www.w3.org/2000/svg'>\n<rect x='0' y='0' width='600' height='206' rx='8' fill='#f0fdf4' stroke='#4ade80'/>\n<text x='16' y='24' font-family='sans-serif' font-size='13' font-weight='700' fill='#15803d'>リポジトリ × 解決したい課題 / 提供する機能</text>\n<text x='14' y='48' font-family='monospace' font-size='10.5' font-weight='700' fill='#166534'>supermimic</text>\n<text x='160' y='48' font-family='sans-serif' font-size='10' fill='#14532d'>課題: 全身動作の追従学習が複雑</text>\n<text x='160' y='64' font-family='sans-serif' font-size='10' fill='#15803d'>機能: 微分可能な単一ワールドモデルで追従(MuJoCo)</text>\n<line x1='14' y1='76' x2='586' y2='76' stroke='#bbf7d0'/>\n<text x='14' y='100' font-family='monospace' font-size='10.5' font-weight='700' fill='#166534'>misterdownloadmanager</text>\n<text x='160' y='100' font-family='sans-serif' font-size='10' fill='#14532d'>課題: DLツールが乱立・有料/不自由</text>\n<text x='160' y='116' font-family='sans-serif' font-size='10' fill='#15803d'>機能: 動画/m3u8/torrent/magnetを純Rustで一本化</text>\n<line x1='14' y1='128' x2='586' y2='128' stroke='#bbf7d0'/>\n<text x='14' y='152' font-family='monospace' font-size='10.5' font-weight='700' fill='#166534'>agent_skills</text>\n<text x='160' y='152' font-family='sans-serif' font-size='10' fill='#14532d'>課題: エージェントの手順が各自バラバラ</text>\n<text x='160' y='168' font-family='sans-serif' font-size='10' fill='#15803d'>機能: SKILL.md 1枚で差し込める標準スキル集</text>\n<text x='14' y='196' font-family='sans-serif' font-size='10' fill='#166534'>※当日の星増加はソースで乖離。created日・実測総スター・日平均で代替評価。</text>\n</svg><figcaption>図1：今日の3本の「課題→機能」対応</figcaption></figure>\n<h4>HybridRobotics/supermimic（Python・⭐1.0k）</h4>\n<p><strong>解決したい課題</strong>：ヒューマノイドにモーションキャプチャ等の参照動作を全身で追従させる学習は、接触やダイナミクスが絡んで設計が難しく、手法が乱立しがちだった。<strong>提供する機能</strong>：mjlab（MuJoCo）基盤で、1 体の全身動作を<strong>微分可能なワールドモデル 1 つ</strong>で追従学習する研究用フレームワーク。arXiv 論文・プロジェクトページを備える。created 2026-11-10 の公開約 2 日で 1,019★/forks67（日平均約 510★/日・率約 50%）＝当日最高率のモメンタム筆頭。LLM/生成系に偏る局面で希少な<strong>身体性・ロボティクス/制御</strong>の新星という点が急上昇の理由だ（Python・Apache-2.0）。</p>\n<h4>anefzaoui/misterdownloadmanager（Rust・⭐6.8k）</h4>\n<p><strong>解決したい課題</strong>：ダウンロード手段が「有料の IDM」「yt-dlp」「torrent クライアント」などに分断され、速度・自由度・一本化を同時に満たすものが無かった。<strong>提供する機能</strong>：「IDM より速い・永久無料」を掲げ、既存の Internet Download Manager を<strong>純 Rust でゼロから書き直したクリーンルーム実装</strong>。動画（yt-dlp 系）・m3u8・プレイリスト・torrent/magnet・real-debrid を一本に束ね、Win/Mac/Linux 版をそろえる。created 2026-10-29 の約 14 日で 6,781★/forks520/open issues204 と、AI 飽和局面で希少な<strong>非 AI・システム系</strong>の大型モメンタム。ライセンスは GPL-3.0 なので製品組み込みは要注意。</p>\n<h4>janestreet/agent_skills（Markdown・⭐5.7k）</h4>\n<p><strong>解決したい課題</strong>：コーディングエージェントに持たせる「手順書（スキル）」が各自バラバラで、再利用も共有も難しかった。<strong>提供する機能</strong>：金融大手 Jane Street が公開した agent skills 集で、各スキル＝<strong>SKILL.md 1 枚のディレクトリ</strong>。共通の SKILL.md 形式（Claude Code/Codex 等）にコピーするだけで差し込め、プレーンなチャットボットにも本文を貼って使える。created 2026-11-03 の約 9 日で 5,730★/forks393。信頼できる組織による<strong>スキル設計・粒度の一次リファレンス</strong>として参照価値が高く、それが急上昇の理由（Markdown・MIT）。</p>\n<p><strong>自分が試すなら</strong>：いちばん手が伸びるのは agent_skills——SKILL.md の粒度と書き方の手本として、自分のスキル運用に直接取り込める。misterdownloadmanager は普段使いの実用ツールとして、supermimic は「AI＝LLM だけではない」を思い出すための一本として眺めておきたい。</p>\n<p><strong>ひとことまとめ</strong>：AI 飽和のトレンドの裏で、ロボ制御・システムアプリ・エージェント標準化という“地に足のついた”新星が伸びた日。共通するのは「乱立していた何かを、素直な実装で一本化する」姿勢だ。</p>",
+      "sources": [
+        {
+          "title": "HybridRobotics/supermimic",
+          "url": "https://github.com/HybridRobotics/supermimic"
+        },
+        {
+          "title": "anefzaoui/misterdownloadmanager",
+          "url": "https://github.com/anefzaoui/misterdownloadmanager"
+        },
+        {
+          "title": "janestreet/agent_skills",
+          "url": "https://github.com/janestreet/agent_skills"
+        }
+      ],
+      "id": "2026-11-12-github-trending"
+    },
     {
       "date": "2026-11-11",
       "topic": "Claude Code",
