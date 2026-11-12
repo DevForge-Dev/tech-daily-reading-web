@@ -1,0 +1,92 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Next.js — @propertyで動かすCSSオーロラ背景、重い所だけWebGL（Paper Shaders） — デイリー技術深掘り 読み物</title><meta name="description" content="全画面の滲む背景は純CSS主軸で十分。@propertyで色を補間し、動かすのはtransform:translateだけ＝GPU合成。Server Componentのまま・JS増ゼロ・CLS 0で出せる。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-12-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Next.js — @propertyで動かすCSSオーロラ背景、重い所だけWebGL（Paper Shaders） — デイリー技術深掘り 読み物"><meta property="og:description" content="全画面の滲む背景は純CSS主軸で十分。@propertyで色を補間し、動かすのはtransform:translateだけ＝GPU合成。Server Componentのまま・JS増ゼロ・CLS 0で出せる。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-12-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>Next.js — @propertyで動かすCSSオーロラ背景、重い所だけWebGL（Paper Shaders）</h1> <p class="lede">全画面の滲む背景は純CSS主軸で十分。@propertyで色を補間し、動かすのはtransform:translateだけ＝GPU合成。Server Componentのまま・JS増ゼロ・CLS 0で出せる。</p> <div class="meta"> <span>📅 2026年11月12日</span> <span>⏱ 約5分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="1"><p>Vercel / Linear / Stripe / Supabase 系の LP で定番化した、画面いっぱいにゆっくり滲み動く<strong>オーロラ／メッシュ・グラデーション</strong>のアンビエント背景。2025〜2026 で「ヒーローに静かに動く色の層を敷く」のがトレンド化し、ReactBits・Inspira UI・Paper Shaders などがこぞってコンポーネント化している。枠に光を回す「ボーダービーム」や文字の上を走る「シマーテキスト」とは違い、本テーマは<strong>面（全画面背景）を低速で滲ませる</strong>のが主眼だ。</p>
+<p>技術の核は 2 本立て。基本は<strong>純CSS</strong>＝複数の <code>radial-gradient</code> ブロブを重ね、<code>@property</code> 登録した角度/位置/色を低速アニメする（JS ゼロ・Server Component のまま）。粒状ノイズや流体歪みが要るときだけ <strong>WebGL</strong>（Paper Shaders 等）へ逃がす。「まず CSS、足りなければ WebGL」という判断軸を持つのが実務の肝になる。</p>
+<figure class='fig'><pre class='mermaid'>flowchart TD
+  A["全画面の動く背景が欲しい"] --> B{"粒状ノイズ/流体歪み/光の屈折が要る?"}
+  B -- "いいえ(大半)" --> C["純CSS: radial-gradient + @property"]
+  C --> D["Server Componentのまま / JS増ゼロ / CLS 0"]
+  B -- "はい" --> E["WebGL: Paper Shaders"]
+  E --> F["use client島 + next/dynamic ssr:false / 版固定"]</pre><figcaption>図1：まずCSS、足りなければWebGLへ逃がす判断フロー</figcaption></figure>
+<p>なぜ <code>@property</code> が要るのか。素の CSS カスタムプロパティは型が無く、ブラウザからは「画像（トークン文字列）」としてしか見えないため、グラデーション内の値はトランジション/アニメで<strong>補間されずカクつく</strong>。<code>@property</code> で <code>syntax</code> を与えて型登録すると、その値が補間可能な数値/角度/色になり、グラデが読んでも滑らかに動く。必須記述子は <code>syntax</code> と <code>inherits</code> の 2 つで、どちらか欠けるとルール全体が無効になる。<code>@property</code> は 2024-07-09 に Baseline Newly available（3 大エンジン対応）で、非対応時も <code>initial-value</code> の静止グラデが残り自然劣化する。</p>
+<p>本テーマ最重要の<strong>パフォーマンス設計</strong>。大面積＋低速ゆえ「気づかぬうちにペイントが毎フレーム走る」のが最大の罠だ。<code>background-position</code> やグラデの色停止、<code>@property</code> の角度・位置を動かすのは<strong>毎フレーム“ペイント”</strong>（コンポジタ合成ではない）で、全画面だと面積が巨大。いちばん軽いのは、色ブロブを個別要素にして <code>transform: translate()</code> だけで動かす方式＝<strong>GPU コンポジタ合成</strong>で再ペイントを避ける。<code>filter: blur()</code> は毎フレーム再計算すると重いので、ぼかした見た目は <code>radial-gradient</code> のソフトなストップで“焼き込み”、要素は translate だけにする。</p>
+<figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg'>
+<rect x='0' y='0' width='600' height='150' rx='8' fill='#eef2ff' stroke='#818cf8'></rect>
+<text x='16' y='26' font-family='sans-serif' font-size='13' font-weight='700' fill='#4338ca'>同じ見た目でも“動かす対象”でコストが段違い</text>
+<rect x='24' y='42' width='264' height='88' rx='6' fill='#e0e7ff'></rect>
+<text x='36' y='64' font-family='sans-serif' font-size='11.5' font-weight='700' fill='#b91c1c'>✗ 重い：毎フレーム ペイント</text>
+<text x='36' y='86' font-family='monospace' font-size='10.5' fill='#3730a3'>background-position / 色停止</text>
+<text x='36' y='104' font-family='monospace' font-size='10.5' fill='#3730a3'>@property の位置・角度を全画面で</text>
+<text x='36' y='122' font-family='sans-serif' font-size='10.5' fill='#6d28d9'>大面積ペイントで低速端末がカクつく</text>
+<rect x='312' y='42' width='264' height='88' rx='6' fill='#dcfce7'></rect>
+<text x='324' y='64' font-family='sans-serif' font-size='11.5' font-weight='700' fill='#047857'>✓ 軽い：GPU合成</text>
+<text x='324' y='86' font-family='monospace' font-size='10.5' fill='#065f46'>transform: translate() のみ</text>
+<text x='324' y='104' font-family='sans-serif' font-size='10.5' fill='#065f46'>ぼかしは radial-gradient で焼き込み</text>
+<text x='324' y='122' font-family='sans-serif' font-size='10.5' fill='#065f46'>will-change は動く要素だけに限定</text>
+</svg><figcaption>図2：ペイント方式 vs コンポジタ合成（全画面で効く）</figcaption></figure>
+<p>Next.js（App Router）では、<strong>純CSS 版は <code>'use client'</code> 不要で Server Component のまま</strong>。<code>@property</code> とレイヤーの CSS を <code>globals.css</code> に置き、全画面背景要素を <code>layout.tsx</code> に 1 つ差すだけで、ハイドレーション mismatch なし・JS バンドル増ゼロ・CLS 0。WebGL 版だけ <code>next/dynamic(..., {ssr:false})</code> の小島に隔離する（Server Component に <code>ssr:false</code> 直書きはビルドエラーなのでラッパ 1 枚）。Paper Shaders は 0.0.x で破壊的変更が入るため<strong>バージョン固定必須</strong>。アニメ付与は <code>@media (prefers-reduced-motion: no-preference)</code> の中だけに置き、縮退時は静的グラデを残すのが安全だ。</p>
+<pre><code>@property --h { syntax: "&lt;angle&gt;"; inherits: false; initial-value: 0deg; }
+.aurora .blob {        /* translateだけ動かす＝GPU合成で軽い */
+  background: radial-gradient(circle, oklch(72% .22 var(--h) / .55) 0%, transparent 70%);
+  mix-blend-mode: screen;
+}
+@media (prefers-reduced-motion: no-preference){
+  .aurora .blob { animation: drift 26s ease-in-out infinite alternate; }
+}</code></pre>
+<p><strong>ひとことまとめ</strong>：オーロラ背景は「<code>@property</code> で色を補間、動かすのは translate だけ」で純CSS・Server Component のまま高品質に出せる。WebGL は粒状感が本当に要るときの最後の手段に取っておく。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://web.dev/blog/at-property-baseline" target="_blank" rel="noopener noreferrer"> @property が Baseline Newly available（web.dev） </a> </li><li> <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/@property" target="_blank" rel="noopener noreferrer"> @property（MDN） </a> </li><li> <a href="https://www.mintlify.com/paper-design/shaders/quickstart-vanilla" target="_blank" rel="noopener noreferrer"> Paper Shaders vanilla quickstart </a> </li> </ol> </aside> </div>  </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

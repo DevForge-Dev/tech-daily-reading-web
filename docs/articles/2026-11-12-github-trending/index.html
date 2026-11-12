@@ -1,0 +1,83 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>11/12の話題リポジトリ — 身体性ロボ・純RustのDLマネージャ・Jane Streetのagent skills — デイリー技術深掘り 読み物</title><meta name="description" content="AI一色の飽和局面で伸びたのは、あえて非LLM/非生成系の3本。乱立していた何かを素直な実装で一本化する姿勢が共通する。"><meta name="theme-color" content="#238636"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-12-github-trending/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="11/12の話題リポジトリ — 身体性ロボ・純RustのDLマネージャ・Jane Streetのagent skills — デイリー技術深掘り 読み物"><meta property="og:description" content="AI一色の飽和局面で伸びたのは、あえて非LLM/非生成系の3本。乱立していた何かを素直な実装で一本化する姿勢が共通する。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-12-github-trending/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3fb950, #1a7f37)"> <span class="glyph" aria-hidden="true">★</span> <div class="kicker">GitHub Trending</div> <h1>11/12の話題リポジトリ — 身体性ロボ・純RustのDLマネージャ・Jane Streetのagent skills</h1> <p class="lede">AI一色の飽和局面で伸びたのは、あえて非LLM/非生成系の3本。乱立していた何かを素直な実装で一本化する姿勢が共通する。</p> <div class="meta"> <span>📅 2026年11月12日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#238636"> <div> <article class="prose" data-has-mermaid="0"><p>今日の 3 本を貫くのは「AI 一色の飽和局面で、あえて<strong>非 LLM／非生成系</strong>の新星を拾う」という視点。身体性ロボティクス、純 Rust のシステムアプリ、そして AI エージェントの“中身”を標準化するスキル集——ジャンルはバラバラだが、いずれも「今まで面倒／危うかったことを、素直な実装で解く」点で共通している。</p>
+<figure class='fig'><svg viewBox='0 0 600 206' xmlns='http://www.w3.org/2000/svg'>
+<rect x='0' y='0' width='600' height='206' rx='8' fill='#f0fdf4' stroke='#4ade80'></rect>
+<text x='16' y='24' font-family='sans-serif' font-size='13' font-weight='700' fill='#15803d'>リポジトリ × 解決したい課題 / 提供する機能</text>
+<text x='14' y='48' font-family='monospace' font-size='10.5' font-weight='700' fill='#166534'>supermimic</text>
+<text x='160' y='48' font-family='sans-serif' font-size='10' fill='#14532d'>課題: 全身動作の追従学習が複雑</text>
+<text x='160' y='64' font-family='sans-serif' font-size='10' fill='#15803d'>機能: 微分可能な単一ワールドモデルで追従(MuJoCo)</text>
+<line x1='14' y1='76' x2='586' y2='76' stroke='#bbf7d0'></line>
+<text x='14' y='100' font-family='monospace' font-size='10.5' font-weight='700' fill='#166534'>misterdownloadmanager</text>
+<text x='160' y='100' font-family='sans-serif' font-size='10' fill='#14532d'>課題: DLツールが乱立・有料/不自由</text>
+<text x='160' y='116' font-family='sans-serif' font-size='10' fill='#15803d'>機能: 動画/m3u8/torrent/magnetを純Rustで一本化</text>
+<line x1='14' y1='128' x2='586' y2='128' stroke='#bbf7d0'></line>
+<text x='14' y='152' font-family='monospace' font-size='10.5' font-weight='700' fill='#166534'>agent_skills</text>
+<text x='160' y='152' font-family='sans-serif' font-size='10' fill='#14532d'>課題: エージェントの手順が各自バラバラ</text>
+<text x='160' y='168' font-family='sans-serif' font-size='10' fill='#15803d'>機能: SKILL.md 1枚で差し込める標準スキル集</text>
+<text x='14' y='196' font-family='sans-serif' font-size='10' fill='#166534'>※当日の星増加はソースで乖離。created日・実測総スター・日平均で代替評価。</text>
+</svg><figcaption>図1：今日の3本の「課題→機能」対応</figcaption></figure>
+<h4 id="sec-1">HybridRobotics/supermimic（Python・⭐1.0k）</h4>
+<p><strong>解決したい課題</strong>：ヒューマノイドにモーションキャプチャ等の参照動作を全身で追従させる学習は、接触やダイナミクスが絡んで設計が難しく、手法が乱立しがちだった。<strong>提供する機能</strong>：mjlab（MuJoCo）基盤で、1 体の全身動作を<strong>微分可能なワールドモデル 1 つ</strong>で追従学習する研究用フレームワーク。arXiv 論文・プロジェクトページを備える。created 2026-11-10 の公開約 2 日で 1,019★/forks67（日平均約 510★/日・率約 50%）＝当日最高率のモメンタム筆頭。LLM/生成系に偏る局面で希少な<strong>身体性・ロボティクス/制御</strong>の新星という点が急上昇の理由だ（Python・Apache-2.0）。</p>
+<h4 id="sec-2">anefzaoui/misterdownloadmanager（Rust・⭐6.8k）</h4>
+<p><strong>解決したい課題</strong>：ダウンロード手段が「有料の IDM」「yt-dlp」「torrent クライアント」などに分断され、速度・自由度・一本化を同時に満たすものが無かった。<strong>提供する機能</strong>：「IDM より速い・永久無料」を掲げ、既存の Internet Download Manager を<strong>純 Rust でゼロから書き直したクリーンルーム実装</strong>。動画（yt-dlp 系）・m3u8・プレイリスト・torrent/magnet・real-debrid を一本に束ね、Win/Mac/Linux 版をそろえる。created 2026-10-29 の約 14 日で 6,781★/forks520/open issues204 と、AI 飽和局面で希少な<strong>非 AI・システム系</strong>の大型モメンタム。ライセンスは GPL-3.0 なので製品組み込みは要注意。</p>
+<h4 id="sec-3">janestreet/agent_skills（Markdown・⭐5.7k）</h4>
+<p><strong>解決したい課題</strong>：コーディングエージェントに持たせる「手順書（スキル）」が各自バラバラで、再利用も共有も難しかった。<strong>提供する機能</strong>：金融大手 Jane Street が公開した agent skills 集で、各スキル＝<strong>SKILL.md 1 枚のディレクトリ</strong>。共通の SKILL.md 形式（Claude Code/Codex 等）にコピーするだけで差し込め、プレーンなチャットボットにも本文を貼って使える。created 2026-11-03 の約 9 日で 5,730★/forks393。信頼できる組織による<strong>スキル設計・粒度の一次リファレンス</strong>として参照価値が高く、それが急上昇の理由（Markdown・MIT）。</p>
+<p><strong>自分が試すなら</strong>：いちばん手が伸びるのは agent_skills——SKILL.md の粒度と書き方の手本として、自分のスキル運用に直接取り込める。misterdownloadmanager は普段使いの実用ツールとして、supermimic は「AI＝LLM だけではない」を思い出すための一本として眺めておきたい。</p>
+<p><strong>ひとことまとめ</strong>：AI 飽和のトレンドの裏で、ロボ制御・システムアプリ・エージェント標準化という“地に足のついた”新星が伸びた日。共通するのは「乱立していた何かを、素直な実装で一本化する」姿勢だ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://github.com/HybridRobotics/supermimic" target="_blank" rel="noopener noreferrer"> HybridRobotics/supermimic </a> </li><li> <a href="https://github.com/anefzaoui/misterdownloadmanager" target="_blank" rel="noopener noreferrer"> anefzaoui/misterdownloadmanager </a> </li><li> <a href="https://github.com/janestreet/agent_skills" target="_blank" rel="noopener noreferrer"> janestreet/agent_skills </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> HybridRobotics/supermimic（Python・⭐1.0k） </a> </li><li> <a href="#sec-2" data-toc="sec-2"> anefzaoui/misterdownloadmanager（Rust・⭐6.8k） </a> </li><li> <a href="#sec-3" data-toc="sec-3"> janestreet/agent_skills（Markdown・⭐5.7k） </a> </li> </ul> <div class="reading-box"> <div>📅 2026-11-12</div> <div>⏱ 読了 約3分</div> <div>🏷 GitHub Trending</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
