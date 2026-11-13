@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-11-12T04:44:54.695Z",
+  "generatedAt": "2026-11-13T04:45:27.940Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,114 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "date": "2026-11-13",
+      "topic": "Claude Code",
+      "title": "Claude Code — denyInsteadOfPromptingと/loop・Autoモードの破壊的変更、Opus 4.8高速モードは11/30終了",
+      "lede": "無人で止まらない運用へ既定を締め直したリリース。確認待ちを拒否で続行する新設定、/loopとAutoモードの破壊的変更、そして11/30のOpus 4.8高速モード終了。",
+      "articleHtml": "<p>公式 CHANGELOG はこのセッションの可読範囲で v2.1.311 までしか反映されていないが、二次情報（classmethod 英語版・ClaudeWorld）で <strong>v2.1.318→319</strong> と11月総覧の輪郭が見えてきた。今回のテーマを一言でいうと「<strong>止まらない自動運用</strong>」——人が張り付いていない headless／scheduled 実行で、確認プロンプト待ちや暗黙フォールバックに足を取られないよう、既定の振る舞いが締め直された。※バージョン番号・構文・件数はすべて二次情報に基づく。</p>\n\n<h4>権限：確認待ちで止めるな、拒否して進め</h4>\n<p>新設定 <code>permissions.denyInsteadOfPrompting</code> は、本来なら確認プロンプトで待つツール呼び出しを「拒否」してターンを止めずに続行させる（terminal／subagent／teammate で有効）。無人運用では「誰も Yes を押さないまま固まる」のが最悪なので、止まるより拒否して次へ進ませる発想だ。値の型や既定値・正確な構文は記事に記載がない点は要注意。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 230' xmlns='http://www.w3.org/2000/svg'>\n<rect x='0' y='0' width='600' height='230' rx='8' fill='#fff7ed' stroke='#fb923c'/>\n<text x='16' y='26' font-family='sans-serif' font-size='13' font-weight='700' fill='#c2410c'>確認が要るツール呼び出し：3つの振る舞い</text>\n<rect x='18' y='44' width='170' height='150' rx='6' fill='#ffffff' stroke='#fdba74'/>\n<text x='103' y='66' text-anchor='middle' font-family='sans-serif' font-size='11.5' font-weight='700' fill='#9a3412'>従来（プロンプト）</text>\n<text x='103' y='92' text-anchor='middle' font-family='sans-serif' font-size='10.5' fill='#7c2d12'>確認で停止</text>\n<text x='103' y='110' text-anchor='middle' font-family='sans-serif' font-size='10.5' fill='#7c2d12'>人の Yes/No を待つ</text>\n<text x='103' y='136' text-anchor='middle' font-family='sans-serif' font-size='10' fill='#b91c1c'>無人だと固まる</text>\n<rect x='215' y='44' width='170' height='150' rx='6' fill='#ffffff' stroke='#fdba74'/>\n<text x='300' y='66' text-anchor='middle' font-family='sans-serif' font-size='11.5' font-weight='700' fill='#9a3412'>denyInsteadOf-</text>\n<text x='300' y='82' text-anchor='middle' font-family='sans-serif' font-size='11.5' font-weight='700' fill='#9a3412'>Prompting</text>\n<text x='300' y='108' text-anchor='middle' font-family='sans-serif' font-size='10.5' fill='#7c2d12'>待たずに拒否</text>\n<text x='300' y='126' text-anchor='middle' font-family='sans-serif' font-size='10.5' fill='#7c2d12'>ターンは続行</text>\n<text x='300' y='152' text-anchor='middle' font-family='sans-serif' font-size='10' fill='#15803d'>無人運用向き</text>\n<rect x='412' y='44' width='170' height='150' rx='6' fill='#ffffff' stroke='#fdba74'/>\n<text x='497' y='66' text-anchor='middle' font-family='sans-serif' font-size='11.5' font-weight='700' fill='#9a3412'>Auto モード(改)</text>\n<text x='497' y='92' text-anchor='middle' font-family='sans-serif' font-size='10.5' fill='#7c2d12'>テレメトリ/FF 無効時</text>\n<text x='497' y='110' text-anchor='middle' font-family='sans-serif' font-size='10.5' fill='#7c2d12'>内蔵分類器に頼らず</text>\n<text x='497' y='128' text-anchor='middle' font-family='sans-serif' font-size='10.5' fill='#7c2d12'>確認 or 拒否へ</text>\n<text x='497' y='154' text-anchor='middle' font-family='sans-serif' font-size='10' fill='#9a3412'>=0で従来挙動</text>\n<text x='16' y='216' font-family='sans-serif' font-size='9.5' fill='#9a3412'>CLAUDE_CODE_AUTO_MODE_SERVER=0（内蔵分類器維持） / =1（ゲートウェイでサーバ判定）</text>\n</svg><figcaption>図1：確認が要る呼び出しの扱い。無人運用では「止まる」より「拒否して進む」へ寄せる設計。</figcaption></figure>\n\n<h4>破壊的変更が2つ：Auto モードと /loop</h4>\n<p>Auto モードは、テレメトリや feature flag が無効な環境（LLM ゲートウェイ背後を含む）で、従来の内蔵分類器フォールバックをやめ「確認または拒否」へ変わった。内蔵分類器を維持するなら <code>CLAUDE_CODE_AUTO_MODE_SERVER=0</code>、ゲートウェイでサーバ判定を使うなら <code>=1</code>（Bedrock/Vertex/Foundry は不変）。もう一つ、自己ペースの <code>/loop</code> は、ターンが自分を再スケジュールしないまま終わると「終了」するようになった。従来の“フォールバック起床で生き続ける”挙動に戻すには <code>CLAUDE_CODE_LOOP_KEEPALIVE=1</code>。ループ運用している人は黙って止まる前に確認を。加えて MCP タスクがターミナルでも背景実行できるようになった（<code>CLAUDE_CODE_DISABLE_MCP_TASK_BACKGROUND</code> でオプトアウト）。</p>\n\n<h4>11月総覧とモデル：Opus 4.8 高速モードは11/30で終了</h4>\n<p>ClaudeWorld の11月まとめ（v2.1.308〜2.1.318・第三者集計で全9版582項目）によると、<strong>Opus 4.8 の高速モードは2026-11-30で終了予定</strong>で、記事は Opus 5.5 への移行を勧めている。ほかに <code>ultrathink</code> がターミナルで <code>xhigh</code> 実行に（v2.1.311）、<code>permissions.blockWritesOutsideWorkingDirectories</code> 新設（v2.1.314）、<code>claude -p</code> が起動エラーやフルディスクで終了コード1を返すよう修正、サインイン期限 <code>loginExpiresAt</code> の表示（v2.1.318）など、CI/ヘッドレスに効く修正が並ぶ。</p>\n\n<h4>自分が試すなら</h4>\n<p>scheduled 運用を持っているので、まず <code>/loop</code> の keepalive 挙動が変わっていないか既存ジョブを点検し、必要なら <code>CLAUDE_CODE_LOOP_KEEPALIVE=1</code> を明示する。無人ジョブには <code>denyInsteadOfPrompting</code> を効かせて“固まり”を潰し、11/30 の Opus 4.8 高速モード終了に向けて使用モデルの棚卸しをしておく。設計面では DotNetNerd『5つのレバー』の整理——CLAUDE.md=常時の前提知識／skills=反復／hooks=確定的自動化／MCP=外部接続／sub-agents=並列・隔離——を基準に、今の構成を見直す。</p>\n\n<h4>注意点・落とし穴</h4>\n<p>数値・構文はいずれも二次情報で、一次 CHANGELOG はこのセッション時点で v2.1.311 まで。<code>denyInsteadOfPrompting</code> は「拒否」なので、本来人が許可すべき操作まで黙って弾いてログだけ残る恐れがあり、無人運用の“進む”と有人の“安全”はトレードオフになる。Auto モードと /loop はどちらも破壊的変更で、既存の自動パイプラインが前触れなく挙動変化しうる点が一番の罠。</p>\n\n<h4>ひとことまとめ</h4>\n<p>今回の Claude Code は機能追加より「無人で止まらない運用の既定を締め直した」リリース。/loop と Auto モードの破壊的変更、そして11/30 の Opus 4.8 高速モード終了は、放置すると後で刺さる。</p>",
+      "sources": [
+        {
+          "title": "classmethod（英・機械翻訳）v2.1.319 詳報",
+          "url": "https://dev.classmethod.jp/en/articles/20261108-cc-updates-v2-1-319/"
+        },
+        {
+          "title": "ClaudeWorld — Claude Code 2026年11月の新機能",
+          "url": "https://claude-world.com/ja/articles/claude-code-november-2026-whats-new/"
+        },
+        {
+          "title": "DotNetNerd — Claude Code の5つのレバー",
+          "url": "https://blog.dotnetnerd.dk/posts/claude-code-power-features-practical-guide"
+        },
+        {
+          "title": "Developer in the Loop — Claude Code 設定の決定版ガイド",
+          "url": "https://developerintheloop.substack.com/p/the-ultimate-guide-to-configuring"
+        }
+      ],
+      "id": "2026-11-13-claude-code"
+    },
+    {
+      "date": "2026-11-13",
+      "topic": "Next.js",
+      "title": "Next.js — React Taint APIでサーバー機密のクライアント漏洩を描画時に止める（experimental）",
+      "lede": "取得オブジェクトをうっかりClientに渡すとRSCペイロードで機密が漏れる。Taint APIは参照/値を汚して描画時にthrowする最後の防壁。ただし参照でしか追えない落とし穴に注意。",
+      "articleHtml": "<p>App Router は Server Components 既定で、DB 行・環境変数・セッショントークンをサーバー側で自由に読める。便利な反面、「取得したオブジェクトをうっかりそのまま Client Component に props で渡す」と、機密フィールドが <strong>RSC ペイロード（ブラウザまで届くシリアライズ JSON）に載って漏洩</strong>する。React の <strong>Taint API</strong> は、この“うっかり漏洩”を描画時に <code>Error</code> で止める最後の防壁（backstop）だ。Next.js 16.2／2026 時点でも experimental（React experimental チャネル＋<code>experimental.taint:true</code>）で、本番導入は慎重に。</p>\n\n<h4>2つの API：参照を汚す / 値を汚す</h4>\n<p>どちらも <strong>Server Component 内でのみ</strong>使い、返り値は <code>undefined</code>。<code>experimental_taintObjectReference(message, object)</code> は<strong>オブジェクトの参照そのもの</strong>に汚染マークを付け、その参照が未加工のまま Client へ渡ると <code>message</code> 付きで throw する。<code>experimental_taintUniqueValue(message, lifetime, value)</code> は<strong>特定の一意な値</strong>（string / bigint / TypedArray のみ）を汚染し、<code>lifetime</code> オブジェクトが生きている限りブロックし続ける。<code>value</code> は暗号トークンや秘密鍵のような<strong>高エントロピーな一意値</strong>に限ること。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg'>\n<rect x='0' y='0' width='600' height='210' rx='8' fill='#eff6ff' stroke='#60a5fa'/>\n<text x='16' y='26' font-family='sans-serif' font-size='13' font-weight='700' fill='#1d4ed8'>RSC → Client 境界：汚染オブジェクトは描画時に throw</text>\n<rect x='24' y='48' width='250' height='140' rx='6' fill='#ffffff' stroke='#93c5fd'/>\n<text x='149' y='70' text-anchor='middle' font-family='sans-serif' font-size='11.5' font-weight='700' fill='#1e40af'>Server Component</text>\n<text x='149' y='96' text-anchor='middle' font-family='monospace' font-size='10' fill='#1e3a8a'>const user = await getUser(id)</text>\n<text x='149' y='118' text-anchor='middle' font-family='monospace' font-size='10' fill='#b91c1c'>taintObject(msg, user)</text>\n<text x='149' y='150' text-anchor='middle' font-family='monospace' font-size='9.5' fill='#15803d'>firstName だけ渡す ✓</text>\n<text x='149' y='170' text-anchor='middle' font-family='monospace' font-size='9.5' fill='#b91c1c'>user 丸ごと渡す ✗</text>\n<path d='M278 110 L336 110' stroke='#1d4ed8' stroke-width='2' marker-end='url(#ar)'/>\n<path d='M278 162 L336 162' stroke='#b91c1c' stroke-width='2' marker-end='url(#arr)'/>\n<defs>\n<marker id='ar' markerWidth='8' markerHeight='8' refX='6' refY='3' orient='auto'><path d='M0 0 L6 3 L0 6 Z' fill='#1d4ed8'/></marker>\n<marker id='arr' markerWidth='8' markerHeight='8' refX='6' refY='3' orient='auto'><path d='M0 0 L6 3 L0 6 Z' fill='#b91c1c'/></marker>\n</defs>\n<rect x='342' y='48' width='234' height='140' rx='6' fill='#ffffff' stroke='#93c5fd'/>\n<text x='459' y='70' text-anchor='middle' font-family='sans-serif' font-size='11.5' font-weight='700' fill='#1e40af'>Client Component</text>\n<text x='459' y='104' text-anchor='middle' font-family='sans-serif' font-size='10.5' fill='#15803d'>個別フィールド → 正常に描画</text>\n<text x='459' y='150' text-anchor='middle' font-family='sans-serif' font-size='10.5' fill='#b91c1c'>汚染オブジェクト →</text>\n<text x='459' y='168' text-anchor='middle' font-family='sans-serif' font-size='10.5' font-weight='700' fill='#b91c1c'>描画時に Error を throw</text>\n</svg><figcaption>図1：参照を汚しておけば、丸ごと渡した瞬間に描画が落ちる。安全な DTO 化を強制する仕組み。</figcaption></figure>\n\n<h4>最大の落とし穴は「参照でしか追えない」</h4>\n<p>Taint は参照の同一性で追跡するので、<strong>コピーすると未汚染になる</strong>。<code>{...user}</code> やフィールド抽出した新オブジェクトは追跡外だ。同様に<strong>派生値も追えない</strong>——<code>toUpperCase()</code>・文字列連結・base64・<code>substring</code> などで作った値は汚染が外れる。</p>\n<pre><code>// コピーは別オブジェクト（未汚染）\nconst copy = { ...user };            // taintObject(user) は効かない\n\n// 派生値は追跡されない（未汚染で漏れる）\nconst label = \"version::\" + key;     // 新しい文字列＝汚染されず Client へ</code></pre>\n<p>さらに <strong>PIN・電話番号・boolean・短い数値などの低エントロピー値は汚染してはいけない</strong>。攻撃者がリクエストで全列挙して「どれが汚染値か」を当てられてしまうからだ。<code>lifetime</code> の設計も罠で、<code>globalThis</code>/<code>process</code> を渡すとアプリ生存期間中ずっと汚染、逆に lifetime なしで React 外のグローバルストアに置くと未汚染化する。</p>\n\n<h4>実装の勘所と、自分が試すなら</h4>\n<p>定石は <strong>DAL（Data Access Layer）</strong>でデータ取得直後に汚染し、<code>import 'server-only'</code> でモジュールごと Client import をビルドエラーにすること。環境変数の秘密は <code>server-only</code>＋<code>taintUniqueValue(msg, process, process.env.API_PASSWORD)</code> の併用が定番。自分で試すなら、まず <code>next.config.ts</code> に <code>experimental:{ taint:true }</code> を入れた検証ブランチを切り、既存 DAL の戻り値に <code>taintObject</code> を足して「丸ごと渡し」が本当に落ちるかをテストで確認する。</p>\n\n<h4>注意点・ひとことまとめ</h4>\n<p>公式は「taint API を唯一の防御にするな」と明言する。本線はあくまで「<strong>DAL が権限チェック→必要最小限の DTO だけ返す</strong>」設計で、<code>SERVICE_API_KEY</code> はそもそも戻り値から除くのが最善。Taint は、取得関数が制御外だったり RSC 描画中に機密へ触れる状況への“追加の保険”として重ねる層だと割り切る。experimental チャネルが入る副作用もあるので本番は慎重に。</p>",
+      "sources": [
+        {
+          "title": "React: experimental_taintObjectReference",
+          "url": "https://react.dev/reference/react/experimental_taintObjectReference"
+        },
+        {
+          "title": "React: experimental_taintUniqueValue",
+          "url": "https://react.dev/reference/react/experimental_taintUniqueValue"
+        },
+        {
+          "title": "Next.js config: taint",
+          "url": "https://nextjs.org/docs/app/api-reference/config/next-config-js/taint"
+        },
+        {
+          "title": "Next.js guide: How to think about data security",
+          "url": "https://nextjs.org/docs/app/guides/data-security"
+        }
+      ],
+      "id": "2026-11-13-nextjs"
+    },
+    {
+      "date": "2026-11-13",
+      "topic": "Flutter",
+      "title": "Flutter — 3.50の機能面を総覧：Direct native interopがstable、iOSタッチ即時配信、material_ui既定化",
+      "lede": "platform channelを外す同期ネイティブ呼び出し（FFIgen/JNIgen stable）、iOSタッチが最大16ms短縮、Web WasmがJS比2倍超、そしてmaterial_ui/cupertino_uiが新規既定に。",
+      "articleHtml": "<p>11/12 のダイジェストが Flutter 3.50 の「リリース手続き面」を扱ったので、今日は中身——公式 whats-new blog が総覧する<strong>機能面</strong>を読む。3.50 は Dart 3.14 と同梱で（Emma Twersky・2026-11-11）、現時点の最新 stable は 3.50（3.51 は未登場）。目玉は <strong>Direct native interop の stable 化</strong>、iOS タッチの即時配信、Web Wasm の高速化、そして新プロジェクト既定パッケージの刷新だ。</p>\n\n<h4>Direct native interop が stable：platform channel を外す</h4>\n<p>Objective-C 向けの <strong>FFIgen</strong> が既存の C 対応に加えて stable になり、Java/Kotlin 向けの <strong>JNIgen</strong> も stable 入りした（Pigeon の native interop モードは preview）。要点は <strong>platform channel のメッセージ受け渡し無しで同期呼び出しができ、バックグラウンド isolate からも呼べる</strong>こと。ネイティブ連携の定番ボトルネックだった「チャンネル越しの非同期シリアライズ」を外せるのが大きい。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg'>\n<rect x='0' y='0' width='600' height='200' rx='8' fill='#ecfeff' stroke='#22d3ee'/>\n<text x='16' y='26' font-family='sans-serif' font-size='13' font-weight='700' fill='#0e7490'>ネイティブ連携：platform channel → direct interop</text>\n<text x='20' y='52' font-family='sans-serif' font-size='11' font-weight='700' fill='#155e75'>従来</text>\n<rect x='70' y='40' width='110' height='34' rx='5' fill='#ffffff' stroke='#67e8f9'/><text x='125' y='61' text-anchor='middle' font-family='monospace' font-size='10' fill='#155e75'>Dart</text>\n<rect x='245' y='40' width='130' height='34' rx='5' fill='#fef9c3' stroke='#fde047'/><text x='310' y='61' text-anchor='middle' font-family='sans-serif' font-size='9.5' fill='#854d0e'>channel（非同期）</text>\n<rect x='440' y='40' width='120' height='34' rx='5' fill='#ffffff' stroke='#67e8f9'/><text x='500' y='61' text-anchor='middle' font-family='monospace' font-size='10' fill='#155e75'>Native</text>\n<path d='M180 57 L243 57' stroke='#0891b2' stroke-width='2'/><path d='M375 57 L438 57' stroke='#0891b2' stroke-width='2'/>\n<text x='20' y='120' font-family='sans-serif' font-size='11' font-weight='700' fill='#155e75'>3.50</text>\n<rect x='70' y='108' width='110' height='34' rx='5' fill='#ffffff' stroke='#67e8f9'/><text x='125' y='129' text-anchor='middle' font-family='monospace' font-size='10' fill='#155e75'>Dart</text>\n<rect x='440' y='108' width='120' height='34' rx='5' fill='#ffffff' stroke='#67e8f9'/><text x='500' y='129' text-anchor='middle' font-family='monospace' font-size='10' fill='#155e75'>Native</text>\n<path d='M180 125 L438 125' stroke='#15803d' stroke-width='2.5'/>\n<text x='310' y='119' text-anchor='middle' font-family='sans-serif' font-size='9.5' fill='#15803d'>FFIgen/JNIgen</text>\n<text x='310' y='138' text-anchor='middle' font-family='sans-serif' font-size='9.5' font-weight='700' fill='#15803d'>同期・isolate 可</text>\n<text x='16' y='178' font-family='sans-serif' font-size='9.5' fill='#0e7490'>iOS タッチ即時配信：60Hzで16ms / 120Hz ProMotionで8ms 短縮（issue #191199）</text>\n</svg><figcaption>図1：3.50 は中間のチャンネル層を外し、Dart から直接ネイティブを同期呼び出しできる。</figcaption></figure>\n\n<h4>体感性能と Web、そして既定パッケージの刷新</h4>\n<p>体感面では <strong>iOS のタッチイベントが即時配信</strong>になり、公式ベンチで 60Hz なら 16ms・120Hz ProMotion なら 8ms 速くなった。<strong>Web Wasm は重い widget ベンチで JS の2倍超のフレームレート</strong>（Safari 26.2+／Firefox 147+ は opt-in、Chrome/Edge 137+ は既定）、WebParagraph（experimental）で CanvasKit のダウンロードが 5.46MB→約3.75MB に縮んだ。さらに大きいのが <strong><code>material_ui</code>／<code>cupertino_ui</code> が新規プロジェクトの既定</strong>になった点——<code>flutter create</code> が <code>package:material_ui</code> を import し、従来の <code>package:flutter/material.dart</code> 系は正式 deprecation。移行は <code>dart fix --apply --code=migrate_design_widgets</code> で進められる。</p>\n\n<h4>実務での使いどころ・自分が試すなら</h4>\n<p>既存アプリで platform channel 越しにネイティブ SDK を叩いている箇所は、FFIgen/JNIgen への置き換え候補。特にバックグラウンド isolate で重い処理をしたいケースは効果が出やすい。新規は AGP 9.3.1・Gradle 9.5.0・compile/target SDK 36・minSdk API 24 が既定になるので、CI のツールチェーンも合わせる。試すなら、まず検証用に <code>flutter create</code> した 3.50 プロジェクトで <code>material_ui</code> 既定の差分を確認し、既存プロジェクトは <code>dart fix</code> のドライラン的に影響範囲を見てから移行するのが安全。描画最適化では公式 perf ベストプラクティス（<code>saveLayer</code>/<code>Opacity</code>/clip を避ける・<code>ListView.builder</code>・Widget に <code>operator==</code> を書かない）も併せて効く。</p>\n\n<h4>注意点・ひとことまとめ</h4>\n<p>既定パッケージ刷新は影響範囲が広く、従来 import の deprecation は既存コードの地雷になりうるので <code>dart fix</code> で計画的に。Wasm は一部ブラウザで opt-in、HCPP は Android 14+・Vulkan 上の Impeller が前提と、適用条件に幅がある。まとめると、3.50 は「ネイティブ連携の同期化」と「既定パッケージの世代交代」が二本柱で、どちらも“今の配管”を見直す good な契機になる。</p>",
+      "sources": [
+        {
+          "title": "What's new in Flutter 3.50（flutter.dev blog）",
+          "url": "https://flutter.dev/blog/whats-new-in-flutter-3-50"
+        },
+        {
+          "title": "What's new in the docs（docs.flutter.dev）",
+          "url": "https://docs.flutter.dev/release/whats-new"
+        },
+        {
+          "title": "Performance best practices（docs.flutter.dev）",
+          "url": "https://docs.flutter.dev/perf/best-practices"
+        }
+      ],
+      "id": "2026-11-13-flutter"
+    },
+    {
+      "date": "2026-11-13",
+      "topic": "GitHub Trending",
+      "title": "11/13の話題リポジトリ — Chrome公式のエージェント用Web指針・Claude Code可視化・ローカルAI議事録ほか",
+      "lede": "AI飽和の中で、エージェント運用に効く一次情報とローカル完結ツール、そして非AIの多様性枠。6本を「解決したい課題→提供する機能」で読み解く。",
+      "articleHtml": "<p>今日の Trending は「AI 一色の飽和局面で、エージェント運用に効く一次情報と、あえて非 AI の多様性枠を拾う」構成。6本を貫くのは、<strong>急上昇の勢い（当日増加率）</strong>と<strong>自分の開発への効きやすさ</strong>の二軸だ。本日は <code>trending?since=daily</code> が当日増加を正常取得できたため、モメンタム枠は当日増加率で並べ、適合枠は created 2026-11 の新星を GitHub API で実測検証した。各リポジトリを「解決したい課題」「提供する機能」で読み解く。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 330' xmlns='http://www.w3.org/2000/svg'>\n<rect x='0' y='0' width='600' height='330' rx='8' fill='#f0fdf4' stroke='#4ade80'/>\n<text x='16' y='24' font-family='sans-serif' font-size='13' font-weight='700' fill='#15803d'>リポジトリ × 解決したい課題 / 提供する機能</text>\n<text x='14' y='48' font-family='monospace' font-size='10' font-weight='700' fill='#166534'>modern-web-guidance</text>\n<text x='210' y='44' font-family='sans-serif' font-size='9.5' fill='#14532d'>課題: エージェントが古いWeb知識で書く</text>\n<text x='210' y='60' font-family='sans-serif' font-size='9.5' fill='#15803d'>機能: 最新Web標準をエージェント向けに構造化配布</text>\n<line x1='14' y1='70' x2='586' y2='70' stroke='#bbf7d0'/>\n<text x='14' y='92' font-family='monospace' font-size='10' font-weight='700' fill='#166534'>HermesEnabler</text>\n<text x='210' y='88' font-family='sans-serif' font-size='9.5' fill='#14532d'>課題: Hermèsフェイスが対象機種限定</text>\n<text x='210' y='104' font-family='sans-serif' font-size='9.5' fill='#15803d'>機能: 任意のApple Watchで有効化（改造系）</text>\n<line x1='14' y1='114' x2='586' y2='114' stroke='#bbf7d0'/>\n<text x='14' y='136' font-family='monospace' font-size='10' font-weight='700' fill='#166534'>we-promise/sure</text>\n<text x='210' y='132' font-family='sans-serif' font-size='9.5' fill='#14532d'>課題: 旧Maybe系の個人資産管理が開発停止</text>\n<text x='210' y='148' font-family='sans-serif' font-size='9.5' fill='#15803d'>機能: コミュニティ主導で継続・自己ホスト家計管理</text>\n<line x1='14' y1='158' x2='586' y2='158' stroke='#bbf7d0'/>\n<text x='14' y='180' font-family='monospace' font-size='10' font-weight='700' fill='#166534'>alexeyw/lot-map</text>\n<text x='210' y='176' font-family='sans-serif' font-size='9.5' fill='#14532d'>課題: エージェント実行の挙動が見えない</text>\n<text x='210' y='192' font-family='sans-serif' font-size='9.5' fill='#15803d'>機能: Claude Codeの動作をライブ地図で可視化（ローカル）</text>\n<line x1='14' y1='202' x2='586' y2='202' stroke='#bbf7d0'/>\n<text x='14' y='224' font-family='monospace' font-size='10' font-weight='700' fill='#166534'>FrigadeHQ/yogurt</text>\n<text x='210' y='220' font-family='sans-serif' font-size='9.5' fill='#14532d'>課題: AI議事録はクラウド送信で機微漏れが不安</text>\n<text x='210' y='236' font-family='sans-serif' font-size='9.5' fill='#15803d'>機能: ローカル完結の無料OSS議事録（Electron+llama.cpp）</text>\n<line x1='14' y1='246' x2='586' y2='246' stroke='#bbf7d0'/>\n<text x='14' y='268' font-family='monospace' font-size='10' font-weight='700' fill='#166534'>expo/exact</text>\n<text x='210' y='264' font-family='sans-serif' font-size='9.5' fill='#14532d'>課題: マルチプラットフォーム開発とAI連携が分断</text>\n<text x='210' y='280' font-family='sans-serif' font-size='9.5' fill='#15803d'>機能: 一度書けばWeb/mac/iOS/Linux・AIがビルド/テスト</text>\n<line x1='14' y1='290' x2='586' y2='290' stroke='#bbf7d0'/>\n<text x='16' y='312' font-family='sans-serif' font-size='9.5' fill='#15803d'>モメンタム枠=上3本（当日増加率で選定）／適合枠=下3本（created 2026-11の新星）</text>\n</svg><figcaption>図1：本日の6本を「解決したい課題→提供する機能」で一望。上がモメンタム、下が開発適合枠。</figcaption></figure>\n\n<h4>GoogleChrome/modern-web-guidance-src（TypeScript・⭐2.8k）</h4>\n<p><strong>解決したい課題</strong>：コーディングエージェントが古い Web 知識のままコードを書いてしまう問題。<strong>提供する機能</strong>：最新の Web 標準・API・パフォーマンス/アクセシビリティ指針を、Claude Code などエージェントが常に参照できる形に構造化して配布する Google Chrome 公式ガイダンス集。本日 <strong>+799★（総2,817★に対し率約28%）</strong>で本日計測の最高率。created 2026-01-27 の既存 repo だが明確な急騰スパイクで、AI コーディング文脈の当日モメンタム筆頭（Apache-2.0）。</p>\n\n<h4>pookjw/HermesEnabler（Objective-C・⭐1.5k）</h4>\n<p><strong>解決したい課題</strong>：純正では対象機種限定の Hermès ウォッチフェイスが任意の Apple Watch で使えない。<strong>提供する機能</strong>：任意の Apple Watch で Hermès フェイスを有効化する改造系ユーティリティ。本日 <strong>+300★（率約20%）</strong>。AI 一色の局面で希少な Objective-C・Apple プラットフォーム題材という多様性枠（MIT・改造系ゆえ自己責任/規約要確認）。</p>\n\n<h4>we-promise/sure（Ruby・⭐13.9k）</h4>\n<p><strong>解決したい課題</strong>：開発が止まった個人資産管理 OSS（旧 Maybe 系）の継続。<strong>提供する機能</strong>：口座・取引・予算・資産推移を自己ホストで完結できる家計/資産管理を、<code>we-promise</code> 組織がコミュニティ主導で継続。本日 <strong>+974★＝本日計測の最大増加数</strong>（総13,862★・率約7%）。非 AI・フィンテック題材＆Ruby の多様性枠（AGPL-3.0＝組込/SaaS 提供は要注意）。</p>\n\n<h4>alexeyw/lot-map（TypeScript・⭐597）</h4>\n<p><strong>解決したい課題</strong>：長時間・多段のエージェント実行で「今まさに何をしているか」が見えない観測性の欠如。<strong>提供する機能</strong>：Claude Code のツール呼出・モデルステップ・フック・スキル・サブエージェントを、チャットの横でリアルタイムに光らせるローカル専用のライブ地図。created 2026-11-09＝<strong>公開約3日で597★</strong>（日平均約189★/日）の新星。ローカル完結で機微データ面も安心（MIT）。複数 PJ をエージェントで横断する運用の観測性に直撃する。</p>\n\n<h4>FrigadeHQ/yogurt（TypeScript・⭐921）</h4>\n<p><strong>解決したい課題</strong>：AI 議事録がクラウドに音声を送るため、商談や社内会議の機微データ漏れが不安。<strong>提供する機能</strong>：会議音声を端末内（Electron＋llama.cpp）で文字起こし・要約する完全プライベートな無料 OSS 議事録（MCP 対応）。created 2026-11-10＝<strong>公開約2日で921★</strong>（日平均約434★/日）の新星。ローカル処理で機微データを外に出さない点が刺さった（MIT）。</p>\n\n<h4>expo/exact（Rust・⭐3.3k）</h4>\n<p><strong>解決したい課題</strong>：マルチプラットフォーム開発と AI エージェント連携が分断していること。<strong>提供する機能</strong>：一度書けば Web・macOS・iOS・Linux でネイティブ動作し、AI エージェントが各環境でビルド・実行・目視・テストまでできるクロスプラットフォーム基盤。Expo 公式、created 2026-11-02＝<strong>公開約11日で3,346★</strong>。中核スタックそのものではないが、複数スタック横断の DX と「エージェントが自動でビルド/テスト」の両面で将来の評価候補（Rust・MIT）。</p>\n\n<h4>自分が試すなら・ひとことまとめ</h4>\n<p>いま一番効きそうなのは <code>lot-map</code>（エージェント運用の可視化）と <code>yogurt</code>（ローカル議事録）——どちらもローカル完結で機微データに配慮があり、すぐ試せる。<code>modern-web-guidance</code> はエージェントの参照ガイドとして取り込み検討の価値あり、<code>expo/exact</code> は中長期の評価枠。全体として「AI 飽和の中で、素直な実装・ローカル完結・公式一次情報」が今日の勝ち筋だった。</p>",
+      "sources": [
+        {
+          "title": "GoogleChrome/modern-web-guidance-src",
+          "url": "https://github.com/GoogleChrome/modern-web-guidance-src"
+        },
+        {
+          "title": "pookjw/HermesEnabler",
+          "url": "https://github.com/pookjw/HermesEnabler"
+        },
+        {
+          "title": "we-promise/sure",
+          "url": "https://github.com/we-promise/sure"
+        },
+        {
+          "title": "alexeyw/lot-map",
+          "url": "https://github.com/alexeyw/lot-map"
+        },
+        {
+          "title": "FrigadeHQ/yogurt",
+          "url": "https://github.com/FrigadeHQ/yogurt"
+        },
+        {
+          "title": "expo/exact",
+          "url": "https://github.com/expo/exact"
+        }
+      ],
+      "id": "2026-11-13-github-trending"
+    },
     {
       "date": "2026-11-12",
       "topic": "Claude Code",
