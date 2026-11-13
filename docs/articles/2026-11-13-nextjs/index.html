@@ -1,0 +1,99 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Next.js — React Taint APIでサーバー機密のクライアント漏洩を描画時に止める（experimental） — デイリー技術深掘り 読み物</title><meta name="description" content="取得オブジェクトをうっかりClientに渡すとRSCペイロードで機密が漏れる。Taint APIは参照/値を汚して描画時にthrowする最後の防壁。ただし参照でしか追えない落とし穴に注意。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-13-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Next.js — React Taint APIでサーバー機密のクライアント漏洩を描画時に止める（experimental） — デイリー技術深掘り 読み物"><meta property="og:description" content="取得オブジェクトをうっかりClientに渡すとRSCペイロードで機密が漏れる。Taint APIは参照/値を汚して描画時にthrowする最後の防壁。ただし参照でしか追えない落とし穴に注意。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-13-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>Next.js — React Taint APIでサーバー機密のクライアント漏洩を描画時に止める（experimental）</h1> <p class="lede">取得オブジェクトをうっかりClientに渡すとRSCペイロードで機密が漏れる。Taint APIは参照/値を汚して描画時にthrowする最後の防壁。ただし参照でしか追えない落とし穴に注意。</p> <div class="meta"> <span>📅 2026年11月13日</span> <span>⏱ 約4分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="0"><p>App Router は Server Components 既定で、DB 行・環境変数・セッショントークンをサーバー側で自由に読める。便利な反面、「取得したオブジェクトをうっかりそのまま Client Component に props で渡す」と、機密フィールドが <strong>RSC ペイロード（ブラウザまで届くシリアライズ JSON）に載って漏洩</strong>する。React の <strong>Taint API</strong> は、この“うっかり漏洩”を描画時に <code>Error</code> で止める最後の防壁（backstop）だ。Next.js 16.2／2026 時点でも experimental（React experimental チャネル＋<code>experimental.taint:true</code>）で、本番導入は慎重に。</p>
+
+<h4 id="sec-1">2つの API：参照を汚す / 値を汚す</h4>
+<p>どちらも <strong>Server Component 内でのみ</strong>使い、返り値は <code>undefined</code>。<code>experimental_taintObjectReference(message, object)</code> は<strong>オブジェクトの参照そのもの</strong>に汚染マークを付け、その参照が未加工のまま Client へ渡ると <code>message</code> 付きで throw する。<code>experimental_taintUniqueValue(message, lifetime, value)</code> は<strong>特定の一意な値</strong>（string / bigint / TypedArray のみ）を汚染し、<code>lifetime</code> オブジェクトが生きている限りブロックし続ける。<code>value</code> は暗号トークンや秘密鍵のような<strong>高エントロピーな一意値</strong>に限ること。</p>
+
+<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg'>
+<rect x='0' y='0' width='600' height='210' rx='8' fill='#eff6ff' stroke='#60a5fa'></rect>
+<text x='16' y='26' font-family='sans-serif' font-size='13' font-weight='700' fill='#1d4ed8'>RSC → Client 境界：汚染オブジェクトは描画時に throw</text>
+<rect x='24' y='48' width='250' height='140' rx='6' fill='#ffffff' stroke='#93c5fd'></rect>
+<text x='149' y='70' text-anchor='middle' font-family='sans-serif' font-size='11.5' font-weight='700' fill='#1e40af'>Server Component</text>
+<text x='149' y='96' text-anchor='middle' font-family='monospace' font-size='10' fill='#1e3a8a'>const user = await getUser(id)</text>
+<text x='149' y='118' text-anchor='middle' font-family='monospace' font-size='10' fill='#b91c1c'>taintObject(msg, user)</text>
+<text x='149' y='150' text-anchor='middle' font-family='monospace' font-size='9.5' fill='#15803d'>firstName だけ渡す ✓</text>
+<text x='149' y='170' text-anchor='middle' font-family='monospace' font-size='9.5' fill='#b91c1c'>user 丸ごと渡す ✗</text>
+<path d='M278 110 L336 110' stroke='#1d4ed8' stroke-width='2' marker-end='url(#ar)'></path>
+<path d='M278 162 L336 162' stroke='#b91c1c' stroke-width='2' marker-end='url(#arr)'></path>
+<defs>
+<marker id='ar' markerWidth='8' markerHeight='8' refX='6' refY='3' orient='auto'><path d='M0 0 L6 3 L0 6 Z' fill='#1d4ed8'></path></marker>
+<marker id='arr' markerWidth='8' markerHeight='8' refX='6' refY='3' orient='auto'><path d='M0 0 L6 3 L0 6 Z' fill='#b91c1c'></path></marker>
+</defs>
+<rect x='342' y='48' width='234' height='140' rx='6' fill='#ffffff' stroke='#93c5fd'></rect>
+<text x='459' y='70' text-anchor='middle' font-family='sans-serif' font-size='11.5' font-weight='700' fill='#1e40af'>Client Component</text>
+<text x='459' y='104' text-anchor='middle' font-family='sans-serif' font-size='10.5' fill='#15803d'>個別フィールド → 正常に描画</text>
+<text x='459' y='150' text-anchor='middle' font-family='sans-serif' font-size='10.5' fill='#b91c1c'>汚染オブジェクト →</text>
+<text x='459' y='168' text-anchor='middle' font-family='sans-serif' font-size='10.5' font-weight='700' fill='#b91c1c'>描画時に Error を throw</text>
+</svg><figcaption>図1：参照を汚しておけば、丸ごと渡した瞬間に描画が落ちる。安全な DTO 化を強制する仕組み。</figcaption></figure>
+
+<h4 id="sec-2">最大の落とし穴は「参照でしか追えない」</h4>
+<p>Taint は参照の同一性で追跡するので、<strong>コピーすると未汚染になる</strong>。<code>{...user}</code> やフィールド抽出した新オブジェクトは追跡外だ。同様に<strong>派生値も追えない</strong>——<code>toUpperCase()</code>・文字列連結・base64・<code>substring</code> などで作った値は汚染が外れる。</p>
+<pre><code>// コピーは別オブジェクト（未汚染）
+const copy = { ...user };            // taintObject(user) は効かない
+
+// 派生値は追跡されない（未汚染で漏れる）
+const label = "version::" + key;     // 新しい文字列＝汚染されず Client へ</code></pre>
+<p>さらに <strong>PIN・電話番号・boolean・短い数値などの低エントロピー値は汚染してはいけない</strong>。攻撃者がリクエストで全列挙して「どれが汚染値か」を当てられてしまうからだ。<code>lifetime</code> の設計も罠で、<code>globalThis</code>/<code>process</code> を渡すとアプリ生存期間中ずっと汚染、逆に lifetime なしで React 外のグローバルストアに置くと未汚染化する。</p>
+
+<h4 id="sec-3">実装の勘所と、自分が試すなら</h4>
+<p>定石は <strong>DAL（Data Access Layer）</strong>でデータ取得直後に汚染し、<code>import 'server-only'</code> でモジュールごと Client import をビルドエラーにすること。環境変数の秘密は <code>server-only</code>＋<code>taintUniqueValue(msg, process, process.env.API_PASSWORD)</code> の併用が定番。自分で試すなら、まず <code>next.config.ts</code> に <code>experimental:{ taint:true }</code> を入れた検証ブランチを切り、既存 DAL の戻り値に <code>taintObject</code> を足して「丸ごと渡し」が本当に落ちるかをテストで確認する。</p>
+
+<h4 id="sec-4">注意点・ひとことまとめ</h4>
+<p>公式は「taint API を唯一の防御にするな」と明言する。本線はあくまで「<strong>DAL が権限チェック→必要最小限の DTO だけ返す</strong>」設計で、<code>SERVICE_API_KEY</code> はそもそも戻り値から除くのが最善。Taint は、取得関数が制御外だったり RSC 描画中に機密へ触れる状況への“追加の保険”として重ねる層だと割り切る。experimental チャネルが入る副作用もあるので本番は慎重に。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://react.dev/reference/react/experimental_taintObjectReference" target="_blank" rel="noopener noreferrer"> React: experimental_taintObjectReference </a> </li><li> <a href="https://react.dev/reference/react/experimental_taintUniqueValue" target="_blank" rel="noopener noreferrer"> React: experimental_taintUniqueValue </a> </li><li> <a href="https://nextjs.org/docs/app/api-reference/config/next-config-js/taint" target="_blank" rel="noopener noreferrer"> Next.js config: taint </a> </li><li> <a href="https://nextjs.org/docs/app/guides/data-security" target="_blank" rel="noopener noreferrer"> Next.js guide: How to think about data security </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 2つの API：参照を汚す / 値を汚す </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 最大の落とし穴は「参照でしか追えない」 </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 実装の勘所と、自分が試すなら </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 注意点・ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-11-13</div> <div>⏱ 読了 約4分</div> <div>🏷 Next.js</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

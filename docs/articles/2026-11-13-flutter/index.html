@@ -1,0 +1,88 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Flutter — 3.50の機能面を総覧：Direct native interopがstable、iOSタッチ即時配信、material_ui既定化 — デイリー技術深掘り 読み物</title><meta name="description" content="platform channelを外す同期ネイティブ呼び出し（FFIgen/JNIgen stable）、iOSタッチが最大16ms短縮、Web WasmがJS比2倍超、そしてmaterial_ui/cupertino_uiが新規既定に。"><meta name="theme-color" content="#0277bd"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-13-flutter/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Flutter — 3.50の機能面を総覧：Direct native interopがstable、iOSタッチ即時配信、material_ui既定化 — デイリー技術深掘り 読み物"><meta property="og:description" content="platform channelを外す同期ネイティブ呼び出し（FFIgen/JNIgen stable）、iOSタッチが最大16ms短縮、Web WasmがJS比2倍超、そしてmaterial_ui/cupertino_uiが新規既定に。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-13-flutter/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #29b6f6, #01579b)"> <span class="glyph" aria-hidden="true">◆</span> <div class="kicker">Flutter</div> <h1>Flutter — 3.50の機能面を総覧：Direct native interopがstable、iOSタッチ即時配信、material_ui既定化</h1> <p class="lede">platform channelを外す同期ネイティブ呼び出し（FFIgen/JNIgen stable）、iOSタッチが最大16ms短縮、Web WasmがJS比2倍超、そしてmaterial_ui/cupertino_uiが新規既定に。</p> <div class="meta"> <span>📅 2026年11月13日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#0277bd"> <div> <article class="prose" data-has-mermaid="0"><p>11/12 のダイジェストが Flutter 3.50 の「リリース手続き面」を扱ったので、今日は中身——公式 whats-new blog が総覧する<strong>機能面</strong>を読む。3.50 は Dart 3.14 と同梱で（Emma Twersky・2026-11-11）、現時点の最新 stable は 3.50（3.51 は未登場）。目玉は <strong>Direct native interop の stable 化</strong>、iOS タッチの即時配信、Web Wasm の高速化、そして新プロジェクト既定パッケージの刷新だ。</p>
+
+<h4 id="sec-1">Direct native interop が stable：platform channel を外す</h4>
+<p>Objective-C 向けの <strong>FFIgen</strong> が既存の C 対応に加えて stable になり、Java/Kotlin 向けの <strong>JNIgen</strong> も stable 入りした（Pigeon の native interop モードは preview）。要点は <strong>platform channel のメッセージ受け渡し無しで同期呼び出しができ、バックグラウンド isolate からも呼べる</strong>こと。ネイティブ連携の定番ボトルネックだった「チャンネル越しの非同期シリアライズ」を外せるのが大きい。</p>
+
+<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg'>
+<rect x='0' y='0' width='600' height='200' rx='8' fill='#ecfeff' stroke='#22d3ee'></rect>
+<text x='16' y='26' font-family='sans-serif' font-size='13' font-weight='700' fill='#0e7490'>ネイティブ連携：platform channel → direct interop</text>
+<text x='20' y='52' font-family='sans-serif' font-size='11' font-weight='700' fill='#155e75'>従来</text>
+<rect x='70' y='40' width='110' height='34' rx='5' fill='#ffffff' stroke='#67e8f9'></rect><text x='125' y='61' text-anchor='middle' font-family='monospace' font-size='10' fill='#155e75'>Dart</text>
+<rect x='245' y='40' width='130' height='34' rx='5' fill='#fef9c3' stroke='#fde047'></rect><text x='310' y='61' text-anchor='middle' font-family='sans-serif' font-size='9.5' fill='#854d0e'>channel（非同期）</text>
+<rect x='440' y='40' width='120' height='34' rx='5' fill='#ffffff' stroke='#67e8f9'></rect><text x='500' y='61' text-anchor='middle' font-family='monospace' font-size='10' fill='#155e75'>Native</text>
+<path d='M180 57 L243 57' stroke='#0891b2' stroke-width='2'></path><path d='M375 57 L438 57' stroke='#0891b2' stroke-width='2'></path>
+<text x='20' y='120' font-family='sans-serif' font-size='11' font-weight='700' fill='#155e75'>3.50</text>
+<rect x='70' y='108' width='110' height='34' rx='5' fill='#ffffff' stroke='#67e8f9'></rect><text x='125' y='129' text-anchor='middle' font-family='monospace' font-size='10' fill='#155e75'>Dart</text>
+<rect x='440' y='108' width='120' height='34' rx='5' fill='#ffffff' stroke='#67e8f9'></rect><text x='500' y='129' text-anchor='middle' font-family='monospace' font-size='10' fill='#155e75'>Native</text>
+<path d='M180 125 L438 125' stroke='#15803d' stroke-width='2.5'></path>
+<text x='310' y='119' text-anchor='middle' font-family='sans-serif' font-size='9.5' fill='#15803d'>FFIgen/JNIgen</text>
+<text x='310' y='138' text-anchor='middle' font-family='sans-serif' font-size='9.5' font-weight='700' fill='#15803d'>同期・isolate 可</text>
+<text x='16' y='178' font-family='sans-serif' font-size='9.5' fill='#0e7490'>iOS タッチ即時配信：60Hzで16ms / 120Hz ProMotionで8ms 短縮（issue #191199）</text>
+</svg><figcaption>図1：3.50 は中間のチャンネル層を外し、Dart から直接ネイティブを同期呼び出しできる。</figcaption></figure>
+
+<h4 id="sec-2">体感性能と Web、そして既定パッケージの刷新</h4>
+<p>体感面では <strong>iOS のタッチイベントが即時配信</strong>になり、公式ベンチで 60Hz なら 16ms・120Hz ProMotion なら 8ms 速くなった。<strong>Web Wasm は重い widget ベンチで JS の2倍超のフレームレート</strong>（Safari 26.2+／Firefox 147+ は opt-in、Chrome/Edge 137+ は既定）、WebParagraph（experimental）で CanvasKit のダウンロードが 5.46MB→約3.75MB に縮んだ。さらに大きいのが <strong><code>material_ui</code>／<code>cupertino_ui</code> が新規プロジェクトの既定</strong>になった点——<code>flutter create</code> が <code>package:material_ui</code> を import し、従来の <code>package:flutter/material.dart</code> 系は正式 deprecation。移行は <code>dart fix --apply --code=migrate_design_widgets</code> で進められる。</p>
+
+<h4 id="sec-3">実務での使いどころ・自分が試すなら</h4>
+<p>既存アプリで platform channel 越しにネイティブ SDK を叩いている箇所は、FFIgen/JNIgen への置き換え候補。特にバックグラウンド isolate で重い処理をしたいケースは効果が出やすい。新規は AGP 9.3.1・Gradle 9.5.0・compile/target SDK 36・minSdk API 24 が既定になるので、CI のツールチェーンも合わせる。試すなら、まず検証用に <code>flutter create</code> した 3.50 プロジェクトで <code>material_ui</code> 既定の差分を確認し、既存プロジェクトは <code>dart fix</code> のドライラン的に影響範囲を見てから移行するのが安全。描画最適化では公式 perf ベストプラクティス（<code>saveLayer</code>/<code>Opacity</code>/clip を避ける・<code>ListView.builder</code>・Widget に <code>operator==</code> を書かない）も併せて効く。</p>
+
+<h4 id="sec-4">注意点・ひとことまとめ</h4>
+<p>既定パッケージ刷新は影響範囲が広く、従来 import の deprecation は既存コードの地雷になりうるので <code>dart fix</code> で計画的に。Wasm は一部ブラウザで opt-in、HCPP は Android 14+・Vulkan 上の Impeller が前提と、適用条件に幅がある。まとめると、3.50 は「ネイティブ連携の同期化」と「既定パッケージの世代交代」が二本柱で、どちらも“今の配管”を見直す good な契機になる。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://flutter.dev/blog/whats-new-in-flutter-3-50" target="_blank" rel="noopener noreferrer"> What&#39;s new in Flutter 3.50（flutter.dev blog） </a> </li><li> <a href="https://docs.flutter.dev/release/whats-new" target="_blank" rel="noopener noreferrer"> What&#39;s new in the docs（docs.flutter.dev） </a> </li><li> <a href="https://docs.flutter.dev/perf/best-practices" target="_blank" rel="noopener noreferrer"> Performance best practices（docs.flutter.dev） </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> Direct native interop が stable：platform channel を外す </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 体感性能と Web、そして既定パッケージの刷新 </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 実務での使いどころ・自分が試すなら </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 注意点・ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-11-13</div> <div>⏱ 読了 約3分</div> <div>🏷 Flutter</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

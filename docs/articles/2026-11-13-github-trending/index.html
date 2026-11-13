@@ -1,0 +1,110 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>11/13の話題リポジトリ — Chrome公式のエージェント用Web指針・Claude Code可視化・ローカルAI議事録ほか — デイリー技術深掘り 読み物</title><meta name="description" content="AI飽和の中で、エージェント運用に効く一次情報とローカル完結ツール、そして非AIの多様性枠。6本を「解決したい課題→提供する機能」で読み解く。"><meta name="theme-color" content="#238636"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-13-github-trending/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="11/13の話題リポジトリ — Chrome公式のエージェント用Web指針・Claude Code可視化・ローカルAI議事録ほか — デイリー技術深掘り 読み物"><meta property="og:description" content="AI飽和の中で、エージェント運用に効く一次情報とローカル完結ツール、そして非AIの多様性枠。6本を「解決したい課題→提供する機能」で読み解く。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-13-github-trending/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3fb950, #1a7f37)"> <span class="glyph" aria-hidden="true">★</span> <div class="kicker">GitHub Trending</div> <h1>11/13の話題リポジトリ — Chrome公式のエージェント用Web指針・Claude Code可視化・ローカルAI議事録ほか</h1> <p class="lede">AI飽和の中で、エージェント運用に効く一次情報とローカル完結ツール、そして非AIの多様性枠。6本を「解決したい課題→提供する機能」で読み解く。</p> <div class="meta"> <span>📅 2026年11月13日</span> <span>⏱ 約5分</span> <span>🔗 出典 6 件</span> </div> </section> <div class="article-layout" style="--topic:#238636"> <div> <article class="prose" data-has-mermaid="0"><p>今日の Trending は「AI 一色の飽和局面で、エージェント運用に効く一次情報と、あえて非 AI の多様性枠を拾う」構成。6本を貫くのは、<strong>急上昇の勢い（当日増加率）</strong>と<strong>自分の開発への効きやすさ</strong>の二軸だ。本日は <code>trending?since=daily</code> が当日増加を正常取得できたため、モメンタム枠は当日増加率で並べ、適合枠は created 2026-11 の新星を GitHub API で実測検証した。各リポジトリを「解決したい課題」「提供する機能」で読み解く。</p>
+
+<figure class='fig'><svg viewBox='0 0 600 330' xmlns='http://www.w3.org/2000/svg'>
+<rect x='0' y='0' width='600' height='330' rx='8' fill='#f0fdf4' stroke='#4ade80'></rect>
+<text x='16' y='24' font-family='sans-serif' font-size='13' font-weight='700' fill='#15803d'>リポジトリ × 解決したい課題 / 提供する機能</text>
+<text x='14' y='48' font-family='monospace' font-size='10' font-weight='700' fill='#166534'>modern-web-guidance</text>
+<text x='210' y='44' font-family='sans-serif' font-size='9.5' fill='#14532d'>課題: エージェントが古いWeb知識で書く</text>
+<text x='210' y='60' font-family='sans-serif' font-size='9.5' fill='#15803d'>機能: 最新Web標準をエージェント向けに構造化配布</text>
+<line x1='14' y1='70' x2='586' y2='70' stroke='#bbf7d0'></line>
+<text x='14' y='92' font-family='monospace' font-size='10' font-weight='700' fill='#166534'>HermesEnabler</text>
+<text x='210' y='88' font-family='sans-serif' font-size='9.5' fill='#14532d'>課題: Hermèsフェイスが対象機種限定</text>
+<text x='210' y='104' font-family='sans-serif' font-size='9.5' fill='#15803d'>機能: 任意のApple Watchで有効化（改造系）</text>
+<line x1='14' y1='114' x2='586' y2='114' stroke='#bbf7d0'></line>
+<text x='14' y='136' font-family='monospace' font-size='10' font-weight='700' fill='#166534'>we-promise/sure</text>
+<text x='210' y='132' font-family='sans-serif' font-size='9.5' fill='#14532d'>課題: 旧Maybe系の個人資産管理が開発停止</text>
+<text x='210' y='148' font-family='sans-serif' font-size='9.5' fill='#15803d'>機能: コミュニティ主導で継続・自己ホスト家計管理</text>
+<line x1='14' y1='158' x2='586' y2='158' stroke='#bbf7d0'></line>
+<text x='14' y='180' font-family='monospace' font-size='10' font-weight='700' fill='#166534'>alexeyw/lot-map</text>
+<text x='210' y='176' font-family='sans-serif' font-size='9.5' fill='#14532d'>課題: エージェント実行の挙動が見えない</text>
+<text x='210' y='192' font-family='sans-serif' font-size='9.5' fill='#15803d'>機能: Claude Codeの動作をライブ地図で可視化（ローカル）</text>
+<line x1='14' y1='202' x2='586' y2='202' stroke='#bbf7d0'></line>
+<text x='14' y='224' font-family='monospace' font-size='10' font-weight='700' fill='#166534'>FrigadeHQ/yogurt</text>
+<text x='210' y='220' font-family='sans-serif' font-size='9.5' fill='#14532d'>課題: AI議事録はクラウド送信で機微漏れが不安</text>
+<text x='210' y='236' font-family='sans-serif' font-size='9.5' fill='#15803d'>機能: ローカル完結の無料OSS議事録（Electron+llama.cpp）</text>
+<line x1='14' y1='246' x2='586' y2='246' stroke='#bbf7d0'></line>
+<text x='14' y='268' font-family='monospace' font-size='10' font-weight='700' fill='#166534'>expo/exact</text>
+<text x='210' y='264' font-family='sans-serif' font-size='9.5' fill='#14532d'>課題: マルチプラットフォーム開発とAI連携が分断</text>
+<text x='210' y='280' font-family='sans-serif' font-size='9.5' fill='#15803d'>機能: 一度書けばWeb/mac/iOS/Linux・AIがビルド/テスト</text>
+<line x1='14' y1='290' x2='586' y2='290' stroke='#bbf7d0'></line>
+<text x='16' y='312' font-family='sans-serif' font-size='9.5' fill='#15803d'>モメンタム枠=上3本（当日増加率で選定）／適合枠=下3本（created 2026-11の新星）</text>
+</svg><figcaption>図1：本日の6本を「解決したい課題→提供する機能」で一望。上がモメンタム、下が開発適合枠。</figcaption></figure>
+
+<h4 id="sec-1">GoogleChrome/modern-web-guidance-src（TypeScript・⭐2.8k）</h4>
+<p><strong>解決したい課題</strong>：コーディングエージェントが古い Web 知識のままコードを書いてしまう問題。<strong>提供する機能</strong>：最新の Web 標準・API・パフォーマンス/アクセシビリティ指針を、Claude Code などエージェントが常に参照できる形に構造化して配布する Google Chrome 公式ガイダンス集。本日 <strong>+799★（総2,817★に対し率約28%）</strong>で本日計測の最高率。created 2026-01-27 の既存 repo だが明確な急騰スパイクで、AI コーディング文脈の当日モメンタム筆頭（Apache-2.0）。</p>
+
+<h4 id="sec-2">pookjw/HermesEnabler（Objective-C・⭐1.5k）</h4>
+<p><strong>解決したい課題</strong>：純正では対象機種限定の Hermès ウォッチフェイスが任意の Apple Watch で使えない。<strong>提供する機能</strong>：任意の Apple Watch で Hermès フェイスを有効化する改造系ユーティリティ。本日 <strong>+300★（率約20%）</strong>。AI 一色の局面で希少な Objective-C・Apple プラットフォーム題材という多様性枠（MIT・改造系ゆえ自己責任/規約要確認）。</p>
+
+<h4 id="sec-3">we-promise/sure（Ruby・⭐13.9k）</h4>
+<p><strong>解決したい課題</strong>：開発が止まった個人資産管理 OSS（旧 Maybe 系）の継続。<strong>提供する機能</strong>：口座・取引・予算・資産推移を自己ホストで完結できる家計/資産管理を、<code>we-promise</code> 組織がコミュニティ主導で継続。本日 <strong>+974★＝本日計測の最大増加数</strong>（総13,862★・率約7%）。非 AI・フィンテック題材＆Ruby の多様性枠（AGPL-3.0＝組込/SaaS 提供は要注意）。</p>
+
+<h4 id="sec-4">alexeyw/lot-map（TypeScript・⭐597）</h4>
+<p><strong>解決したい課題</strong>：長時間・多段のエージェント実行で「今まさに何をしているか」が見えない観測性の欠如。<strong>提供する機能</strong>：Claude Code のツール呼出・モデルステップ・フック・スキル・サブエージェントを、チャットの横でリアルタイムに光らせるローカル専用のライブ地図。created 2026-11-09＝<strong>公開約3日で597★</strong>（日平均約189★/日）の新星。ローカル完結で機微データ面も安心（MIT）。複数 PJ をエージェントで横断する運用の観測性に直撃する。</p>
+
+<h4 id="sec-5">FrigadeHQ/yogurt（TypeScript・⭐921）</h4>
+<p><strong>解決したい課題</strong>：AI 議事録がクラウドに音声を送るため、商談や社内会議の機微データ漏れが不安。<strong>提供する機能</strong>：会議音声を端末内（Electron＋llama.cpp）で文字起こし・要約する完全プライベートな無料 OSS 議事録（MCP 対応）。created 2026-11-10＝<strong>公開約2日で921★</strong>（日平均約434★/日）の新星。ローカル処理で機微データを外に出さない点が刺さった（MIT）。</p>
+
+<h4 id="sec-6">expo/exact（Rust・⭐3.3k）</h4>
+<p><strong>解決したい課題</strong>：マルチプラットフォーム開発と AI エージェント連携が分断していること。<strong>提供する機能</strong>：一度書けば Web・macOS・iOS・Linux でネイティブ動作し、AI エージェントが各環境でビルド・実行・目視・テストまでできるクロスプラットフォーム基盤。Expo 公式、created 2026-11-02＝<strong>公開約11日で3,346★</strong>。中核スタックそのものではないが、複数スタック横断の DX と「エージェントが自動でビルド/テスト」の両面で将来の評価候補（Rust・MIT）。</p>
+
+<h4 id="sec-7">自分が試すなら・ひとことまとめ</h4>
+<p>いま一番効きそうなのは <code>lot-map</code>（エージェント運用の可視化）と <code>yogurt</code>（ローカル議事録）——どちらもローカル完結で機微データに配慮があり、すぐ試せる。<code>modern-web-guidance</code> はエージェントの参照ガイドとして取り込み検討の価値あり、<code>expo/exact</code> は中長期の評価枠。全体として「AI 飽和の中で、素直な実装・ローカル完結・公式一次情報」が今日の勝ち筋だった。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://github.com/GoogleChrome/modern-web-guidance-src" target="_blank" rel="noopener noreferrer"> GoogleChrome/modern-web-guidance-src </a> </li><li> <a href="https://github.com/pookjw/HermesEnabler" target="_blank" rel="noopener noreferrer"> pookjw/HermesEnabler </a> </li><li> <a href="https://github.com/we-promise/sure" target="_blank" rel="noopener noreferrer"> we-promise/sure </a> </li><li> <a href="https://github.com/alexeyw/lot-map" target="_blank" rel="noopener noreferrer"> alexeyw/lot-map </a> </li><li> <a href="https://github.com/FrigadeHQ/yogurt" target="_blank" rel="noopener noreferrer"> FrigadeHQ/yogurt </a> </li><li> <a href="https://github.com/expo/exact" target="_blank" rel="noopener noreferrer"> expo/exact </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> GoogleChrome/modern-web-guidance-src（TypeScript・⭐2.8k） </a> </li><li> <a href="#sec-2" data-toc="sec-2"> pookjw/HermesEnabler（Objective-C・⭐1.5k） </a> </li><li> <a href="#sec-3" data-toc="sec-3"> we-promise/sure（Ruby・⭐13.9k） </a> </li><li> <a href="#sec-4" data-toc="sec-4"> alexeyw/lot-map（TypeScript・⭐597） </a> </li><li> <a href="#sec-5" data-toc="sec-5"> FrigadeHQ/yogurt（TypeScript・⭐921） </a> </li><li> <a href="#sec-6" data-toc="sec-6"> expo/exact（Rust・⭐3.3k） </a> </li><li> <a href="#sec-7" data-toc="sec-7"> 自分が試すなら・ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-11-13</div> <div>⏱ 読了 約5分</div> <div>🏷 GitHub Trending</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
