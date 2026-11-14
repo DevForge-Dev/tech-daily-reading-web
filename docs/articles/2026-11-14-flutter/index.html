@@ -1,0 +1,107 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Flutter 3.50 stable定着＋3.51/Dart 3.15 beta始動。例外を「型」にする公式Resultパターンと、const構築子が効く本当の理由 — デイリー技術深掘り 読み物</title><meta name="description" content="stableは3.50.0のまま（hotfix 3.50.1は未登場）、betaは同日に3.51.0-0.1.preへ。あわせて、uncheckedな例外をsealed Result<T>でコンパイラに網羅強制する公式パターンと、「StatelessWidgetの再構築はタダ」神話の誤りを整理する。"><meta name="theme-color" content="#0277bd"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-14-flutter/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Flutter 3.50 stable定着＋3.51/Dart 3.15 beta始動。例外を「型」にする公式Resultパターンと、const構築子が効く本当の理由 — デイリー技術深掘り 読み物"><meta property="og:description" content="stableは3.50.0のまま（hotfix 3.50.1は未登場）、betaは同日に3.51.0-0.1.preへ。あわせて、uncheckedな例外をsealed Result<T>でコンパイラに網羅強制する公式パターンと、「StatelessWidgetの再構築はタダ」神話の誤りを整理する。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-14-flutter/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #29b6f6, #01579b)"> <span class="glyph" aria-hidden="true">◆</span> <div class="kicker">Flutter</div> <h1>Flutter 3.50 stable定着＋3.51/Dart 3.15 beta始動。例外を「型」にする公式Resultパターンと、const構築子が効く本当の理由</h1> <p class="lede">stableは3.50.0のまま（hotfix 3.50.1は未登場）、betaは同日に3.51.0-0.1.preへ。あわせて、uncheckedな例外をsealed Result&lt;T&gt;でコンパイラに網羅強制する公式パターンと、「StatelessWidgetの再構築はタダ」神話の誤りを整理する。</p> <div class="meta"> <span>📅 2026年11月14日</span> <span>⏱ 約5分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#0277bd"> <div> <article class="prose" data-has-mermaid="1"><p>リリース状況から。stable は <strong>3.50.0 / Dart 3.14.0</strong>（11/11公開）が現在も最新で、公開直後の最初の hotfix <strong>3.50.1 は未登場</strong>。一方 beta は同日 11/11 に <strong>3.51.0-0.1.pre</strong> が切られ Dart は 3.15.0 に前進——stable が3.50に乗った途端、開発ラインは次サイクルを回し始めた二層構造だ。本番は 3.50.0 を新たなpin基準にしつつ、別ジョブで 3.51 beta を緑化して Dart 3.15 を先取り検証しておくのが定石。以下は今日の digest から、実装で効く2本を読み物として再構成する。</p>
+
+<h4 id="sec-1">例外を「型」にする：公式 Result パターン</h4>
+<p>Dartの例外は <strong>unchecked</strong>——メソッドは例外を宣言する必要がなく、呼び出し側もcatchを強制されない。Service側にいくらドキュメントしても、ViewModelがrepository越しだと見落として uncaught exception になる。公式 App Architecture の「Error handling with Result objects」（3.50基準）はこれを<strong>戻り値の型</strong>で塞ぐ。<code>sealed class Result&lt;T&gt;</code> に <code>Result.ok(value)</code> / <code>Result.error(error)</code> の2つの名前付き構築子を置き、本体は <code>Ok&lt;T&gt;</code> と <code>Error&lt;T&gt;</code>。末端サービスで try-catch を封じ込め、戻り値を <code>Future&lt;Result&lt;T&gt;&gt;</code> にして返す。消費側のViewModelは <code>switch</code> で分岐するが、<strong>sealed ゆえにケース網羅をコンパイラが強制</strong>するので、呼び出し側にunwrapを強要できる＝「エラー確認のし忘れ」が型レベルで消える。</p>
+
+<figure class='fig'><pre class='mermaid'>flowchart TD
+  A["ApiClientService: try/catch を内包"] --> B["Result.ok(value) または Result.error(e)"]
+  B --> C["Repository: Result をそのまま返す"]
+  C --> D["ViewModel: switch(result)"]
+  D --> E["case Ok: value を使う"]
+  D --> F["case Error: error を表示"]
+  E --> G["sealed ゆえ網羅を強制 = 確認漏れが消える"]
+  F --> G</pre><figcaption>図1：例外の捕捉を末端に封じ込め、戻り値の型で「確認の強制」を上位へ伝播させる。</figcaption></figure>
+
+<pre><code>sealed class Result&lt;T&gt; {
+  const factory Result.ok(T value) = Ok._;
+  const factory Result.error(Exception error) = Error._;
+}
+// 消費側（ViewModel）: sealed なので case 漏れはコンパイルエラー
+switch (result) {
+  case Ok&lt;UserProfile&gt;():    userProfile = result.value;
+  case Error&lt;UserProfile&gt;(): error = result.error;
+}
+notifyListeners();</code></pre>
+<p>自作が面倒なら pub.dev の <code>result_dart</code> / <code>result_type</code> / <code>multiple_result</code> が既製。なお <code>Error</code> は <code>dart:core</code> の <code>Error</code> を shadow する点だけ注意。</p>
+
+<h4 id="sec-2">constが効く本当の理由：再構築の「打ち切り」</h4>
+<p>公式 perf best-practices「Control build() cost」の核心は、<strong>「前フレームと同一インスタンスの子widgetに再会した時点で、子孫を再構築する走査が止まる」</strong>こと。同一かどうかは <code>operator==</code> で評価される。<code>const</code> 構築子はコンパイル時に正準（canonical）インスタンス化され、毎フレーム同じインスタンスが渡るので、この「同一インスタンスで打ち切り」が発火する。つまり <code>const</code> 化は見た目のためでなく<strong>再構築の走査を途中で止める</strong>ための最適化だ。</p>
+
+<figure class='fig'><svg viewBox='0 0 600 212' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <rect x='0' y='0' width='600' height='212' fill='#eff6ff' rx='10'></rect>
+  <text x='300' y='26' text-anchor='middle' font-size='14' font-weight='bold' fill='#02569B'>setState() 後：operator== が一致した枝で走査を打ち切る</text>
+  <rect x='250' y='40' width='100' height='26' fill='#0468d7' rx='5'></rect><text x='300' y='57' text-anchor='middle' font-size='11' fill='#fff'>親 rebuild</text>
+  <line x1='300' y1='66' x2='160' y2='92' stroke='#60a5fa'></line><line x1='300' y1='66' x2='440' y2='92' stroke='#60a5fa'></line>
+  <rect x='96' y='92' width='128' height='26' fill='#fecaca' rx='5'></rect><text x='160' y='109' text-anchor='middle' font-size='10' fill='#991b1b'>非const子（新規確保）</text>
+  <rect x='376' y='92' width='128' height='26' fill='#bbf7d0' rx='5'></rect><text x='440' y='109' text-anchor='middle' font-size='10' fill='#14532d'>const子（同一=一致）</text>
+  <line x1='160' y1='118' x2='160' y2='140' stroke='#f87171'></line>
+  <rect x='104' y='140' width='112' height='24' fill='#fee2e2' rx='5'></rect><text x='160' y='156' text-anchor='middle' font-size='10' fill='#991b1b'>子孫も再構築</text>
+  <rect x='376' y='140' width='128' height='24' fill='#dcfce7' rx='5'></rect><text x='440' y='156' text-anchor='middle' font-size='10' fill='#166534'>ここで打ち切り（走査停止）</text>
+  <text x='300' y='192' text-anchor='middle' font-size='11' fill='#1e3a8a'>重い静的部分木を const 化／TextStyle は static final／非依存部は AnimatedBuilder の child: へ退避</text>
+</svg><figcaption>図2：const 子は operator== で一致し、その枝の再構築走査が止まる。非const子は毎フレーム新規確保でGC圧とjankの種に。</figcaption></figure>
+
+<p>「StatelessWidgetの再構築はタダ」は<strong>神話</strong>。コストは subtree の深さ・構築子の複雑さ・アロケーション圧に比例し、非const子は毎フレーム新規オブジェクトを確保してminor GCで jank を招き得る（非査読ブログの実測では12ネストのカードを7構築子const化＋TextStyle巻き上げで 4.2ms→1.8ms など。端末・ビルドモード記載なしで数値は鵜呑み厳禁）。実務の武器は <strong>const・部分木抽出・ValueKey・child:退避</strong> の4つ。打ち切り判定を <code>identical()</code> と書く解説も見かけるが、<strong>公式表現は <code>operator==</code></strong> なので、<code>==</code> を安易にoverrideしない（overrideはO(N²)化、leaf widgetのみ例外）のが安全側だ。</p>
+
+<h4 id="sec-3">遷移を1ルートだけ自作するなら PageRouteBuilder</h4>
+<p>アプリ全体の遷移は <code>PageTransitionsTheme</code>＋<code>PageTransitionsBuilder</code> 群で差すが、特定1ルートだけ別演出にしたいなら <code>PageRouteBuilder</code>。<code>pageBuilder</code>（中身・初回ビルドのみ＝重い構築はここ）と <code>transitionsBuilder</code>（遷移・毎フレーム呼ばれるので軽く）の2コールバックで、<code>animation.drive(Tween(...).chain(CurveTween(curve:)))</code> を <code>SlideTransition</code> に流すのが定石。なお 3.50 の material/cupertino 分離構成で iOS風横スライド（<code>CupertinoPageTransitionsBuilder</code>）を差すなら <code>package:cupertino_ui/cupertino_ui.dart</code> の import が別途必要になった点に注意。</p>
+
+<h4 id="sec-4">ひとことまとめ</h4>
+<p>stableは3.50で据わり、設計の勘所は「<strong>例外を型に／再構築を打ち切る</strong>」。Resultで確認漏れを封じ、const＋ValueKeyでGC起因のjankを削る——どちらも“速くする”前に“無駄を生まない”側の工夫だ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://flutterreleases.com/flutter-versions/" target="_blank" rel="noopener noreferrer"> Flutter Versions（flutterreleases.com） </a> </li><li> <a href="https://docs.flutter.dev/app-architecture/design-patterns/result" target="_blank" rel="noopener noreferrer"> Error handling with Result objects（docs.flutter.dev） </a> </li><li> <a href="https://docs.flutter.dev/perf/best-practices" target="_blank" rel="noopener noreferrer"> Performance best practices（docs.flutter.dev） </a> </li><li> <a href="https://docs.flutter.dev/cookbook/animation/page-route-animation" target="_blank" rel="noopener noreferrer"> Animate a page route transition（docs.flutter.dev） </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 例外を「型」にする：公式 Result パターン </a> </li><li> <a href="#sec-2" data-toc="sec-2"> constが効く本当の理由：再構築の「打ち切り」 </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 遷移を1ルートだけ自作するなら PageRouteBuilder </a> </li><li> <a href="#sec-4" data-toc="sec-4"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-11-14</div> <div>⏱ 読了 約5分</div> <div>🏷 Flutter</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

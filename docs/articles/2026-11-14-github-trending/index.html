@@ -1,0 +1,101 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>11/14の話題リポジトリ — ニューラルレンダリングSDK・人×AIチーム協働チャット・プラン注釈レビュー — デイリー技術深掘り 読み物</title><meta name="description" content="AIチャット一色のトレンドの中で、低レイヤーのグラフィックスSDKが3日で1,400★。一方でDevForge文脈に刺さる“人が要所で止める”協働・レビュー系2本が複数ソースで急上昇。共通するのは「自動化の暴走を人の承認で挟む」設計思想だ。"><meta name="theme-color" content="#238636"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-14-github-trending/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="11/14の話題リポジトリ — ニューラルレンダリングSDK・人×AIチーム協働チャット・プラン注釈レビュー — デイリー技術深掘り 読み物"><meta property="og:description" content="AIチャット一色のトレンドの中で、低レイヤーのグラフィックスSDKが3日で1,400★。一方でDevForge文脈に刺さる“人が要所で止める”協働・レビュー系2本が複数ソースで急上昇。共通するのは「自動化の暴走を人の承認で挟む」設計思想だ。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-14-github-trending/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3fb950, #1a7f37)"> <span class="glyph" aria-hidden="true">★</span> <div class="kicker">GitHub Trending</div> <h1>11/14の話題リポジトリ — ニューラルレンダリングSDK・人×AIチーム協働チャット・プラン注釈レビュー</h1> <p class="lede">AIチャット一色のトレンドの中で、低レイヤーのグラフィックスSDKが3日で1,400★。一方でDevForge文脈に刺さる“人が要所で止める”協働・レビュー系2本が複数ソースで急上昇。共通するのは「自動化の暴走を人の承認で挟む」設計思想だ。</p> <div class="meta"> <span>📅 2026年11月14日</span> <span>⏱ 約4分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#238636"> <div> <article class="prose" data-has-mermaid="0"><p>今日の3本は一見バラバラ（グラフィックスSDK／チームチャット／レビューワークスペース）だが、後ろ2本には <strong>human-in-the-loop＝人が要所で止めて承認・指示する</strong>という共通線が通る。エージェントを“速く動かす”より“止められる”ことに価値が移りつつある局面を映している。各リポジトリについて「解決したい課題」と「提供する機能」を分けて見ていく。</p>
+
+<figure class='fig'><svg viewBox='0 0 600 236' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <rect x='0' y='0' width='600' height='236' fill='#f0fdf4' rx='10'></rect>
+  <text x='300' y='24' text-anchor='middle' font-size='14' font-weight='bold' fill='#166534'>解決したい課題 → 提供する機能</text>
+  <line x1='16' y1='40' x2='584' y2='40' stroke='#86efac'></line>
+  <text x='20' y='58' font-size='11' font-weight='bold' fill='#14532d'>owner/repo（言語・★）</text>
+  <text x='210' y='58' font-size='11' font-weight='bold' fill='#991b1b'>解決したい課題</text>
+  <text x='410' y='58' font-size='11' font-weight='bold' fill='#1e40af'>提供する機能</text>
+  <line x1='16' y1='66' x2='584' y2='66' stroke='#bbf7d0'></line>
+  <text x='20' y='92' font-size='10.5' fill='#0f172a'>apex-compute/ANR</text>
+  <text x='20' y='107' font-size='9' fill='#64748b'>C++・⭐1.4k</text>
+  <text x='210' y='88' font-size='9.5' fill='#334155'>描画の重さ：解像度と</text>
+  <text x='210' y='101' font-size='9.5' fill='#334155'>フレームレートの両立</text>
+  <text x='410' y='88' font-size='9.5' fill='#334155'>FG(フレーム生成)/SR(超解</text>
+  <text x='410' y='101' font-size='9.5' fill='#334155'>像)/RR(デノイズ) をSDK化</text>
+  <line x1='16' y1='118' x2='584' y2='118' stroke='#bbf7d0'></line>
+  <text x='20' y='144' font-size='10.5' fill='#0f172a'>agentes-chat</text>
+  <text x='20' y='159' font-size='9' fill='#64748b'>TypeScript・⭐1.3k</text>
+  <text x='210' y='140' font-size='9.5' fill='#334155'>人とAIが別ツールに散在、</text>
+  <text x='210' y='153' font-size='9.5' fill='#334155'>機微データも外部へ</text>
+  <text x='410' y='140' font-size='9.5' fill='#334155'>セルフホストSlack代替＝複数</text>
+  <text x='410' y='153' font-size='9.5' fill='#334155'>AIと承認付きで協働(MCP対応)</text>
+  <line x1='16' y1='170' x2='584' y2='170' stroke='#bbf7d0'></line>
+  <text x='20' y='196' font-size='10.5' fill='#0f172a'>backnotprop/plannotator</text>
+  <text x='20' y='211' font-size='9' fill='#64748b'>TypeScript・⭐10.4k</text>
+  <text x='210' y='192' font-size='9.5' fill='#334155'>エージェント生成物を</text>
+  <text x='210' y='205' font-size='9.5' fill='#334155'>人がレビューしづらい</text>
+  <text x='410' y='192' font-size='9.5' fill='#334155'>プラン/差分/PRを1つのInbox</text>
+  <text x='410' y='205' font-size='9.5' fill='#334155'>で注釈→エージェントへ返す</text>
+</svg><figcaption>図1：3本の「課題→機能」対応。後ろ2本は“人の承認を挟む”設計でDevForgeのTier B/Yes-man禁止と噛み合う。</figcaption></figure>
+
+<h4 id="sec-1">apex-compute/ANR（C++・⭐1.4k）</h4>
+<p><strong>解決したい課題：</strong>リアルタイム描画では「解像度を上げる」と「フレームレートを保つ」が両立しにくい。従来は職人芸のシェーダ最適化やハード依存のアップスケールに頼ってきた。<strong>提供する機能：</strong>フレーム生成（FG）・超解像/アップスケール（SR）・レイ再構成＝デノイズ（RR）を束ねた、DLSS/FSR系の<strong>ニューラルレンダリングSDK</strong>（Apex Compute製）。<strong>なぜ急上昇：</strong>created 2026-11-11＝公開約3日で1,449★・forks21（日平均約483★/日と本日計測で最速級）。AIチャット/エージェント一色のトレンドの中で希少なグラフィックス/低レイヤー題材が目を引いた格好だ。ライセンス未記載（beta段階）＝組込時は要確認。</p>
+
+<h4 id="sec-2">agentes-chat/agentes-chat（TypeScript・⭐1.3k）</h4>
+<p><strong>解決したい課題：</strong>人は Slack、AIは各ツールと、会話とエージェント操作が分断されがちで、機微データを外部SaaSに預ける不安もある。<strong>提供する機能：</strong>人と複数のAIエージェント（Claude/Codex/Gemini/Grok等）が<strong>同じチャンネル/DMで協働</strong>するセルフホスト型のOSS Slack代替。human-in-the-loop・computer-use・ブラウザ自動化・MCPを備える。<strong>なぜ急上昇：</strong>created 2026-11-09＝公開約5日で1,337★・forks227（日平均約267★/日）で、本日 GitHub Search の claude-code/mcp 両トピックに登場＝<strong>複数ソースで確認できる</strong>急上昇。セルフホストで機微データを自組織内に留められる点が、1人×複数PJ運用の設計参照になる。AGPL-3.0（SaaS提供時は要注意）。</p>
+
+<h4 id="sec-3">backnotprop/plannotator（TypeScript・⭐10.4k）</h4>
+<p><strong>解決したい課題：</strong>エージェントが出すプラン・仕様・差分・PRは量も粒度もバラバラで、人が「どこで止めて指示するか」を掴みにくい。<strong>提供する機能：</strong>エージェント生成のプラン/仕様/Markdown/HTMLや差分・PRを<strong>1つのInboxでレビュー→注釈→フィードバック送信</strong>できる human-in-the-loop のレビュー・ワークスペース（Claude Code/Codex/OpenCode/pi 等に対応）。<strong>なぜ急上昇：</strong>本日 Trending(daily) に<strong>当日+100★</strong>（総10,425★に対し率約1.0%）で登場。総スターは大きいが本日明確な増加があり採録。実行の可視化や自動ループとは別レイヤーの「レビュー/注釈」に特化している点が、要所で承認を挟みたい運用に直撃する。Apache-2.0。</p>
+
+<h4 id="sec-4">まとめ：自分が試すなら</h4>
+<p>いま自分の運用（1人×Claude Code×複数PJ横断）に最も刺さるのは <strong>plannotator</strong>。実行を速めるより「エージェント成果物を一箇所に集めて要所で止める」観測性が足りていないからだ。agentes-chat は将来の集約像（会議/タスク）の設計参照として読む価値がある。ANR は畑違いだが、“AI飽和の中で低レイヤーが刺さる”という需要の揺り戻しとして面白い。いずれも Tier B＝鵜呑みにせず評価枠で触る前提で。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://github.com/apex-compute/ANR" target="_blank" rel="noopener noreferrer"> apex-compute/ANR </a> </li><li> <a href="https://github.com/agentes-chat/agentes-chat" target="_blank" rel="noopener noreferrer"> agentes-chat/agentes-chat </a> </li><li> <a href="https://github.com/backnotprop/plannotator" target="_blank" rel="noopener noreferrer"> backnotprop/plannotator </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> apex-compute/ANR（C++・⭐1.4k） </a> </li><li> <a href="#sec-2" data-toc="sec-2"> agentes-chat/agentes-chat（TypeScript・⭐1.3k） </a> </li><li> <a href="#sec-3" data-toc="sec-3"> backnotprop/plannotator（TypeScript・⭐10.4k） </a> </li><li> <a href="#sec-4" data-toc="sec-4"> まとめ：自分が試すなら </a> </li> </ul> <div class="reading-box"> <div>📅 2026-11-14</div> <div>⏱ 読了 約4分</div> <div>🏷 GitHub Trending</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

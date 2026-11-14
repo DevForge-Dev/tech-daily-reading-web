@@ -1,0 +1,111 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>スクロール連動テキストハイライト — 読み進めに合わせ単語が“光る”。純CSS animation-timeline が2026-10にBaseline入り、JSゼロで実装 — デイリー技術深掘り 読み物</title><meta name="description" content="Apple/Stripe系LPで定番の read-along ハイライトを、GSAP/Motionなしの純CSSで。animation-timeline・scroll()/view()・animation-range が三大エンジン横断で動くようになり、Server Componentのまま'use client'不要で組める。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-14-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="スクロール連動テキストハイライト — 読み進めに合わせ単語が“光る”。純CSS animation-timeline が2026-10にBaseline入り、JSゼロで実装 — デイリー技術深掘り 読み物"><meta property="og:description" content="Apple/Stripe系LPで定番の read-along ハイライトを、GSAP/Motionなしの純CSSで。animation-timeline・scroll()/view()・animation-range が三大エンジン横断で動くようになり、Server Componentのまま'use client'不要で組める。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-14-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>スクロール連動テキストハイライト — 読み進めに合わせ単語が“光る”。純CSS animation-timeline が2026-10にBaseline入り、JSゼロで実装</h1> <p class="lede">Apple/Stripe系LPで定番の read-along ハイライトを、GSAP/Motionなしの純CSSで。animation-timeline・scroll()/view()・animation-range が三大エンジン横断で動くようになり、Server Componentのまま&#39;use client&#39;不要で組める。</p> <div class="meta"> <span>📅 2026年11月14日</span> <span>⏱ 約4分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="0"><p>長文のナラティブを「読ませる」ための定番演出に、本文をスクロールすると文章が1語ずつ暗→明に点灯していく <strong>read-along（読み進め）ハイライト</strong>がある。これまでは GSAP ScrollTrigger や Motion の <code>useScroll</code> でJS実装するのが普通だったが、今回の主眼は<strong>純CSSのスクロール連動アニメーションで完全にJSゼロ</strong>にできる段階に来たこと。</p>
+
+<h4 id="sec-1">なぜ“いま”か：対応状況が節目を越えた</h4>
+<p>CSSスクロール連動アニメーション（<code>animation-timeline</code> / <code>scroll()</code> / <code>view()</code> / <code>animation-range</code>）が <strong>2026年10月に Baseline “Newly available” 入り</strong>。Firefox 159 が既定で有効化し、Chrome/Edge 115+・Safari 26+ と合わせて三大エンジン横断で動く。「scroll-timeline はまだ実験的」という長年の但し書きが外れ、<strong>スクロールリスナーのJSを本当に捨てられる</strong>。ただし “Newly available” は旧端末には無いため、1〜2年は段階的強化（PE）での縮退設計が無難だ。</p>
+
+<h4 id="sec-2">仕組み：タイムラインの「出所」と「区間」を分けて考える</h4>
+<p>核は2プロパティ。<code>animation-timeline</code> が進捗の<strong>出所</strong>を決め、<code>animation-range</code> が<strong>どの区間で</strong>流すかを決める。<code>view()</code> は対象要素がスクロールポートを横切る可視進捗（「要素が入ってきた分だけ」）、<code>scroll()</code> は最寄りスクローラのスクロール量そのもの。読み進めの本命は、背の高いセクションを作って中身を <code>position: sticky</code> で画面に留め、そのスクロール量を<strong>名前付きタイムライン</strong>にして各語spanへ割り当てる方式だ。語ごとに <code>animation-range</code> を <code>--i</code>（語インデックス）/ <code>--n</code>（総数）から <code>calc()</code> でずらすと、左上から右下へ読み進むように順次点灯する。</p>
+
+<figure class='fig'><svg viewBox='0 0 600 220' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <rect x='0' y='0' width='600' height='220' fill='#f8fafc' rx='10'></rect>
+  <text x='300' y='26' text-anchor='middle' font-size='14' font-weight='bold' fill='#0f172a'>語ごとに animation-range をずらす＝スクロール%で順次点灯</text>
+  <text x='40' y='70' font-size='12' fill='#64748b'>scroll進捗</text>
+  <rect x='120' y='58' width='440' height='14' fill='#e2e8f0' rx='7'></rect>
+  <rect x='120' y='58' width='176' height='14' fill='#0f172a' rx='7'></rect>
+  <text x='300' y='95' text-anchor='middle' font-size='11' fill='#475569'>0%　　　　　　40%（現在地）　　　　　　100%</text>
+  <g font-size='13'>
+    <rect x='120' y='120' width='70' height='26' fill='#0f172a' rx='5'></rect><text x='155' y='138' text-anchor='middle' fill='#fff'>The</text>
+    <rect x='196' y='120' width='70' height='26' fill='#0f172a' rx='5'></rect><text x='231' y='138' text-anchor='middle' fill='#fff'>quick</text>
+    <rect x='272' y='120' width='64' height='26' fill='#334155' rx='5'></rect><text x='304' y='138' text-anchor='middle' fill='#e2e8f0'>brown</text>
+    <rect x='342' y='120' width='54' height='26' fill='#cbd5e1' rx='5'></rect><text x='369' y='138' text-anchor='middle' fill='#94a3b8'>fox</text>
+    <rect x='402' y='120' width='70' height='26' fill='#e2e8f0' rx='5'></rect><text x='437' y='138' text-anchor='middle' fill='#cbd5e1'>jumps</text>
+    <rect x='478' y='120' width='70' height='26' fill='#e2e8f0' rx='5'></rect><text x='513' y='138' text-anchor='middle' fill='#cbd5e1'>over</text>
+  </g>
+  <text x='155' y='164' text-anchor='middle' font-size='9' fill='#64748b'>既読=明</text>
+  <text x='369' y='164' text-anchor='middle' font-size='9' fill='#64748b'>点灯中</text>
+  <text x='513' y='164' text-anchor='middle' font-size='9' fill='#94a3b8'>未読=暗</text>
+  <rect x='120' y='182' width='428' height='24' fill='#fff' stroke='#cbd5e1' rx='5'></rect>
+  <text x='334' y='198' text-anchor='middle' font-size='11' fill='#334155'>animation-range: calc(--i / --n * 100%) calc((--i+1) / --n * 100%)</text>
+</svg><figcaption>図1：i番目の語は (i/n)〜((i+1)/n) の区間だけ点灯。スクロールが唯一の駆動源で、巻き戻すと消える。</figcaption></figure>
+
+<h4 id="sec-3">Next.js（App Router）での組み込み</h4>
+<p>うれしいのは <strong>Server Component のまま完結</strong>する点。語分割はサーバ側で <code>text.split(/(\s+)/)</code> して <code>&lt;span style={{'--i': i}}&gt;</code> を書き出すだけで、JSバンドル増ゼロ・ハイドレーションmismatchなし・CLS0（色変化はレイアウトに影響しない）。点灯CSSは globals.css に置く。PPR/ISR/SSG と無干渉で、<code>'use client'</code> 境界やハイドレーションコストを増やさないのが Motion/GSAP版との最大の差だ。</p>
+
+<pre><code>/* 名前付きタイムラインを各語へ割り当て */
+.read-scroller { scroll-timeline-name: --read; scroll-timeline-axis: block; }
+.word { color: oklch(60% 0 0 / 0.22); }            /* 未読=暗 */
+@supports (animation-timeline: scroll()) {
+  @media (prefers-reduced-motion: no-preference) {
+    .word {
+      animation: lightup linear both;
+      animation-timeline: --read;                  /* ← ショートハンドの“後”に個別宣言 */
+      animation-range: calc(var(--i)/var(--n)*100%)
+                       calc((var(--i)+1)/var(--n)*100%);
+    }
+  }
+}
+@keyframes lightup { to { color: oklch(96% 0 0 / 1); } }  /* 既読=明 */</code></pre>
+
+<h4 id="sec-4">落とし穴（重要）</h4>
+<p>最も事故るのが <strong><code>animation</code> ショートハンドが <code>animation-timeline</code> をリセットする</strong>点（MDN明記）。必ずショートハンドの<strong>後</strong>に timeline/range を個別宣言する。非対応ブラウザでは既定のドキュメントタイムラインで「1回だけ」再生されてしまうので、<strong>キーフレームの終了状態＝可読（明）</strong>にし、薄色とアニメ付与を <code>@supports (animation-timeline: scroll())</code> で囲うと非対応時は最初から明で安全。<code>background-clip: text</code> を使う見出しスイープ版は <code>-webkit-</code> 前置必須。アクセシビリティ面は「点灯だけで情報を伝えない／未読部分も読める最低限のコントラストを確保する」が原則だ。</p>
+
+<h4 id="sec-5">ひとことまとめ</h4>
+<p>read-along は<strong>サーバsplit＋純CSS</strong>でJSゼロ実装できる時代に。自分で試すなら、まず見出し1行の <code>view()</code> スイープから入れて、段落の順次点灯（名前付き <code>scroll()</code>）へ広げるのが堅い。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://web.dev/blog/web-platform-10-2026" target="_blank" rel="noopener noreferrer"> web.dev「New to the web platform in October」 </a> </li><li> <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/animation-timeline" target="_blank" rel="noopener noreferrer"> MDN animation-timeline </a> </li><li> <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/animation-range" target="_blank" rel="noopener noreferrer"> MDN animation-range </a> </li><li> <a href="https://scroll-driven-animations.style/" target="_blank" rel="noopener noreferrer"> scroll-driven-animations.style（公式デモ集） </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> なぜ“いま”か：対応状況が節目を越えた </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 仕組み：タイムラインの「出所」と「区間」を分けて考える </a> </li><li> <a href="#sec-3" data-toc="sec-3"> Next.js（App Router）での組み込み </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 落とし穴（重要） </a> </li><li> <a href="#sec-5" data-toc="sec-5"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-11-14</div> <div>⏱ 読了 約4分</div> <div>🏷 Next.js</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
