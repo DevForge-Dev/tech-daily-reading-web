@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-11-14T04:45:53.165Z",
+  "generatedAt": "2026-11-15T04:47:14.225Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,94 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "date": "2026-11-15",
+      "topic": "Claude Code",
+      "title": "Claude Code、latestが v2.1.319→v2.1.325 へ一気に前進 — サンドボックスBashを既定で権限フローへ、実験的Code Mode、既定Fableが5.2に",
+      "lede": "11/13リリースの v2.1.325 を筆頭に、v2.1.321〜325 を棚卸し。主題は「人が見ていない自動実行の安全側への締め直し」と「ツール呼び出しをコードで書くCode Mode」。数値は英語二次まとめ（havoptic）ベースで一次CHANGELOG未照合。",
+      "articleHtml": "<p>本セッションで <code>npm view</code> を確認したところ、Claude Code の <strong>latest タグが v2.1.319（11/6）から v2.1.325（11/13）へ</strong>一気に進んでいた（<code>stable</code> は v2.1.311 据え置き）。前日まで本読み物が追えていた範囲から数リリース飛んでいるため、v2.1.321〜325 をまとめて棚卸しする。なお一次 CHANGELOG は本セッションの可読範囲で v2.1.312（10/27）までしか見えず、以下は集約サイト havoptic（英語二次）に基づく＝綴り・細部は要確認。</p>\n\n<h4>何が変わったか：自動実行の「黙ったフォールバック」をやめる方向</h4>\n<p>最新 v2.1.325（約200項目）の軸はセキュリティと取り違え修正。<strong>zstd 圧縮応答のデコード処理</strong>のセキュリティ修正、<code>opusplan</code>/<code>haiku</code> 設定時にサブエージェントが plan 用モデルへ移されてしまう不具合、別モデルのサブエージェントがファイル読取/MCP 結果のサイズ見積りに<strong>メインセッションのモデルを誤用</strong>する不具合、そして多くのサードパーティゲートウェイ／Foundry で毎ターン context length エラーになり<strong>compaction（圧縮）が走らない</strong>不具合の修正が目立つ。挙動変更として、<strong>サンドボックス内 Bash が既定で通常の権限フローを通る</strong>ようになった（従来どおり無確認で走らせたいなら <code>sandbox.autoAllowBashIfSandboxed: true</code>）。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 232' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='0' y='0' width='600' height='232' fill='#fffbeb' rx='10'/>\n  <text x='300' y='26' text-anchor='middle' font-size='14' font-weight='bold' fill='#92400e'>v2.1.321 → 325 の三つの節目</text>\n  <g font-size='11.5' fill='#7c2d12'>\n    <rect x='24' y='44' width='168' height='156' rx='8' fill='#fff' stroke='#f59e0b'/>\n    <text x='108' y='66' text-anchor='middle' font-size='13' font-weight='bold' fill='#b45309'>v2.1.321 (11/9)</text>\n    <text x='36' y='90'>既定 Fable → 5.2(1M)</text>\n    <text x='36' y='110'>remote-control</text>\n    <text x='36' y='126'>  --settings &lt;file&gt;</text>\n    <text x='36' y='150'>セキュリティ修正:</text>\n    <text x='36' y='166'>MCP OAuth 秘密漏れ</text>\n    <text x='36' y='182'>cp/mv の deny 不適用</text>\n    <rect x='216' y='44' width='168' height='156' rx='8' fill='#fff' stroke='#f59e0b'/>\n    <text x='300' y='66' text-anchor='middle' font-size='13' font-weight='bold' fill='#b45309'>v2.1.323 (11/12)</text>\n    <text x='228' y='90'>実験的 Code Mode</text>\n    <text x='228' y='110'>plugin engines 版域</text>\n    <text x='228' y='126'>未知モデル既定</text>\n    <text x='228' y='142'>  200K → 1M</text>\n    <text x='228' y='166'>Artifact が .docx 対応</text>\n    <rect x='408' y='44' width='168' height='156' rx='8' fill='#fff' stroke='#ea580c' stroke-width='2'/>\n    <text x='492' y='66' text-anchor='middle' font-size='13' font-weight='bold' fill='#c2410c'>v2.1.325 (11/13)★</text>\n    <text x='420' y='90'>zstd デコード修正</text>\n    <text x='420' y='110'>サブエージェント</text>\n    <text x='420' y='126'>  モデル取り違え修正</text>\n    <text x='420' y='150'>GW の compaction 不発</text>\n    <text x='420' y='172'>sandbox Bash を</text>\n    <text x='420' y='188'>  既定で権限フローへ</text>\n  </g>\n</svg><figcaption>図1：latest を一気に押し上げた3リリースの要点（havoptic ベース・綴りは要確認）</figcaption></figure>\n\n<h4>仕組み：Code Mode ＝「ツールを直接呼ぶ」から「JSを書いて呼ぶ」へ</h4>\n<p>v2.1.323 の目玉が実験的 <strong>Code Mode</strong>。従来は Claude が個々のツールを1つずつ呼ぶが、Code Mode では <strong>Claude が JavaScript を書き、その中から自前のツール群を呼び出す</strong>（<code>code.claude.com/docs/en/code-mode</code> でオプトイン、組織単位で無効化可）。多数のツール呼び出しをループや分岐でまとめられるのが利点で、権限ダイアログの「Yes」系の語が届かない不具合や、スクリプト実行中に終了したセッションの再開が勝手に走らない修正も同梱。あわせて<strong>未知モデルIDの想定コンテキストを200K→1Mへ</strong>変更（200K維持は <code>/autocompact</code> か <code>CLAUDE_CODE_DISABLE_1M_CONTEXT=1</code>）。プラグインには <code>engines[\"claude-code\"]</code> の版レンジが入り、範囲外は導入/更新/ロードしない。</p>\n\n<h4>自分が試すなら</h4>\n<p>無人運用（scheduled/headless）を回している身としては、v2.1.325 の<strong>sandbox Bash 権限フロー化</strong>と <strong>compaction 不発修正</strong>が効く。前者はセキュリティ的に正しい締め直しだが、スケジュールタスクが Bash を自動実行する構成だと<strong>確認待ちで止まりかねない</strong>ので、無人側は <code>sandbox.autoAllowBashIfSandboxed: true</code> か <code>permissions.allow</code> の整備が要る。既定 Fable が 5.2（1Mコンテキスト）に替わった点も、長文の digest を一気に食わせる用途では追い風。</p>\n\n<h4>注意点</h4>\n<p>これらは<strong>英語の第三者集約（havoptic）由来で一次 CHANGELOG 未照合</strong>。env 変数名はページ側でアンダースコアが欠落表示される既知のクセがあり、綴りは実機で要確認。Code Mode は experimental で破壊的変更があり得るため、無人パイプラインへの即投入は避け、別ブランチで検証してから。</p>\n\n<p><strong>ひとこと：</strong>このサイクルは「速く自動で動かす」より「人が見ていない実行を安全側に倒す」方向が通底している。sandbox Bash の権限フロー化はその象徴で、自動運用勢は権限設定の棚卸しを一度やっておくと安心。</p>",
+      "sources": [
+        {
+          "title": "havoptic『Claude Code 2.1.325』（英語・二次まとめ）",
+          "url": "https://www.havoptic.com/r/claude-code-2.1.325"
+        },
+        {
+          "title": "havoptic『Claude Code 2.1.323』（英語・二次まとめ）",
+          "url": "https://www.havoptic.com/r/claude-code-2.1.323"
+        },
+        {
+          "title": "havoptic『Claude Code 2.1.321』（英語・二次まとめ）",
+          "url": "https://www.havoptic.com/r/claude-code-2.1.321"
+        }
+      ],
+      "id": "2026-11-15-claude-code"
+    },
+    {
+      "date": "2026-11-15",
+      "topic": "Next.js",
+      "title": "serverless Next.js のバックグラウンド処理 — after() の限界を越えて「定期実行／キュー／多段durable」を3層で使い分ける",
+      "lede": "「決済後にメール」「動画トランスコード」「毎朝レポート」を、リクエスト応答の外で確実に走らせたい。サーバーレスは常駐できないので、ジョブ実行を外部に委ね Next.js は呼ばれるエンドポイントに徹する。Vercel Cron／Upstash QStash／Inngest の3層を下から積む。",
+      "articleHtml": "<p>App Router の主戦場であるサーバーレス関数は「リクエストが来たら起動し、応答を返したら即終了」。<strong>常駐プロセス・ワーカー・インメモリキューを持てない</strong>（<code>setInterval</code> もスケール跨ぎで消える）。2026の定石は、ジョブ実行を外部サービスに委ね、<strong>Next.js 側は Route Handler として\"呼ばれる\"だけ</strong>にすることだ。</p>\n\n<h4>なぜ after() ではダメか</h4>\n<p><code>after()</code> は応答ストリーム完了後に副作用を走らせられ、PPR/Cache Components を壊さない点は優秀。だが<strong>永続性なし・自動リトライなし・DLQなし</strong>で、実行時間も <code>maxDuration</code> に縛られる＝落ちたら消える fire-and-forget。ロギングや分析の「ブロックしない副作用」専用で、<strong>必ず完了させたいジョブには不適</strong>だ。原則は「スケジュールとジョブ状態は外部の永続基盤に持たせ、Next.js は冪等な実行エンドポイントに徹する」。</p>\n\n<figure class='fig'><pre class='mermaid'>flowchart TD\n  A[\"ジョブが要る\"] --> B{\"失敗したら困る?\"}\n  B -->|\"いいえ(ログ/分析)\"| C[\"after() で十分\"]\n  B -->|\"はい\"| D{\"どんな形?\"}\n  D -->|\"決まった時刻に軽く叩く\"| E[\"Vercel Cron / Schedules\"]\n  D -->|\"任意URLを後で+リトライ+遅延\"| F[\"Upstash QStash\"]\n  D -->|\"多段/待機/分岐/fan-out\"| G[\"Inngest / Upstash Workflow\"]</pre><figcaption>図1：まず下から（Cron→QStash→Inngest）積む判断フロー</figcaption></figure>\n\n<h4>① Vercel Cron（＝定期HTTP ping）</h4>\n<p>リポジトリ root の <code>vercel.json</code> に <code>crons</code> を書き、その <code>path</code> の Route Handler が <code>GET</code> を export するだけ。Vercel が時刻になると<strong>本番デプロイのURLをGETで叩く</strong>（preview/ローカルでは発火しない）。公開URLなので <code>CRON_SECRET</code> を <code>Authorization: Bearer</code> で検証し不一致は401に。最重要の制限は<strong>リトライなし・ベストエフォート（取りこぼし/二重発火あり）・同時実行制御なし</strong>。Hobby は1日1回±59分、Pro は毎分。キューではないので、重い処理は②③へ逃がす。</p>\n\n<h4>② Upstash QStash（＝\"あなたのURLを呼ぶ\"HTTPキュー）</h4>\n<p>デプロイするワーカー不要。<code>publishJSON({ url, body })</code> で登録すると、QStash が指定URLへ POST し<strong>失敗で自動リトライ</strong>する。受け手は <code>verifySignatureAppRouter(handler)</code> でラップするだけ（<code>QSTASH_CURRENT/NEXT_SIGNING_KEY</code> を自動参照＝鍵ローテ用に2本）。<strong>リトライ・指数バックオフ・DLQ・遅延・1分粒度のcron・flow control</strong>（下流への秒間レート/並列制御）まで揃う。配信は at-least-once なので<strong>受け手は必ず冪等に</strong>。</p>\n\n<h4>③ Inngest（＝durableなステップ実行）</h4>\n<p>関数を <code>step</code> の列として書くと各 <code>step.run</code> がチェックポイント化され、途中失敗時は<strong>完了済みstepはキャッシュ再生し失敗stepだけ再実行</strong>。<code>app/api/inngest/route.ts</code> で <code>serve({ client, functions })</code>、トリガは <code>{ event }</code> か <code>{ cron }</code>。<code>step.sleep(\"wait\",\"3d\")</code> で「3日後にリマインド」が1関数で書ける。多段・分岐・待機・fan-out の確実なワークフロー向け。</p>\n\n<h4>注意点と使い分け</h4>\n<p>共通の落とし穴は<strong>非冪等な受け手</strong>（二重課金・多重メール）、署名/秘密の検証漏れ、<code>trailingSlash</code> のリダイレクトでcronが無言失敗、<code>CRON_SECRET</code> 変更を再デプロイせず無効のまま、など。各ライブラリ（<code>@upstash/qstash</code>・<code>inngest</code>）はAPI変化が速いのでバージョン固定を。<strong>まず Cron で足りるか→足りなければ QStash→ワークフロー性が要れば Inngest</strong>、と下から上げるのが無駄がない。完了後は <code>revalidateTag</code> で画面に反映する。</p>",
+      "sources": [
+        {
+          "title": "Vercel Cron Jobs（quickstart）",
+          "url": "https://vercel.com/docs/schedules/cron-jobs/quickstart"
+        },
+        {
+          "title": "Upstash『Serverless Background Jobs and Message Queues in 2026』",
+          "url": "https://upstash.com/blog/serverless-background-jobs-and-message-queues-every-major-option-in-2026"
+        },
+        {
+          "title": "Inngest vs Trigger.dev vs QStash（比較）",
+          "url": "https://www.pkgpulse.com/guides/inngest-vs-triggerdev-vs-qstash-serverless-durable-2026"
+        }
+      ],
+      "id": "2026-11-15-nextjs"
+    },
+    {
+      "date": "2026-11-15",
+      "topic": "Flutter",
+      "title": "Flutter 3.50 リリースノートを棚卸し — windowing APIの改名・新Sliver/Dialog API・最低AGP 9.1.1、そしてRiverpod 3のMutations",
+      "lede": "stable は 3.50.0 据え置き（hotfix 3.50.1 は公開約4日でも未登場＝初動は安定）。今日はリリースノート実体を読み解く。multi-window の API 改名、新API群、design library の正式deprecation。あわせて Riverpod 3 の experimental「Mutations」で送信中状態を型にする。",
+      "articleHtml": "<p>リリース状況から。stable は <strong>3.50.0 / Dart 3.14.0</strong>（11/11）が現在も最新で、公開直後の最初の hotfix <strong>3.50.1 はまだ出ていない</strong>（公開から約4日）。過去の「公開直後に回帰修正が連発」パターンは今回は起きておらず、初動は安定している。beta は同日に <strong>3.51.0-0.1.pre</strong>（Dart 3.15.0）。本番は 3.50.0 を新たな pin 基準に、別ジョブで 3.51 beta を緑化しておくのが定石だ。</p>\n\n<h4>3.50 で入った実体：API改名と新API</h4>\n<p>multi-window 周りが<strong>名前ごと整理</strong>された。<code>RegularWindow*→Window*</code> 改名、<code>sizedToContent→shrinkWrap</code> 改名（PR #189363）、Win32 の satellite windows 実装、macOS の size-to-content window 実装。旧 <code>RegularWindow</code> 参照のコードは改名追従が必要。新APIも多い：sliver を矩形/角丸でクリップする <code>SliverClipRect</code>/<code>SliverClipRRect</code>、<code>RawImage</code>/<code>RenderImage</code> に <code>blendMode</code>、<code>showDialog</code> に<strong>バリアを自前widgetで描ける</strong> <code>barrierBuilder</code>、<code>ListView.separated</code> に <code>itemExtentBuilder</code>（可変extent）、<code>MediaQuery</code> が <code>reduceMotion</code> アクセシビリティ対応、など。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 220' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='0' y='0' width='600' height='220' fill='#eff6ff' rx='10'/>\n  <text x='300' y='26' text-anchor='middle' font-size='14' font-weight='bold' fill='#02569B'>3.50 の破壊的変更＝アップグレード前チェック</text>\n  <g font-size='11.5'>\n    <rect x='24' y='42' width='264' height='70' rx='8' fill='#fff' stroke='#60a5fa'/>\n    <text x='36' y='62' font-weight='bold' fill='#1d4ed8'>改名（追従必須）</text>\n    <text x='36' y='82' fill='#334155'>RegularWindow* → Window*</text>\n    <text x='36' y='100' fill='#334155'>sizedToContent → shrinkWrap</text>\n    <rect x='312' y='42' width='264' height='70' rx='8' fill='#fff' stroke='#60a5fa'/>\n    <text x='324' y='62' font-weight='bold' fill='#1d4ed8'>CpuArch 統合</text>\n    <text x='324' y='82' fill='#334155'>x86_64 → x64</text>\n    <text x='324' y='100' fill='#334155'>Android/DarwinArch → CpuArch</text>\n    <rect x='24' y='124' width='264' height='72' rx='8' fill='#fff' stroke='#f59e0b'/>\n    <text x='36' y='144' font-weight='bold' fill='#b45309'>最低 AGP 9.1.1</text>\n    <text x='36' y='164' fill='#334155'>未満は Android ビルド不可</text>\n    <text x='36' y='182' fill='#334155'>→ Gradle/AGP を先に上げる</text>\n    <rect x='312' y='124' width='264' height='72' rx='8' fill='#fff' stroke='#f59e0b'/>\n    <text x='324' y='144' font-weight='bold' fill='#b45309'>design libs deprecation</text>\n    <text x='324' y='164' fill='#334155'>material_ui / cupertino_ui 分離</text>\n    <text x='324' y='182' fill='#334155'>→ dart fix --apply で寄せる</text>\n  </g>\n</svg><figcaption>図1：3.50 へ上げる前に当たる4つの破壊的変更</figcaption></figure>\n\n<h4>Riverpod 3 の Mutations（experimental）で「進行状態」を型にする</h4>\n<p>「送信中スピナー」等の進行状態を provider の state に持たせると UI 懸念が混ざる。<strong>Mutations</strong> はその loading/error/success の面倒を肩代わりする（codegen 無しの plain object）。宣言は <code>final addTodo = Mutation&lt;Todo&gt;();</code>、起動は <code>addTodo.run(ref, (tsx) async { … })</code>、購読は <code>ref.watch(addTodo)</code>。状態は <strong>MutationIdle / MutationPending / MutationError / MutationSuccess</strong> の4種で、UI は <code>switch</code> で分岐する。完了または全listener除去で自動的に Idle へ戻る。</p>\n\n<figure class='fig'><pre class='mermaid'>flowchart LR\n  A[\"MutationIdle\"] -->|\"run()\"| B[\"MutationPending\"]\n  B -->|\"成功\"| C[\"MutationSuccess\"]\n  B -->|\"失敗\"| D[\"MutationError\"]\n  C -->|\"完了/reset\"| A\n  D -->|\"完了/reset\"| A</pre><figcaption>図2：Mutation の状態遷移（UIはこの4状態をswitchする）</figcaption></figure>\n\n<h4>自分が試すなら・注意点</h4>\n<p>まず <code>flutter upgrade</code>→<code>flutter analyze</code> で改名漏れを洗い、<code>dart fix --apply</code> で design library import を寄せる。<strong>AGP 9.1.1 未満はビルドが通らない</strong>ので CI の Gradle/AGP を先に上げること。Mutations は<strong>experimental でメジャー無しに破壊的変更があり得る</strong>ため本番採用前に import を確認。hotfix 3.50.1 が出たら即追従で。</p>",
+      "sources": [
+        {
+          "title": "Flutter 3.50.0 release notes（docs.flutter.dev）",
+          "url": "https://docs.flutter.dev/release/release-notes/release-notes-3.50.0"
+        },
+        {
+          "title": "Mutations（riverpod.dev）",
+          "url": "https://riverpod.dev/docs/concepts2/mutations"
+        },
+        {
+          "title": "Flutter Versions（flutterreleases.com）",
+          "url": "https://flutterreleases.com/flutter-versions/"
+        }
+      ],
+      "id": "2026-11-15-flutter"
+    },
+    {
+      "date": "2026-11-15",
+      "topic": "GitHub Trending",
+      "title": "11/15の話題リポジトリ — WindowsでAPK直起動・DeepSeek公式チャットUI・WebGPU無限キャンバス、AI一色の中の「ローカルで軽く動く」3本",
+      "lede": "本日の急上昇は、AIチャット一色のトレンドの中で希少な「ローカル完結・低レイヤーの手触り」系が目立つ。Windowsで.apkをダブルクリック起動、バックエンド不要の静的チャットUI、WebGPUで数千ノードを捌くキャンバス。各リポジトリを「解決したい課題」と「提供する機能」に分けて読む。",
+      "articleHtml": "<p>今日のモメンタム上位3本は、ジャンルこそバラバラ（Androidランナー／チャットUI／グラフィックス）だが、<strong>重いインフラを立てず手元で軽く動く</strong>という一点で通じている。AIエージェント一色の局面で、こうした「低レイヤー・ローカル完結」の多様性枠が急伸しているのは、2026らしい揺り戻しだ。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 232' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='0' y='0' width='600' height='232' fill='#f0fdf4' rx='10'/>\n  <text x='300' y='24' text-anchor='middle' font-size='14' font-weight='bold' fill='#166534'>解決したい課題 → 提供する機能</text>\n  <g font-size='11'>\n    <line x1='150' y1='38' x2='150' y2='222' stroke='#bbf7d0'/>\n    <line x1='375' y1='38' x2='375' y2='222' stroke='#bbf7d0'/>\n    <text x='18' y='54' font-weight='bold' fill='#166534'>repo</text>\n    <text x='160' y='54' font-weight='bold' fill='#166534'>課題</text>\n    <text x='385' y='54' font-weight='bold' fill='#166534'>機能</text>\n    <line x1='12' y1='62' x2='588' y2='62' stroke='#bbf7d0'/>\n    <text x='18' y='92' font-weight='bold' fill='#14532d'>apkstart</text>\n    <text x='18' y='108' fill='#3f6212'>JS ⭐3.5k</text>\n    <text x='160' y='88' fill='#334155'>WinでAndroidアプリを</text>\n    <text x='160' y='104' fill='#334155'>使うのが面倒</text>\n    <text x='385' y='88' fill='#334155'>.apkをダブルクリックで</text>\n    <text x='385' y='104' fill='#334155'>独立窓＋図标起動</text>\n    <line x1='12' y1='122' x2='588' y2='122' stroke='#bbf7d0'/>\n    <text x='18' y='150' font-weight='bold' fill='#14532d'>chat-demo</text>\n    <text x='18' y='166' fill='#3f6212'>TS ⭐1.7k</text>\n    <text x='160' y='146' fill='#334155'>API試用にバックエンド</text>\n    <text x='160' y='162' fill='#334155'>構築が要る</text>\n    <text x='385' y='146' fill='#334155'>静的HTMLがブラウザから</text>\n    <text x='385' y='162' fill='#334155'>API直結（ビルド不要）</text>\n    <line x1='12' y1='180' x2='588' y2='180' stroke='#bbf7d0'/>\n    <text x='18' y='206' font-weight='bold' fill='#14532d'>gpucanvas</text>\n    <text x='18' y='222' fill='#3f6212'>TS ⭐419</text>\n    <text x='160' y='204' fill='#334155'>DOM数千ノードで</text>\n    <text x='160' y='220' fill='#334155'>描画が重い</text>\n    <text x='385' y='204' fill='#334155'>WebGPUで描画、操作は</text>\n    <text x='385' y='220' fill='#334155'>实要素に届く無限キャンバス</text>\n  </g>\n</svg><figcaption>図1：今日の3本を「課題→機能」で一望</figcaption></figure>\n\n<h4>RoutineMiku/apkstart（JavaScript・⭐3.5k）</h4>\n<p><strong>解決したい課題：</strong>Android アプリを Windows で使うには従来エミュレータの重い UI を開く必要があった。<strong>提供する機能：</strong>.apk を関連付けておけば<strong>ダブルクリックで解析→インストール→デスクトップ図标生成まで模拟器UIを一切開かず完結</strong>し、各アプリが独立ウィンドウ＋開始メニュー検索で動く（自前QEMUランタイム）。壳層は第三者依存ゼロ（ZIP/PNG/ICO/AXML解析も手書き）で空闲自動回収＝極致轻量。本日 Trendshift 日次 +184 で当日トップ級（公開約16日で3,500★）、AI一色のトレンドで希少な非AI・システム題材が刺さった。MIT。</p>\n\n<h4>deepseek-ai/chat-demo（TypeScript・⭐1.7k）</h4>\n<p><strong>解決したい課題：</strong>LLM API を試すのにアプリ用バックエンドを立てるのは重い。<strong>提供する機能：</strong>DeepSeek 公式org製の<strong>バックエンド不要・ブラウザ→API直結の静的チャットUI</strong>。配布zipを解凍して <code>index.html</code> をダブルクリックすればビルド不要でローカル起動し、初回に API キーを入れるだけ。公式リファレンス実装として、公開約3日で1,723★（日平均約648★/日＝本日最速級）、Trendshift 日次 +169 の当日モメンタム筆頭。MIT。</p>\n\n<h4>berkantay/gpucanvas（TypeScript・⭐419）</h4>\n<p><strong>解決したい課題：</strong>数千のライブ DOM ノードを無限キャンバスに載せると描画が重い。<strong>提供する機能：</strong>描画を <strong>WebGPU の1インスタンスパスに肩代わり</strong>させ、5,000枚のライブReact画面でもパン/ズームがDOMに触れないのに<strong>クリック/入力/stateは实元素へ届く</strong>。ダブルクリックでコンポーネント階層にドリル、移動/リサイズ、シェーダ、そしてAIエージェントが要素を読んで指差せる。公開約2日で419★（率約49%/日換算）。WebGPU/グラフィックスの多様性枠。MIT。</p>\n\n<h4>ひとこと</h4>\n<p>自分が試すなら、まず <strong>chat-demo</strong>（ビルド不要でDeepSeek APIの手触りをすぐ確認できる）と、UI実験用に <strong>gpucanvas</strong>（大量ノードのキャンバス表現の下敷き）。apkstart は Windows 環境限定だが「アプリを独立窓でネイティブ風に」という発想自体が参考になる。3本とも MIT で、読んで学ぶ素材として素直だ。</p>",
+      "sources": [
+        {
+          "title": "RoutineMiku/apkstart",
+          "url": "https://github.com/RoutineMiku/apkstart"
+        },
+        {
+          "title": "deepseek-ai/chat-demo",
+          "url": "https://github.com/deepseek-ai/chat-demo"
+        },
+        {
+          "title": "berkantay/gpucanvas",
+          "url": "https://github.com/berkantay/gpucanvas"
+        }
+      ],
+      "id": "2026-11-15-github-trending"
+    },
     {
       "id": "2026-11-14-claude-code",
       "date": "2026-11-14",
