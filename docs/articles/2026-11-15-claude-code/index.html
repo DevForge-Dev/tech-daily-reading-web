@@ -1,0 +1,103 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Claude Code、latestが v2.1.319→v2.1.325 へ一気に前進 — サンドボックスBashを既定で権限フローへ、実験的Code Mode、既定Fableが5.2に — デイリー技術深掘り 読み物</title><meta name="description" content="11/13リリースの v2.1.325 を筆頭に、v2.1.321〜325 を棚卸し。主題は「人が見ていない自動実行の安全側への締め直し」と「ツール呼び出しをコードで書くCode Mode」。数値は英語二次まとめ（havoptic）ベースで一次CHANGELOG未照合。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-15-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Claude Code、latestが v2.1.319→v2.1.325 へ一気に前進 — サンドボックスBashを既定で権限フローへ、実験的Code Mode、既定Fableが5.2に — デイリー技術深掘り 読み物"><meta property="og:description" content="11/13リリースの v2.1.325 を筆頭に、v2.1.321〜325 を棚卸し。主題は「人が見ていない自動実行の安全側への締め直し」と「ツール呼び出しをコードで書くCode Mode」。数値は英語二次まとめ（havoptic）ベースで一次CHANGELOG未照合。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-15-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>Claude Code、latestが v2.1.319→v2.1.325 へ一気に前進 — サンドボックスBashを既定で権限フローへ、実験的Code Mode、既定Fableが5.2に</h1> <p class="lede">11/13リリースの v2.1.325 を筆頭に、v2.1.321〜325 を棚卸し。主題は「人が見ていない自動実行の安全側への締め直し」と「ツール呼び出しをコードで書くCode Mode」。数値は英語二次まとめ（havoptic）ベースで一次CHANGELOG未照合。</p> <div class="meta"> <span>📅 2026年11月15日</span> <span>⏱ 約4分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="0"><p>本セッションで <code>npm view</code> を確認したところ、Claude Code の <strong>latest タグが v2.1.319（11/6）から v2.1.325（11/13）へ</strong>一気に進んでいた（<code>stable</code> は v2.1.311 据え置き）。前日まで本読み物が追えていた範囲から数リリース飛んでいるため、v2.1.321〜325 をまとめて棚卸しする。なお一次 CHANGELOG は本セッションの可読範囲で v2.1.312（10/27）までしか見えず、以下は集約サイト havoptic（英語二次）に基づく＝綴り・細部は要確認。</p>
+
+<h4 id="sec-1">何が変わったか：自動実行の「黙ったフォールバック」をやめる方向</h4>
+<p>最新 v2.1.325（約200項目）の軸はセキュリティと取り違え修正。<strong>zstd 圧縮応答のデコード処理</strong>のセキュリティ修正、<code>opusplan</code>/<code>haiku</code> 設定時にサブエージェントが plan 用モデルへ移されてしまう不具合、別モデルのサブエージェントがファイル読取/MCP 結果のサイズ見積りに<strong>メインセッションのモデルを誤用</strong>する不具合、そして多くのサードパーティゲートウェイ／Foundry で毎ターン context length エラーになり<strong>compaction（圧縮）が走らない</strong>不具合の修正が目立つ。挙動変更として、<strong>サンドボックス内 Bash が既定で通常の権限フローを通る</strong>ようになった（従来どおり無確認で走らせたいなら <code>sandbox.autoAllowBashIfSandboxed: true</code>）。</p>
+
+<figure class='fig'><svg viewBox='0 0 600 232' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <rect x='0' y='0' width='600' height='232' fill='#fffbeb' rx='10'></rect>
+  <text x='300' y='26' text-anchor='middle' font-size='14' font-weight='bold' fill='#92400e'>v2.1.321 → 325 の三つの節目</text>
+  <g font-size='11.5' fill='#7c2d12'>
+    <rect x='24' y='44' width='168' height='156' rx='8' fill='#fff' stroke='#f59e0b'></rect>
+    <text x='108' y='66' text-anchor='middle' font-size='13' font-weight='bold' fill='#b45309'>v2.1.321 (11/9)</text>
+    <text x='36' y='90'>既定 Fable → 5.2(1M)</text>
+    <text x='36' y='110'>remote-control</text>
+    <text x='36' y='126'>  --settings &lt;file&gt;</text>
+    <text x='36' y='150'>セキュリティ修正:</text>
+    <text x='36' y='166'>MCP OAuth 秘密漏れ</text>
+    <text x='36' y='182'>cp/mv の deny 不適用</text>
+    <rect x='216' y='44' width='168' height='156' rx='8' fill='#fff' stroke='#f59e0b'></rect>
+    <text x='300' y='66' text-anchor='middle' font-size='13' font-weight='bold' fill='#b45309'>v2.1.323 (11/12)</text>
+    <text x='228' y='90'>実験的 Code Mode</text>
+    <text x='228' y='110'>plugin engines 版域</text>
+    <text x='228' y='126'>未知モデル既定</text>
+    <text x='228' y='142'>  200K → 1M</text>
+    <text x='228' y='166'>Artifact が .docx 対応</text>
+    <rect x='408' y='44' width='168' height='156' rx='8' fill='#fff' stroke='#ea580c' stroke-width='2'></rect>
+    <text x='492' y='66' text-anchor='middle' font-size='13' font-weight='bold' fill='#c2410c'>v2.1.325 (11/13)★</text>
+    <text x='420' y='90'>zstd デコード修正</text>
+    <text x='420' y='110'>サブエージェント</text>
+    <text x='420' y='126'>  モデル取り違え修正</text>
+    <text x='420' y='150'>GW の compaction 不発</text>
+    <text x='420' y='172'>sandbox Bash を</text>
+    <text x='420' y='188'>  既定で権限フローへ</text>
+  </g>
+</svg><figcaption>図1：latest を一気に押し上げた3リリースの要点（havoptic ベース・綴りは要確認）</figcaption></figure>
+
+<h4 id="sec-2">仕組み：Code Mode ＝「ツールを直接呼ぶ」から「JSを書いて呼ぶ」へ</h4>
+<p>v2.1.323 の目玉が実験的 <strong>Code Mode</strong>。従来は Claude が個々のツールを1つずつ呼ぶが、Code Mode では <strong>Claude が JavaScript を書き、その中から自前のツール群を呼び出す</strong>（<code>code.claude.com/docs/en/code-mode</code> でオプトイン、組織単位で無効化可）。多数のツール呼び出しをループや分岐でまとめられるのが利点で、権限ダイアログの「Yes」系の語が届かない不具合や、スクリプト実行中に終了したセッションの再開が勝手に走らない修正も同梱。あわせて<strong>未知モデルIDの想定コンテキストを200K→1Mへ</strong>変更（200K維持は <code>/autocompact</code> か <code>CLAUDE_CODE_DISABLE_1M_CONTEXT=1</code>）。プラグインには <code>engines["claude-code"]</code> の版レンジが入り、範囲外は導入/更新/ロードしない。</p>
+
+<h4 id="sec-3">自分が試すなら</h4>
+<p>無人運用（scheduled/headless）を回している身としては、v2.1.325 の<strong>sandbox Bash 権限フロー化</strong>と <strong>compaction 不発修正</strong>が効く。前者はセキュリティ的に正しい締め直しだが、スケジュールタスクが Bash を自動実行する構成だと<strong>確認待ちで止まりかねない</strong>ので、無人側は <code>sandbox.autoAllowBashIfSandboxed: true</code> か <code>permissions.allow</code> の整備が要る。既定 Fable が 5.2（1Mコンテキスト）に替わった点も、長文の digest を一気に食わせる用途では追い風。</p>
+
+<h4 id="sec-4">注意点</h4>
+<p>これらは<strong>英語の第三者集約（havoptic）由来で一次 CHANGELOG 未照合</strong>。env 変数名はページ側でアンダースコアが欠落表示される既知のクセがあり、綴りは実機で要確認。Code Mode は experimental で破壊的変更があり得るため、無人パイプラインへの即投入は避け、別ブランチで検証してから。</p>
+
+<p><strong>ひとこと：</strong>このサイクルは「速く自動で動かす」より「人が見ていない実行を安全側に倒す」方向が通底している。sandbox Bash の権限フロー化はその象徴で、自動運用勢は権限設定の棚卸しを一度やっておくと安心。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://www.havoptic.com/r/claude-code-2.1.325" target="_blank" rel="noopener noreferrer"> havoptic『Claude Code 2.1.325』（英語・二次まとめ） </a> </li><li> <a href="https://www.havoptic.com/r/claude-code-2.1.323" target="_blank" rel="noopener noreferrer"> havoptic『Claude Code 2.1.323』（英語・二次まとめ） </a> </li><li> <a href="https://www.havoptic.com/r/claude-code-2.1.321" target="_blank" rel="noopener noreferrer"> havoptic『Claude Code 2.1.321』（英語・二次まとめ） </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 何が変わったか：自動実行の「黙ったフォールバック」をやめる方向 </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 仕組み：Code Mode ＝「ツールを直接呼ぶ」から「JSを書いて呼ぶ」へ </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 自分が試すなら </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 注意点 </a> </li> </ul> <div class="reading-box"> <div>📅 2026-11-15</div> <div>⏱ 読了 約4分</div> <div>🏷 Claude Code</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

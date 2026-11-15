@@ -1,0 +1,82 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>serverless Next.js のバックグラウンド処理 — after() の限界を越えて「定期実行／キュー／多段durable」を3層で使い分ける — デイリー技術深掘り 読み物</title><meta name="description" content="「決済後にメール」「動画トランスコード」「毎朝レポート」を、リクエスト応答の外で確実に走らせたい。サーバーレスは常駐できないので、ジョブ実行を外部に委ね Next.js は呼ばれるエンドポイントに徹する。Vercel Cron／Upstash QStash／Inngest の3層を下から積む。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-15-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="serverless Next.js のバックグラウンド処理 — after() の限界を越えて「定期実行／キュー／多段durable」を3層で使い分ける — デイリー技術深掘り 読み物"><meta property="og:description" content="「決済後にメール」「動画トランスコード」「毎朝レポート」を、リクエスト応答の外で確実に走らせたい。サーバーレスは常駐できないので、ジョブ実行を外部に委ね Next.js は呼ばれるエンドポイントに徹する。Vercel Cron／Upstash QStash／Inngest の3層を下から積む。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-15-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>serverless Next.js のバックグラウンド処理 — after() の限界を越えて「定期実行／キュー／多段durable」を3層で使い分ける</h1> <p class="lede">「決済後にメール」「動画トランスコード」「毎朝レポート」を、リクエスト応答の外で確実に走らせたい。サーバーレスは常駐できないので、ジョブ実行を外部に委ね Next.js は呼ばれるエンドポイントに徹する。Vercel Cron／Upstash QStash／Inngest の3層を下から積む。</p> <div class="meta"> <span>📅 2026年11月15日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="1"><p>App Router の主戦場であるサーバーレス関数は「リクエストが来たら起動し、応答を返したら即終了」。<strong>常駐プロセス・ワーカー・インメモリキューを持てない</strong>（<code>setInterval</code> もスケール跨ぎで消える）。2026の定石は、ジョブ実行を外部サービスに委ね、<strong>Next.js 側は Route Handler として"呼ばれる"だけ</strong>にすることだ。</p>
+
+<h4 id="sec-1">なぜ after() ではダメか</h4>
+<p><code>after()</code> は応答ストリーム完了後に副作用を走らせられ、PPR/Cache Components を壊さない点は優秀。だが<strong>永続性なし・自動リトライなし・DLQなし</strong>で、実行時間も <code>maxDuration</code> に縛られる＝落ちたら消える fire-and-forget。ロギングや分析の「ブロックしない副作用」専用で、<strong>必ず完了させたいジョブには不適</strong>だ。原則は「スケジュールとジョブ状態は外部の永続基盤に持たせ、Next.js は冪等な実行エンドポイントに徹する」。</p>
+
+<figure class='fig'><pre class='mermaid'>flowchart TD
+  A["ジョブが要る"] --> B{"失敗したら困る?"}
+  B -->|"いいえ(ログ/分析)"| C["after() で十分"]
+  B -->|"はい"| D{"どんな形?"}
+  D -->|"決まった時刻に軽く叩く"| E["Vercel Cron / Schedules"]
+  D -->|"任意URLを後で+リトライ+遅延"| F["Upstash QStash"]
+  D -->|"多段/待機/分岐/fan-out"| G["Inngest / Upstash Workflow"]</pre><figcaption>図1：まず下から（Cron→QStash→Inngest）積む判断フロー</figcaption></figure>
+
+<h4 id="sec-2">① Vercel Cron（＝定期HTTP ping）</h4>
+<p>リポジトリ root の <code>vercel.json</code> に <code>crons</code> を書き、その <code>path</code> の Route Handler が <code>GET</code> を export するだけ。Vercel が時刻になると<strong>本番デプロイのURLをGETで叩く</strong>（preview/ローカルでは発火しない）。公開URLなので <code>CRON_SECRET</code> を <code>Authorization: Bearer</code> で検証し不一致は401に。最重要の制限は<strong>リトライなし・ベストエフォート（取りこぼし/二重発火あり）・同時実行制御なし</strong>。Hobby は1日1回±59分、Pro は毎分。キューではないので、重い処理は②③へ逃がす。</p>
+
+<h4 id="sec-3">② Upstash QStash（＝"あなたのURLを呼ぶ"HTTPキュー）</h4>
+<p>デプロイするワーカー不要。<code>publishJSON({ url, body })</code> で登録すると、QStash が指定URLへ POST し<strong>失敗で自動リトライ</strong>する。受け手は <code>verifySignatureAppRouter(handler)</code> でラップするだけ（<code>QSTASH_CURRENT/NEXT_SIGNING_KEY</code> を自動参照＝鍵ローテ用に2本）。<strong>リトライ・指数バックオフ・DLQ・遅延・1分粒度のcron・flow control</strong>（下流への秒間レート/並列制御）まで揃う。配信は at-least-once なので<strong>受け手は必ず冪等に</strong>。</p>
+
+<h4 id="sec-4">③ Inngest（＝durableなステップ実行）</h4>
+<p>関数を <code>step</code> の列として書くと各 <code>step.run</code> がチェックポイント化され、途中失敗時は<strong>完了済みstepはキャッシュ再生し失敗stepだけ再実行</strong>。<code>app/api/inngest/route.ts</code> で <code>serve({ client, functions })</code>、トリガは <code>{ event }</code> か <code>{ cron }</code>。<code>step.sleep("wait","3d")</code> で「3日後にリマインド」が1関数で書ける。多段・分岐・待機・fan-out の確実なワークフロー向け。</p>
+
+<h4 id="sec-5">注意点と使い分け</h4>
+<p>共通の落とし穴は<strong>非冪等な受け手</strong>（二重課金・多重メール）、署名/秘密の検証漏れ、<code>trailingSlash</code> のリダイレクトでcronが無言失敗、<code>CRON_SECRET</code> 変更を再デプロイせず無効のまま、など。各ライブラリ（<code>@upstash/qstash</code>・<code>inngest</code>）はAPI変化が速いのでバージョン固定を。<strong>まず Cron で足りるか→足りなければ QStash→ワークフロー性が要れば Inngest</strong>、と下から上げるのが無駄がない。完了後は <code>revalidateTag</code> で画面に反映する。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://vercel.com/docs/schedules/cron-jobs/quickstart" target="_blank" rel="noopener noreferrer"> Vercel Cron Jobs（quickstart） </a> </li><li> <a href="https://upstash.com/blog/serverless-background-jobs-and-message-queues-every-major-option-in-2026" target="_blank" rel="noopener noreferrer"> Upstash『Serverless Background Jobs and Message Queues in 2026』 </a> </li><li> <a href="https://www.pkgpulse.com/guides/inngest-vs-triggerdev-vs-qstash-serverless-durable-2026" target="_blank" rel="noopener noreferrer"> Inngest vs Trigger.dev vs QStash（比較） </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> なぜ after() ではダメか </a> </li><li> <a href="#sec-2" data-toc="sec-2"> ① Vercel Cron（＝定期HTTP ping） </a> </li><li> <a href="#sec-3" data-toc="sec-3"> ② Upstash QStash（＝&quot;あなたのURLを呼ぶ&quot;HTTPキュー） </a> </li><li> <a href="#sec-4" data-toc="sec-4"> ③ Inngest（＝durableなステップ実行） </a> </li><li> <a href="#sec-5" data-toc="sec-5"> 注意点と使い分け </a> </li> </ul> <div class="reading-box"> <div>📅 2026-11-15</div> <div>⏱ 読了 約3分</div> <div>🏷 Next.js</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

@@ -1,0 +1,98 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Flutter 3.50 リリースノートを棚卸し — windowing APIの改名・新Sliver/Dialog API・最低AGP 9.1.1、そしてRiverpod 3のMutations — デイリー技術深掘り 読み物</title><meta name="description" content="stable は 3.50.0 据え置き（hotfix 3.50.1 は公開約4日でも未登場＝初動は安定）。今日はリリースノート実体を読み解く。multi-window の API 改名、新API群、design library の正式deprecation。あわせて Riverpod 3 の experimental「Mutations」で送信中状態を型にする。"><meta name="theme-color" content="#0277bd"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-15-flutter/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Flutter 3.50 リリースノートを棚卸し — windowing APIの改名・新Sliver/Dialog API・最低AGP 9.1.1、そしてRiverpod 3のMutations — デイリー技術深掘り 読み物"><meta property="og:description" content="stable は 3.50.0 据え置き（hotfix 3.50.1 は公開約4日でも未登場＝初動は安定）。今日はリリースノート実体を読み解く。multi-window の API 改名、新API群、design library の正式deprecation。あわせて Riverpod 3 の experimental「Mutations」で送信中状態を型にする。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-15-flutter/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #29b6f6, #01579b)"> <span class="glyph" aria-hidden="true">◆</span> <div class="kicker">Flutter</div> <h1>Flutter 3.50 リリースノートを棚卸し — windowing APIの改名・新Sliver/Dialog API・最低AGP 9.1.1、そしてRiverpod 3のMutations</h1> <p class="lede">stable は 3.50.0 据え置き（hotfix 3.50.1 は公開約4日でも未登場＝初動は安定）。今日はリリースノート実体を読み解く。multi-window の API 改名、新API群、design library の正式deprecation。あわせて Riverpod 3 の experimental「Mutations」で送信中状態を型にする。</p> <div class="meta"> <span>📅 2026年11月15日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#0277bd"> <div> <article class="prose" data-has-mermaid="1"><p>リリース状況から。stable は <strong>3.50.0 / Dart 3.14.0</strong>（11/11）が現在も最新で、公開直後の最初の hotfix <strong>3.50.1 はまだ出ていない</strong>（公開から約4日）。過去の「公開直後に回帰修正が連発」パターンは今回は起きておらず、初動は安定している。beta は同日に <strong>3.51.0-0.1.pre</strong>（Dart 3.15.0）。本番は 3.50.0 を新たな pin 基準に、別ジョブで 3.51 beta を緑化しておくのが定石だ。</p>
+
+<h4 id="sec-1">3.50 で入った実体：API改名と新API</h4>
+<p>multi-window 周りが<strong>名前ごと整理</strong>された。<code>RegularWindow*→Window*</code> 改名、<code>sizedToContent→shrinkWrap</code> 改名（PR #189363）、Win32 の satellite windows 実装、macOS の size-to-content window 実装。旧 <code>RegularWindow</code> 参照のコードは改名追従が必要。新APIも多い：sliver を矩形/角丸でクリップする <code>SliverClipRect</code>/<code>SliverClipRRect</code>、<code>RawImage</code>/<code>RenderImage</code> に <code>blendMode</code>、<code>showDialog</code> に<strong>バリアを自前widgetで描ける</strong> <code>barrierBuilder</code>、<code>ListView.separated</code> に <code>itemExtentBuilder</code>（可変extent）、<code>MediaQuery</code> が <code>reduceMotion</code> アクセシビリティ対応、など。</p>
+
+<figure class='fig'><svg viewBox='0 0 600 220' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <rect x='0' y='0' width='600' height='220' fill='#eff6ff' rx='10'></rect>
+  <text x='300' y='26' text-anchor='middle' font-size='14' font-weight='bold' fill='#02569B'>3.50 の破壊的変更＝アップグレード前チェック</text>
+  <g font-size='11.5'>
+    <rect x='24' y='42' width='264' height='70' rx='8' fill='#fff' stroke='#60a5fa'></rect>
+    <text x='36' y='62' font-weight='bold' fill='#1d4ed8'>改名（追従必須）</text>
+    <text x='36' y='82' fill='#334155'>RegularWindow* → Window*</text>
+    <text x='36' y='100' fill='#334155'>sizedToContent → shrinkWrap</text>
+    <rect x='312' y='42' width='264' height='70' rx='8' fill='#fff' stroke='#60a5fa'></rect>
+    <text x='324' y='62' font-weight='bold' fill='#1d4ed8'>CpuArch 統合</text>
+    <text x='324' y='82' fill='#334155'>x86_64 → x64</text>
+    <text x='324' y='100' fill='#334155'>Android/DarwinArch → CpuArch</text>
+    <rect x='24' y='124' width='264' height='72' rx='8' fill='#fff' stroke='#f59e0b'></rect>
+    <text x='36' y='144' font-weight='bold' fill='#b45309'>最低 AGP 9.1.1</text>
+    <text x='36' y='164' fill='#334155'>未満は Android ビルド不可</text>
+    <text x='36' y='182' fill='#334155'>→ Gradle/AGP を先に上げる</text>
+    <rect x='312' y='124' width='264' height='72' rx='8' fill='#fff' stroke='#f59e0b'></rect>
+    <text x='324' y='144' font-weight='bold' fill='#b45309'>design libs deprecation</text>
+    <text x='324' y='164' fill='#334155'>material_ui / cupertino_ui 分離</text>
+    <text x='324' y='182' fill='#334155'>→ dart fix --apply で寄せる</text>
+  </g>
+</svg><figcaption>図1：3.50 へ上げる前に当たる4つの破壊的変更</figcaption></figure>
+
+<h4 id="sec-2">Riverpod 3 の Mutations（experimental）で「進行状態」を型にする</h4>
+<p>「送信中スピナー」等の進行状態を provider の state に持たせると UI 懸念が混ざる。<strong>Mutations</strong> はその loading/error/success の面倒を肩代わりする（codegen 無しの plain object）。宣言は <code>final addTodo = Mutation&lt;Todo&gt;();</code>、起動は <code>addTodo.run(ref, (tsx) async { … })</code>、購読は <code>ref.watch(addTodo)</code>。状態は <strong>MutationIdle / MutationPending / MutationError / MutationSuccess</strong> の4種で、UI は <code>switch</code> で分岐する。完了または全listener除去で自動的に Idle へ戻る。</p>
+
+<figure class='fig'><pre class='mermaid'>flowchart LR
+  A["MutationIdle"] -->|"run()"| B["MutationPending"]
+  B -->|"成功"| C["MutationSuccess"]
+  B -->|"失敗"| D["MutationError"]
+  C -->|"完了/reset"| A
+  D -->|"完了/reset"| A</pre><figcaption>図2：Mutation の状態遷移（UIはこの4状態をswitchする）</figcaption></figure>
+
+<h4 id="sec-3">自分が試すなら・注意点</h4>
+<p>まず <code>flutter upgrade</code>→<code>flutter analyze</code> で改名漏れを洗い、<code>dart fix --apply</code> で design library import を寄せる。<strong>AGP 9.1.1 未満はビルドが通らない</strong>ので CI の Gradle/AGP を先に上げること。Mutations は<strong>experimental でメジャー無しに破壊的変更があり得る</strong>ため本番採用前に import を確認。hotfix 3.50.1 が出たら即追従で。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://docs.flutter.dev/release/release-notes/release-notes-3.50.0" target="_blank" rel="noopener noreferrer"> Flutter 3.50.0 release notes（docs.flutter.dev） </a> </li><li> <a href="https://riverpod.dev/docs/concepts2/mutations" target="_blank" rel="noopener noreferrer"> Mutations（riverpod.dev） </a> </li><li> <a href="https://flutterreleases.com/flutter-versions/" target="_blank" rel="noopener noreferrer"> Flutter Versions（flutterreleases.com） </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 3.50 で入った実体：API改名と新API </a> </li><li> <a href="#sec-2" data-toc="sec-2"> Riverpod 3 の Mutations（experimental）で「進行状態」を型にする </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 自分が試すなら・注意点 </a> </li> </ul> <div class="reading-box"> <div>📅 2026-11-15</div> <div>⏱ 読了 約3分</div> <div>🏷 Flutter</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
