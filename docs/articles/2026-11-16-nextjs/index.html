@@ -1,0 +1,100 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>animation-composition で複数アニメを「重ねて」合成する — transformの上書き合戦を1要素で解決（add／accumulate／replace） — デイリー技術深掘り 読み物</title><meta name="description" content="1要素に複数の@keyframesを当て両方がtransformを触ると、素直に書けば後勝ちで前が丸ごと消える。animation-compositionは合成の「仕方」をreplace/add/accumulateで宣言するプロパティ。Baseline Widely available、App RouterではServer ComponentのままJSバンドル増ゼロで使える。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-16-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="animation-composition で複数アニメを「重ねて」合成する — transformの上書き合戦を1要素で解決（add／accumulate／replace） — デイリー技術深掘り 読み物"><meta property="og:description" content="1要素に複数の@keyframesを当て両方がtransformを触ると、素直に書けば後勝ちで前が丸ごと消える。animation-compositionは合成の「仕方」をreplace/add/accumulateで宣言するプロパティ。Baseline Widely available、App RouterではServer ComponentのままJSバンドル増ゼロで使える。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-16-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>animation-composition で複数アニメを「重ねて」合成する — transformの上書き合戦を1要素で解決（add／accumulate／replace）</h1> <p class="lede">1要素に複数の@keyframesを当て両方がtransformを触ると、素直に書けば後勝ちで前が丸ごと消える。animation-compositionは合成の「仕方」をreplace/add/accumulateで宣言するプロパティ。Baseline Widely available、App RouterではServer ComponentのままJSバンドル増ゼロで使える。</p> <div class="meta"> <span>📅 2026年11月16日</span> <span>⏱ 約5分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="0"><p>「常時ゆっくり上下するfloatループ」に「ホバーで少し持ち上げる」を足そうとすると、ホバー側の<code>transform: translateY(-8px)</code>がfloat側の<code>transform</code>を上書きし、浮遊が止まってカクッと跳ねる。1要素に複数のアニメを当て、両方が<code>transform</code>を触ると<strong>後勝ちで前が丸ごと消える</strong>——CSSアニメの古典的な罠だ。従来はラッパーdivの二重ネストやJS合成、Motion/GSAPで逃げていた。</p>
+
+<h4 id="sec-1">何が解決されるのか：合成の「仕方」を宣言する</h4>
+<p><code>animation-composition</code>は、キーフレームの効果値を<strong>下敷きの値（CSSルールの静的値や他アニメの寄与）とどう混ぜるか</strong>を切り替えるプロパティ。<strong>replace</strong>（既定・上書き＝従来の後勝ち）／<strong>add</strong>（下敷き値の後ろに積む＝リストへの連結）／<strong>accumulate</strong>（同種コンポーネントを1つに畳んで加算）の3値を取る。効くのは<strong>キーフレームが動かしているプロパティだけ</strong>で、静的指定のプロパティは「混ざる側（underlying value）」になる。注目の理由は2つ——<strong>Baseline Widely available（2023-07〜）</strong>で実験的の但し書きが要らない成熟フェーズに入ったこと、そしてscroll-drivenやView Transitionsで「同じ要素のtransformを複数の駆動源で同時に動かしたい」需要が増えたことだ。</p>
+
+<figure class='fig'><svg viewBox='0 0 600 224' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <rect x='0' y='0' width='600' height='224' fill='#eff6ff' rx='10'></rect>
+  <text x='300' y='24' text-anchor='middle' font-size='12.5' font-weight='bold' fill='#1e3a8a'>下敷き translateX(30px) rotate(45deg) ＋ キーフレーム 50% translateY(30px)</text>
+  <g font-size='11.5'>
+    <rect x='24' y='42' width='552' height='50' fill='#dbeafe' rx='6'></rect>
+    <text x='38' y='63' font-weight='bold' fill='#1e40af'>replace（既定）</text>
+    <text x='38' y='82' fill='#334155'>translateY(30px) ← rotateも元のtranslateXも消える（後勝ち）</text>
+    <rect x='24' y='100' width='552' height='50' fill='#bfdbfe' rx='6'></rect>
+    <text x='38' y='121' font-weight='bold' fill='#1e40af'>add</text>
+    <text x='38' y='140' fill='#334155'>translateX(30px) rotate(45deg) translateY(30px) ← 連結（underlying基準）</text>
+    <rect x='24' y='158' width='552' height='50' fill='#93c5fd' rx='6'></rect>
+    <text x='38' y='179' font-weight='bold' fill='#1e3a8a'>accumulate</text>
+    <text x='38' y='198' fill='#1e293b'>translate(30px,30px) rotate(45deg) ← 同種のtranslateを加算して1つに畳む</text>
+  </g>
+</svg><figcaption>図1：同じキーフレームをreplace/add/accumulateで合成した結果（MDNのケース）</figcaption></figure>
+
+<h4 id="sec-2">add と accumulate の覚え方</h4>
+<p>filter（blur）で見ると一貫する。下敷き<code>blur(5px)</code>＋キーフレーム<code>blur(10px)</code>のとき、<strong>add</strong>は<code>blur(5px) blur(10px)</code>と<strong>関数を2つ連ねる</strong>（実質15px相当）、<strong>accumulate</strong>は<code>blur(15px)</code>と<strong>同じ関数を数値加算して1つに畳む</strong>。つまり<strong>addは「リストに項目を増やす」、accumulateは「同種を1つに合算する」</strong>と覚えると全プロパティで通る。box-shadowのようなリスト値はaddで既存の影にレイヤーを重ねられる。<code>animation-composition: replace, add</code>のようにカンマ区切りで<code>animation-name</code>の並び順に位置対応し、数が合わなければ先頭からループして割り当てられる。</p>
+
+<h4 id="sec-3">App Routerでの実装</h4>
+<p>純CSSで完結するので<strong>'use client'不要・Server Componentのまま</strong>置け、hydration mismatchゼロ、JSバンドル増ゼロ、INP/CLSに無害、PPR/ISR/SSGとも無干渉。ラッパーdivの二重ネストを1要素に畳めるので、RSCツリーに余計なclient境界やDOM階層を増やさずに済むのがApp Router的な利点だ。</p>
+<pre><code>.card {
+  animation: float 3s ease-in-out infinite;
+  animation-composition: add;   /* 上書きでなく積む */
+}
+@keyframes float { 50% { transform: translateY(-10px); } }
+.card:hover {
+  animation: float 3s ease-in-out infinite, lift .25s ease-out forwards;
+  animation-composition: add, add;   /* animation-nameの順に対応 */
+}
+@keyframes lift { to { transform: translateY(-16px) scale(1.03); } }</code></pre>
+
+<h4 id="sec-4">落とし穴</h4>
+<p><strong>addは「前キーフレーム」でなく「underlying」基準</strong>——キーフレーム間で累積移動したいならaccumulateかMotionの方が素直だ。<strong>rotate/scaleのadd vs accumulateの厳密な畳み方は公式ドキュメントに明記がなく、実機検証が必須</strong>。<code>animation</code>ショートハンドは<code>animation-composition</code>を含まない（別に宣言する）。単なる<code>:hover { transform: ... }</code>には効かず、ホバー側も<code>@keyframes</code>＋<code>animation</code>（forwards）にして初めて合成が効く。浮遊ループは<code>@media (prefers-reduced-motion: no-preference)</code>の中だけで付与し、縮退時は中立状態に固定する（WCAG 2.3.3）。</p>
+
+<h4 id="sec-5">ひとこと</h4>
+<p>「transformを複数の駆動源で同時に動かす」場面——scrollでparallaxしつつhoverでtilt、など——が増える中で、ラッパー二重化やJS合成を本当に捨てられる段階に来た。対応はChrome/Edge 112+・Firefox 115+・Safari 16+。まずはfloat×hoverの1要素化から試すのが入り口として手頃だ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/animation-composition" target="_blank" rel="noopener noreferrer"> MDN: animation-composition </a> </li><li> <a href="https://developer.chrome.com/docs/css-ui/css-animation-composition" target="_blank" rel="noopener noreferrer"> Chrome for Developers: Combine multiple animation effects </a> </li><li> <a href="https://blog.master.dev/using-animation-composition-in-css-to-avoid-redeclaring-other-values/" target="_blank" rel="noopener noreferrer"> master.dev: Using animation-composition in CSS </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 何が解決されるのか：合成の「仕方」を宣言する </a> </li><li> <a href="#sec-2" data-toc="sec-2"> add と accumulate の覚え方 </a> </li><li> <a href="#sec-3" data-toc="sec-3"> App Routerでの実装 </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 落とし穴 </a> </li><li> <a href="#sec-5" data-toc="sec-5"> ひとこと </a> </li> </ul> <div class="reading-box"> <div>📅 2026-11-16</div> <div>⏱ 読了 約5分</div> <div>🏷 Next.js</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

@@ -1,0 +1,118 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Claude Code 11/16 — 新リリースはなし、v2.1.325をGitHub一次CHANGELOGで裏取り。拡張は「Skillsは教える／Subagentsは隔離／Hooksは強制／Pluginsは配布」 — デイリー技術深掘り 読み物</title><meta name="description" content="npm latest=v2.1.325（11/13）据え置きで11/14〜16の新規リリースはなく公式枠は版の動きなし。代わりにv2.1.325の要点を公式GitHubのCHANGELOG（一次）で裏取りし、公式ドキュメントの約2.5週間遅延に注意。技術記事3本の核は、拡張手段を「文脈コスト×強制力×読込時機」で使い分ける考え方。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-16-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Claude Code 11/16 — 新リリースはなし、v2.1.325をGitHub一次CHANGELOGで裏取り。拡張は「Skillsは教える／Subagentsは隔離／Hooksは強制／Pluginsは配布」 — デイリー技術深掘り 読み物"><meta property="og:description" content="npm latest=v2.1.325（11/13）据え置きで11/14〜16の新規リリースはなく公式枠は版の動きなし。代わりにv2.1.325の要点を公式GitHubのCHANGELOG（一次）で裏取りし、公式ドキュメントの約2.5週間遅延に注意。技術記事3本の核は、拡張手段を「文脈コスト×強制力×読込時機」で使い分ける考え方。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-16-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>Claude Code 11/16 — 新リリースはなし、v2.1.325をGitHub一次CHANGELOGで裏取り。拡張は「Skillsは教える／Subagentsは隔離／Hooksは強制／Pluginsは配布」</h1> <p class="lede">npm latest=v2.1.325（11/13）据え置きで11/14〜16の新規リリースはなく公式枠は版の動きなし。代わりにv2.1.325の要点を公式GitHubのCHANGELOG（一次）で裏取りし、公式ドキュメントの約2.5週間遅延に注意。技術記事3本の核は、拡張手段を「文脈コスト×強制力×読込時機」で使い分ける考え方。</p> <div class="meta"> <span>📅 2026年11月16日</span> <span>⏱ 約4分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="0"><p>今日のClaude Codeは<strong>版の動きがない</strong>——npmの<code>latest</code>はv2.1.325（11/13）、<code>stable</code>はv2.1.311で前日から据え置き、11/14〜16（JST）の新規リリースは確認できなかった。そこで一次ソース（公式GitHubの<code>CHANGELOG.md</code>）でv2.1.325を裏取りし、あわせて公式ドキュメント側のChangelogページが遅れている運用上の注意を押さえておく。</p>
+
+<h4 id="sec-1">v2.1.325を一次で裏取り——自動実行を安全側へ締め直す</h4>
+<p>昨日まで本読み物は英語の二次まとめ（havoptic）ベースでv2.1.325を扱っていたが、公式リポジトリ anthropics/claude-code のCHANGELOG.md先頭も<strong>v2.1.325</strong>で、より新しい版（2.1.33x以降）は存在しないことを確認できた。主要点は、(1)<strong>zstd圧縮応答のデコード処理のセキュリティ修正</strong>、(2)<strong>サンドボックス内Bashを既定で通常の権限フローに通す</strong>（従来の無確認継続は<code>sandbox.autoAllowBashIfSandboxed: true</code>で明示）、(3)<strong>非信頼リポジトリの読み取り専用gitコマンドも確認を要求</strong>（許可は<code>--add-dir</code>）、(4)スケジュールタスクや<code>/loop</code>がhooks/allowed-toolsを宣言するSkillの実行前に確認（無人実行は<code>permissions.allow</code>に<code>Skill(name)</code>を追加）、(5)<code>opusplan</code>/<code>haiku</code>設定時に独自モデル指定のサブエージェントがplan用モデルへ取り違えられる不具合の修正。人が見ていない自動実行まわりを安全側に締め直す色が濃い。</p>
+
+<h4 id="sec-2">注意：公式ドキュメントのChangelogは約2.5週間遅れ</h4>
+<p>人間向けの公式Changelogページ（code.claude.com/docs/en/changelog）は確認時点で<strong>v2.1.312（10/27）止まり</strong>で、配信中の<code>latest</code>（v2.1.325）から十数リリース分が未反映だった。最新を追うなら、GitHubの一次CHANGELOGか<code>npm view @anthropic-ai/claude-code dist-tags</code>の2系統が実務的。未反映の目玉はv2.1.323の実験的<strong>Code Mode</strong>（Claudeが個々のツールを直接呼ぶ代わりにJavaScriptを書いて自前ツール群を呼ぶ方式）だ。</p>
+
+<h4 id="sec-3">技術記事3本の核：拡張手段の使い分け</h4>
+<p>今日の技術記事は、Claude Codeを「操る」手段の整理で揃った。Anthropic公式『Steering Claude Code』は、<strong>CLAUDE.md／rules／skills／subagents／hooks／output styles／システムプロンプト追記</strong>の7手段を「文脈コスト×強制力×いつ読み込まれるか」で使い分ける。dev.toの『Skills vs Hooks vs Subagents』はこれを一言に凝縮——<strong>「Skillsは教える／Subagentsは隔離する／Hooksは強制する／Pluginsは配布する」</strong>、判断軸は<strong>決定性→文脈隔離→起動モデル→配布</strong>の順。公式サポートの『power user tips』は最重要の実践として<strong>「検証ループを与える」</strong>（テスト・Chrome拡張・<code>/simplify</code>でClaudeに自己確認の経路を用意）を挙げ、git worktreeでの並列、Planモード＋<code>/effort</code>、リポ直下の共有CLAUDE.mdに誤りの度に追記、を推す。</p>
+
+<figure class='fig'><svg viewBox='0 0 600 252' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <rect x='0' y='0' width='600' height='252' fill='#fff7ed' rx='10'></rect>
+  <text x='300' y='24' text-anchor='middle' font-size='14' font-weight='bold' fill='#9a3412'>拡張手段の使い分け（文脈コスト×強制力×読込時機）</text>
+  <g font-size='11'>
+    <line x1='150' y1='38' x2='150' y2='242' stroke='#fed7aa'></line>
+    <line x1='320' y1='38' x2='320' y2='242' stroke='#fed7aa'></line>
+    <line x1='456' y1='38' x2='456' y2='242' stroke='#fed7aa'></line>
+    <text x='16' y='54' font-weight='bold' fill='#9a3412'>手段</text>
+    <text x='160' y='54' font-weight='bold' fill='#9a3412'>役割</text>
+    <text x='330' y='54' font-weight='bold' fill='#9a3412'>読込時機</text>
+    <text x='466' y='54' font-weight='bold' fill='#9a3412'>強制力</text>
+    <line x1='12' y1='62' x2='588' y2='62' stroke='#fed7aa'></line>
+    <text x='16' y='84' font-weight='bold' fill='#7c2d12'>CLAUDE.md</text>
+    <text x='160' y='84' fill='#334155'>常時のファクト</text>
+    <text x='330' y='84' fill='#334155'>開始時</text>
+    <text x='466' y='84' fill='#334155'>助言的</text>
+    <line x1='12' y1='94' x2='588' y2='94' stroke='#ffedd5'></line>
+    <text x='16' y='116' font-weight='bold' fill='#7c2d12'>rules</text>
+    <text x='160' y='116' fill='#334155'>制約</text>
+    <text x='330' y='116' fill='#334155'>常時／pathで限定</text>
+    <text x='466' y='116' fill='#334155'>中</text>
+    <line x1='12' y1='126' x2='588' y2='126' stroke='#ffedd5'></line>
+    <text x='16' y='148' font-weight='bold' fill='#7c2d12'>Skills</text>
+    <text x='160' y='148' fill='#334155'>手順を教える</text>
+    <text x='330' y='148' fill='#334155'>呼び出し時</text>
+    <text x='466' y='148' fill='#334155'>助言的</text>
+    <line x1='12' y1='158' x2='588' y2='158' stroke='#ffedd5'></line>
+    <text x='16' y='180' font-weight='bold' fill='#7c2d12'>Subagents</text>
+    <text x='160' y='180' fill='#334155'>副作業を隔離</text>
+    <text x='330' y='180' fill='#334155'>別コンテキスト</text>
+    <text x='466' y='180' fill='#334155'>要約だけ返す</text>
+    <line x1='12' y1='190' x2='588' y2='190' stroke='#ffedd5'></line>
+    <text x='16' y='212' font-weight='bold' fill='#7c2d12'>Hooks</text>
+    <text x='160' y='212' fill='#334155'>強制する</text>
+    <text x='330' y='212' fill='#334155'>イベント発火</text>
+    <text x='466' y='212' fill='#dc2626' font-weight='bold'>不可視・確実</text>
+    <line x1='12' y1='222' x2='588' y2='222' stroke='#ffedd5'></line>
+    <text x='16' y='240' font-weight='bold' fill='#7c2d12'>Plugins</text>
+    <text x='160' y='240' fill='#334155'>束ねて配布</text>
+    <text x='330' y='240' fill='#334155'>—</text>
+    <text x='466' y='240' fill='#334155'>新能力は足さない</text>
+  </g>
+</svg><figcaption>図1：『Skillsは教える／Subagentsは隔離／Hooksは強制／Pluginsは配布』を一望</figcaption></figure>
+
+<h4 id="sec-4">自分が試すなら</h4>
+<p>「絶対にやるな」系のルールは<strong>CLAUDE.mdの指示ではなくhooksかpermissionsに置く</strong>——PreToolUseフックが終了コード2で呼び出しをブロックできる、という公式の明言が実務の勘所だ。まずは共有CLAUDE.mdを200行以内に保ちつつ、整形・lint・危険コマンドのブロックをhooksへ移すところから。版の追跡は<code>npm view ... dist-tags</code>をメモに貼っておく。</p>
+
+<h4 id="sec-5">ひとこと</h4>
+<p>公式枠は静かな日だが、拡張の「どれを・いつ・どの強制力で」使うかの地図が3記事で揃ったのは収穫。事例ではSmartsheetがエンジニア500名超でClaude Codeを使い「9エージェントSDLCテンプレ」を構築、自己申告でコード量3倍・PRマージ+31%（いずれも自己申告・方法論は非開示）を報告している。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://claude.com/resources/articles/steering-claude-code-skills-hooks-rules-subagents-and-more" target="_blank" rel="noopener noreferrer"> Steering Claude Code（Anthropic公式） </a> </li><li> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer"> anthropics/claude-code CHANGELOG.md（一次） </a> </li><li> <a href="https://support.claude.com/en/articles/14554000-claude-code-power-user-tips" target="_blank" rel="noopener noreferrer"> Claude Code power user tips（Anthropic公式サポート） </a> </li><li> <a href="https://claude.com/customers/smartsheet" target="_blank" rel="noopener noreferrer"> Smartsheet 事例（Anthropic公式） </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> v2.1.325を一次で裏取り——自動実行を安全側へ締め直す </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 注意：公式ドキュメントのChangelogは約2.5週間遅れ </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 技術記事3本の核：拡張手段の使い分け </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 自分が試すなら </a> </li><li> <a href="#sec-5" data-toc="sec-5"> ひとこと </a> </li> </ul> <div class="reading-box"> <div>📅 2026-11-16</div> <div>⏱ 読了 約4分</div> <div>🏷 Claude Code</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

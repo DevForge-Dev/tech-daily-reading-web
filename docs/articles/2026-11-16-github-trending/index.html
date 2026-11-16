@@ -1,0 +1,104 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>11/16の話題リポジトリ — エージェントに専門を授ける3本：自前オーケストレーションのLoopForge、金融Skillsのclaude-trading-skills、ローカルFFmpegのffmpeg-skill — デイリー技術深掘り 読み物</title><meta name="description" content="当日急上昇の3本はジャンルこそ違う（エージェント運用／金融／メディア処理）が、重いクラウドに頼らず自前・ローカルで動き、コーディングエージェントに「役割」や「専門スキル」を与える点で一致している。"><meta name="theme-color" content="#238636"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-16-github-trending/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="11/16の話題リポジトリ — エージェントに専門を授ける3本：自前オーケストレーションのLoopForge、金融Skillsのclaude-trading-skills、ローカルFFmpegのffmpeg-skill — デイリー技術深掘り 読み物"><meta property="og:description" content="当日急上昇の3本はジャンルこそ違う（エージェント運用／金融／メディア処理）が、重いクラウドに頼らず自前・ローカルで動き、コーディングエージェントに「役割」や「専門スキル」を与える点で一致している。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-16-github-trending/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3fb950, #1a7f37)"> <span class="glyph" aria-hidden="true">★</span> <div class="kicker">GitHub Trending</div> <h1>11/16の話題リポジトリ — エージェントに専門を授ける3本：自前オーケストレーションのLoopForge、金融Skillsのclaude-trading-skills、ローカルFFmpegのffmpeg-skill</h1> <p class="lede">当日急上昇の3本はジャンルこそ違う（エージェント運用／金融／メディア処理）が、重いクラウドに頼らず自前・ローカルで動き、コーディングエージェントに「役割」や「専門スキル」を与える点で一致している。</p> <div class="meta"> <span>📅 2026年11月16日</span> <span>⏱ 約4分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#238636"> <div> <article class="prose" data-has-mermaid="0"><p>今日のモメンタム上位3本は、Go製のエージェント・オーケストレーション、金融ドメインのClaude Skills、ローカルFFmpegのMCPツールと見事にバラバラだ。だが<strong>重いクラウドやAPIキーに頼らず自前・ローカルで動き、コーディングエージェントに「役割」や「専門スキル」を与える</strong>という一点で通じている。AIエージェント一色の局面で、こうした「自己ホスト・ローカル完結」の層が急伸しているのが今日の傾向だ。</p>
+
+<figure class='fig'><svg viewBox='0 0 600 234' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <rect x='0' y='0' width='600' height='234' fill='#f0fdf4' rx='10'></rect>
+  <text x='300' y='24' text-anchor='middle' font-size='14' font-weight='bold' fill='#166534'>解決したい課題 → 提供する機能</text>
+  <g font-size='11'>
+    <line x1='168' y1='38' x2='168' y2='224' stroke='#bbf7d0'></line>
+    <line x1='378' y1='38' x2='378' y2='224' stroke='#bbf7d0'></line>
+    <text x='16' y='54' font-weight='bold' fill='#166534'>repo</text>
+    <text x='178' y='54' font-weight='bold' fill='#166534'>課題</text>
+    <text x='388' y='54' font-weight='bold' fill='#166534'>機能</text>
+    <line x1='12' y1='62' x2='588' y2='62' stroke='#bbf7d0'></line>
+    <text x='16' y='92' font-weight='bold' fill='#14532d'>LoopForge</text>
+    <text x='16' y='108' fill='#3f6212'>Go ⭐1.4k</text>
+    <text x='178' y='88' fill='#334155'>一発頼みのエージェントは</text>
+    <text x='178' y='104' fill='#334155'>計画抜け・テスト忘れで不安定</text>
+    <text x='388' y='88' fill='#334155'>計画/実装/レビュー/テストを</text>
+    <text x='388' y='104' fill='#334155'>役割分離＋人間ゲート＋観測</text>
+    <line x1='12' y1='122' x2='588' y2='122' stroke='#bbf7d0'></line>
+    <text x='16' y='150' font-weight='bold' fill='#14532d'>trading-skills</text>
+    <text x='16' y='166' fill='#3f6212'>Python ⭐5.5k</text>
+    <text x='178' y='146' fill='#334155'>個人投資家は時間がなく</text>
+    <text x='178' y='162' fill='#334155'>相場レビューが場当たり</text>
+    <text x='388' y='146' fill='#334155'>レビュー/リスク/計画/記録を</text>
+    <text x='388' y='162' fill='#334155'>Skillsで構造化（丸投げしない）</text>
+    <line x1='12' y1='180' x2='588' y2='180' stroke='#bbf7d0'></line>
+    <text x='16' y='208' font-weight='bold' fill='#14532d'>ffmpeg-skill</text>
+    <text x='16' y='224' fill='#3f6212'>Python ⭐6.0k</text>
+    <text x='178' y='204' fill='#334155'>動画編集にクラウド/APIは</text>
+    <text x='178' y='220' fill='#334155'>重く素材を上げたくない</text>
+    <text x='388' y='204' fill='#334155'>ローカルFFmpeg 42ツールをMCPで</text>
+    <text x='388' y='220' fill='#334155'>付与、出力は自分で検証</text>
+  </g>
+</svg><figcaption>図1：今日の3本を「課題→機能」で一望</figcaption></figure>
+
+<h4 id="sec-1">Tencent/LoopForge（Go・⭐1.4k）</h4>
+<p><strong>解決したい課題：</strong>「fix this bug」の一発頼みはrun依存で不安定——計画スキップ・テスト忘れ・自己レビュー・途中停止が起きる。<strong>提供する機能：</strong>チャットで要件を伝えるとDockerサンドボックスを開いてリポをチェックアウトし、<strong>計画・実装・レビュー・テストを別プロンプト／別executor／別model／別Skills・MCPの役割に分離</strong>、要所に人間承認ゲートを置き、ノード状態・ツールトレース・ログを一元観測して失敗ノードから再開できる。実績ある流れはSOP（標準ワークフロー）として保存し再利用。CodeBuddy/Codex/Claude Code/OpenCode/Cursor CLIなど10種のCLIをexecutorに選べ、すべて自前インフラ上・MIT。<strong>なぜ今：</strong>本日の日次トレンドで<strong>+484（総⭐1,439に対し増加率約33.6%＝当日最高率級）</strong>、AIエージェント運用の「チーム化」を正面から狙う点が刺さった。</p>
+
+<h4 id="sec-2">tradermonty/claude-trading-skills（Python・⭐5.5k）</h4>
+<p><strong>解決したい課題：</strong>時間の限られた個人投資家は、相場レビューやリスク管理が場当たりになりがちだ。<strong>提供する機能：</strong>相場レビュー・リスク管理・トレード計画・ジャーナリング・継続改善を<strong>Claude Skillsベースで構造化</strong>するワークフロー集。長期投資・ETF・配当を核にしつつ、条件が良い時だけ規律あるスイングを衛星戦略として足す設計で、<strong>「売買判断をAIに丸投げしない／シグナルサービスでも利益保証でもない」</strong>と明記する。<strong>なぜ今：</strong>本日<strong>+707＝クリーン新規で当日最大の増加数</strong>（総⭐5,489に対し率約12.9%）。TypeScript/UIに偏りがちな当日トレンドの中で、AI×金融という非・開発ドメインの希少枠。日本語READMEあり・MIT。</p>
+
+<h4 id="sec-3">kajisho5/ffmpeg-skill（Python・⭐6.0k）</h4>
+<p><strong>解決したい課題：</strong>動画編集をエージェントにやらせたいが、クラウドやAPIキーは重く、素材をアップしたくない。<strong>提供する機能：</strong>コーディングエージェント（Claude Code/Cursor/Codex等のMCPクライアント）に<strong>ローカルFFmpegの42ツール</strong>（字幕アニメ／カラオケ、9:16リフレーム、無音カット、ラウドネス正規化 -14LUFS等）をCLI＋MCPで与え、エージェントが編集→<strong>自分で出力を検証</strong>する。<code>npx ffmpeg-skill</code>で導入でき、クラウド/APIキー不要のオフライン完結。各ツールのMCP定義は同じargparseパーサからランタイム生成する「SPEC」で、CLIと乖離すればCIが落ちる契約駆動設計だ。<strong>なぜ今：</strong>公開約2.4か月で⭐5,953、本日<strong>+285（率約4.8%）</strong>の継続モメンタム。Python標準ライブラリのみ・MIT。</p>
+
+<h4 id="sec-4">まとめ：自分が試すなら</h4>
+<p>3本は「エージェントに何を授けるか」の3方向——<strong>運用の骨格</strong>（LoopForge）、<strong>ドメインの型</strong>（trading-skills）、<strong>手元の実行環境</strong>（ffmpeg-skill）だ。まず試すなら<strong>ffmpeg-skill</strong>（<code>npx</code>一発でローカル動画処理をエージェントに繋げられ、SPECの契約駆動も学べる）。チーム運用に関心があればLoopForgeの「役割分離＋人間ゲート＋観測＋SOP再利用」という設計思想が、Skillsの書き方の参考にはtrading-skillsの「丸投げしない」構造化が効く。いずれもMIT/自己ホストで、読んで学ぶ素材として素直だ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://github.com/Tencent/LoopForge" target="_blank" rel="noopener noreferrer"> Tencent/LoopForge </a> </li><li> <a href="https://github.com/tradermonty/claude-trading-skills" target="_blank" rel="noopener noreferrer"> tradermonty/claude-trading-skills </a> </li><li> <a href="https://github.com/kajisho5/ffmpeg-skill" target="_blank" rel="noopener noreferrer"> kajisho5/ffmpeg-skill </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> Tencent/LoopForge（Go・⭐1.4k） </a> </li><li> <a href="#sec-2" data-toc="sec-2"> tradermonty/claude-trading-skills（Python・⭐5.5k） </a> </li><li> <a href="#sec-3" data-toc="sec-3"> kajisho5/ffmpeg-skill（Python・⭐6.0k） </a> </li><li> <a href="#sec-4" data-toc="sec-4"> まとめ：自分が試すなら </a> </li> </ul> <div class="reading-box"> <div>📅 2026-11-16</div> <div>⏱ 読了 約4分</div> <div>🏷 GitHub Trending</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
