@@ -1,0 +1,102 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>11/17の話題リポジトリ — 当日増加トップのAIオフィスSDK・Claude Code用バグハント束・WebGPUの海中世界 — デイリー技術深掘り 読み物</title><meta name="description" content="AIチャット/エージェント運用に偏りがちな当日トレンドの中で、当日の純モメンタム3本を「解決したい課題」と「提供する機能」で読む。業務オフィスSDK、セキュリティ(バグハント)、WebGPUクリエイティブと、ジャンルの多様性が際立つ顔ぶれ。"><meta name="theme-color" content="#238636"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-17-github-trending/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="11/17の話題リポジトリ — 当日増加トップのAIオフィスSDK・Claude Code用バグハント束・WebGPUの海中世界 — デイリー技術深掘り 読み物"><meta property="og:description" content="AIチャット/エージェント運用に偏りがちな当日トレンドの中で、当日の純モメンタム3本を「解決したい課題」と「提供する機能」で読む。業務オフィスSDK、セキュリティ(バグハント)、WebGPUクリエイティブと、ジャンルの多様性が際立つ顔ぶれ。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-17-github-trending/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3fb950, #1a7f37)"> <span class="glyph" aria-hidden="true">★</span> <div class="kicker">GitHub Trending</div> <h1>11/17の話題リポジトリ — 当日増加トップのAIオフィスSDK・Claude Code用バグハント束・WebGPUの海中世界</h1> <p class="lede">AIチャット/エージェント運用に偏りがちな当日トレンドの中で、当日の純モメンタム3本を「解決したい課題」と「提供する機能」で読む。業務オフィスSDK、セキュリティ(バグハント)、WebGPUクリエイティブと、ジャンルの多様性が際立つ顔ぶれ。</p> <div class="meta"> <span>📅 2026年11月17日</span> <span>⏱ 約4分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#238636"> <div> <article class="prose" data-has-mermaid="0"><p>今日のモメンタム上位3本は、ジャンルこそバラバラ（業務オフィスSDK／セキュリティのスキル束／WebGPUグラフィックス）だが、<strong>エージェント運用・AIチャット一色のトレンドに対する“多様性枠”が急伸している</strong>という一点で通じている。各リポジトリについて「解決したい課題」と「提供する機能」を分けて読み、なぜ今急上昇しているかを添える。</p>
+
+<figure class='fig'><svg viewBox='0 0 600 234' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <rect x='0' y='0' width='600' height='234' fill='#f0fdf4' rx='10'></rect>
+  <text x='300' y='24' text-anchor='middle' font-size='14' font-weight='bold' fill='#166534'>解決したい課題 → 提供する機能</text>
+  <line x1='16' y1='38' x2='584' y2='38' stroke='#86efac'></line>
+  <text x='20' y='56' font-size='11' font-weight='bold' fill='#14532d'>owner/repo（言語・⭐）</text>
+  <text x='212' y='56' font-size='11' font-weight='bold' fill='#991b1b'>解決したい課題</text>
+  <text x='410' y='56' font-size='11' font-weight='bold' fill='#1e40af'>提供する機能</text>
+  <line x1='16' y1='64' x2='584' y2='64' stroke='#bbf7d0'></line>
+  <text x='20' y='90' font-size='10.5' fill='#0f172a'>dream-num/univer</text>
+  <text x='20' y='105' font-size='9' fill='#64748b'>TS・⭐27.7k(+1,878)</text>
+  <text x='212' y='86' font-size='9.5' fill='#334155'>人もAIも使える表計算/</text>
+  <text x='212' y='99' font-size='9.5' fill='#334155'>文書基盤を自社に組込</text>
+  <text x='410' y='86' font-size='9.5' fill='#334155'>Office SDK＝表計算/文書/</text>
+  <text x='410' y='99' font-size='9.5' fill='#334155'>スライドを埋め込み可</text>
+  <line x1='16' y1='116' x2='584' y2='116' stroke='#bbf7d0'></line>
+  <text x='20' y='142' font-size='10.5' fill='#0f172a'>elementalsouls/</text>
+  <text x='20' y='155' font-size='10.5' fill='#0f172a'>Claude-BugHunter</text>
+  <text x='20' y='170' font-size='9' fill='#64748b'>Python・⭐7.4k(+1,057)</text>
+  <text x='212' y='138' font-size='9.5' fill='#334155'>CC中心の脆弱性検査が</text>
+  <text x='212' y='151' font-size='9.5' fill='#334155'>体系化されず手動頼み</text>
+  <text x='410' y='138' font-size='9.5' fill='#334155'>24カテゴリ82スキル+15</text>
+  <text x='410' y='151' font-size='9.5' fill='#334155'>コマンドのバグハント束</text>
+  <line x1='16' y1='182' x2='584' y2='182' stroke='#bbf7d0'></line>
+  <text x='20' y='208' font-size='10.5' fill='#0f172a'>Noniv/abyssal-garden</text>
+  <text x='20' y='223' font-size='9' fill='#64748b'>JS(WebGPU)・⭐1.7k</text>
+  <text x='212' y='204' font-size='9.5' fill='#334155'>重い3D体験を外部エンジン</text>
+  <text x='212' y='217' font-size='9.5' fill='#334155'>なしでブラウザに</text>
+  <text x='410' y='204' font-size='9.5' fill='#334155'>WebGPU+コードで全生成の</text>
+  <text x='410' y='217' font-size='9.5' fill='#334155'>泳ぎ回れる海中世界</text>
+</svg><figcaption>図1：今日の3本を「課題→機能」で一望。業務SDK・セキュリティ・グラフィックスとジャンルが割れている。</figcaption></figure>
+
+<h4 id="sec-1">dream-num/univer（TypeScript・⭐27.7k）</h4>
+<p><strong>解決したい課題：</strong>表計算・文書・スライドのような“業務オフィス”機能を自社プロダクトに持たせたいが、編集・計算・共同編集・ファイル処理を一から作るのは重い。しかも今は<strong>人だけでなく AI エージェントも同じ文書を操作する</strong>前提が要る。<strong>提供する機能：</strong>スプレッドシート/ドキュメント/スライドの編集・計算・共同編集・ファイル処理を1つの SDK で提供する、人にも AI エージェントにも使える『自分だけの AI オフィス』基盤（Apache-2.0＝組込可）。<strong>なぜ急上昇：</strong>本日 +1,878 で<strong>当日の増加数トップ</strong>（総⭐27,742・率約6.8%、前日 +1,041 の #2 から #1 へ加速）。AIチャット/エージェント運用に偏る当日トレンドの中で、業務オフィス SDK という多様性枠として突出した。created 2022-09-29 の老舗だが当日スパイクが明確だ。</p>
+
+<h4 id="sec-2">elementalsouls/Claude-BugHunter（Python・⭐7.4k）</h4>
+<p><strong>解決したい課題：</strong>Claude Code を使ったアプリのセキュリティ検査が体系化されず、脆弱性カテゴリごとの観点が属人的・手動頼みになりがち。<strong>提供する機能：</strong>Claude Code 向けのバグハンティング/外部レッドチーム用スキル束で、<strong>24 の中核脆弱性カテゴリにわたる 82 スキル・15 スラッシュコマンド・681 の公開レポート由来パターン</strong>を収録（防御的/正規のバグバウンティ用途、MIT）。<strong>なぜ急上昇：</strong>本日 +1,057＝率約14.3%で当日ランキングに<strong>新規登場（#2）</strong>。AIオフィス/UI系に偏る中でセキュリティという希少ジャンルが刺さった。脆弱性カテゴリ別に整理されたスキル束は、手動監査の底上げ・レビュー強化の一次情報源になりうる。</p>
+
+<h4 id="sec-3">Noniv/abyssal-garden（JavaScript・WebGPU・⭐1.7k）</h4>
+<p><strong>解決したい課題：</strong>没入感のある 3D 体験を Web で届けるには重いエンジンやアセット配信が要る、という常識。<strong>提供する機能：</strong>揺れる海藻の森・差し込む光・沈没船・泳ぐマンタが広がる幻想的な海中世界を、<strong>すべてコードと WebGPU で生成</strong>し、ブラウザで泳ぎ回れるインタラクティブ作品（MIT）。<strong>なぜ急上昇：</strong>当日 daily には未掲載（gain『—』）だが、created 2026-11-12＝<strong>公開約5日で⭐1,674（日平均約335★/日）</strong>の高速新星で、fork率も約15%と不自然さはない。エージェント運用一色の当日トレンドに対する、希少なクリエイティブ/グラフィックス（WebGPU）多様性枠だ。</p>
+
+<h4 id="sec-4">まとめ：自分が試すなら</h4>
+<p>いま自分の運用（1人×Claude Code×複数PJ横断）に直接効くのは <strong>Claude-BugHunter</strong>——CI に自動セキュリティ検査が無く監査が手動な現状に対し、脆弱性カテゴリ別スキル束は観点の棚卸しに使える（鵜呑みにせず評価枠で）。univer は“人とAIが同じ文書を触る”基盤の設計参照として、abyssal-garden は WebGPU 表現の下敷きとして読む価値がある。3本とも素直なライセンスで、読んで学ぶ素材として手に取りやすい。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://github.com/dream-num/univer" target="_blank" rel="noopener noreferrer"> dream-num/univer </a> </li><li> <a href="https://github.com/elementalsouls/Claude-BugHunter" target="_blank" rel="noopener noreferrer"> elementalsouls/Claude-BugHunter </a> </li><li> <a href="https://github.com/Noniv/abyssal-garden" target="_blank" rel="noopener noreferrer"> Noniv/abyssal-garden </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> dream-num/univer（TypeScript・⭐27.7k） </a> </li><li> <a href="#sec-2" data-toc="sec-2"> elementalsouls/Claude-BugHunter（Python・⭐7.4k） </a> </li><li> <a href="#sec-3" data-toc="sec-3"> Noniv/abyssal-garden（JavaScript・WebGPU・⭐1.7k） </a> </li><li> <a href="#sec-4" data-toc="sec-4"> まとめ：自分が試すなら </a> </li> </ul> <div class="reading-box"> <div>📅 2026-11-17</div> <div>⏱ 読了 約4分</div> <div>🏷 GitHub Trending</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

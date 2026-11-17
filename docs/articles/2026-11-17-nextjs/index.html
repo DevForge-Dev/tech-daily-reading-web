@@ -1,0 +1,102 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>マウス追従スポットライト／グロー・ホバーカード — Bentoグリッドの“光る枠”を依存ゼロ・純CSSで。鍵は「再レンダーを経由しない座標渡し」 — デイリー技術深掘り 読み物</title><meta name="description" content="Linear/Vercel系ランディングやBentoグリッドで定番の、カーソル位置に淡い光が灯り枠が光る演出。本質は(1)座標をReact再レンダーなしでCSSへ渡す(2)光を背景グローと枠グローの2層に分ける(3)グリッド全体で1リスナに集約、の3点。使う技術はすべてBaseline。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-17-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="マウス追従スポットライト／グロー・ホバーカード — Bentoグリッドの“光る枠”を依存ゼロ・純CSSで。鍵は「再レンダーを経由しない座標渡し」 — デイリー技術深掘り 読み物"><meta property="og:description" content="Linear/Vercel系ランディングやBentoグリッドで定番の、カーソル位置に淡い光が灯り枠が光る演出。本質は(1)座標をReact再レンダーなしでCSSへ渡す(2)光を背景グローと枠グローの2層に分ける(3)グリッド全体で1リスナに集約、の3点。使う技術はすべてBaseline。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-17-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>マウス追従スポットライト／グロー・ホバーカード — Bentoグリッドの“光る枠”を依存ゼロ・純CSSで。鍵は「再レンダーを経由しない座標渡し」</h1> <p class="lede">Linear/Vercel系ランディングやBentoグリッドで定番の、カーソル位置に淡い光が灯り枠が光る演出。本質は(1)座標をReact再レンダーなしでCSSへ渡す(2)光を背景グローと枠グローの2層に分ける(3)グリッド全体で1リスナに集約、の3点。使う技術はすべてBaseline。</p> <div class="meta"> <span>📅 2026年11月17日</span> <span>⏱ 約5分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="0"><p>Linear / Vercel / shadcn 系ランディングや Bento グリッドで定番化した「カードにカーソルを乗せると、<strong>ポインタ位置に淡い光が灯り、枠が光る</strong>」演出。見た目はリッチだが、本質は3点だけ——<strong>(1) ポインタ座標を React を再レンダーせず CSS へ渡す、(2) 光を『背景グロー』と『ボーダーグロー』の2層に分ける、(3) グリッド全体で1つのリスナに集約する</strong>。派手さの割に依存ゼロ・純CSS+小さなJSで組め、<code>'use client'</code> 境界も最小化できる。</p>
+
+<h4 id="sec-1">なぜ注目か：珍しく“枯れた”演出テーマ</h4>
+<p>使う技術（CSS カスタムプロパティ、<code>radial-gradient</code>、<code>mask</code> + <code>mask-composite</code>、Pointer Events）は<strong>すべて Baseline</strong>。機能検出もフォールバックも要らず、「対応状況の但し書き」がない珍しいテーマで、難しさは対応ではなく<strong>設計（再レンダー回避・レイアウトスラッシング回避・a11y）</strong>に寄る。Aceternity UI の <code>CardSpotlight</code>、Magic UI の <code>MagicCard</code>、motion-primitives の <code>Spotlight</code> 等が軒並み標準採用しているが、中身は数十行の素のCSS+JSで、ライブラリ無しで十分再現できる。</p>
+
+<figure class='fig'><svg viewBox='0 0 600 232' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <rect x='0' y='0' width='600' height='232' fill='#eff6ff' rx='10'></rect>
+  <text x='300' y='26' text-anchor='middle' font-size='14' font-weight='bold' fill='#1e3a8a'>光を2層に分ける：枠グロー(全カード) × スポットライト(自カード)</text>
+  <rect x='60' y='52' width='220' height='150' rx='14' fill='#fff' stroke='#93c5fd' stroke-width='3'></rect>
+  <text x='170' y='78' text-anchor='middle' font-size='11.5' fill='#1d4ed8'>::before = ボーダーグロー</text>
+  <text x='170' y='96' text-anchor='middle' font-size='10' fill='#64748b'>group-hover で全カードの枠が点灯</text>
+  <circle cx='210' cy='150' r='46' fill='#60a5fa' opacity='0.35'></circle>
+  <text x='170' y='182' text-anchor='middle' font-size='10' fill='#64748b'>カーソルがグリッド上にある間ずっと</text>
+  <rect x='320' y='52' width='220' height='150' rx='14' fill='#fff' stroke='#bfdbfe'></rect>
+  <text x='430' y='78' text-anchor='middle' font-size='11.5' fill='#1d4ed8'>::after = スポットライト</text>
+  <text x='430' y='96' text-anchor='middle' font-size='10' fill='#64748b'>:hover の自カードだけに強い光</text>
+  <radialGradient id='g' cx='50%' cy='50%' r='50%'><stop offset='0%' stop-color='#3b82f6' stop-opacity='0.55'></stop><stop offset='100%' stop-color='#3b82f6' stop-opacity='0'></stop></radialGradient>
+  <circle cx='460' cy='150' r='54' fill='url(#g)'></circle>
+  <text x='430' y='188' text-anchor='middle' font-size='10' fill='#64748b'>座標直下にのみ追従</text>
+</svg><figcaption>図1：同じ <code>--mouse-x/--mouse-y</code> を擬似要素へ継承させ、枠グローは全カード、スポットライトは自カードだけに出す。</figcaption></figure>
+
+<h4 id="sec-2">仕組み：座標は state でなく CSS 変数へ直書き</h4>
+<p>グリッド全体を1ラッパーで囲み、<strong>1つの <code>mousemove</code> リスナが全カードの <code>--mouse-x/--mouse-y</code> を一括更新</strong>する。カスタムプロパティは擬似要素へ継承されるので、カード要素に <code>setProperty</code> するだけで <code>::before</code>（枠グロー）と <code>::after</code>（背景グロー）の両方へ効く。枠グローは <code>radial-gradient</code> を <code>padding</code>＋<code>mask-composite: exclude</code> で内側をくり抜き、<strong>枠（リング）だけ</strong>を光らせる定石を使う。重要なのは座標を <code>useState</code> に持たせないこと——毎フレーム state 更新すると INP が悪化するので、<code>useRef</code>＋<code>el.style.setProperty</code> で<strong>再レンダーゼロ</strong>、座標は DOM へ直書きして React を経由しない。</p>
+
+<pre><code>/* 枠だけを光らせる mask-composite 版 */
+.card::before {
+  content: ""; position: absolute; inset: 0; border-radius: inherit;
+  padding: 1.5px;                 /* 枠の太さ */
+  background: radial-gradient(240px circle at var(--x) var(--y),
+             hsl(220 90% 65%), transparent 60%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor; mask-composite: exclude;  /* 枠部分だけ残す */
+  opacity: 0; transition: opacity .4s; pointer-events: none;
+}
+.card:hover::before { opacity: 1; }</code></pre>
+
+<h4 id="sec-3">Next.js（App Router）での組み込み</h4>
+<p><code>'use client'</code> は<strong>『座標を書く島』だけ</strong>に閉じ込める。<code>mousemove</code> を張るラッパーをクライアント化し、中身のカードは <code>children</code> で流す。グループ型の <code>SpotlightCard</code> はフック無し（クラスと擬似要素CSSだけ）なので<strong>Server Component のまま</strong>使え、データ取得・一覧 <code>map</code> は RSC に残せる。初期HTMLは座標未設定・グロー <code>opacity:0</code> なので<strong>ハイドレーション mismatch が無く</strong>、光はポインタ移動後に初めて出る純プログレッシブエンハンスメント。<code>revalidate</code>/<code>use cache</code>/PPR とも無干渉だ。</p>
+
+<h4 id="sec-4">落とし穴・性能</h4>
+<p>最大の事故は<strong>レイアウトスラッシング</strong>。ハンドラ内で各カードの <code>getBoundingClientRect()</code>（読み）と <code>setProperty</code>（書き）を交互にやると強制同期レイアウトになるので、<strong>読みを全カード分先に済ませてから書き</strong>、<code>requestAnimationFrame</code> で1フレーム1回に間引く（リスナは <code>{passive:true}</code>）。動かすのは <code>translate</code>/<code>opacity</code> だけに留めてコンポジタ合成に乗せ、<code>left/top</code> やグローの寸法を毎フレーム変えない。タッチでは無意味なので <code>@media (hover:hover) and (pointer:fine)</code> でラップし、端末では演出もリスナも付けない。a11y はグローを純装飾として <code>aria-hidden</code>・<code>pointer-events:none</code> にし、キーボード等価として <code>:focus-visible</code> で枠グローを点灯、<code>prefers-reduced-motion</code> では追従 <code>transition</code> を切る。</p>
+
+<h4 id="sec-5">ひとことまとめ</h4>
+<p>“光る枠”は<strong>サーバーに残したカード＋クライアントの座標島＋純CSS</strong>で、依存ゼロ・再レンダーゼロで組める。自分で試すなら、まず <code>mask-composite</code> の枠グロー1層から入れて、スポットライト（背景グロー）を足すのが堅い。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://cruip.com/how-to-create-a-spotlight-card-hover-effect-with-tailwind-css/" target="_blank" rel="noopener noreferrer"> Cruip『Spotlight Card Hover Effect with Tailwind CSS』 </a> </li><li> <a href="https://frontendmasters.com/blog/glowing-hover-effect/" target="_blank" rel="noopener noreferrer"> Chris Coyier『Glowing Hover Effect that Follows the Pointer』 </a> </li><li> <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/mask-composite" target="_blank" rel="noopener noreferrer"> MDN mask-composite </a> </li><li> <a href="https://ui.aceternity.com/components/card-spotlight" target="_blank" rel="noopener noreferrer"> Aceternity UI Card Spotlight / Glowing Effect </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> なぜ注目か：珍しく“枯れた”演出テーマ </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 仕組み：座標は state でなく CSS 変数へ直書き </a> </li><li> <a href="#sec-3" data-toc="sec-3"> Next.js（App Router）での組み込み </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 落とし穴・性能 </a> </li><li> <a href="#sec-5" data-toc="sec-5"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-11-17</div> <div>⏱ 読了 約5分</div> <div>🏷 Next.js</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
