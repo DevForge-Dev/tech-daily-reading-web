@@ -1,0 +1,103 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>11/18の話題リポジトリ — 研究自動化の paper-orchestra・中国史インタラクティブ地図 jiangshan-map・Rust ボーカルシンセ chimera-vocal-synth — デイリー技術深掘り 読み物</title><meta name="description" content="エージェント運用ツール一色の当日トレンドに対し、増加率で突き抜けた純モメンタム3本を「解決したい課題」と「提供する機能」で読む。研究論文の自動生成、歴史×地図のデジタルヒューマニティーズ、音声合成×Rust と、ジャンルの多様性が際立つ顔ぶれ。"><meta name="theme-color" content="#238636"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-18-github-trending/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="11/18の話題リポジトリ — 研究自動化の paper-orchestra・中国史インタラクティブ地図 jiangshan-map・Rust ボーカルシンセ chimera-vocal-synth — デイリー技術深掘り 読み物"><meta property="og:description" content="エージェント運用ツール一色の当日トレンドに対し、増加率で突き抜けた純モメンタム3本を「解決したい課題」と「提供する機能」で読む。研究論文の自動生成、歴史×地図のデジタルヒューマニティーズ、音声合成×Rust と、ジャンルの多様性が際立つ顔ぶれ。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-18-github-trending/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3fb950, #1a7f37)"> <span class="glyph" aria-hidden="true">★</span> <div class="kicker">GitHub Trending</div> <h1>11/18の話題リポジトリ — 研究自動化の paper-orchestra・中国史インタラクティブ地図 jiangshan-map・Rust ボーカルシンセ chimera-vocal-synth</h1> <p class="lede">エージェント運用ツール一色の当日トレンドに対し、増加率で突き抜けた純モメンタム3本を「解決したい課題」と「提供する機能」で読む。研究論文の自動生成、歴史×地図のデジタルヒューマニティーズ、音声合成×Rust と、ジャンルの多様性が際立つ顔ぶれ。</p> <div class="meta"> <span>📅 2026年11月18日</span> <span>⏱ 約4分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#238636"> <div> <article class="prose" data-has-mermaid="0"><p>今日のモメンタム上位3本は、ジャンルこそ全く違う（マルチエージェント研究自動化／歴史インタラクティブ地図／ボーカルシンセ）が、<strong>AI チャット・エージェント運用ツール一色の当日トレンドに対する“多様性枠”が増加率で突き抜けている</strong>という一点で通じている。各リポジトリについて『解決したい課題』と『提供する機能』を分けて読み、なぜ今急上昇しているかを添える。</p>
+
+<figure class='fig'><svg viewBox='0 0 600 228' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <rect x='0' y='0' width='600' height='228' fill='#f0fdf4' rx='10'></rect>
+  <text x='300' y='24' text-anchor='middle' font-size='14' font-weight='bold' fill='#166534'>解決したい課題 → 提供する機能</text>
+  <line x1='16' y1='36' x2='584' y2='36' stroke='#86efac'></line>
+  <text x='20' y='54' font-size='10.5' font-weight='bold' fill='#14532d'>owner/repo（言語・⭐）</text>
+  <text x='214' y='54' font-size='10.5' font-weight='bold' fill='#991b1b'>解決したい課題</text>
+  <text x='410' y='54' font-size='10.5' font-weight='bold' fill='#1e40af'>提供する機能</text>
+  <line x1='16' y1='62' x2='584' y2='62' stroke='#bbf7d0'></line>
+  <text x='20' y='88' font-size='10' fill='#0f172a'>google-research/</text>
+  <text x='20' y='101' font-size='10' fill='#0f172a'>paper-orchestra</text>
+  <text x='20' y='116' font-size='8.5' fill='#64748b'>Python ⭐2.9k(+1,175)</text>
+  <text x='214' y='88' font-size='9' fill='#334155'>研究の文献調査〜執筆〜</text>
+  <text x='214' y='101' font-size='9' fill='#334155'>査読が手作業で重い</text>
+  <text x='410' y='88' font-size='9' fill='#334155'>複数エージェントで役割分担し</text>
+  <text x='410' y='101' font-size='9' fill='#334155'>論文ドラフトを自動生成</text>
+  <line x1='16' y1='126' x2='584' y2='126' stroke='#bbf7d0'></line>
+  <text x='20' y='152' font-size='10' fill='#0f172a'>DeanChensj/</text>
+  <text x='20' y='165' font-size='10' fill='#0f172a'>jiangshan-map</text>
+  <text x='20' y='180' font-size='8.5' fill='#64748b'>JS ⭐7.6k(+1,087)</text>
+  <text x='214' y='152' font-size='9' fill='#334155'>王朝ごとの領土変遷を</text>
+  <text x='214' y='165' font-size='9' fill='#334155'>直感的に辿れない</text>
+  <text x='410' y='152' font-size='9' fill='#334155'>18王朝198枚の地図を古今</text>
+  <text x='410' y='165' font-size='9' fill='#334155'>地名対照で対話的に探索</text>
+  <line x1='16' y1='190' x2='584' y2='190' stroke='#bbf7d0'></line>
+  <text x='20' y='210' font-size='10' fill='#0f172a'>jamesondh/</text>
+  <text x='20' y='222' font-size='10' fill='#0f172a'>chimera-vocal-synth</text>
+  <text x='214' y='206' font-size='9' fill='#334155'>歌声・話声・ビートボックスを</text>
+  <text x='214' y='219' font-size='9' fill='#334155'>手軽にOSSで作れない</text>
+  <text x='410' y='206' font-size='9' fill='#334155'>ブラウザ/ローカルで動く</text>
+  <text x='410' y='219' font-size='9' fill='#334155'>OSS ボーカルシンセ（Rust）</text>
+</svg><figcaption>図1：今日の3本を「課題→機能」で一望。研究自動化・歴史地図・音声合成とジャンルが割れている。</figcaption></figure>
+
+<h4 id="sec-1">google-research/paper-orchestra（Python・⭐2.9k）</h4>
+<p><strong>解決したい課題：</strong>研究論文の作成は、文献調査・実験設計・執筆・査読という重い工程の連続で、どれも時間がかかり属人的になりがちだ。<strong>提供する機能：</strong>研究テーマを与えると、<strong>複数の AI エージェントが文献調査・実験設計・執筆・査読を分担</strong>し、AI 研究論文のドラフトを自動生成する Google Research 製のマルチエージェント・フレームワーク（Apache-2.0）。<strong>なぜ今急上昇：</strong>本日 <strong>+1,175＝総⭐2,916 に対し増加率約40.3%で当日最高率</strong>（増加数は前日王者 univer に次ぐ2位だが率ではトップ）。エージェント運用ツール一色の中で『研究自動化』という明確な新規性と、Google Research 公式という信頼が注目を集めた。</p>
+
+<h4 id="sec-2">DeanChensj/jiangshan-map（JavaScript・⭐7.6k）</h4>
+<p><strong>解決したい課題：</strong>紀元前から現代までの中国史で、18 王朝それぞれの領土がどう移り変わったかを、年表や文章だけで直感的に把握するのは難しい。<strong>提供する機能：</strong>紀元前403年から現代までの中国史を、<strong>18王朝・198枚の領土スナップショット・古今の地名対照</strong>で、ブラウザ上の<strong>対話型地図タイムライン</strong>として辿れる歴史アトラス（GPL-3.0）。古典詩の地理まで対話的に探索できる。<strong>なぜ今急上昇：</strong>本日 <strong>+1,087＝率約14.3%で当日2位</strong>。歴史×地図×GIS×デジタルヒューマニティーズという希少な可視化枠で、完成度の高さが話題になった。GPL-3.0 なので製品組み込みには注意だが、閲覧・学習用の作品として秀逸だ。</p>
+
+<h4 id="sec-3">jamesondh/chimera-vocal-synth（Rust・⭐2.7k）</h4>
+<p><strong>解決したい課題：</strong>歌声・話声・ビートボックスを手軽に作れるツールは商用・クローズドが多く、ブラウザやローカルで完結する軽量な OSS が乏しい。<strong>提供する機能：</strong>歌う・話す・ビートボックスまでこなす、<strong>ブラウザ/ローカルで動く次世代のオープンソース・ボーカルシンセサイザー</strong>（Rust 製・MIT）。<strong>なぜ今急上昇：</strong>当日 daily 未掲載で増加は『—』だが、<strong>created 2026-11-05＝公開約13日で⭐2,652（日平均約204★/日）</strong>の高速新星で、fork 率も約12%と健全。AI チャット/エージェントに偏る当日トレンドに対し、音声合成/音楽×Rust という希少なクリエイティブ/オーディオ枠だ。</p>
+
+<h4 id="sec-4">まとめ：自分が試すなら</h4>
+<p>3本とも開発ドメインの“ど真ん中”からはやや外れるが、<strong>paper-orchestra</strong> は『複数エージェントに工程を役割分担させる』設計の生きた参照になる——無人リサーチを回す自分の運用に、調査→要約→検証の役割分離として応用が効く。jiangshan-map は WebGIS×タイムライン表現の下敷き、chimera-vocal-synth は Rust×オーディオの事例として読む価値がある。いずれも素直なライセンス（GPL-3.0 の jiangshan-map だけ組込注意）で、学習素材として手に取りやすい顔ぶれだ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://github.com/google-research/paper-orchestra" target="_blank" rel="noopener noreferrer"> google-research/paper-orchestra </a> </li><li> <a href="https://github.com/DeanChensj/jiangshan-map" target="_blank" rel="noopener noreferrer"> DeanChensj/jiangshan-map </a> </li><li> <a href="https://github.com/jamesondh/chimera-vocal-synth" target="_blank" rel="noopener noreferrer"> jamesondh/chimera-vocal-synth </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> google-research/paper-orchestra（Python・⭐2.9k） </a> </li><li> <a href="#sec-2" data-toc="sec-2"> DeanChensj/jiangshan-map（JavaScript・⭐7.6k） </a> </li><li> <a href="#sec-3" data-toc="sec-3"> jamesondh/chimera-vocal-synth（Rust・⭐2.7k） </a> </li><li> <a href="#sec-4" data-toc="sec-4"> まとめ：自分が試すなら </a> </li> </ul> <div class="reading-box"> <div>📅 2026-11-18</div> <div>⏱ 読了 約4分</div> <div>🏷 GitHub Trending</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
