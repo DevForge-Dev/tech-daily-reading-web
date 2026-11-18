@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-11-17T04:47:31.089Z",
+  "generatedAt": "2026-11-18T04:49:26.611Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,90 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-11-18-claude-code",
+      "date": "2026-11-18",
+      "topic": "Claude Code",
+      "title": "Claude Code v2.1.327 は next 先行配布・文書化最新は v2.1.326 — 自動実行を締める「auto モード allow 厳格化」と「サンドボックス書込先制限」",
+      "lede": "今日の版は二段で捉える。npm next=v2.1.327（JST 11/18 05:33）が先行配布される一方、GitHub の CHANGELOG 先頭は依然 v2.1.326 でリリースノート未掲載。文書化された最新の v2.1.326 では、auto モードの allow ルール厳格化とサンドボックス既定書込先の制限という、無人実行を安全側へ締める2つが効く。",
+      "articleHtml": "<p>Claude Code の版は今日、素直に『最新版はこれ』とは言えない。<code>npm view @anthropic-ai/claude-code dist-tags</code> を叩くと <strong>next=v2.1.327</strong>（npm 公開 2026-11-17T20:33Z＝JST 11/18 05:33）・<strong>latest=v2.1.326</strong>・<strong>stable=v2.1.311</strong> だが、一次ソースの GitHub <code>main</code> の CHANGELOG.md 先頭は<strong>依然 v2.1.326</strong>で、v2.1.327 のリリースノートは本稿時点で未掲載だ。これは Claude Code が安定版（latest）より先に <code>next</code> タグで先行ビルドを配る運用のため——配布物としては v2.1.327 が存在するが、<strong>文書化された最新機能は latest=v2.1.326 まで</strong>という状態になる。把握の仕方は『今日の新規版=v2.1.327（next 先行・中身は未公開）』『文書化済みの最新=v2.1.326』の二段で持つのが正確だ。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='0' y='0' width='600' height='150' fill='#faf5ff' rx='10'/>\n  <text x='300' y='26' text-anchor='middle' font-size='13.5' font-weight='bold' fill='#6d28d9'>npm dist-tags は3本立て（next が latest を先行）</text>\n  <rect x='34' y='46' width='168' height='72' rx='8' fill='#fff' stroke='#c4b5fd'/>\n  <text x='118' y='68' text-anchor='middle' font-size='11.5' fill='#7c3aed'>stable</text>\n  <text x='118' y='92' text-anchor='middle' font-size='15' font-weight='bold' fill='#4c1d95'>v2.1.311</text>\n  <text x='118' y='110' text-anchor='middle' font-size='9.5' fill='#8b5cf6'>最も保守的</text>\n  <rect x='216' y='46' width='168' height='72' rx='8' fill='#fff' stroke='#a78bfa' stroke-width='2'/>\n  <text x='300' y='68' text-anchor='middle' font-size='11.5' fill='#7c3aed'>latest（文書化最新）</text>\n  <text x='300' y='92' text-anchor='middle' font-size='15' font-weight='bold' fill='#4c1d95'>v2.1.326</text>\n  <text x='300' y='110' text-anchor='middle' font-size='9.5' fill='#8b5cf6'>CHANGELOG 先頭</text>\n  <rect x='398' y='46' width='168' height='72' rx='8' fill='#f5f3ff' stroke='#7c3aed' stroke-width='2'/>\n  <text x='482' y='68' text-anchor='middle' font-size='11.5' fill='#6d28d9'>next（先行）</text>\n  <text x='482' y='92' text-anchor='middle' font-size='15' font-weight='bold' fill='#5b21b6'>v2.1.327</text>\n  <text x='482' y='110' text-anchor='middle' font-size='9.5' fill='#8b5cf6'>ノート未掲載</text>\n</svg><figcaption>図1：next=v2.1.327 は配布済みだが中身は未文書化。実務の判断材料は latest=v2.1.326 まで。</figcaption></figure>\n\n<h4>何が重要か：v2.1.326 は無人実行を安全側に締め直す</h4>\n<p>DevelopersIO（classmethod）の v2.1.326 挙動検証によれば、367 項目の大半は修正だが、権限チェックとサンドボックス周りに主要な挙動変更が2つある。<strong>(1) auto モードの allow ルール厳格化</strong>——<strong>プログラム名を含まないワイルドカード</strong>や <strong><code>$HOME</code> から始まるワイルドカード</strong>の shell allow ルール（記事の例は <code>Bash($HOME/scripts/*)</code>）は<strong>無視され、サーバ側の安全性チェックに回される</strong>。完全一致（exact-match）ルールは従来どおり許可される。<strong>(2) サンドボックスの既定書込先制限</strong>——macOS/Linux/WSL でサンドボックス実行時に<strong>一部の機微な home 配下フォルダへ既定で書けなくなり</strong>、ユーザー/管理設定の <code>sandbox.filesystem.allowWrite</code> で明示許可する。あわせて <code>.credentials.json</code> 等サインイン系ファイルへの書込拒否、Bash <code>grep</code> のファイル取りこぼし修正、並列 MCP 結果の取り違え修正、Bedrock/Vertex/Foundry の compaction 修正、そして昨日の目玉 <strong>Code Mode×エージェントチーム併用</strong>（既定 in-process のチームメイトも Code Mode で動作）が挙がる。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 178' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='0' y='0' width='600' height='178' fill='#fff7ed' rx='10'/>\n  <text x='300' y='26' text-anchor='middle' font-size='13.5' font-weight='bold' fill='#9a3412'>auto モード allow ルール：どれが通り、どれが安全チェック行きか</text>\n  <rect x='24' y='42' width='552' height='34' rx='6' fill='#dcfce7'/>\n  <text x='40' y='64' font-size='11.5' font-family='monospace' fill='#14532d'>Bash(npm run build)  完全一致</text>\n  <text x='560' y='64' text-anchor='end' font-size='11' font-weight='bold' fill='#15803d'>✓ 許可（従来通り）</text>\n  <rect x='24' y='84' width='552' height='34' rx='6' fill='#fee2e2'/>\n  <text x='40' y='106' font-size='11.5' font-family='monospace' fill='#7f1d1d'>Bash($HOME/scripts/*)  $HOME 始まりのワイルドカード</text>\n  <text x='560' y='106' text-anchor='end' font-size='11' font-weight='bold' fill='#b91c1c'>⚠ 無視→安全チェック</text>\n  <rect x='24' y='126' width='552' height='34' rx='6' fill='#fee2e2'/>\n  <text x='40' y='148' font-size='11.5' font-family='monospace' fill='#7f1d1d'>Bash(*)  プログラム名なしのワイルドカード</text>\n  <text x='560' y='148' text-anchor='end' font-size='11' font-weight='bold' fill='#b91c1c'>⚠ 無視→安全チェック</text>\n</svg><figcaption>図2：完全一致は通るが、プログラム名なし/$HOME 始まりのワイルドカードは無視され安全性チェックに回る。</figcaption></figure>\n\n<h4>実務での使いどころ・自分が試すなら</h4>\n<p>無人スケジュール運用の身には、この2点は直撃する。auto モードで雑に <code>Bash($HOME/...*）</code> のようなワイルドカード allow を置いていたジョブは、v2.1.326 以降は<strong>静かに安全性チェックへ回され、無人だと止まる</strong>可能性がある。対策は、許可したいコマンドを<strong>完全一致ルール</strong>で列挙し直すこと（代替のワイルドカード構文は記事に示されていない＝完全一致へ寄せるのが安全）。サンドボックス側は、ビルド生成物を home 配下の機微フォルダへ書くジョブがあれば <code>sandbox.filesystem.allowWrite</code> に対象を明示する。まずは1ジョブで <code>/status</code> と allow 設定を点検し、無視されている allow ルールが無いかを確認してから横展開したい。</p>\n\n<h4>注意点</h4>\n<p>v2.1.327 の<strong>具体的変更点はノート未公開</strong>で、next の先行ビルドは破壊的変更があり得るため本番パイプラインへの即投入は避け、latest=v2.1.326 を基準にするのが堅い。版の追跡は <code>npm view @anthropic-ai/claude-code dist-tags</code>（版番号）＋ GitHub 一次 CHANGELOG（ノートの有無）の2系統で。DevelopersIO は英語の二次検証で、設定キー名・既定挙動は版・環境で変わりうる点も踏まえておく。</p>\n\n<h4>ひとこと</h4>\n<p>機能追加の派手さはない日だが、『無人・自動実行をどれだけ安全側に倒すか』という Claude Code の一貫した方向が v2.1.326 でまた一歩進んだ。allow ルールは“雑なワイルドカード”から“完全一致の列挙”へ——定期タスクを回す人ほど、この棚卸しの価値が大きい。</p>",
+      "sources": [
+        {
+          "title": "Claude Code CHANGELOG.md（GitHub・一次）",
+          "url": "https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md"
+        },
+        {
+          "title": "DevelopersIO: Claude Code updates v2.1.326（classmethod・英語）",
+          "url": "https://dev.classmethod.jp/en/articles/20261117-cc-updates-v2-1-326/"
+        }
+      ]
+    },
+    {
+      "id": "2026-11-18-nextjs",
+      "date": "2026-11-18",
+      "topic": "Next.js",
+      "title": "Clerk を Next.js 16 App Router で使う — 鍵は「proxy.ts へ改名」と「Cache Components 下は auth() を Suspense で囲む」の2点",
+      "lede": "マネージド認証の最有力 Clerk の導入完全手順。Next.js 16 との噛み合わせが2つ更新された——(1) ミドルウェアが middleware.ts→proxy.ts に改名、(2) cacheComponents 既定下では auth()/currentUser() を Suspense で囲まないと next build が失敗。この2点を外すと最新テンプレートでビルドが通らない。",
+      "articleHtml": "<p>認証 SaaS の <strong>Clerk</strong> は、サインイン/サインアップ UI・セッション・ユーザー/組織管理・ソーシャルログイン・MFA をホスト型で提供し、<strong>プリビルト UI コンポーネントを置くだけ</strong>で本番品質の認証が立ち上がる。自前でセッション・OAuth を実装する Better Auth/Auth.js とは『どこまで預けるか』の思想が異なり、<strong>実装速度を最優先</strong>するスタートアップ/SaaS で定番だ。注目すべきは、Next.js 16 との噛み合わせが 2026 後半に2つ更新され、これを外すと最新テンプレートで <code>next build</code> が通らないことだ。</p>\n\n<h4>仕組み：ブラウザ・ミドルウェア・サーバヘルパの3層</h4>\n<p>Clerk は <code>ClerkProvider</code>（Client）＋ <code>clerkMiddleware()</code>（<code>proxy.ts</code>）＋ サーバヘルパ <code>auth()</code>/<code>currentUser()</code> の3層で動く。セッションは <strong>Cookie</strong> で運ばれ、ミドルウェアが各リクエストで検証して『認証状態』をアプリ全体に通す。パッケージは単一の <code>@clerk/nextjs</code> で、導入は CLI <code>npx -y clerk@latest init</code> が推奨（<code>.env.local</code>・Provider・<code>proxy.ts</code>・認証ルートを自動生成）。環境変数は公開鍵 <code>NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY</code> と秘密鍵 <code>CLERK_SECRET_KEY</code> の2つだ。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='0' y='0' width='600' height='200' fill='#eff6ff' rx='10'/>\n  <text x='300' y='26' text-anchor='middle' font-size='13.5' font-weight='bold' fill='#1e3a8a'>Clerk の3層：Cookie セッションをミドルウェアが各リクエストで検証</text>\n  <rect x='28' y='48' width='160' height='120' rx='8' fill='#fff' stroke='#93c5fd'/>\n  <text x='108' y='70' text-anchor='middle' font-size='11.5' font-weight='bold' fill='#1d4ed8'>ブラウザ</text>\n  <text x='108' y='94' text-anchor='middle' font-size='10.5' fill='#334155'>ClerkProvider</text>\n  <text x='108' y='112' text-anchor='middle' font-size='10.5' fill='#334155'>Show / UserButton</text>\n  <text x='108' y='136' text-anchor='middle' font-size='10.5' fill='#334155'>useAuth / useUser</text>\n  <rect x='220' y='48' width='160' height='120' rx='8' fill='#fff' stroke='#2563eb' stroke-width='2'/>\n  <text x='300' y='70' text-anchor='middle' font-size='11.5' font-weight='bold' fill='#1d4ed8'>proxy.ts（NJS16）</text>\n  <text x='300' y='94' text-anchor='middle' font-size='10.5' fill='#334155'>clerkMiddleware()</text>\n  <text x='300' y='112' text-anchor='middle' font-size='10.5' fill='#334155'>createRouteMatcher</text>\n  <text x='300' y='136' text-anchor='middle' font-size='10.5' fill='#334155'>auth.protect()</text>\n  <rect x='412' y='48' width='160' height='120' rx='8' fill='#fff' stroke='#93c5fd'/>\n  <text x='492' y='70' text-anchor='middle' font-size='11.5' font-weight='bold' fill='#1d4ed8'>サーバ（RSC）</text>\n  <text x='492' y='94' text-anchor='middle' font-size='10.5' fill='#334155'>auth() = Cookie読取</text>\n  <text x='492' y='112' text-anchor='middle' font-size='10.5' fill='#334155'>currentUser()</text>\n  <text x='492' y='130' text-anchor='middle' font-size='9.5' fill='#64748b'>= Backend API</text>\n  <text x='492' y='146' text-anchor='middle' font-size='9.5' fill='#dc2626'>レート制限を消費</text>\n  <line x1='188' y1='108' x2='218' y2='108' stroke='#60a5fa' stroke-width='2'/>\n  <line x1='380' y1='108' x2='410' y2='108' stroke='#60a5fa' stroke-width='2'/>\n</svg><figcaption>図1：Cookie セッションを proxy.ts のミドルウェアが検証し、サーバは auth()（往復なし）/ currentUser()（Backend API 消費）で読む。</figcaption></figure>\n\n<h4>Next.js 16 の落とし穴①：middleware.ts → proxy.ts</h4>\n<p>ファイル名は <strong>Next.js 16+ = <code>proxy.ts</code>、15 以前 = <code>middleware.ts</code></strong>（中身は同一）。<code>src/</code> 採用時は <code>src/proxy.ts</code>、無ければプロジェクト直下。場所違いは『ミドルウェアが動かない』定番バグだ。なお <code>clerkMiddleware()</code> は<strong>既定で何も保護しない</strong>（全ルート公開＝認証状態を通すだけ）。保護は<strong>オプトイン</strong>で、<code>createRouteMatcher</code> ＋ <code>auth.protect()</code> で宣言する。</p>\n<pre><code>// src/proxy.ts（NJS15以前は src/middleware.ts・中身同一）\nimport { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server'\nconst isProtected = createRouteMatcher(['/dashboard(.*)', '/settings(.*)'])\nexport default clerkMiddleware(async (auth, req) => {\n  if (isProtected(req)) await auth.protect() // 未認証はサインインへ\n})</code></pre>\n\n<h4>落とし穴②（最重要）：Cache Components 下は Suspense 必須</h4>\n<p><code>cacheComponents: true</code>（create-next-app 既定）だと、<strong><code>auth()</code>/<code>currentUser()</code>（＝Cookie/ヘッダ読み取り＝動的）を <code>&lt;Suspense&gt;</code> 境界の外で呼ぶと <code>next build</code> が失敗</strong>する。レイアウトのヘッダ（<code>&lt;Show&gt;</code>＋<code>&lt;UserButton&gt;</code>）やデータを読む Server Component は <code>&lt;Suspense&gt;</code> で囲む。これにより静的シェルを先に流し、認証部分はストリーミングで後追いになり、TTFB を保ちつつビルドも通る。<code>auth()</code> は async なので必ず <code>await auth()</code>。UID だけなら <code>const { userId, isAuthenticated } = await auth()</code> で<strong>ネットワーク往復なし</strong>、<code>currentUser()</code> は <strong>Backend API を叩きレート制限を消費</strong>する点が決定的な差だ。</p>\n\n<h4>実務での勘所・注意点</h4>\n<p><code>'use client'</code> は<strong>フックを使う自作コンポーネントだけ</strong>の小島に隔離し、ページ本体・データ取得は RSC のまま残す（<code>ClerkProvider</code> やプリビルトは内部 Client だが親 layout を client 化する必要はない）。機密漏洩の罠として、<code>currentUser()</code> が返す Backend <code>User</code> には <code>privateMetadata</code> が含まれる＝<strong>丸ごとクライアントへ渡さない</strong>。クライアントで必要なら <code>useUser()</code> を使う。<code>auth()</code>/<code>currentUser()</code> は Cookie を読む＝そのルートが動的化するので、公開ページは認証を読まない設計にし、認証が要る枝だけ動的にするのが静的化を効かせるコツだ。</p>\n\n<h4>ひとこと</h4>\n<p>Clerk は『UI・ユーザー/組織管理まで預ける』マネージド路線で、Auth.js/Better Auth の『自前セッション＋OAuth』路線と使い分ける。Next.js 16 では <code>proxy.ts</code> と Suspense の2点さえ外さなければ、プリビルトを置くだけで本番品質の認証が数十分で立ち上がる。自分で試すなら <code>npx clerk@latest init</code> から入り、まず dashboard ルートを1つ protect して挙動を掴むのが早い。</p>",
+      "sources": [
+        {
+          "title": "Clerk Docs — Next.js Quickstart (App Router)",
+          "url": "https://clerk.com/docs/nextjs/getting-started/quickstart"
+        },
+        {
+          "title": "Clerk Docs — clerkMiddleware reference",
+          "url": "https://clerk.com/docs/reference/nextjs/clerk-middleware"
+        },
+        {
+          "title": "Next.js 16 — proxy.ts（旧 middleware.ts）",
+          "url": "https://nextjs.org/docs/app/api-reference/file-conventions/proxy"
+        }
+      ]
+    },
+    {
+      "id": "2026-11-18-flutter",
+      "date": "2026-11-18",
+      "topic": "Flutter",
+      "title": "Flutter Hero アニメ — tag が一致する2ルート間で子を“飛ばす”。経路は MaterialRectArcTween の弧、飛行中は flightShuttleBuilder で差し替え",
+      "lede": "stable は 3.50.0 据え置き（公開約1週間・3.50.1 hotfix はまだ未登場＝初動は安定）。今日の技法は Hero——同一 tag を持つ2画面の要素を画面遷移中に飛ばす専用ウィジェット。サムネ→詳細の拡大遷移が典型で、tag を両ルートに1つずつ・新ページ初フレームに存在させるのが肝。",
+      "articleHtml": "<p>リリース状況から。stable は <strong>3.50.0 / Dart 3.14.0</strong>（11/11）が現在も最新で、<strong>公開から約1週間たっても hotfix 3.50.1 は未登場</strong>——公式ポリシー『最新版だけ hotfix する』の下、過去例（3.47.1 が約1週間後）に照らせばまだ出得るが、昇格直後の回帰 hotfix 連発は起きておらず初動は安定している。beta は <code>3.51.0-0.1.pre</code>（Dart 3.15.0）のまま静かだ。本番は 3.50.0 を pin 基準に、別ジョブで 3.51 beta を緑化しておくのが定石。その上で今日は、画面遷移アニメの定番 <strong>Hero</strong> を読み物として再構成する。</p>\n\n<h4>何が新しい/重要か：2画面間で同一要素を飛ばす専用ウィジェット</h4>\n<p>公式定義は『<strong>子を hero animation の候補としてマークするウィジェット</strong>』。これまで扱った明示トランジション（<code>SlideTransition</code> 等）や同一ルート内差し替えの <code>AnimatedSwitcher</code> と違い、Hero は<strong>2画面間で同一要素を飛ばす</strong>専用だ。発火条件はただ一つ——<strong>push/pop 先ルートの Hero と <code>tag</code> が一致する</strong>こと。<code>const</code> 構築でき、<code>child</code> は『Navigator の push/pop 遷移中に一方のルートからもう一方へ \"fly\" する』。</p>\n\n<figure class='fig'><pre class='mermaid'>flowchart LR\n  A[\"一覧ルート Hero(tag: id42) サムネ画像\"] -->|\"push 遷移\"| B[\"詳細ルート Hero(tag: id42) 拡大画像\"]\n  A -.->|\"同じ tag が両ルートに1つずつ\"| B\n  B -->|\"飛行経路は createRectTween\"| C[\"既定 MaterialRectArcTween = 弧を描く\"]\n  B -->|\"飛行中の見た目\"| D[\"flightShuttleBuilder で差し替え\"]</pre><figcaption>図1：同一 tag の Hero が両ルートにあると、push/pop 中に child が弧を描いて飛ぶ。</figcaption></figure>\n\n<h4>仕組み：tag ルールと飛行の制御点</h4>\n<p><strong>tag ルール</strong>が最重要だ。公式いわく『同じ tag を持つ Hero のペアごとに hero animation が発火』『各ルートは tag ごとに Hero を1つより多く含んではならない』『Hero は新ページのアニメの<strong>最初のフレームに存在していなければならない</strong>』。つまり同一 tag は<strong>両ルートに1つずつ</strong>、<strong>新ページ初フレームに存在が必須</strong>で、tag は通常『基になるデータを表すオブジェクト』（≒一覧の各アイテム ID）を使う。飛行の見た目は2つの override で制御する——<strong><code>flightShuttleBuilder</code></strong> は飛行中に表示するウィジェットを差し替える（source/destination 両方が与えたら destination 優先、無ければ destination の Hero child が既定で飛ぶ）。<strong><code>createRectTween</code></strong> は飛行経路（bounds の変化）を定義し、<code>null</code> なら MaterialApp の HeroController が使う <strong><code>MaterialRectArcTween</code>＝直線でなく弧を描く</strong>経路になる。</p>\n<pre><code>// 一覧・詳細の両方に同じ tag の Hero を置く\nHero(\n  tag: 'photo-${item.id}',          // ← 両ルートで一致させる\n  child: Image.network(item.thumb),  // 詳細側は拡大画像\n)\n// iOS バックスワイプ等でも飛ばすなら transitionOnUserGestures: true</code></pre>\n\n<h4>実務での使いどころ・自分が試すなら</h4>\n<p>典型は<strong>画像サムネ→詳細の拡大遷移</strong>。一覧の各カードと詳細画面の両方に <code>Hero(tag: アイテムID)</code> を置くだけで、タップすると画像が弧を描いて拡大しながら遷移する。曲線は <code>curve</code>（既定 <code>Curves.fastOutSlowIn</code>）/<code>reverseCurve</code> で調整。円⇄矩形の変形を伴う『radial hero』や、飛行中にプレースホルダを置く <code>placeholderBuilder</code>（<code>GlobalKey</code> 衝突回避に空 <code>SizedBox</code> を併用）まで踏み込むと表現の幅が広がる。自分で試すなら、まず standard hero（別位置/サイズへ単純に飛ばす）を1組だけ組み、動いたら <code>flightShuttleBuilder</code> で飛行中の角丸やラベルを足すのが段階的で安全だ。</p>\n\n<h4>注意点</h4>\n<p>最大の罠は <strong>tag の重複と初フレーム不在</strong>。同一ルートに同じ tag の Hero が2つあると実行時エラー、新ページ初フレームに Hero が無いと飛ばない。<code>tag</code> はアイテム ID のような一意値を使い、リストでインデックスを使い回さないこと。あわせて今日の素材では、再描画を subtree に封じ込める <code>RepaintBoundary</code>（貼りすぎは raster cache 構築コスト＋GPU メモリで逆効果）と、状態管理の定番 <code>flutter_bloc</code>（<code>buildWhen</code>/<code>context.select</code> で不要 rebuild 抑止）も挙がっており、遷移の派手さと描画コストのバランスを取る視点で併読すると効く。</p>\n\n<h4>ひとこと</h4>\n<p>Hero は『同じ tag を両ルートに1つずつ・新ページ初フレームに存在』さえ守れば、数行でサムネ→詳細の拡大遷移が手に入る。経路が既定で弧（MaterialRectArcTween）になるのが Material らしい所で、まずは画像1枚の standard hero から入るのが入り口として手頃だ。</p>",
+      "sources": [
+        {
+          "title": "Hero class（api.flutter.dev）",
+          "url": "https://api.flutter.dev/flutter/widgets/Hero-class.html"
+        },
+        {
+          "title": "Hero animations（docs.flutter.dev）",
+          "url": "https://docs.flutter.dev/ui/animations/hero-animations"
+        },
+        {
+          "title": "Flutter Versions（flutterreleases.com）",
+          "url": "https://flutterreleases.com/flutter-versions/"
+        }
+      ]
+    },
+    {
+      "id": "2026-11-18-github-trending",
+      "date": "2026-11-18",
+      "topic": "GitHub Trending",
+      "title": "11/18の話題リポジトリ — 研究自動化の paper-orchestra・中国史インタラクティブ地図 jiangshan-map・Rust ボーカルシンセ chimera-vocal-synth",
+      "lede": "エージェント運用ツール一色の当日トレンドに対し、増加率で突き抜けた純モメンタム3本を「解決したい課題」と「提供する機能」で読む。研究論文の自動生成、歴史×地図のデジタルヒューマニティーズ、音声合成×Rust と、ジャンルの多様性が際立つ顔ぶれ。",
+      "articleHtml": "<p>今日のモメンタム上位3本は、ジャンルこそ全く違う（マルチエージェント研究自動化／歴史インタラクティブ地図／ボーカルシンセ）が、<strong>AI チャット・エージェント運用ツール一色の当日トレンドに対する“多様性枠”が増加率で突き抜けている</strong>という一点で通じている。各リポジトリについて『解決したい課題』と『提供する機能』を分けて読み、なぜ今急上昇しているかを添える。</p>\n\n<figure class='fig'><svg viewBox='0 0 600 228' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='0' y='0' width='600' height='228' fill='#f0fdf4' rx='10'/>\n  <text x='300' y='24' text-anchor='middle' font-size='14' font-weight='bold' fill='#166534'>解決したい課題 → 提供する機能</text>\n  <line x1='16' y1='36' x2='584' y2='36' stroke='#86efac'/>\n  <text x='20' y='54' font-size='10.5' font-weight='bold' fill='#14532d'>owner/repo（言語・⭐）</text>\n  <text x='214' y='54' font-size='10.5' font-weight='bold' fill='#991b1b'>解決したい課題</text>\n  <text x='410' y='54' font-size='10.5' font-weight='bold' fill='#1e40af'>提供する機能</text>\n  <line x1='16' y1='62' x2='584' y2='62' stroke='#bbf7d0'/>\n  <text x='20' y='88' font-size='10' fill='#0f172a'>google-research/</text>\n  <text x='20' y='101' font-size='10' fill='#0f172a'>paper-orchestra</text>\n  <text x='20' y='116' font-size='8.5' fill='#64748b'>Python ⭐2.9k(+1,175)</text>\n  <text x='214' y='88' font-size='9' fill='#334155'>研究の文献調査〜執筆〜</text>\n  <text x='214' y='101' font-size='9' fill='#334155'>査読が手作業で重い</text>\n  <text x='410' y='88' font-size='9' fill='#334155'>複数エージェントで役割分担し</text>\n  <text x='410' y='101' font-size='9' fill='#334155'>論文ドラフトを自動生成</text>\n  <line x1='16' y1='126' x2='584' y2='126' stroke='#bbf7d0'/>\n  <text x='20' y='152' font-size='10' fill='#0f172a'>DeanChensj/</text>\n  <text x='20' y='165' font-size='10' fill='#0f172a'>jiangshan-map</text>\n  <text x='20' y='180' font-size='8.5' fill='#64748b'>JS ⭐7.6k(+1,087)</text>\n  <text x='214' y='152' font-size='9' fill='#334155'>王朝ごとの領土変遷を</text>\n  <text x='214' y='165' font-size='9' fill='#334155'>直感的に辿れない</text>\n  <text x='410' y='152' font-size='9' fill='#334155'>18王朝198枚の地図を古今</text>\n  <text x='410' y='165' font-size='9' fill='#334155'>地名対照で対話的に探索</text>\n  <line x1='16' y1='190' x2='584' y2='190' stroke='#bbf7d0'/>\n  <text x='20' y='210' font-size='10' fill='#0f172a'>jamesondh/</text>\n  <text x='20' y='222' font-size='10' fill='#0f172a'>chimera-vocal-synth</text>\n  <text x='214' y='206' font-size='9' fill='#334155'>歌声・話声・ビートボックスを</text>\n  <text x='214' y='219' font-size='9' fill='#334155'>手軽にOSSで作れない</text>\n  <text x='410' y='206' font-size='9' fill='#334155'>ブラウザ/ローカルで動く</text>\n  <text x='410' y='219' font-size='9' fill='#334155'>OSS ボーカルシンセ（Rust）</text>\n</svg><figcaption>図1：今日の3本を「課題→機能」で一望。研究自動化・歴史地図・音声合成とジャンルが割れている。</figcaption></figure>\n\n<h4>google-research/paper-orchestra（Python・⭐2.9k）</h4>\n<p><strong>解決したい課題：</strong>研究論文の作成は、文献調査・実験設計・執筆・査読という重い工程の連続で、どれも時間がかかり属人的になりがちだ。<strong>提供する機能：</strong>研究テーマを与えると、<strong>複数の AI エージェントが文献調査・実験設計・執筆・査読を分担</strong>し、AI 研究論文のドラフトを自動生成する Google Research 製のマルチエージェント・フレームワーク（Apache-2.0）。<strong>なぜ今急上昇：</strong>本日 <strong>+1,175＝総⭐2,916 に対し増加率約40.3%で当日最高率</strong>（増加数は前日王者 univer に次ぐ2位だが率ではトップ）。エージェント運用ツール一色の中で『研究自動化』という明確な新規性と、Google Research 公式という信頼が注目を集めた。</p>\n\n<h4>DeanChensj/jiangshan-map（JavaScript・⭐7.6k）</h4>\n<p><strong>解決したい課題：</strong>紀元前から現代までの中国史で、18 王朝それぞれの領土がどう移り変わったかを、年表や文章だけで直感的に把握するのは難しい。<strong>提供する機能：</strong>紀元前403年から現代までの中国史を、<strong>18王朝・198枚の領土スナップショット・古今の地名対照</strong>で、ブラウザ上の<strong>対話型地図タイムライン</strong>として辿れる歴史アトラス（GPL-3.0）。古典詩の地理まで対話的に探索できる。<strong>なぜ今急上昇：</strong>本日 <strong>+1,087＝率約14.3%で当日2位</strong>。歴史×地図×GIS×デジタルヒューマニティーズという希少な可視化枠で、完成度の高さが話題になった。GPL-3.0 なので製品組み込みには注意だが、閲覧・学習用の作品として秀逸だ。</p>\n\n<h4>jamesondh/chimera-vocal-synth（Rust・⭐2.7k）</h4>\n<p><strong>解決したい課題：</strong>歌声・話声・ビートボックスを手軽に作れるツールは商用・クローズドが多く、ブラウザやローカルで完結する軽量な OSS が乏しい。<strong>提供する機能：</strong>歌う・話す・ビートボックスまでこなす、<strong>ブラウザ/ローカルで動く次世代のオープンソース・ボーカルシンセサイザー</strong>（Rust 製・MIT）。<strong>なぜ今急上昇：</strong>当日 daily 未掲載で増加は『—』だが、<strong>created 2026-11-05＝公開約13日で⭐2,652（日平均約204★/日）</strong>の高速新星で、fork 率も約12%と健全。AI チャット/エージェントに偏る当日トレンドに対し、音声合成/音楽×Rust という希少なクリエイティブ/オーディオ枠だ。</p>\n\n<h4>まとめ：自分が試すなら</h4>\n<p>3本とも開発ドメインの“ど真ん中”からはやや外れるが、<strong>paper-orchestra</strong> は『複数エージェントに工程を役割分担させる』設計の生きた参照になる——無人リサーチを回す自分の運用に、調査→要約→検証の役割分離として応用が効く。jiangshan-map は WebGIS×タイムライン表現の下敷き、chimera-vocal-synth は Rust×オーディオの事例として読む価値がある。いずれも素直なライセンス（GPL-3.0 の jiangshan-map だけ組込注意）で、学習素材として手に取りやすい顔ぶれだ。</p>",
+      "sources": [
+        {
+          "title": "google-research/paper-orchestra",
+          "url": "https://github.com/google-research/paper-orchestra"
+        },
+        {
+          "title": "DeanChensj/jiangshan-map",
+          "url": "https://github.com/DeanChensj/jiangshan-map"
+        },
+        {
+          "title": "jamesondh/chimera-vocal-synth",
+          "url": "https://github.com/jamesondh/chimera-vocal-synth"
+        }
+      ]
+    },
     {
       "id": "2026-11-17-claude-code",
       "date": "2026-11-17",
@@ -201,6 +285,7 @@
       ]
     },
     {
+      "id": "2026-11-15-claude-code",
       "date": "2026-11-15",
       "topic": "Claude Code",
       "title": "Claude Code、latestが v2.1.319→v2.1.325 へ一気に前進 — サンドボックスBashを既定で権限フローへ、実験的Code Mode、既定Fableが5.2に",
@@ -219,10 +304,10 @@
           "title": "havoptic『Claude Code 2.1.321』（英語・二次まとめ）",
           "url": "https://www.havoptic.com/r/claude-code-2.1.321"
         }
-      ],
-      "id": "2026-11-15-claude-code"
+      ]
     },
     {
+      "id": "2026-11-15-nextjs",
       "date": "2026-11-15",
       "topic": "Next.js",
       "title": "serverless Next.js のバックグラウンド処理 — after() の限界を越えて「定期実行／キュー／多段durable」を3層で使い分ける",
@@ -241,10 +326,10 @@
           "title": "Inngest vs Trigger.dev vs QStash（比較）",
           "url": "https://www.pkgpulse.com/guides/inngest-vs-triggerdev-vs-qstash-serverless-durable-2026"
         }
-      ],
-      "id": "2026-11-15-nextjs"
+      ]
     },
     {
+      "id": "2026-11-15-flutter",
       "date": "2026-11-15",
       "topic": "Flutter",
       "title": "Flutter 3.50 リリースノートを棚卸し — windowing APIの改名・新Sliver/Dialog API・最低AGP 9.1.1、そしてRiverpod 3のMutations",
@@ -263,10 +348,10 @@
           "title": "Flutter Versions（flutterreleases.com）",
           "url": "https://flutterreleases.com/flutter-versions/"
         }
-      ],
-      "id": "2026-11-15-flutter"
+      ]
     },
     {
+      "id": "2026-11-15-github-trending",
       "date": "2026-11-15",
       "topic": "GitHub Trending",
       "title": "11/15の話題リポジトリ — WindowsでAPK直起動・DeepSeek公式チャットUI・WebGPU無限キャンバス、AI一色の中の「ローカルで軽く動く」3本",
@@ -285,8 +370,7 @@
           "title": "berkantay/gpucanvas",
           "url": "https://github.com/berkantay/gpucanvas"
         }
-      ],
-      "id": "2026-11-15-github-trending"
+      ]
     },
     {
       "id": "2026-11-14-claude-code",
@@ -381,6 +465,7 @@
       ]
     },
     {
+      "id": "2026-11-13-claude-code",
       "date": "2026-11-13",
       "topic": "Claude Code",
       "title": "Claude Code — denyInsteadOfPromptingと/loop・Autoモードの破壊的変更、Opus 4.8高速モードは11/30終了",
@@ -403,10 +488,10 @@
           "title": "Developer in the Loop — Claude Code 設定の決定版ガイド",
           "url": "https://developerintheloop.substack.com/p/the-ultimate-guide-to-configuring"
         }
-      ],
-      "id": "2026-11-13-claude-code"
+      ]
     },
     {
+      "id": "2026-11-13-nextjs",
       "date": "2026-11-13",
       "topic": "Next.js",
       "title": "Next.js — React Taint APIでサーバー機密のクライアント漏洩を描画時に止める（experimental）",
@@ -429,10 +514,10 @@
           "title": "Next.js guide: How to think about data security",
           "url": "https://nextjs.org/docs/app/guides/data-security"
         }
-      ],
-      "id": "2026-11-13-nextjs"
+      ]
     },
     {
+      "id": "2026-11-13-flutter",
       "date": "2026-11-13",
       "topic": "Flutter",
       "title": "Flutter — 3.50の機能面を総覧：Direct native interopがstable、iOSタッチ即時配信、material_ui既定化",
@@ -451,10 +536,10 @@
           "title": "Performance best practices（docs.flutter.dev）",
           "url": "https://docs.flutter.dev/perf/best-practices"
         }
-      ],
-      "id": "2026-11-13-flutter"
+      ]
     },
     {
+      "id": "2026-11-13-github-trending",
       "date": "2026-11-13",
       "topic": "GitHub Trending",
       "title": "11/13の話題リポジトリ — Chrome公式のエージェント用Web指針・Claude Code可視化・ローカルAI議事録ほか",
@@ -485,10 +570,10 @@
           "title": "expo/exact",
           "url": "https://github.com/expo/exact"
         }
-      ],
-      "id": "2026-11-13-github-trending"
+      ]
     },
     {
+      "id": "2026-11-12-claude-code",
       "date": "2026-11-12",
       "topic": "Claude Code",
       "title": "Claude Code — v2.1.321でFable 5.2が既定に（値下げ）、cp/mvの保護強化とプラグインskills非ロード",
@@ -507,10 +592,10 @@
           "title": "Claude Code パワーユーザーのヒント（公式・日本語）",
           "url": "https://support.claude.com/ja/articles/14554000-claude-code-power-user-tips"
         }
-      ],
-      "id": "2026-11-12-claude-code"
+      ]
     },
     {
+      "id": "2026-11-12-nextjs",
       "date": "2026-11-12",
       "topic": "Next.js",
       "title": "Next.js — @propertyで動かすCSSオーロラ背景、重い所だけWebGL（Paper Shaders）",
@@ -529,10 +614,10 @@
           "title": "Paper Shaders vanilla quickstart",
           "url": "https://www.mintlify.com/paper-design/shaders/quickstart-vanilla"
         }
-      ],
-      "id": "2026-11-12-nextjs"
+      ]
     },
     {
+      "id": "2026-11-12-flutter",
       "date": "2026-11-12",
       "topic": "Flutter",
       "title": "Flutter — 3.50.0 stable到達（Dart 3.14）、material_ui分離の正式deprecationとAGP 9.1.1必須",
@@ -551,10 +636,10 @@
           "title": "CustomPainter class（api.flutter.dev）",
           "url": "https://api.flutter.dev/flutter/rendering/CustomPainter-class.html"
         }
-      ],
-      "id": "2026-11-12-flutter"
+      ]
     },
     {
+      "id": "2026-11-12-github-trending",
       "date": "2026-11-12",
       "topic": "GitHub Trending",
       "title": "11/12の話題リポジトリ — 身体性ロボ・純RustのDLマネージャ・Jane Streetのagent skills",
@@ -573,10 +658,10 @@
           "title": "janestreet/agent_skills",
           "url": "https://github.com/janestreet/agent_skills"
         }
-      ],
-      "id": "2026-11-12-github-trending"
+      ]
     },
     {
+      "id": "2026-11-11-claude-code",
       "date": "2026-11-11",
       "topic": "Claude Code",
       "title": "Claude Code — Vertexでfast mode対応、MCP呼び出しの背景化と権限の締め直し",
@@ -595,10 +680,10 @@
           "title": "Best Practices: Hooks/Subagents/Context (SmartScope)",
           "url": "https://smartscope.blog/en/generative-ai/claude/claude-code-best-practices-advanced-2026/"
         }
-      ],
-      "id": "2026-11-11-claude-code"
+      ]
     },
     {
+      "id": "2026-11-11-nextjs",
       "date": "2026-11-11",
       "topic": "Next.js",
       "title": "Next.js — useLinkStatusでリンク単位のペンディングUI（15.3+）",
@@ -617,10 +702,10 @@
           "title": "Linking and Navigating (Next.js Docs)",
           "url": "https://nextjs.org/docs/app/building-your-application/routing/linking-and-navigating"
         }
-      ],
-      "id": "2026-11-11-nextjs"
+      ]
     },
     {
+      "id": "2026-11-11-flutter",
       "date": "2026-11-11",
       "topic": "Flutter",
       "title": "Flutter — プロセス終了をまたいでUI状態を復元するState Restoration（3.50はなお足踏み）",
@@ -639,10 +724,10 @@
           "title": "Restore state on Android (docs.flutter.dev)",
           "url": "https://docs.flutter.dev/platform-integration/android/restore-state-android"
         }
-      ],
-      "id": "2026-11-11-flutter"
+      ]
     },
     {
+      "id": "2026-11-11-github-trending",
       "date": "2026-11-11",
       "topic": "GitHub Trending",
       "title": "11/11の話題リポジトリ — GPU内部を覗くhtop・Xの見逃し推文を回収・セルフホスト統合",
@@ -661,10 +746,10 @@
           "title": "HolyArrs/HolyArrs",
           "url": "https://github.com/HolyArrs/HolyArrs"
         }
-      ],
-      "id": "2026-11-11-github-trending"
+      ]
     },
     {
+      "id": "2026-11-10-claude-code",
       "date": "2026-11-10",
       "topic": "Claude Code",
       "title": "Claude Code v2.1.321 — モデル別名の再割り当てと、cp/mvまで広げた書き込み保護",
@@ -683,10 +768,10 @@
           "title": "Morph — Claude Code Plugins and Marketplaces (2026)",
           "url": "https://www.morphllm.com/claude-code-marketplace"
         }
-      ],
-      "id": "2026-11-10-claude-code"
+      ]
     },
     {
+      "id": "2026-11-10-nextjs",
       "date": "2026-11-10",
       "topic": "Next.js",
       "title": "グーイ(gooey)メニュー — feGaussianBlur×feColorMatrixだけでJSゼロの“溶ける”UI",
@@ -705,10 +790,10 @@
           "title": "MDN — CSS filter: url()",
           "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/filter"
         }
-      ],
-      "id": "2026-11-10-nextjs"
+      ]
     },
     {
+      "id": "2026-11-10-flutter",
       "date": "2026-11-10",
       "topic": "Flutter",
       "title": "Flutter 3.50は最終ゲートで足踏み — 待つ間に効くTweenAnimationBuilderとRepaintBoundary",
@@ -727,10 +812,10 @@
           "title": "RepaintBoundary class（api.flutter.dev）",
           "url": "https://api.flutter.dev/flutter/widgets/RepaintBoundary-class.html"
         }
-      ],
-      "id": "2026-11-10-flutter"
+      ]
     },
     {
+      "id": "2026-11-10-github-trending",
       "date": "2026-11-10",
       "topic": "GitHub Trending",
       "title": "11/10の話題リポジトリ — スマホ操作エージェント・COWフォルダ隔離・自分のCCセッションでローカル微調整",
@@ -749,8 +834,7 @@
           "title": "drost-ai/tinker-ai-skill",
           "url": "https://github.com/drost-ai/tinker-ai-skill"
         }
-      ],
-      "id": "2026-11-10-github-trending"
+      ]
     },
     {
       "id": "2026-11-09-claude-code",
