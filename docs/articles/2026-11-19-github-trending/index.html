@@ -1,0 +1,93 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>11/19 の話題リポジトリ — Docker運用UI「arcane」・LLM改変「heretic」・公式拡張「cursor/plugins」 — デイリー技術深掘り 読み物</title><meta name="description" content="AI エージェント一色のトレンドで、インフラ運用・モデル工学・コーディング拡張と綺麗にばらけた急上昇3本（Go/Python/TS）。各リポを「解決したい課題」と「提供する機能」の2点で読み解く。"><meta name="theme-color" content="#238636"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-19-github-trending/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="11/19 の話題リポジトリ — Docker運用UI「arcane」・LLM改変「heretic」・公式拡張「cursor/plugins」 — デイリー技術深掘り 読み物"><meta property="og:description" content="AI エージェント一色のトレンドで、インフラ運用・モデル工学・コーディング拡張と綺麗にばらけた急上昇3本（Go/Python/TS）。各リポを「解決したい課題」と「提供する機能」の2点で読み解く。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-19-github-trending/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3fb950, #1a7f37)"> <span class="glyph" aria-hidden="true">★</span> <div class="kicker">GitHub Trending</div> <h1>11/19 の話題リポジトリ — Docker運用UI「arcane」・LLM改変「heretic」・公式拡張「cursor/plugins」</h1> <p class="lede">AI エージェント一色のトレンドで、インフラ運用・モデル工学・コーディング拡張と綺麗にばらけた急上昇3本（Go/Python/TS）。各リポを「解決したい課題」と「提供する機能」の2点で読み解く。</p> <div class="meta"> <span>📅 2026年11月19日</span> <span>⏱ 約3分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#238636"> <div> <article class="prose" data-has-mermaid="0"><p>今日のモメンタム枠3本は、トレンドが『AI エージェント/スキル束』一色に寄るなかで、<strong>インフラ運用・モデル工学・コーディング拡張</strong>と見事にばらけた。言語も Go / Python / TypeScript と三者三様。純粋な急上昇（増加『率』主軸）で選んだ3本を、それぞれ『どんな課題を解こうとしているのか』『実際に何ができるのか』の2点で読み解く。</p>
+
+<figure class='fig'>
+<svg viewBox='0 0 600 206' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <rect x='0' y='0' width='600' height='206' fill='#f0fdf4' rx='8'></rect>
+  <text x='16' y='24' font-size='12' font-weight='700' fill='#166534'>11/19 モメンタム3本 — 解決する課題 → 提供する機能</text>
+  <line x1='16' y1='34' x2='584' y2='34' stroke='#86efac'></line>
+  <text x='22' y='58' font-size='11' font-weight='700' fill='#14532d'>arcane (Go, ⭐9.5k)</text>
+  <text x='200' y='58' font-size='10' fill='#166534'>CLIだけの Docker 運用が辛い</text>
+  <text x='400' y='58' font-size='10' fill='#047857'>→ モダン Web UI で一元管理</text>
+  <line x1='16' y1='70' x2='584' y2='70' stroke='#bbf7d0'></line>
+  <text x='22' y='96' font-size='11' font-weight='700' fill='#14532d'>heretic (Python, ⭐42k)</text>
+  <text x='200' y='96' font-size='10' fill='#166534'>再訓練せず LLM の拒否/迎合を直したい</text>
+  <text x='400' y='96' font-size='10' fill='#047857'>→ 数学的 steering で abliteration</text>
+  <line x1='16' y1='108' x2='584' y2='108' stroke='#bbf7d0'></line>
+  <text x='22' y='134' font-size='11' font-weight='700' fill='#14532d'>cursor/plugins (TS, ⭐17k)</text>
+  <text x='200' y='134' font-size='10' fill='#166534'>エージェントの拡張に共通仕様が無い</text>
+  <text x='400' y='134' font-size='10' fill='#047857'>→ 公式プラグイン仕様＋実装集</text>
+  <line x1='16' y1='146' x2='584' y2='146' stroke='#bbf7d0'></line>
+  <text x='22' y='172' font-size='10' fill='#15803d'>共通点：いずれも「既存ツールの一段上の運用/改変レイヤ」を公式/セルフホストで提供</text>
+  <text x='22' y='192' font-size='9' fill='#4d7c0f'>増加率：arcane 約5.8%（当日最高率級）/ heretic 約1.5% / cursor/plugins 約1.9%</text>
+</svg>
+<figcaption>図1：3本の「課題→機能」対応。急上昇の理由が一望できる。</figcaption>
+</figure>
+
+<h4 id="sec-1">getarcaneapp/arcane（Go・⭐約9.5k）</h4>
+<p><strong>解決したい課題：</strong>Docker コンテナや Compose スタックの運用を、CLI コマンドの暗記や寄せ集めの管理画面に頼らず、<em>誰でも</em>扱える形にしたい。<strong>提供する機能：</strong>バックエンド Go＋フロント SvelteKit で、コンテナ・Compose・スタックを<strong>モダンな Web UI で一元管理</strong>するセルフホスト型ツール（BSD-3-Clause・forks 約344）。本日 +547 は総⭐約9.5k に対し<strong>率約5.8%＝当日最高率級</strong>。AI 一色のトレンドに対する『実直なインフラ系×Go/Svelte』という多様性と、vendor ロックインの無いセルフホストの手触りが評価されている。</p>
+
+<h4 id="sec-2">p-e-w/heretic（Python・⭐約42k）</h4>
+<p><strong>解決したい課題：</strong>ローカルで動かす LLM の、過剰な拒否（検閲）・冗長な常套句（slop）・過度な迎合（sycophancy）を、<strong>高価な再訓練なしで</strong>手元で調整したい。<strong>提供する機能：</strong>訓練せずに数学的な steering でこれらを取り除く『<strong>abliteration</strong>』ツール（AGPL-3.0・forks 約4.3k・既定動作は拒否除去）。コンセプトは『Modify, rather than merely run, language models＝モデルをただ動かすのでなく改変する』。本日 +620（率約1.5%）。エージェント/スキル束が並ぶなかで、<strong>LLM 内部をいじるモデル工学</strong>という別軸の新規性が面白がられている。※AGPL-3.0 なので開発ツール利用は問題ないが製品組み込みは要注意。</p>
+
+<h4 id="sec-3">cursor/plugins（TypeScript・⭐約17k）</h4>
+<p><strong>解決したい課題：</strong>コーディングエージェント（Cursor）を社内ツールや SaaS と連携・拡張したいが、<strong>共通の拡張仕様が無い</strong>と各自バラバラの作り込みになる。<strong>提供する機能：</strong>Cursor 公式の<strong>プラグイン仕様</strong>と、GitHub・Salesforce・Playwright・Cursor SDK 等の公式プラグイン群を束ねたリポジトリ（MIT・forks 約1.3k）。各プラグインは <code>.cursor-plugin/plugin.json</code> マニフェストを持つ独立ディレクトリという明快な構造。本日 +315（率約1.9%）。<strong>エージェント拡張エコシステムが公式に一段進んだ</strong>ニュースとして話題化し、プラグイン機構の設計は <code>.claude/skills+agents</code> 構成の参照にもなる。</p>
+
+<p><strong>ひとこと：</strong>自分が今すぐ触るなら、セルフホスト運用に直結する <strong>arcane</strong>。設計の参照としては、独立ディレクトリ＋マニフェストという素直な拡張モデルの <strong>cursor/plugins</strong> が学びになる。heretic はローカル LLM をいじる“実験の面白さ”枠だ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://github.com/getarcaneapp/arcane" target="_blank" rel="noopener noreferrer"> getarcaneapp/arcane </a> </li><li> <a href="https://github.com/p-e-w/heretic" target="_blank" rel="noopener noreferrer"> p-e-w/heretic </a> </li><li> <a href="https://github.com/cursor/plugins" target="_blank" rel="noopener noreferrer"> cursor/plugins </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> getarcaneapp/arcane（Go・⭐約9.5k） </a> </li><li> <a href="#sec-2" data-toc="sec-2"> p-e-w/heretic（Python・⭐約42k） </a> </li><li> <a href="#sec-3" data-toc="sec-3"> cursor/plugins（TypeScript・⭐約17k） </a> </li> </ul> <div class="reading-box"> <div>📅 2026-11-19</div> <div>⏱ 読了 約3分</div> <div>🏷 GitHub Trending</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
