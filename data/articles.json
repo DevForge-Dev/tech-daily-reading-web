@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-11-18T04:49:26.611Z",
+  "generatedAt": "2026-11-19T04:45:45.837Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,110 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "date": "2026-11-19",
+      "topic": "Claude Code",
+      "title": "Claude Code v2.1.327 が latest 昇格・CHANGELOG 正式掲載 — 自動実行の allow を締め、トークンと設定ファイルを守る堅牢化",
+      "lede": "昨日まで next 先行で中身が読めなかった v2.1.327 が本日 latest へ昇格し、CHANGELOG にも変更一覧が掲載（stable=v2.1.311）。mcp add-json のstdin読込、/status の壊れた設定一覧などの新機能に加え、PowerShell allow 無視・.mcp.json 他キー削除・WebFetch 長大URL拒否など、無人実行を安全側へ締める修正が本体。",
+      "articleHtml": "<p>Claude Code の版番号は、昨日まで『<strong>next 先行で中身が読めない</strong>』もどかしい状態だった。本日 11/19、その <code>v2.1.327</code> が npm の <code>latest</code> へ昇格し、一次ソースである GitHub の <code>CHANGELOG.md</code> 先頭にも変更一覧がそろって載った（<code>stable</code> は <code>v2.1.311</code>）。つまり『版はあるが変更点が不明』の宙ぶらりんが解消し、ようやく内容を確定して読める日になったということだ。</p>\n\n<h4>何が新しいか</h4>\n<p>大半は修正だが、実務に効く追加がいくつかある。<code>/install-github-app</code> がリポジトリを変更する前に確認を挟むようになり、うっかり設定を書き換える事故を防ぐ。地味だが重要なのが <code>claude mcp add-json &lt;name&gt; -</code> ——server 定義の JSON を <strong>標準入力（stdin）から読める</strong>ようになり、トークンをコマンドライン引数（＝シェル履歴）に残さずに登録できる。ほかに <code>/status</code> が『壊れた agent / skill / command / output style、効かないキーバインド、使えないサンドボックス、無視された権限、噛み合わない hook matcher』を一覧化、<code>attributionProject</code> で課金グループに名前を付与、非フルスクリーン描画に <code>/tui classic</code> の別名追加、など。</p>\n\n<figure class='fig'>\n<svg viewBox='0 0 600 232' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='0' y='0' width='600' height='232' fill='#fff7ed' rx='8'/>\n  <text x='16' y='26' font-size='13' font-weight='700' fill='#9a3412'>v2.1.327（latest 昇格・CHANGELOG 掲載）</text>\n  <rect x='16' y='40' width='272' height='176' rx='6' fill='#ffffff' stroke='#fdba74'/>\n  <text x='30' y='62' font-size='12' font-weight='700' fill='#c2410c'>✚ 追加された主な機能</text>\n  <text x='30' y='86' font-size='11' fill='#7c2d12'>/install-github-app は変更前に確認</text>\n  <text x='30' y='108' font-size='11' fill='#7c2d12'>mcp add-json &lt;name&gt; - ＝stdin 読込</text>\n  <text x='46' y='124' font-size='10' fill='#9a3412'>→ トークンを履歴に残さない</text>\n  <text x='30' y='146' font-size='11' fill='#7c2d12'>/status が壊れた設定を一覧表示</text>\n  <text x='30' y='168' font-size='11' fill='#7c2d12'>attributionProject＝課金グループ命名</text>\n  <text x='30' y='190' font-size='11' fill='#7c2d12'>/tui classic 名称追加</text>\n  <rect x='312' y='40' width='272' height='176' rx='6' fill='#ffffff' stroke='#fca5a5'/>\n  <text x='326' y='62' font-size='12' font-weight='700' fill='#b91c1c'>🛡 無人実行を締める修正</text>\n  <text x='326' y='86' font-size='11' fill='#7f1d1d'>auto モードが .\\ 始まりの</text>\n  <text x='326' y='102' font-size='11' fill='#7f1d1d'>PowerShell allow を無視→修正</text>\n  <text x='326' y='126' font-size='11' fill='#7f1d1d'>mcp add/remove が .mcp.json の</text>\n  <text x='326' y='142' font-size='11' fill='#7f1d1d'>$schema 等他キー削除→修正</text>\n  <text x='326' y='166' font-size='11' fill='#7f1d1d'>WebFetch が 2,000字超 URL を拒否</text>\n  <text x='326' y='190' font-size='11' fill='#7f1d1d'>worktree 停止が .env 削除→修正</text>\n</svg>\n<figcaption>図1：v2.1.327 の要点。左＝新機能、右＝自動実行まわりを安全側へ締める修正。</figcaption>\n</figure>\n\n<h4>仕組みと落とし穴</h4>\n<p>安全系の修正が今回の肝だ。<code>auto</code> モードが <code>.\\scripts\\build.ps1 *</code> のような『<code>.\\</code> 始まりの PowerShell ワイルドカード allow ルール』を<strong>無視していた</strong>不具合が直り、意図した許可がきちんと効く。逆に <code>claude mcp add</code> / <code>remove</code> を project scope で使うと <code>.mcp.json</code> の <code>$schema</code> など他ツールのトップレベルキーを<strong>巻き添えで削除</strong>していたのも修正。さらに WebFetch は権限プロンプトの前に <strong>2,000字超の URL を拒否</strong>、Remote Control の worktree モードはサーバ停止時に稼働中セッションの <code>.env</code> 等 git-ignored を消す不具合も直った。DevelopersIO（石川覚）の検証では、少し前の v2.1.325 で『<strong>サンドボックス内 Bash が既定で通常の権限フローに従う</strong>（＝確認が入る）』変更も入っており、従来のノープロンプト挙動に戻すには <code>sandbox.autoAllowBashIfSandboxed: true</code> が要る点に注意。</p>\n\n<h4>自分が試すなら</h4>\n<p>まず <code>mcp add-json - </code> での登録に切り替えてトークンを履歴から外す。次に <code>/status</code> を一度走らせ、積み上がった壊れた skill / hook matcher を棚卸しする——このスケジューラ群のように定期タスクが多い環境ほど効く。無人実行の allow ルールは PowerShell / 複合コマンドの挙動が変わっているので、<code>v2.1.311</code>（stable）運用なら更新後に一度 allow が意図通り効くか確認したい。</p>\n\n<h4>注意点</h4>\n<p>事例側は温度差を押さえておく。GoDaddy は約2,000人規模へ Bedrock 経由で展開しスプリントを約半減（ただし二次ニュース・AWS 事例の未確認引用）、一方 Uber は2026年 AI 予算が4か月で枯渇し主因は Claude Code と報じられた（半年前・The Information 由来の未確認値）。どちらも<strong>消費ベース課金のコスト管理</strong>が論点で、ツールの否定ではなく『予算設計の作り直し』として読むのが妥当だ。</p>\n\n<p><strong>ひとこと：</strong>今日の <code>v2.1.327</code> は派手な新機能より『<em>自動実行の allow を厳密化し、トークンと設定ファイルを守る</em>』地味な堅牢化が本体。無人・定期運用の土台づくりに効く更新だ。</p>",
+      "sources": [
+        {
+          "title": "Claude Code CHANGELOG.md（GitHub・一次）",
+          "url": "https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md"
+        },
+        {
+          "title": "Claude Code Changelog（code.claude.com）",
+          "url": "https://code.claude.com/docs/en/changelog"
+        },
+        {
+          "title": "DevelopersIO: Claude Code v2.1.325 検証（石川覚）",
+          "url": "https://dev.classmethod.jp/articles/20261114-cc-updates-v2-1-325/"
+        },
+        {
+          "title": "developerintheloop: Ultimate Guide to Configuring Claude Code",
+          "url": "https://developerintheloop.substack.com/p/the-ultimate-guide-to-configuring"
+        }
+      ],
+      "id": "2026-11-19-claude-code"
+    },
+    {
+      "date": "2026-11-19",
+      "topic": "Next.js",
+      "title": "2026年版アクセシブル・モバイルメニュー — native <dialog> + @starting-style + inert で自前フォーカストラップを捨てる",
+      "lede": "モバイルナビは全サイトに要るのに a11y との両立が難しい。dialog.showModal() はフォーカストラップ・inert化・Esc・::backdrop を標準でくれ、@starting-style/allow-discrete で開閉アニメも CSS だけ。React 側は use client のトグル状態と usePathname での遷移クローズだけで済む。",
+      "articleHtml": "<p>モバイルナビは<strong>ほぼ全ての Next.js サイトに要る</strong>のに、見た目の作り込み（アイコンのモーフ・オーバーレイの出現・リンクの順次表示）と、アクセシビリティ（フォーカス管理・背景の無効化・スクロールロック・reduced motion）を両立できていない実装が多い。2024年にベースライン化した <code>inert</code> 属性と、ネイティブ <code>&lt;dialog&gt;</code> ＋モダン CSS を使えば、<strong>自前のフォーカストラップ JS を書かずに</strong>『開閉アニメ付き・アクセシブルな全画面メニュー』が最小コードで作れる。これが2026年版の最短ルートだ。</p>\n\n<h4>何が新しいか — &lt;dialog&gt;.showModal() が“ただで”くれるもの</h4>\n<p><code>dialog.showModal()</code> を呼ぶだけで、<strong>フォーカストラップ・背景の inert 化・<code>Esc</code> で閉じる・<code>::backdrop</code></strong> がブラウザ標準で付いてくる。これまで何十行も書いていたフォーカストラップ JS が丸ごと不要になる。閉じるときは <code>dialog.close()</code>。開閉アニメは、表示/非表示に <code>display</code> が絡むため <code>transition-behavior: allow-discrete</code> を併用し、入場の初期値を <strong><code>@starting-style</code></strong> に書く（<code>opacity:0; translate:0 -8px</code> → 到達値は <code>[open]</code>）。<code>::backdrop</code> にも同じ手でフェードインを付けられる。</p>\n\n<figure class='fig'>\n<svg viewBox='0 0 600 220' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='0' y='0' width='600' height='220' fill='#eff6ff' rx='8'/>\n  <rect x='18' y='44' width='250' height='150' rx='6' fill='#ffffff' stroke='#93c5fd'/>\n  <text x='28' y='34' font-size='12' font-weight='700' fill='#1d4ed8'>自前オーバーレイ（従来）</text>\n  <text x='32' y='70' font-size='11' fill='#1e3a8a'>・focus trap を JS で実装</text>\n  <text x='32' y='92' font-size='11' fill='#1e3a8a'>・背景に aria-hidden / tabindex=-1</text>\n  <text x='32' y='114' font-size='11' fill='#1e3a8a'>・Esc キー処理を自前</text>\n  <text x='32' y='136' font-size='11' fill='#1e3a8a'>・backdrop を要素で用意</text>\n  <text x='32' y='166' font-size='11' font-weight='700' fill='#b91c1c'>= 書く量が多く事故りやすい</text>\n  <rect x='332' y='44' width='250' height='150' rx='6' fill='#ffffff' stroke='#60a5fa'/>\n  <text x='342' y='34' font-size='12' font-weight='700' fill='#1d4ed8'>&lt;dialog&gt;.showModal()（2026）</text>\n  <text x='346' y='70' font-size='11' fill='#1e3a8a'>✓ フォーカストラップ標準</text>\n  <text x='346' y='92' font-size='11' fill='#1e3a8a'>✓ 背景を inert 化</text>\n  <text x='346' y='114' font-size='11' fill='#1e3a8a'>✓ Esc で閉じる</text>\n  <text x='346' y='136' font-size='11' fill='#1e3a8a'>✓ ::backdrop 付属</text>\n  <text x='346' y='166' font-size='11' font-weight='700' fill='#15803d'>= JS 最小・@starting-style で入場</text>\n  <text x='284' y='124' font-size='20' fill='#2563eb'>→</text>\n</svg>\n<figcaption>図1：自前オーバーレイと native &lt;dialog&gt; の比較。モーダル体験の“面倒な部分”がブラウザ側へ移った。</figcaption>\n</figure>\n\n<h4>仕組みのポイント</h4>\n<p>アイコンは <strong>1要素＋<code>::before</code> / <code>::after</code> 擬似要素</strong>の3本バーで作り、<code>[aria-expanded=\"true\"]</code> のときに真ん中を <code>rotate(45deg)</code>、上下を回転・重ねて X へモーフする。<code>transition</code> は <strong>対象プロパティを明示</strong>すること——<code>transition: all</code> を当てると擬似要素の <code>scale(0)</code> がスナップして崩れる。リンクのスタッガーは各 <code>&lt;a&gt;</code> に <code>--i</code>（0,1,2…）を振り <code>transition-delay: calc(var(--i) * 60ms)</code>。閉じるときに同じ遅延を使うと『最後のリンクが一番遅く消える』不自然さが出るので、閉時は遅延0か逆順が自然だ。スクロールロックは <code>body { overflow:hidden }</code> が基本だが、<strong>iOS Safari では効きにくい</strong>ので <code>position:fixed</code>＋スクロール位置の保存/復元か <code>overscroll-behavior: contain</code> を併用する。</p>\n\n<figure class='fig'>\n<pre class='mermaid'>flowchart LR\n  B[\"ハンバーガー\"] -->|\"showModal()\"| O[\"dialog[open]\"]\n  O -->|\"@starting-style\"| A[\"入場アニメ + スタッガー\"]\n  A -->|\"usePathname 変化\"| C[\"setOpen(false)\"]\n  C -->|\"dialog.close()\"| B</pre>\n<figcaption>図2：開く→アニメ→ルート遷移で自動的に閉じる、までの流れ。</figcaption>\n</figure>\n\n<h4>Next.js（App Router）への組み込み</h4>\n<p>トグル状態を持つラッパは <code>'use client'</code> の Client Component にする。要は<strong>ルート遷移で自動的に閉じる</strong>こと——SPA 遷移ではアンマウントされないため、<code>usePathname()</code> を購読して <code>useEffect(() =&gt; setOpen(false), [pathname])</code> を入れないと、遷移後もメニューが開きっぱなしになる。アクティブリンクは <code>pathname === href</code> で <code>aria-current=\"page\"</code> を付与。注意点として、<code>cacheComponents</code>（旧 PPR / <code>use cache</code>）有効時に <code>generateStaticParams</code> で網羅されない動的ルートで <code>usePathname</code> を使うと<strong>サスペンド</strong>するため、呼び出し側を <code>&lt;Suspense&gt;</code> で包まないとビルドが落ちる。Rewrite ＋静的プリレンダ併用時は <code>usePathname()</code> がハイドレーション不一致を起こしうるので、サーバでは安定なフォールバックを描き <code>useEffect</code> で実値を入れる。</p>\n\n<h4>reduced motion</h4>\n<p><code>@media (prefers-reduced-motion: reduce)</code> で回転・移動・スタッガーを無効化し、瞬時表示か短いフェードだけ残す。開閉状態は <code>aria-expanded</code> で伝わるので、視覚アニメを削っても機能は損なわれない。</p>\n\n<p><strong>ひとこと：</strong>『アニメは CSS（<code>@starting-style</code>/<code>allow-discrete</code>）、モーダルの行儀は <code>&lt;dialog&gt;</code>、状態と遷移クローズだけ React』——役割を分ければ、JS は数行で済む。</p>",
+      "sources": [
+        {
+          "title": "MDN: <dialog> 要素 / showModal()",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog"
+        },
+        {
+          "title": "MDN: inert 属性",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/HTML/Global_attributes/inert"
+        },
+        {
+          "title": "web.dev: Building a dialog component（@starting-style / allow-discrete）",
+          "url": "https://web.dev/articles/building/a-dialog-component"
+        },
+        {
+          "title": "Next.js Docs: usePathname",
+          "url": "https://nextjs.org/docs/app/api-reference/functions/use-pathname"
+        }
+      ],
+      "id": "2026-11-19-nextjs"
+    },
+    {
+      "date": "2026-11-19",
+      "topic": "Flutter",
+      "title": "Flutter 3.50.1 hotfix tracker が起票（未出荷）＋ AnimatedBuilder の child 最適化・ListView.builder・Riverpod code-gen",
+      "lede": "3.50.1 の release-tracker issue #196743 が 11/17 起票（OPEN・assignee justinmc）だが cherry-pick は空で stable 表に 3.50.1 行は無く未出荷。技法は「Listenable で最小再描画」を軸に、AnimatedBuilder の child 再利用、ListView.builder の遅延生成、Riverpod 3 の code generation を一本で捉える。",
+      "articleHtml": "<p>今日の Flutter は、<strong>リリースの“枠”が立った</strong>というニュースから。GitHub の release-tracker issue <strong>#196743「[stable] [hotfix] Flutter Release Version 3.50.1」</strong>が 11/17 に bot で起票され、状態 OPEN・assignee は <code>justinmc</code>・tag <code>3.50.1</code>・candidate <code>flutter-3.50-candidate.0</code>。ただし <code>flutterreleases.com</code>（releases.json は 11/18 生成）の stable 履歴は全197本で先頭は依然 <strong>3.50.0（11/11）</strong>——<strong>3.50.1 行はまだ無く、未出荷</strong>だ。</p>\n\n<h4>何が確定して、何がまだか</h4>\n<p>issue 本文は個別 PR を列挙せず、チェックリストの『Merge outstanding cherry-picks』が <code>label:\"cp: review\"</code> の<strong>動的クエリ</strong>へリンクするだけ。Dart 版も未記入（空の <code>Dart Hash:</code> テンプレ）で、具体的な修正内容はこの時点では未確定。チェックリスト（cherry-pick マージ→Dart 版更新→engine hash pin→changelog→postsubmit→push→Archive 確認→告知）は全項目未チェックで、tag と branch は<strong>名前が立っただけ</strong>。公式ポリシーは『最新版だけ hotfix する』なので、実務は<strong>引き続き 3.50.0 を pin 基準</strong>にしつつ <strong>#196743 を watch</strong>し、<code>cp: review</code> の PR がマージされ始めたら 3.50.1 が近い合図だ。</p>\n\n<h4>仕組み — 『最小再描画』で一本につながる3つの道具</h4>\n<p>技法面は、<strong>Listenable を購読して必要な所だけ作り直す</strong>という一本の思想で読むと腑に落ちる。<code>AnimatedBuilder</code> は『<code>Listenable</code>（通常は <code>Animation</code>）が notify するたび <code>builder</code> だけ再実行』する汎用リビルダ。肝は <strong><code>child:</code> 最適化</strong>——builder 内にアニメへ依存しない subtree があるなら、それを <code>child</code> に渡して<strong>一度だけ構築</strong>し、builder の第2引数で受け取って再利用する（公式も good practice と明言）。再利用可能な独立アニメ widget を作るなら <code>AnimatedWidget</code>、大きい <code>build()</code> の一部に織り込むなら <code>AnimatedBuilder</code>、という住み分け。名前に反して <code>AnimatedBuilder</code> は Animation 専用ではなく、<code>ChangeNotifier</code>/<code>ValueNotifier</code> でも rebuild できる（その場合は可読性のため <code>ListenableBuilder</code> 推奨）。</p>\n\n<figure class='fig'>\n<svg viewBox='0 0 600 212' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='0' y='0' width='600' height='212' fill='#ecfeff' rx='8'/>\n  <rect x='18' y='40' width='258' height='150' rx='6' fill='#ffffff' stroke='#f59e0b'/>\n  <text x='28' y='30' font-size='12' font-weight='700' fill='#b45309'>ListView(children: [...])</text>\n  <text x='32' y='66' font-size='11' fill='#92400e'>作成時に全要素ぶんを構築</text>\n  <rect x='32' y='78' width='228' height='14' fill='#fcd34d'/><text x='36' y='89' font-size='9' fill='#78350f'>可視0〜9</text>\n  <rect x='32' y='96' width='228' height='14' fill='#fde68a'/><text x='36' y='107' font-size='9' fill='#78350f'>画面外10〜9999 も構築…</text>\n  <rect x='32' y='114' width='228' height='14' fill='#fde68a'/>\n  <text x='32' y='150' font-size='11' font-weight='700' fill='#b91c1c'>= 大リストでコスト膨張（小リスト用）</text>\n  <rect x='324' y='40' width='258' height='150' rx='6' fill='#ffffff' stroke='#10b981'/>\n  <text x='334' y='30' font-size='12' font-weight='700' fill='#047857'>ListView.builder</text>\n  <text x='338' y='66' font-size='11' fill='#065f46'>見える子だけ on-demand 構築</text>\n  <rect x='338' y='78' width='228' height='14' fill='#6ee7b7'/><text x='342' y='89' font-size='9' fill='#064e3b'>可視0〜9 のみ生成</text>\n  <text x='338' y='112' font-size='11' fill='#065f46'>画面外は element/state/RO を破棄</text>\n  <text x='338' y='136' font-size='11' fill='#065f46'>itemExtent / prototypeItem で測定省略</text>\n  <text x='334' y='166' font-size='11' font-weight='700' fill='#047857'>= 1万件でも一定コスト</text>\n</svg>\n<figcaption>図1：既定 ListView は全要素を構築、builder は可視だけを遅延生成し画面外を破棄する。</figcaption>\n</figure>\n\n<h4>長大リストと状態管理</h4>\n<p>パフォーマンスの定石は <code>ListView.builder</code>。既定の <code>ListView(children:)</code> は『表示されうる全要素』を構築するため<strong>小リスト専用</strong>で、builder は <code>itemBuilder</code> で可視の子だけを作り、スクロールで画面外へ出た子は <strong>element/state/RenderObject ごと破棄</strong>する（1万件でも軽い）。高さが一定なら <code>itemExtent</code>、ひな形があれば <code>prototypeItem</code> で各子の測定を省ける（両方同時指定は不可）。なお off-screen キャッシュ量の <code>cacheExtent</code> は 3.41 以降<strong>非推奨</strong>で、<code>scrollCacheExtent</code> に置き換わった点に注意。状態管理は Riverpod 3（<code>riverpod</code> 3.4.3・MIT）の <strong>code generation</strong> が現行推奨——<code>@riverpod Future&lt;T&gt; foo(Ref ref)</code> と関数に注釈するだけで <code>fooProvider</code> が生成され、consumer は <code>ref.watch(fooProvider)</code> で得た <code>AsyncValue</code> を <code>AsyncData</code>/<code>AsyncError</code>/loading に分岐する。loading・error を“状態として”既定で面倒を見てくれるのが要点だ。</p>\n\n<p><strong>ひとこと：</strong>3.50.1 は<strong>枠が立っただけ</strong>で中身は空——慌てず 3.50.0 で pin し #196743 を watch。技法は『Listenable で最小再描画』の一本槍で <code>AnimatedBuilder</code> と <code>ListView.builder</code> を同じ目で見ると設計がぶれない。</p>",
+      "sources": [
+        {
+          "title": "Flutter Issue #196743（3.50.1 hotfix tracker）",
+          "url": "https://github.com/flutter/flutter/issues/196743"
+        },
+        {
+          "title": "Flutter Versions（flutterreleases.com）",
+          "url": "https://flutterreleases.com/flutter-versions/"
+        },
+        {
+          "title": "AnimatedBuilder class（api.flutter.dev）",
+          "url": "https://api.flutter.dev/flutter/widgets/AnimatedBuilder-class.html"
+        },
+        {
+          "title": "ListView class / Work with long lists",
+          "url": "https://api.flutter.dev/flutter/widgets/ListView-class.html"
+        },
+        {
+          "title": "riverpod（pub.dev 3.4.3）",
+          "url": "https://pub.dev/packages/riverpod"
+        }
+      ],
+      "id": "2026-11-19-flutter"
+    },
+    {
+      "date": "2026-11-19",
+      "topic": "GitHub Trending",
+      "title": "11/19 の話題リポジトリ — Docker運用UI「arcane」・LLM改変「heretic」・公式拡張「cursor/plugins」",
+      "lede": "AI エージェント一色のトレンドで、インフラ運用・モデル工学・コーディング拡張と綺麗にばらけた急上昇3本（Go/Python/TS）。各リポを「解決したい課題」と「提供する機能」の2点で読み解く。",
+      "articleHtml": "<p>今日のモメンタム枠3本は、トレンドが『AI エージェント/スキル束』一色に寄るなかで、<strong>インフラ運用・モデル工学・コーディング拡張</strong>と見事にばらけた。言語も Go / Python / TypeScript と三者三様。純粋な急上昇（増加『率』主軸）で選んだ3本を、それぞれ『どんな課題を解こうとしているのか』『実際に何ができるのか』の2点で読み解く。</p>\n\n<figure class='fig'>\n<svg viewBox='0 0 600 206' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='0' y='0' width='600' height='206' fill='#f0fdf4' rx='8'/>\n  <text x='16' y='24' font-size='12' font-weight='700' fill='#166534'>11/19 モメンタム3本 — 解決する課題 → 提供する機能</text>\n  <line x1='16' y1='34' x2='584' y2='34' stroke='#86efac'/>\n  <text x='22' y='58' font-size='11' font-weight='700' fill='#14532d'>arcane (Go, ⭐9.5k)</text>\n  <text x='200' y='58' font-size='10' fill='#166534'>CLIだけの Docker 運用が辛い</text>\n  <text x='400' y='58' font-size='10' fill='#047857'>→ モダン Web UI で一元管理</text>\n  <line x1='16' y1='70' x2='584' y2='70' stroke='#bbf7d0'/>\n  <text x='22' y='96' font-size='11' font-weight='700' fill='#14532d'>heretic (Python, ⭐42k)</text>\n  <text x='200' y='96' font-size='10' fill='#166534'>再訓練せず LLM の拒否/迎合を直したい</text>\n  <text x='400' y='96' font-size='10' fill='#047857'>→ 数学的 steering で abliteration</text>\n  <line x1='16' y1='108' x2='584' y2='108' stroke='#bbf7d0'/>\n  <text x='22' y='134' font-size='11' font-weight='700' fill='#14532d'>cursor/plugins (TS, ⭐17k)</text>\n  <text x='200' y='134' font-size='10' fill='#166534'>エージェントの拡張に共通仕様が無い</text>\n  <text x='400' y='134' font-size='10' fill='#047857'>→ 公式プラグイン仕様＋実装集</text>\n  <line x1='16' y1='146' x2='584' y2='146' stroke='#bbf7d0'/>\n  <text x='22' y='172' font-size='10' fill='#15803d'>共通点：いずれも「既存ツールの一段上の運用/改変レイヤ」を公式/セルフホストで提供</text>\n  <text x='22' y='192' font-size='9' fill='#4d7c0f'>増加率：arcane 約5.8%（当日最高率級）/ heretic 約1.5% / cursor/plugins 約1.9%</text>\n</svg>\n<figcaption>図1：3本の「課題→機能」対応。急上昇の理由が一望できる。</figcaption>\n</figure>\n\n<h4>getarcaneapp/arcane（Go・⭐約9.5k）</h4>\n<p><strong>解決したい課題：</strong>Docker コンテナや Compose スタックの運用を、CLI コマンドの暗記や寄せ集めの管理画面に頼らず、<em>誰でも</em>扱える形にしたい。<strong>提供する機能：</strong>バックエンド Go＋フロント SvelteKit で、コンテナ・Compose・スタックを<strong>モダンな Web UI で一元管理</strong>するセルフホスト型ツール（BSD-3-Clause・forks 約344）。本日 +547 は総⭐約9.5k に対し<strong>率約5.8%＝当日最高率級</strong>。AI 一色のトレンドに対する『実直なインフラ系×Go/Svelte』という多様性と、vendor ロックインの無いセルフホストの手触りが評価されている。</p>\n\n<h4>p-e-w/heretic（Python・⭐約42k）</h4>\n<p><strong>解決したい課題：</strong>ローカルで動かす LLM の、過剰な拒否（検閲）・冗長な常套句（slop）・過度な迎合（sycophancy）を、<strong>高価な再訓練なしで</strong>手元で調整したい。<strong>提供する機能：</strong>訓練せずに数学的な steering でこれらを取り除く『<strong>abliteration</strong>』ツール（AGPL-3.0・forks 約4.3k・既定動作は拒否除去）。コンセプトは『Modify, rather than merely run, language models＝モデルをただ動かすのでなく改変する』。本日 +620（率約1.5%）。エージェント/スキル束が並ぶなかで、<strong>LLM 内部をいじるモデル工学</strong>という別軸の新規性が面白がられている。※AGPL-3.0 なので開発ツール利用は問題ないが製品組み込みは要注意。</p>\n\n<h4>cursor/plugins（TypeScript・⭐約17k）</h4>\n<p><strong>解決したい課題：</strong>コーディングエージェント（Cursor）を社内ツールや SaaS と連携・拡張したいが、<strong>共通の拡張仕様が無い</strong>と各自バラバラの作り込みになる。<strong>提供する機能：</strong>Cursor 公式の<strong>プラグイン仕様</strong>と、GitHub・Salesforce・Playwright・Cursor SDK 等の公式プラグイン群を束ねたリポジトリ（MIT・forks 約1.3k）。各プラグインは <code>.cursor-plugin/plugin.json</code> マニフェストを持つ独立ディレクトリという明快な構造。本日 +315（率約1.9%）。<strong>エージェント拡張エコシステムが公式に一段進んだ</strong>ニュースとして話題化し、プラグイン機構の設計は <code>.claude/skills+agents</code> 構成の参照にもなる。</p>\n\n<p><strong>ひとこと：</strong>自分が今すぐ触るなら、セルフホスト運用に直結する <strong>arcane</strong>。設計の参照としては、独立ディレクトリ＋マニフェストという素直な拡張モデルの <strong>cursor/plugins</strong> が学びになる。heretic はローカル LLM をいじる“実験の面白さ”枠だ。</p>",
+      "sources": [
+        {
+          "title": "getarcaneapp/arcane",
+          "url": "https://github.com/getarcaneapp/arcane"
+        },
+        {
+          "title": "p-e-w/heretic",
+          "url": "https://github.com/p-e-w/heretic"
+        },
+        {
+          "title": "cursor/plugins",
+          "url": "https://github.com/cursor/plugins"
+        }
+      ],
+      "id": "2026-11-19-github-trending"
+    },
     {
       "id": "2026-11-18-claude-code",
       "date": "2026-11-18",
