@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-11-19T04:45:45.837Z",
+  "generatedAt": "2026-11-20T04:44:39.346Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,94 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "date": "2026-11-20",
+      "topic": "Claude Code",
+      "title": "Claude Code v2.1.329 が latest 昇格 — /tasks がスケジュール・loop再開・会話フォークまで可視化し、無人運用の「見える化」が進む",
+      "lede": "昨日の v2.1.327 から二段飛びで v2.1.329 が latest へ（JST 11/20 03:40 公開・stable=v2.1.311）。目玉は /tasks がスケジュールタスク・/loop の再開予定・ゴール・会話フォークを一覧表示し x で止められること。無人で走らせるセッションの状態が、ようやく画面から読めるようになった。",
+      "articleHtml": "<p>Claude Code の版番号が、昨日まで latest だった <code>v2.1.327</code> から一気に <code>v2.1.329</code> へ進んだ（JST 11/20 早朝公開、<code>stable</code> は <code>v2.1.311</code> 据え置き）。npm の dist-tags を一次確認した更新で、間の <code>v2.1.328</code>（11/18 公開）とあわせて読むと、この数日のテーマが「<strong>無人・自律で動くセッションを、安全に・見えるようにする</strong>」ことに寄っているのが分かる。</p>\n\n<h4>何が新しいか — /tasks が「走っている自分」を映す</h4>\n<p>v2.1.329 の主役は <code>/tasks</code> の拡張だ。これまで現在のタスクくらいしか見えなかったのが、(1) このセッションに紐づく<strong>スケジュールタスク</strong>、(2) <code>/loop</code> の<strong>再開予定（wakeup）</strong>、(3) <strong>ゴール</strong>、(4) この会話から派生した<strong>フォーク</strong>——までを一覧し、<code>x</code> で確認のうえ停止できる。定期タスクや自己ループを多用する運用ほど「今なにが仕掛かっているか」が掴めず不安だったが、その可視化が進んだ格好だ。あわせて <code>/mcp</code> には、リモート HTTP MCP が接続を拒否したときの JSON-RPC エラーを示す「<strong>Server message</strong>」行、<code>/status</code> には自動更新されない管理マーケットプレイスを示す「<strong>Marketplace auto-update</strong>」行が増えた。OpenTelemetry のイベント/メトリクスを有効にしたまま Code Mode が使える点も地味に効く。</p>\n\n<figure class='fig'>\n<svg viewBox='0 0 600 212' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='0' y='0' width='600' height='212' fill='#fff7ed' rx='8' stroke='#fdba74'/>\n  <text x='16' y='26' font-size='13' font-weight='700' fill='#9a3412'>v2.1.329 /tasks が新たに映すもの</text>\n  <line x1='16' y1='36' x2='584' y2='36' stroke='#fdba74'/>\n  <g font-size='11' fill='#7c2d12'>\n    <rect x='16' y='50' width='270' height='64' fill='#ffedd5' rx='6'/>\n    <text x='28' y='70' font-weight='700'>スケジュールタスク</text>\n    <text x='28' y='90'>このセッションに紐づく定期実行を列挙</text>\n    <text x='28' y='106'>→ 無人で走る処理が見える</text>\n    <rect x='314' y='50' width='270' height='64' fill='#ffedd5' rx='6'/>\n    <text x='326' y='70' font-weight='700'>/loop 再開予定 (wakeup)</text>\n    <text x='326' y='90'>次にいつ起きて続きを走るか</text>\n    <text x='326' y='106'>→ 自己ループの待機状態が分かる</text>\n    <rect x='16' y='126' width='270' height='64' fill='#ffedd5' rx='6'/>\n    <text x='28' y='146' font-weight='700'>ゴール</text>\n    <text x='28' y='166'>セッションが目指している到達点</text>\n    <text x='28' y='182'>→ 脱線の検知に使える</text>\n    <rect x='314' y='126' width='270' height='64' fill='#ffedd5' rx='6'/>\n    <text x='326' y='146' font-weight='700'>会話のフォーク</text>\n    <text x='326' y='166'>この会話から枝分かれした分身</text>\n    <text x='326' y='182'>いずれも x で確認のうえ停止可</text>\n  </g>\n</svg>\n<figcaption>図1：v2.1.329 で /tasks が一覧するようになった4種。無人セッションの「仕掛かり」が画面に出る。</figcaption>\n</figure>\n\n<h4>堅牢化の本体は修正側・一つ前の v2.1.328</h4>\n<p>修正も実務直撃だ。ネットワーク停止やファイルロックで <code>~/.claude.json</code> が読めず<strong>既定値へリセット</strong>される不具合、macOS で Keychain を読めるが書けないときの繰り返しサインアウト、そして <code>/code-review &lt;pr番号&gt;</code> が PR ではなく<strong>チェックアウト中ブランチをレビュー</strong>していた問題（<code>gh pr diff</code> で PR を読むよう変更）が直った。一つ前の <code>v2.1.328</code> では、Bedrock・Agent Platform・Foundry 等で Opus 4.6／Sonnet 4.6 の <strong>auto モード</strong>に対応し（権限モード未指定の対話は auto で開始）、<code>mcp_tool</code> フックに <code>&quot;onFailure&quot;:&quot;block&quot;</code>、保留ツール呼び出しの復元を止める <code>CLAUDE_CODE_DISABLE_DEFERRED_TOOL_RESUME</code> も入った。DevelopersIO（石川覚）は、公式『Choose a permission mode』に 4.6 系がまだ載らず CHANGELOG と食い違う点を指摘している。</p>\n\n<h4>試すなら・落とし穴</h4>\n<p>自分の運用で効くのは、まず <code>/tasks</code> を開いて「知らないうちに走っている定期タスク／ループ」を棚卸しすること。無人実行を増やすほど、この一覧と <code>/status</code> の自動更新行が効いてくる。注意点は <code>v2.1.329</code> は <code>latest</code> であって <code>stable</code>（v2.1.311）ではないこと——安定重視の環境は <code>stable</code> を pin したまま、新 <code>/tasks</code> だけ検証機で触るのが安全だ。事例面では楽天（市場投入 24→5 営業日、1,250万行 vLLM を7時間自律リファクタ）や Stripe（1,370人展開・Scala→Java を4日移行）が公式/自社事例として出ているが、いずれも自己申告の数値で方法論の記載はない点は割り引いて読みたい。</p>\n\n<p><strong>ひとこと：</strong>この数日の Claude Code は「速く賢く」より「<strong>無人で安全に・状態を見せる</strong>」方向。定期タスクと自己ループを回す人ほど、v2.1.329 の /tasks は今日入れる価値がある。</p>",
+      "sources": [
+        {
+          "title": "anthropics/claude-code CHANGELOG",
+          "url": "https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md"
+        },
+        {
+          "title": "Claude Code changelog (公式ドキュメント)",
+          "url": "https://code.claude.com/docs/en/changelog"
+        },
+        {
+          "title": "DevelopersIO — v2.1.328 解説（石川覚）",
+          "url": "https://dev.classmethod.jp/articles/20261119-cc-updates-v2-1-328/"
+        }
+      ],
+      "id": "2026-11-20-claude-code"
+    },
+    {
+      "date": "2026-11-20",
+      "topic": "Next.js",
+      "title": "動的OG画像は next/og の ImageResponse で焼く — Satori は「ブラウザではない」ことだけ先に飲み込む（Next.js 16 の params/ランタイム作法つき）",
+      "lede": "リンクを貼ったとき出る大きなOGカードを、ページ単位で自動生成する標準解が opengraph-image.tsx × next/og の ImageResponse。レンダラは Satori で、HTML/CSS→SVG→PNG に変換する別エンジン。grid は効かず flexbox 前提、という一点を知らないと「黙って崩れる」。",
+      "articleHtml": "<p>SNS や Slack にリンクを貼ると出る大きなカード画像（Open Graph 画像）は、クリック率に直結する「もう一つの UI」だ。ブログ記事や商品ページのように<strong>ページごとに中身が変わる</strong>サイトでは、全ページ共通の静的 PNG では足りず、タイトルや著者を焼き込んだ1枚をページ単位で生成したい。App Router はこれを<strong>ファイル規約 <code>opengraph-image.tsx</code> ＋ <code>next/og</code> の <code>ImageResponse</code></strong>で標準提供する。JSX をそのままサーバーで画像化できるのが最大の利点だが、Next.js 16 で <code>params</code> が Promise 化し、既定ランタイムが Node.js に寄ったことで、旧 <code>@vercel/og</code> 時代の Edge 前提サンプルとは書き方がずれてきた。</p>\n\n<h4>核心：レンダラは Satori＝ブラウザではない</h4>\n<p><code>ImageResponse</code> の中身は Satori で、<strong>HTML/CSS → SVG → PNG</strong> に変換する専用エンジンだ。headless Chrome でもブラウザでもないので、<strong>CSS の一部しか解釈しない</strong>。公式が明言するとおり「flexbox と CSS の一部のみ対応、<code>display:grid</code> のような高度なレイアウトは効かない」。さらに <code>calc()</code>・CSS 変数・<code>transform</code>・アニメーションは<strong>エラーも出さず黙って無視</strong>され、「なんか違う絵」が出る。要素は基本 <code>display:flex</code> 前提で、子が2つ以上あるのに親に flex が無いと崩れる。ここを知らずに普段の CSS 感覚で書くのが一番の落とし穴だ。</p>\n\n<figure class='fig'>\n<svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='0' y='0' width='600' height='150' fill='#f8fafc' rx='8' stroke='#cbd5e1'/>\n  <text x='16' y='24' font-size='12' font-weight='700' fill='#0f172a'>ImageResponse の変換パイプライン（ブラウザを通らない）</text>\n  <g font-size='11' fill='#1e293b' text-anchor='middle'>\n    <rect x='20' y='54' width='110' height='56' fill='#e0e7ff' rx='6'/><text x='75' y='78'>JSX</text><text x='75' y='96' font-size='9'>flexbox+一部CSS</text>\n    <rect x='170' y='54' width='110' height='56' fill='#ddd6fe' rx='6'/><text x='225' y='84'>Satori</text>\n    <rect x='320' y='54' width='110' height='56' fill='#e0e7ff' rx='6'/><text x='375' y='84'>SVG</text>\n    <rect x='470' y='54' width='110' height='56' fill='#dcfce7' rx='6'/><text x='525' y='78'>Resvg</text><text x='525' y='96' font-size='9'>→ PNG</text>\n  </g>\n  <g stroke='#94a3b8' stroke-width='2' marker-end='url(#ar)'>\n    <line x1='130' y1='82' x2='168' y2='82'/><line x1='280' y1='82' x2='318' y2='82'/><line x1='430' y1='82' x2='468' y2='82'/>\n  </g>\n  <defs><marker id='ar' markerWidth='8' markerHeight='8' refX='6' refY='3' orient='auto'><path d='M0,0 L6,3 L0,6 Z' fill='#94a3b8'/></marker></defs>\n  <text x='16' y='136' font-size='10' fill='#64748b'>grid・calc・transform・アニメは無視。まず og-playground で見た目を固めるのが近道。</text>\n</svg>\n<figcaption>図1：JSX→Satori→SVG→Resvg→PNG。各段で使える CSS が限られるため、普段のブラウザ前提 CSS は通らない。</figcaption>\n</figure>\n\n<h4>Next.js 16 の作法 — params は await、ランタイムは書かない</h4>\n<p>動的ルートでは <code>params</code> が <strong>Promise</strong> になったので <code>const { slug } = await params</code> が必須（型は <code>params: Promise&lt;{ slug: string }&gt;</code>）。既定は<strong>ビルド時生成＋キャッシュ（static optimization）</strong>で、<code>cookies()</code>/<code>headers()</code>/未キャッシュ <code>fetch</code> を使うと静的最適化が外れて都度生成になる。既知スラッグは <code>generateStaticParams</code> で全部焼けば実行時生成ゼロだ。ランタイムは Next.js 16 で <code>runtime='edge'</code> が非推奨になり、既定の Node.js で問題なく動く。これに伴いフォント読み込みも変わり、現行サンプルは <code>node:fs/promises</code> の <code>readFile</code> を<strong>モジュールスコープで一度だけ</strong>読む（リクエストに依存しない予測可能値だから）。Edge 時代の「関数内で毎回 <code>fetch(new URL(...))</code>」は不要になった。</p>\n\n<pre><code>export const size = { width: 1200, height: 630 }\nconst font = await readFile(join(process.cwd(),'assets/NotoSansJP-Bold.ttf'))\nexport default async function Image({ params }:{ params: Promise&lt;{slug:string}&gt; }) {\n  const { slug } = await params\n  const post = await getPost(slug)\n  return new ImageResponse(\n    &lt;div style={{ width:'100%', height:'100%', display:'flex', flexDirection:'column' }}&gt;{post.title}&lt;/div&gt;,\n    { ...size, fonts:[{ name:'Noto', data:font, weight:700 }] })\n}</code></pre>\n\n<h4>試すなら・注意</h4>\n<p>制限も押さえておく。バンドルは合計 <strong>500KB 上限</strong>（JSX・CSS・フォント・画像の総和）、フォントは <code>ttf</code>/<code>otf</code>/<code>woff</code> のみでパース速度優先なら <code>ttf</code>/<code>otf</code>。ページの <code>generateMetadata</code> に <code>openGraph.images</code> を書くと<strong>ファイル規約の画像を上書き</strong>してしまうので、「ファイル画像が出ない」ときはまず実際の <code>og:image</code> タグを疑う。確認は <code>/blog/&lt;slug&gt;/opengraph-image</code> を直接開けば PNG が見え、<code>debug:true</code> で要素境界を可視化できる。ユーザー入力をそのまま焼く用途では、過去に RCE 修正（16.3.6）も入っているため Next を最新に追従しておくこと。出力は静的 PNG なので <code>prefers-reduced-motion</code> 対応は対象外——動くものではない。</p>\n\n<p><strong>ひとこと：</strong>「ブラウザだと思って CSS を書かない」。flexbox だけで組み、grid と calc を捨て、og-playground で先に絵を固める——これだけで OG 画像生成の八割は安定する。</p>",
+      "sources": [
+        {
+          "title": "Next.js 公式 — ImageResponse (next/og)",
+          "url": "https://nextjs.org/docs/app/api-reference/functions/image-response"
+        },
+        {
+          "title": "Next.js 公式 — opengraph-image / twitter-image 規約",
+          "url": "https://nextjs.org/docs/app/api-reference/file-conventions/metadata/opengraph-image"
+        },
+        {
+          "title": "Satori（レンダリングエンジン・対応CSS）",
+          "url": "https://github.com/vercel/satori"
+        }
+      ],
+      "id": "2026-11-20-nextjs"
+    },
+    {
+      "date": "2026-11-20",
+      "topic": "Flutter",
+      "title": "Flutter 3.50.1 hotfix が「中身の組み立て」へ前進 — changelog PR がマージ、ただし tracker は全未チェックで未出荷。あわせて Material Motion の既製トランジション package も整理",
+      "lede": "3.50.1 は changelog PR #196936 が候補ブランチへ merged し cherry-pick 11本が出そろったが、release-tracker #196743 は依然 OPEN で全項目未チェック＝まだ出荷前。stable は 3.50.0／Dart 3.14.0 据え置き。画面遷移の意匠を既製化する公式 animations 3.0.0 もあわせて押さえる。",
+      "articleHtml": "<p>Flutter の次の hotfix <strong>3.50.1</strong> が、昨日の「tracker が立っただけ」段階から一歩進み、今日は<strong>中身（changelog）が初めて組み上がった</strong>のが news だ。現況は stable <code>3.50.0</code> / Dart <code>3.14.0</code>（11/11）、beta <code>3.51.0-0.1.pre</code> / Dart 3.15.0 で据え置き、<strong>3.50.1 行は stable 表にまだ無い＝未出荷</strong>。「出そうで出ていない」この数日の状態を、リリース工程のどこにいるかで読むと分かりやすい。</p>\n\n<h4>何が動いたか — changelog は merged、出荷チェックは全部空</h4>\n<p>GitHub の <strong>flutter/flutter #196936「[3.50] Changelog for 3.50.1」</strong>が 11/19 に <code>auto-submit[bot]</code> で候補ブランチ <code>flutter-3.50-candidate.0</code> へ <strong>MERGED</strong>（reviewer approve 済）。本文は 3.50.1 に入る cherry-pick を列挙し、<strong>計11エントリ</strong>——例として「flutter_tools: library plugin に app 専用ビルド型を複製しない（#196756）」「[Linux] glBlitFramebuffer 無し合成時のレイヤ位置修正（#196418）」「DevFS.create の VM ファイルシステムエラー処理（#196895）」「[FGP] split-APK の versionCode オフセット（#196923）」など、<strong>ツール／Linux 描画／Android ビルドの回帰修正が主</strong>だ。一方で肝心の release-tracker <strong>#196743 は依然 OPEN</strong>、チェックリスト（CP マージ→Dart 版更新→engine hash pin→changelog→postsubmit 検証→MPA で push→SDK Archive 確認→告知）は<strong>全項目 未チェック</strong>。Dart 版更新も無く、3.50.1 は <strong>Dart 3.14.0 据え置き</strong>の見込みだ。</p>\n\n<figure class='fig'>\n<svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='0' y='0' width='600' height='150' fill='#eff6ff' rx='8' stroke='#93c5fd'/>\n  <text x='16' y='24' font-size='12' font-weight='700' fill='#1e3a8a'>3.50.1 リリース工程 — いまここ</text>\n  <g font-size='9.5' text-anchor='middle'>\n    <rect x='16' y='50' width='86' height='44' fill='#bbf7d0' rx='5'/><text x='59' y='70'>cherry-pick</text><text x='59' y='84'>✓ merged</text>\n    <rect x='110' y='50' width='86' height='44' fill='#bbf7d0' rx='5'/><text x='153' y='70'>changelog</text><text x='153' y='84'>✓ merged</text>\n    <rect x='204' y='50' width='86' height='44' fill='#fde68a' rx='5'/><text x='247' y='70'>postsubmit</text><text x='247' y='84'>□ 検証待ち</text>\n    <rect x='298' y='50' width='86' height='44' fill='#fecaca' rx='5'/><text x='341' y='70'>MPA push</text><text x='341' y='84'>□ 未</text>\n    <rect x='392' y='50' width='86' height='44' fill='#fecaca' rx='5'/><text x='435' y='70'>SDK Archive</text><text x='435' y='84'>□ 未</text>\n    <rect x='486' y='50' width='98' height='44' fill='#fecaca' rx='5'/><text x='535' y='70'>告知/出荷</text><text x='535' y='84'>□ 未</text>\n  </g>\n  <text x='16' y='120' font-size='10.5' fill='#1d4ed8'>合図：#196743 の「MPA push」「SDK Archive」にチェックが入ったら 3.50.1 出荷。</text>\n  <text x='16' y='138' font-size='10.5' fill='#64748b'>実務：引き続き 3.50.0 を pin 基準。出たら stable→upgrade→まず flutter analyze。</text>\n</svg>\n<figcaption>図1：changelog まで緑、ビルド/配布は赤。候補ブランチに載った＝検証直前だが、出荷判定はまだ先。</figcaption>\n</figure>\n\n<h4>あわせて：画面遷移の意匠は公式 animations で既製化できる</h4>\n<p>リリース待ちの間に効くのが、公式 <strong>animations 3.0.0</strong>（publisher flutter.dev・BSD-3）。Material 3 の <strong>Material Motion</strong> 4種（Container transform / Shared axis / Fade through / Fade）を既製 widget 化したもので、3.0.0 は依存に 3.50 で入った新 <code>material_ui ^1.0.0</code> を取るのが新しい。中核は2つ——タップで画面を埋めるように成長する <strong><code>OpenContainer</code></strong>（<code>closedBuilder</code>/<code>openBuilder</code> を渡す）と、child の <code>ValueKey</code> 変化で差し替える <strong><code>PageTransitionSwitcher</code></strong>。後者の <code>transitionBuilder</code> に <code>SharedAxisTransition</code>（<code>horizontal</code>/<code>vertical</code>/<code>scaled</code> の3軸）を返せば、オンボーディングやステップ遷移が「軸に沿って入れ替わる」動きになる。11/13 に見た <code>flutter_animate</code> が「任意 widget へエフェクトを連鎖」なのに対し、こちらは<strong>ページ/コンテナ遷移の“型”</strong>担当、と住み分けると整理しやすい。</p>\n\n<h4>ひとこと</h4>\n<p>3.50.1 は「出荷直前だがまだ」。慌てて上げず 3.50.0 を pin したまま、#196743 の MPA push / SDK Archive のチェックを待つのが正解。待ち時間は、遷移の意匠を <code>OpenContainer</code> と <code>PageTransitionSwitcher</code> で標準化しておくと、アップグレード後の見栄え調整が楽になる。配色も <code>ColorScheme.fromSeed</code>（seed 1色＋<code>contrastLevel</code>）で宣言的に整えておきたい。</p>",
+      "sources": [
+        {
+          "title": "flutter/flutter PR #196936 — [3.50] Changelog for 3.50.1",
+          "url": "https://github.com/flutter/flutter/pull/196936"
+        },
+        {
+          "title": "flutter/flutter Issue #196743 — 3.50.1 release tracker",
+          "url": "https://github.com/flutter/flutter/issues/196743"
+        },
+        {
+          "title": "animations — pub.dev",
+          "url": "https://pub.dev/packages/animations"
+        }
+      ],
+      "id": "2026-11-20-flutter"
+    },
+    {
+      "date": "2026-11-20",
+      "topic": "GitHub Trending",
+      "title": "11/20 の話題リポジトリ — 非同期DLマネージャ「Ghost-Downloader-3」・Intel推論基盤「OpenVINO」・自動切り抜き「autoclip」",
+      "lede": "トレンドが AIエージェント/スキル束一色に寄るなか、純新規の当日モメンタム3本は見事にばらけた。実用デスクトップDL（Python）・C++推論基盤・AI動画編集。各リポを「解決したい課題」と「提供する機能」の2点で読み解く。",
+      "articleHtml": "<p>今日のモメンタム枠3本は、当日トレンド上位が「AI エージェント／スキル束」の既出リポに偏るなかで、増加『率』を主軸に選んだ<strong>純新規の急上昇</strong>——<strong>実用デスクトップユーティリティ・C++ 推論基盤・AI 動画編集</strong>と、ジャンルも言語も三者三様だ。それぞれ『どんな課題を解こうとしているのか』『実際に何ができるのか』の2点で読み解く。</p>\n\n<figure class='fig'>\n<svg viewBox='0 0 600 196' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='0' y='0' width='600' height='196' fill='#f0fdf4' rx='8' stroke='#86efac'/>\n  <text x='16' y='24' font-size='12' font-weight='700' fill='#166534'>11/20 モメンタム3本 — 解決する課題 → 提供する機能</text>\n  <line x1='16' y1='32' x2='584' y2='32' stroke='#86efac'/>\n  <g font-size='10' fill='#14532d'>\n    <text x='16' y='50' font-weight='700'>リポジトリ</text>\n    <text x='188' y='50' font-weight='700'>解決したい課題</text>\n    <text x='392' y='50' font-weight='700'>提供する機能</text>\n    <line x1='16' y1='58' x2='584' y2='58' stroke='#bbf7d0'/>\n    <text x='16' y='80' font-weight='700'>Ghost-Downloader-3</text><text x='16' y='94' font-size='9'>Python ⭐12.7k +449</text>\n    <text x='188' y='80'>DL手段が分散し操作も古い</text>\n    <text x='392' y='80'>HTTP/BT/m3u8 を非同期並行DL</text>\n    <text x='392' y='94' font-size='9'>Fluent Design GUI・クロスPF</text>\n    <line x1='16' y1='104' x2='584' y2='104' stroke='#bbf7d0'/>\n    <text x='16' y='126' font-weight='700'>openvino</text><text x='16' y='140' font-size='9'>C++ ⭐11.5k +246</text>\n    <text x='188' y='126'>AI推論をローカルで速く回したい</text>\n    <text x='392' y='126'>CPU/GPU/NPU 向け推論最適化</text>\n    <text x='392' y='140' font-size='9'>CV・拡散/生成AIを幅広く対応</text>\n    <line x1='16' y1='150' x2='584' y2='150' stroke='#bbf7d0'/>\n    <text x='16' y='172' font-weight='700'>autoclip</text><text x='16' y='186' font-size='9'>Python ⭐11.2k +110</text>\n    <text x='188' y='172'>長尺の切り抜き再利用が手作業</text>\n    <text x='392' y='172'>長尺→短尺＋字幕/カバー/投稿文</text>\n    <text x='392' y='186' font-size='9'>TikTok/Shorts 向け・MCP対応</text>\n  </g>\n</svg>\n<figcaption>図1：3本の「課題→機能」対応。非AI実用・推論基盤・AIメディア制作と、綺麗にドメインが割れている。</figcaption>\n</figure>\n\n<h4>XiaoYouChR/Ghost-Downloader-3（Python・⭐約12.7k）</h4>\n<p><strong>解決したい課題：</strong>ファイルや動画を落とす手段は HTTP ダウンロード、BitTorrent、HLS（m3u8）とバラバラで、既存の DL マネージャは UI が古かったり一方式しか扱えなかったりする。<strong>提供する機能：</strong>「下載器の集大成」を掲げ、HTTP/BT/m3u8 等を <code>asyncio</code> で<strong>非同期・並行に高速ダウンロード</strong>するオールインワンDLマネージャ。Fluent Design のモダン GUI でクロスプラットフォーム対応。本日 <strong>+449（率約3.5%）</strong>——AIエージェント一色のトレンドで、純粋な実用デスクトップユーティリティとして根強い支持を集めた非AI多様性枠だ。GPL-3.0 なので製品組み込みは注意、開発利用は問題ない。</p>\n\n<h4>openvinotoolkit/openvino（C++・⭐約11.5k）</h4>\n<p><strong>解決したい課題：</strong>学習済みの深層学習・生成AIモデルを、GPU クラウドに頼らず手元の CPU/GPU/NPU で<strong>速く・省リソースに動かしたい</strong>。<strong>提供する機能：</strong>Intel 発の OSS 推論ツールキットで、モデルを各種ハードウェア向けに<strong>最適化してデプロイ</strong>する。computer-vision から diffusion-models・generative-ai まで幅広くカバーする。本日 <strong>+246（率約2.1%）</strong>——老舗の巨大プロジェクトながら、生成AI/拡散モデルのローカル最適化需要を背景に再注目。エージェント/スキル束に偏る当日トレンドで希少な C++ 推論基盤という多様性枠で、Apache-2.0（商用可）。</p>\n\n<h4>zhouxiaoka/autoclip（Python・⭐約11.2k）</h4>\n<p><strong>解決したい課題：</strong>ポッドキャストや対談・講義といった長尺動画から「切り抜き（短尺クリップ）」を作り各 SNS へ再投稿する作業は、切り出し・字幕・カバー・投稿文まで含めると<strong>手作業の塊</strong>になる。<strong>提供する機能：</strong>一本のリンクから長尺を自動で短尺クリップに切り出し、<strong>字幕・カバー・投稿文まで生成</strong>する OSS の AI 動画編集デスクトップアプリ。抖音/小紅書/TikTok/Reels/YouTube Shorts 向けに最適化し、<strong>MCP 対応でエージェントからも扱える</strong>のが新規性だ。本日 <strong>+110（率約1.0%）</strong>、MIT（商用可）。</p>\n\n<h4>ひとこと — 自分が試すなら</h4>\n<p>DevForge の文脈で一番触りたいのは <strong>autoclip</strong>。MCP 対応なので、既存の Claude 定期タスクから「長尺→切り抜き＋投稿文」まで繋げられる余地がある（devforge-shorts 系と相性が良い）。ローカル推論を詰めるなら OpenVINO、純粋に日々の DL 作業を楽にするなら Ghost-Downloader-3——いずれもクラウド非依存で手元完結する点が、今日の3本に共通する良さだ。</p>",
+      "sources": [
+        {
+          "title": "XiaoYouChR/Ghost-Downloader-3",
+          "url": "https://github.com/XiaoYouChR/Ghost-Downloader-3"
+        },
+        {
+          "title": "openvinotoolkit/openvino",
+          "url": "https://github.com/openvinotoolkit/openvino"
+        },
+        {
+          "title": "zhouxiaoka/autoclip",
+          "url": "https://github.com/zhouxiaoka/autoclip"
+        }
+      ],
+      "id": "2026-11-20-github-trending"
+    },
     {
       "date": "2026-11-19",
       "topic": "Claude Code",
