@@ -1,0 +1,99 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>動的OG画像は next/og の ImageResponse で焼く — Satori は「ブラウザではない」ことだけ先に飲み込む（Next.js 16 の params/ランタイム作法つき） — デイリー技術深掘り 読み物</title><meta name="description" content="リンクを貼ったとき出る大きなOGカードを、ページ単位で自動生成する標準解が opengraph-image.tsx × next/og の ImageResponse。レンダラは Satori で、HTML/CSS→SVG→PNG に変換する別エンジン。grid は効かず flexbox 前提、という一点を知らないと「黙って崩れる」。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-20-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="動的OG画像は next/og の ImageResponse で焼く — Satori は「ブラウザではない」ことだけ先に飲み込む（Next.js 16 の params/ランタイム作法つき） — デイリー技術深掘り 読み物"><meta property="og:description" content="リンクを貼ったとき出る大きなOGカードを、ページ単位で自動生成する標準解が opengraph-image.tsx × next/og の ImageResponse。レンダラは Satori で、HTML/CSS→SVG→PNG に変換する別エンジン。grid は効かず flexbox 前提、という一点を知らないと「黙って崩れる」。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-20-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>動的OG画像は next/og の ImageResponse で焼く — Satori は「ブラウザではない」ことだけ先に飲み込む（Next.js 16 の params/ランタイム作法つき）</h1> <p class="lede">リンクを貼ったとき出る大きなOGカードを、ページ単位で自動生成する標準解が opengraph-image.tsx × next/og の ImageResponse。レンダラは Satori で、HTML/CSS→SVG→PNG に変換する別エンジン。grid は効かず flexbox 前提、という一点を知らないと「黙って崩れる」。</p> <div class="meta"> <span>📅 2026年11月20日</span> <span>⏱ 約4分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="0"><p>SNS や Slack にリンクを貼ると出る大きなカード画像（Open Graph 画像）は、クリック率に直結する「もう一つの UI」だ。ブログ記事や商品ページのように<strong>ページごとに中身が変わる</strong>サイトでは、全ページ共通の静的 PNG では足りず、タイトルや著者を焼き込んだ1枚をページ単位で生成したい。App Router はこれを<strong>ファイル規約 <code>opengraph-image.tsx</code> ＋ <code>next/og</code> の <code>ImageResponse</code></strong>で標準提供する。JSX をそのままサーバーで画像化できるのが最大の利点だが、Next.js 16 で <code>params</code> が Promise 化し、既定ランタイムが Node.js に寄ったことで、旧 <code>@vercel/og</code> 時代の Edge 前提サンプルとは書き方がずれてきた。</p>
+
+<h4 id="sec-1">核心：レンダラは Satori＝ブラウザではない</h4>
+<p><code>ImageResponse</code> の中身は Satori で、<strong>HTML/CSS → SVG → PNG</strong> に変換する専用エンジンだ。headless Chrome でもブラウザでもないので、<strong>CSS の一部しか解釈しない</strong>。公式が明言するとおり「flexbox と CSS の一部のみ対応、<code>display:grid</code> のような高度なレイアウトは効かない」。さらに <code>calc()</code>・CSS 変数・<code>transform</code>・アニメーションは<strong>エラーも出さず黙って無視</strong>され、「なんか違う絵」が出る。要素は基本 <code>display:flex</code> 前提で、子が2つ以上あるのに親に flex が無いと崩れる。ここを知らずに普段の CSS 感覚で書くのが一番の落とし穴だ。</p>
+
+<figure class='fig'>
+<svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <rect x='0' y='0' width='600' height='150' fill='#f8fafc' rx='8' stroke='#cbd5e1'></rect>
+  <text x='16' y='24' font-size='12' font-weight='700' fill='#0f172a'>ImageResponse の変換パイプライン（ブラウザを通らない）</text>
+  <g font-size='11' fill='#1e293b' text-anchor='middle'>
+    <rect x='20' y='54' width='110' height='56' fill='#e0e7ff' rx='6'></rect><text x='75' y='78'>JSX</text><text x='75' y='96' font-size='9'>flexbox+一部CSS</text>
+    <rect x='170' y='54' width='110' height='56' fill='#ddd6fe' rx='6'></rect><text x='225' y='84'>Satori</text>
+    <rect x='320' y='54' width='110' height='56' fill='#e0e7ff' rx='6'></rect><text x='375' y='84'>SVG</text>
+    <rect x='470' y='54' width='110' height='56' fill='#dcfce7' rx='6'></rect><text x='525' y='78'>Resvg</text><text x='525' y='96' font-size='9'>→ PNG</text>
+  </g>
+  <g stroke='#94a3b8' stroke-width='2' marker-end='url(#ar)'>
+    <line x1='130' y1='82' x2='168' y2='82'></line><line x1='280' y1='82' x2='318' y2='82'></line><line x1='430' y1='82' x2='468' y2='82'></line>
+  </g>
+  <defs><marker id='ar' markerWidth='8' markerHeight='8' refX='6' refY='3' orient='auto'><path d='M0,0 L6,3 L0,6 Z' fill='#94a3b8'></path></marker></defs>
+  <text x='16' y='136' font-size='10' fill='#64748b'>grid・calc・transform・アニメは無視。まず og-playground で見た目を固めるのが近道。</text>
+</svg>
+<figcaption>図1：JSX→Satori→SVG→Resvg→PNG。各段で使える CSS が限られるため、普段のブラウザ前提 CSS は通らない。</figcaption>
+</figure>
+
+<h4 id="sec-2">Next.js 16 の作法 — params は await、ランタイムは書かない</h4>
+<p>動的ルートでは <code>params</code> が <strong>Promise</strong> になったので <code>const { slug } = await params</code> が必須（型は <code>params: Promise&lt;{ slug: string }&gt;</code>）。既定は<strong>ビルド時生成＋キャッシュ（static optimization）</strong>で、<code>cookies()</code>/<code>headers()</code>/未キャッシュ <code>fetch</code> を使うと静的最適化が外れて都度生成になる。既知スラッグは <code>generateStaticParams</code> で全部焼けば実行時生成ゼロだ。ランタイムは Next.js 16 で <code>runtime='edge'</code> が非推奨になり、既定の Node.js で問題なく動く。これに伴いフォント読み込みも変わり、現行サンプルは <code>node:fs/promises</code> の <code>readFile</code> を<strong>モジュールスコープで一度だけ</strong>読む（リクエストに依存しない予測可能値だから）。Edge 時代の「関数内で毎回 <code>fetch(new URL(...))</code>」は不要になった。</p>
+
+<pre><code>export const size = { width: 1200, height: 630 }
+const font = await readFile(join(process.cwd(),'assets/NotoSansJP-Bold.ttf'))
+export default async function Image({ params }:{ params: Promise&lt;{slug:string}&gt; }) {
+  const { slug } = await params
+  const post = await getPost(slug)
+  return new ImageResponse(
+    &lt;div style={{ width:'100%', height:'100%', display:'flex', flexDirection:'column' }}&gt;{post.title}&lt;/div&gt;,
+    { ...size, fonts:[{ name:'Noto', data:font, weight:700 }] })
+}</code></pre>
+
+<h4 id="sec-3">試すなら・注意</h4>
+<p>制限も押さえておく。バンドルは合計 <strong>500KB 上限</strong>（JSX・CSS・フォント・画像の総和）、フォントは <code>ttf</code>/<code>otf</code>/<code>woff</code> のみでパース速度優先なら <code>ttf</code>/<code>otf</code>。ページの <code>generateMetadata</code> に <code>openGraph.images</code> を書くと<strong>ファイル規約の画像を上書き</strong>してしまうので、「ファイル画像が出ない」ときはまず実際の <code>og:image</code> タグを疑う。確認は <code>/blog/&lt;slug&gt;/opengraph-image</code> を直接開けば PNG が見え、<code>debug:true</code> で要素境界を可視化できる。ユーザー入力をそのまま焼く用途では、過去に RCE 修正（16.3.6）も入っているため Next を最新に追従しておくこと。出力は静的 PNG なので <code>prefers-reduced-motion</code> 対応は対象外——動くものではない。</p>
+
+<p><strong>ひとこと：</strong>「ブラウザだと思って CSS を書かない」。flexbox だけで組み、grid と calc を捨て、og-playground で先に絵を固める——これだけで OG 画像生成の八割は安定する。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://nextjs.org/docs/app/api-reference/functions/image-response" target="_blank" rel="noopener noreferrer"> Next.js 公式 — ImageResponse (next/og) </a> </li><li> <a href="https://nextjs.org/docs/app/api-reference/file-conventions/metadata/opengraph-image" target="_blank" rel="noopener noreferrer"> Next.js 公式 — opengraph-image / twitter-image 規約 </a> </li><li> <a href="https://github.com/vercel/satori" target="_blank" rel="noopener noreferrer"> Satori（レンダリングエンジン・対応CSS） </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 核心：レンダラは Satori＝ブラウザではない </a> </li><li> <a href="#sec-2" data-toc="sec-2"> Next.js 16 の作法 — params は await、ランタイムは書かない </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 試すなら・注意 </a> </li> </ul> <div class="reading-box"> <div>📅 2026-11-20</div> <div>⏱ 読了 約4分</div> <div>🏷 Next.js</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

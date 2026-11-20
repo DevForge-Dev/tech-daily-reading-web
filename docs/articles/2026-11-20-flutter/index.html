@@ -1,0 +1,86 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Flutter 3.50.1 hotfix が「中身の組み立て」へ前進 — changelog PR がマージ、ただし tracker は全未チェックで未出荷。あわせて Material Motion の既製トランジション package も整理 — デイリー技術深掘り 読み物</title><meta name="description" content="3.50.1 は changelog PR #196936 が候補ブランチへ merged し cherry-pick 11本が出そろったが、release-tracker #196743 は依然 OPEN で全項目未チェック＝まだ出荷前。stable は 3.50.0／Dart 3.14.0 据え置き。画面遷移の意匠を既製化する公式 animations 3.0.0 もあわせて押さえる。"><meta name="theme-color" content="#0277bd"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-20-flutter/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Flutter 3.50.1 hotfix が「中身の組み立て」へ前進 — changelog PR がマージ、ただし tracker は全未チェックで未出荷。あわせて Material Motion の既製トランジション package も整理 — デイリー技術深掘り 読み物"><meta property="og:description" content="3.50.1 は changelog PR #196936 が候補ブランチへ merged し cherry-pick 11本が出そろったが、release-tracker #196743 は依然 OPEN で全項目未チェック＝まだ出荷前。stable は 3.50.0／Dart 3.14.0 据え置き。画面遷移の意匠を既製化する公式 animations 3.0.0 もあわせて押さえる。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-20-flutter/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #29b6f6, #01579b)"> <span class="glyph" aria-hidden="true">◆</span> <div class="kicker">Flutter</div> <h1>Flutter 3.50.1 hotfix が「中身の組み立て」へ前進 — changelog PR がマージ、ただし tracker は全未チェックで未出荷。あわせて Material Motion の既製トランジション package も整理</h1> <p class="lede">3.50.1 は changelog PR #196936 が候補ブランチへ merged し cherry-pick 11本が出そろったが、release-tracker #196743 は依然 OPEN で全項目未チェック＝まだ出荷前。stable は 3.50.0／Dart 3.14.0 据え置き。画面遷移の意匠を既製化する公式 animations 3.0.0 もあわせて押さえる。</p> <div class="meta"> <span>📅 2026年11月20日</span> <span>⏱ 約4分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#0277bd"> <div> <article class="prose" data-has-mermaid="0"><p>Flutter の次の hotfix <strong>3.50.1</strong> が、昨日の「tracker が立っただけ」段階から一歩進み、今日は<strong>中身（changelog）が初めて組み上がった</strong>のが news だ。現況は stable <code>3.50.0</code> / Dart <code>3.14.0</code>（11/11）、beta <code>3.51.0-0.1.pre</code> / Dart 3.15.0 で据え置き、<strong>3.50.1 行は stable 表にまだ無い＝未出荷</strong>。「出そうで出ていない」この数日の状態を、リリース工程のどこにいるかで読むと分かりやすい。</p>
+
+<h4 id="sec-1">何が動いたか — changelog は merged、出荷チェックは全部空</h4>
+<p>GitHub の <strong>flutter/flutter #196936「[3.50] Changelog for 3.50.1」</strong>が 11/19 に <code>auto-submit[bot]</code> で候補ブランチ <code>flutter-3.50-candidate.0</code> へ <strong>MERGED</strong>（reviewer approve 済）。本文は 3.50.1 に入る cherry-pick を列挙し、<strong>計11エントリ</strong>——例として「flutter_tools: library plugin に app 専用ビルド型を複製しない（#196756）」「[Linux] glBlitFramebuffer 無し合成時のレイヤ位置修正（#196418）」「DevFS.create の VM ファイルシステムエラー処理（#196895）」「[FGP] split-APK の versionCode オフセット（#196923）」など、<strong>ツール／Linux 描画／Android ビルドの回帰修正が主</strong>だ。一方で肝心の release-tracker <strong>#196743 は依然 OPEN</strong>、チェックリスト（CP マージ→Dart 版更新→engine hash pin→changelog→postsubmit 検証→MPA で push→SDK Archive 確認→告知）は<strong>全項目 未チェック</strong>。Dart 版更新も無く、3.50.1 は <strong>Dart 3.14.0 据え置き</strong>の見込みだ。</p>
+
+<figure class='fig'>
+<svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <rect x='0' y='0' width='600' height='150' fill='#eff6ff' rx='8' stroke='#93c5fd'></rect>
+  <text x='16' y='24' font-size='12' font-weight='700' fill='#1e3a8a'>3.50.1 リリース工程 — いまここ</text>
+  <g font-size='9.5' text-anchor='middle'>
+    <rect x='16' y='50' width='86' height='44' fill='#bbf7d0' rx='5'></rect><text x='59' y='70'>cherry-pick</text><text x='59' y='84'>✓ merged</text>
+    <rect x='110' y='50' width='86' height='44' fill='#bbf7d0' rx='5'></rect><text x='153' y='70'>changelog</text><text x='153' y='84'>✓ merged</text>
+    <rect x='204' y='50' width='86' height='44' fill='#fde68a' rx='5'></rect><text x='247' y='70'>postsubmit</text><text x='247' y='84'>□ 検証待ち</text>
+    <rect x='298' y='50' width='86' height='44' fill='#fecaca' rx='5'></rect><text x='341' y='70'>MPA push</text><text x='341' y='84'>□ 未</text>
+    <rect x='392' y='50' width='86' height='44' fill='#fecaca' rx='5'></rect><text x='435' y='70'>SDK Archive</text><text x='435' y='84'>□ 未</text>
+    <rect x='486' y='50' width='98' height='44' fill='#fecaca' rx='5'></rect><text x='535' y='70'>告知/出荷</text><text x='535' y='84'>□ 未</text>
+  </g>
+  <text x='16' y='120' font-size='10.5' fill='#1d4ed8'>合図：#196743 の「MPA push」「SDK Archive」にチェックが入ったら 3.50.1 出荷。</text>
+  <text x='16' y='138' font-size='10.5' fill='#64748b'>実務：引き続き 3.50.0 を pin 基準。出たら stable→upgrade→まず flutter analyze。</text>
+</svg>
+<figcaption>図1：changelog まで緑、ビルド/配布は赤。候補ブランチに載った＝検証直前だが、出荷判定はまだ先。</figcaption>
+</figure>
+
+<h4 id="sec-2">あわせて：画面遷移の意匠は公式 animations で既製化できる</h4>
+<p>リリース待ちの間に効くのが、公式 <strong>animations 3.0.0</strong>（publisher flutter.dev・BSD-3）。Material 3 の <strong>Material Motion</strong> 4種（Container transform / Shared axis / Fade through / Fade）を既製 widget 化したもので、3.0.0 は依存に 3.50 で入った新 <code>material_ui ^1.0.0</code> を取るのが新しい。中核は2つ——タップで画面を埋めるように成長する <strong><code>OpenContainer</code></strong>（<code>closedBuilder</code>/<code>openBuilder</code> を渡す）と、child の <code>ValueKey</code> 変化で差し替える <strong><code>PageTransitionSwitcher</code></strong>。後者の <code>transitionBuilder</code> に <code>SharedAxisTransition</code>（<code>horizontal</code>/<code>vertical</code>/<code>scaled</code> の3軸）を返せば、オンボーディングやステップ遷移が「軸に沿って入れ替わる」動きになる。11/13 に見た <code>flutter_animate</code> が「任意 widget へエフェクトを連鎖」なのに対し、こちらは<strong>ページ/コンテナ遷移の“型”</strong>担当、と住み分けると整理しやすい。</p>
+
+<h4 id="sec-3">ひとこと</h4>
+<p>3.50.1 は「出荷直前だがまだ」。慌てて上げず 3.50.0 を pin したまま、#196743 の MPA push / SDK Archive のチェックを待つのが正解。待ち時間は、遷移の意匠を <code>OpenContainer</code> と <code>PageTransitionSwitcher</code> で標準化しておくと、アップグレード後の見栄え調整が楽になる。配色も <code>ColorScheme.fromSeed</code>（seed 1色＋<code>contrastLevel</code>）で宣言的に整えておきたい。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://github.com/flutter/flutter/pull/196936" target="_blank" rel="noopener noreferrer"> flutter/flutter PR #196936 — [3.50] Changelog for 3.50.1 </a> </li><li> <a href="https://github.com/flutter/flutter/issues/196743" target="_blank" rel="noopener noreferrer"> flutter/flutter Issue #196743 — 3.50.1 release tracker </a> </li><li> <a href="https://pub.dev/packages/animations" target="_blank" rel="noopener noreferrer"> animations — pub.dev </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 何が動いたか — changelog は merged、出荷チェックは全部空 </a> </li><li> <a href="#sec-2" data-toc="sec-2"> あわせて：画面遷移の意匠は公式 animations で既製化できる </a> </li><li> <a href="#sec-3" data-toc="sec-3"> ひとこと </a> </li> </ul> <div class="reading-box"> <div>📅 2026-11-20</div> <div>⏱ 読了 約4分</div> <div>🏷 Flutter</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
