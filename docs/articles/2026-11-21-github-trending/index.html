@@ -1,0 +1,103 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>11/21の話題リポジトリ — 検証付きRust移行 rust-anything・免Rootテレメトリ掃除 TelemetryCleaner・モデル無しチャットボット pybot — デイリー技術深掘り 読み物</title><meta name="description" content="エージェント／スキル束一色の当日トレンドの中で、増加率で突き抜けた純モメンタム3本を「解決したい課題」と「提供する機能」で読む。Rust移行の検証自動化・Android プライバシー・“LLM以前”のルールベース実証と、言語もジャンルも割れた顔ぶれ。"><meta name="theme-color" content="#238636"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-21-github-trending/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="11/21の話題リポジトリ — 検証付きRust移行 rust-anything・免Rootテレメトリ掃除 TelemetryCleaner・モデル無しチャットボット pybot — デイリー技術深掘り 読み物"><meta property="og:description" content="エージェント／スキル束一色の当日トレンドの中で、増加率で突き抜けた純モメンタム3本を「解決したい課題」と「提供する機能」で読む。Rust移行の検証自動化・Android プライバシー・“LLM以前”のルールベース実証と、言語もジャンルも割れた顔ぶれ。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-21-github-trending/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3fb950, #1a7f37)"> <span class="glyph" aria-hidden="true">★</span> <div class="kicker">GitHub Trending</div> <h1>11/21の話題リポジトリ — 検証付きRust移行 rust-anything・免Rootテレメトリ掃除 TelemetryCleaner・モデル無しチャットボット pybot</h1> <p class="lede">エージェント／スキル束一色の当日トレンドの中で、増加率で突き抜けた純モメンタム3本を「解決したい課題」と「提供する機能」で読む。Rust移行の検証自動化・Android プライバシー・“LLM以前”のルールベース実証と、言語もジャンルも割れた顔ぶれ。</p> <div class="meta"> <span>📅 2026年11月21日</span> <span>⏱ 約4分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#238636"> <div> <article class="prose" data-has-mermaid="0"><p>今日のモメンタム3本は、Rust のコード移行ツール／Kotlin の Android プライバシーツール／Python のルールベース実証と、<strong>言語もジャンルも見事に割れている</strong>。共通点は、AI エージェント・スキル束に偏った当日トレンドに対し、<strong>いずれも「解きたい課題」と「提供する機能」が明快な多様性枠として増加率で突き抜けた</strong>こと。各リポジトリを課題と機能に分けて読む（★数・forks は実行時の api.github.com 実測）。</p>
+
+<figure class='fig'><svg viewBox='0 0 600 230' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <rect x='0' y='0' width='600' height='230' fill='#f0fdf4' rx='10'></rect>
+  <text x='300' y='24' text-anchor='middle' font-size='14' font-weight='bold' fill='#166534'>解決したい課題 → 提供する機能</text>
+  <line x1='16' y1='38' x2='584' y2='38' stroke='#86efac'></line>
+  <text x='20' y='55' font-size='10.5' font-weight='bold' fill='#14532d'>owner/repo（言語・⭐）</text>
+  <text x='214' y='55' font-size='10.5' font-weight='bold' fill='#991b1b'>解決したい課題</text>
+  <text x='410' y='55' font-size='10.5' font-weight='bold' fill='#1e40af'>提供する機能</text>
+  <line x1='16' y1='63' x2='584' y2='63' stroke='#bbf7d0'></line>
+  <text x='20' y='88' font-size='10' fill='#0f172a'>erkamyaman/</text>
+  <text x='20' y='101' font-size='10' fill='#0f172a'>rust-anything</text>
+  <text x='20' y='116' font-size='8.5' fill='#64748b'>Rust ⭐約6.6k</text>
+  <text x='214' y='88' font-size='9' fill='#334155'>既存アプリの Rust 移行が</text>
+  <text x='214' y='101' font-size='9' fill='#334155'>“同じ挙動か”を保証できない</text>
+  <text x='410' y='88' font-size='9' fill='#334155'>元挙動を録画し、各片を</text>
+  <text x='410' y='101' font-size='9' fill='#334155'>照合する“証明付き移行”</text>
+  <line x1='16' y1='126' x2='584' y2='126' stroke='#bbf7d0'></line>
+  <text x='20' y='151' font-size='10' fill='#0f172a'>Eynnzerr/</text>
+  <text x='20' y='164' font-size='10' fill='#0f172a'>TelemetryCleaner</text>
+  <text x='20' y='179' font-size='8.5' fill='#64748b'>Kotlin ⭐約2.2k</text>
+  <text x='214' y='151' font-size='9' fill='#334155'>プリインのキャリア系収集が</text>
+  <text x='214' y='164' font-size='9' fill='#334155'>静かに動き止められない</text>
+  <text x='410' y='151' font-size='9' fill='#334155'>免Root(Shizuku)で検出・</text>
+  <text x='410' y='164' font-size='9' fill='#334155'>卸載・復元・クラウドソース</text>
+  <line x1='16' y1='189' x2='584' y2='189' stroke='#bbf7d0'></line>
+  <text x='20' y='210' font-size='10' fill='#0f172a'>huggingface/pybot</text>
+  <text x='20' y='223' font-size='8.5' fill='#64748b'>Python ⭐約1.0k</text>
+  <text x='214' y='206' font-size='9' fill='#334155'>“LLM以前”のルールのみで</text>
+  <text x='214' y='219' font-size='9' fill='#334155'>どこまで伸ばせるか不明</text>
+  <text x='410' y='206' font-size='9' fill='#334155'>エージェント群が純Python</text>
+  <text x='410' y='219' font-size='9' fill='#334155'>ルールのbotを自作・評価</text>
+</svg><figcaption>図1：今日の3本を「課題→機能」で一望。Rust移行・Androidプライバシー・ルールベース実証と割れている。</figcaption></figure>
+
+<h4 id="sec-1">erkamyaman/rust-anything（Rust・⭐約6.6k）</h4>
+<p><strong>解決したい課題：</strong>既存アプリを Rust へ書き換えるとき、「翻訳できたか」ではなく「<strong>書き換えが元と同じ挙動か</strong>」を保証するのが難しい。<strong>提供する機能：</strong>自分のアプリを一片ずつ Rust 化し、<strong>元の挙動を記録して各片をそれと照合しながら移行する</strong>ツール。「コードを翻訳する」のではなく「同じ挙動であることを証明する」設計だ。CLI/HTTPサーバ/ライブラリを TS/Python/Go/Java 等から移行でき、Claude Code プラグイン・MCP Registry にも対応。<strong>なぜ今急上昇：</strong>created 2026-11-16＝作成約5日で⭐約6.6k（<strong>日平均約1,317★＝当日最速級</strong>）。「Rewrite in Rust」ミームに乗りつつ、録画した元挙動とバイト単位で照合する検証付き移行という新規性で急伸——v2.0 では Prettier を自前 Rust へ移植し19x高速・全runバイト一致というデモが拡散した。forks518・MIT。※open issues 1 は要確認だが整備状況から実体あり。</p>
+
+<h4 id="sec-2">Eynnzerr/TelemetryCleaner（Kotlin・⭐約2.2k）</h4>
+<p><strong>解決したい課題：</strong>国内向け Android 固件にプリインされた<strong>キャリア系テレメトリ（SystemHelper/RegService 等）はデスクトップ入口が無く、通常手段では静かな定時データ収集を止められない</strong>。<strong>提供する機能：</strong>これらのコンポーネントの導入状態・権限を検出し、<strong>免Root（Shizuku）でアンインストール・復元</strong>、クラウドソースで対応メーカー/パッケージ名を拡充する非AIプライバシーツール。<strong>なぜ今急上昇：</strong>created 2026-11-11＝約10日で⭐約2.2k（日平均約219★）。可視化・管理できる実用性が支持され、エージェント一色のトレンドで希少な <strong>Kotlin × 非AI システム/プライバシー</strong>の多様性枠。forks165・MIT（商用可）。</p>
+
+<h4 id="sec-3">huggingface/pybot（Python・⭐約1.0k）</h4>
+<p><strong>解決したい課題：</strong>重みも学習も使わない「LLM 以前」のルールベース・チャットボットを、<strong>エージェントでどこまで伸ばせるか</strong>は実証されていなかった。<strong>提供する機能：</strong>純 Python（if-else/正規表現/ルックアップ表）だけの bot を、<strong>1,000体超のエージェントが5,000版以上自作・評価</strong>して磨く HuggingFace 公式の実験プロジェクト。<strong>なぜ今急上昇：</strong>created 2026-11-12＝約9日で⭐約1.0k（日平均約114★）。SmolTalkBench の勝率を <strong>0%→26%（SmolLM-360M-Instruct 級）</strong>まで押し上げ、約64万行のコード＋エージェント自作の55万行テストから成る規模と、インストール不要（Python 3.8+）で即実行できる手軽さが話題に。Apache-2.0。</p>
+
+<h4 id="sec-4">まとめ：自分が試すなら</h4>
+<p>無人リサーチ運用の視点で一番効くのは <strong>rust-anything の“録画→照合”設計</strong>——「生成物が元と同じ挙動か」を自動検証する発想は、移行に限らず自動化パイプラインの回帰防止に応用が利く。pybot は「役割分担したエージェント群に大量の版を自作・評価させる」運用の生きた事例として、TelemetryCleaner は Shizuku で免Root に権限操作を行う Android 実装例として読む価値がある。3本とも許容的ライセンス（MIT / Apache-2.0）で手に取りやすい。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://github.com/erkamyaman/rust-anything" target="_blank" rel="noopener noreferrer"> erkamyaman/rust-anything </a> </li><li> <a href="https://github.com/Eynnzerr/TelemetryCleaner" target="_blank" rel="noopener noreferrer"> Eynnzerr/TelemetryCleaner </a> </li><li> <a href="https://github.com/huggingface/pybot" target="_blank" rel="noopener noreferrer"> huggingface/pybot </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> erkamyaman/rust-anything（Rust・⭐約6.6k） </a> </li><li> <a href="#sec-2" data-toc="sec-2"> Eynnzerr/TelemetryCleaner（Kotlin・⭐約2.2k） </a> </li><li> <a href="#sec-3" data-toc="sec-3"> huggingface/pybot（Python・⭐約1.0k） </a> </li><li> <a href="#sec-4" data-toc="sec-4"> まとめ：自分が試すなら </a> </li> </ul> <div class="reading-box"> <div>📅 2026-11-21</div> <div>⏱ 読了 約4分</div> <div>🏷 GitHub Trending</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

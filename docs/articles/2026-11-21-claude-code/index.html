@@ -1,0 +1,97 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Claude Code v2.1.330 が latest に昇格 — 組み込みチャート mod「easel」でCLIが図を描き、MCPメトリクスにも自動で添える — デイリー技術深掘り 読み物</title><meta name="description" content="今日の最大の動きはバージョン。npm latest が v2.1.329→v2.1.330 へ（JST 11/21 04:16 公開、stable=v2.1.323）。目玉は組み込みチャート mod「easel」——依頼に応じて図を描き、/mcp のメトリクス結果の下にも自動でチャートを添える。あわせて Enterprise Admin Console 管理組織へのサインインに対応し、コンパクト後のフリーズや WebFetch の空応答、worktree 誤削除など多数を修正した。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-21-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Claude Code v2.1.330 が latest に昇格 — 組み込みチャート mod「easel」でCLIが図を描き、MCPメトリクスにも自動で添える — デイリー技術深掘り 読み物"><meta property="og:description" content="今日の最大の動きはバージョン。npm latest が v2.1.329→v2.1.330 へ（JST 11/21 04:16 公開、stable=v2.1.323）。目玉は組み込みチャート mod「easel」——依頼に応じて図を描き、/mcp のメトリクス結果の下にも自動でチャートを添える。あわせて Enterprise Admin Console 管理組織へのサインインに対応し、コンパクト後のフリーズや WebFetch の空応答、worktree 誤削除など多数を修正した。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-21-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>Claude Code v2.1.330 が latest に昇格 — 組み込みチャート mod「easel」でCLIが図を描き、MCPメトリクスにも自動で添える</h1> <p class="lede">今日の最大の動きはバージョン。npm latest が v2.1.329→v2.1.330 へ（JST 11/21 04:16 公開、stable=v2.1.323）。目玉は組み込みチャート mod「easel」——依頼に応じて図を描き、/mcp のメトリクス結果の下にも自動でチャートを添える。あわせて Enterprise Admin Console 管理組織へのサインインに対応し、コンパクト後のフリーズや WebFetch の空応答、worktree 誤削除など多数を修正した。</p> <div class="meta"> <span>📅 2026年11月21日</span> <span>⏱ 約4分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="0"><p>Claude Code の版は今日も素直に一段進んだ。<code>npm view @anthropic-ai/claude-code dist-tags</code> を一次確認すると <strong>latest=v2.1.330</strong>（npm 公開 2026-11-20 19:16 UTC＝JST 11/21 04:16）で、昨日の v2.1.329 から1つ前進。<strong>stable は v2.1.323</strong> に据え置かれている。GitHub の一次 CHANGELOG によれば、このバージョンのユーザー向けの目玉は明確に1つ——<strong>組み込みチャート mod「easel」</strong>の追加だ。CLI がターミナルの中で図を描けるようになり、しかも <code>/mcp</code> のメトリクス結果の下にも自動でチャートを添える。</p>
+
+<figure class='fig'><svg viewBox='0 0 600 180' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <rect x='0' y='0' width='600' height='180' fill='#f0fdf4' rx='10'></rect>
+  <text x='300' y='26' text-anchor='middle' font-size='13.5' font-weight='bold' fill='#15803d'>easel が図を描く2つの場面</text>
+  <rect x='28' y='46' width='258' height='114' rx='8' fill='#fff' stroke='#86efac' stroke-width='2'></rect>
+  <text x='157' y='70' text-anchor='middle' font-size='12' font-weight='bold' fill='#166534'>① 依頼に応じて描画</text>
+  <text x='157' y='94' text-anchor='middle' font-size='10' fill='#334155'>「このCSVを棒グラフに」等の</text>
+  <text x='157' y='110' text-anchor='middle' font-size='10' fill='#334155'>短い依頼でチャートを生成</text>
+  <text x='157' y='140' text-anchor='middle' font-size='9.5' fill='#15803d'>Pro / Max ＋ 一部 Team・Enterprise</text>
+  <rect x='314' y='46' width='258' height='114' rx='8' fill='#fff' stroke='#4ade80' stroke-width='2'></rect>
+  <text x='443' y='70' text-anchor='middle' font-size='12' font-weight='bold' fill='#166534'>② MCPメトリクスに自動添付</text>
+  <text x='443' y='94' text-anchor='middle' font-size='10' fill='#334155'>/mcp のメトリクス結果の</text>
+  <text x='443' y='110' text-anchor='middle' font-size='10' fill='#334155'>下に自動でチャートを描く</text>
+  <text x='443' y='140' text-anchor='middle' font-size='9.5' fill='#15803d'>自動描画は /config でオフ化可</text>
+</svg><figcaption>図1：easel は「依頼時の描画」と「MCPメトリクス結果への自動添付」の2場面で効く。対象は macOS・Linux。</figcaption></figure>
+
+<h4 id="sec-1">何が新しいか：easel は“別インストール”ではなく組み込み mod</h4>
+<p>誤解されやすいが、<strong>easel は外部プラグインではなく Claude Code に同梱される組み込み mod</strong> だ。対象は <strong>Pro・Max</strong>、そして利用可能な環境では <strong>Team・Enterprise の macOS・Linux</strong>。自動でチャートを添える挙動が不要なら <code>/config</code> で止められる。関連して v2.1.330 では、許可/拒否リストが easel を除外している環境で起動のたびに出ていた「MCP server blocked by enterprise policy: easel」警告の抑制や、Claude が <strong>Code Mode</strong> から組み込みチャートツールを呼ぶと失敗する不具合の修正も入り、チャート周りが一通り整えられた。もう一つの新機能は <strong>Anthropic の Enterprise Admin Console で管理する組織へのサインイン</strong>対応で、<code>claude auth login</code> の後に組織の設定とそのクラウドプロバイダ/ゲートウェイを適用する。短いサインインリンクが壊れる場合に完全なリンクを出す <code>CLAUDE_CODE_FULL_SIGN_IN_LINK=1</code>、セルフホストランナーの作業開始フォルダを指定する <code>--start-dir</code> / <code>SELF_HOSTED_RUNNER_START_DIR</code> も追加された。</p>
+
+<h4 id="sec-2">見逃せない修正：無人運用に直撃する worktree 誤削除</h4>
+<p>機能より重要かもしれないのが修正群だ。とりわけ <strong><code>ExitWorktree</code>（および終了ダイアログ）が、別セッションが作業中の worktree を削除してしまう不具合</strong>の修正は、<code>/batch</code> や <code>claude --worktree</code> で worktree を並列に使う無人運用にとって地雷の除去にあたる。ほかに、非常に長い会話のコンパクト直後に数分フリーズする問題、<strong>WebFetch が一部ページで数分フリーズ・空応答を返す問題</strong>、複数プロセスの同時保存でユーザー設定が失われる問題、Code Mode の多数の不具合が直った。</p>
+
+<figure class='fig'><svg viewBox='0 0 600 150' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <rect x='0' y='0' width='600' height='150' fill='#fff7ed' rx='10'></rect>
+  <text x='300' y='26' text-anchor='middle' font-size='13.5' font-weight='bold' fill='#9a3412'>v2.1.330 の主要修正（無人運用に効く順）</text>
+  <rect x='24' y='40' width='552' height='28' rx='5' fill='#fee2e2'></rect>
+  <text x='38' y='59' font-size='11' fill='#7f1d1d'>ExitWorktree が別セッションの worktree を削除 → 修正</text>
+  <rect x='24' y='72' width='552' height='28' rx='5' fill='#ffedd5'></rect>
+  <text x='38' y='91' font-size='11' fill='#9a3412'>WebFetch のフリーズ／空応答 → 修正</text>
+  <rect x='24' y='104' width='552' height='28' rx='5' fill='#fef9c3'></rect>
+  <text x='38' y='123' font-size='11' fill='#854d0e'>コンパクト直後の数分フリーズ・設定の同時保存欠落 → 修正</text>
+</svg><figcaption>図2：機能追加は小粒だが、worktree 誤削除・WebFetch 空応答の修正は定期タスク運用の実害を直接消す。</figcaption></figure>
+
+<h4 id="sec-3">実務での使いどころ・自分が試すなら</h4>
+<p>worktree 並列運用をしているなら、この版への更新は優先度が高い——誤削除修正だけでも上げる価値がある。easel は、ログや CSV を手元で素早く可視化したいときに <code>/config</code> の設定を一度確認し、自動添付が邪魔なら切る、という付き合い方で十分だ。周辺の技術記事も厚い日で、DevelopersIO は v2.1.326 の破壊的変更（auto モードで <code>$HOME</code> 始まりのワイルドカード allow が無視され安全チェックに回る／サンドボックスが一部の機微な home フォルダへ既定で書かなくなる）を before/after で解説し、Vibehackers は hooks（command/HTTP/prompt/agent の4種、command は終了コード2でブロック）と subagents を体系化している。</p>
+
+<h4 id="sec-4">ひとこと</h4>
+<p>事例面では Money Forward の全社展開（エンジニアの80%が採用・API 実装を2日→5時間、社内ツール Sherlock/Lumos を内製）も公開された。派手な新機能より“無人で安全に回す”方向の地ならしが続く中、v2.1.330 は worktree 周りの実害を消しつつ、CLI に図を描く小さな楽しさ（easel）を足した版だ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md" target="_blank" rel="noopener noreferrer"> Claude Code CHANGELOG.md（GitHub・一次） </a> </li><li> <a href="https://code.claude.com/docs/en/changelog" target="_blank" rel="noopener noreferrer"> Claude Code Changelog（公式ドキュメント） </a> </li><li> <a href="https://claude.com/ja/customers/money-forward" target="_blank" rel="noopener noreferrer"> Money Forward 導入事例（Anthropic 公式） </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 何が新しいか：easel は“別インストール”ではなく組み込み mod </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 見逃せない修正：無人運用に直撃する worktree 誤削除 </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 実務での使いどころ・自分が試すなら </a> </li><li> <a href="#sec-4" data-toc="sec-4"> ひとこと </a> </li> </ul> <div class="reading-box"> <div>📅 2026-11-21</div> <div>⏱ 読了 約4分</div> <div>🏷 Claude Code</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

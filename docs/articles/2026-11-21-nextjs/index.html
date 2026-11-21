@@ -1,0 +1,114 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>CSS `corner-shape` — `border-radius` の「丸」を超え、角の“曲線タイプ”そのものを純CSSでアニメーション（squircle / superellipse） — デイリー技術深掘り 読み物</title><meta name="description" content="20年近く「角を丸める」唯一の手段だった border-radius は、形が常に円弧だった。corner-shape は、その角の曲線タイプ自体を round / squircle / bevel / scoop / notch や連続パラメータ superellipse(k) に差し替える新プロパティ。最大の旨味は補間可能＝ホバーで「bevel→squircle」とぬるっとモーフできること。Chrome/Edge 139 でフラグなし搭載済み。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-21-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="CSS `corner-shape` — `border-radius` の「丸」を超え、角の“曲線タイプ”そのものを純CSSでアニメーション（squircle / superellipse） — デイリー技術深掘り 読み物"><meta property="og:description" content="20年近く「角を丸める」唯一の手段だった border-radius は、形が常に円弧だった。corner-shape は、その角の曲線タイプ自体を round / squircle / bevel / scoop / notch や連続パラメータ superellipse(k) に差し替える新プロパティ。最大の旨味は補間可能＝ホバーで「bevel→squircle」とぬるっとモーフできること。Chrome/Edge 139 でフラグなし搭載済み。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-21-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>CSS `corner-shape` — `border-radius` の「丸」を超え、角の“曲線タイプ”そのものを純CSSでアニメーション（squircle / superellipse）</h1> <p class="lede">20年近く「角を丸める」唯一の手段だった border-radius は、形が常に円弧だった。corner-shape は、その角の曲線タイプ自体を round / squircle / bevel / scoop / notch や連続パラメータ superellipse(k) に差し替える新プロパティ。最大の旨味は補間可能＝ホバーで「bevel→squircle」とぬるっとモーフできること。Chrome/Edge 139 でフラグなし搭載済み。</p> <div class="meta"> <span>📅 2026年11月21日</span> <span>⏱ 約4分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="0"><p><code>border-radius</code> は長らく「角を丸める」唯一の手段で、形は常に真円の一部（円弧）だった。iOS 風のなめらかな角丸＝<strong>スクイクル（squircle）</strong>や面取り（bevel）、えぐれた角（scoop）を作るには、SVG の <code>clip-path</code>/<code>mask</code>、<code>figma-squircle</code> 等の JS ライブラリ、<code>border-image</code> といったハックが必要で、どれも「角のサイズが変わると破綻」「中身のクリップが面倒」「JS 計算が要る」弱点を抱えていた。<strong>CSS <code>corner-shape</code></strong> は、<code>border-radius</code> が丸める“その角”の曲線タイプ自体を差し替える新プロパティで、これらを純CSSで置き換える。</p>
+
+<h4 id="sec-1">値とジオメトリ：superellipse(k) の指数が形を決める</h4>
+<p>構文は <code>border-radius</code> と同じ 1〜4 値（1値＝全角、4値＝TL から時計回り）。キーワードは連続パラメータ <code>superellipse(k)</code> に対応づく——曲線 <code>|x|^(2k)+|y|^(2k)=1</code> の指数 k が、<strong>k=1 で真円、k=0 で直線（bevel）</strong>、2 付近で squircle、2超で直角寄り、負値で凹（scoop〜notch）になる。<code>superellipse(1.8)</code> のような中間値も書ける。</p>
+
+<figure class='fig'><svg viewBox='0 0 600 200' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <rect x='0' y='0' width='600' height='200' fill='#eff6ff' rx='10'></rect>
+  <text x='300' y='26' text-anchor='middle' font-size='13.5' font-weight='bold' fill='#1e3a8a'>キーワード ↔ superellipse(k)：k が角の“曲率タイプ”</text>
+  <g>
+    <path d='M44 150 L44 86 Q44 72 58 72 L104 72' fill='none' stroke='#2563eb' stroke-width='3'></path>
+    <text x='74' y='172' text-anchor='middle' font-size='11' fill='#1d4ed8'>round</text>
+    <text x='74' y='186' text-anchor='middle' font-size='9' fill='#64748b'>k=1</text>
+  </g>
+  <g>
+    <path d='M160 150 L160 100 Q160 72 200 72 L220 72' fill='none' stroke='#2563eb' stroke-width='3'></path>
+    <text x='190' y='172' text-anchor='middle' font-size='11' fill='#1d4ed8'>squircle</text>
+    <text x='190' y='186' text-anchor='middle' font-size='9' fill='#64748b'>k=2</text>
+  </g>
+  <g>
+    <path d='M276 150 L276 86 L336 72' fill='none' stroke='#2563eb' stroke-width='3'></path>
+    <text x='306' y='172' text-anchor='middle' font-size='11' fill='#1d4ed8'>bevel</text>
+    <text x='306' y='186' text-anchor='middle' font-size='9' fill='#64748b'>k=0</text>
+  </g>
+  <g>
+    <path d='M392 150 L392 86 Q438 86 452 72' fill='none' stroke='#2563eb' stroke-width='3'></path>
+    <text x='422' y='172' text-anchor='middle' font-size='11' fill='#1d4ed8'>scoop</text>
+    <text x='422' y='186' text-anchor='middle' font-size='9' fill='#64748b'>k=-1</text>
+  </g>
+  <g>
+    <path d='M508 150 L508 86 L516 86 L516 78 L560 72' fill='none' stroke='#2563eb' stroke-width='3'></path>
+    <text x='536' y='172' text-anchor='middle' font-size='11' fill='#1d4ed8'>notch</text>
+    <text x='536' y='186' text-anchor='middle' font-size='9' fill='#64748b'>k=-∞</text>
+  </g>
+</svg><figcaption>図1：同じ border-radius でも corner-shape（superellipse の指数 k）で角の曲率タイプが変わる。</figcaption></figure>
+
+<h4 id="sec-2">最重要の前提：border-radius が無いと一切効かない</h4>
+<p><code>corner-shape</code> は「<code>border-radius</code> が丸める角」を別カーブに<strong>置き換える</strong>プロパティなので、<strong>半径が 0 に解決されると置き換える対象が無く無反応</strong>になる（最頻出ミス）。役割分担は「半径の大きさ＝コーナーの“深さ”、<code>corner-shape</code>＝その“曲率タイプ”」と覚える。</p>
+
+<h4 id="sec-3">本題のアニメーション：transition を書くだけでモーフする</h4>
+<p>MDN の Animation type は各 longhand が「superellipse interpolation で補間」。キーワード同士の遷移もそれぞれの <code>superellipse()</code> 等価値に変換してなめらかに補間されるので、<code>transition: corner-shape .3s ease;</code> と書くだけで「bevel⇄squircle」が連続モーフする。<code>@keyframes</code> で曲率を脈動させるのも可。ただし端点が無限大（<code>square</code>＝∞ / <code>notch</code>＝−∞）を含む遷移は仕様の詳細が薄く要実機検証で、できれば有限値の <code>superellipse()</code> を端点に使うのが無難だ。</p>
+
+<pre><code>.card { border-radius: 24px; corner-shape: squircle; } /* = superellipse(2) */
+
+/* ホバーで bevel → squircle にモーフ */
+.btn {
+  border-radius: 18px;
+  corner-shape: bevel;                 /* = superellipse(0) */
+  transition: corner-shape .3s ease;   /* ← これが無いとモーフしない */
+}
+.btn:hover { corner-shape: squircle; }</code></pre>
+
+<h4 id="sec-4">対応状況と Next.js（App Router）での組み込み</h4>
+<p><strong>Chrome / Edge 139+（2025・フラグ不要）</strong>で動き、<strong>Safari・Firefox は未対応</strong>（2026年半ば時点）。非対応ブラウザは宣言を無視して素の丸角を表示＝自然縮退するので、<code>@supports (corner-shape: squircle){…}</code> で段階導入し、ベースは <code>border-radius</code> だけで成立させるのが鉄則だ。<strong>純CSSなので <code>'use client'</code> 不要・Server Component のまま</strong>使え、JS・ハイドレーション・追加バンドルはゼロ、レイアウトは <code>border-radius</code> で固定されるため CLS 0。曲率をサーバー側から出し分けたいときは CSS 変数で注入できる（<code>style={{ ['--k']: 1.8 }}</code> → <code>corner-shape: superellipse(var(--k))</code>）。Tailwind v4 なら <code>className="rounded-3xl [corner-shape:squircle]"</code> のように半径とセットで。</p>
+
+<h4 id="sec-5">ひとことまとめ</h4>
+<p>これまでの SVG マスク／JS squircle ライブラリを丸ごと置き換えられるのが実務的インパクト。ただし Chromium 限定なので<strong>ブランドアイコンの“squircle”をこれだけに依存させない</strong>こと——squircle は「対応ブラウザへのご褒美」と割り切り、<code>border-radius</code> の丸角で完成するデザインの上に <code>@supports</code> で重ねるのが安全だ。<code>prefers-reduced-motion</code> では形状の結果は見せつつ transition / animation だけ止める。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/Reference/Properties/corner-shape" target="_blank" rel="noopener noreferrer"> MDN — corner-shape </a> </li><li> <a href="https://www.smashingmagazine.com/2026/03/beyond-border-radius-css-corner-shape-property-ui/" target="_blank" rel="noopener noreferrer"> Smashing Magazine — Beyond border-radius: CSS corner-shape </a> </li><li> <a href="https://css-tricks.com/almanac/functions/s/superellipse/" target="_blank" rel="noopener noreferrer"> CSS-Tricks Almanac — superellipse() </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 値とジオメトリ：superellipse(k) の指数が形を決める </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 最重要の前提：border-radius が無いと一切効かない </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 本題のアニメーション：transition を書くだけでモーフする </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 対応状況と Next.js（App Router）での組み込み </a> </li><li> <a href="#sec-5" data-toc="sec-5"> ひとことまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-11-21</div> <div>⏱ 読了 約4分</div> <div>🏷 Next.js</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>

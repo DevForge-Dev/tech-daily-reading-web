@@ -1,0 +1,99 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Flutter 3.50.1 が stable 出荷 — あわせて物理シミュレーションアニメ（animateWith + SpringSimulation）でバネに運動を委ねる — デイリー技術深掘り 読み物</title><meta name="description" content="数日追ってきた 3.50.1 hotfix がついに stable 出荷（11/20・Dart 3.14.0 据え置き）。中身は回帰修正の寄せ集めで移行リスクは低め。ただし release-tracker #196743 は未更新のねじれあり。今日の技法は物理シミュレーション——AnimationController.animateWith(SpringSimulation) で duration を捨て、離した瞬間の速度を初速にバネで中心へ戻す。"><meta name="theme-color" content="#0277bd"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-21-flutter/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="Flutter 3.50.1 が stable 出荷 — あわせて物理シミュレーションアニメ（animateWith + SpringSimulation）でバネに運動を委ねる — デイリー技術深掘り 読み物"><meta property="og:description" content="数日追ってきた 3.50.1 hotfix がついに stable 出荷（11/20・Dart 3.14.0 据え置き）。中身は回帰修正の寄せ集めで移行リスクは低め。ただし release-tracker #196743 は未更新のねじれあり。今日の技法は物理シミュレーション——AnimationController.animateWith(SpringSimulation) で duration を捨て、離した瞬間の速度を初速にバネで中心へ戻す。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-21-flutter/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #29b6f6, #01579b)"> <span class="glyph" aria-hidden="true">◆</span> <div class="kicker">Flutter</div> <h1>Flutter 3.50.1 が stable 出荷 — あわせて物理シミュレーションアニメ（animateWith + SpringSimulation）でバネに運動を委ねる</h1> <p class="lede">数日追ってきた 3.50.1 hotfix がついに stable 出荷（11/20・Dart 3.14.0 据え置き）。中身は回帰修正の寄せ集めで移行リスクは低め。ただし release-tracker #196743 は未更新のねじれあり。今日の技法は物理シミュレーション——AnimationController.animateWith(SpringSimulation) で duration を捨て、離した瞬間の速度を初速にバネで中心へ戻す。</p> <div class="meta"> <span>📅 2026年11月21日</span> <span>⏱ 約5分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#0277bd"> <div> <article class="prose" data-has-mermaid="1"><p>リリースから。数日追ってきた <strong>3.50.1 hotfix がついに stable 出荷</strong>された（11/20・Dart 3.14.0 据え置き）。flutterreleases.com の stable 表に <code>3.50.1 / Dart 3.14.0 / 2026-11-20</code> 行が出現し、11/11 の 3.50.0 から約9日での hotfix。中身は<strong>回帰修正の寄せ集め</strong>（flutter_tools・Linux 描画・Android split-APK の versionCode offset など計11エントリ）で機能追加はなく、移行リスクは低めだ。ただし <strong>release-tracker #196743 は 11/21 時点でも OPEN・チェックリスト全項目未チェック</strong>というねじれがあり、「配布物は出ているが tracker は未更新」の状態——判断は flutterreleases / SDK Archive 側を一次として優先する。pin 基準は 3.50.0→3.50.1 へ更新可（<code>flutter upgrade</code>→<code>flutter analyze</code>→CI 緑を確認）。beta は <code>3.51.0-0.2.pre</code>（Dart 3.15.0）へ前進した。</p>
+
+<h4 id="sec-1">今日の技法：duration を捨て、運動をバネ物理に委ねる</h4>
+<p>これまでの Tween/Curve ベースは <code>duration</code> を固定して 0→1 を補間する。対して<strong>物理シミュレーションは「初速・質量・バネ定数から運動を解く」</strong>——自然な慣性・弾みを duration 無しで表現する。公式 cookbook「Animate a widget using a physics simulation」は、ドラッグして離したカードを<strong>離した瞬間の速度を初速に</strong>バネで中心へ戻す例だ。import は <code>package:flutter/physics.dart</code>。</p>
+
+<figure class='fig'><pre class='mermaid'>flowchart LR
+  A["Tween 版: controller.drive(AlignmentTween) + forward()"] --> B["controller.animateWith(simulation) に置換"]
+  B --> C["AnimationController(vsync: this) だけ = duration 不要"]
+  B --> D["SpringSimulation(spring, 0, 1, -初速)"]
+  D --> E["SpringDescription(mass, stiffness, damping) でバネの性格"]</pre><figcaption>図1：核心は drive+forward を animateWith(simulation) に置換すること。controller から duration が消える。</figcaption></figure>
+
+<p>肝は <strong><code>AnimationController.animateWith(Simulation)</code></strong>。公式いわく「シミュレーションを使うので controller の <code>duration</code> 引数はもう要らない」——<code>AnimationController(vsync: this)</code> だけで生成し、値の進行はシミュレーション側が決める。バネは <code>SpringDescription(mass, stiffness, damping)</code> の3値で性格が決まり、<code>SpringSimulation(spring, 開始値, 終了値, 初速)</code> に渡す。</p>
+
+<pre><code>const spring = SpringDescription(mass: 1, stiffness: 1, damping: 1);
+final simulation = SpringSimulation(spring, 0, 1, -unitVelocity);
+controller.animateWith(simulation); // duration なしの controller でOK</code></pre>
+
+<figure class='fig'><svg viewBox='0 0 600 160' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <rect x='0' y='0' width='600' height='160' fill='#ecfeff' rx='10'></rect>
+  <text x='300' y='26' text-anchor='middle' font-size='13.5' font-weight='bold' fill='#155e75'>ドラッグ速度 → 単位系へ正規化 → バネの初速</text>
+  <rect x='24' y='46' width='168' height='70' rx='8' fill='#fff' stroke='#67e8f9' stroke-width='2'></rect>
+  <text x='108' y='74' text-anchor='middle' font-size='10.5' fill='#0e7490'>onPanEnd の</text>
+  <text x='108' y='92' text-anchor='middle' font-size='10' fill='#334155'>velocity.pixelsPerSecond</text>
+  <text x='300' y='46' font-size='20' fill='#0891b2'></text>
+  <rect x='216' y='46' width='168' height='70' rx='8' fill='#fff' stroke='#22d3ee' stroke-width='2'></rect>
+  <text x='300' y='70' text-anchor='middle' font-size='10' fill='#334155'>dx/width, dy/height で</text>
+  <text x='300' y='88' text-anchor='middle' font-size='10' fill='#334155'>-1〜1 の Alignment 空間へ</text>
+  <text x='300' y='104' text-anchor='middle' font-size='9.5' fill='#0e7490'>.distance = unitVelocity</text>
+  <rect x='408' y='46' width='168' height='70' rx='8' fill='#cffafe' stroke='#0891b2' stroke-width='2'></rect>
+  <text x='492' y='74' text-anchor='middle' font-size='10.5' fill='#155e75'>SpringSimulation の</text>
+  <text x='492' y='92' text-anchor='middle' font-size='10.5' fill='#155e75'>初速に渡す</text>
+  <line x1='192' y1='81' x2='214' y2='81' stroke='#22d3ee' stroke-width='2'></line>
+  <line x1='384' y1='81' x2='406' y2='81' stroke='#22d3ee' stroke-width='2'></line>
+  <text x='300' y='142' text-anchor='middle' font-size='10' fill='#0e7490'>onPanDown で controller.stop()＝飛行中でも掴める</text>
+</svg><figcaption>図2：画面サイズ比で速度を正規化し、その distance をバネの初速にする。各 tick で listener が値を _dragAlignment へ写す。</figcaption></figure>
+
+<h4 id="sec-2">実務での使いどころ・注意点・併読</h4>
+<p>mass/stiffness/damping を手で決める代わりに <code>SpringDescription.withDurationAndBounce()</code>（尺と弾み具合から生成）が公式 tip。より宣言的に書きたいなら community の <code>flutter_physics</code>（<code>PhysicsController</code> 等）という別アプローチもある。ルーティング文脈では <code>go_router 18.1.1</code>（flutter.dev・Flutter Favorite）が、ボトムナビで各タブの状態を保つ定番として <code>StatefulShellRoute.indexedStack</code>（各ブランチが独立 Navigator を持ち、タブ切替で dispose されない／切替は <code>navigationShell.goBranch(index)</code>）を提供する——18.0.0 で <code>material_ui</code>/<code>cupertino_ui</code> へ移行し最低 Flutter 3.44 になった破壊的変更に注意。高度スクロールは <code>CustomScrollView</code> に sliver を並べ、<code>SliverAppBar</code> の <code>pinned</code>/<code>floating</code>/<code>snap</code>/<code>expandedHeight</code> で折りたたみヘッダ、<code>SliverList.builder</code> で可視分だけ遅延生成、が土台だ。</p>
+
+<h4 id="sec-3">ひとこと</h4>
+<p>3.50.1 は「回帰修正だけ」の安全な一段。アニメは、tap で決め打ちしたいなら Tween、ドラッグ&フリングの“手触り”が要るなら物理シミュレーション——<code>animateWith</code> で duration を手放す、と使い分けるのが指針になる。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://docs.flutter.dev/cookbook/animation/physics-simulation" target="_blank" rel="noopener noreferrer"> 物理シミュレーションでアニメーション（docs.flutter.dev） </a> </li><li> <a href="https://flutterreleases.com/flutter-versions/" target="_blank" rel="noopener noreferrer"> Flutter Versions（flutterreleases.com） </a> </li><li> <a href="https://pub.dev/packages/go_router" target="_blank" rel="noopener noreferrer"> go_router（pub.dev） </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 今日の技法：duration を捨て、運動をバネ物理に委ねる </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 実務での使いどころ・注意点・併読 </a> </li><li> <a href="#sec-3" data-toc="sec-3"> ひとこと </a> </li> </ul> <div class="reading-box"> <div>📅 2026-11-21</div> <div>⏱ 読了 約5分</div> <div>🏷 Flutter</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
