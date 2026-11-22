@@ -1,0 +1,103 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>11/22の話題リポジトリ — Rustでシェルごと置換 WinRust・クラウド非依存3Dプリンタ管理 prusa-connect・完全ローカル切り抜き neonclipping — デイリー技術深掘り 読み物</title><meta name="description" content="エージェント／スキル束に偏る当日トレンドの中で、増加率で突き抜けた純モメンタム3本を「解決したい課題」と「提供する機能」で読む。Rust×システム・Go×ハードウェア・Python×メディアと、言語もジャンルも見事に割れた顔ぶれ。共通点は、クラウドや巨大ランタイムに依存しない“手元で完結する実用”への回答であること。"><meta name="theme-color" content="#238636"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-22-github-trending/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="11/22の話題リポジトリ — Rustでシェルごと置換 WinRust・クラウド非依存3Dプリンタ管理 prusa-connect・完全ローカル切り抜き neonclipping — デイリー技術深掘り 読み物"><meta property="og:description" content="エージェント／スキル束に偏る当日トレンドの中で、増加率で突き抜けた純モメンタム3本を「解決したい課題」と「提供する機能」で読む。Rust×システム・Go×ハードウェア・Python×メディアと、言語もジャンルも見事に割れた顔ぶれ。共通点は、クラウドや巨大ランタイムに依存しない“手元で完結する実用”への回答であること。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-22-github-trending/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3fb950, #1a7f37)"> <span class="glyph" aria-hidden="true">★</span> <div class="kicker">GitHub Trending</div> <h1>11/22の話題リポジトリ — Rustでシェルごと置換 WinRust・クラウド非依存3Dプリンタ管理 prusa-connect・完全ローカル切り抜き neonclipping</h1> <p class="lede">エージェント／スキル束に偏る当日トレンドの中で、増加率で突き抜けた純モメンタム3本を「解決したい課題」と「提供する機能」で読む。Rust×システム・Go×ハードウェア・Python×メディアと、言語もジャンルも見事に割れた顔ぶれ。共通点は、クラウドや巨大ランタイムに依存しない“手元で完結する実用”への回答であること。</p> <div class="meta"> <span>📅 2026年11月22日</span> <span>⏱ 約5分</span> <span>🔗 出典 3 件</span> </div> </section> <div class="article-layout" style="--topic:#238636"> <div> <article class="prose" data-has-mermaid="0"><p>今日のモメンタム3本は、<strong>Rust のシェル置換・Go の3Dプリンタ管理サーバー・Python のローカル切り抜きエンジン</strong>と、言語もジャンルも綺麗に割れている。AI エージェント／スキル束に偏りがちな当日トレンドに対し、<strong>いずれも「解きたい課題」と「提供する機能」が明快で、かつ“クラウドや重いランタイムに依存せず手元で完結する”という共通の思想</strong>を持って増加率で突き抜けた。各リポを課題と機能に分けて読む（★数・forks は実行時の api.github.com 実測）。</p>
+
+<figure class='fig'><svg viewBox='0 0 600 230' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <rect x='0' y='0' width='600' height='230' fill='#f0fdf4' rx='10'></rect>
+  <text x='300' y='24' text-anchor='middle' font-size='14' font-weight='bold' fill='#166534'>解決したい課題 → 提供する機能</text>
+  <line x1='16' y1='38' x2='584' y2='38' stroke='#86efac'></line>
+  <text x='20' y='55' font-size='10.5' font-weight='bold' fill='#14532d'>owner/repo（言語・⭐）</text>
+  <text x='210' y='55' font-size='10.5' font-weight='bold' fill='#991b1b'>解決したい課題</text>
+  <text x='406' y='55' font-size='10.5' font-weight='bold' fill='#1e40af'>提供する機能</text>
+  <line x1='16' y1='63' x2='584' y2='63' stroke='#bbf7d0'></line>
+  <text x='20' y='86' font-size='10' fill='#0f172a'>Lemxy/WinRust</text>
+  <text x='20' y='101' font-size='8.5' fill='#64748b'>Rust ⭐約951</text>
+  <text x='210' y='82' font-size='9' fill='#334155'>Windows シェルが .NET/Electron</text>
+  <text x='210' y='95' font-size='9' fill='#334155'>依存で重く、刷新しづらい</text>
+  <text x='406' y='82' font-size='9' fill='#334155'>タスクバー/ファイラ/検索等を</text>
+  <text x='406' y='95' font-size='9' fill='#334155'>Rustネイティブ群で丸ごと置換</text>
+  <line x1='16' y1='112' x2='584' y2='112' stroke='#bbf7d0'></line>
+  <text x='20' y='135' font-size='10' fill='#0f172a'>prusa3d/</text>
+  <text x='20' y='148' font-size='10' fill='#0f172a'>prusa-connect</text>
+  <text x='20' y='163' font-size='8.5' fill='#64748b'>Go ⭐約275</text>
+  <text x='210' y='131' font-size='9' fill='#334155'>3Dプリンタ管理がクラウド</text>
+  <text x='210' y='144' font-size='9' fill='#334155'>前提＝データ主権が無い</text>
+  <text x='406' y='131' font-size='9' fill='#334155'>Web内蔵の単一Goバイナリで</text>
+  <text x='406' y='144' font-size='9' fill='#334155'>自己ホスト・全データを手元に</text>
+  <line x1='16' y1='176' x2='584' y2='176' stroke='#bbf7d0'></line>
+  <text x='20' y='199' font-size='10' fill='#0f172a'>iamajmeena/</text>
+  <text x='20' y='212' font-size='10' fill='#0f172a'>neonclipping</text>
+  <text x='20' y='225' font-size='8.5' fill='#64748b'>Python ⭐約1.7k</text>
+  <text x='210' y='195' font-size='9' fill='#334155'>切り抜き作成がクラウド課金/</text>
+  <text x='210' y='208' font-size='9' fill='#334155'>Docker等で手間・コスト大</text>
+  <text x='406' y='195' font-size='9' fill='#334155'>リンク貼付→約2分で字幕付き</text>
+  <text x='406' y='208' font-size='9' fill='#334155'>9:16クリップを完全ローカル生成</text>
+</svg><figcaption>図1：3本の「課題→機能」を一望。いずれも“外部サービスに預けず手元で完結する”点で一致している。</figcaption></figure>
+
+<h4 id="sec-1">Lemxy/WinRust（Rust・⭐約951）</h4>
+<p><strong>解決したい課題：</strong>Windows のシェル周辺（タスクバー・ファイルマネージャ・検索・タスクマネージャ等）は <code>.NET</code> や Electron に依存し、重く刷新しづらい。<strong>提供する機能：</strong>これらのシェル要素を <strong>Rust 製のネイティブ小型プログラム群で丸ごと置き換える</strong>——タスクバー・ファイルマネージャ・NTFS 全文検索・タスクマネージャ・ディスククリーナ／ディスクマップ／画像ビューアを <code>.NET</code> も Electron も使わずに提供し、1つのインストーラで選択導入・1ボタンで全撤去、導入前に復元ポイントを作る。<strong>なぜ今急上昇：</strong>created 2026-11-17＝作成約5日で⭐約951（日平均約190★）。「Electron/.NET 疲れ」への回答を<strong>“Rust でシェルごと置換”まで振り切った新規性</strong>で急伸した。希少な Rust×非AIシステム領域の多様性枠。forks49／open issues38 と実体もある。ただし README は<strong>未署名 exe で SmartScreen 警告が出る・Explorer をシェル置換するため本番機より VM/予備機推奨</strong>と明記＝検証用途向き。Apache-2.0（商用可）。</p>
+
+<h4 id="sec-2">prusa3d/prusa-connect（Go・⭐約275）</h4>
+<p><strong>解決したい課題：</strong>3D プリンタの管理はクラウドサービス前提が多く、アカウント・印刷履歴・ファイルが外部に預けられて<strong>データ主権が無い</strong>。<strong>提供する機能：</strong>Prusa Research 公式による<strong>クラウド非依存・自己ホスト型のローカルサーバー</strong>。Web アプリ内蔵の<strong>単一 Go バイナリ</strong>で Linux／Windows／macOS／Raspberry Pi で起動し、アカウント・プリンタ・印刷履歴・印刷ファイルをすべて自分のマシンに保持する。<strong>なぜ今急上昇：</strong>created 2026-11-17＝約5日で⭐約275（日平均約55★）。公式が「Bring your own hardware. We bring the REST.」を掲げ、<strong>ローカル完結の運用</strong>を打ち出した点が支持された。エージェント一色のトレンドで希少な Go×非AIハードウェア/IoT の多様性枠。open issues43 と活発。※ライセンスは独自（OCL v1.1＋NoSaaS 等）で <strong>SaaS/商用組込は要確認</strong>。</p>
+
+<h4 id="sec-3">iamajmeena/neonclipping（Python・⭐約1.7k）</h4>
+<p><strong>解決したい課題：</strong>長尺配信から縦型クリップを作る作業は、OpusClip のようなクラウド課金や Docker 系クリッパーのセットアップなど<strong>手間とコストが大きい</strong>。<strong>提供する機能：</strong>YouTube／Twitch／Kick のリンク（または手持ち MP4）を貼るだけで、<strong>約2分・完全ローカルで字幕付き 9:16 縦型クリップ（タイトル/フック付き）を自動生成</strong>する OSS クリッピングエンジン。<code>faster-whisper</code>／<code>ffmpeg</code>／ローカル LLM（Ollama）構成で、アカウント／サブスク／アップロード不要・API コストゼロ。<strong>なぜ今急上昇：</strong>created 2026-11-19＝作成約3日で⭐約1.7k（<strong>日平均約577★＝当日最速級</strong>）。85分の配信を97秒・100%ローカル・課金ゼロで切り出せる速度と、クラウド課金クリッパーに対する「<strong>ローカル完結・ワンクリック導入</strong>」の明快な差別化が拡散理由。MIT（商用可）。</p>
+
+<h4 id="sec-4">まとめ：自分が試すなら</h4>
+<p>無人リサーチ運用の視点で一番手を出しやすいのは <strong>neonclipping</strong>——完全ローカル・API 課金ゼロで動くので、手持ちの長尺素材で“切り抜き自動化”の下限品質を測るのに向く。<strong>prusa-connect</strong> は「単一 Go バイナリ＋Web UI 内蔵で自己ホスト」という配布形態そのものが、自作ツールを誰でも立ち上げられる形で配る良い手本だ。<strong>WinRust</strong> は本番機で動かすものではないが、<strong>Rust でネイティブ GUI 群を束ねて1インストーラにまとめる</strong>構成の参照になる。3本とも許容的ライセンス（Apache-2.0／MIT／独自）だが、prusa-connect だけは SaaS/商用組込の条件を読んでから触ること。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://github.com/Lemxy/WinRust" target="_blank" rel="noopener noreferrer"> Lemxy/WinRust </a> </li><li> <a href="https://github.com/prusa3d/prusa-connect" target="_blank" rel="noopener noreferrer"> prusa3d/prusa-connect </a> </li><li> <a href="https://github.com/iamajmeena/neonclipping" target="_blank" rel="noopener noreferrer"> iamajmeena/neonclipping </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> Lemxy/WinRust（Rust・⭐約951） </a> </li><li> <a href="#sec-2" data-toc="sec-2"> prusa3d/prusa-connect（Go・⭐約275） </a> </li><li> <a href="#sec-3" data-toc="sec-3"> iamajmeena/neonclipping（Python・⭐約1.7k） </a> </li><li> <a href="#sec-4" data-toc="sec-4"> まとめ：自分が試すなら </a> </li> </ul> <div class="reading-box"> <div>📅 2026-11-22</div> <div>⏱ 読了 約5分</div> <div>🏷 GitHub Trending</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
