@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-11-22T04:51:01.282848Z",
+  "generatedAt": "2026-11-23T04:50:45.921Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,110 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-11-23-claude-code",
+      "date": "2026-11-23",
+      "topic": "Claude Code",
+      "title": "11/23も新リリースなし — v2.1.330据え置き3日目に効く「信頼性・認証」修正、computer use の macOS 安全強化、/code-review と /simplify の分離",
+      "lede": "新機能ゼロの日こそ、長時間セッションと無人の自動実行に効く地味な修正を読む。Keychain・~/.claude.json・HTTP MCP 自動再接続・octet-stream 問題と、computer use の安全ルール更新、そしてレビューコマンドの責務分離。",
+      "articleHtml": "<p>週末から週明けにかけて Claude Code の新規リリースはなく、npm の <code>latest</code> は 2026-11-20 公開の <strong>v2.1.330</strong> が3日連続で据え置き（<code>stable</code>=v2.1.323 / <code>next</code>=v2.1.330）。版が動かない日ほど、CHANGELOG に積まれた「地味だが運用に効く」修正を拾っておきたい。今日はその棚卸し。</p>\n<h4>信頼性・認証まわり（v2.1.329 中心）</h4>\n<p>長時間セッションと日次自動実行に効く修正が集中している。macOS で Keychain を読めても保存できない環境での「繰り返しサインアウト」を修正し、該当セッションだけ期限切れで停止して理由を表示、他セッションのサインインは維持するようになった。ネットワーク断やファイルロックで <code>~/.claude.json</code> が読めず既定値にリセットされる問題、トークン更新中に認証解除された MCP が再サインインされる問題、低速再接続後に固まった HTTP MCP の自動再接続も入った。さらに、MCP やサイトが <code>application/octet-stream</code> で送る PDF・画像・Office 文書が <code>.bin</code> として保存され Claude から読めない問題、Code Mode が大きなテキストを保持し続けるメモリリークも修正。CI やスケジュール実行で「夜中に静かに壊れる」類の不具合が多く、無人運用ほど効く。</p>\n<figure class='fig'><svg viewBox='0 0 600 230' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n<rect x='0' y='0' width='600' height='230' fill='#fff7ed'/>\n<rect x='20' y='20' width='270' height='190' rx='10' fill='#ffffff' stroke='#f59e0b' stroke-width='2'/>\n<rect x='310' y='20' width='270' height='190' rx='10' fill='#ffffff' stroke='#f59e0b' stroke-width='2'/>\n<text x='155' y='48' text-anchor='middle' font-size='16' font-weight='bold' fill='#b45309'>/code-review</text>\n<text x='445' y='48' text-anchor='middle' font-size='16' font-weight='bold' fill='#b45309'>/simplify</text>\n<line x1='35' y1='60' x2='275' y2='60' stroke='#fcd34d'/>\n<line x1='325' y1='60' x2='565' y2='60' stroke='#fcd34d'/>\n<text x='35' y='86' font-size='12' fill='#78350f'>・バグの検出</text>\n<text x='35' y='110' font-size='12' fill='#78350f'>・CLAUDE.md 違反</text>\n<text x='35' y='142' font-size='11' fill='#92400e'>指摘を Important /</text>\n<text x='35' y='160' font-size='11' fill='#92400e'>Pre-existing / Nit で分類</text>\n<text x='35' y='190' font-size='11' fill='#92400e'>PR番号 → gh pr diff で読む</text>\n<text x='325' y='86' font-size='12' fill='#78350f'>・再利用性</text>\n<text x='325' y='110' font-size='12' fill='#78350f'>・簡潔化 / 効率</text>\n<text x='325' y='142' font-size='11' fill='#92400e'>コードのクリーンアップ</text>\n<text x='325' y='160' font-size='11' fill='#92400e'>提案に専念</text>\n<text x='325' y='190' font-size='11' fill='#92400e'>v2.1.328〜329 で分離</text>\n</svg><figcaption>図1：レビュー系コマンドの責務分離。バグ検出は /code-review、整理提案は /simplify へ。</figcaption></figure>\n<h4>computer use の macOS 安全強化</h4>\n<p>デスクトップ操作（computer use）のガードレールも段階的に強まった。v2.1.328 で承認ダイアログが「各アプリの持つアクセス権レベル」と平易な警告を表示するようになり、v2.1.329 で macOS 版を新しい安全ルールへ更新——一部操作を拒否し、一部アプリの権限を縮小、さらにアプリ起動が30秒で完了しなければ打ち切る（ハング回避）。Cowork やデスクトップ版で画面操作を使う運用では挙動が変わりうるので把握しておきたい。</p>\n<h4>/code-review と /simplify の分離</h4>\n<p>レビュー系コマンドの責務が切り分けられた。多くのモデルで <code>/code-review</code> は「バグ」と「CLAUDE.md 違反」のみを報告し、再利用性・簡潔化・効率のクリーンアップは新コマンド <code>/simplify</code> へ移動。指摘は Important / Pre-existing / Nit で分類され末尾に修正案が付き、問題がなければ「Code review found no issues.」。<code>/code-review &lt;PR番号&gt;</code> はチェックアウト中の枝ではなく <code>gh pr diff</code> で対象 PR を読むよう修正され、対象省略時は既定ブランチ比較でブランチ全体をレビューする。</p>\n<h4>試すなら・注意点</h4>\n<p>この読み物生成のように無人で長く走る構成では、v2.1.329 以降へ上げておくと Keychain / MCP 再接続まわりの事故が減る。レビュー運用は「バグ検出は /code-review、整理は /simplify」と口癖を分けるのが移行の近道。ただし公式ドキュメントは CHANGELOG に対して遅延があるため、修正の有無は GitHub の一次 CHANGELOG と npm dist-tags で裏取りするのが安全。computer use の安全ルール更新で、これまで通っていた操作が拒否されるケースもある。</p>\n<h4>ひとことまとめ</h4>\n<p>「新バージョンなし」は「変化なし」ではない。無人運用の足回り（認証・MCP 再接続・メモリ）とレビュー導線が静かに良くなった日。</p>",
+      "sources": [
+        {
+          "title": "Claude Code CHANGELOG.md（GitHub・一次）",
+          "url": "https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md"
+        },
+        {
+          "title": "Claude Code changelog（公式docs）",
+          "url": "https://code.claude.com/docs/en/changelog"
+        },
+        {
+          "title": "Claude Code releases（GitHub）",
+          "url": "https://github.com/anthropics/claude-code/releases"
+        }
+      ]
+    },
+    {
+      "id": "2026-11-23-nextjs",
+      "date": "2026-11-23",
+      "topic": "Next.js",
+      "title": "純CSSだけのグリッチ／RGBずれテキスト — Server Component のまま動く「数少ない全部盛り」と、光過敏性(PSE)という本題",
+      "lede": "見出しを信号ノイズのように震わせるサイバーパンク定番。依存ゼロ・'use client' 不要で App Router と相性抜群だが、WCAG 2.3.1「3回点滅」に正面衝突しうる唯一クラスの装飾。閾値を知っているかで差が出る。",
+      "articleHtml": "<p>同じ文字を複数レイヤーに複製し、色と位置をずらして「信号が乱れたように震える」グリッチ表現。SplitText やスクランブルのような“文字を動かす系”とは別軸で、構造はシンプルだ。純CSSで書けるため <strong>Server Component のまま</strong>動き、<code>'use client'</code> もハイドレーションも不要——INP/CLS を汚さず Next.js App Router と相性が良い“数少ない安全な全部盛り”。ただし本題は見た目ではなく、点滅＝光過敏性発作(PSE)のリスク制御にある。</p>\n<h4>仕組み（3レイヤー＋スライス帯）</h4>\n<p>王道実装は3ステップ。(1) <code>data-text</code> 属性に本文と同じ値を持たせ、<code>::before</code>/<code>::after</code> の <code>content: attr(data-text)</code> で同じ文字を2枚複製。(2) 2枚に別色を与える（<code>::before</code>=シアン #0ff、<code>::after</code>=マゼンタ #f0f、本体は白）。暗背景なら <code>mix-blend-mode: screen</code> で色収差らしく発光する。(3) 各コピーを <code>clip-path: inset()</code> で横帯に切り、<code>transform: translate()</code> で小刻みにずらす。ここで <code>animation: ... steps(2)</code> と<strong>コマ送り</strong>にするのが“デジタルノイズ”感の正体で、滑らかに補間してはいけない。2枚を別周期・別 steps にすると非同期に暴れてリッチになる。</p>\n<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='monospace'>\n<rect x='0' y='0' width='600' height='210' fill='#0b0f1a'/>\n<rect x='150' y='66' width='300' height='12' fill='#ffffff' opacity='0.07'/>\n<text x='150' y='96' font-size='52' font-weight='bold' fill='#00ffff' opacity='0.9'>GLITCH</text>\n<text x='162' y='104' font-size='52' font-weight='bold' fill='#ff00ff' opacity='0.9'>GLITCH</text>\n<text x='156' y='100' font-size='52' font-weight='bold' fill='#ffffff'>GLITCH</text>\n<text x='40' y='146' font-size='12' fill='#00ffff'>::before  color:#0ff  translate(-6px,-4px)</text>\n<text x='40' y='168' font-size='12' fill='#ff00ff'>::after   color:#f0f  translate(+6px,+4px)</text>\n<text x='40' y='190' font-size='12' fill='#e5e7eb'>本体     color:#fff（DOMに実在・SR可）</text>\n</svg><figcaption>図1：同じ文字を3枚重ね、シアン／マゼンタのコピーを逆方向へずらす。clip-path で横帯に切り steps() でコマ送りにする。</figcaption></figure>\n<h4>対応状況</h4>\n<p><code>clip-path</code>・<code>mix-blend-mode</code>・<code>content: attr()</code>・<code>steps()</code>・<code>prefers-reduced-motion</code> はいずれも全モダンブラウザで Baseline。検出もフォールバックも不要で、色を滑らかに補間したいとき“だけ” <code>@property</code> を併用する。</p>\n<h4>本題：光過敏性(PSE)と WCAG の閾値</h4>\n<p>装飾グリッチは容易に「点滅」になり、WCAG 2.3.1（3回点滅以下）に触れる。覚えておく数値は、(a) <strong>毎秒3回超(&gt;3Hz)が危険域</strong>（Section 508 は 3〜55Hz を禁止、発作誘発は 5〜30Hz が多い）、(b) 相対輝度が最大の10%以上変化する点滅、とくに<strong>飽和赤への遷移は輝度に関係なく危険</strong>、(c) 点滅面積が<strong>画面の約25%</strong>（中心視野約10度）を超えると危険度が跳ねる。つまり「小さく・低コントラスト・飽和赤を避ける」ほど安全。</p>\n<figure class='fig'><svg viewBox='0 0 600 185' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n<rect x='0' y='0' width='600' height='185' fill='#fef2f2'/>\n<text x='300' y='30' text-anchor='middle' font-size='14' font-weight='bold' fill='#991b1b'>グリッチで触れる3つの危険域（安全側＝数値を小さく）</text>\n<rect x='30' y='48' width='175' height='110' rx='8' fill='#fff' stroke='#fca5a5'/>\n<rect x='212' y='48' width='175' height='110' rx='8' fill='#fff' stroke='#fca5a5'/>\n<rect x='394' y='48' width='176' height='110' rx='8' fill='#fff' stroke='#fca5a5'/>\n<g font-size='12' fill='#7f1d1d'>\n<text x='117' y='74' text-anchor='middle' font-weight='bold'>点滅頻度</text>\n<text x='117' y='102' text-anchor='middle'>&gt;3Hz が危険域</text>\n<text x='117' y='126' text-anchor='middle'>誘発は 5〜30Hz</text>\n<text x='299' y='74' text-anchor='middle' font-weight='bold'>輝度 / 色</text>\n<text x='299' y='102' text-anchor='middle'>最大の10%以上変化</text>\n<text x='299' y='126' text-anchor='middle'>飽和赤は輝度無関係に×</text>\n<text x='482' y='74' text-anchor='middle' font-weight='bold'>面積</text>\n<text x='482' y='102' text-anchor='middle'>画面の約25%超で</text>\n<text x='482' y='126' text-anchor='middle'>危険度が跳ねる</text>\n</g>\n</svg><figcaption>図2：WCAG 2.3.1 が関わる点滅の目安。小さく・低コントラスト・飽和赤回避・既定オフが安全マージンを稼ぐ。</figcaption></figure>\n<h4>Next.js での組み込みと a11y</h4>\n<p>純CSSグリッチは RSC のまま、CSS クラスを当てるだけ。<code>data-text</code> はSSRでそのまま出力されるのでハイドレーション不一致も起きず、<code>use cache</code>/ISR にも無干渉。安全側の設計は<strong>既定オフ</strong>——<code>[data-motion=\"on\"] .glitch::before{ animation:... }</code> のようにオプトインで初めて動かし、小さな <code>'use client'</code> 島でトグルする。OS の低モーション設定は必ず尊重する：</p>\n<pre><code>@media (prefers-reduced-motion: reduce){\n  .glitch::before,.glitch::after{ animation:none !important; }\n}</code></pre>\n<h4>落とし穴とまとめ</h4>\n<p>擬似要素はスクリーンリーダーに読まれず選択もできないが、本体テキストが DOM に実在するので情報は伝わる（装飾を唯一の伝達手段にしない原則を自然に満たす）。<code>0.2〜0.4s</code> の常時ループは“カクつき点滅”になりやすいので、ホバー時だけ・短時間1回に寄せ、公開前に PEAT で点滅チェック。見た目はド派手でも、設計の8割は「どこまで激しくしてよいか」の線引きだ。</p>",
+      "sources": [
+        {
+          "title": "MDN — Web accessibility for seizures and physical reactions",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/Accessibility/Guides/Seizure_disorders"
+        },
+        {
+          "title": "web.dev — Animation and motion",
+          "url": "https://web.dev/learn/accessibility/motion"
+        },
+        {
+          "title": "W3C WCAG — Understanding 2.3.1 Three Flashes or Below Threshold",
+          "url": "https://www.w3.org/WAI/WCAG21/Understanding/three-flashes-or-below-threshold.html"
+        },
+        {
+          "title": "MDN — prefers-reduced-motion",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion"
+        },
+        {
+          "title": "MDN — clip-path",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/CSS/clip-path"
+        },
+        {
+          "title": "PEAT（光過敏性チェッカー）",
+          "url": "https://trace.umd.edu/peat/"
+        }
+      ]
+    },
+    {
+      "id": "2026-11-23-flutter",
+      "date": "2026-11-23",
+      "topic": "Flutter",
+      "title": "派手な新機能はない日のFlutter足回り点検 — 描画エンジン Impeller、不変モデル freezed 4.0、再生専用 lottie。「配布は先行・tracker は未更新」のリリース状況も",
+      "lede": "stable 3.50.1 / beta 3.51.0-0.2.pre は据え置き、hotfix tracker は「配布済みなのに publish 欄が空欄」の常態化。版が動かない日なので、定番パッケージとエンジンの現在地を読み直す。",
+      "articleHtml": "<p>今日の Flutter は版の動きがない。stable は <strong>3.50.1 / Dart 3.14.0</strong>、beta は <strong>3.51.0-0.2.pre / Dart 3.15.0</strong> で据え置き、hotfix の tracker（#196743 / #196929）は「配布物は出たのに Validate and publish 欄が全未チェック」の stale が続く。結論はシンプルで、<strong>出荷シグナルに tracker を使わない</strong>——一次情報は flutterreleases / SDK Archive / flutter-announce を優先する。版が動かない日なので、足回りの定番3点を読み直す。</p>\n<h4>描画エンジン Impeller — SkSL warm-up 時代の終わり</h4>\n<p>Impeller は Skia に代わる新レンダリング runtime で、設計の肝は<strong>シェーダをエンジンビルド時に事前コンパイル</strong>すること。従来 Skia は実行時にシェーダをコンパイルし初回表示で jank（カクつき）を生みがちだったが、Impeller は事前コンパイル済みで描画が予測可能になる。既定状況は、iOS/Android(API 29+) が 3.27 から既定、<strong>iOS は Skia に戻せない唯一エンジン</strong>、Vulkan 非対応や API&lt;29 の Android は legacy OpenGL へ自動退避、macOS/Linux/Windows は 3.47 で既定（将来 opt-out 廃止予定）、web はまだ Skia。実務インパクトは、Skia 時代に初回 jank を手当てした <code>--bundle-sksl-path</code> などの <strong>SkSL warm-up が役目を終える</strong>こと。残るコストは raster thread 側＝<code>saveLayer</code>・過剰な半透明・ブラー・AA で、計測は DevTools の Performance view で続ける。</p>\n<figure class='fig'><svg viewBox='0 0 600 220' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n<rect x='0' y='0' width='600' height='220' fill='#eff6ff'/>\n<text x='300' y='28' text-anchor='middle' font-size='14' font-weight='bold' fill='#1e3a8a'>シェーダのコンパイルはいつ起きるか</text>\n<text x='30' y='66' font-size='13' font-weight='bold' fill='#991b1b'>Skia（旧）</text>\n<rect x='30' y='76' width='380' height='26' fill='#fecaca' stroke='#ef4444'/>\n<text x='220' y='94' text-anchor='middle' font-size='12' fill='#7f1d1d'>実行時にコンパイル → 初回表示で jank</text>\n<rect x='410' y='76' width='160' height='26' fill='#ffffff' stroke='#cbd5e1'/>\n<text x='490' y='94' text-anchor='middle' font-size='11' fill='#334155'>以降は描画</text>\n<text x='30' y='140' font-size='13' font-weight='bold' fill='#166534'>Impeller（新）</text>\n<rect x='30' y='150' width='150' height='26' fill='#bbf7d0' stroke='#22c55e'/>\n<text x='105' y='168' text-anchor='middle' font-size='11' fill='#14532d'>ビルド時に事前</text>\n<rect x='180' y='150' width='390' height='26' fill='#ffffff' stroke='#cbd5e1'/>\n<text x='375' y='168' text-anchor='middle' font-size='12' fill='#334155'>実行時はコンパイルなし＝予測可能な描画</text>\n<text x='30' y='204' font-size='10.5' fill='#475569'>→ SkSL warm-up(--bundle-sksl-path)は役目終了。残コストは raster: saveLayer/ブラー/AA</text>\n</svg><figcaption>図1：Impeller はシェーダをエンジンビルド時に事前コンパイルし、実行時のコンパイル jank を潰す。</figcaption></figure>\n<h4>不変モデル freezed 4.0 — primary constructors 対応</h4>\n<p>状態管理で載せる immutable モデルの定番 <code>freezed</code>（Riverpod と同じ Remi Rousselet 作）は、<code>@freezed abstract class X with _$X</code> ＋ factory から <code>copyWith</code>/<code>==</code>/<code>hashCode</code>/<code>toString</code>/<code>fromJson</code> を自動生成する。バージョン史が要点で、<strong>3.0.0 で <code>map</code>/<code>when</code> を削除</strong>して Dart 3 の <code>switch</code> パターンマッチへ寄せた後、移行緩和で 3.1.0 に復活、<strong>4.0.0(2026-08) で primary constructors に対応</strong>。4.0.0 の breaking は「コンストラクタ引数内の <code>final</code> キーワード廃止」（Dart 3.13 が構文を許可しなくなったため）。sealed union は各 factory がサブクラス化し、ネイティブ <code>switch</code>/<code>if-case</code> で網羅分岐できる。</p>\n<h4>再生専用 lottie と、Rive との対比</h4>\n<p>アニメーションでは <code>lottie 3.8.2</code>（After Effects 由来の JSON を純 Dart で“再生”する player）。前回扱った Rive が入力で分岐する state machine なのに対し、<strong>Lottie は決め打ち再生</strong>（分岐なし）。描画コストの要は v3.0 の <code>renderCache</code>（<code>RenderCache.raster</code> でフレームをビットマップ化＝同一アニメ多数で CPU/GPU 削減・メモリ増）と <code>frameRate</code> の間引き。実行時の色/位置差し替えは <code>LottieDelegates</code>/<code>ValueDelegate</code>、3.7.0 で slots 対応。最低 SDK は Flutter 3.47 / Dart 3.13 へ引き上げ。</p>\n<h4>ひとことまとめ</h4>\n<p>新機能ゼロの日は“土台”を確認する日。iOS は Impeller 固定で SkSL warm-up は過去、状態モデルは freezed 4.0、再生専用アニメは lottie の renderCache。そして tracker ではなく配布物を信じる。</p>",
+      "sources": [
+        {
+          "title": "Impeller rendering engine（docs.flutter.dev）",
+          "url": "https://docs.flutter.dev/perf/impeller"
+        },
+        {
+          "title": "freezed（pub.dev）",
+          "url": "https://pub.dev/packages/freezed"
+        },
+        {
+          "title": "lottie（pub.dev）",
+          "url": "https://pub.dev/packages/lottie"
+        },
+        {
+          "title": "Flutter Versions（flutterreleases.com）",
+          "url": "https://flutterreleases.com/flutter-versions/"
+        }
+      ]
+    },
+    {
+      "id": "2026-11-23-github-trending",
+      "date": "2026-11-23",
+      "topic": "GitHub Trending",
+      "title": "11/23の話題リポジトリ — Rustでホットパスだけ移植 fast-anything・リーマン予想のLean検証・ピクセル×ガウシアンスプラット",
+      "lede": "エージェント／スキル束一色のトレンドの中で、言語もジャンルも尖った純「急上昇」3本。Rust の開発ツール、数学の形式検証、ブラウザ創作グラフィックス。",
+      "articleHtml": "<p>この日の GitHub トレンドは AI エージェントやスキル束が上位を占めたが、その中で言語もジャンルも異なる“純粋な急上昇”が3本立った。共通点は「大きな流行語に乗らず、具体的な一点突破で数日のうちに数百〜千★を集めた」こと。Rust の開発ツール、数学の形式検証、ブラウザ創作ツールという多様性枠として読む。</p>\n<figure class='fig'><svg viewBox='0 0 620 240' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n<rect x='0' y='0' width='620' height='240' fill='#f0fdf4'/>\n<rect x='15' y='15' width='150' height='34' fill='#166534'/>\n<rect x='165' y='15' width='215' height='34' fill='#166534'/>\n<rect x='380' y='15' width='225' height='34' fill='#166534'/>\n<text x='90' y='37' text-anchor='middle' fill='#fff' font-weight='bold' font-size='12'>リポジトリ</text>\n<text x='272' y='37' text-anchor='middle' fill='#fff' font-weight='bold' font-size='12'>解決したい課題</text>\n<text x='492' y='37' text-anchor='middle' fill='#fff' font-weight='bold' font-size='12'>提供する機能</text>\n<rect x='15' y='49' width='150' height='60' fill='#fff' stroke='#86efac'/>\n<rect x='165' y='49' width='215' height='60' fill='#fff' stroke='#86efac'/>\n<rect x='380' y='49' width='225' height='60' fill='#fff' stroke='#86efac'/>\n<text x='22' y='74' fill='#14532d' font-weight='bold' font-size='11'>fast-anything</text>\n<text x='22' y='92' fill='#3f6212' font-size='10'>Rust ⭐1,824</text>\n<text x='172' y='72' fill='#334155' font-size='10'>全部Rust移植は重い。遅さは</text>\n<text x='172' y='90' fill='#334155' font-size='10'>一部ホット関数に集中</text>\n<text x='387' y='72' fill='#334155' font-size='10'>遅い5%だけ移植し、</text>\n<text x='387' y='90' fill='#334155' font-size='10'>等価性をテストで証明</text>\n<rect x='15' y='109' width='150' height='60' fill='#fff' stroke='#86efac'/>\n<rect x='165' y='109' width='215' height='60' fill='#fff' stroke='#86efac'/>\n<rect x='380' y='109' width='225' height='60' fill='#fff' stroke='#86efac'/>\n<text x='22' y='134' fill='#14532d' font-weight='bold' font-size='11'>riemann-hypothesis</text>\n<text x='22' y='152' fill='#3f6212' font-size='10'>Lean ⭐605</text>\n<text x='172' y='132' fill='#334155' font-size='10'>リーマン予想のLean形式化を</text>\n<text x='172' y='150' fill='#334155' font-size='10'>人は目視で保証できない</text>\n<text x='387' y='132' fill='#334155' font-size='10'>機械チェック可能な</text>\n<text x='387' y='150' fill='#334155' font-size='10'>独立検証(Comparator)環境</text>\n<rect x='15' y='169' width='150' height='60' fill='#fff' stroke='#86efac'/>\n<rect x='165' y='169' width='215' height='60' fill='#fff' stroke='#86efac'/>\n<rect x='380' y='169' width='225' height='60' fill='#fff' stroke='#86efac'/>\n<text x='22' y='194' fill='#14532d' font-weight='bold' font-size='11'>ink-studio</text>\n<text x='22' y='212' fill='#3f6212' font-size='10'>JS ⭐1,028</text>\n<text x='172' y='192' fill='#334155' font-size='10'>AI生成一辺倒で「手で造る」</text>\n<text x='172' y='210' fill='#334155' font-size='10'>創作の場が乏しい</text>\n<text x='387' y='192' fill='#334155' font-size='10'>ピクセル×ガウシアン</text>\n<text x='387' y='210' fill='#334155' font-size='10'>スプラットの造形toolkit</text>\n</svg><figcaption>図1：この日の急上昇3本を「解決したい課題 → 提供する機能」で一望。</figcaption></figure>\n<h4>EL4CTEO/fast-anything（Rust・⭐約1,824）</h4>\n<p><strong>解決したい課題：</strong>「速くしたいから全部 Rust で書き直す」は現実にはコストもリスクも重すぎる。Python/Node/Ruby アプリの遅さは往々にして一部のホット関数に集中しているのに、全面移植は工数が大きい。<strong>提供する機能：</strong>アプリをプロファイルして“遅い5%”の関数だけをコーディングエージェントで Rust に移植し（napi-rs/pyo3/FFI）、移植前後の挙動が等価であることをテストで証明する。「速くなったが壊れていない」をデータで担保するのが肝。作成約2日で日平均約912★＝当日最速級、MIT。既出の全面 Rust 移行系と違う“部分最適”の新規性で急伸した。</p>\n<h4>leanprover-community/riemann-hypothesis（Lean・⭐約605）</h4>\n<p><strong>解決したい課題：</strong>2026-11-20 に発表されたリーマン予想の Lean 形式化（Alpöge）は、人間が目視で正しさを保証しきれない。<strong>提供する機能：</strong>その証明を機械チェック可能な形で独立検証する Comparator 環境を leanprover-community 公式で用意する。open issues は96と極めて活発で、「AI/計算機 × 数学・定理証明」の話題性で作成約3日・日平均約200★。Lean という希少言語 × 形式検証ジャンルの多様性枠で、話題性ドリブンの急上昇。</p>\n<h4>siliconjungle/shapeshift-labs-ink-studio（JavaScript・⭐約1,028）</h4>\n<p><strong>解決したい課題：</strong>生成 AI 一辺倒のトレンドの中で、「手で造る」グラフィックス表現の場が乏しい。<strong>提供する機能：</strong>ピクセルアートとガウシアンスプラットを掛け合わせ、ブラウザ上で点群的な3D風表現を彫刻・アニメーション・シミュレーションできる toolkit。JS/MIT、作成約7日で日平均約147★。AI 生成でない創作ツールとしての新規性でグラフィックス多様性枠として伸びた。</p>\n<h4>試すなら・まとめ</h4>\n<p>自分の開発に最も近いのは fast-anything——「遅い5%だけ移植して等価検証」という考え方は、Rust を使わなくても“計測してから最適化”の規律として流用できる。残り2本は直接使うより「Lean での形式検証」「ブラウザ創作ツール」という引き出しとして持っておく。流行語に乗らず一点突破した3本、という読み方がこの日のトレンドの芯だ。</p>",
+      "sources": [
+        {
+          "title": "EL4CTEO/fast-anything",
+          "url": "https://github.com/EL4CTEO/fast-anything"
+        },
+        {
+          "title": "leanprover-community/riemann-hypothesis",
+          "url": "https://github.com/leanprover-community/riemann-hypothesis"
+        },
+        {
+          "title": "siliconjungle/shapeshift-labs-ink-studio",
+          "url": "https://github.com/siliconjungle/shapeshift-labs-ink-studio"
+        }
+      ]
+    },
     {
       "id": "2026-11-22-claude-code",
       "date": "2026-11-22",
