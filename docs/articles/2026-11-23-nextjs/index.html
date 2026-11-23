@@ -1,0 +1,100 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>純CSSだけのグリッチ／RGBずれテキスト — Server Component のまま動く「数少ない全部盛り」と、光過敏性(PSE)という本題 — デイリー技術深掘り 読み物</title><meta name="description" content="見出しを信号ノイズのように震わせるサイバーパンク定番。依存ゼロ・'use client' 不要で App Router と相性抜群だが、WCAG 2.3.1「3回点滅」に正面衝突しうる唯一クラスの装飾。閾値を知っているかで差が出る。"><meta name="theme-color" content="#1f6feb"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-23-nextjs/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="純CSSだけのグリッチ／RGBずれテキスト — Server Component のまま動く「数少ない全部盛り」と、光過敏性(PSE)という本題 — デイリー技術深掘り 読み物"><meta property="og:description" content="見出しを信号ノイズのように震わせるサイバーパンク定番。依存ゼロ・'use client' 不要で App Router と相性抜群だが、WCAG 2.3.1「3回点滅」に正面衝突しうる唯一クラスの装飾。閾値を知っているかで差が出る。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-23-nextjs/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3b82f6, #0b3d91)"> <span class="glyph" aria-hidden="true">▲</span> <div class="kicker">Next.js</div> <h1>純CSSだけのグリッチ／RGBずれテキスト — Server Component のまま動く「数少ない全部盛り」と、光過敏性(PSE)という本題</h1> <p class="lede">見出しを信号ノイズのように震わせるサイバーパンク定番。依存ゼロ・&#39;use client&#39; 不要で App Router と相性抜群だが、WCAG 2.3.1「3回点滅」に正面衝突しうる唯一クラスの装飾。閾値を知っているかで差が出る。</p> <div class="meta"> <span>📅 2026年11月23日</span> <span>⏱ 約4分</span> <span>🔗 出典 6 件</span> </div> </section> <div class="article-layout" style="--topic:#1f6feb"> <div> <article class="prose" data-has-mermaid="0"><p>同じ文字を複数レイヤーに複製し、色と位置をずらして「信号が乱れたように震える」グリッチ表現。SplitText やスクランブルのような“文字を動かす系”とは別軸で、構造はシンプルだ。純CSSで書けるため <strong>Server Component のまま</strong>動き、<code>'use client'</code> もハイドレーションも不要——INP/CLS を汚さず Next.js App Router と相性が良い“数少ない安全な全部盛り”。ただし本題は見た目ではなく、点滅＝光過敏性発作(PSE)のリスク制御にある。</p>
+<h4 id="sec-1">仕組み（3レイヤー＋スライス帯）</h4>
+<p>王道実装は3ステップ。(1) <code>data-text</code> 属性に本文と同じ値を持たせ、<code>::before</code>/<code>::after</code> の <code>content: attr(data-text)</code> で同じ文字を2枚複製。(2) 2枚に別色を与える（<code>::before</code>=シアン #0ff、<code>::after</code>=マゼンタ #f0f、本体は白）。暗背景なら <code>mix-blend-mode: screen</code> で色収差らしく発光する。(3) 各コピーを <code>clip-path: inset()</code> で横帯に切り、<code>transform: translate()</code> で小刻みにずらす。ここで <code>animation: ... steps(2)</code> と<strong>コマ送り</strong>にするのが“デジタルノイズ”感の正体で、滑らかに補間してはいけない。2枚を別周期・別 steps にすると非同期に暴れてリッチになる。</p>
+<figure class='fig'><svg viewBox='0 0 600 210' xmlns='http://www.w3.org/2000/svg' font-family='monospace'>
+<rect x='0' y='0' width='600' height='210' fill='#0b0f1a'></rect>
+<rect x='150' y='66' width='300' height='12' fill='#ffffff' opacity='0.07'></rect>
+<text x='150' y='96' font-size='52' font-weight='bold' fill='#00ffff' opacity='0.9'>GLITCH</text>
+<text x='162' y='104' font-size='52' font-weight='bold' fill='#ff00ff' opacity='0.9'>GLITCH</text>
+<text x='156' y='100' font-size='52' font-weight='bold' fill='#ffffff'>GLITCH</text>
+<text x='40' y='146' font-size='12' fill='#00ffff'>::before  color:#0ff  translate(-6px,-4px)</text>
+<text x='40' y='168' font-size='12' fill='#ff00ff'>::after   color:#f0f  translate(+6px,+4px)</text>
+<text x='40' y='190' font-size='12' fill='#e5e7eb'>本体     color:#fff（DOMに実在・SR可）</text>
+</svg><figcaption>図1：同じ文字を3枚重ね、シアン／マゼンタのコピーを逆方向へずらす。clip-path で横帯に切り steps() でコマ送りにする。</figcaption></figure>
+<h4 id="sec-2">対応状況</h4>
+<p><code>clip-path</code>・<code>mix-blend-mode</code>・<code>content: attr()</code>・<code>steps()</code>・<code>prefers-reduced-motion</code> はいずれも全モダンブラウザで Baseline。検出もフォールバックも不要で、色を滑らかに補間したいとき“だけ” <code>@property</code> を併用する。</p>
+<h4 id="sec-3">本題：光過敏性(PSE)と WCAG の閾値</h4>
+<p>装飾グリッチは容易に「点滅」になり、WCAG 2.3.1（3回点滅以下）に触れる。覚えておく数値は、(a) <strong>毎秒3回超(&gt;3Hz)が危険域</strong>（Section 508 は 3〜55Hz を禁止、発作誘発は 5〜30Hz が多い）、(b) 相対輝度が最大の10%以上変化する点滅、とくに<strong>飽和赤への遷移は輝度に関係なく危険</strong>、(c) 点滅面積が<strong>画面の約25%</strong>（中心視野約10度）を超えると危険度が跳ねる。つまり「小さく・低コントラスト・飽和赤を避ける」ほど安全。</p>
+<figure class='fig'><svg viewBox='0 0 600 185' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+<rect x='0' y='0' width='600' height='185' fill='#fef2f2'></rect>
+<text x='300' y='30' text-anchor='middle' font-size='14' font-weight='bold' fill='#991b1b'>グリッチで触れる3つの危険域（安全側＝数値を小さく）</text>
+<rect x='30' y='48' width='175' height='110' rx='8' fill='#fff' stroke='#fca5a5'></rect>
+<rect x='212' y='48' width='175' height='110' rx='8' fill='#fff' stroke='#fca5a5'></rect>
+<rect x='394' y='48' width='176' height='110' rx='8' fill='#fff' stroke='#fca5a5'></rect>
+<g font-size='12' fill='#7f1d1d'>
+<text x='117' y='74' text-anchor='middle' font-weight='bold'>点滅頻度</text>
+<text x='117' y='102' text-anchor='middle'>&gt;3Hz が危険域</text>
+<text x='117' y='126' text-anchor='middle'>誘発は 5〜30Hz</text>
+<text x='299' y='74' text-anchor='middle' font-weight='bold'>輝度 / 色</text>
+<text x='299' y='102' text-anchor='middle'>最大の10%以上変化</text>
+<text x='299' y='126' text-anchor='middle'>飽和赤は輝度無関係に×</text>
+<text x='482' y='74' text-anchor='middle' font-weight='bold'>面積</text>
+<text x='482' y='102' text-anchor='middle'>画面の約25%超で</text>
+<text x='482' y='126' text-anchor='middle'>危険度が跳ねる</text>
+</g>
+</svg><figcaption>図2：WCAG 2.3.1 が関わる点滅の目安。小さく・低コントラスト・飽和赤回避・既定オフが安全マージンを稼ぐ。</figcaption></figure>
+<h4 id="sec-4">Next.js での組み込みと a11y</h4>
+<p>純CSSグリッチは RSC のまま、CSS クラスを当てるだけ。<code>data-text</code> はSSRでそのまま出力されるのでハイドレーション不一致も起きず、<code>use cache</code>/ISR にも無干渉。安全側の設計は<strong>既定オフ</strong>——<code>[data-motion="on"] .glitch::before{ animation:... }</code> のようにオプトインで初めて動かし、小さな <code>'use client'</code> 島でトグルする。OS の低モーション設定は必ず尊重する：</p>
+<pre><code>@media (prefers-reduced-motion: reduce){
+  .glitch::before,.glitch::after{ animation:none !important; }
+}</code></pre>
+<h4 id="sec-5">落とし穴とまとめ</h4>
+<p>擬似要素はスクリーンリーダーに読まれず選択もできないが、本体テキストが DOM に実在するので情報は伝わる（装飾を唯一の伝達手段にしない原則を自然に満たす）。<code>0.2〜0.4s</code> の常時ループは“カクつき点滅”になりやすいので、ホバー時だけ・短時間1回に寄せ、公開前に PEAT で点滅チェック。見た目はド派手でも、設計の8割は「どこまで激しくしてよいか」の線引きだ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://developer.mozilla.org/en-US/docs/Web/Accessibility/Guides/Seizure_disorders" target="_blank" rel="noopener noreferrer"> MDN — Web accessibility for seizures and physical reactions </a> </li><li> <a href="https://web.dev/learn/accessibility/motion" target="_blank" rel="noopener noreferrer"> web.dev — Animation and motion </a> </li><li> <a href="https://www.w3.org/WAI/WCAG21/Understanding/three-flashes-or-below-threshold.html" target="_blank" rel="noopener noreferrer"> W3C WCAG — Understanding 2.3.1 Three Flashes or Below Threshold </a> </li><li> <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion" target="_blank" rel="noopener noreferrer"> MDN — prefers-reduced-motion </a> </li><li> <a href="https://developer.mozilla.org/en-US/docs/Web/CSS/clip-path" target="_blank" rel="noopener noreferrer"> MDN — clip-path </a> </li><li> <a href="https://trace.umd.edu/peat/" target="_blank" rel="noopener noreferrer"> PEAT（光過敏性チェッカー） </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 仕組み（3レイヤー＋スライス帯） </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 対応状況 </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 本題：光過敏性(PSE)と WCAG の閾値 </a> </li><li> <a href="#sec-4" data-toc="sec-4"> Next.js での組み込みと a11y </a> </li><li> <a href="#sec-5" data-toc="sec-5"> 落とし穴とまとめ </a> </li> </ul> <div class="reading-box"> <div>📅 2026-11-23</div> <div>⏱ 読了 約4分</div> <div>🏷 Next.js</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
