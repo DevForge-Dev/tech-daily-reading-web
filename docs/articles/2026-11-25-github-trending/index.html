@@ -1,0 +1,118 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>11/25の話題リポジトリ — 広告なしデスクトップ実用3本と、エージェント開発を支える基盤3本 — デイリー技術深掘り 読み物</title><meta name="description" content="Rust/Tauri 製の“軽いデスクトップ道具”と、iOSテスト・ローカルモデル継続学習・一貫ビジュアル生成という開発基盤。消費者向けの快適さと、エージェント開発の地味な穴埋めが同じ日に並んだ。"><meta name="theme-color" content="#238636"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-25-github-trending/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="11/25の話題リポジトリ — 広告なしデスクトップ実用3本と、エージェント開発を支える基盤3本 — デイリー技術深掘り 読み物"><meta property="og:description" content="Rust/Tauri 製の“軽いデスクトップ道具”と、iOSテスト・ローカルモデル継続学習・一貫ビジュアル生成という開発基盤。消費者向けの快適さと、エージェント開発の地味な穴埋めが同じ日に並んだ。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-25-github-trending/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #3fb950, #1a7f37)"> <span class="glyph" aria-hidden="true">★</span> <div class="kicker">GitHub Trending</div> <h1>11/25の話題リポジトリ — 広告なしデスクトップ実用3本と、エージェント開発を支える基盤3本</h1> <p class="lede">Rust/Tauri 製の“軽いデスクトップ道具”と、iOSテスト・ローカルモデル継続学習・一貫ビジュアル生成という開発基盤。消費者向けの快適さと、エージェント開発の地味な穴埋めが同じ日に並んだ。</p> <div class="meta"> <span>📅 2026年11月25日</span> <span>⏱ 約5分</span> <span>🔗 出典 6 件</span> </div> </section> <div class="article-layout" style="--topic:#238636"> <div> <article class="prose" data-has-mermaid="0"><p>今日の6本を貫くのは2つの流れ。前半は <strong>Rust/Tauri でネイティブに作り直した“軽いデスクトップ道具”</strong>——広告やブラウザのタブから逃れる方向。後半は <strong>エージェント開発の地味だが効く穴埋め</strong>——Mac なしの iOS テスト、遊休GPUでのローカルモデル継続学習、一貫したビジュアル生成。消費者の快適さと開発基盤が同じ日に並んだ格好だ。各リポジトリについて「どんな課題を解こうとしているか」「何ができるか」を押さえる。<em>（本日は daily 未掲載のため、増加は日平均★で代替評価。数値はリポジトリ実測。）</em></p>
+
+<figure class='fig'>
+<svg viewBox='0 0 600 300' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif' font-size='10'>
+  <rect x='6' y='6' width='588' height='288' rx='8' fill='#f3fbf5' stroke='#1a7f37'></rect>
+  <line x1='168' y1='30' x2='168' y2='288' stroke='#cde8d4'></line>
+  <line x1='384' y1='30' x2='384' y2='288' stroke='#cde8d4'></line>
+  <text x='87' y='24' text-anchor='middle' font-weight='bold' fill='#1a7f37'>リポジトリ</text>
+  <text x='276' y='24' text-anchor='middle' font-weight='bold' fill='#1a7f37'>解決したい課題</text>
+  <text x='489' y='24' text-anchor='middle' font-weight='bold' fill='#1a7f37'>提供する機能</text>
+  <line x1='10' y1='32' x2='590' y2='32' stroke='#1a7f37'></line>
+  <g fill='#222'>
+    <text x='14' y='56'>Stream-Tube-Desktop</text><text x='14' y='70' fill='#777'>Rust ⭐857</text>
+    <text x='176' y='52'>YouTube を広告/追跡なし・</text><text x='176' y='64'>タブ開きっぱなしなしで観たい</text>
+    <text x='392' y='52'>gpui+mpv ネイティブ再生。</text><text x='392' y='64'>SponsorBlock/DeArrow 内蔵</text>
+    <line x1='10' y1='82' x2='590' y2='82' stroke='#e0efe4'></line>
+    <text x='14' y='104'>kurocat</text><text x='14' y='118' fill='#777'>TS/Tauri ⭐602</text>
+    <text x='176' y='100'>配信オーバーレイ(Bongo Cat)を</text><text x='176' y='112'>OSS・多OSで手軽に</text>
+    <text x='392' y='100'>キー可視化の猫ペット＋</text><text x='392' y='112'>OBS透明ソース・覗き見防止</text>
+    <line x1='10' y1='130' x2='590' y2='130' stroke='#e0efe4'></line>
+    <text x='14' y='152'>navier-stokes</text><text x='14' y='166' fill='#777'>Lean ⭐424</text>
+    <text x='176' y='148'>数学の大問題を機械検証可能に</text><text x='176' y='160'>(N-S 有限時間爆発の主張)</text>
+    <text x='392' y='148'>79p論文＋Lean4形式化。</text><text x='392' y='160'>許容公理を限定する comparator</text>
+    <line x1='10' y1='178' x2='590' y2='178' stroke='#e0efe4'></line>
+    <text x='14' y='200'>agent-sim</text><text x='14' y='214' fill='#777'>Rust ⭐544</text>
+    <text x='176' y='196'>Mac/GPU なしで iOS を</text><text x='176' y='208'>CI/クラウドで E2E したい</text>
+    <text x='392' y='196'>x86 Linux上の iOS Sim を</text><text x='392' y='208'>エージェントが操作(導入/読取/タップ)</text>
+    <line x1='10' y1='226' x2='590' y2='226' stroke='#e0efe4'></line>
+    <text x='14' y='248'>songe</text><text x='14' y='262' fill='#777'>Python ⭐631</text>
+    <text x='176' y='244'>ローカルモデルでトークン代を</text><text x='176' y='256'>継続的に削りたい</text>
+    <text x='392' y='244'>遊休GPUで観察→継続学習</text><text x='392' y='256'>(distill/LoRA/MLX)・OpenAI互換</text>
+    <line x1='10' y1='270' x2='590' y2='270' stroke='#e0efe4'></line>
+    <text x='14' y='288'>papercraft</text>
+    <text x='176' y='284'>エージェント生成物の見た目を</text>
+    <text x='392' y='284'>ポップアップ紙工作風で統一生成</text>
+  </g>
+</svg>
+<figcaption>図1：6本の「解決したい課題 × 提供する機能」対応表。</figcaption>
+</figure>
+
+<h4 id="sec-1">Avaneesh-Inamdar/Stream-Tube-Desktop（Rust・⭐約857）</h4>
+<p><strong>解決したい課題：</strong>「ブラウザのタブを開きっぱなしにせず、広告も自動再生もなしで YouTube を観たい」という素朴な不便。<strong>提供する機能：</strong>gpui(Rust GUI)＋mpv のネイティブ再生で、広告・トラッキングなし(Windows/Linux)。SponsorBlock・DeArrow・Return YouTube Dislike を標準内蔵。作成約3日で日平均約286★＝本日クリーン新星の最速級。非AIの消費者向け道具が純粋なモメンタムで伸びた例。</p>
+
+<h4 id="sec-2">qianyiai/kurocat（TypeScript/Tauri・⭐約602）</h4>
+<p><strong>解決したい課題：</strong>配信者が使う Bongo Cat 系オーバーレイを、OSS・クロスプラットフォーム・MCP 対応で手軽に。<strong>提供する機能：</strong>キー入力に合わせて動く透明・最前面のデスクトップ「打字猫」兼 OBS 透明ソース。6種の猫＋鯨娘、パスワード入力時の覗き見防止、AI での見た目生成(MCP)に対応(Win/Mac/Linux/Android)。Tauri v2＋Rust/TS。可愛さと実用の合わせ技で急伸。</p>
+
+<h4 id="sec-3">tristanbuckmaster/navier-stokes（Lean・⭐約424）</h4>
+<p><strong>解決したい課題：</strong>ミレニアム級の未解決問題（ナビエ–ストークス正則性）に関わる主張を、人手の査読だけでなく<em>機械検証可能</em>な形に落とす。<strong>提供する機能：</strong>Alpöge・Buckmaster の「有限時間爆発」を主張する79ページ論文と、Lean 4 形式化を同梱。各定理の形式ステートメント・証明に加え、使用公理を <code>propext</code>/<code>Quot.sound</code>/<code>Classical.choice</code> に限定する comparator を持つ。先の Riemann 予想 Lean 形式化と同じ Alpöge による「大問題を Lean で」潮流の中核。<em>（主張の真偽判断はせず、話題化している事実のみを扱う。）</em></p>
+
+<h4 id="sec-4">Developing-Gamer/agent-sim（Rust・⭐約544）</h4>
+<p><strong>解決したい課題：</strong>iOS の E2E/ビジュアルテストは Mac 必須で CI に載せづらい、という長年の壁。<strong>提供する機能：</strong>Mac も GPU も使わず x86-64 Linux VM 上で iOS シミュレータ(x86Sim)を動かし、AI エージェントに「.ipa インストール→画面をテキストで読む→タップ/入力/スクロール→ブラウザで目視」をさせるエージェント層。Apache-2.0。モバイル E2E をクラウド/CI で回す将来の土台になり得る。</p>
+
+<h4 id="sec-5">sous-labs/songe（Python・⭐約631）</h4>
+<p><strong>解決したい課題：</strong>「1人×エージェント×多プロジェクト」で効いてくるトークンコストを、ローカルモデルで削りたい。<strong>提供する機能：</strong>普段使いのローカルモデルを opencode/pi 等 OpenAI 互換ツール越しに使いつつ、各アクション後の結果・エラー・次指示を観察し、エージェントが空いている間に<strong>遊休GPUで継続学習</strong>(蒸留/LoRA/MLX)してモデルを鍛える学習エンジン。既存ワークフローに非侵襲。生徒モデルのローカル実行基盤が前提な点は要注意。</p>
+
+<h4 id="sec-6">xikhar/papercraft（JavaScript・⭐約606）</h4>
+<p><strong>解決したい課題：</strong>エージェントに作らせるビジュアルが毎回バラバラで、統一した“らしさ”を出しにくい。<strong>提供する機能：</strong>ゲーム・インタラクティブシーン・Web・アニメ・動画を、立体の「飛び出す絵本(ポップアップ紙工作)」風の統一スタイルで生成させるエージェントスキル。出荷済み three.js ゲームの「写真に写った紙模型に見せる」ノウハウ（マット紙・薄い切り口・世界の色で染まる影・ティルトシフト）を数値化して移植。MIT。</p>
+
+<h4 id="sec-7">まとめ — 自分が試すなら</h4>
+<p>消費者枠なら <strong>Stream-Tube-Desktop</strong> を一度入れて SponsorBlock 内蔵の快適さを体感するのが手軽。開発基盤として本命は <strong>agent-sim</strong>——Mac 不要の iOS テストは CI に組めれば効果が大きい。コスト最適化に興味があれば <strong>songe</strong> を小さなローカルモデルで観察運用から。いずれも作成数日のクリーン新星で、採用判断は自動実行せず様子見から。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://github.com/Avaneesh-Inamdar/Stream-Tube-Desktop" target="_blank" rel="noopener noreferrer"> Avaneesh-Inamdar/Stream-Tube-Desktop </a> </li><li> <a href="https://github.com/qianyiai/kurocat" target="_blank" rel="noopener noreferrer"> qianyiai/kurocat </a> </li><li> <a href="https://github.com/tristanbuckmaster/navier-stokes" target="_blank" rel="noopener noreferrer"> tristanbuckmaster/navier-stokes </a> </li><li> <a href="https://github.com/Developing-Gamer/agent-sim" target="_blank" rel="noopener noreferrer"> Developing-Gamer/agent-sim </a> </li><li> <a href="https://github.com/sous-labs/songe" target="_blank" rel="noopener noreferrer"> sous-labs/songe </a> </li><li> <a href="https://github.com/xikhar/papercraft" target="_blank" rel="noopener noreferrer"> xikhar/papercraft </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> Avaneesh-Inamdar/Stream-Tube-Desktop（Rust・⭐約857） </a> </li><li> <a href="#sec-2" data-toc="sec-2"> qianyiai/kurocat（TypeScript/Tauri・⭐約602） </a> </li><li> <a href="#sec-3" data-toc="sec-3"> tristanbuckmaster/navier-stokes（Lean・⭐約424） </a> </li><li> <a href="#sec-4" data-toc="sec-4"> Developing-Gamer/agent-sim（Rust・⭐約544） </a> </li><li> <a href="#sec-5" data-toc="sec-5"> sous-labs/songe（Python・⭐約631） </a> </li><li> <a href="#sec-6" data-toc="sec-6"> xikhar/papercraft（JavaScript・⭐約606） </a> </li><li> <a href="#sec-7" data-toc="sec-7"> まとめ — 自分が試すなら </a> </li> </ul> <div class="reading-box"> <div>📅 2026-11-25</div> <div>⏱ 読了 約5分</div> <div>🏷 GitHub Trending</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
