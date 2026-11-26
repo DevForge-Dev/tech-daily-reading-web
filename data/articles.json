@@ -1,6 +1,6 @@
 {
   "schema": "tech-daily-reading/v1",
-  "generatedAt": "2026-11-25T04:44:48.310Z",
+  "generatedAt": "2026-11-26T04:49:31.195Z",
   "topics": [
     "Claude Code",
     "Next.js",
@@ -8,6 +8,90 @@
     "GitHub Trending"
   ],
   "articles": [
+    {
+      "id": "2026-11-26-claude-code",
+      "date": "2026-11-26",
+      "topic": "Claude Code",
+      "title": "v2.1.332 が latest 昇格 — MCPサーバー製スキルと新フック PreSkillShellCommand",
+      "lede": "next 止まりだった v2.1.332 が latest に。スキルをMCPサーバーから配れるベータと、スキル/コマンド内インラインシェルをロード時に拒否する新フックが対で入った。",
+      "articleHtml": "<p>前日まで npm の <code>next</code> タグ止まりだった <strong>v2.1.332</strong> が本日 <code>latest</code> に昇格し、公式 CHANGELOG にも変更ノートが載った。日々のマイナー更新に見えて、今回は「スキルの配り方」と「スキル実行前の安全フック」という、エージェント運用の土台に効く2点が同梱されている。</p>\n<h4>何が新しいか</h4>\n<p>目玉は2つ。ひとつは <strong>MCP サーバーが提供するスキル</strong>（ベータ）で、<code>/</code> メニューに <code>server:skill</code> 形式で並ぶ。これまでローカルの設定に置くものだったスキルを、MCP サーバー側から配布・共有できるようになる。もうひとつが新フックイベント <strong><code>PreSkillShellCommand</code></strong>。スキルやスラッシュコマンドの本文に埋め込まれたインラインシェルコマンドを、<em>ロード時点で</em>拒否できる。v2.1.331 以前は当該フックを書いた設定があると起動時にダイアログが出ていたが、今回これが正式イベント化された。ほかに、他セッションからの保留メッセージに「Always deliver」、応答ロギング時の OpenTelemetry <code>assistant_response</code> イベント、claude.ai サインイン時に起動ヘッダへ Cyber Verification Program のアクセスティア表示、など。</p>\n<figure class='fig'><pre class='mermaid'>flowchart TD\n  A[\"スキル/コマンドをロード\"] --> B[\"本文にインラインシェルを含む?\"]\n  B -->|\"あり\"| C[\"PreSkillShellCommand フック\"]\n  B -->|\"なし\"| E[\"通常どおりロード\"]\n  C -->|\"exit 2 = ブロック\"| D[\"シェル実行を拒否\"]\n  C -->|\"許可\"| E</pre><figcaption>図1：PreSkillShellCommand は“ロード時”にインラインシェルを検査し、実行前に拒否できる。</figcaption></figure>\n<h4>PreSkillShellCommand の勘どころ</h4>\n<p>スキルは「使うと便利」だが、本文にインラインシェルを含められるため、信頼していないスキルを読み込むだけでコマンドが走る余地があった。<code>PreSkillShellCommand</code> は、そのシェルが<strong>実行される前（ロード時）</strong>にフックを挟み、Command ハンドラの exit 2 等でブロックできる。「必ず止めたい」処理は CLAUDE.md の助言（約8割しか守られない）ではなくフックの決定論で止める、という本日の技術記事でも強調された設計思想にそのまま沿う。</p>\n<h4>実務での使いどころ・注意</h4>\n<p>MCP スキルを導入するなら、まず <code>server:skill</code> で何が増えたかを <code>/</code> メニューで確認し、未知のスキルは <code>PreSkillShellCommand</code> でインラインシェルを既定拒否→必要なものだけ許可、が安全側だ。加えて v2.1.332 は安定性修正が厚い——自動 compaction 失敗後の「Prompt is too long」、巨大ログや MCP 標準出力の洪水による端末フリーズ（Ctrl+C 無視）、Code Mode の4,096件超リストでツール呼び出しを黙って飛ばす不具合、Bedrock/Google Cloud/Foundry のモデルフォールバック（例：Bedrock Mantle の <code>sonnet</code> が Haiku 4.5 に化ける）などを修正。安定版チャネル <code>stable</code> も v2.1.325→v2.1.326 に前進した。</p>\n<figure class='fig'><svg viewBox='0 0 520 160' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='1' y='1' width='518' height='158' rx='10' fill='#fff7ed' stroke='#fdba74'/>\n  <text x='20' y='30' font-size='15' font-weight='bold' fill='#9a3412'>npm dist-tags（2026-11-26 実測）</text>\n  <rect x='20' y='46' width='480' height='46' rx='8' fill='#ffedd5' stroke='#fb923c'/>\n  <text x='34' y='68' font-size='13' font-weight='bold' fill='#7c2d12'>latest = next → v2.1.332</text>\n  <text x='34' y='85' font-size='11.5' fill='#9a3412'>前日は next 止まり。本日 latest へ昇格し CHANGELOG 掲載</text>\n  <rect x='20' y='100' width='480' height='44' rx='8' fill='#f1f5f9' stroke='#cbd5e1'/>\n  <text x='34' y='121' font-size='13' font-weight='bold' fill='#334155'>stable → v2.1.326</text>\n  <text x='34' y='137' font-size='11.5' fill='#475569'>前日 v2.1.325 から一つ前進</text>\n</svg><figcaption>図2：npm dist-tags。latest=next=v2.1.332、stable も一つ前進。</figcaption></figure>\n<h4>ひとことまとめ</h4>\n<p>「スキルを配れる（MCP）」「スキルを安全に止められる（PreSkillShellCommand）」が対で入った更新。エージェントを毎日動かす運用ほど、<code>stable</code> 追従か <code>latest</code> で早めに取り込む価値がある。</p>",
+      "sources": [
+        {
+          "title": "anthropics/claude-code — CHANGELOG",
+          "url": "https://github.com/anthropics/claude-code/blob/main/CHANGELOG.md"
+        },
+        {
+          "title": "@anthropic-ai/claude-code (npm)",
+          "url": "https://www.npmjs.com/package/@anthropic-ai/claude-code"
+        }
+      ]
+    },
+    {
+      "id": "2026-11-26-nextjs",
+      "date": "2026-11-26",
+      "topic": "Next.js",
+      "title": "マルチステップ・フォーム／ウィザード — 本質は演出でなく「状態をどこに持つか」（App Router）",
+      "lede": "1画面1トピックに割るウィザード。スライド遷移より先に決めるべきは状態の持ち方。4つの保持戦略と、退場アニメ・ハイドレーションの罠。",
+      "articleHtml": "<p>サインアップ・オンボーディング・決済・アンケート——長いフォームを1画面に詰め込むと離脱が増える。だから「1画面1トピック」に割り、上部のステッパーと戻る/次へで進ませるのが定番（GOV.UK の one thing per page と同じ思想）。だが Next.js（App Router）でこれを作るときの本質は、スライド遷移という<em>演出</em>ではなく「<strong>状態をどこに持つか</strong>」だ。素朴に作ると「リロードで全消え」「戻るが効かない」「ハイドレーション不一致」「退場アニメが出ない」を順に踏む。</p>\n<h4>状態の持ち方 4択（最重要）</h4>\n<p>① <strong>クライアント状態のみ</strong>（<code>useReducer</code>）＝最短だがリロードで消える。短いフロー向き。② <strong>現在ステップをURLに</strong>（<code>?step=2</code>）＝ブラウザの戻る/進む・共有・リロード耐性が効く。ただし<em>フィールド値はURLに置かない</em>（機微・履歴汚染）。③ <strong>値を永続化</strong>＝sessionStorage／Cookie／サーバー下書き。決済・個人情報はサーバー下書きが安全。④ <strong>プログレッシブ・エンハンスメント</strong>＝各ステップを独立 <code>&lt;form action={serverAction}&gt;</code> にして POST→redirect。JS なしでも動く。実務の落としどころは「<strong>位置＝URL or client state／値＝sessionStorage or サーバー下書き</strong>」の組み合わせだ。</p>\n<figure class='fig'><svg viewBox='0 0 560 248' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='1' y='1' width='558' height='246' rx='10' fill='#f8fafc' stroke='#cbd5e1'/>\n  <text x='16' y='28' font-size='14' font-weight='bold' fill='#0f172a'>ウィザードの状態の持ち方 — 4戦略の比較</text>\n  <text x='20' y='58' font-size='12' font-weight='bold' fill='#334155'>戦略</text>\n  <text x='288' y='58' font-size='12' font-weight='bold' fill='#334155'>リロード耐性</text>\n  <text x='398' y='58' font-size='12' font-weight='bold' fill='#334155'>戻る/進む</text>\n  <text x='480' y='58' font-size='12' font-weight='bold' fill='#334155'>機微安全</text>\n  <line x1='16' y1='66' x2='544' y2='66' stroke='#e2e8f0'/>\n  <text x='20' y='92' font-size='12' fill='#0f172a'>① client 状態のみ</text>\n  <text x='300' y='92' font-size='14' fill='#dc2626'>×</text>\n  <text x='410' y='92' font-size='14' fill='#dc2626'>×</text>\n  <text x='488' y='92' font-size='11' fill='#64748b'>—</text>\n  <text x='20' y='128' font-size='12' fill='#0f172a'>② 位置を URL に</text>\n  <text x='300' y='128' font-size='14' fill='#16a34a'>○</text>\n  <text x='410' y='128' font-size='14' fill='#16a34a'>○</text>\n  <text x='470' y='128' font-size='11' fill='#d97706'>位置○/値×</text>\n  <text x='20' y='164' font-size='12' fill='#0f172a'>③ 値を永続化</text>\n  <text x='300' y='164' font-size='14' fill='#16a34a'>○</text>\n  <text x='406' y='164' font-size='11' fill='#d97706'>戦略次第</text>\n  <text x='474' y='164' font-size='11' fill='#16a34a'>○(下書き)</text>\n  <text x='20' y='200' font-size='12' fill='#0f172a'>④ PE（多ページ）</text>\n  <text x='300' y='200' font-size='14' fill='#16a34a'>○</text>\n  <text x='410' y='200' font-size='14' fill='#16a34a'>○</text>\n  <text x='488' y='200' font-size='14' fill='#16a34a'>○</text>\n  <line x1='16' y1='216' x2='544' y2='216' stroke='#e2e8f0'/>\n  <text x='20' y='236' font-size='10.5' fill='#64748b'>落としどころ＝「位置＝URL/状態」×「値＝sessionStorage or サーバー下書き」</text>\n</svg><figcaption>図1：4戦略の比較。位置と値を分けて持つのが実務解。</figcaption></figure>\n<h4>遷移アニメと退場の罠</h4>\n<p>方向（次へ=+1／戻る=−1）を状態に持ち、<code>key</code> を差し替えて入場アニメを走らせるのが素直だ。問題は<strong>退場</strong>——React は旧ステップを即アンマウントするので CSS だけでは「出て行く絵」を描けない。対策は (a) 退場中に一時クラスを当て <code>animationend</code> 後にアンマウント、(b) <strong>View Transitions API</strong>（<code>document.startViewTransition</code> が前後を自動キャプチャ）、(c) Motion の <code>AnimatePresence</code>。バリデーションは Zod の <code>safeParse</code> をクライアント即時＋サーバー再検証の二段で、送信は <code>useActionState</code> の <code>pending</code> でボタンを無効化する。</p>\n<figure class='fig'><pre class='mermaid'>flowchart LR\n  S[\"開始\"] --> S1[\"ステップ1\"]\n  S1 --> S2[\"ステップ2\"]\n  S2 --> S3[\"ステップ3\"]\n  S3 --> F[\"送信 (Server Action で再検証)\"]\n  F --> D[\"完了\"]\n  S2 -->|\"戻る\"| S1\n  S3 -->|\"戻る\"| S2</pre><figcaption>図2：位置は URL/状態、値は sessionStorage かサーバー下書き。最終送信のみ Server Action。</figcaption></figure>\n<h4>落とし穴と reduced-motion</h4>\n<p>ハイドレーション不一致を避けるため、初期ステップは <code>page.tsx</code> の searchParams をサーバーで読んで渡す（sessionStorage は <code>useEffect</code> 内で読む）。ステップごとの高さ差は <code>min-height</code> で CLS を抑える。切替でフォーカスが body に落ちたら次ステップの見出しへ移す。演出は <code>@media (prefers-reduced-motion: no-preference)</code> の<em>中だけ</em>に置き、既定は瞬時切替＝非対応環境でも安全にする。進捗は色＋<code>aria-current</code>＋状態テキストで伝わるので、アニメを切っても機能は無損だ。</p>\n<h4>ひとことまとめ</h4>\n<p>ウィザードは「位置」と「値」を分けて持つ設計が8割。演出は View Transitions で退場まで含めて最後に乗せる。</p>",
+      "sources": [
+        {
+          "title": "Next.js Docs — Forms",
+          "url": "https://nextjs.org/docs/app/guides/forms"
+        },
+        {
+          "title": "USWDS — Step indicator",
+          "url": "https://designsystem.digital.gov/components/step-indicator/"
+        },
+        {
+          "title": "MDN — View Transition API",
+          "url": "https://developer.mozilla.org/en-US/docs/Web/API/View_Transition_API"
+        }
+      ]
+    },
+    {
+      "id": "2026-11-26-flutter",
+      "date": "2026-11-26",
+      "topic": "Flutter",
+      "title": "CocoaPods trunk が 12/2 read-only 化 — SwiftPM が iOS/macOS の既定依存マネージャへ",
+      "lede": "CocoaPods 中央Specsが12/2にread-only。Flutter 3.44からSwiftPMが既定で、CLIが移行を自動化。あと約1週間、依存プラグインの棚卸しが今週の最優先。",
+      "articleHtml": "<p>iOS/macOS 開発者にとって今週の最優先タスクは棚卸しだ。CocoaPods の中央 Specs リポジトリ（trunk）が公式に「<strong>2026年12月2日に read-only 化</strong>」＝あと約1週間。CocoaPods は「officially in maintenance mode」で、既存ビルドは動き続ける（existing builds will still work）が、この日以降は「no new versions or pods will be added to the trunk」＝<strong>新規 pod の公開・追加が止まる</strong>。</p>\n<h4>何が変わるか — SwiftPM が既定へ</h4>\n<p>公式は「next stable Flutter release, 3.44」から <strong>Swift Package Manager を iOS/macOS の既定依存マネージャ</strong>に昇格させる。ありがたいのは <strong>Flutter CLI が移行を自動化</strong>する点だ——<code>build</code>/<code>run</code> で Xcode プロジェクトを SwiftPM 向けに更新し、未対応プラグインは警告表示する。未移行プラグインには一時的に CocoaPods へフォールバックするが「CocoaPods support will eventually be removed entirely」＝恒久策ではない。無効化は enable コマンドではなく <code>pubspec.yaml</code> の <code>flutter: &gt; config: &gt; enable-swift-package-manager: false</code> で行う。</p>\n<figure class='fig'><svg viewBox='0 0 580 164' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='1' y='1' width='578' height='162' rx='10' fill='#eff6ff' stroke='#93c5fd'/>\n  <line x1='54' y1='86' x2='536' y2='86' stroke='#60a5fa' stroke-width='3'/>\n  <circle cx='70' cy='86' r='8' fill='#2563eb'/>\n  <circle cx='230' cy='86' r='8' fill='#dc2626'/>\n  <circle cx='390' cy='86' r='8' fill='#2563eb'/>\n  <circle cx='520' cy='86' r='8' fill='#94a3b8'/>\n  <text x='70' y='44' font-size='12' font-weight='bold' fill='#1e3a8a' text-anchor='middle'>今 (11/26)</text>\n  <text x='70' y='112' font-size='10.5' fill='#334155' text-anchor='middle'>stable 3.50.1</text>\n  <text x='230' y='44' font-size='12' font-weight='bold' fill='#991b1b' text-anchor='middle'>12/2</text>\n  <text x='230' y='112' font-size='10.5' fill='#334155' text-anchor='middle'>trunk read-only</text>\n  <text x='230' y='127' font-size='10.5' fill='#334155' text-anchor='middle'>新規 pod 停止</text>\n  <text x='390' y='44' font-size='12' font-weight='bold' fill='#1e3a8a' text-anchor='middle'>Flutter 3.44</text>\n  <text x='390' y='112' font-size='10.5' fill='#334155' text-anchor='middle'>SwiftPM 既定</text>\n  <text x='390' y='127' font-size='10.5' fill='#334155' text-anchor='middle'>CLI が自動移行</text>\n  <text x='520' y='44' font-size='12' font-weight='bold' fill='#475569' text-anchor='middle'>その後</text>\n  <text x='520' y='112' font-size='10.5' fill='#334155' text-anchor='middle'>CocoaPods</text>\n  <text x='520' y='127' font-size='10.5' fill='#334155' text-anchor='middle'>完全撤廃予定</text>\n</svg><figcaption>図1：CocoaPods→SwiftPM 移行のタイムライン。12/2 が最初の節目。</figcaption></figure>\n<h4>プラグイン作者と進捗</h4>\n<p>プラグイン作者は <strong><code>Package.swift</code> 追加＋標準 Swift package レイアウト</strong>への移行が必須で、未対応パッケージは pub.dev スコアが下がる。公式いわく top 100 iOS プラグインの <strong>61%</strong> が移行済み。残り4割が自分の依存ツリーにいないかが分かれ目になる。</p>\n<figure class='fig'><pre class='mermaid'>flowchart TD\n  P[\"依存プラグインは SwiftPM 対応?\"] -->|\"対応済み\"| A[\"そのまま 3.44 へ (CLI が自動化)\"]\n  P -->|\"未対応\"| B[\"作者へ依頼 or 代替を採用\"]\n  P -->|\"暫定\"| C[\"一時的に CocoaPods へフォールバック\"]\n  C --> D[\"いずれ撤廃＝恒久策ではない\"]</pre><figcaption>図2：12/2 前に依存プラグインの SwiftPM 対応を確認し、未対応は依頼/代替へ。</figcaption></figure>\n<h4>実務での動き方</h4>\n<p><strong>12/2 前に、依存プラグインの SwiftPM 対応状況を確認</strong>し、未対応なら作者へ依頼するか代替を採用する。既存ビルドは当面動くので慌てて全面移行する必要はないが、新規 pod が trunk に増えなくなる以上、放置した依存は将来の更新で詰む。なお今日のダイジェストでは <code>AnimatedIcon</code>（Material 標準の2状態トグル図像）、<code>StreamBuilder</code>（build 内で stream を作らない＝親 rebuild で購読が貼り直される罠）、<code>flutter build --analyze-size</code>（DevTools App size tool で版間 diff）も扱われたが、今週は依存移行が最優先。版は stable <code>3.50.1</code>／beta <code>3.51.0-0.2.pre</code> で6日連続据え置きだ。</p>\n<h4>ひとことまとめ</h4>\n<p>「12/2 に trunk が凍る・3.44 で SwiftPM 既定・CLI が自動移行」。今やるのは依存プラグインの SwiftPM 対応チェック1本に尽きる。</p>",
+      "sources": [
+        {
+          "title": "Saying goodbye to CocoaPods (flutter.dev)",
+          "url": "https://flutter.dev/blog/saying-goodbye-to-cocoapods-swift-package-manager-is-soon-the-default-in-flutter"
+        },
+        {
+          "title": "SwiftPM for app developers (docs.flutter.dev)",
+          "url": "https://docs.flutter.dev/packages-and-plugins/swift-package-manager/for-app-developers"
+        },
+        {
+          "title": "Flutter Versions (flutterreleases.com)",
+          "url": "https://flutterreleases.com/flutter-versions/"
+        }
+      ]
+    },
+    {
+      "id": "2026-11-26-github-trending",
+      "date": "2026-11-26",
+      "topic": "GitHub Trending",
+      "title": "11/26の話題リポジトリ — “一点特化”で急伸した新星3本（AIコードの贅肉削ぎ・擬似3D・5090特化推論）",
+      "lede": "GTA6/Xbox系のグレー群を除いた本日の純・話題枠。Rust/HTML/CUDA と言語も分野もバラけ、どれも一芸特化で急上昇した新星。",
+      "articleHtml": "<p>本日の github.com/trending 上位は GTA6/Xbox 系の recompilation・エミュレータや star-farm 群で埋まっていたため、それらグレー枠を除いた「純・話題枠」を Search API で拾い直した3本。共通点は明快で、<strong>どれも“一点特化”で急伸した新星</strong>だ——Rust・HTML・CUDA と言語もジャンルもバラけ、AIコーディング時代の“後始末”や“擬似3D”“GPU特化推論”に一芸で刺さっている。</p>\n<figure class='fig'><svg viewBox='0 0 600 232' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>\n  <rect x='1' y='1' width='598' height='230' rx='10' fill='#f0fdf4' stroke='#86efac'/>\n  <text x='16' y='26' font-size='14' font-weight='bold' fill='#166534'>本日の3本 — 解決したい課題 → 提供する機能</text>\n  <text x='16' y='50' font-size='11' font-weight='bold' fill='#15803d'>リポジトリ（言語）</text>\n  <text x='190' y='50' font-size='11' font-weight='bold' fill='#15803d'>解決したい課題</text>\n  <text x='402' y='50' font-size='11' font-weight='bold' fill='#15803d'>提供する機能</text>\n  <line x1='12' y1='58' x2='588' y2='58' stroke='#bbf7d0'/>\n  <text x='16' y='82' font-size='11' font-weight='bold' fill='#0f172a'>deslop-please</text>\n  <text x='16' y='97' font-size='10' fill='#475569'>Rust ・ ⭐1,055</text>\n  <text x='190' y='82' font-size='10.5' fill='#334155'>AI生成コードの“slop(贅肉)”</text>\n  <text x='190' y='97' font-size='10.5' fill='#334155'>が積み上がる</text>\n  <text x='402' y='82' font-size='10.5' fill='#334155'>冗長/過剰抽象を削ぎ</text>\n  <text x='402' y='97' font-size='10.5' fill='#334155'>可読性を回復する CLI</text>\n  <line x1='12' y1='110' x2='588' y2='110' stroke='#dcfce7'/>\n  <text x='16' y='134' font-size='11' font-weight='bold' fill='#0f172a'>sprite-stacking</text>\n  <text x='16' y='149' font-size='10' fill='#475569'>HTML ・ ⭐903</text>\n  <text x='190' y='134' font-size='10.5' fill='#334155'>ドット絵で擬似3Dを作る</text>\n  <text x='190' y='149' font-size='10.5' fill='#334155'>手作業がつらい</text>\n  <text x='402' y='134' font-size='10.5' fill='#334155'>4面ピクセル→fake-3D生成</text>\n  <text x='402' y='149' font-size='10.5' fill='#334155'>のエージェントスキル</text>\n  <line x1='12' y1='162' x2='588' y2='162' stroke='#dcfce7'/>\n  <text x='16' y='186' font-size='11' font-weight='bold' fill='#0f172a'>squid5090</text>\n  <text x='16' y='201' font-size='10' fill='#475569'>CUDA ・ ⭐252</text>\n  <text x='190' y='186' font-size='10.5' fill='#334155'>汎用推論は特定構成の</text>\n  <text x='190' y='201' font-size='10.5' fill='#334155'>限界性能を出せない</text>\n  <text x='402' y='186' font-size='10.5' fill='#334155'>Inkling Mini2×RTX5090</text>\n  <text x='402' y='201' font-size='10.5' fill='#334155'>の手書き最適化推論</text>\n  <line x1='12' y1='214' x2='588' y2='214' stroke='#bbf7d0'/>\n  <text x='16' y='227' font-size='10' fill='#64748b'>※当日 daily 未掲載のため★は実測総数（gain は—）</text>\n</svg><figcaption>図1：3本の「課題→提供機能」対応。どれも守備範囲を絞った一点特化。</figcaption></figure>\n<h4>deterministic-machines/deslop-please（Rust・⭐約1,055）</h4>\n<p><strong>解決したい課題：</strong>Claude Code / Codex でAIに書かせると、やたら長く・過剰に抽象化された“slop（贅肉）”コードが積み上がる、という実感。<strong>提供する機能：</strong>その冗長・過剰抽象を削ぎ落とし、読みやすく保守できるコードへ戻す Rust 製 CLI。既存コードベースに後付けできる。作成約4日で⭐約1,055（日平均約264★＝本日のクリーン新星で最速級）、MIT。“deslop”という明快なキャッチが時代の実感に真正面から刺さった。</p>\n<h4>danielwh2/sprite-stacking（HTML・⭐約903）</h4>\n<p><strong>解決したい課題：</strong>ドット絵だけで“くるくる回せる擬似3D”を作りたいが、昔のアーケード的な「スプライトを層状に積む」技法は手作業がつらい。<strong>提供する機能：</strong>4方向のピクセルアートから fake-3D/voxel モデルを生成する<strong>エージェントスキル</strong>。Claude Code/Codex/Cursor/OpenCode/Gemini CLI/Pi で呼べる。古い技法を現代のコーディングエージェント用スキルに落とした新規性で急伸。作成約6日で日平均約151★、MIT。</p>\n<h4>tensorfish/squid5090（CUDA・⭐約252）</h4>\n<p><strong>解決したい課題：</strong>汎用推論ランタイムは「どのモデル×どのGPUでもそこそこ」で、特定構成の限界性能を引き出せない。<strong>提供する機能：</strong>小型モデル「Inkling Mini 2」を NVIDIA RTX 5090 上で動かすために<strong>手書き最適化</strong>した CUDA 推論エンジン。「1モデル×1GPU」に張り付く割り切りが、汎用に飽きた層へ刺さった。本日唯一の CUDA/GPU 枠。作成約3日で日平均約84★、ただしライセンス未記載＝利用時は要確認。</p>\n<h4>自分が試すなら</h4>\n<p>DevForge の文脈で一番効くのは <strong>deslop-please</strong>——AI生成コードの可読性回復は10PJ横断の保守コストに直結する。擬似3Dは手元の素材遊びに、squid5090 は 5090 を持っていればの実験枠だ。</p>",
+      "sources": [
+        {
+          "title": "deterministic-machines/deslop-please",
+          "url": "https://github.com/deterministic-machines/deslop-please"
+        },
+        {
+          "title": "danielwh2/sprite-stacking",
+          "url": "https://github.com/danielwh2/sprite-stacking"
+        },
+        {
+          "title": "tensorfish/squid5090",
+          "url": "https://github.com/tensorfish/squid5090"
+        }
+      ]
+    },
     {
       "id": "2026-11-25-claude-code",
       "date": "2026-11-25",
