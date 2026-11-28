@@ -1,0 +1,108 @@
+<!DOCTYPE html><html lang="ja"> <head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>11/28も新バージョンなし — v2.1.330『easel』チャートと定期タスク/loop 30日化、第三者クラウドの auto モード拡大を振り返る — デイリー技術深掘り 読み物</title><meta name="description" content="npm dist-tags 一次確認で latest=next=v2.1.332 据え置き（stable=v2.1.326）。本体の新リリースは11/24以降ない日なので、直近リリースの“見落としがち”を復習する。v2.1.330 は内蔵チャートモッド『easel』を足し、定期タスクと /loop の最長稼働を7日→30日へ延長。v2.1.328 は Bedrock/GCP/Foundry など第三者プロバイダへ auto モードを拡大し、v2.1.327 は標準入力からサーバを登録する claude mcp add-json <name> - を追加した。"><meta name="theme-color" content="#7b3fe4"><link rel="canonical" href="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-28-claude-code/"><link rel="alternate" type="application/rss+xml" title="デイリー技術深掘り 読み物" href="/tech-daily-reading-web/feed.xml"><link rel="manifest" href="/tech-daily-reading-web/manifest.webmanifest"><link rel="icon" href="/tech-daily-reading-web/favicon.svg" type="image/svg+xml"><link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Newsreader:ital,opsz,wght@0,6..72,400;0,6..72,500;0,6..72,600;1,6..72,400;1,6..72,500&family=Noto+Sans+JP:wght@400;500;700&family=Shippori+Mincho+B1:wght@400;500;600;700;800&display=swap"><meta property="og:type" content="website"><meta property="og:site_name" content="デイリー技術深掘り 読み物"><meta property="og:title" content="11/28も新バージョンなし — v2.1.330『easel』チャートと定期タスク/loop 30日化、第三者クラウドの auto モード拡大を振り返る — デイリー技術深掘り 読み物"><meta property="og:description" content="npm dist-tags 一次確認で latest=next=v2.1.332 据え置き（stable=v2.1.326）。本体の新リリースは11/24以降ない日なので、直近リリースの“見落としがち”を復習する。v2.1.330 は内蔵チャートモッド『easel』を足し、定期タスクと /loop の最長稼働を7日→30日へ延長。v2.1.328 は Bedrock/GCP/Foundry など第三者プロバイダへ auto モードを拡大し、v2.1.327 は標準入力からサーバを登録する claude mcp add-json <name> - を追加した。"><meta property="og:url" content="https://devforge-dev.github.io/tech-daily-reading-web/articles/2026-11-28-claude-code/"><meta name="twitter:card" content="summary_large_image"><!-- FOUC を防ぐためテーマを最優先で適用 --><script>
+      (function () {
+        try {
+          var stored = localStorage.getItem('theme');
+          var theme =
+            stored ||
+            (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+          document.documentElement.setAttribute('data-theme', theme);
+        } catch (e) {}
+      })();
+    </script><link rel="stylesheet" href="/tech-daily-reading-web/_astro/archive.Ceuvs2Mz.css"></head> <body> <header class="site-header"> <div class="container inner"> <a class="brand" href="/tech-daily-reading-web/"> <span class="logo">読</span> <span class="wordmark">
+デイリー技術深掘り
+<span class="sub">TECH DAILY READING</span> </span> </a> <nav class="nav"> <a href="/tech-daily-reading-web/"> ホーム </a><a href="/tech-daily-reading-web/archive"> アーカイブ </a><a href="/tech-daily-reading-web/trends"> 傾向 </a><a href="/tech-daily-reading-web/search"> 検索 </a> <button id="theme-toggle" class="icon-btn" type="button" aria-label="ダークモード切替" title="ダークモード切替"> <span aria-hidden="true" id="theme-icon">🌙</span> </button> </nav> </div> </header> <script>
+  (function () {
+    const btn = document.getElementById('theme-toggle');
+    const icon = document.getElementById('theme-icon');
+    function current() {
+      return document.documentElement.getAttribute('data-theme') || 'light';
+    }
+    function paint() {
+      if (icon) icon.textContent = current() === 'dark' ? '☀️' : '🌙';
+    }
+    paint();
+    btn &&
+      btn.addEventListener('click', function () {
+        const next = current() === 'dark' ? 'light' : 'dark';
+        document.documentElement.setAttribute('data-theme', next);
+        try {
+          localStorage.setItem('theme', next);
+        } catch (e) {}
+        paint();
+        document.dispatchEvent(new CustomEvent('themechange', { detail: next }));
+      });
+  })();
+</script> <main class="container">  <a class="back-link" href="/tech-daily-reading-web/">← 一覧へ戻る</a> <section class="hero big rise" style="background:linear-gradient(135deg, #8b5cf6, #5b21b6)"> <span class="glyph" aria-hidden="true">✶</span> <div class="kicker">Claude Code</div> <h1>11/28も新バージョンなし — v2.1.330『easel』チャートと定期タスク/loop 30日化、第三者クラウドの auto モード拡大を振り返る</h1> <p class="lede">npm dist-tags 一次確認で latest=next=v2.1.332 据え置き（stable=v2.1.326）。本体の新リリースは11/24以降ない日なので、直近リリースの“見落としがち”を復習する。v2.1.330 は内蔵チャートモッド『easel』を足し、定期タスクと /loop の最長稼働を7日→30日へ延長。v2.1.328 は Bedrock/GCP/Foundry など第三者プロバイダへ auto モードを拡大し、v2.1.327 は標準入力からサーバを登録する claude mcp add-json &lt;name&gt; - を追加した。</p> <div class="meta"> <span>📅 2026年11月28日</span> <span>⏱ 約4分</span> <span>🔗 出典 4 件</span> </div> </section> <div class="article-layout" style="--topic:#7b3fe4"> <div> <article class="prose" data-has-mermaid="0"><p>本日（JST 11/28・土）も Claude Code 本体の新バージョンは無い。npm レジストリの dist-tags を一次確認すると <strong>latest＝next＝v2.1.332</strong>（2026-11-24 公開）、<strong>stable＝v2.1.326</strong> で、いずれも前日から変化なし。直近の公開履歴は v2.1.330(11/20)→v2.1.331(11/23)→v2.1.332(11/24) で、11/24 以降は本体の新リリースが止まっている。リリース面の新事実が乏しい日なので、ここでは<strong>直近リリース（v2.1.327〜330）の見落とされがちな要点</strong>を棚卸しする。</p>
+
+<h4 id="sec-1">何が新しいか：直近リリースの“効いてくる”3点</h4>
+<p>第一に <strong>v2.1.330 の内蔵チャートモッド『easel』</strong>。要求時や MCP メトリクスの結果に応じてチャートを描く機能で、Pro/Max および対象の Team/Enterprise、macOS/Linux で使える（自動チャートは <code>/config</code> で無効化可）。第二に、<strong>定期タスク（recurring tasks）と <code>/loop</code> のウェイクアップが、セッション稼働中に最長30日まで延長</strong>された（従来は7日。記事時点でドキュメントは7日表記のまま、との指摘あり）。第三に <strong>v2.1.327 の <code>claude mcp add-json &lt;name&gt; -</code></strong>——標準入力からサーバ JSON を読み込み、<strong>トークンをコマンド履歴に残さず</strong>登録できる（ただし Claude Code セッション内からは実行不可）。※リリース要点の一部は二次情報（aiparabellum／dev.to）に基づく。</p>
+
+<figure class='fig'><svg viewBox='0 0 600 196' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <rect x='0' y='0' width='600' height='196' fill='#faf5ff' rx='10'></rect>
+  <text x='300' y='26' text-anchor='middle' font-size='13.5' font-weight='bold' fill='#6b21a8'>直近リリース（v2.1.327〜330）の見落としがちな要点</text>
+  <line x1='16' y1='38' x2='584' y2='38' stroke='#c4b5fd'></line>
+  <text x='70' y='56' text-anchor='middle' font-size='11' font-weight='bold' fill='#5b21b6'>版</text>
+  <text x='340' y='56' text-anchor='middle' font-size='11' font-weight='bold' fill='#5b21b6'>見落としがちな変更</text>
+  <line x1='16' y1='64' x2='584' y2='64' stroke='#ddd6fe'></line>
+  <text x='70' y='92' text-anchor='middle' font-size='11' font-weight='bold' fill='#0f172a'>v2.1.330</text>
+  <text x='128' y='84' font-size='10' fill='#334155'>内蔵チャートモッド『easel』を追加（要求時/MCPメトリクスで描画）</text>
+  <text x='128' y='100' font-size='10' fill='#334155'>定期タスク/loop の最長稼働を7日→30日／rm 承認強化</text>
+  <line x1='16' y1='110' x2='584' y2='110' stroke='#ede9fe'></line>
+  <text x='70' y='132' text-anchor='middle' font-size='11' font-weight='bold' fill='#0f172a'>v2.1.328</text>
+  <text x='128' y='128' font-size='10' fill='#334155'>第三者クラウド(Bedrock/GCP/Foundry/gateway)へ auto モード拡大</text>
+  <line x1='16' y1='142' x2='584' y2='142' stroke='#ede9fe'></line>
+  <text x='70' y='164' text-anchor='middle' font-size='11' font-weight='bold' fill='#0f172a'>v2.1.327</text>
+  <text x='128' y='160' font-size='10' fill='#334155'>claude mcp add-json &lt;name&gt; - で標準入力からサーバ登録</text>
+  <text x='128' y='176' font-size='9' fill='#64748b'>（トークンを履歴に残さない。CCセッション内からは不可）</text>
+  <line x1='16' y1='186' x2='584' y2='186' stroke='#ede9fe'></line>
+</svg><figcaption>図1：新リリースの無い日に押さえる、直近4版の“効いてくる”差分。※一部二次情報。</figcaption></figure>
+
+<h4 id="sec-2">仕組み・セキュリティ：auto モードが“自前契約”を離れた</h4>
+<p>運用に最も効くのは v2.1.328 の <strong>auto モード拡大</strong>だ。これまで実質 Anthropic 直 API 前提だった auto モード（危険度の低い操作を自動承認）が、<strong>Amazon Bedrock・Google Cloud Agent Platform・Microsoft Foundry・Claude apps ゲートウェイ</strong>上の Opus 4.6／Sonnet 4.6 でも使えるようになり、<strong>権限モード未指定の対話セッションは auto で開始</strong>する。裏を返せば“今まで都度確認だった環境が黙って自動承認に変わり得る”ので、確認を残したいなら <code>permissions.defaultMode</code> を明示設定する。あわせて v2.1.330 ではセキュリティも強化され、<strong>root/ホーム/作業フォルダを狙う <code>rm</code> の多くが承認を要求</strong>し、応答者がいなければ拒否、ファイルツールは <code>.credentials.json</code> への書き込みを拒否するようになった（※二次情報）。</p>
+
+<h4 id="sec-3">事例：Anthropic『Working with AI』企業導入調査</h4>
+<p>事例面では、Anthropic の定性研究『Working with AI』（2026-11-23）が目を引く。法務〜物流の<strong>58社・66インタビュー</strong>を対象に、生成AI／コーディングエージェントの実務導入を聞き取った調査（労働力センサスではない）。報告によると、AI 主因の国内レイオフはごく少数にとどまる一方、<strong>約3分の2の企業が採用を抑制</strong>し、一部は外注（多くはオフショア）を削減。非技術者が作った「ソフトウェア成果物」100件を分類すると、<strong>約8割が手作業（表計算・議事録・運用トラッカー等）の自動化、約2割が購入 SaaS の置換</strong>だった。最大の壁は「レビューしきれない AI 出力量」で、価値はツール導入そのものより<strong>業務の再設計（reorganization）</strong>から生まれる、と結論づける。※数値は二次報道の紹介に基づき一次（anthropic.com）で要確認。</p>
+
+<figure class='fig'><svg viewBox='0 0 600 172' xmlns='http://www.w3.org/2000/svg' font-family='sans-serif'>
+  <rect x='0' y='0' width='600' height='172' fill='#f5f3ff' rx='10'></rect>
+  <text x='300' y='26' text-anchor='middle' font-size='13.5' font-weight='bold' fill='#6b21a8'>『Working with AI』（2026-11-23）の要点</text>
+  <rect x='24' y='42' width='170' height='48' rx='8' fill='#fff' stroke='#c4b5fd' stroke-width='1.5'></rect>
+  <text x='109' y='64' text-anchor='middle' font-size='13' font-weight='bold' fill='#5b21b6'>58社 / 66IV</text>
+  <text x='109' y='82' text-anchor='middle' font-size='9.5' fill='#64748b'>法務〜物流の定性調査</text>
+  <rect x='214' y='42' width='170' height='48' rx='8' fill='#fff' stroke='#c4b5fd' stroke-width='1.5'></rect>
+  <text x='299' y='64' text-anchor='middle' font-size='13' font-weight='bold' fill='#b45309'>約2/3が採用抑制</text>
+  <text x='299' y='82' text-anchor='middle' font-size='9.5' fill='#64748b'>国内レイオフはごく少数</text>
+  <rect x='404' y='42' width='172' height='48' rx='8' fill='#fff' stroke='#c4b5fd' stroke-width='1.5'></rect>
+  <text x='490' y='64' text-anchor='middle' font-size='13' font-weight='bold' fill='#166534'>成果物100件</text>
+  <text x='490' y='82' text-anchor='middle' font-size='9.5' fill='#64748b'>8割=自動化 / 2割=SaaS置換</text>
+  <rect x='24' y='104' width='552' height='30' rx='7' fill='#ede9fe'></rect>
+  <text x='300' y='123' text-anchor='middle' font-size='10.5' fill='#5b21b6'>最大の壁＝「レビューしきれない AI 出力量」</text>
+  <text x='300' y='156' text-anchor='middle' font-size='11' font-weight='bold' fill='#7c3aed'>価値はツール導入より“業務の再設計”から生まれる</text>
+</svg><figcaption>図2：採用抑制と、非技術者による“手作業の自動化”が導入の実像。数値は二次紹介ベース、一次で要確認。</figcaption></figure>
+
+<h4 id="sec-4">実務での使いどころ・落とし穴・ひとこと</h4>
+<p>自分の定期タスク運用に引きつけると、効くのは2点。ひとつは <strong>定期タスク/loop の30日化</strong>で、長く回すスケジュール運用の設計余地が広がること。もうひとつは <strong>auto モードの既定化</strong>——第三者クラウド経由なら <code>permissions.defaultMode</code> を一度棚卸しし、「確認が出ると思っていた操作が自動承認されていた」を防ぐ。落とし穴は、本稿のリリース要点が一部二次情報に拠ること——版数・挙動は公式 CHANGELOG を正とする。新バージョンが無い日の学びは「<strong>機能より“承認と稼働時間の既定”が変わった</strong>」ことだ。</p></article> <aside class="sources"> <h4>出典 / 参考</h4> <ol> <li> <a href="https://www.npmjs.com/package/@anthropic-ai/claude-code" target="_blank" rel="noopener noreferrer"> @anthropic-ai/claude-code（npm・一次） </a> </li><li> <a href="https://aiparabellum.com/whats-new-in-claude-code-nov-16-22/" target="_blank" rel="noopener noreferrer"> What&#39;s new in Claude Code Nov 16–22（aiparabellum） </a> </li><li> <a href="https://dev.to/aicoding-guide/this-week-in-claude-code-codex-and-gemini-cli-week-of-november-22-2026-1ofi" target="_blank" rel="noopener noreferrer"> This Week in Claude Code — week of Nov 22, 2026（dev.to） </a> </li><li> <a href="https://www.anthropic.com/research/working-with-ai" target="_blank" rel="noopener noreferrer"> Working with AI（Anthropic Research） </a> </li> </ol> </aside> </div> <nav class="toc-rail" aria-label="目次"> <div class="toc-title">目次</div> <ul> <li> <a href="#sec-1" data-toc="sec-1"> 何が新しいか：直近リリースの“効いてくる”3点 </a> </li><li> <a href="#sec-2" data-toc="sec-2"> 仕組み・セキュリティ：auto モードが“自前契約”を離れた </a> </li><li> <a href="#sec-3" data-toc="sec-3"> 事例：Anthropic『Working with AI』企業導入調査 </a> </li><li> <a href="#sec-4" data-toc="sec-4"> 実務での使いどころ・落とし穴・ひとこと </a> </li> </ul> <div class="reading-box"> <div>📅 2026-11-28</div> <div>⏱ 読了 約4分</div> <div>🏷 Claude Code</div> </div> </nav> </div>  </main> <footer class="site-footer"> <div class="container inner"> <span>© デイリー技術深掘り 読み物 — 自分用の知識アーカイブ</span> <span> <a href="/tech-daily-reading-web/feed.xml">RSS</a> ·
+<a href="/tech-daily-reading-web/archive">アーカイブ</a> ·
+<a href="https://github.com/DevForge-Dev/tech-daily-reading-web">GitHub</a> </span> </div> </footer> <!-- OS のカラースキーム変更に追従（手動設定が無いときのみ） --> <script>
+      (function () {
+        var mq = window.matchMedia('(prefers-color-scheme: dark)');
+        mq.addEventListener &&
+          mq.addEventListener('change', function (e) {
+            try {
+              if (localStorage.getItem('theme')) return;
+            } catch (err) {}
+            document.documentElement.setAttribute('data-theme', e.matches ? 'dark' : 'light');
+            document.dispatchEvent(
+              new CustomEvent('themechange', { detail: e.matches ? 'dark' : 'light' })
+            );
+          });
+      })();
+    </script> <!-- 軽量 Service Worker 登録（PWA / オフライン閲覧） --> <script>(function(){const swPath = "/tech-daily-reading-web/sw.js";
+const scope = "/tech-daily-reading-web/";
+
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register(swPath, { scope: scope }).catch(function () {});
+        });
+      }
+    })();</script> </body> </html> <!-- 見出しアンカー + TOC アクティブ表示 + コードハイライト --> <script type="module" src="/tech-daily-reading-web/_astro/_id_.astro_astro_type_script_index_0_lang.BJQeLdWV.js"></script>
